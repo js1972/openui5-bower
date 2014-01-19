@@ -1,0 +1,21 @@
+{
+	"name": "openui5-bower",
+	"version": "1.16.8-SNAPSHOT",
+	"author": "SAP AG",
+	"contributors": [
+		"SAP AG <*@sap.com>"
+	],
+	"description": "Fork of the OpenUI5 runtime for bower enablement.",
+	"keywords": [
+		"OpenUI5",
+		"Bower",
+		"SAP"
+	],
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	]
+}
