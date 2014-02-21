@@ -2,8 +2,8 @@
 jQuery.sap.declare('sap.ui.layout.library-all');
 if ( !jQuery.sap.isDeclared('sap.ui.layout.GridRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.layout.GridRenderer");
@@ -12,7 +12,7 @@ jQuery.sap.declare("sap.ui.layout.GridRenderer");
  * @class
  * @author SAP AG
  * @version
- * 1.16.8-SNAPSHOT
+ * 1.18.8
  * @static
  */
 sap.ui.layout.GridRenderer = {};
@@ -128,9 +128,9 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 					}
 
 					// Catch the Individual Spans
-					var iSpanLarge = oLay.getSpanLarge();
-					var iSpanMedium = oLay.getSpanMedium();
-					var iSpanSmall = oLay.getSpanSmall();
+					var iSpanLarge = oLay.getSpanL();
+					var iSpanMedium = oLay.getSpanM();
+					var iSpanSmall = oLay.getSpanS();
 
 					span = span.toUpperCase();
 					if ((span.substr(0, 1) === "L") && (iSpanLarge > 0)	&& (iSpanLarge < 13)) {
@@ -172,26 +172,23 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 					}
 					if (indent) {
 						indent = indent.toUpperCase();
-						if (!(/^(L0)? ?(M0)? ?(S0)?$/.exec(indent))) { 
 
-							// Catch the Individual Indents
-							var iIndentLarge = oLay.getIndentLarge();
-							var iIndentMedium = oLay.getIndentMedium();
-							var iIndentSmall = oLay.getIndentSmall();
+						// Catch the Individual Indents
+						var iIndentLarge = oLay.getIndentL();
+						var iIndentMedium = oLay.getIndentM();
+						var iIndentSmall = oLay.getIndentS();
 
-							if ((indent.substr(0, 1) === "L")
-									&& (iIndentLarge > 0)
-									&& (iIndentLarge < 12)) {
-								oRm.addClass("sapUiRespGridIndentL"	+ iIndentLarge);
-							} else if ((indent.substr(0, 1) === "M") 
-									&& (iIndentMedium > 0)
-									&& (iIndentMedium < 12)) {
-								oRm.addClass("sapUiRespGridIndentM"	+ iIndentMedium);
-							} else if ((indent.substr(0, 1) === "S")
-									&& (iIndentSmall > 0)
-									&& (iIndentSmall < 12)) {
-								oRm.addClass("sapUiRespGridIndentS"	+ iIndentSmall);
-							} else {
+						if ((indent.substr(0, 1) === "L") && (iIndentLarge > 0)
+								&& (iIndentLarge < 12)) {
+							oRm.addClass("sapUiRespGridIndentL" + iIndentLarge);
+						} else if ((indent.substr(0, 1) === "M")
+								&& (iIndentMedium > 0) && (iIndentMedium < 12)) {
+							oRm.addClass("sapUiRespGridIndentM"	+ iIndentMedium);
+						} else if ((indent.substr(0, 1) === "S")
+								&& (iIndentSmall > 0) && (iIndentSmall < 12)) {
+							oRm.addClass("sapUiRespGridIndentS" + iIndentSmall);
+						} else {
+							if (!(/^(L0)? ?(M0)? ?(S0)?$/.exec(indent))) {
 								oRm.addClass("sapUiRespGridIndent" + indent);
 							}
 						}
@@ -200,10 +197,12 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 			}
 			
 			
+			
+			
 			// Visibility
-			var l = oLay.getVisibleOnLarge(),
-			m = oLay.getVisibleOnMedium(),
-			s = oLay.getVisibleOnSmall();
+			var l = oLay.getVisibleL(),
+			m = oLay.getVisibleM(),
+			s = oLay.getVisibleS();
 
 			if (!l && m && s) {
 				oRm.addClass("sapUiRespGridHiddenL");
@@ -283,7 +282,7 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 						oRm.addClass("sapUiRespGridIndent" + indent.toUpperCase());
 					}
 				}
-			} 
+			}
 		}
 
 		oRm.writeClasses();
@@ -301,8 +300,8 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 }; // end of sap/ui/layout/GridRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.HorizontalLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -359,8 +358,8 @@ sap.ui.layout.HorizontalLayoutRenderer.render = function(oRenderManager, oContro
 }; // end of sap/ui/layout/HorizontalLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.ResponsiveFlowLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.layout.ResponsiveFlowLayoutRenderer");
@@ -399,8 +398,8 @@ sap.ui.layout.ResponsiveFlowLayoutRenderer = {};
 }; // end of sap/ui/layout/ResponsiveFlowLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.VerticalLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -457,8 +456,8 @@ sap.ui.layout.VerticalLayoutRenderer.render = function(oRenderManager, oVertical
 }; // end of sap/ui/layout/VerticalLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -637,10 +636,14 @@ sap.ui.layout.form.FormLayoutRenderer.renderTitle = function(rm, oTitle, oExpand
 			rm.writeEscaped(oTitle, true);
 		}else{
 			// title control
-			if (oTitle.getIcon()) {
-				rm.write("<img id=\"" + oTitle.getId() + "-ico\" src=\"");
-				rm.writeEscaped(oTitle.getIcon());
-				rm.write("\" role=\"presentation\" alt=\"\"/>"); // role and alt added as per accessibility requirement
+			var sIcon = oTitle.getIcon();
+
+			if (sIcon) {
+				var aClasses = [];
+				var mAttributes = {};
+
+				mAttributes["id"] = oTitle.getId() + "-ico";
+				rm.writeIcon(sIcon, aClasses, mAttributes);
 			}
 			rm.writeEscaped(oTitle.getText(), true);
 		}
@@ -652,8 +655,8 @@ sap.ui.layout.form.FormLayoutRenderer.renderTitle = function(rm, oTitle, oExpand
 }; // end of sap/ui/layout/form/FormLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -731,8 +734,8 @@ sap.ui.layout.form.FormRenderer.render = function(oRenderManager, oForm){
 }; // end of sap/ui/layout/form/FormRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.GridLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1225,8 +1228,8 @@ sap.ui.layout.form.GridLayoutRenderer.getElementData = function(oLayout, oContro
 }; // end of sap/ui/layout/form/GridLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.ResponsiveGridLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1274,8 +1277,8 @@ sap.ui.layout.form.ResponsiveGridLayoutRenderer.renderContainers = function(rm, 
 }; // end of sap/ui/layout/form/ResponsiveGridLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.ResponsiveLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1325,8 +1328,8 @@ sap.ui.layout.form.ResponsiveLayoutRenderer.renderContainers = function(rm, oLay
 }; // end of sap/ui/layout/form/ResponsiveLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.SimpleFormRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1363,8 +1366,8 @@ sap.ui.layout.form.SimpleFormRenderer.render = function(oRm, oControl){
 }; // end of sap/ui/layout/form/SimpleFormRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.library') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1374,7 +1377,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.layout.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.layout (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.layout (1.18.8)
  */
 jQuery.sap.declare("sap.ui.layout.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1424,11 +1427,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.layout.form.GridContainerData",
     "sap.ui.layout.form.GridElementData"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1458,8 +1461,8 @@ sap.ui.layout.GridIndent = sap.ui.base.DataType.createType('sap.ui.layout.GridIn
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1475,7 +1478,7 @@ jQuery.sap.declare("sap.ui.layout.GridPosition");
 /**
  * @class Position of the Grid. Can be "Left", "Center" or "Right". "Left" is default.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1501,8 +1504,8 @@ sap.ui.layout.GridPosition = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1532,8 +1535,8 @@ sap.ui.layout.GridSpan = sap.ui.base.DataType.createType('sap.ui.layout.GridSpan
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1563,8 +1566,8 @@ sap.ui.layout.form.GridElementCells = sap.ui.base.DataType.createType('sap.ui.la
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1580,7 +1583,7 @@ jQuery.sap.declare("sap.ui.layout.form.SimpleFormLayout");
 /**
  * @class Available FormLayouts used for the SimpleForm.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.16.0
@@ -1627,8 +1630,8 @@ if (!sap.ui.layout.form.FormHelper) {
 }; // end of sap/ui/layout/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.Grid') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1689,7 +1692,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -2138,8 +2141,8 @@ sap.ui.core.Control.extend("sap.ui.layout.Grid", { metadata : {
 }; // end of sap/ui/layout/Grid.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.GridData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2172,10 +2175,16 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * <li>Properties
  * <ul>
  * <li>{@link #getSpan span} : sap.ui.layout.GridSpan</li>
+ * <li>{@link #getSpanL spanL} : int</li>
+ * <li>{@link #getSpanM spanM} : int</li>
+ * <li>{@link #getSpanS spanS} : int</li>
  * <li>{@link #getIndent indent} : sap.ui.layout.GridIndent</li>
- * <li>{@link #getVisibleOnLarge visibleOnLarge} : boolean (default: true)</li>
- * <li>{@link #getVisibleOnMedium visibleOnMedium} : boolean (default: true)</li>
- * <li>{@link #getVisibleOnSmall visibleOnSmall} : boolean (default: true)</li>
+ * <li>{@link #getIndentL indentL} : int</li>
+ * <li>{@link #getIndentM indentM} : int</li>
+ * <li>{@link #getIndentS indentS} : int</li>
+ * <li>{@link #getVisibleL visibleL} : boolean (default: true)</li>
+ * <li>{@link #getVisibleM visibleM} : boolean (default: true)</li>
+ * <li>{@link #getVisibleS visibleS} : boolean (default: true)</li>
  * <li>{@link #getMoveBackwards moveBackwards} : sap.ui.layout.GridIndent</li>
  * <li>{@link #getMoveForward moveForward} : sap.ui.layout.GridIndent</li>
  * <li>{@link #getLinebreak linebreak} : boolean (default: false)</li>
@@ -2187,7 +2196,10 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * <li>{@link #getSpanSmall spanSmall} : int</li>
  * <li>{@link #getIndentLarge indentLarge} : int</li>
  * <li>{@link #getIndentMedium indentMedium} : int</li>
- * <li>{@link #getIndentSmall indentSmall} : int</li></ul>
+ * <li>{@link #getIndentSmall indentSmall} : int</li>
+ * <li>{@link #getVisibleOnLarge visibleOnLarge} : boolean (default: true)</li>
+ * <li>{@link #getVisibleOnMedium visibleOnMedium} : boolean (default: true)</li>
+ * <li>{@link #getVisibleOnSmall visibleOnSmall} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -2212,7 +2224,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -2227,22 +2239,31 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	library : "sap.ui.layout",
 	properties : {
 		"span" : {type : "sap.ui.layout.GridSpan", group : "Behavior", defaultValue : null},
+		"spanL" : {type : "int", group : "Behavior", defaultValue : null},
+		"spanM" : {type : "int", group : "Behavior", defaultValue : null},
+		"spanS" : {type : "int", group : "Behavior", defaultValue : null},
 		"indent" : {type : "sap.ui.layout.GridIndent", group : "Behavior", defaultValue : null},
-		"visibleOnLarge" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"visibleOnMedium" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"visibleOnSmall" : {type : "boolean", group : "Behavior", defaultValue : true},
+		"indentL" : {type : "int", group : "Behavior", defaultValue : null},
+		"indentM" : {type : "int", group : "Behavior", defaultValue : null},
+		"indentS" : {type : "int", group : "Behavior", defaultValue : null},
+		"visibleL" : {type : "boolean", group : "Behavior", defaultValue : true},
+		"visibleM" : {type : "boolean", group : "Behavior", defaultValue : true},
+		"visibleS" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"moveBackwards" : {type : "sap.ui.layout.GridIndent", group : "Misc", defaultValue : null},
 		"moveForward" : {type : "sap.ui.layout.GridIndent", group : "Misc", defaultValue : null},
 		"linebreak" : {type : "boolean", group : "Misc", defaultValue : false},
 		"linebreakL" : {type : "boolean", group : "Misc", defaultValue : false},
 		"linebreakM" : {type : "boolean", group : "Misc", defaultValue : false},
 		"linebreakS" : {type : "boolean", group : "Misc", defaultValue : false},
-		"spanLarge" : {type : "int", group : "Behavior", defaultValue : null},
-		"spanMedium" : {type : "int", group : "Behavior", defaultValue : null},
-		"spanSmall" : {type : "int", group : "Behavior", defaultValue : null},
-		"indentLarge" : {type : "int", group : "Behavior", defaultValue : null},
-		"indentMedium" : {type : "int", group : "Behavior", defaultValue : null},
-		"indentSmall" : {type : "int", group : "Behavior", defaultValue : null}
+		"spanLarge" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"spanMedium" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"spanSmall" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"indentLarge" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"indentMedium" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"indentSmall" : {type : "int", group : "Behavior", defaultValue : null, deprecated: true},
+		"visibleOnLarge" : {type : "boolean", group : "Behavior", defaultValue : true, deprecated: true},
+		"visibleOnMedium" : {type : "boolean", group : "Behavior", defaultValue : true, deprecated: true},
+		"visibleOnSmall" : {type : "boolean", group : "Behavior", defaultValue : true, deprecated: true}
 	}
 }});
 
@@ -2290,6 +2311,81 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 
 /**
+ * Getter for property <code>spanL</code>.
+ * Optional. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "span".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>spanL</code>
+ * @public
+ * @name sap.ui.layout.GridData#getSpanL
+ * @function
+ */
+
+/**
+ * Setter for property <code>spanL</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iSpanL  new value for property <code>spanL</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setSpanL
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>spanM</code>.
+ * Optional. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "span".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>spanM</code>
+ * @public
+ * @name sap.ui.layout.GridData#getSpanM
+ * @function
+ */
+
+/**
+ * Setter for property <code>spanM</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iSpanM  new value for property <code>spanM</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setSpanM
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>spanS</code>.
+ * Optional. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "span".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>spanS</code>
+ * @public
+ * @name sap.ui.layout.GridData#getSpanS
+ * @function
+ */
+
+/**
+ * Setter for property <code>spanS</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iSpanS  new value for property <code>spanS</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setSpanS
+ * @function
+ */
+
+
+/**
  * Getter for property <code>indent</code>.
  * A string type that represents Grid's span values for large, medium and small screens. Allowed values are separated by space Letters L, M or S followed by number of columns from 1 to 12 that the container has to take, for example: "L2 M4 S6", "M12", "s10" or "l4 m4". Note that the parameters has to be provided in the order large medium small.
  *
@@ -2315,76 +2411,151 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 
 /**
- * Getter for property <code>visibleOnLarge</code>.
+ * Getter for property <code>indentL</code>.
+ * Optional. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "indent".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>indentL</code>
+ * @public
+ * @name sap.ui.layout.GridData#getIndentL
+ * @function
+ */
+
+/**
+ * Setter for property <code>indentL</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iIndentL  new value for property <code>indentL</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setIndentL
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>indentM</code>.
+ * Optional. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "indent".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>indentM</code>
+ * @public
+ * @name sap.ui.layout.GridData#getIndentM
+ * @function
+ */
+
+/**
+ * Setter for property <code>indentM</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iIndentM  new value for property <code>indentM</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setIndentM
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>indentS</code>.
+ * Optional. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "indent".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {int} the value of property <code>indentS</code>
+ * @public
+ * @name sap.ui.layout.GridData#getIndentS
+ * @function
+ */
+
+/**
+ * Setter for property <code>indentS</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {int} iIndentS  new value for property <code>indentS</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.layout.GridData#setIndentS
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visibleL</code>.
  * Defines if this Control is visible on Large screens.
  *
  * Default value is <code>true</code>
  *
- * @return {boolean} the value of property <code>visibleOnLarge</code>
+ * @return {boolean} the value of property <code>visibleL</code>
  * @public
- * @name sap.ui.layout.GridData#getVisibleOnLarge
+ * @name sap.ui.layout.GridData#getVisibleL
  * @function
  */
 
 /**
- * Setter for property <code>visibleOnLarge</code>.
+ * Setter for property <code>visibleL</code>.
  *
  * Default value is <code>true</code> 
  *
- * @param {boolean} bVisibleOnLarge  new value for property <code>visibleOnLarge</code>
+ * @param {boolean} bVisibleL  new value for property <code>visibleL</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.layout.GridData#setVisibleOnLarge
+ * @name sap.ui.layout.GridData#setVisibleL
  * @function
  */
 
 
 /**
- * Getter for property <code>visibleOnMedium</code>.
+ * Getter for property <code>visibleM</code>.
  * Defines if this Control is visible on Medium size screens.
  *
  * Default value is <code>true</code>
  *
- * @return {boolean} the value of property <code>visibleOnMedium</code>
+ * @return {boolean} the value of property <code>visibleM</code>
  * @public
- * @name sap.ui.layout.GridData#getVisibleOnMedium
+ * @name sap.ui.layout.GridData#getVisibleM
  * @function
  */
 
 /**
- * Setter for property <code>visibleOnMedium</code>.
+ * Setter for property <code>visibleM</code>.
  *
  * Default value is <code>true</code> 
  *
- * @param {boolean} bVisibleOnMedium  new value for property <code>visibleOnMedium</code>
+ * @param {boolean} bVisibleM  new value for property <code>visibleM</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.layout.GridData#setVisibleOnMedium
+ * @name sap.ui.layout.GridData#setVisibleM
  * @function
  */
 
 
 /**
- * Getter for property <code>visibleOnSmall</code>.
+ * Getter for property <code>visibleS</code>.
  * Defines if this Control is visible on small screens.
  *
  * Default value is <code>true</code>
  *
- * @return {boolean} the value of property <code>visibleOnSmall</code>
+ * @return {boolean} the value of property <code>visibleS</code>
  * @public
- * @name sap.ui.layout.GridData#getVisibleOnSmall
+ * @name sap.ui.layout.GridData#getVisibleS
  * @function
  */
 
 /**
- * Setter for property <code>visibleOnSmall</code>.
+ * Setter for property <code>visibleS</code>.
  *
  * Default value is <code>true</code> 
  *
- * @param {boolean} bVisibleOnSmall  new value for property <code>visibleOnSmall</code>
+ * @param {boolean} bVisibleS  new value for property <code>visibleS</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.layout.GridData#setVisibleOnSmall
+ * @name sap.ui.layout.GridData#setVisibleS
  * @function
  */
 
@@ -2541,12 +2712,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>spanLarge</code>.
- * Optional. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "span".
+ * Deprecated. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "span".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>spanLarge</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanL instead.
  * @name sap.ui.layout.GridData#getSpanLarge
  * @function
  */
@@ -2559,6 +2732,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iSpanLarge  new value for property <code>spanLarge</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanL instead.
  * @name sap.ui.layout.GridData#setSpanLarge
  * @function
  */
@@ -2566,12 +2741,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>spanMedium</code>.
- * Optional. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "span".
+ * Deprecated. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "span".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>spanMedium</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanM instead.
  * @name sap.ui.layout.GridData#getSpanMedium
  * @function
  */
@@ -2584,6 +2761,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iSpanMedium  new value for property <code>spanMedium</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanM instead.
  * @name sap.ui.layout.GridData#setSpanMedium
  * @function
  */
@@ -2591,12 +2770,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>spanSmall</code>.
- * Optional. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "span".
+ * Deprecated. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "span".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>spanSmall</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanS instead.
  * @name sap.ui.layout.GridData#getSpanSmall
  * @function
  */
@@ -2609,6 +2790,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iSpanSmall  new value for property <code>spanSmall</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use spanS instead.
  * @name sap.ui.layout.GridData#setSpanSmall
  * @function
  */
@@ -2616,12 +2799,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>indentLarge</code>.
- * Optional. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "indent".
+ * Deprecated. Defines a span value for large screens. This value overwrites the value for large screens defined in the parameter "indent".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>indentLarge</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentL instead.
  * @name sap.ui.layout.GridData#getIndentLarge
  * @function
  */
@@ -2634,6 +2819,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iIndentLarge  new value for property <code>indentLarge</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentL instead.
  * @name sap.ui.layout.GridData#setIndentLarge
  * @function
  */
@@ -2641,12 +2828,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>indentMedium</code>.
- * Optional. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "indent".
+ * Deprecated. Defines a span value for medium size screens. This value overwrites the value for medium screens defined in the parameter "indent".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>indentMedium</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentM instead.
  * @name sap.ui.layout.GridData#getIndentMedium
  * @function
  */
@@ -2659,6 +2848,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iIndentMedium  new value for property <code>indentMedium</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentM instead.
  * @name sap.ui.layout.GridData#setIndentMedium
  * @function
  */
@@ -2666,12 +2857,14 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 /**
  * Getter for property <code>indentSmall</code>.
- * Optional. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "indent".
+ * Deprecated. Defines a span value for small screens. This value overwrites the value for small screens defined in the parameter "indent".
  *
  * Default value is empty/<code>undefined</code>
  *
  * @return {int} the value of property <code>indentSmall</code>
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentS instead.
  * @name sap.ui.layout.GridData#getIndentSmall
  * @function
  */
@@ -2684,7 +2877,96 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
  * @param {int} iIndentSmall  new value for property <code>indentSmall</code>
  * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.17.1. 
+ * Use indentS instead.
  * @name sap.ui.layout.GridData#setIndentSmall
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visibleOnLarge</code>.
+ * Deprecated. Defines if this Control is visible on Large screens.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visibleOnLarge</code>
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleL instead.
+ * @name sap.ui.layout.GridData#getVisibleOnLarge
+ * @function
+ */
+
+/**
+ * Setter for property <code>visibleOnLarge</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisibleOnLarge  new value for property <code>visibleOnLarge</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleL instead.
+ * @name sap.ui.layout.GridData#setVisibleOnLarge
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visibleOnMedium</code>.
+ * Deprecated. Defines if this Control is visible on Medium size screens.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visibleOnMedium</code>
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleM instead.
+ * @name sap.ui.layout.GridData#getVisibleOnMedium
+ * @function
+ */
+
+/**
+ * Setter for property <code>visibleOnMedium</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisibleOnMedium  new value for property <code>visibleOnMedium</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleM instead.
+ * @name sap.ui.layout.GridData#setVisibleOnMedium
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visibleOnSmall</code>.
+ * Deprecated. Defines if this Control is visible on small screens.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visibleOnSmall</code>
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleS instead.
+ * @name sap.ui.layout.GridData#getVisibleOnSmall
+ * @function
+ */
+
+/**
+ * Setter for property <code>visibleOnSmall</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisibleOnSmall  new value for property <code>visibleOnSmall</code>
+ * @return {sap.ui.layout.GridData} <code>this</code> to allow method chaining
+ * @public
+ * @deprecated Since version 1.17.1. 
+ * Use visibleS instead.
+ * @name sap.ui.layout.GridData#setVisibleOnSmall
  * @function
  */
 
@@ -2711,11 +2993,11 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 
 	sap.ui.layout.GridData.prototype._getEffectiveSpanLarge = function() {
 
-		var iSpan = this.getSpanLarge();
+		var iSpan = this.getSpanL();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
 			return iSpan;
 		}
-
+		
 		var SPANPATTERN = /L([1-9]|1[0-2])(?:\s|$)/i;
 
 		var aSpan = SPANPATTERN.exec(this.getSpan());
@@ -2737,11 +3019,11 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	 * of the span @private
 	 */   	
 	sap.ui.layout.GridData.prototype._getEffectiveSpanMedium = function() {
-		var iSpan = this.getSpanMedium();
+		var iSpan = this.getSpanM();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
 			return iSpan;
 		}
-
+				
 		var SPANPATTERN = /M([1-9]|1[0-2])(?:\s|$)/i;
 
 		var aSpan = SPANPATTERN.exec(this.getSpan());
@@ -2764,11 +3046,12 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
      * @private
      */   	
 	sap.ui.layout.GridData.prototype._getEffectiveSpanSmall = function() {
-		var iSpan = this.getSpanSmall();
+		var iSpan = this.getSpanS();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
 			return iSpan;
 		}
-
+		
+		
 		var SPANPATTERN = /S([1-9]|1[0-2])(?:\s|$)/i;
 
 		var aSpan = SPANPATTERN.exec(this.getSpan());
@@ -2786,14 +3069,107 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	};
 	
 	
+	// Deprecated properties handling
+	//Setter
+	sap.ui.layout.GridData.prototype.setSpanLarge = function(iSpan) {
+		this.setSpanL(iSpan);
+		jQuery.sap.log.warning("Deprecated property spanLarge is used, please use spanL instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setSpanMedium = function(iSpan) {
+		this.setSpanM(iSpan);
+		jQuery.sap.log.warning("Deprecated property spanMedium is used, please use spanM instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setSpanSmall = function(iSpan) {
+		this.setSpanS(iSpan);
+		jQuery.sap.log.warning("Deprecated property spanSmall is used, please use spanS instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setIndentLarge = function(iIndent) {
+		this.setIndentL(iIndent);
+		jQuery.sap.log.warning("Deprecated property indentLarge is used, please use indentL instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setIndentMedium = function(iIndent) {
+		this.setIndentM(iIndent);
+		jQuery.sap.log.warning("Deprecated property indentMedium is used, please use indentM instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setIndentSmall = function(iIndent) {
+		this.setIndentS(iIndent);
+		jQuery.sap.log.warning("Deprecated property indentSmall is used, please use indentS instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setVisibleOnLarge = function(bVisible) {
+		this.setVisibleL(bVisible);
+		jQuery.sap.log.warning("Deprecated property visibleOnLarge is used, please use visibleL instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setVisibleOnMedium = function(bVisible) {
+		this.setVisibleM(bVisible);
+		jQuery.sap.log.warning("Deprecated property visibleOnMedium is used, please use visibleM instead.");
+	};
+	
+	sap.ui.layout.GridData.prototype.setVisibleOnSmall = function(bVisible) {
+		this.setVisibleS(bVisible);
+		jQuery.sap.log.warning("Deprecated property visibleOnSmall is used, please use visibleS instead.");
+	};
+	
+	
+	// Getter 
+	sap.ui.layout.GridData.prototype.getSpanLarge = function() {
+		jQuery.sap.log.warning("Deprecated property spanLarge is used, please use spanL instead.");
+		return this.getSpanL();
+	};
+	
+	sap.ui.layout.GridData.prototype.getSpanMedium = function() {
+		jQuery.sap.log.warning("Deprecated property spanMedium is used, please use spanM instead.");
+		return this.getSpanM();
+	};
+	
+	sap.ui.layout.GridData.prototype.getSpanSmall = function() {
+		jQuery.sap.log.warning("Deprecated property spanSmall is used, please use spanS instead.");
+		return this.getSpanS();
+	};
+	
+	sap.ui.layout.GridData.prototype.getIndentLarge = function() {
+		jQuery.sap.log.warning("Deprecated property indentLarge is used, please use indentL instead.");
+		return this.getIndentL();
+	};
+	
+	sap.ui.layout.GridData.prototype.getIndentMedium = function() {
+		jQuery.sap.log.warning("Deprecated property indentMedium is used, please use indentM instead.");
+		return this.getIndentM();
+	};
+	
+	sap.ui.layout.GridData.prototype.getIndentSmall = function() {
+		jQuery.sap.log.warning("Deprecated property indentSmall is used, please use indentS instead.");
+		return this.getIndentS();
+	};
+	
+	sap.ui.layout.GridData.prototype.getVisibleOnLarge = function() {
+		jQuery.sap.log.warning("Deprecated property visibleOnLarge is used, please use visibleL instead.");
+		return this.getVisibleL();
+	};
+	
+	sap.ui.layout.GridData.prototype.getVisibleOnMedium = function() {
+		jQuery.sap.log.warning("Deprecated property visibleOnMedium is used, please use visibleM instead.");
+		return this.getVisibleM();
+	};
+	
+	sap.ui.layout.GridData.prototype.getVisibleOnSmall = function() {
+		jQuery.sap.log.warning("Deprecated property visibleOnSmall is used, please use visibleS instead.");
+		return this.getVisibleS();
+	};
 	
 }());
 
 }; // end of sap/ui/layout/GridData.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.HorizontalLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2849,7 +3225,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -3026,8 +3402,8 @@ sap.ui.core.Control.extend("sap.ui.layout.HorizontalLayout", { metadata : {
 }; // end of sap/ui/layout/HorizontalLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.ResponsiveFlowLayoutData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3088,7 +3464,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -3297,8 +3673,8 @@ sap.ui.layout.ResponsiveFlowLayoutData.prototype.setLinebreakable = function(bLi
 }; // end of sap/ui/layout/ResponsiveFlowLayoutData.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.VerticalLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3355,7 +3731,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -3564,8 +3940,8 @@ sap.ui.core.EnabledPropagator.call(sap.ui.layout.VerticalLayout.prototype);
 }; // end of sap/ui/layout/VerticalLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.Form') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3625,7 +4001,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -3911,8 +4287,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 }; // end of sap/ui/layout/form/Form.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3974,7 +4350,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -4331,8 +4707,8 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 }; // end of sap/ui/layout/form/FormContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormElement') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4391,7 +4767,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -4867,8 +5243,8 @@ jQuery.sap.require('sap.ui.core.EnabledPropagator'); // unlisted dependency reta
 }; // end of sap/ui/layout/form/FormElement.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4922,7 +5298,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -5104,94 +5480,102 @@ sap.ui.core.Control.extend("sap.ui.layout.form.FormLayout", { metadata : {
 
 	sap.ui.layout.form.FormLayout.prototype.onsaphome = function(oEvent){
 
-		var oControl = oEvent.srcControl;
-		var iCurrentIndex = 0;
-		var oNewDomRef;
-		var oRoot = this.findElement(oControl);
-		var oElement = oRoot.element;
-		var oContainer = oElement.getParent();
-		var oForm = oContainer.getParent();
+		if (sap.ui.layout.form.FormHelper.bArrowKeySupport) {
+			var oControl = oEvent.srcControl;
+			var iCurrentIndex = 0;
+			var oNewDomRef;
+			var oRoot = this.findElement(oControl);
+			var oElement = oRoot.element;
+			var oContainer = oElement.getParent();
+			var oForm = oContainer.getParent();
 
-		iCurrentIndex = oForm.indexOfFormContainer(oContainer);
-		// actually it's within the same container
-		oNewDomRef = this.findFirstFieldOfFirstElementInNextContainer(oForm, iCurrentIndex);
+			iCurrentIndex = oForm.indexOfFormContainer(oContainer);
+			// actually it's within the same container
+			oNewDomRef = this.findFirstFieldOfFirstElementInNextContainer(oForm, iCurrentIndex);
 
-		if (oNewDomRef) {
-			jQuery.sap.focus(oNewDomRef);
-			oEvent.preventDefault(); // to avoid moving cursor in next field
+			if (oNewDomRef) {
+				jQuery.sap.focus(oNewDomRef);
+				oEvent.preventDefault(); // to avoid moving cursor in next field
+			}
 		}
 
 	};
 
 	sap.ui.layout.form.FormLayout.prototype.onsaptop = function(oEvent){
 
-		var oControl = oEvent.srcControl;
-		var oRoot = this.findElement(oControl);
-		var oElement = oRoot.element;
-		var oNewDomRef;
-		var oContainer;
+		if (sap.ui.layout.form.FormHelper.bArrowKeySupport) {
+			var oControl = oEvent.srcControl;
+			var oRoot = this.findElement(oControl);
+			var oElement = oRoot.element;
+			var oNewDomRef;
+			var oContainer;
 
-		if (oElement && oElement instanceof sap.ui.layout.form.FormElement) {
-			oContainer = oElement.getParent();
-		} else if (oElement && oElement instanceof sap.ui.layout.form.FormContainer) {
-			// current control is not inside an Element - maybe a title or expander?
-			oContainer = oElement;
-		}
-		var oForm = oContainer.getParent();
+			if (oElement && oElement instanceof sap.ui.layout.form.FormElement) {
+				oContainer = oElement.getParent();
+			} else if (oElement && oElement instanceof sap.ui.layout.form.FormContainer) {
+				// current control is not inside an Element - maybe a title or expander?
+				oContainer = oElement;
+			}
+			var oForm = oContainer.getParent();
 
-		oNewDomRef = this.findFirstFieldOfForm(oForm);
+			oNewDomRef = this.findFirstFieldOfForm(oForm);
 
-		if (oNewDomRef) {
-			jQuery.sap.focus(oNewDomRef);
-			oEvent.preventDefault(); // to avoid moving cursor in next field
-		}
+			if (oNewDomRef) {
+				jQuery.sap.focus(oNewDomRef);
+				oEvent.preventDefault(); // to avoid moving cursor in next field
+			}
+}
 
 	};
 
 	sap.ui.layout.form.FormLayout.prototype.onsapend = function(oEvent){
 
-		var oControl = oEvent.srcControl;
-		var iCurrentIndex = 0;
-		var oNewDomRef;
-		var oRoot = this.findElement(oControl);
-		var oElement = oRoot.element;
-		var oContainer = oElement.getParent();
-		var oForm = oContainer.getParent();
+		if (sap.ui.layout.form.FormHelper.bArrowKeySupport) {
+			var oControl = oEvent.srcControl;
+			var iCurrentIndex = 0;
+			var oNewDomRef;
+			var oRoot = this.findElement(oControl);
+			var oElement = oRoot.element;
+			var oContainer = oElement.getParent();
+			var oForm = oContainer.getParent();
 
-		iCurrentIndex = oForm.indexOfFormContainer(oContainer);
-		oNewDomRef = this.findLastFieldOfLastElementInPrevContainer(oForm, iCurrentIndex);
+			iCurrentIndex = oForm.indexOfFormContainer(oContainer);
+			oNewDomRef = this.findLastFieldOfLastElementInPrevContainer(oForm, iCurrentIndex);
 
-		if (oNewDomRef) {
-			jQuery.sap.focus(oNewDomRef);
-			oEvent.preventDefault(); // to avoid moving cursor in next field
-		}
+			if (oNewDomRef) {
+				jQuery.sap.focus(oNewDomRef);
+				oEvent.preventDefault(); // to avoid moving cursor in next field
+			}
+}
 
 	};
 
 	sap.ui.layout.form.FormLayout.prototype.onsapbottom = function(oEvent){
 
-		var oControl = oEvent.srcControl;
-		var oRoot = this.findElement(oControl);
-		var oElement = oRoot.element;
-		var oNewDomRef;
-		var oContainer;
+		if (sap.ui.layout.form.FormHelper.bArrowKeySupport) {
+			var oControl = oEvent.srcControl;
+			var oRoot = this.findElement(oControl);
+			var oElement = oRoot.element;
+			var oNewDomRef;
+			var oContainer;
 
-		if (oElement && oElement instanceof sap.ui.layout.form.FormElement) {
-			oContainer = oElement.getParent();
-		} else if (oElement && oElement instanceof sap.ui.layout.form.FormContainer) {
-			// current control is not inside an Element - maybe a title or expander?
-			oContainer = oElement;
-		}
-		var oForm = oContainer.getParent();
+			if (oElement && oElement instanceof sap.ui.layout.form.FormElement) {
+				oContainer = oElement.getParent();
+			} else if (oElement && oElement instanceof sap.ui.layout.form.FormContainer) {
+				// current control is not inside an Element - maybe a title or expander?
+				oContainer = oElement;
+			}
+			var oForm = oContainer.getParent();
 
-		var aContainers = oForm.getFormContainers();
-		var iLength = aContainers.length;
+			var aContainers = oForm.getFormContainers();
+			var iLength = aContainers.length;
 
-		oNewDomRef = this.findLastFieldOfLastElementInPrevContainer(oForm, iLength - 1);
+			oNewDomRef = this.findLastFieldOfLastElementInPrevContainer(oForm, iLength - 1);
 
-		if (oNewDomRef) {
-			jQuery.sap.focus(oNewDomRef);
-			oEvent.preventDefault(); // to avoid moving cursor in next field
+			if (oNewDomRef) {
+				jQuery.sap.focus(oNewDomRef);
+				oEvent.preventDefault(); // to avoid moving cursor in next field
+			}
 		}
 
 	};
@@ -5759,8 +6143,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.FormLayout", { metadata : {
 }; // end of sap/ui/layout/form/FormLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.GridContainerData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5818,7 +6202,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -5891,8 +6275,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.form.GridContainerData", { metadata
 }; // end of sap/ui/layout/form/GridContainerData.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.GridElementData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5951,7 +6335,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -6052,8 +6436,8 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.form.GridElementData", { metadata :
 }; // end of sap/ui/layout/form/GridElementData.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.GridLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6111,7 +6495,7 @@ jQuery.sap.declare("sap.ui.layout.form.GridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -6339,8 +6723,8 @@ sap.ui.layout.form.FormLayout.extend("sap.ui.layout.form.GridLayout", { metadata
 }; // end of sap/ui/layout/form/GridLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.ResponsiveGridLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6407,7 +6791,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveGridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -6997,11 +7381,11 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 					}
 					_setLayoutDataForLinebreak(oPanel, oContainer, iVisibleContainers, oContainerNext);
 				}else{
-					// panel not longer needed
 					if (oLayout.mContainers[sContainerId] && oLayout.mContainers[sContainerId][0]) {
+						// panel not longer needed
 						_deletePanel(oLayout.mContainers[sContainerId][0]);
-						_changeGetLayoutDataOfGrid(oGrid, false);
 					}
+					_changeGetLayoutDataOfGrid(oGrid, false);
 					_setLayoutDataForLinebreak(oGrid, oContainer, iVisibleContainers, oContainerNext);
 				}
 
@@ -7241,10 +7625,16 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 
 			var oLayout = this.__myParentLayout;
 			if (!oLayout._mainGrid || !oLayout._mainGrid.__bIsUsed ) {
+				// no main grid used -> only 1 container
 				var aContainers = oLayout.getParent().getFormContainers();
-				if(oLayout.mContainers[aContainers[0].getId()][0]){
+				if (!oLayout.mContainers[aContainers[0].getId()] || aContainers[0].getId() != this.__myParentContainerId) {
+					// Form seems to be invalidated (container changed) but rerendering still not done
+					// -> ignore resize, it will be rerendered soon
+					return;
+				}
+				if(oLayout.mContainers[this.__myParentContainerId][0]){
 					// panel used -> get size from panel
-					var oDomRef = oLayout.mContainers[aContainers[0].getId()][0].getDomRef();
+					var oDomRef = oLayout.mContainers[this.__myParentContainerId][0].getDomRef();
 
 					var iCntWidth = oDomRef.clientWidth;
 					if (iCntWidth <= oLayout.getBreakpointM()) {
@@ -7505,11 +7895,12 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 
 
 }());
+
 }; // end of sap/ui/layout/form/ResponsiveGridLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.SimpleForm') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7579,7 +7970,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -7796,7 +8187,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 /**
  * Getter for property <code>labelSpanM</code>.
  * Default span for labels in medium size.
- * This property is used for full size containers. if more than one Container is in one line, labelSpanL is used.
+ * This property is used for full size containers. If more than one Container is in one line, labelSpanL is used.
  * (This property is only used if a ResponsiveGridLayout is used as Layout.)
  *
  * Default value is <code>2</code>
@@ -8054,16 +8445,15 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
  * Add a Label control to start a new row (Element).
  * Add controls as Input fields, text fields or other as needed.
  * Use LayoutData to influence the layout for special cases in the single controls.
- * For example, if a ResponsiveLayout is used as layout the form content is weighted using weight 3 for the labels and weight 5 for the fields part. Per default the label column become 192 pixels wide.
- * If your Input controls like to influence their width you can add sap.ui.layout.ResponsiveFlowLayoutData to them via setLayoutData method.
+ * For example, if a ResponsiveLayout is used as layout the form content is weighted using weight 3 for the labels and weight 5 for the fields part. Per default the label column is 192 pixels wide.
+ * If your Input controls should influence their width you can add sap.ui.layout.ResponsiveFlowLayoutData to them via setLayoutData method.
  * Ensure that the sum of the weights in the ResponsiveFlowLayoutData does not use more than 5 as this is the total width of Input control part of each form row.
- * Example for on row where the Input takes 4 and the Text takes 1 weight:
+ * Example for a row where the Input takes 4 and the Text takes 1 weight:
  * new sap.ui.commons.Label({text:"Label"});
  * new sap.ui.commons.TextField({value:"Weight 4",
  * layoutData:new sap.ui.layout.ResponsiveFlowLayoutData({weight:4})}),
  * new sap.ui.commons.TextView({text:"Weight 1",
  * layoutData: new sap.ui.layout.ResponsiveFlowLayoutData({weight:1})}),
- * 
  * 
  * @return {sap.ui.core.Element[]}
  * @public
@@ -9246,8 +9636,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 }; // end of sap/ui/layout/form/SimpleForm.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.ResponsiveFlowLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9302,7 +9692,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -9915,7 +10305,7 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 					}
 
 					// if this sould be the initial rendering -> do it
-					bRender = bRender || bInitial;
+					bRender = bRender || (typeof(bInitial) === "boolean" && bInitial);
 
 					if (this._bLayoutDataChanged || bRender) {
 						this._oDomRef.innerHTML = "";
@@ -10062,11 +10452,12 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 		this.removeAggregation("content", oContent);
 	};
 }());
+
 }; // end of sap/ui/layout/ResponsiveFlowLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.ResponsiveLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10121,7 +10512,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -10337,7 +10728,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 
 		sap.ui.layout.form.FormLayout.prototype.contentOnAfterRendering.apply(this, arguments);
 
-		if (oControl.getWidth && !oControl.getWidth()) {
+		if (oControl.getWidth && ( !oControl.getWidth() || oControl.getWidth() == "auto" ) && oControl.getMetadata().getName() != "sap.ui.commons.Image") {
 			oControl.$().css("width", "100%");
 		}
 
@@ -10883,4 +11274,5 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 	}
 
 }());
+
 }; // end of sap/ui/layout/form/ResponsiveLayout.js

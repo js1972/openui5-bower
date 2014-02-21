@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -126,6 +126,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	// call to reset paging
 	reset : function() {
 		this._iItemCount = 0;
+		this._bLastAsyncCheck = false;
 	},
 
 	// get actual and total info
@@ -141,12 +142,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 		// if max item count not reached
 		if (this._oControl && !this._bLoading && this._iItemCount < this._oControl.getMaxItemsCount()) {
 			this._showIndicator();
-			jQuery.sap.delayedCall(0, this, function() {
-				if (this._oControl) {	// maybe control is already destroyed
-					this._iItemCount += this._oControl.getGrowingThreshold();
-					this.updateItems("Growing");
-				}
-			});
+			this._iItemCount += this._oControl.getGrowingThreshold();
+			this.updateItems("Growing");
 		}
 	},
 
@@ -402,6 +399,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 			oBindingInfo = this._oControl.getBindingInfo("items"),
 			oBinding = oBindingInfo.binding,
 			fnFactory = oBindingInfo.factory,
+			oChangeReason = sap.ui.model.ChangeReason,
 			fnODataListBinding = oUiModel && oUiModel.odata && oUiModel.odata.ODataListBinding,
 			bODataListBinding = fnODataListBinding && oBinding instanceof fnODataListBinding;
 
@@ -424,7 +422,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 		if (oBinding.isGrouped()) {
 			// If binding is sorted or filtered we need to recreate the whole list
-			if (sChangeReason && (sChangeReason == sap.ui.model.ChangeReason.Sort || sChangeReason == sap.ui.model.ChangeReason.Filter)) {
+			if (sChangeReason && (sChangeReason == oChangeReason.Sort || sChangeReason == oChangeReason.Filter)) {
 				this.destroyListItems();
 				delete aContexts.diff;
 			}
@@ -504,8 +502,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 		if (!bODataListBinding) {
 			// JSON model fires event immediately
 			this._onAfterPageLoaded(sChangeReason);
-		} else if (this._bLastAsyncCheck) {
-			// oData model and last asynchronous  check
+		} else if (this._bLastAsyncCheck || (sChangeReason == oChangeReason.Sort && !oBinding.getLength())) {
+			// oData model and last asynchronous check or no binding length width sorting
 			this._onAfterPageLoaded(sChangeReason);
 			this._bLastAsyncCheck = false;
 		} else if (aContexts.length > iLastItemCount) {

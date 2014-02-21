@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -452,6 +452,16 @@ sap.ui.ux3.Collection.prototype.setMultiSelection = function(bMultiSelection) {
 sap.ui.ux3.Collection.prototype.setEditable = function(bEditable) {
 	this.setProperty("editable",bEditable,true);
 	this.firePropertyChanged();
+};
+
+/**
+ * Set title
+ *
+ * @public
+ */
+sap.ui.ux3.Collection.prototype.setTitle = function(sTitle) {
+	this.setProperty("title",sTitle);
+	this.fireEvent('_titleChanged', { newTitle: this.getProperty("title") });
 };
 
 

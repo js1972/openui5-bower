@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
  
@@ -145,9 +145,7 @@ sap.ui.ux3.ThingViewerRenderer.renderHeader = function(oRenderManager, oControl)
 	var rm = oRenderManager;
 
 	rm.write("<div class='sapUiUx3TVIconBar'>");
-	rm.write("<div class='sapUiUx3TVIcon'><img alt='' role='presentation' src='");
-	rm.writeEscaped(oControl.getIcon());
-	rm.write("' id='" + oControl.getId() + "-swatch'></div>");
+	rm.writeIcon(oControl.getIcon(),["sapUiUx3TVIcon"],{role:'presentation', id:oControl.getId() + '-swatch'});
 	rm.write("<div class='sapUiUx3TVTitle'>");
 	rm.write("<span role='heading' aria-level='2' class='sapUiUx3TVTitleFirst'");
 	rm.writeAttributeEscaped("title", oControl.getTitle());

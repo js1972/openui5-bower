@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -304,7 +304,7 @@ jQuery.sap.require("sap.m.DateTimeCustom");
 		}());
 
 	$.extend(oPrototype, {
-		//In iOS5 date-time fields do not fire change/input events
+		// In iOS5 date-time fields do not fire change/input events
 		_hasChangeEventBug: oDevice.support.touch &&
 							oDevice.os.ios &&
 							oDevice.os.version < 6,
@@ -336,11 +336,21 @@ jQuery.sap.require("sap.m.DateTimeCustom");
 		}
 	});
 
-	//build DateTime formats from Date And Time values
-	$.each(["Time", "Date"], function(nIndex, sType) {
-		$.each(["valueFormat", "displayFormat"], function() {
+	// am-pm picker is hard-coded in mobiscroll so use 24 hour format for RTL
+	// see https://github.com/acidb/mobiscroll/issues/190
+	if (sap.ui.getCore().getConfiguration().getRTL()) {
+		["valueFormat", "displayFormat"].forEach(function(sFormatType) {
+			var oTime = oPrototype._types.Time;
+			var sFormat = oTime[sFormatType];
+			oTime[sFormatType] = sFormat.replace(/a+/i, "").replace(/h+/i, "HH").trim();
+		});
+	}
+
+	// build DateTime formats from Date And Time values
+	["Time", "Date"].forEach(function(sType, nIndex) {
+		["valueFormat", "displayFormat"].forEach(function(sFormat) {
 			var oTypes = oPrototype._types;
-			oTypes.DateTime[this] = oTypes.DateTime[this].replace("{" + nIndex + "}", oTypes[sType][this]);
+			oTypes.DateTime[sFormat] = oTypes.DateTime[sFormat].replace("{" + nIndex + "}", oTypes[sType][sFormat]);
 		});
 	});
 
@@ -492,6 +502,14 @@ sap.m.DateTimeInput.prototype.setType = function(sType) {
 	}
 
 	return this;
+};
+
+sap.m.DateTimeInput.prototype.ontap = function(oEvent) {
+	// for desktop we show picker with tap/click
+	// for mobile mobiscroll will handle it
+	if (!sap.ui.Device.support.touch) {
+		this.onsapshow(oEvent);
+	}
 };
 
 // Check given is JS Date Object and throw error if not

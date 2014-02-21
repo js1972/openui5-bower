@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1070,17 +1070,16 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 		if (oInPlaceEdit._oUndoButton){
 			var sIcon = sap.ui.core.theming.Parameters.get('sapUiIpeUndoImageURL');
 			var sIconHovered = sap.ui.core.theming.Parameters.get('sapUiIpeUndoImageDownURL');
-			var sText = "X";
 			if (sIcon) {
 				sIcon = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIcon;
-				sText = "";
+			}else{
+				sIcon = "sap-icon://decline";
 			}
 			if (sIconHovered) {
 				sIconHovered = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIconHovered;
 			}
 			oInPlaceEdit._oUndoButton.setIcon(sIcon);
 			oInPlaceEdit._oUndoButton.setIconHovered(sIconHovered);
-			oInPlaceEdit._oUndoButton.setText(sText);
 		}
 
 	};
@@ -1150,17 +1149,16 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 		if (oInPlaceEdit._oEditButton){
 			var sIcon = sap.ui.core.theming.Parameters.get('sapUiIpeEditImageURL');
 			var sIconHovered = sap.ui.core.theming.Parameters.get('sapUiIpeEditImageDownURL');
-			var sText = "✎"; //&#9998;
 			if (sIcon) {
 				sIcon = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIcon;
-				sText = "";
+			}else{
+				sIcon = "sap-icon://edit";
 			}
 			if (sIconHovered) {
 				sIconHovered = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIconHovered;
 			}
 			oInPlaceEdit._oEditButton.setIcon(sIcon);
 			oInPlaceEdit._oEditButton.setIconHovered(sIconHovered);
-			oInPlaceEdit._oEditButton.setText(sText);
 		}
 
 	};

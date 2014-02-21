@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -74,7 +74,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1062,11 +1062,13 @@ sap.ui.commons.Dialog.prototype.open = function() {
 	this._bOpen = true;
 };
 
-sap.ui.commons.Dialog.prototype.handleOpened = function() {
-	this.oPopup.detachEvent("opened", this.handleOpened, this);
 
+/**
+ * @private
+ */
+sap.ui.commons.Dialog.prototype._handleOpened = function() {
 	var sInitFocus = this.getInitialFocus(),
-		oFocusCtrl;
+	oFocusCtrl;
 	if(sInitFocus && (oFocusCtrl = sap.ui.getCore().getControl(sInitFocus))){ // an additional previous check was  oFocusCtrl.getParent() === this  which prevented nested children from being focused
 		oFocusCtrl.focus();
 		this._bInitialFocusSet = true;
@@ -1083,6 +1085,21 @@ sap.ui.commons.Dialog.prototype.handleOpened = function() {
 			this.getContent()[0].focus();
 			this._bInitialFocusSet = true;
 		}
+	}
+};
+
+sap.ui.commons.Dialog.prototype.handleOpened = function() {
+	this.oPopup.detachEvent("opened", this.handleOpened, this);
+
+	if (sap.ui.Device.browser.internet_explorer &&  sap.ui.Device.browser.version === 11) {
+		// a delayed call is needed for IE11. Since it fires the opened event before all stuff
+		// is visible. All stuff is added to the DOM though and all operations can be done
+		// but a focus seems to work (there is no error) but the focus can't be set to something
+		// that isn't really visible
+		jQuery.sap.clearDelayedCall(this._delayedCallId);
+		this._delayedCallId = jQuery.sap.delayedCall(0, this, this._handleOpened); 
+	} else {
+		this._handleOpened();
 	}
 };
 
@@ -1131,7 +1148,7 @@ sap.ui.commons.Dialog.prototype.restorePreviousFocus = function() {
 
 sap.ui.commons.Dialog.prototype.setTitle = function (sText) {
 	this.setProperty("title", sText, true); // last parameter avoids invalidation
-	jQuery.sap.byId(this.getId() + "-lbl").html(sText);
+	jQuery.sap.byId(this.getId() + "-lbl").text(sText);
 	return this;
 };
 

@@ -2,8 +2,8 @@
 jQuery.sap.declare('sap.ui.ux3.library-all');
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ActionBarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -244,8 +244,8 @@ sap.ui.ux3.ActionBarRenderer._renderMoreMenuButton = function (rm, oMoreMenuButt
 }; // end of sap/ui/ux3/ActionBarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.CollectionInspectorRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -437,8 +437,8 @@ sap.ui.ux3.CollectionInspectorRenderer.renderContent = function(rm, oControl) {
 }; // end of sap/ui/ux3/CollectionInspectorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.DataSetRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -541,8 +541,8 @@ sap.ui.ux3.DataSetRenderer.renderFilterArea = function(oRenderManager,oControl) 
 }; // end of sap/ui/ux3/DataSetRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.DataSetSimpleViewRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -616,8 +616,8 @@ sap.ui.ux3.DataSetSimpleViewRenderer.renderItem = function(rm, oControl, oItem){
 }; // end of sap/ui/ux3/DataSetSimpleViewRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactAreaRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -677,8 +677,8 @@ sap.ui.ux3.ExactAreaRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/ux3/ExactAreaRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactBrowserRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -741,8 +741,8 @@ sap.ui.ux3.ExactBrowserRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/ux3/ExactBrowserRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactListRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -924,8 +924,8 @@ sap.ui.ux3.ExactListRenderer.getExpanderSymbol = function(bExpanded, bHorizontal
 }; // end of sap/ui/ux3/ExactListRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -968,8 +968,8 @@ sap.ui.ux3.ExactRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/ux3/ExactRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FacetFilterListRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1022,8 +1022,8 @@ sap.ui.ux3.FacetFilterListRenderer.render = function(oRenderManager, oControl) {
 }; // end of sap/ui/ux3/FacetFilterListRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FacetFilterRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1073,8 +1073,8 @@ sap.ui.ux3.FacetFilterRenderer.render = function(oRenderManager, oControl) {
 }; // end of sap/ui/ux3/FacetFilterRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FeedChunkRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1320,8 +1320,8 @@ sap.ui.ux3.FeedChunkRenderer.renderExpander = function(oChunk){
 }; // end of sap/ui/ux3/FeedChunkRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FeedRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1397,8 +1397,8 @@ sap.ui.ux3.FeedRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/ux3/FeedRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FeederRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1484,8 +1484,8 @@ sap.ui.ux3.FeederRenderer.getEmptyTextInfo = function( oFeeder ){
 }; // end of sap/ui/ux3/FeederRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.NavigationBarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1607,8 +1607,8 @@ sap.ui.ux3.NavigationBarRenderer.renderItems = function(oRm, oControl) {
 }; // end of sap/ui/ux3/NavigationBarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.NotificationBarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.NotificationBarRenderer");
@@ -2093,7 +2093,8 @@ sap.ui.ux3.NotificationBarRenderer = {};
 				oRm.writeAttribute("tabindex", "-1");
 				oRm.addClass("sapUiNotifierMessageText");
 				oRm.addClass("sapUiInPlaceMessage");
-				if (oMessageNotifier._bEnableMessageSelect) {
+				// if the latest message is read-only don't provide a visual selectable link
+				if (oMessageNotifier._bEnableMessageSelect && !oMA._message.getReadOnly()) {
 					// if there is an event handler show the inplace message
 					// clickable
 					oRm.addClass("sapUiInPlaceMessageSelectable");
@@ -2122,8 +2123,8 @@ sap.ui.ux3.NotificationBarRenderer = {};
 }; // end of sap/ui/ux3/NotificationBarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.OverlayRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2192,8 +2193,8 @@ sap.ui.ux3.OverlayRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/ux3/OverlayRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.QuickViewRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2373,8 +2374,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.ux3.ShellColorPicker') ) {
  */
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2674,8 +2675,8 @@ sap.ui.ux3.ShellColorPicker.hslToCss = function(oColor) {
 }; // end of sap/ui/ux3/ShellColorPicker.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ShellPersonalization') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3316,8 +3317,8 @@ sap.ui.ux3.ShellPersonalization.prototype._handleDrop = function(evt) {
 }; // end of sap/ui/ux3/ShellPersonalization.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ShellRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3461,20 +3462,22 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	rm.write("<ul id='" + sId + "-paneBarEntries' class='sapUiUx3ShellPaneEntries' role='tablist'>");
 	sap.ui.ux3.ShellRenderer.renderPaneBarItems(rm, oControl);
 	rm.write("</ul>");
-	
-	
-	rm.write("</div>");
-	
+
 	// Render overflow button
 	rm.write("<div id='" + sId + "-paneBarOverflowButton' class='sapUiUx3ShellPaneOverflowButton'");
 	rm.addStyle("display", "none;"); // So it does not depend on theme being loaded
 	rm.writeStyles();
 	rm.write(">");
-	rm.writeIcon(sap.ui.core.IconPool.getIconURI("slim-arrow-down"), [], { 
-		"id" : sId + "-paneBarOverflowButtonIcon",
-		"tabindex" : "0"
-	});
+	rm.write("<div id='" + sId + "-paneBarOverflowWrapper' class='sapUiUx3ShellPaneOverflowWrapper'>");
+	rm.write("<span id='" + sId + "-paneBarOverflowText' class='sapUiUx3ShellPaneOverflowText sapUiUx3ShellPaneEntry'>");
+	rm.write(sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT.toUpperCase());
+	rm.write("</span>"); // sapUiUx3ShellPaneOverflowText
+	rm.write("</div>"); // overflow-wrapper
+	rm.write("</div>"); // sapUiUx3ShellPaneOverflowButton
+	
+	
 	rm.write("</div>");
+	
 	
 	rm.write("</aside>   <!-- end of paneBar -->");
 
@@ -3702,8 +3705,8 @@ sap.ui.ux3.ShellRenderer.renderFacetBar = function(rm, oControl) {
 }; // end of sap/ui/ux3/ShellRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingInspectorRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3769,8 +3772,8 @@ sap.ui.ux3.ThingInspectorRenderer.addOverlayClasses = function(oRenderManager, o
 }; // end of sap/ui/ux3/ThingInspectorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingViewerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
  
@@ -3915,9 +3918,7 @@ sap.ui.ux3.ThingViewerRenderer.renderHeader = function(oRenderManager, oControl)
 	var rm = oRenderManager;
 
 	rm.write("<div class='sapUiUx3TVIconBar'>");
-	rm.write("<div class='sapUiUx3TVIcon'><img alt='' role='presentation' src='");
-	rm.writeEscaped(oControl.getIcon());
-	rm.write("' id='" + oControl.getId() + "-swatch'></div>");
+	rm.writeIcon(oControl.getIcon(),["sapUiUx3TVIcon"],{role:'presentation', id:oControl.getId() + '-swatch'});
 	rm.write("<div class='sapUiUx3TVTitle'>");
 	rm.write("<span role='heading' aria-level='2' class='sapUiUx3TVTitleFirst'");
 	rm.writeAttributeEscaped("title", oControl.getTitle());
@@ -4040,8 +4041,8 @@ sap.ui.ux3.ThingViewerRenderer.renderFacetContent = function(rm, oControl) {
 }; // end of sap/ui/ux3/ThingViewerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ToolPopupRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4159,8 +4160,8 @@ sap.ui.ux3.ToolPopupRenderer.render = function(rm, oControl) {
 }; // end of sap/ui/ux3/ToolPopupRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.library') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4170,7 +4171,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.ux3.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.ux3 (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.ux3 (1.18.8)
  */
 jQuery.sap.declare("sap.ui.ux3.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -4242,11 +4243,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.ux3.ThingAction",
     "sap.ui.ux3.ThingGroup"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4262,7 +4263,7 @@ jQuery.sap.declare("sap.ui.ux3.ActionBarSocialActions");
 /**
  * @class Enumeration of available standard actions for 'sap.ui.ux3.ActionBar'. To be used as parameters for function 'sap.ui.ux3.ActionBar.getSocialAction'.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4312,8 +4313,8 @@ sap.ui.ux3.ActionBarSocialActions = {
  */
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4329,7 +4330,7 @@ jQuery.sap.declare("sap.ui.ux3.ExactOrder");
 /**
  * @class Defines the order of the sub lists of a list in the ExactBrowser.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.7.1
@@ -4350,8 +4351,8 @@ sap.ui.ux3.ExactOrder = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4367,7 +4368,7 @@ jQuery.sap.declare("sap.ui.ux3.FeederType");
 /**
  * @class Type of an Feeder.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4395,8 +4396,8 @@ sap.ui.ux3.FeederType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4412,7 +4413,7 @@ jQuery.sap.declare("sap.ui.ux3.FollowActionState");
 /**
  * @class Defines the states of the follow action
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -4438,8 +4439,8 @@ sap.ui.ux3.FollowActionState = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4455,7 +4456,7 @@ jQuery.sap.declare("sap.ui.ux3.NotificationBarStatus");
 /**
  * @class This entries are used to set the visibility status of a NotificationBar
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -4487,8 +4488,8 @@ sap.ui.ux3.NotificationBarStatus = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4504,7 +4505,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellDesignType");
 /**
  * @class Available shell design types.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.12.0
@@ -4538,8 +4539,8 @@ sap.ui.ux3.ShellDesignType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4555,7 +4556,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellHeaderType");
 /**
  * @class Available shell header display types.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -4587,8 +4588,8 @@ sap.ui.ux3.ShellHeaderType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4604,7 +4605,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingViewerHeaderType");
 /**
  * @class Available ThingViewer header display types.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.16.3
@@ -4625,8 +4626,8 @@ sap.ui.ux3.ThingViewerHeaderType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4642,7 +4643,7 @@ jQuery.sap.declare("sap.ui.ux3.VisibleItemCountMode");
 /**
  * @class VisibleItemCountMode of the FacetFilter defines if the FacetFilter takes the whole available height (Auto) in the surrounding container, or is so high as needed to show 5 Items ("Fixed " - default).
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -4665,8 +4666,8 @@ sap.ui.ux3.VisibleItemCountMode = {
 }; // end of sap/ui/ux3/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ActionBar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4737,7 +4738,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -6662,7 +6663,7 @@ sap.ui.ux3.ActionBar.prototype.invalidate = function(oControl) {
 			oBusinessMenuItem.setTooltip(oControl.getTooltip());
 			oBusinessMenuItem.setText(oControl.getText());
 			oBusinessMenuItem.setEnabled(oControl.getEnabled());
-		} 
+		}
 		if (!oBusinessActionButton && !oBusinessMenuItem) {
 			//the social actions are ThingActions too, but they need no special treatment
 			sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
@@ -6674,8 +6675,8 @@ sap.ui.ux3.ActionBar.prototype.invalidate = function(oControl) {
 }; // end of sap/ui/ux3/ActionBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Collection') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6738,7 +6739,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -7131,6 +7132,16 @@ sap.ui.ux3.Collection.prototype.setEditable = function(bEditable) {
 	this.firePropertyChanged();
 };
 
+/**
+ * Set title
+ *
+ * @public
+ */
+sap.ui.ux3.Collection.prototype.setTitle = function(sTitle) {
+	this.setProperty("title",sTitle);
+	this.fireEvent('_titleChanged', { newTitle: this.getProperty("title") });
+};
+
 
 /**
  *
@@ -7210,8 +7221,8 @@ sap.ui.ux3.Collection.prototype.removeAllSelectedItems = function() {
 }; // end of sap/ui/ux3/Collection.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.CollectionInspector') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7272,7 +7283,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -8015,6 +8026,9 @@ sap.ui.ux3.CollectionInspector.prototype.closeSidebar = function() {
 sap.ui.ux3.CollectionInspector.prototype.insertCollection = function(oCollection, iIndex) {
 	var oButton = new sap.ui.commons.Button();
 	oButton.setText(oCollection.getTitle());
+	oCollection.attachEvent('_titleChanged', function(oEvent) {
+		oButton.setText(oEvent.getParameter("newTitle"));
+	});
 	var that = this;
 	oCollection.attachSelectionChanged(function() {
 		that.refreshSelectionHighlighting();
@@ -8040,6 +8054,9 @@ sap.ui.ux3.CollectionInspector.prototype.insertCollection = function(oCollection
 sap.ui.ux3.CollectionInspector.prototype.addCollection = function(oCollection) {
 	var oButton = new sap.ui.commons.Button();
 	oButton.setText(oCollection.getTitle());
+	oCollection.attachEvent('_titleChanged', function(oEvent) {
+		oButton.setText(oEvent.getParameter("newTitle"));
+	});
 	var that = this;
 	oCollection.attachSelectionChanged(function() {
 		that.refreshSelectionHighlighting();
@@ -8089,6 +8106,19 @@ sap.ui.ux3.CollectionInspector.prototype.removeAllCollections = function() {
 	this._oCollectionSelector.removeAllButtons();
 	this.setSelectedCollection(null);
 	return this.removeAllAggregation("collections");
+};
+
+/**
+ * Destroys the collection aggregation
+ * @return {sap.ui.ux3.CollectionInspector} this to allow method chaining
+ * @public
+ * @name sap.ui.ux3.CollectionInspector#destroyCollections
+ * @function
+ */
+sap.ui.ux3.CollectionInspector.prototype.destroyCollections = function() {
+	this._oCollectionSelector.destroyButtons();
+	this.setSelectedCollection(null);
+	return this.destroyAggregation("collections");
 };
 
 sap.ui.ux3.CollectionInspector.prototype.setSelectedCollection = function(oCollection) {
@@ -8271,11 +8301,12 @@ sap.ui.ux3.CollectionInspector.prototype.refreshSelectionHighlighting = function
 sap.ui.ux3.CollectionInspector.prototype.getEditButton = function() {
 	return this._oEditButton;
 };
+
 }; // end of sap/ui/ux3/CollectionInspector.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.DataSet') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8338,7 +8369,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -8994,6 +9025,23 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 	this._oSearchField.attachSearch(function(oEvent) {
 		that.fireSearch(oEvent.getParameters());
 	});
+	this.selectionModel.attachSelectionChanged(function(oEvent){
+		var oldSelectedIndex;
+		var mParameters = oEvent.getParameters();
+		if (mParameters){
+			var newSelectedIndex = mParameters.leadIndex;
+			// if rowIndices are larger than 1, we have had a leadIndex before, otherwise the 
+			// first array entry contains the new value
+			if (mParameters.rowIndices && mParameters.rowIndices.length > 1){
+				var oldSelectedIndex = mParameters.rowIndices[0]
+			}
+		}
+		that.fireSelectionChanged({
+			oldLeadSelectedIndex: oldSelectedIndex,
+			newLeadSelectedIndex: newSelectedIndex
+		});
+		jQuery.sap.log.debug("Selection Change fired");
+	});
 	oToolbar = new sap.ui.commons.Toolbar();
 	this._setToolbar(oToolbar);
 	this._iShiftStart = null;
@@ -9001,7 +9049,7 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 
 sap.ui.ux3.DataSet.prototype.exit = function() {
 	this._oSegBut.destroy();
-	this._oSearchField.destroy()
+	this._oSearchField.destroy();
 	this.destroyAggregation("_toolbar");
 };
 
@@ -9065,6 +9113,16 @@ sap.ui.ux3.DataSet.prototype.sort = function() {
  */
 sap.ui.ux3.DataSet.prototype.addSelectionInterval = function(iIndexFrom, iIndexTo) {
 	this.selectionModel.addSelectionInterval(iIndexFrom, iIndexTo);
+	return this;
+};
+
+/**
+ * sets selection interval to array of selected items.
+ * 
+ * @private
+ */
+sap.ui.ux3.DataSet.prototype.setSelectionInterval = function(iIndexFrom, iIndexTo) {
+	this.selectionModel.setSelectionInterval(iIndexFrom, iIndexTo);
 	return this;
 };
 /**
@@ -9139,12 +9197,11 @@ sap.ui.ux3.DataSet.prototype.selectItem = function(oEvent) {
 			if (!this._iShiftStart && this._iShiftStart !== 0) {
 				this._iShiftStart = oldSelectedIndex;
 			}
-			if (!oParams.ctrl){
-				this.clearSelection();
-			}
-			if (this._iShiftStart >= 0){
+			if (this._iShiftStart >= 0 && oParams.ctrl){
 				this.addSelectionInterval(this._iShiftStart, iIndex);
-			} else {
+			} else if (this._iShiftStart >= 0 &! oParams.ctrl){
+				this.setSelectionInterval(this._iShiftStart, iIndex);
+			}else{
 				this.setLeadSelection(iIndex);
 				this._iShiftStart = iIndex;
 			}
@@ -9159,10 +9216,6 @@ sap.ui.ux3.DataSet.prototype.selectItem = function(oEvent) {
 			this._iShiftStart = null;
 		}
 	}
-	this.fireSelectionChanged({
-		oldLeadSelectedIndex: oldSelectedIndex,
-		newLeadSelectedIndex: iIndex
-	});
 };
 
 /**
@@ -9557,8 +9610,8 @@ sap.ui.ux3.DataSet.prototype.updateItems = function(bForceUpdate) {
 }; // end of sap/ui/ux3/DataSet.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.DataSetItem') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9619,7 +9672,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -9854,8 +9907,8 @@ sap.ui.ux3.DataSetItem.prototype.onclick = function(oEvent) {
 }; // end of sap/ui/ux3/DataSetItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.DataSetSimpleView') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9922,7 +9975,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -10694,8 +10747,8 @@ sap.ui.ux3.DataSetSimpleView.prototype.setScrollArea = function(aScrollArea, bSu
 }; // end of sap/ui/ux3/DataSetSimpleView.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactArea') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10753,7 +10806,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -11035,8 +11088,8 @@ sap.ui.core.Element.extend("sap.ui.ux3.ExactAreaToolbarTitle", {
 }; // end of sap/ui/ux3/ExactArea.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactAttribute') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -11103,7 +11156,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -11780,7 +11833,7 @@ sap.ui.ux3.ExactAttribute.prototype._clearSelection = function(){
 
 //Setter of the width property without invalidate and change notification
 sap.ui.ux3.ExactAttribute.prototype._setWidth = function(iWidth) {
-	iWidth = sap.ui.ux3.ExactAttribute._checkWidth(iWidth);
+	iWidth = Math.round(sap.ui.ux3.ExactAttribute._checkWidth(iWidth));
 	this.setProperty("width", iWidth, true);
 };
 
@@ -11796,8 +11849,8 @@ sap.ui.ux3.ExactAttribute._checkWidth = function(iWidth) {
 }; // end of sap/ui/ux3/ExactAttribute.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactList') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -11856,7 +11909,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -13584,8 +13637,8 @@ var getOrCreateListItem = function(oAttribute){
 }; // end of sap/ui/ux3/ExactList.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FacetFilter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13641,7 +13694,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -13816,8 +13869,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.FacetFilter", { metadata : {
 }; // end of sap/ui/ux3/FacetFilter.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FacetFilterList') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13877,7 +13930,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -14416,8 +14469,8 @@ sap.ui.ux3.FacetFilterList.prototype.onSelect = function(oFFList, oEvent) {
 }; // end of sap/ui/ux3/FacetFilterList.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Feeder') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -14475,7 +14528,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -14672,7 +14725,8 @@ jQuery.sap.require('sap.ui.commons.Button'); // unlisted dependency retained
 sap.ui.ux3.Feeder.prototype.init = function(){
 	this.rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3");
 	this.oSendButton = new sap.ui.commons.Button( this.getId() + "-send", {
-			style: sap.ui.commons.ButtonStyle.Emph
+			style: sap.ui.commons.ButtonStyle.Emph,
+			icon: "sap-icon://feeder-arrow"
 		}).setParent(this);
 	this.oSendButton.attachEvent('press', this.handleSendButtonPress, this); // attach event this way to have the right this-reference in handler
 
@@ -14685,32 +14739,6 @@ sap.ui.ux3.Feeder.prototype.initSendButton = function(){
 	if (this.getText() == "") {
 		// no re-rendering as button is not rendered now.
 		this.oSendButton.setProperty('enabled', false, true);
-	}
-
-	var sArrow = "";
-
-	switch (this.getType()){
-	case( sap.ui.ux3.FeederType.Medium):
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowMediumUrl');
-	break;
-	case( sap.ui.ux3.FeederType.Comment):
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowSmallUrl');
-	break;
-	default: // large feeder is default
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowLargeUrl');
-	break;
-	}
-
-	if (!sArrow || sArrow == "") {
-		// no arrow image
-		// no re-rendering as button is not rendered now.
-		this.oSendButton.setProperty('text', '-->', true);
-	} else {
-		// no re-rendering as button is not rendered now.
-		if (sap.ui.getCore().getConfiguration().getRTL()) {
-			sArrow = sArrow.replace(/\/img\//, "/img-RTL/");
-		}
-		this.oSendButton.setProperty('icon', jQuery.sap.getModulePath("sap.ui.ux3", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sArrow, true);
 	}
 
 };
@@ -14938,8 +14966,8 @@ sap.ui.ux3.Feeder.prototype.onAfterPaste = function(){
 }; // end of sap/ui/ux3/Feeder.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.NavigationBar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -15001,7 +15029,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -16037,8 +16065,8 @@ sap.ui.ux3.NavigationBar.prototype.isSelectedItemValid = function() {
 }; // end of sap/ui/ux3/NavigationBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.NavigationItem') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16097,7 +16125,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -16276,8 +16304,8 @@ sap.ui.core.Item.extend("sap.ui.ux3.NavigationItem", { metadata : {
 }; // end of sap/ui/ux3/NavigationItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.NotificationBar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16337,7 +16365,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -16745,6 +16773,9 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.NotifierView", {
 			}
 
 			var oMessage = aMessages[i];
+			if (oMessage._message && oMessage._message.getReadOnly()) {
+				oMessage.addStyleClass("sapUiNotifierMessageReadOnly");
+			}
 			oRm.renderControl(oMessage);
 		}
 
@@ -16915,12 +16946,15 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	},
 
 	onclick : function(oEvent) {
-		var oNotifier = this._message.getParent();
+		// only fire selected event if the message can be selected at all
+		if (!this._message.getReadOnly()) {
+			var oNotifier = this._message.getParent();
 
-		this._message.getParent().fireMessageSelected({
-			message : this._message,
-			notifier : oNotifier
-		});
+			oNotifier.fireMessageSelected({
+				message : this._message,
+				notifier : oNotifier
+			});
+		}
 	},
 
 	onsapselect : function(oEvent) {
@@ -17509,17 +17543,61 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 		this._oItemNavigation.setRootDomRef(this.getDomRef());
 
 		var aItemDomRefs = [];
-		var mNotifiers = this.getNotifiers();
-		for ( var i = 0; i < mNotifiers.length; i++) {
-			aItemDomRefs.push(mNotifiers[i].getDomRef());
-		}
+		var bIsMaximized = this.getVisibleStatus() === sap.ui.ux3.NotificationBarStatus.Max;
 
-		var oMessageNotifier = this.getMessageNotifier();
-		if (oMessageNotifier != null) {
-			aItemDomRefs.push(oMessageNotifier.getDomRef());
+		// use different elements for navigation in maximized-mode
+		if (bIsMaximized) {
+			// add notifiers and messages reverse so the arrow keys can be used
+			// properly. Or the whole control of the item navigation is
+			// inverted.
+			var oMessageNotifier = this.getMessageNotifier();
+			if (oMessageNotifier != null) {
+				var aMessages = oMessageNotifier.getMessages();
+				var sId = oMessageNotifier.getId() + "-messageNotifierView-messageView-";
 
-			// add the inplace message to the item navigation as well
-			aItemDomRefs.push(jQuery.sap.byId(this.getId() + "-inplaceMessage"));
+				for ( var i = aMessages.length - 1; i >= 0; i--) {
+					var oDomRef = jQuery.sap.domById(sId + aMessages[i].getId());
+					if (oDomRef) {
+						aItemDomRefs.push(oDomRef);
+					}
+				}
+			}
+
+			var aNotifiers = this.getNotifiers();
+			for ( var i = 0; i < aNotifiers.length; i++) {
+				var aMessages = aNotifiers[i].getMessages();
+				var sId = aNotifiers[i].getId() + "-notifierView-messageView-";
+
+				for ( var j = aMessages.length - 1; j >= 0; j--) {
+					var oDomRef = jQuery.sap.domById(sId + aMessages[j].getId());
+					if (oDomRef) {
+						aItemDomRefs.push(oDomRef);
+					}
+				}
+			}
+
+		} else {
+			var aNotifiers = this.getNotifiers();
+			for ( var i = 0; i < aNotifiers.length; i++) {
+				var oDomRef = aNotifiers[i].getDomRef();
+				if (oDomRef) {
+					aItemDomRefs.push(oDomRef);
+				}
+			}
+
+			var oMessageNotifier = this.getMessageNotifier();
+			if (oMessageNotifier != null) {
+				var oDomRef = oMessageNotifier.getDomRef();
+				if (oDomRef) {
+					aItemDomRefs.push(oDomRef);
+				}
+
+				// add the inplace message to the item navigation as well
+				oDomRef = jQuery.sap.domById(this.getId() + "-inplaceMessage");
+				if (oDomRef && jQuery(oDomRef).hasClass("sapUiInPlaceMessageSelectable")) {
+					aItemDomRefs.push(oDomRef);
+				}
+			}
 		}
 
 		this._oItemNavigation.setItemDomRefs(aItemDomRefs);
@@ -17700,6 +17778,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			}, "fast");
 
 			oNotiBar.$().addClass("sapUiNotificationBarMinimized");
+			
+			oNotiBar.$("notifiers").css("display", "none");
 
 			display = "block";
 			break;
@@ -17895,8 +17975,10 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 				if (this.getDomRef()) {
 					fnResize(this, toStatus);
 				} else {
-					this.$().css("height", "0px");
-					this.$().css("display", "none");
+					this.$().css({
+						"height" : "0px",
+						"display" : "none"
+					});
 				}
 			}
 
@@ -17912,8 +17994,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 }; // end of sap/ui/ux3/NotificationBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Notifier') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -17973,7 +18055,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -18437,8 +18519,8 @@ jQuery.sap.require('sap.ui.commons.Callout'); // unlisted dependency retained
 }; // end of sap/ui/ux3/Notifier.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Overlay') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18496,7 +18578,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -19092,8 +19174,8 @@ sap.ui.ux3.Overlay.prototype.isOpen = function() {
 }; // end of sap/ui/ux3/Overlay.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.OverlayContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19149,7 +19231,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayContainer");
  * @extends sap.ui.ux3.Overlay
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -19299,8 +19381,8 @@ sap.ui.ux3.OverlayContainer.prototype._setFocusFirst = function() {
 }; // end of sap/ui/ux3/OverlayContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.OverlayContainerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19369,8 +19451,8 @@ sap.ui.ux3.OverlayContainerRenderer.addOverlayClasses = function(oRenderManager,
 }; // end of sap/ui/ux3/OverlayContainerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.OverlayDialog') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19428,7 +19510,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayDialog");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -19774,8 +19856,8 @@ sap.ui.ux3.OverlayDialog.prototype._checkChange = function(){
 }; // end of sap/ui/ux3/OverlayDialog.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.OverlayDialogRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19844,8 +19926,8 @@ sap.ui.ux3.OverlayDialogRenderer.addOverlayClasses = function(oRenderManager, oC
 }; // end of sap/ui/ux3/OverlayDialogRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.QuickView') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19924,7 +20006,7 @@ jQuery.sap.require('sap.ui.commons.CalloutBase'); // unlisted dependency retaine
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -21090,8 +21172,8 @@ sap.ui.ux3.QuickView.prototype.setActionBar = function(oActionBar) {
 }; // end of sap/ui/ux3/QuickView.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Shell') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21175,7 +21257,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -22725,10 +22807,14 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 jQuery.sap.require('sap.ui.commons.Menu'); // unlisted dependency retained
 
 
+
+
 sap.ui.ux3.Shell.WSI_MENU_DELAY = 200;
 sap.ui.ux3.Shell.WSI_OVERFLOW_SCROLL_STEP = 250; // how many pixels to scroll with every overflow arrow click
 sap.ui.ux3.Shell.TOOL_PREFIX = "-tool-";
 sap.ui.ux3.Shell.FIRST_RENDERING = true; // used for detecting the single very first rendering of any Shell on the page
+sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
+
 /**
  * The basic width of the ToolPalette if all icons fit into one column. Multiplied if more than
  * one column of items must be used.
@@ -22894,6 +22980,8 @@ sap.ui.ux3.Shell.prototype._updateThemeVariables = function() {
 		sap.ui.core.theming.Parameters.get("sapUiUx3ShellPaneOverflowButtonHeight"),
 		10
 	);
+	// Save the original button height to be referenced as maximum height
+	sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT;
 };
 
 
@@ -23072,6 +23160,8 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 		(this._bRtl ? $PaneListRef.innerHeight() : 0);
 	var iItemBottomPosition = 0;
 	var $Entries = $PaneListRef.children();
+
+	$Entries.css("display", "inline-block");
 	var bItemsInMenu = false;
 	var len = $Entries.length;
 	for (var i = len - 1; i >= 0; --i) {
@@ -23109,11 +23199,7 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 		}
 	}
 
-
-	var $PaneBar = jQuery.sap.byId(sId + "-paneBarRight");
 	var $OverflowButton = jQuery.sap.byId(sId + "-paneBarOverflowButton");
-	// Make sure there is room for overflow menu button
-	$PaneBar.css("padding-bottom", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT + "px");
 	if (bItemsInMenu) {
 		// Overflow is happening. Show button.
 		$OverflowButton.css("display", "block");
@@ -23130,10 +23216,96 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 			sap.ui.core.RenderManager.forceRepaint(document.getElementsByTagName("body")[0]);
 		}
 	}
+	
+	// This is tricky: Because of this method, the overflow-button might change, but since the
+	// calculation depends on the size of the overflow-button we have to check whether something 
+	// changed and then restart the calculation if it did (or else we have an endless loop).
+	var bOverflowButtonChanged = this._changeOverflowButton();
+	if (bOverflowButtonChanged) {
+		this._checkPaneBarOverflow();
+	}
+	
 };
 
 
+/**
+ * Checks the text content of the overflow-button and resizes it depending on the text. The 
+ * maximum height is defined through the less-parameter and written to 
+ * sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT while the current height is saved in
+ * sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT
+ * 
+ * @returns {bool} Returns whether a change to the button height has been made.
+ */
+sap.ui.ux3.Shell.prototype._adaptOverflowButtonHeight = function() {
+	var sId = this.getId();
+	
+	var $Button = jQuery.sap.byId(sId + "-paneBarOverflowButton");
+	var $ButtonWrapper = jQuery.sap.byId(sId + "-paneBarOverflowWrapper");
+	var $ButtonText = jQuery.sap.byId(sId + "-paneBarOverflowText");
+	var $PaneBar = jQuery.sap.byId(sId + "-paneBarRight");
 
+	// Make the span small so it does not increase the button size without having content
+	$ButtonText.css("width", "");
+	
+	
+	var iOldHeight = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT;
+	
+	// We need the scroll_Width_ because the content of the button is rotated by 90°
+	var iScrollWidth = $ButtonText[0].scrollWidth + /* buffer: */ 5;
+	
+	if (iScrollWidth > sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT) {
+		// Use the size specified in the theme as maximum width
+		sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT;
+	} else {
+		// The button does not need the maximum amount of allowed space, give it whatever it needs
+		sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT = iScrollWidth;
+	}
+	
+	$Button.css("height", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+	$ButtonWrapper.css("width", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+	// Make the span as large as the surrounding box again, so ellipsis works
+	$ButtonText.css("width", "100%");
+	// Make sure there is room for overflow menu button
+	$PaneBar.css("padding-bottom", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT + "px");
+
+	
+	return (iOldHeight != sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+};
+
+/**
+ * Changes the overflow button from the standard text to the currently active overflowing
+ * item and back.
+ * 
+ * @returns {bool} Returns whether a change to the button height has been made.
+ */
+sap.ui.ux3.Shell.prototype._changeOverflowButton = function() {
+	// Only if this._sOpenPaneId is not null, an overflow item could be active
+	// Whether the item is really in the overflow menu will be checked later by checking
+	// its visible-property
+	var oOverflowItem = null;
+	if (this._sOpenPaneId) {
+		oOverflowItem = sap.ui.getCore().byId(this._sOpenPaneId + "-overflow");
+	}
+	
+	
+	var sText = sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT;
+	var bSelected = false;
+	if (oOverflowItem && oOverflowItem.getVisible()) {
+		// This activation is from an overflow menu item: Change overflow button
+		sText = oOverflowItem.getText();
+		bSelected = true;
+	}
+	
+	sText = sText.toUpperCase(); // TODO: This should be done in CSS, see also renderer
+	
+	var oButtonText = jQuery.sap.byId(this.getId() + "-paneBarOverflowText");
+
+	oButtonText.text(sText);
+	oButtonText.attr("title", sText);
+	oButtonText.toggleClass("sapUiUx3ShellPaneEntrySelected", bSelected);
+	
+	return this._adaptOverflowButtonHeight();
+};
 
 sap.ui.ux3.Shell.prototype._getPaneOverflowMenu = function() {
 	return this.getAggregation("_paneOverflowMenu");
@@ -23212,7 +23384,7 @@ sap.ui.ux3.Shell.prototype.onUserActivation = function(oEvent) {
 		&& parent.parentNode.parentNode.className.indexOf("sapUiUx3ShellToolPaletteArea") > -1) {  // image in tool item clicked
 		this._handleToolItemClick(parent.id);
 
-	} else if (sTargetId === sId + "-paneBarOverflowButtonIcon" || sTargetId === sId + "-paneBarOverflowButton") {
+	} else if (sTargetId === sId + "-paneBarOverflowText") {
 		// Show/Hide overflow menu
 		var oTarget = jQuery.sap.byId(sId + "-paneBarOverflowButton")[0];
 		this._getPaneOverflowMenu().open(
@@ -23227,12 +23399,11 @@ sap.ui.ux3.Shell.prototype.onUserActivation = function(oEvent) {
 		if (parent && parent.className 
 			&& parent.className.indexOf /* not available for SVG elements */
 			&& parent.className.indexOf("sapUiUx3ShellPaneEntries") > -1) {  // pane bar item clicked
+			
 			this._handlePaneBarItemClick(sTargetId);
 		}
 	}
 };
-
-
 
 
 /* ====== WORKSET ITEMS ====== */
@@ -23488,6 +23659,7 @@ sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
 		var oPaneButton = jQuery.sap.byId(sPaneId);
 		oPaneButton.siblings().removeClass("sapUiUx3ShellPaneEntrySelected");
 		oPaneButton.addClass("sapUiUx3ShellPaneEntrySelected");
+		
 		if (!this._sOpenPaneId) {
 			// pane area not open yet, open it
 			this._openPane();
@@ -23517,7 +23689,10 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 	} else { // a pane needs to be displayed
 		this.openPane(sPaneId);
 	}
+	
+	this._checkPaneBarOverflow();
 };
+
 
 
 (function() {
@@ -24455,6 +24630,7 @@ sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
 		// Emulate an event-object to "trick" the Shell into believing a real panel
 		// item was selected
 		var mPseudoEvent = {
+			overflowItem : oEvent.getParameter("item"),
 			target : {
 				id : oEvent.getParameter("id").replace(/-overflow$/, ""),
 				parentNode : {
@@ -24471,11 +24647,13 @@ sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
 		var oItem = sap.ui.getCore().byId(sItemId);
 
 		if (!oItem) {
-			oMenu.addItem(new sap.ui.commons.MenuItem(sItemId, {
+			var oOverflowItem = new sap.ui.commons.MenuItem(sItemId, {
 				text : aPaneBarItems[i].getText(),
 				visible : false,
 				select : fnOnItemSelect
-			}));
+			});
+			
+			oMenu.addItem(oOverflowItem);
 		}
 	}
 
@@ -24911,8 +25089,8 @@ sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 }; // end of sap/ui/ux3/Shell.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingAction') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -24971,7 +25149,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -25150,8 +25328,8 @@ sap.ui.ux3.ThingAction.prototype.onsapselect = function(oEvent) {
 }; // end of sap/ui/ux3/ThingAction.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingGroup') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25211,7 +25389,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -25474,8 +25652,8 @@ sap.ui.core.Element.extend("sap.ui.ux3.ThingGroup", { metadata : {
 }; // end of sap/ui/ux3/ThingGroup.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingViewer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25542,7 +25720,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -26535,8 +26713,8 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 }; // end of sap/ui/ux3/ThingViewer.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ToolPopup') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26576,7 +26754,9 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <li>{@link #getInverted inverted} : boolean (default: true)</li>
  * <li>{@link #getAutoClose autoClose} : boolean (default: false)</li>
  * <li>{@link #getMaxHeight maxHeight} : sap.ui.core.CSSSize</li>
- * <li>{@link #getMaxWidth maxWidth} : sap.ui.core.CSSSize</li></ul>
+ * <li>{@link #getMaxWidth maxWidth} : sap.ui.core.CSSSize</li>
+ * <li>{@link #getOpenDuration openDuration} : int (default: 400)</li>
+ * <li>{@link #getCloseDuration closeDuration} : int (default: 400)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -26612,7 +26792,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -26637,7 +26817,9 @@ sap.ui.core.Control.extend("sap.ui.ux3.ToolPopup", { metadata : {
 		"inverted" : {type : "boolean", group : "Misc", defaultValue : true},
 		"autoClose" : {type : "boolean", group : "Misc", defaultValue : false},
 		"maxHeight" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
-		"maxWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null}
+		"maxWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
+		"openDuration" : {type : "int", group : "Misc", defaultValue : 400},
+		"closeDuration" : {type : "int", group : "Misc", defaultValue : 400}
 	},
 	defaultAggregation : "content",
 	aggregations : {
@@ -26913,6 +27095,60 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @public
  * @since 1.15.0
  * @name sap.ui.ux3.ToolPopup#setMaxWidth
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>openDuration</code>.
+ * Time in miliseconds for the open animation.
+ *
+ * Default value is <code>400</code>
+ *
+ * @return {int} the value of property <code>openDuration</code>
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#getOpenDuration
+ * @function
+ */
+
+/**
+ * Setter for property <code>openDuration</code>.
+ *
+ * Default value is <code>400</code> 
+ *
+ * @param {int} iOpenDuration  new value for property <code>openDuration</code>
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#setOpenDuration
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>closeDuration</code>.
+ * Time in miliseconds for the close animation.
+ *
+ * Default value is <code>400</code>
+ *
+ * @return {int} the value of property <code>closeDuration</code>
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#getCloseDuration
+ * @function
+ */
+
+/**
+ * Setter for property <code>closeDuration</code>.
+ *
+ * Default value is <code>400</code> 
+ *
+ * @param {int} iCloseDuration  new value for property <code>closeDuration</code>
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#setCloseDuration
  * @function
  */
 
@@ -27434,6 +27670,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *
  * @name sap.ui.ux3.ToolPopup#opened
  * @event
+ * @since 1.19.0
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -27457,6 +27694,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#attachOpened
  * @function
  */
@@ -27472,6 +27710,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *            oListener Context object on which the given function had to be called.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#detachOpened
  * @function
  */
@@ -27482,6 +27721,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#fireOpened
  * @function
  */
@@ -27822,6 +28062,7 @@ var fnPopupOpened = function(){
 	this._proxyFixSize();
 	
 	// forward the Popup's opened event accordingly
+	// was added in "1.19.0" as a fix for a CSN and was downported to "1.18.2" and "1.16.6"
 	this.fireOpened();
 };
 
@@ -27928,7 +28169,7 @@ sap.ui.ux3.ToolPopup.prototype.open = function(my, at) {
 	fnCheckOpener(this);
 	
 	// function(iDuration, my, at, of, offset, collision /*empty to avoid any override*/, followOf /*true*/)
-	this.oPopup.open(400, this._my, this._at, $OpenerRef, this.sOffset, "", true);
+	this.oPopup.open(this.getOpenDuration(), this._my, this._at, $OpenerRef, this.sOffset, "", true);
 	fnSetArrow(this);
 	
 	return this;
@@ -28198,7 +28439,7 @@ sap.ui.ux3.ToolPopup.prototype.close = function(bPreventRestoreFocus) {
 			delete this._bBoundOnResize;
 		}
 
-		this.oPopup.close(400);
+		this.oPopup.close(this.getCloseDuration());
 		this._bPreventRestoreFocus = bPreventRestoreFocus;
 	}
 	return this;
@@ -28461,8 +28702,8 @@ sap.ui.ux3.ToolPopup.prototype.setMaxWidth = function(sMaxWidth) {
 }; // end of sap/ui/ux3/ToolPopup.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ExactBrowser') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -28533,7 +28774,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -29412,8 +29653,8 @@ jQuery.sap.require('sap.ui.commons.Button'); // unlisted dependency retained
 }; // end of sap/ui/ux3/ExactBrowser.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Feed') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -29479,7 +29720,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -30620,8 +30861,8 @@ sap.ui.ux3.Feed.prototype.unbindFilterItems = function() {
 }; // end of sap/ui/ux3/Feed.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.FeedChunk') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -30704,7 +30945,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -32414,8 +32655,8 @@ sap.ui.ux3.FeedChunk.prototype.handleHCMMenuButtonSelected = function(oEvent){
 }; // end of sap/ui/ux3/FeedChunk.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ThingInspector') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32491,7 +32732,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingInspector");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -33664,6 +33905,16 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 		}
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfAction = function(oAction) {
+		var result = -1;
+		if (this.getActionBar()) {
+			result = this.getActionBar().indexOfBusinessAction(oAction);
+		}
+		return result;
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.getFacets = function() {
 		return this._oThingViewer.getFacets();
@@ -33696,6 +33947,11 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 		this._oThingViewer.destroyFacets();
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfFacet = function(oFacet) {
+		return this._oThingViewer.indexOfFacet(oFacet);
+	};
+	
 	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setFollowState = function(oFollowState) {
@@ -33797,6 +34053,12 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 	sap.ui.ux3.ThingInspector.prototype.getFacetContent = function() {
 		return this._oThingViewer.getFacetContent();
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfFacetContent = function(oFacetContent) {
+		return this._oThingViewer.indexOfFacetContent(oFacetContent);
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setActionBar = function(oActionBar) {
 		this._oThingViewer.setActionBar(oActionBar);
@@ -33839,6 +34101,12 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 		this._oThingViewer.destroyHeaderContent();
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfHeaderContent = function(oHeaderContent) {
+		return this._oThingViewer.indexOfHeaderContent(oHeaderContent);
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setSelectedFacet = function(selectedFacet) {
 		this._oThingViewer.setSelectedFacet(selectedFacet);
@@ -33951,8 +34219,8 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 }; // end of sap/ui/ux3/ThingInspector.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Exact') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -34011,7 +34279,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public

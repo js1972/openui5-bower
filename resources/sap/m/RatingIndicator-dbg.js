@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -789,7 +789,7 @@ sap.m.RatingIndicator.prototype._getIcon = function (iState) {
 sap.m.RatingIndicator.prototype._calculateSelectedValue = function (oEvent) {
 	var selectedValue = -1.0,
 		percentageWidth = 0.0,
-		oControlRoot = this.$(this.getId()),
+		oControlRoot = this.$(),
 		fControlPadding = (oControlRoot.innerWidth() - oControlRoot.width()) / 2,
 		oEventPosition,
 		bRtl = sap.ui.getCore().getConfiguration().getRTL();

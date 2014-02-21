@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,15 +59,21 @@ sap.ui.commons.CheckBoxRenderer.render = function(oRenderManager, oCheckBox) {
 	var myTabIndex = 0;
 	var bReadOnly = false;
 
+	if (!editable) {
+		bReadOnly = true;
+		rm.addClass("sapUiCbRo");
+		// According to CSN 2581852 2012 a readonly CB should be in the tabchain
+		// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+		// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+		// End of 2013 is have to be again in the tabchain.
+		// But not in the Form. But this is handled in the FromLayout control
+		// Let's see what happens 2014... ;-)
+		myTabIndex = 0;
+	}
 	if (!enabled) {
 		bReadOnly = true;
 		rm.addClass("sapUiCbDis");
 		myTabIndex = -1;
-	}
-	if (!editable) {
-		bReadOnly = true;
-		rm.addClass("sapUiCbRo");
-		//myTabIndex = -1; //According to CSN2581852 2012 a readonly CB should be in the tabchain 
 	}
 	if (inErrorState) {
 		rm.addClass("sapUiCbErr");

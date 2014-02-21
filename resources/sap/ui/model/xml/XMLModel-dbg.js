@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -29,7 +29,7 @@ jQuery.sap.require("jquery.sap.xml");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @param {object} oData either the URL where to load the XML from or a XML
  * @constructor
@@ -182,8 +182,8 @@ sap.ui.model.xml.XMLModel.prototype.bindList = function(sPath, oContext, aSorter
 /**
  * @see sap.ui.model.Model.prototype.bindTree
  */
-sap.ui.model.xml.XMLModel.prototype.bindTree = function(sPath, oContext, mParameters) {
-	var oBinding = new sap.ui.model.xml.XMLTreeBinding(this, sPath, oContext, mParameters);
+sap.ui.model.xml.XMLModel.prototype.bindTree = function(sPath, oContext, aFilters, mParameters) {
+	var oBinding = new sap.ui.model.xml.XMLTreeBinding(this, sPath, oContext, aFilters, mParameters);
 	return oBinding;
 };
 
@@ -244,9 +244,26 @@ sap.ui.model.xml.XMLModel.prototype.getProperty = function(sPath, oContext) {
 };
 
 /**
- * @param sPath
- * @param oContext
- * @returns the node of the specified path/context
+* Returns the object for the given <code>path</code>
+*
+* @param {string} sPath the path to the object
+* @param {object} [oContext=null] the context which will be used to retrieve the object
+* @type any
+* @return the object
+* @public
+*/
+sap.ui.model.xml.XMLModel.prototype.getObject = function(sPath, oContext) {
+	var oObject = this._getObject(sPath, oContext);
+	if (jQuery.isArray(oObject)) {
+		oObject = oObject[0];
+	}
+	return oObject;
+};
+
+/**
+ * @param {string} sPath
+ * @param {object} oContext
+ * @returns {any} the node of the specified path/context
  */
 sap.ui.model.xml.XMLModel.prototype._getObject = function (sPath, oContext) {
 	var oRootNode = this.oData.documentElement;
@@ -413,4 +430,8 @@ sap.ui.model.xml.XMLModel.prototype._resolve = function(sPath, oContext) {
 		}
 	}
 	return sResolvedPath;
+};
+
+sap.ui.model.xml.XMLModel.prototype.isList = function(sPath, oContext) {
+	return false;
 };

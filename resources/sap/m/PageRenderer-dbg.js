@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32,7 +32,6 @@ sap.m.PageRenderer.render = function(rm, oPage) {
 	if (oPage.getShowFooter()){
 		oFooter = oPage.getFooter();
 	}
-
 	rm.write("<div");
 	rm.writeControlData(oPage);
 	rm.addClass("sapMPage");
@@ -48,7 +47,6 @@ sap.m.PageRenderer.render = function(rm, oPage) {
 	}
 
 	if (oFooter) {
-
 		// it is used in the PopOver to remove additional margin bottom for page with footer
 		rm.addClass("sapMPageWithFooter");
 	}

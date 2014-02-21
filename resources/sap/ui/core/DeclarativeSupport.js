@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.DeclarativeSupport");sap.ui.core.DeclarativeSupport={};sap.ui.core.DeclarativeSupport.attributes={"data-sap-ui-type":true,"data-sap-ui-aggregation":true,"data-sap-ui-default-aggregation":true,"data-sap-ui-binding":function(v,s){var b=sap.ui.base.ManagedObject.bindingParser(v);s.objectBindings=s.objectBindings||{};s.objectBindings[b.model||undefined]=b},"data-tooltip":function(v,s){s["tooltip"]=v},"tooltip":function(v,s,c){s["tooltip"]=v;jQuery.sap.log.warning('[Deprecated] Control "'+s.id+'": The attribute "tooltip" is not prefixed with "data-*". Future version of declarative support will only suppport attributes with "data-*" prefix.')},"class":true,"style":true,"id":true};

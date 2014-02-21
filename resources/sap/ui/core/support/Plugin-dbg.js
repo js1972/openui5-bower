@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -17,7 +17,7 @@ jQuery.sap.require("jquery.sap.dom");
  *
  * @abstract
  * @extends sap.ui.base.Object
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @private
  * @name sap.ui.core.support.Plugin
@@ -107,12 +107,20 @@ sap.ui.core.support.Plugin.prototype.isToolPlugin = function(){
 /**
  * Returns the DOM node that represents this plugin wrapped as jQuery object.
  * 
+ * If an ID suffix is given, the ID of this Element is concatenated with the suffix 
+ * (separated by a single dash) and the DOM node with that compound ID will be wrapped by jQuery.
+ * This matches the naming convention for named inner DOM nodes of a plugin.
+ *
+ * If no suffix is given and if no DOM exists, a DIV with the ID of this plugin will be created
+ * and appended to the support popup content section (identified by class .sapUiSupportCntnt).
+ *  
+ * @param {string} [sSuffix] ID suffix to get a jQuery object for
  * @return {jQuery} The jQuery wrapped plugin's DOM reference
  * @private
  */
-sap.ui.core.support.Plugin.prototype.$ = function(){
-	var jRef = jQuery.sap.byId(this.getId());
-	if(jRef.length == 0){
+sap.ui.core.support.Plugin.prototype.$ = function(sSuffix){
+	var jRef = jQuery.sap.byId(sSuffix ? this.getId() + "-" + sSuffix : this.getId());
+	if(jRef.length == 0 && !sSuffix){
 		jRef = jQuery("<DIV/>", {id:this.getId()});
 		jRef.appendTo(jQuery(".sapUiSupportCntnt"));
 	}

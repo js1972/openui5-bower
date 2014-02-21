@@ -1,6 +1,6 @@
 
-/* SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+/* SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
  *//* Global CSS for 'base' theme */
@@ -289,10 +289,11 @@
 @sapUiUx3ShellSideBarBaseWidth:       40px;
 /** 
   * This parameter is used in the Shell control to calculate the size of the margin when showing
-  * an overflow button in the right pane.
+  * an overflow button in the right pane. As of 1.18.0 this value contains the _maximum_ height
+  * of the overflow button, if the text inside the button is smaller, the button shrinks with it.
   * !!! ONLY PX-VALUES ARE ALLOWED HERE.
   */
-@sapUiUx3ShellPaneOverflowButtonHeight: 40px;
+@sapUiUx3ShellPaneOverflowButtonHeight: 120px;
 
 @sapUiUx3ExactLstExpandOffset: 0 0;
 @sapUiUx3ExactLstRootExpandOffset: 0 3;
@@ -1496,7 +1497,6 @@ html[dir=rtl] .sapUiIconMirrorInRTL {
 	-ms-transform: scale(-1,1); /* IE 9 */
 	-webkit-transform: scale(-1,1); /* Safari and Chrome */
 }
-
 html[dir=rtl][data-sap-ui-browser*='ie8'] .sapUiIconMirrorInRTL {
 	filter: FlipH;
 	-ms-filter: "FlipH";

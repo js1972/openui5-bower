@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.ShellColorPicker");jQuery.sap.require("sap.ui.base.EventProvider");jQuery.sap.require("sap.ui.core.Popup");jQuery.sap.require("sap.ui.commons.Button");sap.ui.base.EventProvider.extend("sap.ui.ux3.ShellColorPicker",{constructor:function(i){sap.ui.base.EventProvider.apply(this);this.id=i}});sap.ui.ux3.ShellColorPicker.M_EVENTS={liveChange:"liveChange"};

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -20,7 +20,7 @@ jQuery.sap.declare("sap.ui.model.odata.ODataMetadata");
  * Implementation to access oData metadata
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @public
@@ -67,6 +67,7 @@ sap.ui.model.odata.ODataMetadata.prototype._loadMetadata = function(oModel, bAsy
 	}
 
 	function _handleError(oError) {
+		that.oModel.fireMetadataFailed(oError);
 		that.oModel._handleError(oError);
 	}
 
@@ -167,7 +168,7 @@ sap.ui.model.odata.ODataMetadata.prototype._getEntityTypeByPath = function(sPath
 		// if only one part exists it should be the name of the collection and we can get the entity type for it
 		aEntityTypeName = this._splitName(this._getEntityTypeName(aParts[0]));
 		oEntityType = this._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
-		if (oEntityType) {		
+		if (oEntityType) {
 			// store the type name also in the oEntityType
 			oEntityType.entityType = this._getEntityTypeName(aParts[0]);
 		}
@@ -177,16 +178,16 @@ sap.ui.model.odata.ODataMetadata.prototype._getEntityTypeByPath = function(sPath
 	if (!oEntityType) {
 		var sFuncCandName = aParts[aParts.length - 1]; // last segment is always a function import
 		var oFuncType = this._getFunctionImportMetadata(sFuncCandName, "GET");
-		if (oFuncType && oFuncType.entitySet) { // only collections supported which have an entitySet			
+		if (oFuncType && oFuncType.entitySet) { // only collections supported which have an entitySet
 			oEntityType = this._getEntityTypeByPath(oFuncType.entitySet);
-			if (oEntityType) {		
+			if (oEntityType) {
 				// store the type name also in the oEntityType
 				oEntityType.entityType = this._getEntityTypeName(oFuncType.entitySet);
-			}			
+			}
 		}
 	}
-	
-	
+
+
 	//jQuery.sap.assert(oEntityType, "EntityType for path " + sPath + " could not be found!");
 	return oEntityType;
 };
@@ -215,12 +216,14 @@ sap.ui.model.odata.ODataMetadata.prototype._getEntityTypeName = function(sCollec
 		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
 			if (oSchema.entityContainer) {
 				jQuery.each(oSchema.entityContainer, function(k, oEntityContainer) {
-					jQuery.each(oEntityContainer.entitySet, function(j, oEntitySet) {
-						if (oEntitySet.name === sCollection) {
-							sEntityTypeName = oEntitySet.entityType;
-							return false;
-						}
-					});
+					if (oEntityContainer.entitySet) {
+						jQuery.each(oEntityContainer.entitySet, function(j, oEntitySet) {
+							if (oEntitySet.name === sCollection) {
+								sEntityTypeName = oEntitySet.entityType;
+								return false;
+							}
+						});
+					}
 				});
 			}
 		});
@@ -325,7 +328,7 @@ sap.ui.model.odata.ODataMetadata.prototype._getEntityTypeByNavProperty = functio
 				oNavEntityType = that._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
 				if (oNavEntityType) {
 					// store the type name also in the oEntityType
-					oNavEntityType.entityType = oEnd.type;					
+					oNavEntityType.entityType = oEnd.type;
 				}
 				return false;
 			}

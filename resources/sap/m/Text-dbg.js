@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -331,7 +331,7 @@ sap.m.Text.prototype.onAfterRendering = function() {
 		return;
 	}
 
-	if (sap.m.Text.hasNativeLineClamp) {
+	if (this._canUseNativeLineClamp()) {
 		// There is a bug with -webkit-line-clamp does not repaint sometimes
 		// Here we try to handle repaint with the cheapest and the same result
 		// https://code.google.com/p/chromium/issues/detail?id=265836
@@ -368,6 +368,23 @@ sap.m.Text.hasNativeLineClamp = (function() {
  * @protected
  */
 sap.m.Text.prototype.ellipsis = '…';
+
+// decides whether control can use native line clamp feature
+// In RTL mode native line clamp feature is not supported
+sap.m.Text.prototype._canUseNativeLineClamp = function() {
+	if (!sap.m.Text.hasNativeLineClamp) {
+		return false;
+	}
+	if (this.getTextDirection() == sap.ui.core.TextDirection.RTL) {
+		return false;
+	}
+	if (this.getTextDirection() == sap.ui.core.TextDirection.Inherit && sap.ui.getCore().getConfiguration().getRTL()) {
+		return false;
+	}
+
+	return true;
+};
+
 
 // clean up resize handler stuff
 sap.m.Text.prototype._cleanupResize = function() {

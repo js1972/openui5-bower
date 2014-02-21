@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10,7 +10,7 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.core (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.core (1.18.8)
  */
 jQuery.sap.declare("sap.ui.core.library");
 jQuery.sap.require("sap.ui.core.Core");
@@ -100,11 +100,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.search.SearchProvider",
     "sap.ui.core.tmpl.DOMAttribute"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -122,7 +122,7 @@ jQuery.sap.declare("sap.ui.core.AccessibleRole");
  * For more information, goto "Roles for Accessible Rich Internet Applications (WAI-ARIA Roles)" at the www.w3.org homepage.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -515,8 +515,8 @@ sap.ui.core.AccessibleRole = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -532,7 +532,7 @@ jQuery.sap.declare("sap.ui.core.BarColor");
 /**
  * @class Configuration options for the colors of a progress bar
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -564,8 +564,8 @@ sap.ui.core.BarColor = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -597,8 +597,8 @@ sap.ui.core.CSSColor = sap.ui.base.DataType.createType('sap.ui.core.CSSColor', {
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -628,8 +628,8 @@ sap.ui.core.CSSSize = sap.ui.base.DataType.createType('sap.ui.core.CSSSize', {
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -660,8 +660,8 @@ sap.ui.core.CSSSizeShortHand = sap.ui.base.DataType.createType('sap.ui.core.CSSS
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -693,8 +693,8 @@ sap.ui.core.Collision = sap.ui.base.DataType.createType('sap.ui.core.Collision',
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -710,7 +710,7 @@ jQuery.sap.declare("sap.ui.core.Design");
 /**
  * @class Font design for texts
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -730,8 +730,8 @@ sap.ui.core.Design = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -765,8 +765,8 @@ sap.ui.core.Dock = sap.ui.base.DataType.createType('sap.ui.core.Dock', {
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -782,7 +782,7 @@ jQuery.sap.declare("sap.ui.core.HorizontalAlign");
 /**
  * @class Configuration options for horizontal alignments of controls
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -820,8 +820,8 @@ sap.ui.core.HorizontalAlign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -850,8 +850,8 @@ sap.ui.core.ID = sap.ui.base.DataType.createType('sap.ui.core.ID', {
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -867,7 +867,7 @@ jQuery.sap.declare("sap.ui.core.IconColor");
 /**
  * @class Semantic Colors of an icon.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -905,8 +905,8 @@ sap.ui.core.IconColor = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -922,7 +922,7 @@ jQuery.sap.declare("sap.ui.core.ImeMode");
 /**
  * @class State of the Input Method Editor (IME) for the control. Depending on its value, it allows users to enter and edit for example Chinese characters.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -964,8 +964,8 @@ sap.ui.core.ImeMode = {
  */
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -981,7 +981,7 @@ jQuery.sap.declare("sap.ui.core.MessageType");
 /**
  * @class Defines the different message types of a message
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1019,8 +1019,8 @@ sap.ui.core.MessageType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1036,7 +1036,7 @@ jQuery.sap.declare("sap.ui.core.OpenState");
 /**
  * @class Defines the different possible states of an element that can be open or closed and does not only toggle between these states, but also spends some time in between (e.g. because of an animation).
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1068,8 +1068,8 @@ sap.ui.core.OpenState = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1098,8 +1098,8 @@ sap.ui.core.Percentage = sap.ui.base.DataType.createType('sap.ui.core.Percentage
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1115,7 +1115,7 @@ jQuery.sap.declare("sap.ui.core.ScrollBarAction");
 /**
  * @class Actions are: Click on track, button, drag of thumb, or mouse wheel click
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1147,8 +1147,8 @@ sap.ui.core.ScrollBarAction = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1164,7 +1164,7 @@ jQuery.sap.declare("sap.ui.core.Scrolling");
 /**
  * @class Defines the possible values for horizontal and vertical scrolling behavior.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1196,8 +1196,8 @@ sap.ui.core.Scrolling = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1213,7 +1213,7 @@ jQuery.sap.declare("sap.ui.core.TextAlign");
 /**
  * @class Configuration options for text alignments.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1251,8 +1251,8 @@ sap.ui.core.TextAlign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1268,7 +1268,7 @@ jQuery.sap.declare("sap.ui.core.TextDirection");
 /**
  * @class Configuration options for the direction of texts.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1294,8 +1294,8 @@ sap.ui.core.TextDirection = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1311,7 +1311,7 @@ jQuery.sap.declare("sap.ui.core.TitleLevel");
 /**
  * @class Level of a title.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.9.1
@@ -1362,8 +1362,8 @@ sap.ui.core.TitleLevel = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1392,8 +1392,8 @@ sap.ui.core.URI = sap.ui.base.DataType.createType('sap.ui.core.URI', {
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1409,7 +1409,7 @@ jQuery.sap.declare("sap.ui.core.ValueState");
 /**
  * @class Marker for the correctness of the current value.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1441,8 +1441,8 @@ sap.ui.core.ValueState = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1460,7 +1460,7 @@ jQuery.sap.declare("sap.ui.core.VerticalAlign");
  * Configuration options for vertical alignments, for example of a layout cell content within the borders.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1500,8 +1500,8 @@ sap.ui.core.VerticalAlign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1517,7 +1517,7 @@ jQuery.sap.declare("sap.ui.core.Wrapping");
 /**
  * @class Configuration options for text wrapping.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1549,8 +1549,8 @@ sap.ui.core.Wrapping = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1566,7 +1566,7 @@ jQuery.sap.declare("sap.ui.core.mvc.ViewType");
 /**
  * @class Specifies possible view types
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -1604,8 +1604,8 @@ sap.ui.core.mvc.ViewType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1621,7 +1621,7 @@ jQuery.sap.declare("sap.ui.core.routing.HistoryDirection");
 /**
  * @class Enumaration for different HistoryDirections
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.ActionSheet");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.ActionSheet",{metadata:{publicMethods:["openBy","close","isOpen"],library:"sap.m",properties:{"placement":{type:"sap.m.PlacementType",group:"Appearance",defaultValue:sap.m.PlacementType.Bottom},"showCancelButton":{type:"boolean",group:"Appearance",defaultValue:true},"cancelButtonText":{type:"string",group:"Appearance",defaultValue:null},"title":{type:"string",group:"Appearance",defaultValue:null}},aggregations:{"buttons":{type:"sap.m.Button",multiple:true,singularName:"button"},"_cancelButton":{type:"sap.m.Button",multiple:false,visibility:"hidden"}},events:{"cancelButtonTap":{},"beforeOpen":{},"afterOpen":{},"beforeClose":{},"afterClose":{},"cancelButtonPress":{}}}});sap.m.ActionSheet.M_EVENTS={'cancelButtonTap':'cancelButtonTap','beforeOpen':'beforeOpen','afterOpen':'afterOpen','beforeClose':'beforeClose','afterClose':'afterClose','cancelButtonPress':'cancelButtonPress'};jQuery.sap.require("sap.m.Dialog");jQuery.sap.require("sap.m.Popover");jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");

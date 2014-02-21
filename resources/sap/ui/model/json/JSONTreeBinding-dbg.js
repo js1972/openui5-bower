@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -71,11 +71,11 @@ sap.ui.model.json.JSONTreeBinding.prototype.getNodeContexts = function(oContext)
 	}
 
 	var aContexts = [],
-	that = this,
-	oNode = this.oModel._getObject(sContextPath),
-	oChild, 
-    aArrayNames = this.mParameters && this.mParameters.arrayNames,
-    aChildArray;
+		that = this,
+		oNode = this.oModel._getObject(sContextPath),
+		oChild,
+		aArrayNames = this.mParameters && this.mParameters.arrayNames,
+		aChildArray;
 	
 	if (aArrayNames && jQuery.isArray(aArrayNames)) {
 		
@@ -83,7 +83,7 @@ sap.ui.model.json.JSONTreeBinding.prototype.getNodeContexts = function(oContext)
 			aChildArray = oNode[sArrayName];
 			if (aChildArray) {
 				jQuery.each(aChildArray, function(sSubName, oSubChild) {
-					that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);           	
+					that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);
 				})
 			}
 		});
@@ -92,7 +92,7 @@ sap.ui.model.json.JSONTreeBinding.prototype.getNodeContexts = function(oContext)
 			jQuery.sap.each(oNode, function(sName, oChild) {
 				if (jQuery.isArray(oChild)){
 					jQuery.each(oChild, function(sSubName, oSubChild) {
-						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);           	
+						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);
 					})
 				} else if (typeof oChild == "object") {
 					that._saveSubContext(oChild, aContexts, sContextPath, sName);

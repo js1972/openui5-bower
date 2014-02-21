@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -645,7 +645,7 @@ sap.ui.commons.ComboBox.prototype._checkChange = function(oEvent, bImmediate) {
 					this._addDummyOption(sNewVal);
 				}else{
 					this._removeDummyOption();
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+					this.getDomRef("select").selectedIndex = iIndex;
 				}
 			}
 		}else {
@@ -891,7 +891,7 @@ sap.ui.commons.ComboBox.prototype._doTypeAhead = function(){
 			bFound = true;
 			if(this.mobile){
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = i;
+				this.getDomRef("select").selectedIndex = i;
 			}
 			return;
 		}
@@ -1009,11 +1009,11 @@ sap.ui.commons.ComboBox.prototype._doSelect = function(iStart, iEnd){
  * Returns the DomRef which represents the icon for value help.
  * Could be overwritten in child-classes
  *
- * @return {DOMNode} The F4-element's DOM reference or null
+ * @return {Element} The F4-element's DOM reference or null
  * @protected
  */
 sap.ui.commons.ComboBox.prototype.getF4ButtonDomRef = function() {
-	return jQuery.sap.domById(this.getId() + "-icon");
+	return this.getDomRef("icon");
 };
 
 
@@ -1142,7 +1142,7 @@ sap.ui.commons.ComboBox.prototype._open = function(iDuration){
 	oPopup.setInitialFocusId(this.getId()+'-input'); // to prevent popup to set focus to the ListBox -> stay in input field
 
 	// now, as everything is set, ensure HTML is up-to-date
-	// This is separated in a function because controls which inherit the Combobox (e.g. SearchField) might overriden this
+	// This is separated in a function because controls which inherit the Combobox (e.g. SearchField) might override this
 	// Here is also the possibility to interrupt the open procedure of the list (e.g. when the list is empty)
 	var bSkipOpen = this._rerenderListBox(oListBox);
 	if(bSkipOpen) {
@@ -1513,7 +1513,7 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 		}
 		if (this.mobile) {
 			// refresh und rebulid select options because not ever known what exactly changed
-			var oSelect = jQuery.sap.domById(this.getId()+"-select");
+			var oSelect = this.getDomRef("select");
 			while (oSelect.length > 0) {
 				oSelect.remove(0);
 			}
@@ -1602,8 +1602,8 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 
 	if (this.mobile) {
 		var that = this;
-		jQuery.sap.byId(this.getId()+"-select").bind("change", function(){
-			var newVal = jQuery.sap.byId(that.getId()+"-select").attr("value");
+		this.$("select").bind("change", function(){
+			var newVal = that.$("select").val();
 			//as iPad ignores disabled attibute on option - check if item is enabled -> otherwise ignore
 			var aItems = that.getItems();
 			var bEnabled = true;
@@ -1624,7 +1624,7 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 				that.setValue(newVal);
 				that.fireChange({newValue:newVal, selectedItem: sap.ui.getCore().byId(that.getSelectedItemId())});
 			}else{
-				jQuery.sap.domById(that.getId()+"-select").selectedIndex = iOldIndex;
+				that.getDomRef("select").selectedIndex = iOldIndex;
 			}
 		});
 		// set initial selected item
@@ -1632,7 +1632,7 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 			for ( var i = 0; i < this.getItems().length; i++) {
 				var oItem = this.getItems()[i];
 				if (this.getSelectedItemId() == oItem.getId()) {
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = i;
+					this.getDomRef("select").selectedIndex = i;
 					break;
 				}
 			}
@@ -1708,11 +1708,8 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 		return this;
 	}
 
-	if (!sSelectedKey) {
+	if (!sSelectedKey && this._isSetEmptySelectedKeyAllowed()) {
 		// selectedKey explicit not set -> select no item and initialize value
-		this.setProperty("selectedKey", sSelectedKey, true); // no rerendering needed
-		this.setProperty("selectedItemId", "", true); // no rerendering needed
-		this.setValue("", true);
 		return this;
 	}
 
@@ -1744,7 +1741,7 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 			jQuery(this.getInputDomRef()).attr("aria-posinset", iIndex+1);
 			if (this.mobile) {
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+				this.getDomRef("select").selectedIndex = iIndex;
 			}
 		}
 		this._sWantedSelectedKey = undefined;
@@ -1759,6 +1756,19 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 };
 
 /*
+ * To be overwritten by DropdownBox
+ * in ComboBox an empty selected Key is allowed, then select no item and initialize value
+ */
+sap.ui.commons.ComboBox.prototype._isSetEmptySelectedKeyAllowed = function() {
+
+		this.setProperty("selectedKey", "", true); // no rerendering needed
+		this.setProperty("selectedItemId", "", true); // no rerendering needed
+		this.setValue("", true);
+		return true;
+
+};
+
+/*
  * Overwrite of standard function
  */
 sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) {
@@ -1768,11 +1778,8 @@ sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) 
 		return this;
 	}
 
-	if (!sSelectedItemId) {
-		// selectedKey explicit not set -> select no item and initialize value
-		this.setProperty("selectedKey", "", true); // no rerendering needed
-		this.setProperty("selectedItemId", sSelectedItemId, true); // no rerendering needed
-		this.setValue("", true);
+	if (!sSelectedItemId && this._isSetEmptySelectedKeyAllowed()) {
+		// selectedItemId explicit not set -> select no item and initialize value
 		return this;
 	}
 
@@ -1804,7 +1811,7 @@ sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) 
 			jQuery(this.getInputDomRef()).attr("aria-posinset", iIndex+1);
 			if (this.mobile) {
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+				this.getDomRef("select").selectedIndex = iIndex;
 			}
 		}
 		this._sWantedSelectedItemId = undefined;
@@ -1859,7 +1866,7 @@ sap.ui.commons.ComboBox.prototype.setValue = function(sValue, bNotSetSelectedKey
 					this._addDummyOption(sValue);
 				}else{
 					this._removeDummyOption();
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+					this.getDomRef("select").selectedIndex = iIndex;
 				}
 			}
 		}
@@ -1924,29 +1931,39 @@ sap.ui.commons.ComboBox.prototype.clone = function(sIdSuffix){
 
 sap.ui.commons.ComboBox.prototype._addDummyOption = function(sValue){
 
-	var oOption = jQuery.sap.domById(this.getId()+"-dummyOption");
+	var oOption = this.getDomRef("dummyOption");
 	if(!oOption){
 		var aItems = this.getItems();
 		oOption = document.createElement("option");
 		oOption.text = sValue;
 		oOption.id = this.getId()+"-dummyOption";
 		if (aItems.length > 0) {
-			jQuery.sap.domById(this.getId()+"-select").add(oOption, jQuery.sap.domById(this.getId()+"-"+aItems[0].getId()));
+			this.getDomRef("select").add(oOption, jQuery.sap.domById(this.getId()+"-"+aItems[0].getId()));
 		}else{
-			jQuery.sap.domById(this.getId()+"-select").add(oOption, null);
+			this.getDomRef("select").add(oOption, null);
 		}
 	}else{
 		oOption.text = sValue;
 	}
-	jQuery.sap.domById(this.getId()+"-select").selectedIndex = 0;
+	this.getDomRef("select").selectedIndex = 0;
 
 };
 
 sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
 
-	var oOption = jQuery.sap.domById(this.getId()+"-dummyOption");
+	var oOption = this.getDomRef("dummyOption");
 	if (oOption) {
-		jQuery.sap.domById(this.getId()+"-select").remove(0);
+		this.getDomRef("select").remove(0);
+	}
+
+};
+
+sap.ui.commons.ComboBox.prototype.getFocusDomRef = function() {
+
+	if (this.mobile) {
+		return this.getDomRef("select") || null;
+	} else {
+		return this.getDomRef("input") || null;
 	}
 
 };
@@ -1959,7 +1976,7 @@ sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
  * Expects following event parameters:
  * <ul>
  * <li>'newValue' of type <code>string</code> The new / changed value of the textfield.</li>
- * <li>'selectedItem' of type <code>sap.ui.core/ListItem</code> selected item </li>
+ * <li>'selectedItem' of type <code>sap.ui.core.ListItem</code> selected item </li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -1979,6 +1996,6 @@ sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
  * @param {object} oControlEvent.getParameters
 
  * @param {string} oControlEvent.getParameters.newValue The new / changed value of the ComboBox.
- * @param {sap.ui.core/ListItem} oControlEvent.getParameters.selectedItem The new / changed item of the ComboBox.
+ * @param {sap.ui.core.ListItem} oControlEvent.getParameters.selectedItem The new / changed item of the ComboBox.
  * @public
  */

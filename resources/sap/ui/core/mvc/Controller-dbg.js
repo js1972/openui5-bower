@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
 					jQuery.sap.require({modName: sName, type: "controller"}); // maybe there is a controller definition, but it has not been loaded yet -> try to load
 	
 					if (!mRegistry[sName]) {
-						throw new Error("Controller type " + sName + " is undefined.");
+						throw new Error("Controller type " + sName + " is still undefined after trying to load it.");
 					}
 				}
 				oToExtend = mRegistry[sName];
@@ -72,6 +72,10 @@ jQuery.sap.require("sap.ui.base.EventProvider");
 				if ( !mRegistry[sControllerName] && !jQuery.sap.getObject(sControllerName) ) {
 					// ...if not, try to load an external controller definition module
 					jQuery.sap.require({modName: sControllerName, type: "controller"});
+				}
+				if ( !mRegistry[sControllerName] && !jQuery.sap.getObject(sControllerName) ) {
+					// still not defined? this means there was not the correct controller in the file
+					jQuery.sap.log.error("Attempt to load Extension Controller " + sControllerName + " was not successful - is the Controller correctly defined in its file?");
 				}
 				
 				if (oCustomControllerDef = mRegistry[sControllerName]) { //variable init, not comparison!

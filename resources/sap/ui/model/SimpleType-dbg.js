@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22,7 +22,7 @@ jQuery.sap.require("sap.ui.model.FormatException");
  * @extends sap.ui.model.Type
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @param {object} [oFormatOptions] options as provided by concrete subclasses

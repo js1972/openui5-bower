@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -33,7 +33,7 @@ jQuery.sap.require("sap.ui.model.Context");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @public
@@ -61,7 +61,7 @@ sap.ui.base.EventProvider.extend("sap.ui.model.Model", /** @lends sap.ui.model.M
 			"bindProperty", "bindList", "bindTree", "bindContext", "createBindingContext", "destroyBindingContext", "getProperty",
 			"getDefaultBindingMode", "setDefaultBindingMode", "isBindingModeSupported", "attachParseError", "detachParseError",
 			"attachRequestCompleted", "detachRequestCompleted", "attachRequestFailed", "detachRequestFailed", "attachRequestSent",
-			"detachRequestSent", "setSizeLimit", "refresh"
+			"detachRequestSent", "setSizeLimit", "refresh", "isList", "getObject"
 	  ]
 	
 	  /* the following would save code, but requires the new ManagedObject (1.9.1) 
@@ -492,7 +492,8 @@ sap.ui.model.Model.prototype.fireRequestCompleted = function(mArguments) {
  * @param {function}
  *         fnCallBack the function which should be called after the binding context has been created
  * @param {boolean}
- *         [bForceUpdate] force update even if data is already available 
+ *         [bReload] force reload even if data is already available. For server side models this should 
+ *                   refetch the data from the server 
  *         
  * @public
  */
@@ -523,24 +524,41 @@ sap.ui.model.Model.prototype.fireRequestCompleted = function(mArguments) {
  */
 
 /**
+ * Implement in inheriting classes
+ * @abstract
+ *
+ * @name sap.ui.model.Model.prototype.getObject
+ * @function
+ * @param {string}
+ *         sPath the path to where to read the object
+ * @param {object}
+ *		   [oContext=null] the context with which the path should be resolved
+ * @public
+ */
+sap.ui.model.Model.prototype.getObject = function(sPath, oContext) {
+	return this.getProperty(sPath, oContext);
+};
+
+
+/**
  * Create ContextBinding
+ * @abstract
  * 
  * @name sap.ui.model.Model.prototype.bindContext
  * @function
- * @param {string}
- *         sPath the path pointing to the property that should be bound
+ * @param {string | object}
+ *         sPath the path pointing to the property that should be bound or an object 
+ *         which contains the following parameter properties: path, context, parameters
  * @param {object}
  *         [oContext=null] the context object for this databinding (optional)
  * @param {object}
  *         [mParameters=null] additional model specific parameters (optional)
+ * @param {object}
+ *         [oEvents=null] event handlers can be passed to the binding ({change:myHandler})
  * @return {sap.ui.model.ContextBinding}
  *
  * @public
  */
-sap.ui.model.Model.prototype.bindContext = function(sPath, oContext, mParameters) {
-	var oBinding = new sap.ui.model.ContextBinding(this, sPath, oContext, mParameters);
-	return oBinding;
-};
 
 /**
  * Gets a binding context. If context already exists, return it from the map,
@@ -724,3 +742,15 @@ sap.ui.model.Model.prototype.checkUpdate = function(bForceUpdate) {
 	});
 };
 
+/**
+ * Returns id the provided path is a list (aggregation) or an entity
+ *
+ * @abstract
+ * @name sap.ui.model.Model.prototype.bindContext
+ * @function
+ * @param {string} sPath the path pointing to the property that should be bound
+ * @param {object} [oContext=null] the context object for this databinding (optional)
+ * @return {boolean} 
+ * @since 1.17.1 
+ * @public
+ */

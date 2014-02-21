@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -624,6 +624,26 @@ sap.ui.core.Popup.prototype.open = function(iDuration, my, at, of, offset, colli
 	}
 
 	var that = this;
+
+	// shield layer is needs for iOS devices to prevent the delayed mouse events from reaching the dom element in popup while it's being open.
+	if(sap.ui.Device.os.ios && sap.ui.Device.support.touch){
+		if(this._oTopShieldLayer){
+			// very extreme case where the same popop is opened and closed again before the 500ms timed out.
+			// reuse the same shieldlayer and clear the timeout
+			jQuery.sap.clearDelayedCall(this._iTopShieldRemoveTimer);
+			this._iTopShieldRemoveTimer = null;
+		}else{
+			this._oTopShieldLayer = this.oShieldLayerPool.borrowObject($Ref, this._iZIndex + 1);
+		}
+
+		// hide the shield layer after the delayed mouse events are fired.
+		this._iTopShieldRemoveTimer = jQuery.sap.delayedCall(500, this, function(){
+			this.oShieldLayerPool.returnObject(this._oTopShieldLayer);
+			this._oTopShieldLayer = null;
+			this._iTopShieldRemoveTimer = null;
+		});
+	}
+
 	var fnOpened = function() {
 		$Ref.css("display","block");
 
@@ -663,6 +683,8 @@ sap.ui.core.Popup.prototype.open = function(iDuration, my, at, of, offset, colli
 	// and show the popup content
 	$Ref.toggleClass("sapUiShd", this._bShadow).hide().css("visibility", "visible");
 	if (iRealDuration == 0) { // do not animate if there is a duration == 0
+		// internal status that any animation has been finished should set to true;
+		this.bOpen = true;
 		fnOpened.apply(); // otherwise call after-opening functions directly
 	} else {
 		if (this._animations.open) { // if custom animation is defined, call it
@@ -685,9 +707,9 @@ sap.ui.core.Popup.prototype.open = function(iDuration, my, at, of, offset, colli
 	if(this.oContent instanceof sap.ui.core.Element) {
 		this.oContent.addDelegate(this);
 	}
-
-	this.bOpen = true;
 	
+	this.bOpen = true;
+
 	if (this._bModal || this._bAutoClose) { // initialize focus handling
 		this.fEventHandler = jQuery.proxy(this.onFocusEvent, this);
 		// make sure to notice all blur's in the popup
@@ -752,9 +774,11 @@ sap.ui.core.Popup.prototype.onFocusEvent = function(oBrowserEvent) {
 			if (!bContains && this._aFocusableArea) {
 				var j = this._aFocusableArea.length;
 				for (i = 0; i < j; i++) {
-					bContains = oEvent.target.id === this._aFocusableArea[i] || jQuery.contains(jQuery.sap.domById(this._aFocusableArea[i]), oEvent.target);
-					if (bContains) {
-						break;
+					if (jQuery.sap.domById(this._aFocusableArea[i])) {
+						bContains = oEvent.target.id === this._aFocusableArea[i] || jQuery.contains(jQuery.sap.domById(this._aFocusableArea[i]), oEvent.target);
+						if (bContains) {
+							break;
+						}
 					}
 				}
 			}
@@ -856,14 +880,15 @@ sap.ui.core.Popup.prototype.close = function(iDuration) {
 		delete this._aFocusableArea;
 	}
 
-	if (this._bAddFocusableAreaRegistered) {
+	// unsubscribe the event listeners from EventBus
+	if (this._bFocusableListenersRegistered) {
+		delete this._bFocusableListenersRegistered;
+
 		var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-		var oProxy =  jQuery.proxy(this._addFocusableArea, this);
-		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, oProxy);
-		
+		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._addFocusableArea, this);
+
 		sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-		oProxy =  jQuery.proxy(this._removeFocusableArea, this);
-		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, oProxy);
+		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._removeFocusableArea, this);
 	}
 
 	// If we added the content control to the static UIArea,
@@ -927,21 +952,21 @@ sap.ui.core.Popup.prototype.close = function(iDuration) {
 	
 	// shield layer is needs for iOS devices to prevent the delayed mouse events from reaching the underneath dom element.
 	if(sap.ui.Device.os.ios && sap.ui.Device.support.touch){
-		if(this._oShieldLayer){
+		if(this._oBottomShieldLayer){
 
 			// very extreme case where the same popop is opened and closed again before the 500ms timed out.
 			// reuse the same shieldlayer and clear the timeout
-			jQuery.sap.clearDelayedCall(this._sShieldRemoveTimer);
-			this._sShieldRemoveTimer = null;
+			jQuery.sap.clearDelayedCall(this._iBottomShieldRemoveTimer);
+			this._iBottomShieldRemoveTimer = null;
 		}else{
-			this._oShieldLayer = this.oShieldLayerPool.borrowObject($Ref, this._iZIndex - 3);
+			this._oBottomShieldLayer = this.oShieldLayerPool.borrowObject($Ref, this._iZIndex - 3);
 		}
 
 		// hide the shield layer after the delayed mouse events are fired.
-		this._sShieldRemoveTimer = jQuery.sap.delayedCall(500, this, function(){
-			this.oShieldLayerPool.returnObject(this._oShieldLayer);
-			this._oShieldLayer = null;
-			this._sShieldRemoveTimer = null;
+		this._iBottomShieldRemoveTimer = jQuery.sap.delayedCall(500, this, function(){
+			this.oShieldLayerPool.returnObject(this._oBottomShieldLayer);
+			this._oBottomShieldLayer = null;
+			this._iBottomShieldRemoveTimer = null;
 		});
 	}
 	
@@ -1533,14 +1558,14 @@ sap.ui.core.Popup.prototype.destroy = function() {
 		delete this._aFocusableArea;
 	}
 
-	if (this._bAddFocusableAreaRegistered) {
+	if (this._bFocusableListenersRegistered) {
+		delete this._bFocusableListenersRegistered;
+
 		var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-		var oProxy =  jQuery.proxy(this._addFocusableArea, this);
-		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, oProxy);
-		
+		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._addFocusableArea);
+
 		sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-		oProxy =  jQuery.proxy(this._removeFocusableArea, this);
-		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, oProxy);
+		sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._removeFocusableArea);
 	}
 };
 
@@ -1617,16 +1642,14 @@ sap.ui.core.Popup.prototype._setIdentity = function($Ref) {
 		return;
 	}
 
-	if (!this._bAddFocusableAreaRegistered) {
-		this._bAddFocusableAreaRegistered = true;
+	if (!this._bFocusableListenersRegistered) {
+		this._bFocusableListenersRegistered = true;
 
 		var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-		var oProxy =  jQuery.proxy(this._addFocusableArea, this);
-		sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, oProxy);
-		
+		sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, this._addFocusableArea, this);
+
 		sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-		var oProxy =  jQuery.proxy(this._removeFocusableArea, this);
-		sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, oProxy);
+		sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, this._removeFocusableArea, this);
 	}
 };
 
@@ -1705,6 +1728,24 @@ sap.ui.core.Popup.DockTrigger = new sap.ui.core.IntervalTrigger(200);
 sap.ui.core.Popup.checkDocking = function(){
 	if (this.getOpenState() === sap.ui.core.OpenState.OPEN) {
 		var oCurrentOfRect = jQuery(this._oLastPosition.of instanceof sap.ui.core.Element ? this._oLastPosition.of.getDomRef() : this._oLastPosition.of).rect();
+
+		if (oCurrentOfRect.left === 0 
+				&& oCurrentOfRect.top === 0
+				&& oCurrentOfRect.width === 0
+				&& oCurrentOfRect.height === 0) {
+			
+			// Try to get the newest 
+			if (this._oLastPosition.of.id && this._oLastPosition.of.id !== "") {
+				// If the 'of' was rerendered the newest DOM-element has to be taken for the corresponding rect-object.
+				// Because the id of the 'of' may be still the same but due to its rerendering the reference changed and has to be taken 
+				var oNewestOfRect = jQuery(jQuery.sap.domById(this._oLastPosition.of.id)).rect();
+				
+				// if there is a newest corresponding DOM-reference and it differs from the current -> use the newest one
+				if (oNewestOfRect && oNewestOfRect !== oCurrentOfRect) {
+					oCurrentOfRect = oNewestOfRect;
+				}
+			} 
+		}
 
 		/*
 		 * It's possible that the triggering has already started since the listener is added in 'open' and the Popup hasn't opened yet.

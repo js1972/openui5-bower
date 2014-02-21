@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.model.resource.ResourceModel");jQuery.sap.require("sap.ui.model.Model");jQuery.sap.require("sap.ui.model.resource.ResourcePropertyBinding");sap.ui.model.Model.extend("sap.ui.model.resource.ResourceModel",{constructor:function(d){sap.ui.model.Model.apply(this,arguments);this.sDefaultBindingMode=sap.ui.model.BindingMode.OneTime;this.mSupportedBindingModes={"OneWay":false,"TwoWay":false,"OneTime":true};this.oData=d;if(d&&(d.bundleUrl||d.bundleName)){this.ResourceBundle=this.loadResourceBundle(d)}else{throw new Error("Neither bundleUrl nor bundleName are given. One of these is mandatory.")}},metadata:{publicMethods:["getResourceBundle"]}});

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -17,7 +17,7 @@ jQuery.sap.require("sap.ui.base.DataType");
  *
  * @class
  * @author Frank Weigel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 0.8.6
  */
 sap.ui.base.ManagedObjectMetadata = function(sClassName, oClassInfo) {
@@ -608,7 +608,8 @@ sap.ui.base.ManagedObjectMetadata.prototype.generateAccessors = function() {
 		method("attach", n, function(d,f,o) { this.attachEvent(n,d,f,o); return this; }, info.deprecated);
 		method("detach", n, function(f,o) { this.detachEvent(n,f,o); return this; });
 		var n1 = !!info.allowPreventDefault;
-		method("fire", n, function(p) { return this.fireEvent(n,p, n1); });
+		var n2 = !!info.enableEventBubbling;
+		method("fire", n, function(p) { return this.fireEvent(n,p, n1, n2); });
 	});
 
 };

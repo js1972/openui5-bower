@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.TreeNode");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Element");sap.ui.core.Element.extend("sap.ui.commons.TreeNode",{metadata:{publicMethods:["select","expand","collapse"],library:"sap.ui.commons",properties:{"text":{type:"string",group:"Misc",defaultValue:null},"expanded":{type:"boolean",group:"Misc",defaultValue:true},"hasExpander":{type:"boolean",group:"Misc",defaultValue:false},"icon":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"isSelected":{type:"boolean",group:"Misc",defaultValue:false},"selectable":{type:"boolean",group:"Misc",defaultValue:true}},defaultAggregation:"nodes",aggregations:{"nodes":{type:"sap.ui.commons.TreeNode",multiple:true,singularName:"node"}},events:{"toggleOpenState":{},"selected":{}}}});sap.ui.commons.TreeNode.M_EVENTS={'toggleOpenState':'toggleOpenState','selected':'selected'};sap.ui.commons.TreeNode.ANIMATION_DURATION=600;

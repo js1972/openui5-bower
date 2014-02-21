@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -72,7 +72,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -929,6 +929,7 @@ sap.ui.commons.ListBox.M_EVENTS = {'select':'select'};
 // Start of sap\ui\commons\ListBox.js
 jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
 jQuery.sap.require("jquery.sap.strings");
+jQuery.sap.require("sap.ui.core.IconPool");
 
 /**
  * Initializes the ListBox control
@@ -1702,14 +1703,12 @@ sap.ui.commons.ListBox.prototype.setSelectedKeys = function(aSelectedKeys) {
 	var key;
 	var mKeyMap = {};
 	for (var i = 0; i < aSelectedKeys.length; i++) { // put the keys into a map to hopefully search faster below
-		if (key = aSelectedKeys[i]) {
-			mKeyMap[key] = true;
-		}
+		mKeyMap[aSelectedKeys[i]] = true;
 	}
 
 	var aIndices = [];
 	for (var j = 0; j < aItems.length; j++) {
-		if ((key = aItems[j].getKey()) && (mKeyMap[key])) {
+		if (mKeyMap[aItems[j].getKey()]) {
 			aIndices.push(j);
 		}
 	}

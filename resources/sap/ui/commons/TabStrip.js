@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.TabStrip");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.TabStrip",{metadata:{publicMethods:["createTab","closeTab"],library:"sap.ui.commons",properties:{"height":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:null},"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:null},"selectedIndex":{type:"int",group:"Misc",defaultValue:0}},defaultAggregation:"tabs",aggregations:{"tabs":{type:"sap.ui.commons.Tab",multiple:true,singularName:"tab"}},events:{"select":{},"close":{}}}});sap.ui.commons.TabStrip.M_EVENTS={'select':'select','close':'close'};jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.core.ws.WebSocket");
  * @class WebSocket class implementing the pcp-protocol
  * @extends sap.ui.core.ws.WebSocket
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.ws.SapPcpWebSocket
  */
 sap.ui.core.ws.WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket */ {
@@ -77,7 +77,7 @@ sap.ui.core.ws.WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap
  *
  * @private
  */
-sap.ui.core.ws.SapPcpWebSocket._deserializeRegexp = /((?:[^:\\]|(?:\\.))+):((?:[^:\\\n]|(?:\\.))+)/;
+sap.ui.core.ws.SapPcpWebSocket._deserializeRegexp = /((?:[^:\\]|(?:\\.))+):((?:[^:\\\n]|(?:\\.))*)/;
 
 /**
  * Separator between header-fields and message body

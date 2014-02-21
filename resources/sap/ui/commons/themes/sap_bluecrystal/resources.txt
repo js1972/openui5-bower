@@ -57,13 +57,9 @@ img/datepicker
 img/datepicker/Calendar_dsbl.png
 img/datepicker/Calendar_hover.png
 img/datepicker/Calendar_regular.png
-img/Delete_button.png
-img/Delete_button_down.png
 img/dlg-close-act.png
 img/dlg-close-hov.png
 img/dlg-close.png
-img/Edit.png
-img/Edit_hover.png
 img/menu
 img/menu/bar-overflow.png
 img/menu/menuitem-sub-dis.png

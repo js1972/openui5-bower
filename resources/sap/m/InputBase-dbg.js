@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -442,9 +442,9 @@ sap.m.InputBase.prototype.onAfterRendering = function() {
 	if (this._showLabelAsPlaceholder) {
 		this._$label = this.$().find('label');
 		this._setLabelVisibility();
-		
+
 		// workaround for iOS 5 bug - see http://stackoverflow.com/questions/7358781/tapping-on-label-in-mobile-safari
-		if (sap.ui.Device.os.ios && sap.ui.Device.os.version <= 5) {
+		if (sap.ui.Device.os.ios && sap.ui.Device.os.version <= 5){
 			this._$label.bind("click", function(){});
 		}
 	}
@@ -491,6 +491,10 @@ sap.m.InputBase.prototype.setValueState = function(sValueState) {
 		this._$input.addClass("sapMInputBase" + sValueState + "Inner");
 	}
 
+	// set tooltip based on state (will be undefined when state is None)
+	var sTooltip = sap.ui.core.ValueStateSupport.enrichTooltip(this, this.getTooltip_AsString());
+	this.$().attr("title", ( sTooltip !== undefined ? sTooltip : "" ));
+
 	return this;
 };
 
@@ -512,7 +516,7 @@ sap.m.InputBase.prototype.setValue = function(sValue) {
 sap.m.InputBase.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth, true);
 	if (this.getDomRef()) {
-		this.$().width(this.getWidth());
+		this.$().css("width", this.getWidth());
 	}
 	return this;
 };

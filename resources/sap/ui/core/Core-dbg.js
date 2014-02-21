@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13,6 +13,7 @@ jQuery.sap.require("jquery.sap.mobile");
 jQuery.sap.require("jquery.sap.properties");
 jQuery.sap.require("jquery.sap.resources");
 jQuery.sap.require("jquery.sap.script");
+jQuery.sap.require("jquery.sap.act");
 jQuery.sap.require("sap.ui.Global");
 jQuery.sap.require("sap.ui.base.EventProvider");
 jQuery.sap.require("sap.ui.base.DataType");
@@ -52,7 +53,7 @@ jQuery.sap.require("sap.ui.Device");
  * @extends sap.ui.base.EventProvider
  * @final
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @name sap.ui.core.Core 
  * @public
@@ -1484,6 +1485,8 @@ sap.ui.core.Core.prototype.fireThemeChanged = function(mParameters) {
 		oElement._handleEvent(oEvent);
 	});
 	
+	jQuery.sap.act.refresh();
+	
 	// notify the listeners via a control event
 	this.fireEvent(sEventId, mParameters);
 };
@@ -2219,6 +2222,7 @@ sap.ui.core.Core.prototype.getEventBus = function() {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'validationError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  *
  * @param {function}
@@ -2254,6 +2258,7 @@ sap.ui.core.Core.prototype.detachValidationError = function(fnFunction, oListene
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'parseError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the
@@ -2288,6 +2293,7 @@ sap.ui.core.Core.prototype.detachParseError = function(fnFunction, oListener) {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'formatError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the
@@ -2322,6 +2328,7 @@ sap.ui.core.Core.prototype.detachFormatError = function(fnFunction, oListener) {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'validationSuccess' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the

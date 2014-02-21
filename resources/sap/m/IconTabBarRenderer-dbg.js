@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -90,16 +90,30 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 			if (!oItem.getShowAll() && !oItem.getIcon() && !bTextOnly)  {
 				oRM.write("<span class='sapMITBFilterNoIcon'> </span>");
 			}
+			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal) {
+				oRM.write("</div>");
+				oRM.write("<div class='sapMITBHorizontalWrapper'>");
+			}
 			oRM.write("<span ");
 			oRM.addClass("sapMITBCount")
 			oRM.writeClasses();
 			oRM.write(">");
-			oRM.writeEscaped(oItem.getCount());
+			if ((oItem.getCount() === "") && (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal)) {
+				//this is needed for the correct placement of the text in the horizontal design
+				oRM.write("&nbsp;");
+			} else {
+				oRM.writeEscaped(oItem.getCount());
+			}
 			oRM.write("</span>");
-			oRM.write("</div>");
+			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Vertical) {
+				oRM.write("</div>");
+			}
 			if (oItem.getText().length) {
 				oRM.write("<div id='" + oItem.getId() + "-text' class=\"sapMITBText\">");
 				oRM.writeEscaped(oItem.getText());
+				oRM.write("</div>");
+			}
+			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal) {
 				oRM.write("</div>");
 			}
 		} else { // separator

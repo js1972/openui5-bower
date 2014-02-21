@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -24,7 +24,7 @@ sap.m.InputRenderer = sap.ui.core.Renderer.extend(sap.m.InputBaseRenderer);
  */
 sap.m.InputRenderer.addOuterClasses = function(oRm, oControl) {
 	oRm.addClass("sapMInput");
-	if(oControl.getShowValueHelp() && oControl.getEnabled()) {
+	if(oControl.getShowValueHelp() && oControl.getEnabled() && oControl.getEditable()) {
 		oRm.addClass("sapMInputVH");
 	}
 };
@@ -36,9 +36,7 @@ sap.m.InputRenderer.addOuterClasses = function(oRm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.InputRenderer.addOuterStyles = function(oRm, oControl) {
-	if (!oControl.getWidth()) {
-		oRm.addStyle("width", "100%");
-	}
+	oRm.addStyle("width", oControl.getWidth());
 };
 
 /**
@@ -48,9 +46,9 @@ sap.m.InputRenderer.addOuterStyles = function(oRm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.InputRenderer.writeInnerAttributes = function(oRm, oControl) {
-	oRm.writeAttribute("type", oControl.getType().toLowerCase()); 
-	if ((!oControl.getEnabled() && oControl.getType() == "Password") 
-			|| (oControl.getShowSuggestion() && sap.ui.Device.system.phone)){
+	oRm.writeAttribute("type", oControl.getType().toLowerCase());
+	if ((!oControl.getEnabled() && oControl.getType() == "Password")
+			|| (oControl.getShowSuggestion() && jQuery.device.is.phone)){
 		// required for JAWS reader on password fields on desktop:
 		oRm.writeAttribute("readonly", "readonly");
 	}
@@ -72,7 +70,7 @@ sap.m.InputRenderer.addInnerClasses = function(oRm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.InputRenderer.writeInnerContent = function(oRm, oControl) {
-	 if(oControl.getShowValueHelp() && oControl.getEnabled()) {
+	 if(oControl.getShowValueHelp() && oControl.getEnabled() && oControl.getEditable()) {
 		oRm.write('<div class="sapMInputValHelp">');
 		oRm.renderControl(oControl._getValueHelpIcon());
 		oRm.write("</div>");

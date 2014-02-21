@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52,7 +52,7 @@ jQuery.sap.require("sap.ui.model.SimpleType");
  * @class Base Class for Elements.
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @public
  * @name sap.ui.core.Element
  */
@@ -392,32 +392,42 @@ sap.ui.core.Element.prototype.toString = function() {
 
 
 /**
- * Returns the best suitable DOM node that represents this Element.
- * By default the DOM node with the same ID as this Element is returned.
+ * Returns the best suitable DOM Element that represents this UI5 Element.
+ * By default the DOM Element with the same ID as this Element is returned.
  * Subclasses should override this method if the lookup via id is not sufficient.
  *
- * Note that such a DOM node does not necessarily exist in all cases.
+ * Note that such a DOM Element does not necessarily exist in all cases.
  * Some elements or controls might not have a DOM representation at all (e.g.
  * a naive FlowLayout) while others might not have one due to their current
  * state (e.g. an initial, not yet rendered control).
  *
- * @return {DOMNode} The element's DOM reference or null
+ * If an ID suffix is given, the ID of this Element is concatenated with the suffix 
+ * (separated by a single dash) and the DOM node with that compound ID will be returned.
+ * This matches the UI5 naming convention for named inner DOM nodes of a control. 
+ * 
+ * @param {string} [sSuffix] ID suffix to get the DOMRef for
+ * @return {Element} The Element's DOM Element sub DOM Element or null
  * @protected
  */
-sap.ui.core.Element.prototype.getDomRef = function() {
-	return jQuery.sap.domById(this.getId());
+sap.ui.core.Element.prototype.getDomRef = function(sSuffix) {
+	return jQuery.sap.domById(sSuffix ? this.getId() + "-" + sSuffix : this.getId());
 };
 
 /**
  * Returns the best suitable DOM node that represents this Element wrapped as jQuery object.
  * I.e. the element returned by {@link sap.ui.core.Element#getDomRef} is wrapped and returned.
  *
+ * If an ID suffix is given, the ID of this Element is concatenated with the suffix 
+ * (separated by a single dash) and the DOM node with that compound ID will be wrapped by jQuery.
+ * This matches the UI5 naming convention for named inner DOM nodes of a control. 
+ * 
+ * @param {string} [sSuffix] ID suffix to get a jQuery object for
  * @return {jQuery} The jQuery wrapped element's DOM reference
  * @protected
  */
 
-sap.ui.core.Element.prototype.$ = function() {
-	return jQuery(this.getDomRef());
+sap.ui.core.Element.prototype.$ = function(sSuffix) {
+	return jQuery(this.getDomRef(sSuffix));
 };
 
 /**

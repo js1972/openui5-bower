@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.model.control.ControlModel");jQuery.sap.require("sap.ui.model.Model");jQuery.sap.require("sap.ui.model.control.ControlPropertyBinding");sap.ui.model.Model.extend("sap.ui.model.control.ControlModel",{constructor:function(c){sap.ui.model.Model.apply(this,arguments);this.oControl=c;this.oControl.attachEvent("_change",this.checkUpdate,this);this.oElements=[]}});

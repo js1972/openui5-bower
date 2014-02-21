@@ -2,8 +2,8 @@
 jQuery.sap.declare('sap-ui-testenv');
 if ( !jQuery.sap.isDeclared('sap.ui.test.TestEnv') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -11,8 +11,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.test.TestEnv') ) {
 jQuery.sap.declare("sap.ui.test.TestEnv");
 if ( !jQuery.sap.isDeclared('sap.ui.test.ControlTree') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21,8 +21,8 @@ jQuery.sap.declare("sap.ui.test.ControlTree");
 
 if ( !jQuery.sap.isDeclared('jquery.sap.strings') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -335,7 +335,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  *
  * @class Control Tree used for the Test Environment
  * @author SAPUI5 Designtime
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @param {sap.ui.core.Core}
  *            oCore the core instance to use for analysis
@@ -462,8 +462,8 @@ sap.ui.test.ControlTree.prototype.renderNodeDT = function(oControl,iLevel) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.debug.Highlighter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -559,7 +559,7 @@ sap.ui.debug.Highlighter.prototype.hide = function() {
  * @class Central Class for the Test Environment
  *
  * @author SAPUI5 Designtime
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @private
  */

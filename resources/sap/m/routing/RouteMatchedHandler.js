@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.routing.RouteMatchedHandler");jQuery.sap.require("sap.ui.base.Object");jQuery.sap.require("sap.ui.core.routing.Router");jQuery.sap.require("sap.ui.core.routing.History");jQuery.sap.require("sap.m.InstanceManager");jQuery.sap.require("sap.m.SplitContainer");jQuery.sap.require("sap.m.NavContainer");sap.ui.base.Object.extend("sap.m.routing.RouteMatchedHandler",{constructor:function(r,c){this._aQueue=[];if(c===undefined){this._bCloseDialogs=true}else{this._bCloseDialogs=!!c}r.attachRouteMatched(this._onHandleRouteMatched,this);r.attachRoutePatternMatched(this._handleRoutePatternMatched,this);this._oRouter=r}});

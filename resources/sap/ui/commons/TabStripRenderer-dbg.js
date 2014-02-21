@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -133,12 +133,15 @@ sap.ui.commons.TabStripRenderer.render = function(oRenderManager, oControl){
 
 		// title with icon
 		if (oTitle) {
-			if (oTitle.getIcon()) {
-				rm.write("<img class=\"sapUiTabIco\"");
-				rm.writeAttributeEscaped("src", oTitle.getIcon());
-				rm.write("/>");
+			var sIcon = oTitle.getIcon();
+			if (sIcon) {
+				var aClasses = [];
+				var mAttributes = {};
+
+				aClasses.push("sapUiTabIco");
+				rm.writeIcon(sIcon, aClasses, mAttributes);
 			}
-			rm.writeEscaped(oTab.getTitle().getText());
+			rm.writeEscaped(oTitle.getText());
 		} else {
 			jQuery.sap.log.warning("No title configured for " + oTab + ". Either set a string as 'text' property or a sap.ui.core.Title as 'title' aggregation.");
 		}

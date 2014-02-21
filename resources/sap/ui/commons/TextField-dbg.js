@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -73,7 +73,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1182,6 +1182,9 @@ sap.ui.commons.TextField.prototype.setRequired = function(bRequired) {
 				this.getRenderer().setRequired(this, bRequired);
 			}
 		}
+
+		// fire internal event to inform Label about the change
+		this.fireEvent("requiredChanged", {required: bRequired});
 	}
 
 	return this;
@@ -1260,7 +1263,13 @@ sap.ui.commons.TextField.prototype.setTooltip = function(oTooltip) {
  * @protected
  */
 sap.ui.commons.TextField.prototype.getInputDomRef = function(){
-	return this.getFocusDomRef();
+
+	if (!this._getRenderOuter()) {
+		return this.getDomRef() || null;
+	} else {
+		return this.getDomRef("input") || null;
+	}
+
 };
 
 /**
@@ -1339,12 +1348,9 @@ sap.ui.commons.TextField.prototype.getIdForLabel = function () {
  * Overwrites default implementation
  * the focus is always on the input field
  * @public
- */sap.ui.commons.TextField.prototype.getFocusDomRef = function() {
+ */
+sap.ui.commons.TextField.prototype.getFocusDomRef = function() {
 
-	if (!this._getRenderOuter()) {
-		return this.getDomRef() || null;
-	} else {
-		return jQuery.sap.domById(this.getId()+'-input') || null;
-	}
+	return this.getInputDomRef();
 
 };

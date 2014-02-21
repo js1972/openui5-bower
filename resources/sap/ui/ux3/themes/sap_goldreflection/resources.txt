@@ -74,9 +74,6 @@ img/feed/Delete_button_down.png
 img/feed/Delete_button_hover.png
 img/feed/Expand_button.png
 img/feed/Expand_button_hover.png
-img/feed/Feeder_arrow_large.png
-img/feed/Feeder_arrow_medium.png
-img/feed/Feeder_arrow_small.png
 img/feed/ico12_click.png
 img/feed/Line_Comments.png
 img/feed/relevantHovered.png

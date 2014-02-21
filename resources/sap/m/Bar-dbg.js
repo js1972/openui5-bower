@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53,11 +53,11 @@ jQuery.sap.require("sap.ui.core.Control");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * A bar that is usually used on top of pages
+ * A bar that may be used as a header of a page. It has the capability to center a content like a title, while having few controls on the left and right side.
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -71,7 +71,7 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 	library : "sap.m",
 	properties : {
 		"enableFlexBox" : {type : "boolean", group : "Misc", defaultValue : false, deprecated: true},
-		"translucent" : {type : "boolean", group : "Appearance", defaultValue : false}
+		"translucent" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true}
 	},
 	aggregations : {
     	"contentLeft" : {type : "sap.ui.core.Control", multiple : true, singularName : "contentLeft"}, 
@@ -100,15 +100,14 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 /**
  * Getter for property <code>enableFlexBox</code>.
- * If this flag is set to true, ContentMiddle will be rendered as a HBox and layoutData can be used to allocate available space
+ * If this flag is set to true, contentMiddle will be rendered as a HBox and layoutData can be used to allocate available space
  *
  * Default value is <code>false</code>
  *
  * @return {boolean} the value of property <code>enableFlexBox</code>
  * @public
  * @deprecated Since version 1.16. 
- * 
- * This property is no longer supported, instead, ContentMiddle will always occupy 100% width when no ContentLeft and ContentRight are being set.
+ * This property is no longer supported, instead, contentMiddle will always occupy 100% width when no contentLeft and contentRight are being set.
  * @name sap.m.Bar#getEnableFlexBox
  * @function
  */
@@ -122,8 +121,7 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
  * @return {sap.m.Bar} <code>this</code> to allow method chaining
  * @public
  * @deprecated Since version 1.16. 
- * 
- * This property is no longer supported, instead, ContentMiddle will always occupy 100% width when no ContentLeft and ContentRight are being set.
+ * This property is no longer supported, instead, contentMiddle will always occupy 100% width when no contentLeft and contentRight are being set.
  * @name sap.m.Bar#setEnableFlexBox
  * @function
  */
@@ -132,13 +130,15 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 /**
  * Getter for property <code>translucent</code>.
  * A boolean value indicating whether the bar is partially translucent.
- * It is only applied for mobile devices.
+ * It is only applied for touch devices.
  *
  * Default value is <code>false</code>
  *
  * @return {boolean} the value of property <code>translucent</code>
  * @public
  * @since 1.12
+ * @deprecated Since version 1.18.6. 
+ * This property has no effect since release 1.18.6 and should not be used. Translucent bar may overlay an input and make it difficult to edit.
  * @name sap.m.Bar#getTranslucent
  * @function
  */
@@ -152,6 +152,8 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
  * @return {sap.m.Bar} <code>this</code> to allow method chaining
  * @public
  * @since 1.12
+ * @deprecated Since version 1.18.6. 
+ * This property has no effect since release 1.18.6 and should not be used. Translucent bar may overlay an input and make it difficult to edit.
  * @name sap.m.Bar#setTranslucent
  * @function
  */
@@ -159,7 +161,7 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 /**
  * Getter for aggregation <code>contentLeft</code>.<br/>
- * this is the left content area, usually containing button or App Icon. If this is overlapped by the right content, its content will disappear and text will show an elipsis.
+ * this is the left content area, usually containing a button or an app icon. If this is overlapped by the right content, its content will disappear and text will show an elipsis.
  * 
  * @return {sap.ui.core.Control[]}
  * @public
@@ -240,7 +242,7 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 /**
  * Getter for aggregation <code>contentMiddle</code>.<br/>
- * This is the middle content area. Controls such as label, segmented buttons, Select should be placed here. Content that are placed here will be centrally positioned, if there is enough space. If the right or left content overlaps the middle content, the middle content will be centered in the space between the left and the right content.
+ * This is the middle content area. Controls such as label, segmented buttons or select should be placed here. Content that is placed here will be centrally positioned, if there is enough space. If the right or left content overlaps the middle content, the middle content will be centered in the space between the left and the right content.
  * 
  * @return {sap.ui.core.Control[]}
  * @public
@@ -321,7 +323,7 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 /**
  * Getter for aggregation <code>contentRight</code>.<br/>
- * this is the right content area. Controls such as Action buttons or Search field could be placed here.
+ * this is the right content area. Controls such as action buttons or search field could be placed here.
  * 
  * @return {sap.ui.core.Control[]}
  * @public
@@ -428,9 +430,9 @@ sap.m.Bar.prototype.exit = function() {
 
 	}
 
-	this.$midBarPH = null;
-	this.$rightBar = null;
-	this.$leftBar = null;
+	this._$MidBarPlaceHolder = null;
+	this._$RightBar = null;
+	this._$LeftBar = null;
 };
 
 /**
@@ -454,6 +456,7 @@ sap.m.Bar.prototype._removeAllListeners = function() {
 
 /**
  * Removes a listener with the specified name and sets it to null, if the listener is defined.
+ * @param sListenerName the name of the listener that has to be removed
  *
  * @private
  */
@@ -473,9 +476,7 @@ sap.m.Bar.prototype._removeListenerFailsave = function(sListenerName) {
 sap.m.Bar.prototype._handleResize = function() {
 	this._removeAllListeners();
 
-	var sId = this.getId(),
-
-		bContentLeft = !!this.getContentLeft().length,
+	var bContentLeft = !!this.getContentLeft().length,
 		bContentMiddle = !!this.getContentMiddle().length,
 		bContentRight = !!this.getContentRight().length;
 
@@ -484,57 +485,58 @@ sap.m.Bar.prototype._handleResize = function() {
 		return;
 	}
 
-	this.$leftBar = jQuery.sap.byId( sId + "-BarLeft");
-	this.$rightBar = jQuery.sap.byId( sId + "-BarRight");
-	this.$midBarPH = jQuery.sap.byId( sId + "-BarPH");
+	this._$LeftBar = this.$("BarLeft");
+	this._$RightBar = this.$("BarRight");
+	this._$MidBarPlaceHolder = this.$("BarPH");
 
 	this._updatePosition(bContentLeft, bContentMiddle, bContentRight);
 
 	this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef(), jQuery.proxy(this._handleResize, this));
-	
 
 	if(this.getEnableFlexBox()) {
 		return;
 	}
-	
+
 	if(bContentLeft) {
-		this._sResizeListenerIdLeft = sap.ui.core.ResizeHandler.register(this.$leftBar[0], jQuery.proxy(this._handleResize, this));
+		this._sResizeListenerIdLeft = sap.ui.core.ResizeHandler.register(this._$LeftBar[0], jQuery.proxy(this._handleResize, this));
 	}
 
 	if(bContentMiddle) {
-		this._sResizeListenerIdMid = sap.ui.core.ResizeHandler.register(this.$midBarPH[0], jQuery.proxy(this._handleResize, this));
+		this._sResizeListenerIdMid = sap.ui.core.ResizeHandler.register(this._$MidBarPlaceHolder[0], jQuery.proxy(this._handleResize, this));
 	}
 
 	if(bContentRight) {
-		this._sResizeListenerIdRight = sap.ui.core.ResizeHandler.register(this.$rightBar[0], jQuery.proxy(this._handleResize, this));
+		this._sResizeListenerIdRight = sap.ui.core.ResizeHandler.register(this._$RightBar[0], jQuery.proxy(this._handleResize, this));
 	}
 };
 
 /**
  * Repositions the bar. 
  * If there is only one aggregation filled, this aggregation will take 100% of the bars space.
+ * @param bContentLeft indicates if there is left content in the bar
+ * @param bContentMiddle indicates if there is middle content in the bar
+ * @param bContentRight indicates if there is right content in the bar
  * @private
  */
 sap.m.Bar.prototype._updatePosition = function(bContentLeft, bContentMiddle, bContentRight) {
-	var bUseFlex = this.getEnableFlexBox();
 
 	if (!bContentLeft && !bContentRight) {
 
-		this.$midBarPH.css({ width : '100%'});
+		this._$MidBarPlaceHolder.css({ width : '100%'});
 		return;
 
 	}
 
 	if(bContentLeft && !bContentMiddle && !bContentRight) {
 
-		this.$leftBar.css({ width : '100%'});
+		this._$LeftBar.css({ width : '100%'});
 		return;
 
 	}
 
 	if(!bContentLeft && !bContentMiddle && bContentRight) {
 
-		this.$rightBar.css({ width : '100%'});
+		this._$RightBar.css({ width : '100%'});
 		return;
 
 	}
@@ -542,105 +544,102 @@ sap.m.Bar.prototype._updatePosition = function(bContentLeft, bContentMiddle, bCo
 	var iBarWidth = this.$().outerWidth(true);
 
 	// reset to default
-	this.$rightBar.css({ width : "" });
-	this.$leftBar.css({ width : "" });
-	this.$midBarPH.css({ position : "", width : "", visibility : 'hidden' });
+	this._$RightBar.css({ width : "" });
+	this._$LeftBar.css({ width : "" });
+	this._$MidBarPlaceHolder.css({ position : "", width : "", visibility : 'hidden' });
 
-	var iRBWidth = this.$rightBar.outerWidth(true);
+	var iRightBarWidth = this._$RightBar.outerWidth(true);
 
 	//right bar is bigger than the bar - only show the right bar
-	if(iRBWidth > iBarWidth) {
+	if(iRightBarWidth > iBarWidth) {
 
 		if(bContentLeft) {
-			this.$leftBar.css({ width : "0px" });
+			this._$LeftBar.css({ width : "0px" });
 		}
 
 		if(bContentMiddle) {
-			this.$midBarPH.css({ width : "0px" });
+			this._$MidBarPlaceHolder.css({ width : "0px" });
 		}
 
-		this.$rightBar.css({ width : iBarWidth + "px"});
+		this._$RightBar.css({ width : iBarWidth + "px"});
 		return;
 
 	}
 
-	var iLBWidth = this._getBarContainerWidth(this.$leftBar);
+	var iLeftBarWidth = this._getBarContainerWidth(this._$LeftBar);
 
 	// handle the case when left and right content are wider than the bar itself
-	if (iBarWidth < (iLBWidth + iRBWidth)) {
+	if (iBarWidth < (iLeftBarWidth + iRightBarWidth)) {
 
 		// this scenario happens mostly when a very long title text is set in the left content area
 		// hence we make sure the rightContent always has enough space and reduce the left content area width accordingly
-		iLBWidth = iBarWidth - iRBWidth;
+		iLeftBarWidth = iBarWidth - iRightBarWidth;
 
-		this.$leftBar.width(iLBWidth);
-		this.$midBarPH.width(0);
+		this._$LeftBar.width(iLeftBarWidth);
+		this._$MidBarPlaceHolder.width(0);
 		return;
 
 	}
 
 	//middle bar will be shown
-	var oMidBarPHCss = this._getMidBarCss(iRBWidth, iBarWidth, iLBWidth);
-	this.$midBarPH.css(oMidBarPHCss);
+	this._$MidBarPlaceHolder.css(this._getMidBarCss(iRightBarWidth, iBarWidth, iLeftBarWidth));
 
 };
 
 /**
  * Returns the css for the contentMiddle aggregation. It is centered if there is enough space for it to fit between the left and right content.
  * If not it will be centered between those two.
- * @returns {object} the new $midBarPh css
+ * @param iRightBarWidth the width in pixel
+ * @param iBarWidth the width in pixel
+ * @param iLeftBarWidth the width in pixel
+ * @returns {object} the new _$MidBarPlaceHolder css value
  */
-sap.m.Bar.prototype._getMidBarCss = function(iRBWidth, iBarWidth, iLBWidth) {
-	var iMBPHWidth = this.$midBarPH.outerWidth(true),
-		oMBPHPosition = this.$midBarPH.position();
-
-	var bRtl = sap.ui.getCore().getConfiguration().getRTL(),
+sap.m.Bar.prototype._getMidBarCss = function(iRightBarWidth, iBarWidth, iLeftBarWidth) {
+	var iMidBarPlaceholderWidth = this._$MidBarPlaceHolder.outerWidth(true),
+		bRtl = sap.ui.getCore().getConfiguration().getRTL(),
 		sLeftOrRight = bRtl ? "right" : "left",
 		oMidBarCss = { visibility : "" };
 
 	if (this.getEnableFlexBox()) {
 
-		iMBPHWidth = iBarWidth - iLBWidth - iRBWidth - parseInt(this.$midBarPH.css('margin-left'), 10) - parseInt(this.$midBarPH.css('margin-right'), 10);
+		iMidBarPlaceholderWidth = iBarWidth - iLeftBarWidth - iRightBarWidth - parseInt(this._$MidBarPlaceHolder.css('margin-left'), 10) - parseInt(this._$MidBarPlaceHolder.css('margin-right'), 10);
 
-		oMidBarCss = jQuery.extend(oMidBarCss, {
-			position : 'absolute',
-			width : iMBPHWidth + "px"
-		});
-
-		oMidBarCss[sLeftOrRight] = iLBWidth;
+		oMidBarCss.position = "absolute";
+		oMidBarCss.width = iMidBarPlaceholderWidth + "px";
+		oMidBarCss[sLeftOrRight] = iLeftBarWidth;
 
 		//calculation for flex is done
 		return oMidBarCss;
 
 	}
 
-	var iSpaceBetweenLeftAndRight = iBarWidth - iLBWidth - iRBWidth;
+	var iSpaceBetweenLeftAndRight = iBarWidth - iLeftBarWidth - iRightBarWidth,
 
-	var iMidBarStartingPoint = (iBarWidth / 2) - (iMBPHWidth / 2);
-	var bLeftContentIsOverlapping = iLBWidth > iMidBarStartingPoint;
+		iMidBarStartingPoint = (iBarWidth / 2) - (iMidBarPlaceholderWidth / 2),
+		bLeftContentIsOverlapping = iLeftBarWidth > iMidBarStartingPoint,
 
-	var iMidBarEndPoint = (iBarWidth / 2) + (iMBPHWidth / 2);
-	var bRightContentIsOverlapping = (iBarWidth - iRBWidth) < iMidBarEndPoint;
+		iMidBarEndPoint = (iBarWidth / 2) + (iMidBarPlaceholderWidth / 2),
+		bRightContentIsOverlapping = (iBarWidth - iRightBarWidth) < iMidBarEndPoint;
 
 	if (iSpaceBetweenLeftAndRight > 0 && (bLeftContentIsOverlapping || bRightContentIsOverlapping)) {
 
 		//Left or Right content is overlapping the Middle content
-		oMidBarCss = jQuery.extend(oMidBarCss, {
-				// place the middle positioned element directly next to the end of left content area
-				position : 'absolute',
-				//Use the remaining space
-				width : iSpaceBetweenLeftAndRight + "px"
-			});
 
-		oMidBarCss.left = bRtl ? iRBWidth : iLBWidth;
+		// place the middle positioned element directly next to the end of left content area
+		oMidBarCss.position = "absolute";
+
+		//Use the remaining space
+		oMidBarCss.width = iSpaceBetweenLeftAndRight + "px";
+
+		oMidBarCss.left = bRtl ? iRightBarWidth : iLeftBarWidth;
 	}
 
-	var $midBar = jQuery.sap.byId(this.getId() + "-BarMiddle"),
-		iMBWidth = $midBar.outerWidth(true);
+	var $MidBar = this.$("BarMiddle"),
+		iMidBarWidth = $MidBar.outerWidth(true);
 
-	if (oMidBarCss.width > iMBWidth) {
+	if (oMidBarCss.width > iMidBarWidth) {
 
-		oMidBarCss.width = iMBWidth;
+		oMidBarCss.width = iMidBarWidth;
 
 	}
 
@@ -649,16 +648,20 @@ sap.m.Bar.prototype._getMidBarCss = function(iRBWidth, iBarWidth, iLBWidth) {
 };
 
 /**
- * @returns {integer} the width of one of the bar containers
+ * Gets the width of a container
+ * @static
+ * @param $Container a container with children
+ * @returns {number} the width of one of the bar containers
  */
-sap.m.Bar.prototype._getBarContainerWidth = function($container) {
+sap.m.Bar.prototype._getBarContainerWidth = function($Container) {
 	var i,
 		iContainerWidth = 0,
-		aContainerChildren = $container.children(),
+		aContainerChildren = $Container.children(),
 		iContainerChildrenTotalWidth = 0;
 
 	// Chrome browser has a problem in providing the correct div size when image inside does not have width explicitly set
-	if (sap.ui.Device.browser.webkit) {
+	//since ff version 24 the calculation is correct, since we don't support older versions we won't check it 
+	if (sap.ui.Device.browser.webkit || sap.ui.Device.browser.firefox) {
 
 		for (i= 0; i < aContainerChildren.length; i++) {
 
@@ -666,11 +669,11 @@ sap.m.Bar.prototype._getBarContainerWidth = function($container) {
 
 		}
 
-		iContainerWidth = $container.outerWidth(true);
+		iContainerWidth = $Container.outerWidth(true);
 
 	} else {
 
-		// IE & firefox has a rounding issue with JQuery.outerWidth
+		// IE has a rounding issue with JQuery.outerWidth
 		var oContainerChildrenStyle;
 
 		for(i= 0; i < aContainerChildren.length; i++){
@@ -693,7 +696,7 @@ sap.m.Bar.prototype._getBarContainerWidth = function($container) {
 			iContainerChildrenTotalWidth += parseFloat(oContainerChildrenStyle.paddingRight);
 		}
 
-		var oContainerComputedStyle = window.getComputedStyle($container[0]);
+		var oContainerComputedStyle = window.getComputedStyle($Container[0]);
 
 		iContainerWidth += parseFloat(oContainerComputedStyle.width);
 		iContainerWidth += parseFloat(oContainerComputedStyle.marginLeft);

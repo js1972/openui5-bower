@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -125,19 +125,21 @@ sap.ui.commons.LabelRenderer.render = function(oRenderManager, oLabel) {
 
 sap.ui.commons.LabelRenderer.writeImgHtml = function(oRenderManager, oLabel) {
 	var rm = oRenderManager;
-	var iconUrl = oLabel.getIcon();
+	var sIconUrl = oLabel.getIcon();
 	var oConfig = oRenderManager.getConfiguration();
-	rm.write("<img");
-	rm.writeAttributeEscaped("src", iconUrl);
-	rm.addClass("sapUiLblIco");
+	var aClasses = [];
+	var mAttributes = {};
+
+	aClasses.push("sapUiLblIco");
 	if ((oLabel.getTextDirection()==sap.ui.core.TextDirection.RTL && !oConfig.getRTL()) || (oLabel.getTextDirection()==sap.ui.core.TextDirection.LTR && oConfig.getRTL())) {
 		// if text direction is different to global text direction, icon margin must be switched.
-		rm.addClass("sapUiLblIcoR");
+		aClasses.push("sapUiLblIcoR");
 	} else {
-		rm.addClass("sapUiLblIcoL");
+		aClasses.push("sapUiLblIcoL");
 	}
-	rm.writeClasses();
-	rm.write("/>");
+
+	rm.writeIcon(sIconUrl, aClasses, mAttributes);
+
 };
 
 /**

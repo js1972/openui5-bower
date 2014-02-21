@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.Element");jQuery.sap.require("jquery.sap.strings");jQuery.sap.require("sap.ui.base.ManagedObject");jQuery.sap.require("sap.ui.core.ElementMetadata");jQuery.sap.require("sap.ui.model.SimpleType");sap.ui.base.ManagedObject.extend("sap.ui.core.Element",{metadata:{stereotype:"element","abstract":true,publicMethods:["getId","getMetadata","getTooltip_AsString","getTooltip_Text","getModel","setModel","hasModel","bindElement","unbindElement","getElementBinding","prop","getLayoutData","setLayoutData"],library:"sap.ui.core",properties:{},aggregations:{tooltip:{name:"tooltip",type:"sap.ui.core.TooltipBase",altTypes:["string"],multiple:false},customData:{name:"customData",type:"sap.ui.core.CustomData",multiple:true,singularName:"customData"},layoutData:{name:"layoutData",type:"sap.ui.core.LayoutData",multiple:false,singularName:"layoutData"}},associations:{},events:{}},constructor:function(i,s){sap.ui.base.ManagedObject.apply(this,arguments)},renderer:null},sap.ui.core.ElementMetadata);
@@ -10,8 +10,8 @@ sap.ui.core.Element.prototype._handleEvent=function(e){var h="on"+e.type;this._c
 sap.ui.core.Element.prototype._callEventHandles=function(h,H,e,d){if(h.length>0){for(var i=0;i<h.length;i++){if(e.isImmediateHandlerPropagationStopped()){break}var o=d?h[i].oDelegate:h[i];var t=(d&&h[i].vThis)?h[i].vThis:o;if(t===true){t=this}if(o[H]){o[H].call(t,e)}}}};
 sap.ui.core.Element.create=function(d,k){if(!d||d instanceof sap.ui.core.Element||typeof d!=="object"||d instanceof String){return d}function g(t){if(typeof t==="function"){return t}if(typeof t==="string"){return jQuery.sap.getObject(t)}}var c=g(d.Type)||g(k&&k.type);if(typeof c==="function"){return new c(d)}var m="Don't know how to create an Element from "+d+" ("+(typeof d)+")";jQuery.sap.log.fatal(m);throw new Error(m)};
 sap.ui.core.Element.prototype.toString=function(){if(this.getMetadata){return"Element "+this.getMetadata().getName()+"#"+this.sId}else{return"Element {unknown class}#"+this.sId}};
-sap.ui.core.Element.prototype.getDomRef=function(){return jQuery.sap.domById(this.getId())};
-sap.ui.core.Element.prototype.$=function(){return jQuery(this.getDomRef())};
+sap.ui.core.Element.prototype.getDomRef=function(s){return jQuery.sap.domById(s?this.getId()+"-"+s:this.getId())};
+sap.ui.core.Element.prototype.$=function(s){return jQuery(this.getDomRef(s))};
 sap.ui.core.Element.prototype.isActive=function(){return this.oParent&&this.oParent.isActive()};
 sap.ui.core.Element.prototype.prop=function(p,v){var P=this.getMetadata().getJSONKeys()[p];if(P){if(arguments.length==1){return this[P._sGetter]()}else{this[P._sMutator](v);return this}}};
 jQuery.sap.require("sap.ui.core.Core");

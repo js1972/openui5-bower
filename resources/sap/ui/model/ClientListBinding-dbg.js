@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13,11 +13,15 @@ jQuery.sap.require("sap.ui.model.FilterType");
 /**
  *
  * @class
- * @abstract
  * List binding implementation for client models
  *
- * @param sPath
- * @param [oModel]
+ * @param {sap.ui.model.Model} oModel
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {array} [aSorters] initial sort order (can be either a sorter or an array of sorters)
+ * @param {array} [aFilters] predefined filter/s (can be either a filter or an array of filters)
+ * @param {object} [mParameters]
+ * 
  * @name sap.ui.model.ClientListBinding
  * @extends sap.ui.model.ListBinding
  */
@@ -262,6 +266,21 @@ sap.ui.model.ClientListBinding.prototype.filter = function(aFilters, sFilterType
 };
 
 /**
+ * Normalize filter value
+ * 
+ * @private
+ */
+sap.ui.model.ClientListBinding.prototype.normalizeFilterValue = function(oValue){
+	if (typeof oValue == "string") {
+		return oValue.toUpperCase();
+	} 
+	if (oValue instanceof Date) {
+		return oValue.getTime();
+	}
+	return oValue;
+};
+
+/**
  * Filters the list
  * Filters are first grouped according to their binding path.
  * All filters belonging to a group are ORed and after that the
@@ -303,9 +322,7 @@ sap.ui.model.ClientListBinding.prototype.applyFilter = function(){
 		jQuery.each(oFilterGroups, function(sPath, aFilterGroup) {
 			if (sPath !== "__multiFilter") {
 				var oValue = that.oModel.getProperty(sPath, that.oList[iIndex]);
-				if (typeof oValue == "string") {
-					oValue = oValue.toUpperCase();
-				}
+				oValue = that.normalizeFilterValue(oValue);
 				bGroupFiltered = false;
 				jQuery.each(aFilterGroup, function(j, oFilter) {
 					var fnTest = that.getFilterFunction(oFilter);
@@ -353,9 +370,7 @@ sap.ui.model.ClientListBinding.prototype._resolveMultiFilter = function(oMultiFi
 				bLocalMatch = that._resolveMultiFilter(oFilter, iIndex)
 			} else if (oFilter.sPath !== undefined) {
 				var oValue = that.oModel.getProperty(oFilter.sPath, that.oList[iIndex]);
-				if (typeof oValue == "string") {
-					oValue = oValue.toUpperCase();
-				}
+				oValue = that.normalizeFilterValue(oValue);
 				var fnTest = that.getFilterFunction(oFilter);
 				if (oValue != undefined && fnTest(oValue)) {
 					bLocalMatch = true;
@@ -383,14 +398,9 @@ sap.ui.model.ClientListBinding.prototype.getFilterFunction = function(oFilter){
 	if (oFilter.fnTest) {
 		return oFilter.fnTest;
 	}
-	var oValue1 = oFilter.oValue1,
-		oValue2 = oFilter.oValue2;
-	if (typeof oValue1 == "string") {
-		oValue1 = oValue1.toUpperCase();
-	}
-	if (typeof oValue2 == "string") {
-		oValue2 = oValue2.toUpperCase();
-	}
+	var oValue1 = this.normalizeFilterValue(oFilter.oValue1),
+		oValue2 = this.normalizeFilterValue(oFilter.oValue2);
+
 	switch (oFilter.sOperator) {
 		case "EQ":
 			oFilter.fnTest = function(value) { return value == oValue1; }; break;

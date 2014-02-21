@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -136,7 +136,7 @@ jQuery.sap.require("sap.ui.core.RenderManager");
 			rm.write('><div><span class="className">' + oValue + '</span>' +
 					 '<span class="breakpoints">' + bpCountText + '</span></div>' +
 					 '<img class="remove-class" style="cursor:pointer;margin-left:5px" ' +
-					 'src="../../../../testsuite/images/delete.gif"></li>');
+					 'src="../../debug/images/delete.gif" alt="X"></li>');
 		});
 
 		rm.write('</ul>');
@@ -176,7 +176,7 @@ jQuery.sap.require("sap.ui.core.RenderManager");
 
 			rm.write('<li data-method-type="' + oValue.type + '"><span>' + oValue.name + '</span>' +
 					 '<img class="remove-breakpoint" style="cursor:pointer;margin-left:5px" ' +
-					 'src="../../../../testsuite/images/delete.gif"></li>');
+					 'src="../../debug/images/delete.gif" alt="Remove"></li>');
 		});
 
 		rm.write('</ul>');

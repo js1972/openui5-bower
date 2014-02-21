@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -322,8 +322,8 @@ sap.ui.commons.ColorPicker.prototype.init = function(){
 	//	create global variables
 	this.HexString = "FFFFFF";
 	this.rgbString = "";
-	this.$cpBox = "";
-	this.$cpCur = "";
+	this.$cpBox = null;
+	this.$cpCur = null;
 	this.RGB = {
 			r : 0,
 			g : 0,
@@ -535,7 +535,10 @@ sap.ui.commons.ColorPicker.prototype.init = function(){
 sap.ui.commons.ColorPicker.prototype.exit = function(){
 
 	//	unbind Mouse-Event-Handler
-	this.$cpBox.unbind("mousedown", this.handleMouseDown);
+	if (this.$cpBox) {
+		this.$cpBox.unbind("mousedown", this.handleMouseDown);
+	}
+
 	jQuery(document)
 	.unbind("mousemove", this.handleMousePos)
 	.unbind("mouseup", this.handleMouseUp);

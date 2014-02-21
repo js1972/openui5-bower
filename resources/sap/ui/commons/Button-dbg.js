@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -270,9 +270,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>icon</code>.
- * 
  * Icon to be displayed as graphical element within the button.
- * 
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is <code>''</code>
  *
@@ -297,9 +296,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>iconHovered</code>.
- * 
  * Icon to be displayed as graphical element within the button when it is hovered (only if also a base icon was specified). If not specified the base icon is used.
- * 
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is <code>''</code>
  *
@@ -324,9 +322,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>iconSelected</code>.
- * 
  * Icon to be displayed as graphical element within the button when it is selected (only if also a base icon was specified). If not specified the base or hovered icon is used.
- * 
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is <code>''</code>
  *
@@ -626,6 +623,7 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 // Start of sap\ui\commons\Button.js
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
+jQuery.sap.require("sap.ui.core.IconPool");
 
 sap.ui.core.EnabledPropagator.call(sap.ui.commons.Button.prototype);
 
@@ -782,8 +780,24 @@ sap.ui.commons.Button.prototype.setIconSelected = function(sIcon) {
 sap.ui.commons.Button.prototype._setIcon = function(sIcon, sProperty) {
 
 	var sIconOld = this.getProperty(sProperty);
+
+	if (sIconOld == sIcon) {
+		// icon not changed -> nothing to do
+		return;
+	}
+
+	var bUseIconFontOld = false;
+	if (sap.ui.core.IconPool.isIconURI(sIconOld)) {
+		bUseIconFontOld = true;
+	}
+
+	var bUseIconFontNew = false;
+	if (sap.ui.core.IconPool.isIconURI(sIcon)) {
+		bUseIconFontNew = true;
+	}
+
 	var bSupressRerender = true;
-	if ((!sIconOld && sIcon) || (sIconOld && !sIcon)) {
+	if ((!sIconOld && sIcon) || (sIconOld && !sIcon) || (bUseIconFontOld != bUseIconFontNew)) {
 		// Icon new added or removed -> need to rerender
 		bSupressRerender = false;
 	}

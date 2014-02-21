@@ -2404,18 +2404,25 @@
             	headers["Content-Type"] = contentType;
             if (contentLength)
             	headers["Content-Length"] = contentLength;
-        }else{
+        } else {
+        // ##### END: MODIFIED BY SAP
         	responseHeaders = responseHeaders.split(/\r?\n/);
         	var i, len;
         	for (i = 0, len = responseHeaders.length; i < len; i++) {
         		if (responseHeaders[i]) {
-        			var header = responseHeaders[i].split(": ");
-        			headers[header[0]] = header[1];
+        			// ##### BEGIN: MODIFIED BY SAP
+
+        			// expression matches "field-name: field-value"
+        			// removes trailing/leading whitespace(s) from the field-value.
+        			// result array: 0 = header, 1 = field-name, 2 = field-value
+        			var header = responseHeaders[i].match(/([^:]*):\s*((?:\s*\S+)+)?\s*/);
+        			headers[header[1]] = header[2];
+
+        			// ##### END: MODIFIED BY SAP
         		}
         	}
         }
-        // ##### END: MODIFIED BY SAP
-        
+
     };
 
     var writeHtmlToIFrame = function (iframe, html) {

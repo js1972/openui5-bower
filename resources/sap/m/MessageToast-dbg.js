@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -23,21 +23,9 @@ jQuery.sap.require("sap.m.InstanceManager");
  * the message toasts in different places.
  * This positioning needs to be handled in the application logic.
  *
- * As <code>MessageToast</code> is a static class, a <code>jQuery.sap.require("sap.m.MessageToast");</code>
- * statement must be explicitly executed before the class can be used.
- *
- * Basic example:
+ * Message toast example:
  *
  * <pre>
- * jQuery.sap.require("sap.m.MessageToast");
- *
- * sap.m.MessageToast.show("This message should appear in the message toast");
- * </pre>
- *
- * Other example:
- * <pre>
- * jQuery.sap.require("sap.m.MessageToast");
- *
  * sap.m.MessageToast.show("This message should appear in the message toast", {
  *     duration: 3000,                  // default
  *     width: "15em",                   // default

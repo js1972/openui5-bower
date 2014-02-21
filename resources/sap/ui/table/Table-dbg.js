@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52,7 +52,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getVisibleRowCountMode visibleRowCountMode} : sap.ui.table.VisibleRowCountMode (default: sap.ui.table.VisibleRowCountMode.Fixed)</li>
  * <li>{@link #getFixedColumnCount fixedColumnCount} : int (default: 0)</li>
  * <li>{@link #getFixedRowCount fixedRowCount} : int (default: 0)</li>
- * <li>{@link #getMinAutoRowCount minAutoRowCount} : int (default: 5)</li></ul>
+ * <li>{@link #getMinAutoRowCount minAutoRowCount} : int (default: 5)</li>
+ * <li>{@link #getFixedBottomRowCount fixedBottomRowCount} : int (default: 0)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -90,7 +91,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -120,15 +121,16 @@ sap.ui.core.Control.extend("sap.ui.table.Table", { metadata : {
 		"editable" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"navigationMode" : {type : "sap.ui.table.NavigationMode", group : "Behavior", defaultValue : sap.ui.table.NavigationMode.Scrollbar},
-		"threshold" : {type : "int", group : "", defaultValue : 100},
+		"threshold" : {type : "int", group : "Appearance", defaultValue : 100},
 		"enableColumnReordering" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"enableGrouping" : {type : "boolean", group : "Behavior", defaultValue : false},
-		"showColumnVisibilityMenu" : {type : "boolean", group : "Misc", defaultValue : false},
-		"showNoData" : {type : "boolean", group : "Misc", defaultValue : true},
+		"showColumnVisibilityMenu" : {type : "boolean", group : "Appearance", defaultValue : false},
+		"showNoData" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"visibleRowCountMode" : {type : "sap.ui.table.VisibleRowCountMode", group : "Appearance", defaultValue : sap.ui.table.VisibleRowCountMode.Fixed},
 		"fixedColumnCount" : {type : "int", group : "Appearance", defaultValue : 0},
 		"fixedRowCount" : {type : "int", group : "Appearance", defaultValue : 0},
-		"minAutoRowCount" : {type : "int", group : "Appearance", defaultValue : 5}
+		"minAutoRowCount" : {type : "int", group : "Appearance", defaultValue : 5},
+		"fixedBottomRowCount" : {type : "int", group : "Appearance", defaultValue : 0}
 	},
 	defaultAggregation : "columns",
 	aggregations : {
@@ -556,7 +558,7 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
 
 /**
  * Getter for property <code>enableGrouping</code>.
- * Flag to enable or disable column grouping. (experimental)
+ * Flag to enable or disable column grouping. (experimental!)
  *
  * Default value is <code>false</code>
  *
@@ -728,6 +730,33 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
  * @return {sap.ui.table.Table} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Table#setMinAutoRowCount
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>fixedBottomRowCount</code>.
+ * Number of rows that are fix on the bottom. When you use a vertical scroll bar, only the rows which are not fixed, will scroll. (experimental!)
+ *
+ * Default value is <code>0</code>
+ *
+ * @return {int} the value of property <code>fixedBottomRowCount</code>
+ * @public
+ * @since 1.18.7
+ * @name sap.ui.table.Table#getFixedBottomRowCount
+ * @function
+ */
+
+/**
+ * Setter for property <code>fixedBottomRowCount</code>.
+ *
+ * Default value is <code>0</code> 
+ *
+ * @param {int} iFixedBottomRowCount  new value for property <code>fixedBottomRowCount</code>
+ * @return {sap.ui.table.Table} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.18.7
+ * @name sap.ui.table.Table#setFixedBottomRowCount
  * @function
  */
 
@@ -1146,7 +1175,7 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
 
 
 /**
- * Group By Column (experimental)
+ * Group By Column (experimental!)
  *
  * @return {string} Id of the element which is the current target of the <code>groupBy</code> association, or null
  * @public
@@ -1155,7 +1184,7 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
  */
 
 /**
- * Group By Column (experimental)
+ * Group By Column (experimental!)
  *
  * @param {string | sap.ui.table.Column} vGroupBy 
  *    Id of an element which becomes the new target of this <code>groupBy</code> association.
@@ -1577,7 +1606,7 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
 
 
 /**
- * fired when the table is grouped. 
+ * fired when the table is grouped (experimental!). 
  *
  * @name sap.ui.table.Table#group
  * @event
@@ -1594,7 +1623,7 @@ sap.ui.table.Table.M_EVENTS = {'rowSelectionChange':'rowSelectionChange','column
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.ui.table.Table</code>.<br/> itself. 
  *  
- * fired when the table is grouped. 
+ * fired when the table is grouped (experimental!). 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -2039,11 +2068,17 @@ sap.ui.table.Table.prototype._updateTableContent = function() {
 	this._updateRowHeader();
 	
 	// hook for update table cell after rendering is complete 
-	if (this._bOnAfterRendering && this._bCallUpdateTableCell) {
+	if (this._bOnAfterRendering && (this._bCallUpdateTableCell || typeof this._updateTableCell === "function")) {
+		var that = this;
 		jQuery.each(this.getRows(), function(iIndex, oRow) {
 			jQuery.each(oRow.getCells(), function(iIndex, oCell) {
 				if (oCell._updateTableCell) {
 					oCell._updateTableCell(oCell /* cell control */, 
+					                       oCell.getBindingContext() /* cell context */, 
+					                       oCell.$().closest("td") /* jQuery object for td */);
+				}
+				if (that._updateTableCell) {
+					that._updateTableCell(oCell /* cell control */, 
 					                       oCell.getBindingContext() /* cell context */, 
 					                       oCell.$().closest("td") /* jQuery object for td */);
 				}
@@ -2084,11 +2119,15 @@ sap.ui.table.Table.prototype._initItemNavigation = function() {
 	} else {
 		var $topLeft = this.$().find('.sapUiTableCtrlFixed.sapUiTableCtrlRowFixed');
 		var $topRight = this.$().find('.sapUiTableCtrlScroll.sapUiTableCtrlRowFixed');
-		var $bottomLeft = this.$().find('.sapUiTableCtrlFixed.sapUiTableCtrlRowScroll');
-		var $bottomRight = this.$().find('.sapUiTableCtrlScroll.sapUiTableCtrlRowScroll');
+		var $middleLeft = this.$().find('.sapUiTableCtrlFixed.sapUiTableCtrlRowScroll');
+		var $middleRight = this.$().find('.sapUiTableCtrlScroll.sapUiTableCtrlRowScroll');
+		var $bottomLeft = this.$().find('.sapUiTableCtrlFixed.sapUiTableCtrlRowFixedBottom');
+		var $bottomRight = this.$().find('.sapUiTableCtrlScroll.sapUiTableCtrlRowFixedBottom');
 		for (var i = 0; i < this.getVisibleRowCount(); i++) {
 			aItemDomRefs = aItemDomRefs.concat($topLeft.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
 			aItemDomRefs = aItemDomRefs.concat($topRight.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
+			aItemDomRefs = aItemDomRefs.concat($middleLeft.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
+			aItemDomRefs = aItemDomRefs.concat($middleRight.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
 			aItemDomRefs = aItemDomRefs.concat($bottomLeft.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
 			aItemDomRefs = aItemDomRefs.concat($bottomRight.find('tr[data-sap-ui-rowindex="' + i +'"]').find('td[tabindex]').get());
 		}
@@ -2295,6 +2334,18 @@ sap.ui.table.Table.prototype._bindAggregation = function(sName, sPath, oTemplate
 	return this;
 };
 
+/**
+ * handler for change events of the binding
+ * @param {sap.ui.base.Event} oEvent change event
+ * @private
+ */
+sap.ui.table.Table.prototype._onBindingChange = function(oEvent) {
+	var sReason = typeof(oEvent) === "object" ? oEvent.getParameter("reason") : oEvent;
+	if (sReason === "sort" || sReason === "filter") {
+		this.clearSelection();
+		this.setFirstVisibleRow(0);
+	}
+};
 
 /*
  * @see JSDoc generated by SAPUI5 control API generator
@@ -2331,20 +2382,29 @@ sap.ui.table.Table.prototype.setVisibleRowCount = function(iVisibleRowCount) {
 	return this;
 };
 
+/**
+ * refresh rows
+ * @private
+ */
+sap.ui.table.Table.prototype.refreshRows = function(sReason) {
+	//needs to be called here to reset the firstVisible row so that the correct data is fetched
+	this._onBindingChange(sReason);
+	this._updateBindingContexts(true);
+};
 
 /**
  * updates the rows - called internally by the updateAggregation function when
  * anything in the model has been changed.
  * @private
  */
-sap.ui.table.Table.prototype.updateRows = function() {
+sap.ui.table.Table.prototype.updateRows = function(sReason) {
 
 	// by default the start index is the first visible row
 	var iStartIndex = this.getFirstVisibleRow();
 
 	// calculate the boundaries (at least 0 - max the row count - visible row count)
 	iStartIndex = Math.max(iStartIndex, 0);
-	if (this.getNavigationMode() === sap.ui.table.NavigationMode.Scrollbar) {
+	if (this.getNavigationMode() === sap.ui.table.NavigationMode.Scrollbar && this._getRowCount() > 0) {
 		iStartIndex = Math.min(iStartIndex, Math.max(this._getRowCount() - this.getVisibleRowCount(), 0));
 	}
 	this.setProperty("firstVisibleRow", iStartIndex, true);
@@ -2383,24 +2443,12 @@ sap.ui.table.Table.prototype.updateRows = function() {
 				this._updateBindingContexts();
 				this._updateTableContent();
 				this._sBindingTimer = undefined;
+				//Helper event for testing
+				this.fireEvent("_rowsUpdated");
 			}
 		});
 	}
 };
-
-/**
- * handler for change events of the binding
- * @param {sap.ui.base.Event} oEvent change event
- * @private
- */
-sap.ui.table.Table.prototype._onBindingChange = function(oEvent) {
-	var sReason = oEvent.getParameter("reason");
-	if (sReason === "sort" || sReason === "filter") {
-		this.clearSelection();
-		this.setFirstVisibleRow(0);
-	}
-};
-
 
 /*
  * @see JSDoc generated by SAPUI5 control API generator
@@ -2609,10 +2657,14 @@ sap.ui.table.Table.prototype._createRows = function(iStartIndex) {
 	var aContexts = undefined;
 	var oBinding = this.getBinding("rows");
 	var oBindingInfo = this.mBindingInfos["rows"];
-	if (oBinding) {
+	if (oBinding && iVisibleRowCount > 0) {
 		// if thresholding is 0 then it is disabled and we forward 0 to the binding
 		var iThreshold = this.getThreshold() ? Math.max(this.getVisibleRowCount(), this.getThreshold()): 0;
-		aContexts = oBinding.getContexts(iStartIndex, iVisibleRowCount, iThreshold);
+		var iFixedBottomRowCount = this.getFixedBottomRowCount();
+		aContexts = oBinding.getContexts(iStartIndex, iVisibleRowCount - iFixedBottomRowCount, iThreshold);
+		if (iFixedBottomRowCount > 0) {
+			aContexts = aContexts.concat(oBinding.getContexts(oBinding.getLength() - iFixedBottomRowCount, iFixedBottomRowCount, 1));
+		}
 	}
 	for (var i = 0; i < iVisibleRowCount; i++) {
 		var oClone = oTemplate.clone("row" + i); // TODO: Isn't the following required! + "-" + this.getId());
@@ -2761,41 +2813,52 @@ sap.ui.table.Table.prototype._updateVSb = function() {
  * updates the binding contexts of the currently visible controls
  * @private
  */
-sap.ui.table.Table.prototype._updateBindingContexts = function() {
+sap.ui.table.Table.prototype._updateBindingContexts = function(bSuppressUpdate) {
 
 	var aRows = this.getRows(),
 	    oBinding = this.getBinding("rows"),
 	    oBindinginfo = this.mBindingInfos["rows"],
 	    aFixedContexts = undefined,
 	    aContexts = undefined,
-	    iFixedRows = this.getFixedRowCount();
+	    aFixedBottomContexts = undefined,
+	    iFixedRows = this.getFixedRowCount(),
+	    iFixedBottomRows = this.getFixedBottomRowCount();
 
 	// fetch the contexts from the binding
 	if (oBinding) {
 		var iThreshold; 
-		if (iFixedRows > 0) {
+		if (iFixedRows > 0 || iFixedBottomRows > 0) {
 			// thresholding is deactivated when value is 0
-			iThreshold = this.getThreshold() ? Math.max((this.getVisibleRowCount() - iFixedRows), this.getThreshold()) : 0;
-			aContexts = oBinding.getContexts(this.getFirstVisibleRow() + iFixedRows, aRows.length - iFixedRows, iThreshold);
+			var iTotalFixedRows = iFixedRows + iFixedBottomRows;
+			iThreshold = this.getThreshold() ? Math.max((this.getVisibleRowCount() - iTotalFixedRows), this.getThreshold()) : 0;
+			aContexts = oBinding.getContexts(this.getFirstVisibleRow() + iFixedRows, aRows.length - iTotalFixedRows, iThreshold);
 			// static rows: we fetch the contexts without threshold to avoid loading
 			// of unnecessary data. Make sure to fetch after the normal rows to avoid
 			// outgoing double requests for the contexts. 
-			aFixedContexts = oBinding.getContexts(0, iFixedRows);
-			aContexts = aFixedContexts.concat(aContexts);
-		} else {
+			if (iFixedRows > 0) {
+				aFixedContexts = oBinding.getContexts(0, iFixedRows);
+				aContexts = aFixedContexts.concat(aContexts);
+			}
+			if (iFixedBottomRows > 0) {
+				aFixedBottomContexts = oBinding.getContexts(oBinding.getLength() - iFixedBottomRows, iFixedBottomRows);
+				aContexts = aContexts.concat(aFixedBottomContexts);
+			}
+		} else if (aRows.length > 0) {
 			// thresholding is deactivated when value is 0
-			iThreshold = this.getThreshold() ? Math.max((this.getVisibleRowCount() - iFixedRows), this.getThreshold()) : 0;
-			aContexts = oBinding.getContexts(this.getFirstVisibleRow(), aRows.length, Math.max(this.getVisibleRowCount(), this.getThreshold()));
+			iThreshold = this.getThreshold() ? Math.max(this.getVisibleRowCount(), this.getThreshold()) : 0;
+			aContexts = oBinding.getContexts(this.getFirstVisibleRow(), aRows.length, iThreshold);
 		}
 	}
 
 	// update the binding contexts only for the visible columns
 	//for (var iIndex = 0, iLength = this.getRows().length; iIndex < iLength; iIndex++) {
-	for (var iIndex = aRows.length - 1; iIndex >= 0; iIndex--) {
-		var oContext = aContexts ? aContexts[iIndex] : undefined;
-		var oRow = aRows[iIndex];
-		if (oRow) {
-			this._updateRowBindingContext(oRow, oContext, oBindinginfo && oBindinginfo.model);
+	if (!bSuppressUpdate) {
+		for (var iIndex = aRows.length - 1; iIndex >= 0; iIndex--) {
+			var oContext = aContexts ? aContexts[iIndex] : undefined;
+			var oRow = aRows[iIndex];
+			if (oRow) {
+				this._updateRowBindingContext(oRow, oContext, oBindinginfo && oBindinginfo.model);
+			}
 		}
 	}
 
@@ -2811,6 +2874,7 @@ sap.ui.table.Table.prototype._updateRowBindingContext = function(oRow, oContext,
 	var aCells = oRow.getCells();
 	var $row = oRow.$();
 	var $fixedRow = jQuery.sap.byId(oRow.getId() + "-fixed");
+	var $rowHdr = this.$().find("div[data-sap-ui-rowindex=" + $row.attr("data-sap-ui-rowindex") + "]");
 	// check for a context object (in case of grouping there could be custom context objects)
 	if (oContext && oContext instanceof sap.ui.model.Context) {
 		for (var i = 0, l = this._aVisibleColumns.length; i < l; i++) {
@@ -2822,12 +2886,14 @@ sap.ui.table.Table.prototype._updateRowBindingContext = function(oRow, oContext,
 		if ($row.hasClass("sapUiTableRowHidden")) {
 			$row.removeClass("sapUiTableRowHidden");
 			$fixedRow.removeClass("sapUiTableRowHidden");
+			$rowHdr.removeClass("sapUiTableRowHidden");
 		}
 		oRow._bHidden = false;
 	} else {
 		if (!$row.hasClass("sapUiTableRowHidden")) {
 			$row.addClass("sapUiTableRowHidden");
 			$fixedRow.addClass("sapUiTableRowHidden");
+			$rowHdr.addClass("sapUiTableRowHidden");
 		}
 		oRow._bHidden = true;
 		for (var i = 0, l = this._aVisibleColumns.length; i < l; i++) {
@@ -2849,6 +2915,9 @@ sap.ui.table.Table.prototype._updateCellBindingContext = function(oCell, oContex
 		oCell.setBindingContext(oContext, sModelName);
 		if (this._bCallUpdateTableCell && oCell._updateTableCell) {
 			oCell._updateTableCell(oCell /* cell control */, oContext /* cell context */, oCell.$().closest("td") /* jQuery object for td */);
+		}
+		if (typeof this._updateTableCell === "function") {
+			this._updateTableCell(oCell /* cell control */, oContext /* cell context */, oCell.$().closest("td") /* jQuery object for td */);
 		}
 };
 
@@ -2896,7 +2965,7 @@ sap.ui.table.Table.prototype._determineVisibleCols = function() {
 		var iScrollRight = iScrollLeft + this._getScrollWidth();
 
 		// has the view port changed?
-		if (this._iOldScrollLeft !== iScrollLeft || this._iOldScrollRight !== iScrollRight) {
+		if (this._iOldScrollLeft !== iScrollLeft || this._iOldScrollRight !== iScrollRight || this._bForceVisibleColCalc) {
 
 			// calculate the first and last visible column
 			var bRtl = this._bRtlMode;
@@ -2922,19 +2991,39 @@ sap.ui.table.Table.prototype._determineVisibleCols = function() {
 			// keep the view port information (performance!!)
 			this._iOldScrollLeft = iScrollLeft;
 			this._iOldScrollRight = iScrollRight;
-
+			this._bForceVisibleColCalc = false;
 		}
 
 	} else {
 		this._aVisibleColumns = [];
 		var aCols = this.getColumns();
 		for (var i = 0, l = aCols.length; i < l; i++) {
-			if (aCols[i].getVisible() && !aCols[i].getGrouped()) {
+			if (aCols[i].shouldRender()) {
 				this._aVisibleColumns.push(i);
 			}
 		}
 	}
 	
+};
+
+sap.ui.table.Table.prototype.addColumn = function (oColumn) {
+	var that = this;
+	this.addAggregation('columns', oColumn);
+	oColumn.attachEvent('_widthChanged', function(oEvent) {
+		that._bForceVisibleColCalc = true;
+	});
+	
+	return this;
+};
+
+sap.ui.table.Table.prototype.insertColumn = function (oColumn, iIndex) {
+	var that = this;
+	this.insertAggregation('columns', oColumn, iIndex);
+	oColumn.attachEvent('_widthChanged', function() {
+		that._bForceVisibleColCalc = true;
+	});
+
+	return this;
 };
 
 /**
@@ -2987,7 +3076,7 @@ sap.ui.table.Table.prototype._getVisibleColumns = function() {
 	var aColumns = [];
 	var aCols = this.getColumns();
 	for (var i = 0, l = aCols.length; i < l; i++) {
-		if (aCols[i].getVisible() && !aCols[i].getGrouped()) {
+		if (aCols[i].shouldRender()) {
 			aColumns.push(aCols[i]);
 		}
 	}
@@ -3134,40 +3223,51 @@ sap.ui.table.Table.prototype._handleRowCountMode = function() {
  */
 sap.ui.table.Table.prototype._updateRowHeader = function() {
 
-	var $this = this.$();
+	// we skip this expensive height and width calculation when not required!
+	if (this.getFixedRowCount() >= 0 || this.getFixedColumnCount() >= 0 || this.getRowHeight() <= 0) {
+		
+		var $this = this.$();
 
-	var $fixedRows = $this.find(".sapUiTableCtrlFixed > tbody > tr");
-	var $scrollRows = $this.find(".sapUiTableCtrlScroll > tbody > tr");
-	var $rowHeaders = $this.find(".sapUiTableRowHdr");
+		var $fixedRows = $this.find(".sapUiTableCtrlFixed > tbody > tr");
+		var $scrollRows = $this.find(".sapUiTableCtrlScroll > tbody > tr");
+		var $rowHeaders = $this.find(".sapUiTableRowHdr");
 
-	if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
-		$fixedRows.css('height','');
-		$scrollRows.css('height','');
-	}
+		if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
+			$fixedRows.css('height','');
+			$scrollRows.css('height','');
+		}
 
-	for (var i = 0, l = $scrollRows.length; i < l; i++) {
-		var iHeight = Math.max(jQuery($fixedRows[i]).height(), jQuery($scrollRows[i]).height());
-		if (this._bjQueryLess18) {
-			jQuery($rowHeaders[i]).height(iHeight);
-			if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
-				jQuery($fixedRows[i]).height(iHeight);
-				jQuery($scrollRows[i]).height(iHeight);
-			}
-		} else {
-			jQuery($rowHeaders[i]).outerHeight(iHeight);
-			if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
-				jQuery($fixedRows[i]).outerHeight(iHeight);
-				jQuery($scrollRows[i]).outerHeight(iHeight);
+		for (var i = 0, l = $scrollRows.length; i < l; i++) {
+			var iHeight = Math.max(jQuery($fixedRows[i]).height(), jQuery($scrollRows[i]).height());
+			if (this._bjQueryLess18) {
+				jQuery($rowHeaders[i]).height(iHeight);
+				if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
+					jQuery($fixedRows[i]).height(iHeight);
+					jQuery($scrollRows[i]).height(iHeight);
+				}
+			} else {
+				jQuery($rowHeaders[i]).outerHeight(iHeight);
+				if (this.getFixedColumnCount() > 0 && !this.getRowHeight()) {
+					jQuery($fixedRows[i]).outerHeight(iHeight);
+					jQuery($scrollRows[i]).outerHeight(iHeight);
+				}
 			}
 		}
+		
+		var iFixedRows = this.getFixedRowCount();
+		if (iFixedRows > 0) {
+			var iOffsetTop = $this.find('.sapUiTableCtrl.sapUiTableCtrlRowScroll.sapUiTableCtrlScroll')[0].offsetTop;
+			this.$().find('.sapUiTableVSb').css('top', (iOffsetTop - 1) + 'px');
+		}
+
+		var iFixedBottomRows = this.getFixedBottomRowCount();
+		if (iFixedBottomRows > 0) {
+			var iOffsetHeight = $this.find('.sapUiTableCtrl.sapUiTableCtrlRowScroll.sapUiTableCtrlScroll')[0].offsetHeight;
+			this.$().find('.sapUiTableVSb').css('height', iOffsetHeight + 'px');
+		}
+
 	}
 	
-	var iFixedRows = this.getFixedRowCount();
-	if (iFixedRows > 0) {
-		var iOffsetTop = $this.find('.sapUiTableCtrl.sapUiTableCtrlRowScroll.sapUiTableCtrlScroll')[0].offsetTop;
-		this.$().find('.sapUiTableVSb').css('top', (iOffsetTop - 1) + 'px');
-	}
-
 };
 
 /**
@@ -3206,7 +3306,7 @@ sap.ui.table.Table.prototype._updateColumnHeader = function(bUpdateResizeHandler
 		});
 		$ths.each(function(iIndex, oElement) {
 			// apply the width of the column
-			var iWidth = oElement.offsetWidth; //jQuery(oElement).width();
+			var iWidth = oElement.clientWidth; //jQuery(oElement).width();
 			var $col = $cols.filter('[data-sap-ui-colindex=' + jQuery(oElement).data('sap-ui-headcolindex') + ']');
 			if ($col.length > 0) {
 				if (!bUpdateResizeHandlers) {
@@ -3423,64 +3523,67 @@ sap.ui.table.Table.prototype._oncntscroll = function(oEvent) {
  */
 sap.ui.table.Table.prototype.onmousedown = function(oEvent) {
 
-	var $target = jQuery(oEvent.target);
-
-	var $splitter = jQuery.sap.byId(this.getId() + "-sb");
-	if (oEvent.target == $splitter[0]) {
-
-		// Fix for IE text selection while dragging
-		jQuery(document.body).bind("selectstart",jQuery.proxy(this._splitterSelectStart,this));
-
-		var offset = $splitter.offset();
-		var height = $splitter.height();
-		var width = $splitter.width();
-
-		jQuery(document.body).append(
-				"<div id=\"" + this.getId() + "-ghost\" class=\"sapUiHSBGhost\" style =\" height:" + height + "px; width:"
-				+ width + "px; left:" + offset.left + "px; top:" + offset.top + "px\" ></div>");
-
-		// append overlay over splitter to enable correct functionality of moving the splitter
-		$splitter.append(
-				"<div id=\"" + this.getId() + "-overlay\" style =\"left: 0px;" +
-						" right: 0px; bottom: 0px; top: 0px; position:absolute\" ></div>");
-
-		jQuery(document).bind("mouseup", jQuery.proxy(this._onGhostMouseRelease, this));
-		jQuery(document).bind("mousemove", jQuery.proxy(this._onGhostMouseMove, this));
-		// cancel the event
-		oEvent.preventDefault();
-		oEvent.stopPropagation();
-		return;
-	}
-
-	var $col = $target.closest(".sapUiTableCol");
-	if ($col.length === 1) {
-
-		this._bShowMenu = true;
-		this._sDelayedMenuTimer = jQuery.sap.delayedCall(200, this, function() {
-			this._bShowMenu = false;
-		});
-				
-		if (this.getEnableColumnReordering()) {
+	// only move on left click!
+	var bLeftButton = oEvent.button === (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 8 ? 1 : 0);
+	if (bLeftButton) {
+		
+		var $target = jQuery(oEvent.target);
 	
-			var iIndex = parseInt($col.attr("data-sap-ui-colindex"), 10);
-			if (iIndex > this._iLastFixedColIndex) {
-			
-				var oColumn = this.getColumns()[iIndex];
-				
-				this._sDelayedActionTimer = jQuery.sap.delayedCall(200, this, function() {
-					this._onColumnMoveStart(oColumn);
-				});
-				
-			}
-
+		var $splitter = jQuery.sap.byId(this.getId() + "-sb");
+		if (oEvent.target == $splitter[0]) {
+	
+			// Fix for IE text selection while dragging
+			jQuery(document.body).bind("selectstart",jQuery.proxy(this._splitterSelectStart,this));
+	
+			var offset = $splitter.offset();
+			var height = $splitter.height();
+			var width = $splitter.width();
+	
+			jQuery(document.body).append(
+					"<div id=\"" + this.getId() + "-ghost\" class=\"sapUiHSBGhost\" style =\" height:" + height + "px; width:"
+					+ width + "px; left:" + offset.left + "px; top:" + offset.top + "px\" ></div>");
+	
+			// append overlay over splitter to enable correct functionality of moving the splitter
+			$splitter.append(
+					"<div id=\"" + this.getId() + "-overlay\" style =\"left: 0px;" +
+							" right: 0px; bottom: 0px; top: 0px; position:absolute\" ></div>");
+	
+			jQuery(document).bind("mouseup", jQuery.proxy(this._onGhostMouseRelease, this));
+			jQuery(document).bind("mousemove", jQuery.proxy(this._onGhostMouseMove, this));
+			return;
 		}
-	}
-
-	// in case of FireFox and CTRL+CLICK it selects the target TD 
-	//   => prevent the default behavior only in this case (to still allow text selection)
-	var bCtrl = !!(oEvent.metaKey || oEvent.ctrlKey);
-	if (!!sap.ui.Device.browser.firefox && bCtrl) {
-		oEvent.preventDefault();
+	
+		var $col = $target.closest(".sapUiTableCol");
+		if ($col.length === 1) {
+	
+			this._bShowMenu = true;
+			this._sDelayedMenuTimer = jQuery.sap.delayedCall(200, this, function() {
+				this._bShowMenu = false;
+			});
+					
+			if (this.getEnableColumnReordering()) {
+		
+				var iIndex = parseInt($col.attr("data-sap-ui-colindex"), 10);
+				if (iIndex > this._iLastFixedColIndex) {
+				
+					var oColumn = this.getColumns()[iIndex];
+					
+					this._sDelayedActionTimer = jQuery.sap.delayedCall(200, this, function() {
+						this._onColumnMoveStart(oColumn);
+					});
+					
+				}
+	
+			}
+		}
+	
+		// in case of FireFox and CTRL+CLICK it selects the target TD 
+		//   => prevent the default behavior only in this case (to still allow text selection)
+		var bCtrl = !!(oEvent.metaKey || oEvent.ctrlKey);
+		if (!!sap.ui.Device.browser.firefox && bCtrl) {
+			oEvent.preventDefault();
+		}
+		
 	}
 
 };
@@ -3638,6 +3741,12 @@ sap.ui.table.Table.prototype._onRowSelect = function(iRowIndex, bShift, bCtrl) {
 				this.clearSelection();
 			}
 		} else {
+			// in case of multi toggle behavior a click on the row selection
+			// header adds or removes the selected row and the previous seleciton
+			// will not be removed
+			if (oSelMode === sap.ui.table.SelectionMode.MultiToggle) {
+				bCtrl = true;
+			}
 			if (bShift) {
 				// If no row is selected getSelectedIndex returns -1 - then we simply 
 				// select the clicked row:
@@ -3902,14 +4011,20 @@ sap.ui.table.Table.prototype._onColumnMoved = function(oEvent) {
  */
 sap.ui.table.Table.prototype._onColumnResizeStart = function(oEvent) {
 	
-	this._iColumnResizeStart = oEvent.pageX;
-
-	this._disableTextSelection();
-	this._$colResize = jQuery(oEvent.target);
-
-	jQuery(document.body).
-		mousemove(jQuery.proxy(this._onColumnResize, this)).
-		mouseup(jQuery.proxy(this._onColumnResized, this));
+	// only move on left click!
+	var bLeftButton = oEvent.button === (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 8 ? 1 : 0);
+	if (bLeftButton) {
+		
+		this._iColumnResizeStart = oEvent.pageX;
+	
+		this._disableTextSelection();
+		this._$colResize = jQuery(oEvent.target);
+	
+		jQuery(document.body).
+			mousemove(jQuery.proxy(this._onColumnResize, this)).
+			mouseup(jQuery.proxy(this._onColumnResized, this));
+		
+	}
 
 };
 
@@ -3919,7 +4034,7 @@ sap.ui.table.Table.prototype._onColumnResizeStart = function(oEvent) {
  */
 sap.ui.table.Table.prototype._onColumnResize = function(oEvent) {
 	
-	if (this._iColumnResizeStart && this._iColumnResizeStart + 3 < oEvent.pageX && this._iColumnResizeStart - 3 > oEvent.pageX) {
+	if (this._iColumnResizeStart && oEvent.pageX < this._iColumnResizeStart + 3 && oEvent.pageX > this._iColumnResizeStart - 3) {
 		return;
 	}
 	this._$colResize.addClass("sapUiTableColRszActive");
@@ -3975,12 +4090,10 @@ sap.ui.table.Table.prototype._onColumnResized = function(oEvent) {
 	var iColIndex = parseInt(this._$colResize.attr("data-sap-ui-colindex"), 10);
 	var oColumn = this.getColumns()[iColIndex];
 
-	if (!this._iColumnResizeStart) {
-		// ignore when no resize happened
-		if (!oColumn._iNewWidth) {
-			return;
-		}
-		
+	// if the resize has started and we have a new width for the column
+	// we apply it to the column object
+	var bResized = false;
+	if (!this._iColumnResizeStart && oColumn._iNewWidth) {
 		var sWidth;
 		var iAvailableSpace = this.$().find(".sapUiTableCtrl").width();
 		if (!this._checkPercentageColumnWidth()) {
@@ -3994,6 +4107,8 @@ sap.ui.table.Table.prototype._onColumnResized = function(oEvent) {
 		this._resizeDependentColumns(oColumn, sWidth);
 	
 		delete oColumn._iNewWidth;
+		
+		bResized = true;
 	}
 
 	// unbind the event handlers
@@ -4009,8 +4124,10 @@ sap.ui.table.Table.prototype._onColumnResized = function(oEvent) {
 	this._$colResize = undefined;
 	this._enableTextSelection();
 	
-	// rerender
-	this.invalidate();
+	// rerender / ignore if nothing changed!
+	if (bResized) {
+		this.invalidate();
+	}
 
 };
 
@@ -4185,6 +4302,18 @@ sap.ui.table.Table.prototype._updateSelection = function() {
 	var that = this;
 	var oResBundle = this._oResBundle;
 	var bMultiSelection = this._oSelection.getSelectedIndices().length > 1;
+	// Only show "click to select"-tooltip on cell if it actually can be selected that way
+	var bSelectOnCell = this.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowSelector;
+	var sRowSelect           = oResBundle.getText("TBL_ROW_SELECT");
+	var sRowSelectKey        = oResBundle.getText("TBL_ROW_SELECT_KEY");
+	var sRowDeSelect         = oResBundle.getText("TBL_ROW_DESELECT");
+	var sRowDeSelectKey      = oResBundle.getText("TBL_ROW_DESELECT_KEY");
+	var sRowSelectMulti      = oResBundle.getText("TBL_ROW_SELECT_MULTI");
+	var sRowSelectMultiKey   = oResBundle.getText("TBL_ROW_SELECT_MULTI_KEY");
+	var sRowDeSelectMulti    = oResBundle.getText("TBL_ROW_DESELECT_MULTI");
+	var sRowDeSelectMultiKey = oResBundle.getText("TBL_ROW_DESELECT_MULTI_KEY");
+	
+	
 	$this.find(".sapUiTableRowHdr").each(function(iIndex, oElement) {
 		var $jqTR1 = jQuery($this.find(".sapUiTableCtrlFixed > tbody > tr").get(iIndex));
 		var $jqTR2 = jQuery($this.find(".sapUiTableCtrlScroll > tbody > tr").get(iIndex));
@@ -4199,17 +4328,17 @@ sap.ui.table.Table.prototype._updateSelection = function() {
 				$jqTR.children("td").attr("aria-selected", "true");
 			}
 			if (bMultiSelection) {
-				$jqRow.attr("title", oResBundle.getText("TBL_ROW_DESELECT_MULTI")).
-				  attr("aria-label", oResBundle.getText("TBL_ROW_DESELECT_MULTI_KEY"));
-				$jqTR.find(".sapUiTableAriaRowSel").text(oResBundle.getText("TBL_ROW_DESELECT_MULTI_KEY"));
-				if (that.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowSelector) {
+				$jqTR.find(".sapUiTableAriaRowSel").text(sRowDeSelectMultiKey);
+				if (bSelectOnCell) {
+					$jqRow.attr("title", sRowDeSelectMulti).
+						attr("aria-label", sRowDeSelectMultiKey);
 					$jqTR.children("td").attr('aria-describedby', that.getId() + "-toggleedit " + that.getId() + "-deselectrowmulti");
 				}
 			} else {
-				$jqRow.attr("title", oResBundle.getText("TBL_ROW_DESELECT")).
-					attr("aria-label", oResBundle.getText("TBL_ROW_DESELECT_KEY"));
-				$jqTR.find(".sapUiTableAriaRowSel").text(oResBundle.getText("TBL_ROW_DESELECT_KEY"));
-				if (that.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowSelector) {
+				$jqTR.find(".sapUiTableAriaRowSel").text(sRowDeSelectKey);
+				if (bSelectOnCell) {
+					$jqRow.attr("title", sRowDeSelect).
+						attr("aria-label", sRowDeSelectKey);
 					$jqTR.children("td").attr('aria-describedby', that.getId() + "-toggleedit " + that.getId() + "-deselectrow");
 				}
 			}
@@ -4217,7 +4346,8 @@ sap.ui.table.Table.prototype._updateSelection = function() {
 			if (jQuery(this).hasClass("sapUiTableRowSel")) {
 				jQuery(this).removeClass("sapUiTableRowSel");
 				$jqTR.removeClass("sapUiTableRowSel");
-				if (that.getSelectionMode()  === sap.ui.table.SelectionMode.Multi) {
+				if (that.getSelectionMode()  === sap.ui.table.SelectionMode.Multi ||
+				    that.getSelectionMode()  === sap.ui.table.SelectionMode.MultiToggle) {
 					$jqRow.attr("aria-selected", "false");
 					$jqTR.children("td").attr("aria-selected", "false");
 				} else {
@@ -4225,18 +4355,19 @@ sap.ui.table.Table.prototype._updateSelection = function() {
 					$jqTR.children("td").removeAttr("aria-selected");
 				}
 			}
-			if (that.getSelectionMode() === sap.ui.table.SelectionMode.Multi && that._oSelection.getSelectedIndices().length > 0) {
-				$jqRow.attr("title", oResBundle.getText("TBL_ROW_SELECT")).
-			  	  attr("aria-label", oResBundle.getText("TBL_ROW_SELECT_MULTI_KEY"));
-				$jqTR.find(".sapUiTableAriaRowSel").text(oResBundle.getText("TBL_ROW_SELECT_MULTI_KEY"));
-				if (that.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowSelector) {
+			if ((that.getSelectionMode() === sap.ui.table.SelectionMode.Multi ||
+			    that.getSelectionMode()  === sap.ui.table.SelectionMode.MultiToggle) && that._oSelection.getSelectedIndices().length > 0) {
+				$jqTR.find(".sapUiTableAriaRowSel").text(sRowSelectMulti);
+				if (bSelectOnCell) {
+					$jqRow.attr("title", sRowSelectMulti).
+						attr("aria-label", sRowSelectMultiKey);
 					$jqTR.children("td").attr('aria-describedby', that.getId() + "-toggleedit " + that.getId() + "-selectrowmulti");
 				}
 			} else {
-				$jqRow.attr("title", oResBundle.getText("TBL_ROW_SELECT")).
-				  attr("aria-label", oResBundle.getText("TBL_ROW_SELECT_KEY"));
-				$jqTR.find(".sapUiTableAriaRowSel").text(oResBundle.getText("TBL_ROW_SELECT_KEY"));
-				if (that.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowSelector) {
+				$jqTR.find(".sapUiTableAriaRowSel").text(sRowSelectKey);
+				if (bSelectOnCell) {
+					$jqRow.attr("title", sRowSelect).
+						attr("aria-label", sRowSelectKey);
 					$jqTR.children("td").attr('aria-describedby', that.getId() + "-toggleedit " + that.getId() + "-selectrow");
 				}
 			}
@@ -4254,8 +4385,9 @@ sap.ui.table.Table.prototype._onSelectionChanged = function(oEvent) {
 	var aRowIndices = oEvent.getParameter("rowIndices");
 	var iRowIndex = this._iSourceRowIndex !== undefined ? this._iSourceRowIndex : this.getSelectedIndex();
 	this._updateSelection();
-	if (this.getSelectionMode() == "Multi") {
-		jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_SELECT_ALL"));
+	var oSelMode = this.getSelectionMode();
+	if (oSelMode == "Multi" || oSelMode == "MultiToggle") {
+		jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_SELECT_ALL")).addClass("sapUiTableSelAll");
 	}
 	this.fireRowSelectionChange({
 		rowIndex: iRowIndex,
@@ -4301,7 +4433,10 @@ sap.ui.table.Table.prototype.setSelectedIndex = function(iIndex) {
  */
 sap.ui.table.Table.prototype.clearSelection = function() {
 	this._oSelection.clearSelection();
-	jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_SELECT_ALL"));
+	var oSelMode = this.getSelectionMode();
+	if (oSelMode == "Multi" || oSelMode == "MultiToggle") {
+		jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_SELECT_ALL")).addClass("sapUiTableSelAll");
+	}
 	return this;
 };
 
@@ -4309,13 +4444,14 @@ sap.ui.table.Table.prototype.clearSelection = function() {
  * @see JSDoc generated by SAPUI5 control API generator
  */
 sap.ui.table.Table.prototype.selectAll = function() {
-	if (this.getSelectionMode() != "Multi") {
+	var oSelMode = this.getSelectionMode();
+	if (oSelMode != "Multi" && oSelMode != "MultiToggle") {
 		return this;
 	}
 	var oBinding = this.getBinding("rows");
 	if (oBinding) {
 		this._oSelection.setSelectionInterval(0, (oBinding.getLength() || 0) - 1);
-		jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_DESELECT_ALL"));
+		jQuery.sap.byId(this.getId() + "-selall").attr('title',this._oResBundle.getText("TBL_DESELECT_ALL")).removeClass("sapUiTableSelAll");
 	}
 	return this;
 };
@@ -4422,6 +4558,10 @@ sap.ui.table.Table.prototype._isTopRow = function(oEvent) {
 sap.ui.table.Table.prototype._isBottomRow = function(oEvent) {
 	var $target = jQuery(oEvent.target);
 	var iRowIndex = parseInt($target.add($target.parent()).filter("[data-sap-ui-rowindex]").attr("data-sap-ui-rowindex"), 10);
+	var iFixedRows = this.getFixedBottomRowCount();
+	if (iFixedRows > 0 && iRowIndex <= this.getVisibleRowCount() - 1 - iFixedRows) {
+		return iRowIndex === this.getVisibleRowCount() - 1 - iFixedRows;
+	}
 	return iRowIndex === this.getVisibleRowCount() - 1;
 };
 
@@ -4530,7 +4670,7 @@ sap.ui.table.Table.prototype.onkeydown = function(oEvent) {
 		oEvent.keyCode == jQuery.sap.KeyCodes.F2 ||
 		oEvent.keyCode == jQuery.sap.KeyCodes.ENTER) {
 		if ($this.find(".sapUiTableCtrl td:focus").length > 0) {
-			this._enterActionMode($this.find(".sapUiTableCtrl td:focus :sapFocusable").get(0));
+			this._enterActionMode($this.find(".sapUiTableCtrl td:focus").find(":sapFocusable").get(0));
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}
@@ -4640,10 +4780,13 @@ sap.ui.table.Table.prototype.onsaptabnext = function(oEvent) {
  */
 sap.ui.table.Table.prototype.onsapdown = function(oEvent) {
 	if (!this._bActionMode && this._isBottomRow(oEvent)) {
-		if (this.getNavigationMode() === sap.ui.table.NavigationMode.Scrollbar) {
-			this._scrollNext();
-		} else {
-			this._scrollPageDown();
+		if (this.getFirstVisibleRow() != this._getRowCount() - this.getVisibleRowCount() - this.getFixedBottomRowCount()) {
+			oEvent.stopImmediatePropagation(true);
+			if (this.getNavigationMode() === sap.ui.table.NavigationMode.Scrollbar) {
+				this._scrollNext();
+			} else {
+				this._scrollPageDown();
+			}
 		}
 	}
 	oEvent.preventDefault();
@@ -4802,15 +4945,13 @@ sap.ui.table.Table.prototype.getBinding = function(sName) {
 	if (this.getEnableGrouping()) {
 
 		// require the binding types (think about loading them only if required)
-		jQuery.sap.require("sap.ui.model.json.JSONListBinding");
-		jQuery.sap.require("sap.ui.model.xml.XMLListBinding");
+		jQuery.sap.require("sap.ui.model.ClientListBinding");
 	
-		// check for grouping being supported or not (only for JSON and XML ListBinding!!) 
+		// check for grouping being supported or not (only for client ListBindings!!) 
 		var oGroupBy = sap.ui.getCore().byId(this.getGroupBy());
 		var bIsSupported = oGroupBy && oGroupBy.getGrouped() &&
-		                   sName === "rows" && oBinding && (
-		                     oBinding instanceof sap.ui.model.json.JSONListBinding || 
-		                     oBinding instanceof sap.ui.model.xml.XMLListBinding);
+		                   sName === "rows" && oBinding && 
+		                   oBinding instanceof sap.ui.model.ClientListBinding;
 	
 		// only enhance the binding if it has not been done yet and supported!
 		if (bIsSupported && !oBinding._modified) {
@@ -4860,21 +5001,15 @@ sap.ui.table.Table.prototype.getBinding = function(sName) {
 					}
 				}
 			};
-	
+
 			// we use sorting finally to sort the values and afterwards group them
 			var sPropertyName = oGroupBy.getSortProperty();
 			oBinding.sort(new sap.ui.model.Sorter(sPropertyName));
-	
+
 			// fetch the contexts from the original binding
-			var iLength, aContexts;
-			if (oBinding instanceof sap.ui.model.json.JSONListBinding) {
-				iLength = sap.ui.model.json.JSONListBinding.prototype.getLength.apply(oBinding, []);
-				aContexts = sap.ui.model.json.JSONListBinding.prototype.getContexts.apply(oBinding, [0, iLength]);
-			} else {
-				iLength = sap.ui.model.xml.XMLListBinding.prototype.getLength.apply(oBinding, []);
-				aContexts = sap.ui.model.xml.XMLListBinding.prototype.getContexts.apply(oBinding, [0, iLength]);
-			}
-			
+			var iLength = oBinding.getLength(),
+				aContexts = oBinding.getContexts(0, iLength);
+
 			// add the context information for the group headers which are later on
 			// used for displaying the grouping information of each group
 			var sKey = undefined;
@@ -4950,7 +5085,7 @@ sap.ui.table.Table.prototype.getBinding = function(sName) {
 	}
 
 	return oBinding;
-	
+
 };
 
 sap.ui.table.Table.prototype.resetGrouping = function() {
@@ -4958,10 +5093,10 @@ sap.ui.table.Table.prototype.resetGrouping = function() {
 	// reset the group binding only when enhanced
 	var oBinding = this.getBinding("rows");
 	if (oBinding && oBinding._modified) {
-	
+
 		// we remove the style override to display the row header
 		this.$().find(".sapUiTableRowHdrScr").css("display", "");
-		
+
 		// if the grouping is not supported we remove the hacks we did
 		// and simply return the binding finally
 		this.onclick = sap.ui.table.Table.prototype.onclick;
@@ -4971,9 +5106,9 @@ sap.ui.table.Table.prototype.resetGrouping = function() {
 		var oBindingInfo = this.getBindingInfo("rows");
 		this.unbindRows();
 		this.bindRows(oBindingInfo);
-			
+
 	}
-			
+
 };
 
 sap.ui.table.Table.prototype.setEnableGrouping = function(bEnableGrouping) {

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -553,20 +553,74 @@ sap.m.BusyIndicator.prototype._doPlatformDependent = function(){
 	}
 };
 
-// Set the rotation speed of the image
-// @private 
+//Set the rotation speed of the image
+//@private 
 sap.m.BusyIndicator.prototype._setRotationSpeed = function(){
-	var self = this;
-	var sRotationSpeed = this.getCustomIconRotationSpeed() + "ms";
-	this.$().children('img')
-		.css("-webkit-animation-duration", sRotationSpeed)
-		.css("animation-duration", sRotationSpeed);
-	//Bug in Chrome: After changing height of image -> changing the rotationspeed will have no affect
-	//chrome needs a rerendering of this element.
-	this._iconImage.$().css("display", "none");
-	setTimeout(function() {
-		self._iconImage.$().css("display", "inline");
-	}, 0);
+
+	if(!this._iconImage) return;
+
+	if(jQuery.support.cssAnimations){
+		var $icon = this._iconImage.$();
+		var sRotationSpeed = this.getCustomIconRotationSpeed() + "ms";
+		$icon.css("-webkit-animation-duration", sRotationSpeed)
+			.css("animation-duration", sRotationSpeed);
+		//Bug in Chrome: After changing height of image -> changing the rotationspeed will have no affect
+		//chrome needs a rerendering of this element.
+		$icon.css("display", "none");
+		setTimeout(function() {
+			$icon.css("display", "inline");
+		}, 0);
+	} else { // IE9
+		this._rotateCustomIcon();
+	}
+};
+
+//Animate custom icon in IE9
+//@private
+sap.m.BusyIndicator.prototype._rotateCustomIcon = function(){
+
+	if(!this._iconImage){
+		return;
+	}
+	var $icon = this._iconImage.$();
+
+	// stop if the custom icon is not available or hidden:
+	if(!$icon[0] || !$icon[0].offsetWidth){
+		return;
+	}
+
+	var iRotationSpeed = this.getCustomIconRotationSpeed();
+	if(!iRotationSpeed) return;
+
+	if(!this._fnRotateCustomIcon){
+		this._fnRotateCustomIcon = jQuery.proxy(this._rotateCustomIcon, this);
+	}
+	var fnRotateCustomIcon = this._fnRotateCustomIcon;
+
+	if(!this._$CustomRotator){
+		this._$CustomRotator = jQuery({deg: 0});
+	}
+	var $rotator = this._$CustomRotator;
+
+	if($rotator.running){
+		return;
+	}
+
+	// restart animation
+	$rotator[0].deg = 0;
+
+	$rotator.animate({deg: 360}, {
+		duration: iRotationSpeed,
+		easing: "linear",
+		step: function(now) {
+			$rotator.running = true;
+			$icon.css("-ms-transform", 'rotate(' + now + 'deg)');
+		},
+		complete: function(){
+			$rotator.running = false;
+			window.setTimeout(fnRotateCustomIcon, 10);
+		}
+	});
 };
 
 sap.m.BusyIndicator.prototype.onBeforeRendering = function(){
@@ -603,11 +657,12 @@ sap.m.BusyIndicator.prototype.setCustomIcon = function(iSrc){
 };
 
 sap.m.BusyIndicator.prototype.setCustomIconRotationSpeed = function(iSpeed){
-	if(iSpeed){
-		if(iSpeed !== this.getCustomIconRotationSpeed()) {
-			this.setProperty("customIconRotationSpeed", iSpeed, true);
-			this._setRotationSpeed();
-		}
+	if(isNaN(iSpeed) || iSpeed < 0){
+		iSpeed = 0;
+	}
+	if(iSpeed !== this.getCustomIconRotationSpeed()) {
+		this.setProperty("customIconRotationSpeed", iSpeed, true);
+		this._setRotationSpeed();
 	}
 	return this;
 };

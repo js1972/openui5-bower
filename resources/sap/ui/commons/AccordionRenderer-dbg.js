@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -41,7 +41,6 @@ sap.ui.commons.AccordionRenderer.render = function(oRenderManager, oAccordion){
 
 	rm.write("<div id='" + oAccordion.getId()+ "-dropTarget" + "' style='width:"+ oAccordion.getWidth() +"' tabIndex='-1' class='sapUiAcd-droptarget'></div>");
 
-
 	var aSections = oAccordion.getSections();
 	var aDefaultSections = oAccordion.getOpenedSectionsId().split(",");
 
@@ -62,13 +61,13 @@ sap.ui.commons.AccordionRenderer.render = function(oRenderManager, oAccordion){
 	   sap.ui.commons.AccordionRenderer.renderSection(rm, aSections[i]);
 
 	}
-	
+
 	rm.write('<SPAN id="' + oAccordion.getId() + '-Descr" style="visibility: hidden; display: none;">');
 	rm.write(oAccordion.rb.getText("ACCORDION_DSC"));
 	rm.write('</SPAN>');
 
 	rm.write("</div>");
-	
+
 	oAccordion.bInitialRendering = false;
 
 };
@@ -111,7 +110,10 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 	rm.writeStyles();
 
 	// header
-	rm.write("><div draggable=\"true\" class='sapUiAcdSectionHdr' tabindex='0'");
+	rm.write("><div class='sapUiAcdSectionHdr'");
+	if (oControl.getEnabled()) {
+		rm.write(" tabindex='0'");
+	}
 	rm.writeAttribute("id", oControl.getId() + "-hdr");
 	if (accessibility) {
 		rm.writeAttribute('role', 'tab');
@@ -134,9 +136,9 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 	rm.write("<span id='" + oControl.getId() + "-hdrL'>");
 
 	if (oControl.getEnabled()){
-		rm.write("<a draggable='false' id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow' href='javascript:void(0)' title='Collapse/Expand'");
+		rm.write("<a id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow' href='javascript:void(0)' title='Collapse/Expand'");
 	}else{
-		rm.write("<a draggable='false' id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow sapUiAcdCursorText' href='javascript:void(0)' title='Collapse/Expand'");
+		rm.write("<a id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow sapUiAcdCursorText' href='javascript:void(0)' title='Collapse/Expand'");
 	}
 
 	rm.write(" tabindex='-1' ");
@@ -213,7 +215,7 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 		} else {
 			rm.write(" style='position:relative;top:0px;'"); // for IE7, when Panel contains relatively positioned elements
 		}
-		
+
 		if ( sap.ui.getCore().getConfiguration().getAccessibility()){
 			rm.writeAttribute('role', 'tabpanel');
 		}
@@ -230,5 +232,5 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 
 	}
 	// End of Panel
-		rm.write("</div>");
+	rm.write("</div>");
 };

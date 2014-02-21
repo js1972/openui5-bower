@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -85,7 +85,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -97,7 +97,7 @@ sap.ui.core.Control.extend("sap.m.ListBase", { metadata : {
 	// ---- object ----
 	publicMethods : [
 		// methods
-		"getSelectedItem", "setSelectedItem", "getSelectedItems", "setSelectedItemById", "removeSelections", "selectAll", "getSwipedItem", "swipeOut", "getGrowingInfo"
+		"getSelectedItem", "setSelectedItem", "getSelectedItems", "setSelectedItemById", "removeSelections", "selectAll", "getSwipedItem", "swipeOut", "getGrowingInfo", "getSelectedContexts"
 	],
 
 	// ---- control specific ----
@@ -522,6 +522,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 /**
  * Getter for property <code>growing</code>.
  * Sets the growing(paging) feature of control.
+ * Note: This feature only works with item binding and should not be used with two way binding!
  *
  * Default value is <code>false</code>
  *
@@ -1561,6 +1562,23 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  */
 
 
+/**
+ * Returns the binding contexts of the selected items.
+ * Note: This method returns an empty array if no databinding is used.
+ *
+ * @name sap.m.ListBase.prototype.getSelectedContexts
+ * @function
+ * @param {boolean} 
+ *         bAll
+ *         Set true to include even invisible selected items(e.g. the selections from the previous filters).
+ * Note: In single selection modes, only the last selected item's binding context is returned in array.
+
+ * @type object[]
+ * @public
+ * @since 1.18.6
+ */
+
+
 // Start of sap\m\ListBase.js
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
@@ -1611,6 +1629,8 @@ sap.m.ListBase.prototype.updateItems = function(sReason) {
 
 sap.m.ListBase.prototype.bindAggregation = function(sName) {
 	if (sName == "items" && this.isBound("items")) {
+		this._bUpdating = false;
+		this._detachDataEvents();
 		this.removeSelections(true);
 		this._oGrowingDelegate && this._oGrowingDelegate.reset();
 	}
@@ -1693,7 +1713,7 @@ sap.m.ListBase.prototype.setBackgroundDesign = function(sBgDesign) {
 sap.m.ListBase.prototype.setShowSeparators = function(sSeparators) {
 	var sSeparatorsOld = this.getShowSeparators();
 	this.setProperty("showSeparators", sSeparators, true);
-	jQuery.sap.byId(this.getId("listUl")).removeClass("sapMListShowSeparators" + sSeparatorsOld).addClass("sapMListShowSeparators" + this.getShowSeparators());
+	this.$("listUl").removeClass("sapMListShowSeparators" + sSeparatorsOld).addClass("sapMListShowSeparators" + this.getShowSeparators());
 	return this;
 };
 
@@ -1715,7 +1735,7 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 		this.setProperty("inset", bInset, true);
 		if (this.getDomRef()) {
 			this.$().toggleClass("sapMListInsetBG", bInset);
-			jQuery.sap.byId(this.getId("listUl")).toggleClass("sapMListInset", bInset);
+			this.$("listUl").toggleClass("sapMListInset", bInset);
 			this._setSwipePosition();
 		}
 	}
@@ -1724,13 +1744,16 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 
 sap.m.ListBase.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth, true);
-	this.$().width(this.getWidth());
+	var oDomRef = this.getDomRef();
+	if (oDomRef) {
+		oDomRef.style.width = this.getWidth();
+	}
 	return this;
 };
 
 sap.m.ListBase.prototype.setNoDataText = function(sNoDataText) {
 	this.setProperty("noDataText", sNoDataText, true);
-	jQuery.sap.byId(this.getId("nodata-text")).text(this.getNoDataText());
+	this.$("nodata-text").text(this.getNoDataText());
 	return this;
 };
 
@@ -1775,6 +1798,29 @@ sap.m.ListBase.prototype.setSelectedItemById = function(sId, bSelect) {
 	return this.setSelectedItem(oListItem, bSelect);
 };
 
+sap.m.ListBase.prototype.getSelectedContexts = function(bAll) {
+	var oBindingInfo = this.getBindingInfo("items"),
+		sModelName = (oBindingInfo || {}).model,
+		oModel = this.getModel(sModelName);
+
+	// only deal with binding case
+	if (!oBindingInfo || !oModel) {
+		return [];
+	}
+
+	// return binding contexts from all selection paths
+	if (bAll && this.getRememberSelections()) {
+		return this._aSelectedPaths.map(function(sPath) {
+			return oModel.getContext(sPath);
+		});
+	}
+
+	// return binding context of current selected items
+	return this.getSelectedItems().map(function(oItem) {
+		return oItem.getBindingContext(sModelName);
+	});
+};
+
 sap.m.ListBase.prototype.removeSelections = function(bAll, bFireEvent) {
 	var aChangedListItems = [];
 	this._oSelectedItem = null;
@@ -1817,8 +1863,11 @@ sap.m.ListBase.prototype.setMode = function(sMode) {
 	var sOldMode = this.getMode();
 	if (sOldMode != sMode) {
 		this.setProperty("mode", sMode);
+		var iSelectionLength = this.getSelectedItems().length;
 		this._bSelectionMode = this.getMode().indexOf("Select") > -1;
-		if (sOldMode != "None") {
+
+		// remove selection only if needed
+		if (iSelectionLength > 1 || !this._bSelectionMode) {
 			this.removeSelections(true);
 		}
 	}
@@ -1865,7 +1914,7 @@ sap.m.ListBase.prototype.onItemSetSelected = function(oItem, bSelect) {
  * @protected
  */
 sap.m.ListBase.prototype.getItemsContainerDomRef = function() {
-	return jQuery.sap.domById(this.getId("listUl"));
+	return this.getDomRef("listUl");
 };
 
 /*
@@ -1883,7 +1932,7 @@ sap.m.ListBase.prototype.onBeforePageLoaded = function(oGrowingInfo, sChangeReas
  */
 sap.m.ListBase.prototype.onAfterPageLoaded = function(oGrowingInfo, sChangeReason) {
 	this._startItemNavigation();
-	this.getShowNoData() && this.getMaxItemsCount() && jQuery.sap.byId(this.getId("nodata")).remove();
+	this.getShowNoData() && this.getMaxItemsCount() && this.$("nodata").remove();
 	this._updateFinished(sChangeReason, oGrowingInfo);
 	this.fireGrowingFinished(oGrowingInfo);
 };
@@ -1924,6 +1973,7 @@ sap.m.ListBase.prototype._attachDataEvents = function() {
 sap.m.ListBase.prototype._detachDataEvents = function() {
 	var oBinding = this.getBinding("items");
 	if (oBinding) {
+		this._bReceivingData = false;
 		oBinding.detachDataReceived(this._onDataReceived, this);
 		oBinding.detachDataRequested(this._onDataRequested, this);
 	}
@@ -1950,7 +2000,7 @@ sap.m.ListBase.prototype._updateStarted = function(sReason, oInfo) {
 	this._bUpdating = true;
 
 	// attach data events
-	this._attachDataEvents();
+	!this.getGrowing() && this._attachDataEvents();
 
 	// fire update started event
 	this._sUpdateReason = jQuery.sap.charToUpperCase(sReason || "Binding");
@@ -1968,14 +2018,12 @@ sap.m.ListBase.prototype._updateFinished = function(sReason, oInfo) {
 		return;
 	}
 
-	// reset update status
-	this._bUpdating = false;
-
 	// detach data events
-	this._detachDataEvents();
+	!this.getGrowing() && this._detachDataEvents();
 
 	// fire event should run delayed to make sure rendering phase is done
 	jQuery.sap.delayedCall(0, this, function() {
+		this._bUpdating = false;
 		this.fireUpdateFinished({
 			reason : this._sUpdateReason || sReason,
 			actual : oInfo ? oInfo.actual : this.getItems().length,
@@ -2349,7 +2397,14 @@ sap.m.ListBase.prototype._startItemNavigation = function() {
 
 		// implicitly setting table mode with one column
 		// to disable up/down reaction on events of the cell
-		this._oItemNavigation.setTableMode(true).setColumns(1);
+		this._oItemNavigation.setTableMode(true, true).setColumns(1);
+
+		// alt + up/down will be used for section navigation
+		// notify item navigation not to handle alt key modifiers
+		this._oItemNavigation.setDisabledModifiers({
+			sapnext : ["alt"],
+			sapprevious : ["alt"]
+		});
 	}
 
 	// set navigation items
@@ -2369,25 +2424,107 @@ sap.m.ListBase.prototype.getItemNavigation = function() {
 	return this._oItemNavigation;
 };
 
+// navigate to previous or next section according to current focus position
+sap.m.ListBase.prototype._navToSection = function(bForward) {
+	var iIndex = 0;
+	var iStep = bForward ? 1 : -1;
+	var iLength = this._aNavSections.length;
+
+	// find the current section index
+	this._aNavSections.some(function(sSectionId, iSectionIndex) {
+		var oSectionDomRef = jQuery.sap.domById(sSectionId);
+		if (oSectionDomRef && oSectionDomRef.contains(document.activeElement)) {
+			iIndex = iSectionIndex;
+			return true;
+		}
+	});
+
+	// find the next focusable section
+	this._aNavSections.some(function() {
+		iIndex = (iIndex + iStep + iLength) % iLength;	// circle
+		var $Section = jQuery.sap.byId(this._aNavSections[iIndex]);
+		if ($Section.is(":focusable")) {
+			$Section.focus();
+			return true;
+		}
+	}, this);
+};
+
+// move focus to the next/prev tabbable element after or before the list
+// TODO: This implementation search parent which means we are out of our sandbox!
+sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
+	var iStep = bAfter ? 1 : -1;
+	var sElement = bAfter ? "after" : "before";
+	var $Element = this.$(sElement).attr("tabindex", "0");
+
+	// search all parents to find next/prev tabbable item
+	for (var oParent = this; (oParent = oParent.getParent()) && oParent.$;) {
+		var $Tabbables = oParent.$().find(":tabbable");
+		var iLimit = bAfter ? $Tabbables.length - 1 : 0;
+		var iIndex = $Tabbables.index($Element);
+
+		// should have more tabbables then dummy before or after element
+		// should keep searching if the $Element is the first or last one
+		if ($Tabbables.length > 1 && iIndex != iLimit) {
+			break;
+		}
+	}
+
+	// focus to next/prev tabbable item and reset tabindex
+	$Tabbables = $Tabbables || this.$().parent().find(":tabbable");
+	$Tabbables.eq($Tabbables.index($Element) + iStep).focus();
+	$Element.attr("tabindex", "-1");
+};
+
 // Handle F6
 sap.m.ListBase.prototype.onsapskipforward = function(oEvent) {
-	jQuery.sap.byId(this.getId("after")).focus();
+	// do not handle marked events
+	if (oEvent.isMarked()) {
+		return;
+	}
+
+	// focus to the next tabbable element after the control
+	this._navToTabChain(true);
 	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 // Handle Shift + F6
 sap.m.ListBase.prototype.onsapskipback = function(oEvent) {
-	this.$().focus();
+	// do not handle marked events
+	if (oEvent.isMarked()) {
+		return;
+	}
+
+	// focus to the previous tabbable element before the control
+	this._navToTabChain(false);
 	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 // Handle Alt + Down
 sap.m.ListBase.prototype.onsapshow = function(oEvent) {
-	if (oEvent.keyCode == jQuery.sap.KeyCodes.F4) {
+	// do not handle marked events and ignore F4
+	if (oEvent.isMarked() || oEvent.keyCode == jQuery.sap.KeyCodes.F4) {
 		return;
 	}
+
+	// move focus to the next section
+	this._navToSection(true);
+	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 // Handle Alt + Up
-sap.m.ListBase.prototype.onsaphide =  function(oEvent) {
+sap.m.ListBase.prototype.onsaphide = function(oEvent) {
+	// do not handle marked events
+	if (oEvent.isMarked()) {
+		return;
+	}
+
+	// move focus to the previous section
+	this._navToSection(false);
+	oEvent.preventDefault();
+	oEvent.setMarked();
 };
+

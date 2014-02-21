@@ -2,8 +2,8 @@
 jQuery.sap.declare('sap.ui.unified.library-all');
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ContentSwitcherRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.unified.ContentSwitcherRenderer");
@@ -57,8 +57,8 @@ sap.ui.unified.ContentSwitcherRenderer.renderContent = function(oRm, aContent) {
 }; // end of sap/ui/unified/ContentSwitcherRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellOverlayRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -137,8 +137,8 @@ sap.ui.unified.ShellOverlayRenderer.renderContent = function(rm, oControl) {
 }; // end of sap/ui/unified/ShellOverlayRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -268,15 +268,17 @@ sap.ui.unified.ShellRenderer._renderIcon = function(rm, oShell) {
 	rm.write("<img id='", oShell.getId(), "-icon'");
 	rm.writeAttributeEscaped("title", sLogoTooltip);
 	rm.writeAttributeEscaped("alt", sLogoTooltip);
-	rm.write("src='", oShell._getIcon(), "' style='", oShell._getIcon() ? "" : "display:none;","'></img>");
+	rm.write("src='");
+	rm.writeEscaped(oShell._getIcon());
+	rm.write("' style='", oShell._getIcon() ? "" : "display:none;","'></img>");
 	rm.write("</div>");
 };
 
 }; // end of sap/ui/unified/ShellRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.SplitContainerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -347,8 +349,8 @@ sap.ui.unified.SplitContainerRenderer.renderContent = function (rm, sId, aConten
 }; // end of sap/ui/unified/SplitContainerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -358,7 +360,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.unified (1.18.8)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -393,11 +395,11 @@ sap.ui.getCore().initLibrary({
   elements: [
     "sap.ui.unified.ShellHeadItem"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -413,7 +415,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.16.0
@@ -529,8 +531,8 @@ sap.ui.unified._iNumberOfOpenedShellOverlays = 0;
 }; // end of sap/ui/unified/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ContentSwitcher') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -587,7 +589,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -962,8 +964,8 @@ sap.ui.unified.ContentSwitcher.prototype.setAnimation = function(sAnimation, bSu
 }; // end of sap/ui/unified/ContentSwitcher.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellHeadItem') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1024,7 +1026,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1278,14 +1280,14 @@ sap.ui.unified.ShellHeadItem.prototype._refreshIcon = function(){
 			$Ico.text(oIconInfo.content).css("font-family", "'" + oIconInfo.fontFamily + "'");
 		}
 	}else{
-		$Ico.html("<img src='"+sIco+"'></img>")
+		$Ico.html("<img src='" + jQuery.sap.encodeHTML(sIco) + "'></img>");
 	}
 };
 }; // end of sap/ui/unified/ShellHeadItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.SplitContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1342,7 +1344,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1834,8 +1836,8 @@ sap.ui.unified.SplitContainer.prototype.destroySecondaryContent = function() {
 }; // end of sap/ui/unified/SplitContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.Shell') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1900,7 +1902,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -3177,8 +3179,8 @@ sap.ui.unified.Shell.prototype.invalidate = function(oOrigin) {
 }; // end of sap/ui/unified/Shell.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellOverlay') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3235,7 +3237,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public

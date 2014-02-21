@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1856,5 +1856,14 @@ sap.ui.commons.DropdownBox.prototype.ondrop = function(oEvent) {
 
 	// dropping text in DropdownBox makes no sense.
 	oEvent.preventDefault();
+
+};
+
+/*
+ * in ComboBox an empty selected Key is not allowed (execute same logig as for defined keys)
+ */
+sap.ui.commons.ComboBox.prototype._isSetEmptySelectedKeyAllowed = function() {
+
+		return false;
 
 };

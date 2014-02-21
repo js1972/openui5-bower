@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.DataSetSimpleView");jQuery.sap.require("sap.ui.ux3.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.ux3.DataSetSimpleView",{metadata:{interfaces:["sap.ui.ux3.DataSetView"],library:"sap.ui.ux3",properties:{"floating":{type:"boolean",group:"Misc",defaultValue:true},"name":{type:"string",group:"Misc",defaultValue:"Name of this View"},"icon":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"iconHovered":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"iconSelected":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"responsive":{type:"boolean",group:"Misc",defaultValue:false},"itemMinWidth":{type:"int",group:"Misc",defaultValue:0},"initialItemCount":{type:"int",group:"Appearance",defaultValue:0},"reloadItemCount":{type:"int",group:"Appearance",defaultValue:0},"scrollArea":{type:"any",group:"Appearance",defaultValue:null},"height":{type:"sap.ui.core.CSSSize",group:"Appearance",defaultValue:null}},aggregations:{"template":{type:"sap.ui.core.Control",multiple:false}}}});jQuery.sap.require("jquery.sap.script");jQuery.sap.require("sap.ui.core.ResizeHandler");

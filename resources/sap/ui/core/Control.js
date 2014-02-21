@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.Control");jQuery.sap.require("sap.ui.core.Element");sap.ui.core.Element.extend("sap.ui.core.Control",{metadata:{stereotype:"control","abstract":true,publicMethods:["placeAt","attachBrowserEvent","detachBrowserEvent"],library:"sap.ui.core",properties:{"busy":{type:"boolean",defaultValue:false},"busyIndicatorDelay":{type:"int",defaultValue:1000}},aggregations:{},associations:{},events:{}},constructor:function(i,s){this.bAllowTextSelection=true;sap.ui.core.Element.apply(this,arguments);this.bOutput=this.getDomRef()!=null;if(this._sapUiCoreLocalBusy_initBusyIndicator){this._sapUiCoreLocalBusy_initBusyIndicator()}},renderer:null});

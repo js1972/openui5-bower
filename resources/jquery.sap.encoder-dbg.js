@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -31,7 +31,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for HTML escaping
 	 */
-	var rHtml = /[\x00-\x2b\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/g,
+	var rHtml = /[\x00-\x2b\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\xff\u2028\u2029]/g,
 		rHtmlReplace = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]/,
 		mHtmlLookup = {
 			"<": "&lt;",
@@ -97,7 +97,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for JS escaping
 	 */
-	var rJS = /[\x00-\x2b\x2d\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/g,
+	var rJS = /[\x00-\x2b\x2d\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\xff\u2028\u2029]/g,
 		mJSLookup = {};
 
 	var fJS = function(sChar) {
@@ -185,7 +185,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for CSS escaping
 	 */
-	var rCSS = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\uffff][0-9A-Fa-f]?/g;
+	var rCSS = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\xff\u2028\u2029][0-9A-Fa-f]?/g;
 
 	var fCSS = function(sChar) {
 		var iChar = sChar.charCodeAt(0);
@@ -298,7 +298,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 			sQuery = result[5],
 			sHash = result[6];
 
-		var rCheck = /[\x00-\x24\x26-\x29\x2b\x2c\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/;
+		var rCheck = /[\x00-\x24\x26-\x29\x2b\x2c\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x7d\x7f-\uffff]/;
 		var rCheckMail = /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 		// protocol
@@ -382,7 +382,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 					}
 					if (bOk){
 						// host OK
-						if (!aWhitelist[i].port || sPort == aWhitelist[i].port) {
+						if ((!sHost && !sPort) || !aWhitelist[i].port || sPort == aWhitelist[i].port) {
 							// port OK
 							if (aWhitelist[i].path && /\*$/.test(aWhitelist[i].path)) {
 								// check for wildcard search at end
@@ -403,7 +403,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 				}
 			}
 			if (!bFound) {
-				return bFound;
+				return false;
 			}
 		}
 

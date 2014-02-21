@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,96 +18,97 @@ sap.m.BarRenderer = {};
  * @param {sap.ui.core.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
-sap.m.BarRenderer.render = function(rm, oControl) { 
+sap.m.BarRenderer.render = function(oRenderManager, oControl) { 
 	var i = 0;
 
+	//_context is set by the page control
 	switch (oControl._context) {
 	case 'header':
 		//render header element 
-		rm.write("<header");
+		oRenderManager.write("<header");
 		break;
 	case 'footer':
 		//render footer element 
-		rm.write("<footer");
-		rm.addClass("sapMFooter-CTX");
+		oRenderManager.write("<footer");
+		oRenderManager.addClass("sapMFooter-CTX");
 		break;
 	default: 
 		//render div element as default 
-		rm.write("<div");
+		oRenderManager.write("<div");
 		break;
 	}
-	rm.writeControlData(oControl);
-	rm.addClass("sapMBar");
+	oRenderManager.writeControlData(oControl);
+	oRenderManager.addClass("sapMBar");
 
 	if (oControl.getTranslucent() && (sap.ui.Device.support.touch  || jQuery.sap.simulateMobileOnDesktop)) {
-		rm.addClass("sapMBarTranslucent");
+		oRenderManager.addClass("sapMBarTranslucent");
 	}
 
-	rm.addClass("sapMBar-CTX");
-	rm.writeClasses();
+	oRenderManager.addClass("sapMBar-CTX");
+	oRenderManager.writeClasses();
 	
 	var sTooltip = oControl.getTooltip_AsString();
 	if (sTooltip) {
-		rm.writeAttributeEscaped("title", sTooltip);
+		oRenderManager.writeAttributeEscaped("title", sTooltip);
 	}
 	
-	rm.write(">"); 
+	oRenderManager.write(">"); 
 
 	//left content area
-	rm.write("<div id='"); 
-	rm.write(oControl.getId());
-	rm.write("-BarLeft' class='sapMBarLeft' >");
+	oRenderManager.write("<div id='"); 
+	oRenderManager.write(oControl.getId());
+	oRenderManager.write("-BarLeft' class='sapMBarLeft' >");
 	var aLContent = oControl.getContentLeft();
 	for(i=0; i< aLContent.length; i++){
-		rm.renderControl(aLContent[i]);
+		oRenderManager.renderControl(aLContent[i]);
 	}
-	rm.write("</div>");
+	oRenderManager.write("</div>");
 
 	//middle content area 
-	rm.write("<div id='"); 
-	rm.write(oControl.getId());
-	rm.write("-BarMiddle' class='sapMBarMiddle' >");
+	oRenderManager.write("<div id='"); 
+	oRenderManager.write(oControl.getId());
+	oRenderManager.write("-BarMiddle' class='sapMBarMiddle' >");
 	if (oControl.getEnableFlexBox()){
 		oControl._oflexBox = oControl._oflexBox || new sap.m.HBox(oControl.getId() + "-BarPH", {alignItems: "Center"}).addStyleClass("sapMBarPH").setParent(oControl, null, true);
 		aMContent = oControl.getContentMiddle();
 		for(i=0; i<aMContent.length; i++){
 			oControl._oflexBox.addItem(aMContent[i]);
 		}
-		rm.renderControl(oControl._oflexBox);
+		oRenderManager.renderControl(oControl._oflexBox);
 	} else {
-		rm.write("<div id='" + oControl.getId() + "-BarPH' class='sapMBarPH' >"); //place holder
+		oRenderManager.write("<div id='" + oControl.getId() + "-BarPH' class='sapMBarPH' >"); //place holder
 		var aMContent = oControl.getContentMiddle();
 		for(i=0; i<aMContent.length; i++){
-			rm.renderControl(aMContent[i]);
+			oRenderManager.renderControl(aMContent[i]);
 		}
-		rm.write("</div>");
+		oRenderManager.write("</div>");
 	}
-	rm.write("</div>");
+	oRenderManager.write("</div>");
 
 
 	//right content area
-	rm.write("<div id='" + oControl.getId() + "-BarRight'");
-	rm.addClass('sapMBarRight');
+	oRenderManager.write("<div id='" + oControl.getId() + "-BarRight'");
+	oRenderManager.addClass('sapMBarRight');
 	if(sap.ui.getCore().getConfiguration().getRTL()){
-		rm.addClass("sapMRTL");
+		oRenderManager.addClass("sapMRTL");
 	}
-	rm.writeClasses();
-	rm.write(">");
+	oRenderManager.writeClasses();
+	oRenderManager.write(">");
 	var aRContent = oControl.getContentRight();
 	for(i=0; i<aRContent.length; i++){
-		rm.renderControl(aRContent[i]);
+		oRenderManager.renderControl(aRContent[i]);
 	}
-	rm.write("</div>");
+	oRenderManager.write("</div>");
 	
 	switch (oControl._context) {
 	case 'header':
-		rm.write("</header>");
+		oRenderManager.write("</header>");
 		break;
 	case 'footer':
-		rm.write("</footer>");
+		oRenderManager.write("</footer>");
 		break;
 	default: 
-		rm.write("</div>");
+		oRenderManager.write("</div>");
 		break;
 	}
 	

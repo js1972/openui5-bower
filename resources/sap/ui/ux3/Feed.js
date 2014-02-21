@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.Feed");jQuery.sap.require("sap.ui.ux3.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.ux3.Feed",{metadata:{library:"sap.ui.ux3",properties:{"feederThumbnailSrc":{type:"sap.ui.core.URI",group:"Data",defaultValue:null},"feederSender":{type:"string",group:"Data",defaultValue:null},"live":{type:"boolean",group:"Behavior",defaultValue:true},"title":{type:"string",group:"Data",defaultValue:null}},aggregations:{"filterItems":{type:"sap.ui.core.ListItem",multiple:true,singularName:"filterItem",bindable:"bindable"},"chunks":{type:"sap.ui.ux3.FeedChunk",multiple:true,singularName:"chunk",bindable:"bindable"},"toolsMenuItems":{type:"sap.ui.commons.MenuItem",multiple:true,singularName:"toolsMenuItem",bindable:"bindable"}},events:{"filterChange":{},"search":{},"chunkAdded":{},"toolsItemSelected":{},"toggleLive":{}}}});sap.ui.ux3.Feed.M_EVENTS={'filterChange':'filterChange','search':'search','chunkAdded':'chunkAdded','toolsItemSelected':'toolsItemSelected','toggleLive':'toggleLive'};jQuery.sap.require("sap.ui.commons.MenuButton");jQuery.sap.require("sap.ui.commons.ToggleButton");jQuery.sap.require("sap.ui.commons.DropdownBox");jQuery.sap.require("sap.ui.commons.SearchField");jQuery.sap.require("sap.ui.ux3.Feeder");

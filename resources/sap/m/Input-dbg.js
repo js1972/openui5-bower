@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -767,6 +767,10 @@ sap.m.Input.prototype.setWidth = function(sWidth) {
 	return sap.m.InputBase.prototype.setWidth.call(this, sWidth || "100%");
 };
 
+sap.m.Input.prototype.getWidth = function() {
+	return this.getProperty("width") || "100%";
+};
+
 sap.m.Input.prototype.setFilterFunction = function(fnFilter){
 	this._fnFilter = fnFilter;
 };
@@ -824,31 +828,23 @@ sap.m.Input.prototype._onsaparrowkey = function(oEvent, sDir){
 	var oList = this._oList,
 		aListItems = oList.getItems(),
 		sValue = this._$input.val(),
-		i, iIndex = -1, iSelectedIndex;
+		iSelectedIndex = this._iPopupListSelectedIndex,
+		sNewValue;
 
-	for( i = 0 ; i < aListItems.length ; i++ ){
-		if(aListItems[i].getTitle() === sValue){
-			iIndex = i;
-			break;
-		}
-	}
-
-	if(iIndex === -1){
+	if(iSelectedIndex === -1){
 		iSelectedIndex = 0;
 	}else{
-		iSelectedIndex = iIndex;
 		if(sDir === "down"){
-			if(iIndex < aListItems.length - 1){
-				iSelectedIndex = iIndex + 1;
-				aListItems[iIndex].$().removeClass("sapMLIBSelected");
+			if(iSelectedIndex < aListItems.length - 1){
+				aListItems[iSelectedIndex].$().removeClass("sapMLIBSelected");
+				iSelectedIndex = iSelectedIndex + 1;
 			}
 		}else{
-			if(iIndex > 0){
-				iSelectedIndex = iIndex - 1;
-				aListItems[iIndex].$().removeClass("sapMLIBSelected");
+			if(iSelectedIndex > 0){
+				aListItems[iSelectedIndex].$().removeClass("sapMLIBSelected");
+				iSelectedIndex = iSelectedIndex - 1;
 			}
 		}
-
 	}
 	aListItems[iSelectedIndex].$().addClass("sapMLIBSelected");
 
@@ -856,7 +852,15 @@ sap.m.Input.prototype._onsaparrowkey = function(oEvent, sDir){
 		this._scrollToItem(iSelectedIndex, sDir);
 	}
 
-	this._$input.val(aListItems[iSelectedIndex].getTitle());
+	// make sure the value doesn't exceed the maxLength
+	sNewValue = this._getInputValue(aListItems[iSelectedIndex].getTitle());
+	// setValue isn't used because here is too early to modify the lastValue of input
+	this._$input.val(sNewValue);
+
+	// memorize the value set by calling jQuery.val, because browser doesn't fire a change event
+	// when the value is set programmatically.
+	this._sSelectedSuggViaKeyboard = sNewValue;
+
 	this._doSelect();
 
 	this._iPopupListSelectedIndex = iSelectedIndex;
@@ -874,11 +878,14 @@ sap.m.Input.prototype.onsapdown = function(oEvent) {
 };
 
 sap.m.Input.prototype.onsapescape = function(oEvent) {
-	if(this._oSuggestionPopup && this._oSuggestionPopup.isOpen()){
-		this._oSuggestionPopup.close();
-	}
 	if(sap.m.InputBase.prototype.onsapescape){
 		sap.m.InputBase.prototype.onsapescape.apply(this, arguments);
+	}
+
+	if(this._oSuggestionPopup && this._oSuggestionPopup.isOpen()){
+		// mark the event as already handled
+		oEvent.originalEvent._sapui_handledByControl = true;
+		this._oSuggestionPopup.close();
 	}
 };
 
@@ -908,7 +915,15 @@ sap.m.Input.prototype.onsapfocusleave = function(oEvent){
 
 	if(oEvent.relatedControlId
 			&& jQuery.sap.containsOrEquals(oPopup.getFocusDomRef(), sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())){
+		// force the focus to stay in input
 		this.focus();
+	}else{
+		// when the input still has the value of the last jQuery.val call, a change event has to be
+		// fired manually because browser doesn't fire an input event in this case.
+		if(this._$input.val() === this._sSelectedSuggViaKeyboard) {
+			this._sSelectedSuggViaKeyboard = null;
+			this._$input.change();
+		}
 	}
 };
 
@@ -918,7 +933,7 @@ sap.m.Input.prototype.onmousedown = function(oEvent){
 	if((oPopup instanceof sap.m.Popover) && oPopup.isOpen()){
 		oEvent.stopPropagation();
 	}
-}
+};
 
 sap.m.Input.prototype._deregisterEvents = function(){
 	if(this._sPopupResizeHandler){
@@ -933,80 +948,15 @@ sap.m.Input.prototype._deregisterEvents = function(){
 
 (function(){
 	sap.m.Input.prototype.setShowSuggestion = function(bValue){
-		var that = this;
 		this.setProperty("showSuggestion", bValue);
+		this._iPopupListSelectedIndex = -1;
 		if(bValue){
 			if(this._oSuggestionPopup){
 				return this;
 			}
-
-			if(sap.ui.Device.system.phone){
-				this._oPopupInput = new sap.m.Input(this.getId() + "-popup-input", {
-					width: "100%",
-					suggest: function(oEvent){
-						that.fireSuggest({
-							suggestValue: oEvent.getParameter("suggestValue")
-						});
-					},
-					liveChange: function(oEvent){
-						var sValue = oEvent.getParameter("newValue");
-						that.setValue(sValue);
-						if(sValue){
-							refreshListItems(that);
-						}
-					}
-				}).addStyleClass("sapMInputSuggInDialog");
-			}
-
-			this._oSuggestionPopup = !sap.ui.Device.system.phone ?
-				(new sap.m.Popover(this.getId() + "-popup", {
-					showHeader: false,
-					placement: sap.m.PlacementType.Vertical,
-					initialFocus: this
-				}))
-			:
-				(new sap.m.Dialog(this.getId() + "-popup", {
-					beginButton: new sap.m.Button(this.getId()+"-popup-closeButton", {
-						text: "Close", // TODO: translation text
-						press: function(){
-							that._oSuggestionPopup.close();
-						}
-					}),
-					stretch: true,
-					customHeader: new sap.m.Bar(this.getId() + "-popup-header", {
-						contentMiddle: this._oPopupInput
-					}),
-					horizontalScrolling: false,
-					initialFocus: this._oPopupInput
-				}).attachAfterClose(function(){
-					that._$input.val(that._oPopupInput._$input.val());
-					that._changeProxy();
-					that._oList.destroyItems();
-				})).attachAfterOpen(function(){
-					that._oPopupInput._$input.val(that._$input.val());
-					if(that._$input.val()){
-						that.fireSuggest({
-							suggestValue: that._$input.val()
-						});
-					}
-				});
-
-			this._oSuggestionPopup.addStyleClass("sapMInputSuggestionPopup");
-
-			if(!sap.ui.Device.system.phone){
-				overwritePopover(this._oSuggestionPopup, this);
-			}
-
-			this._oList = new sap.m.List(this.getId() + "-popup-list", {
-				width: "100%"
-			});
-
-			this._oSuggestionPopup.addContent(this._oList);
+			createSuggestionPopup(this);
 		}else{
-			if(this._oSuggestionPopup){
-				this._oSuggestionPopup.destory();
-				this._oSuggestionPopup = null;
-			}
+			destroySuggestionPopup(this);
 		}
 	};
 
@@ -1020,7 +970,7 @@ sap.m.Input.prototype._deregisterEvents = function(){
 			this._$input.val(value);
 		}
 
-		if (value != this.getProperty("value")) {
+		if (value !== this.getProperty("value")) {
 			this.setProperty("value", value, true);
 			this._curpos = this._$input.cursorPos();
 			this._setLabelVisibility();
@@ -1028,11 +978,17 @@ sap.m.Input.prototype._deregisterEvents = function(){
 				newValue : value
 			});
 
+			// No need to fire suggest event when suggestion feature isn't enabled or runs on the phone.
+			// Because suggest event should only be fired by the input in dialog when runs on the phone.
+			if(!this.getShowSuggestion() || sap.ui.Device.system.phone){
+				return;
+			}
+
 			if(value){
-				refreshListItems(this);
 				this.fireSuggest({
 					suggestValue: value
 				});
+				refreshListItems(this);
 			}else{
 				if(this._oSuggestionPopup && this._oSuggestionPopup.isOpen()){
 					this._oSuggestionPopup.close();
@@ -1070,6 +1026,93 @@ sap.m.Input.prototype._deregisterEvents = function(){
 		refreshListItems(this);
 		return this;
 	};
+
+	function createSuggestionPopup(oInput){
+		var oMessageBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+
+		if(sap.ui.Device.system.phone){
+			oInput._oPopupInput = new sap.m.Input(oInput.getId() + "-popup-input", {
+				width: "100%",
+				liveChange: function(oEvent){
+					var sValue = oEvent.getParameter("newValue");
+					oInput.setValue(sValue);
+
+					oInput.fireSuggest({
+						suggestValue: sValue
+					});
+					refreshListItems(oInput);
+
+					// make sure the live change handler on the original input is also called
+					oInput.fireLiveChange({
+						newValue: sValue
+					});
+				},
+
+			}).addStyleClass("sapMInputSuggInDialog");
+		}
+
+		oInput._oSuggestionPopup = !sap.ui.Device.system.phone ?
+			(new sap.m.Popover(oInput.getId() + "-popup", {
+				showHeader: false,
+				placement: sap.m.PlacementType.Vertical,
+				initialFocus: oInput
+			}).attachAfterClose(function(){
+				oInput._iPopupListSelectedIndex = -1;
+				oInput._oList.destroyItems();
+			}))
+		:
+			(new sap.m.Dialog(oInput.getId() + "-popup", {
+				beginButton: new sap.m.Button(oInput.getId() + "-popup-closeButton", {
+					text: oMessageBundle.getText("MSGBOX_CLOSE"),
+					press: function(){
+						oInput._oSuggestionPopup.close();
+					}
+				}),
+				stretch: true,
+				customHeader: new sap.m.Bar(oInput.getId() + "-popup-header", {
+					contentMiddle: oInput._oPopupInput
+				}),
+				horizontalScrolling: false,
+				initialFocus: oInput._oPopupInput
+			}).attachBeforeOpen(function(){
+				// set the same placeholder and maxLength as the original input
+				oInput._oPopupInput.setPlaceholder(oInput.getPlaceholder());
+				oInput._oPopupInput.setMaxLength(oInput.getMaxLength());
+			}).attachAfterClose(function(){
+				// call _getInputValue to apply the maxLength to the typed value
+				oInput._$input.val(oInput._getInputValue(oInput._oPopupInput.getValue()));
+				oInput._changeProxy();
+				oInput._oList.destroyItems();
+			}).attachAfterOpen(function(){
+				var sValue = oInput.getValue();
+
+				oInput._oPopupInput.setValue(sValue);
+				oInput.fireSuggest({
+					suggestValue: sValue
+				});
+				refreshListItems(oInput);
+			}));
+
+		oInput._oSuggestionPopup.addStyleClass("sapMInputSuggestionPopup");
+
+		if(!sap.ui.Device.system.phone){
+			overwritePopover(oInput._oSuggestionPopup, oInput);
+		}
+
+		oInput._oList = new sap.m.List(oInput.getId() + "-popup-list", {
+			width: "100%",
+			showNoData: false
+		});
+
+		oInput._oSuggestionPopup.addContent(oInput._oList);
+	}
+
+	function destroySuggestionPopup(oInput){
+		if(oInput._oSuggestionPopup){
+			oInput._oSuggestionPopup.destory();
+			oInput._oSuggestionPopup = null;
+		}
+	}
 
 	function overwritePopover(oPopover, oInput){
 		//overwrite the internal properties to not to show the arrow in popover.
@@ -1119,12 +1162,16 @@ sap.m.Input.prototype._deregisterEvents = function(){
 			},
 			oStandardListItem;
 
+		oList.destroyItems();
+
 		if(!bFilter){
-			oPopup.close();
+			// when the input has no value, close the Popup when not runs on the phone.
+			// because the opened dialog on phone shouldn't be closed.
+			if(!sap.ui.Device.system.phone){
+				oPopup.close();
+			}
 			return false;
 		}
-
-		oList.destroyItems();
 
 		for(var i=0; i<aItems.length; i++){
 			oItem = aItems[i];
@@ -1134,10 +1181,11 @@ sap.m.Input.prototype._deregisterEvents = function(){
 					type: oItem.getEnabled() ? sap.m.ListType.Active : sap.m.ListType.Inactive,
 					press: function(){
 						if(sap.ui.Device.system.phone){
-							oInput._oPopupInput._$input.val(this.getTitle());
+							oInput._oPopupInput.setValue(this.getTitle());
 							oInput._oPopupInput._doSelect();
 						}else{
-							oInput._$input.val(this.getTitle());
+							// call _getInputValue to apply the maxLength to the typed value
+							oInput._$input.val(oInput._getInputValue(this.getTitle()));
 							oInput._changeProxy();
 						}
 						oPopup.close();

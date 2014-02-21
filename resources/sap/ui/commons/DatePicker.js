@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.DatePicker");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.commons.TextField");sap.ui.commons.TextField.extend("sap.ui.commons.DatePicker",{metadata:{library:"sap.ui.commons",properties:{"locale":{type:"string",group:"Misc",defaultValue:null},"yyyymmdd":{type:"string",group:"Misc",defaultValue:null}}}});jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-core");jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-datepicker");jQuery.sap.require("sap.ui.model.type.Date");(function(){var o=function(d,i){var I=this.id;var c=I.replace(/-input/,'');var C=sap.ui.getCore().getControl(c);if(C){if(C.oPrivate.bVerboseMode){jQuery.sap.log.debug("DATEPICKER: JQUERY ONCLOSE CALLBACK")}C._hide()}};var O=function(y,m,i){if(document.activeElement){if(document.activeElement.className=="ui-datepicker-month"){setTimeout(sap.ui.commons.DatePicker._focusMonth,100)}else if(document.activeElement.className=="ui-datepicker-year"){setTimeout(sap.ui.commons.DatePicker._focusYear,100)}else{setTimeout(sap.ui.commons.DatePicker._focusCalendar,100)}}};jQuery.datepicker.regional['']={changeMonth:true,changeYear:true,isRTL:sap.ui.getCore().getConfiguration().getRTL(),onChangeMonthYear:O,onClose:o,showOn:'button',showOtherMonths:true,selectOtherMonths:true,showWeek:true,weekHeader:''};jQuery.datepicker.setDefaults(jQuery.datepicker.regional[''])}());

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1035,7 +1035,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.ValueState");
 
 sap.m.Dialog._bOneDesign = (sap.ui.core.theming.Parameters.get("sapMPlatformDependent") !== 'true');
-
+sap.m.Dialog._bIOS7Tablet = sap.ui.Device.os.ios && sap.ui.Device.system.tablet && sap.ui.Device.os.version >= 7 && sap.ui.Device.os.version < 8 && sap.ui.Device.browser.name === "sf";
 sap.m.Dialog._bPaddingByDefault = (sap.ui.getCore().getConfiguration().getCompatibilityVersion("sapMDialogWithPadding").compareTo("1.16") < 0);
 
 sap.m.Dialog._mStateClasses = {};
@@ -1117,8 +1117,19 @@ sap.m.Dialog.prototype.init = function(){
 					$that.css("top", iTop - iWindowScrollTop);
 				}
 
+				//TODO: remove this code after Apple fixes the jQuery(window).height() is 20px more than the window.innerHeight issue.
+				if(sap.m.Dialog._bIOS7Tablet && sap.ui.Device.orientation.landscape){
+					iTop = $that.offset().top;
+					$that.css("top", iTop - 10); //the calculated window size is 20px more than the actual size in ios 7 tablet landscape mode.
+				}
+
 				if(bHideRepositionProcess){
-					$that.css("visibility", "visible");
+					// set the dialog visible again
+					if(sap.ui.Device.os.ios){
+						$that.css("visibility", "visible");
+					}else{
+						$that.css("opacity", "1");
+					}
 				}
 
 				if (bFromResize) {
@@ -1129,7 +1140,16 @@ sap.m.Dialog.prototype.init = function(){
 				}
 			};
 		if(bHideRepositionProcess){
-			$that.css("visibility", "hidden");
+			// make dialog invisible before position it again to avoid flickering
+			// in iOS this has to be done with property visibility because setting opacity can't hide the reposition process
+			// in Android device visibility: hidden can't be used because in NEXUS 7 setting visibility to hidden will reset the focus which can
+			// close the already opened on screen keyboard
+			// Here is chosen: for iOS uses visibility and the rest uses opacity
+			if(sap.ui.Device.os.ios){
+				$that.css("visibility", "hidden");
+			}else{
+				$that.css("opacity", "0");
+			}
 		}
 
 		that._deregisterResizeHandler();
@@ -1453,7 +1473,7 @@ sap.m.Dialog.prototype._closeAnimation = function($Ref, iRealDuration, fnClose) 
 
 sap.m.Dialog.prototype._setDimensions = function() {
 	var iWindowWidth = this._$Window.width(),
-		iWindowHeight = this._$Window.height(),
+		iWindowHeight = (sap.m.Dialog._bIOS7Tablet && sap.ui.Device.orientation.landscape && window.innerHeight) ? window.innerHeight : this._$Window.height(),
 		$this = this.$(),
 		//stretch is ignored for message dialog
 		bStretch = this.getStretch() && !this._bMessageType,

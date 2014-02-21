@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -49,6 +49,7 @@ sap.ui.table.TableRenderer.render = function(rm, oTable) {
 	}
 	rm.writeControlData(oTable);
 	rm.addClass("sapUiTable");
+	rm.addClass("sapUiTableSelMode" + oTable.getSelectionMode());
 	if (oTable.getColumnHeaderVisible()) {
 		rm.addClass("sapUiTableCHdr"); // show column headers
 	}
@@ -67,6 +68,9 @@ sap.ui.table.TableRenderer.render = function(rm, oTable) {
 	rm.addClass("sapUiTableShNoDa");
 	if (oTable.getShowNoData() && oTable._getRowCount() === 0) {
 		rm.addClass("sapUiTableEmpty"); // no data!
+	}
+	if (oTable.getEnableGrouping()) {
+		rm.addClass("sapUiTableGrouping");
 	}
 	rm.writeClasses();
 	if (oTable.getWidth()) {
@@ -320,7 +324,7 @@ sap.ui.table.TableRenderer.renderColHdr = function(rm, oTable) {
 			rm.write(">");
 	
 			for (var i = 0, l = oTable.getFixedColumnCount(); i < l; i++) {
-				if (aCols[i] && aCols[i].getVisible() && !aCols[i].getGrouped()) {
+				if (aCols[i] && aCols[i].shouldRender()) {
 					this.renderCol(rm, oTable, aCols[i], i, h);
 					if (h == 0) {
 						this.renderColRsz(rm, oTable, aCols[i], i);
@@ -359,7 +363,7 @@ sap.ui.table.TableRenderer.renderColHdr = function(rm, oTable) {
 		rm.write(">");
 	
 		for (var i = oTable.getFixedColumnCount(), l = aCols.length; i < l; i++) {
-			if (aCols[i].getVisible() && !aCols[i].getGrouped()) {
+			if (aCols[i].shouldRender()) {
 				this.renderCol(rm, oTable, aCols[i], i, h);
 				if (h == 0) {
 					this.renderColRsz(rm, oTable, aCols[i], i);
@@ -381,8 +385,10 @@ sap.ui.table.TableRenderer.renderColHdr = function(rm, oTable) {
 sap.ui.table.TableRenderer.renderColRowHdr = function(rm, oTable) {
 	rm.write("<div");
 	rm.writeAttribute("id", oTable.getId() + "-selall");
-	if (oTable.getSelectionMode() == "Multi") {
+	var oSelMode = oTable.getSelectionMode();
+	if (oSelMode == "Multi" || oSelMode == "MultiToggle") {
 		rm.writeAttributeEscaped("title", oTable._oResBundle.getText("TBL_SELECT_ALL"));
+		rm.addClass("sapUiTableSelAll");
 	}
 	rm.addClass("sapUiTableColRowHdr");
 	rm.writeClasses();
@@ -597,15 +603,19 @@ sap.ui.table.TableRenderer.renderTableControl = function(rm, oTable, bFixedTable
 		iEndColumn = oTable.getColumns().length;
 	}
 	var iFixedRows = oTable.getFixedRowCount();
+	var iFixedBottomRows = oTable.getFixedBottomRowCount();
 	var aRows = oTable.getRows();
 
 	if (iFixedRows > 0) {
-		this.renderTableControlCnt(rm, oTable, bFixedTable, iStartColumn, iEndColumn, true, 0, iFixedRows);
+		this.renderTableControlCnt(rm, oTable, bFixedTable, iStartColumn, iEndColumn, true, false, 0, iFixedRows);
 	}
-	this.renderTableControlCnt(rm, oTable, bFixedTable, iStartColumn, iEndColumn, false, iFixedRows, aRows.length);
+	this.renderTableControlCnt(rm, oTable, bFixedTable, iStartColumn, iEndColumn, false, false, iFixedRows, aRows.length - iFixedBottomRows);
+	if (iFixedBottomRows > 0) {
+		this.renderTableControlCnt(rm, oTable, bFixedTable, iStartColumn, iEndColumn, false, true, aRows.length - iFixedBottomRows, aRows.length);
+	}
 };
 
-sap.ui.table.TableRenderer.renderTableControlCnt = function(rm, oTable, bFixedTable, iStartColumn, iEndColumn, bFixedRow, iStartRow, iEndRow) {
+sap.ui.table.TableRenderer.renderTableControlCnt = function(rm, oTable, bFixedTable, iStartColumn, iEndColumn, bFixedRow, bFixedBottomRow, iStartRow, iEndRow) {
 	rm.write("<table");
 	var sId = oTable.getId() + "-table";
 	if (bFixedTable) {
@@ -617,6 +627,9 @@ sap.ui.table.TableRenderer.renderTableControlCnt = function(rm, oTable, bFixedTa
 	if (bFixedRow) {
 		sId += "-fixrow";
 		rm.addClass("sapUiTableCtrlRowFixed");
+	} else if (bFixedBottomRow) {
+		sId += "-fixrow-bottom";
+		rm.addClass("sapUiTableCtrlRowFixedBottom");
 	} else {
 		rm.addClass("sapUiTableCtrlRowScroll");
 	}
@@ -665,7 +678,7 @@ sap.ui.table.TableRenderer.renderTableControlCnt = function(rm, oTable, bFixedTa
 
 	for (var col = iStartColumn, count = iEndColumn; col < count; col++) {
 		var oColumn = aCols[col];
-		if (oColumn && oColumn.getVisible() && !oColumn.getGrouped()) {
+		if (oColumn && oColumn.shouldRender()) {
 			rm.write("<th");
 			rm.addStyle("width", oColumn.getWidth());
 			rm.writeStyles();
@@ -795,7 +808,7 @@ sap.ui.table.TableRenderer.renderTableRow = function(rm, oTable, oRow, iRowIndex
 sap.ui.table.TableRenderer.renderTableCell = function(rm, oTable, oRow, oCell, iCellIndex, bFixedTable, iStartColumn, iEndColumn) {
 	var iColIndex = oCell.data("sap-ui-colindex");
 	var oColumn = oTable.getColumns()[iColIndex];
-	if (oColumn.getVisible() && !oColumn.getGrouped() && iStartColumn <= iColIndex && iEndColumn > iColIndex) {
+	if (oColumn.shouldRender() && iStartColumn <= iColIndex && iEndColumn > iColIndex) {
 		rm.write("<td");
 		var sId = oRow.getId() + "-col" + iCellIndex;
 		rm.writeAttribute("id", sId);
@@ -818,6 +831,10 @@ sap.ui.table.TableRenderer.renderTableCell = function(rm, oTable, oRow, oCell, i
 		rm.writeStyles();
 		if (iCellIndex === 0) {
 			rm.addClass("sapUiTableTdFirst");
+		}
+		// grouping support to show/hide values of grouped columns
+		if (oColumn.getGrouped()) {
+			rm.addClass("sapUiTableTdGroup");
 		}
 		rm.writeClasses();
 		rm.write("><div");

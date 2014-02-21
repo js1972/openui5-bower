@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -572,7 +572,7 @@ sap.ui.commons.Carousel.prototype.onAfterRendering = function() {
 sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 	var $this = this.$();
 	var $scrollList = jQuery.sap.byId(this.getId() + "-scrolllist");
-	
+
 	if (!this._oItemNavigation) {
 		this._oItemNavigation = new sap.ui.core.delegate.ItemNavigation();
 		this._oItemNavigation.setCycling(true);
@@ -582,6 +582,24 @@ sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 		this._oItemNavigation.attachEvent(sap.ui.core.delegate.ItemNavigation.Events.AfterFocus, function(oEvent) {
 			var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea'),
 				$ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+
+			// ItemNavigation should only handle keyboard, do not set the focus on a carousel item if clicked on control inside
+			var oOrgEvent = oEvent.getParameter("event");
+			if (oOrgEvent && oOrgEvent.type == "mousedown") {
+				var bItem = false;
+				for ( var i = 0; i < $ScrollList.children().length; i++) {
+					var oItem = $ScrollList.children()[i];
+					if (oOrgEvent.target.id == oItem.id) {
+						bItem = true;
+						break;
+					}
+				}
+				if (!bItem) {
+					// something inside carousel item clicked -> focus this one
+					oOrgEvent.target.focus();
+				}
+			}
+
 			if (sap.ui.getCore().getConfiguration().getRTL()) {
 				$ContentArea.scrollLeft($ScrollList.width()  - $ContentArea.width());
 			} else {
@@ -589,7 +607,7 @@ sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 			}
 		}, this);
 	}
-	
+
 	this._oItemNavigation.setRootDomRef($scrollList[0]);
 	this._oItemNavigation.setItemDomRefs($scrollList.children());
 }

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -49,26 +49,37 @@ sap.ui.commons.ValueHelpFieldRenderer.renderOuterAttributes = function(rm, oCont
  */
 sap.ui.commons.ValueHelpFieldRenderer.renderOuterContent = function(rm, oControl){
 
-	rm.write('<img id=', oControl.getId() + '-icon');
+	var sIconUrl = oControl.getIconURL();
+	var aClasses = [];
+	var mAttributes = {};
+	mAttributes["id"] = oControl.getId() + "-icon";
+	mAttributes["role"] = "button";
+
 	// As mentioned above, a more generic "sapUiTfIcon" className could have been used...
 	// One would just have had to add its own icon className!
 	// Using "sapUiTfValueHelpIcon" for now, as it proved easier to define instead of overwriting
 	// the ComboBox image sources and backgrounds.
-	rm.addClass("sapUiTfValueHelpIcon");
-	if (oControl.getEnabled() && oControl.getEditable()) {
-		rm.addClass("sapUiTfValueHelpRegularIcon");
+	aClasses.push("sapUiTfValueHelpIcon");
+
+	if (sIconUrl && sap.ui.core.IconPool.isIconURI(sIconUrl)) {
+		oControl.bIsIconURI = true;
+	} else {
+		oControl.bIsIconURI = false;
+		if (oControl.getEnabled() && oControl.getEditable()) {
+			aClasses.push("sapUiTfValueHelpRegularIcon");
+		}
+
+		sIconUrl = this.renderIcon(rm, oControl, aClasses);
 	}
 
-	this.renderIcon(rm, oControl);
-	rm.writeClasses();
-	rm.writeAttribute("role","button");
-	rm.write(">");
+	rm.writeIcon(sIconUrl, aClasses, mAttributes);
+
 };
 
 /**
  * as onBeforeRendering only runs while re-rendering this module is called in renderer
  */
-sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
+sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl, aClasses){
 
 	var sIcon = "";
 
@@ -77,8 +88,7 @@ sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
 			oControl.sIconDsblUrl = oControl.getIconDisabledURL();
 		} else if (oControl.getIconURL()) {
 			oControl.sIconDsblUrl = oControl.getIconURL();
-			var oIcon  = jQuery.sap.domById(oControl.getId() + '-icon');
-			rm.addClass('sapUiTfValueHelpDsblIcon');
+			aClasses.push('sapUiTfValueHelpDsblIcon');
 		}
 		sIcon = oControl.sIconDsblUrl;
 	} else {
@@ -87,7 +97,8 @@ sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
 		}
 		sIcon = oControl.sIconRegularUrl;
 	}
-	rm.writeAttributeEscaped('src', sIcon);
+	return sIcon;
+
 };
 
 ///**

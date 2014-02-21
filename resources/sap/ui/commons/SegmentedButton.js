@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.SegmentedButton");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.SegmentedButton",{metadata:{interfaces:["sap.ui.commons.ToolbarItem"],library:"sap.ui.commons",properties:{"enabled":{type:"boolean",group:"Misc",defaultValue:true},"visible":{type:"boolean",group:"Misc",defaultValue:true}},aggregations:{"buttons":{type:"sap.ui.commons.Button",multiple:true,singularName:"button"}},associations:{"selectedButton":{type:"sap.ui.commons.Button",multiple:false}},events:{"select":{}}}});sap.ui.commons.SegmentedButton.M_EVENTS={'select':'select'};jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
@@ -9,7 +9,7 @@ sap.ui.commons.SegmentedButton.prototype.exit=function(){if(this._oItemNavigatio
 sap.ui.commons.SegmentedButton.prototype.onAfterRendering=function(){this._setItemNavigation(true)};
 sap.ui.commons.SegmentedButton.prototype._buttonSelected=function(e){var o=sap.ui.getCore().byId(this.getSelectedButton()),n=e.getSource();if(n!==o){this.setSelectedButton(n);this.fireSelect({selectedButtonId:n.getId()})}};
 sap.ui.commons.SegmentedButton.prototype._setItemNavigation=function(a){var b,B,I=[];if(this.getDomRef()){this._oItemNavigation.setRootDomRef(jQuery.sap.domById(this.getId()+"-radiogroup"));B=this.getButtons();for(var i=0;i<B.length;i++){b=B[i];I.push(b.getDomRef());this._setAriaInfo(b,i+1);if(a){b.removeDelegate(this._oButtonDelegate);b.addDelegate(this._oButtonDelegate)}}this._oItemNavigation.setItemDomRefs(I)}};
-sap.ui.commons.SegmentedButton.prototype._setAriaInfo=function(b,i){var $=jQuery(b.getDomRef()),l=this.getButtons().length;$.attr("aria-posinset",i);$.attr("aria-setsize",l);$.attr("role","radio");if(b.getId()===this.getSelectedButton()){$.attr("aria-checked",true);$.removeAttr("aria-describedby")}else{$.removeAttr("aria-checked");$.attr("aria-describedby",this.getId()+"-label")}};
+sap.ui.commons.SegmentedButton.prototype._setAriaInfo=function(b,i){var $=jQuery(b.getDomRef()),l=this.getButtons().length;$.attr("aria-posinset",i);$.attr("aria-setsize",l);$.attr("role","radio");if(b.getId()===this.getSelectedButton()){$.attr("aria-checked","true");$.removeAttr("aria-describedby")}else{$.removeAttr("aria-checked");$.attr("aria-describedby",this.getId()+"-label")}};
 sap.ui.commons.SegmentedButton.prototype._buttonOnAfterRendering=function(){this.oSegmentedButton._setItemNavigation()};
 sap.ui.commons.SegmentedButton.prototype._rerenderButtons=function(){var $=jQuery.sap.byId(this.getId());if($.length>0){var r=sap.ui.getCore().createRenderManager();sap.ui.commons.SegmentedButtonRenderer.renderButtons(r,this);r.flush($[0]);r.destroy()}};
 sap.ui.commons.SegmentedButton.prototype.addButton=function(b){this.addAggregation("buttons",b,true);b.attachPress(this._buttonSelected,this);this._rerenderButtons();return this};

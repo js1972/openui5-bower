@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.tmpl.TemplateControl");jQuery.sap.require("sap.ui.core.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.core.tmpl.TemplateControl",{metadata:{library:"sap.ui.core",properties:{"context":{type:"object",group:"Data",defaultValue:null}},aggregations:{"controls":{type:"sap.ui.core.Control",multiple:true,singularName:"control",visibility:"hidden"}},associations:{"template":{type:"sap.ui.core.tmpl.Template",multiple:false}},events:{"afterRendering":{},"beforeRendering":{}}}});sap.ui.core.tmpl.TemplateControl.M_EVENTS={'afterRendering':'afterRendering','beforeRendering':'beforeRendering'};jQuery.sap.require("sap.ui.core.tmpl.DOMElement");jQuery.sap.require("sap.ui.core.tmpl.DOMAttribute");jQuery.sap.require("sap.ui.core.DeclarativeSupport");
@@ -19,4 +19,4 @@ sap.ui.core.tmpl.TemplateControl.prototype.bind=function(p,t){var P=sap.ui.core.
 sap.ui.core.tmpl.TemplateControl.prototype.bindProp=function(p){var b=this.bind(p,"property");return b&&b.getExternalValue()};
 sap.ui.core.tmpl.TemplateControl.prototype.bindList=function(p){var b=this.bind(p,"list"),m=b&&b.getModel(),p=b&&b.getPath();return b&&m.getProperty(p)};
 sap.ui.core.tmpl.TemplateControl.prototype.createDOMElement=function(s,p,d){var e=new sap.ui.core.tmpl.DOMElement(s);if(p){e.bindElement(p)}if(!d){this.addAggregation("controls",e)}return e};
-sap.ui.core.tmpl.TemplateControl.prototype.createControl=function(s,p,d,v){var h={};jQuery.each(s,function(k,V){if(k.indexOf("-")===-1){h["data-"+jQuery.sap.hyphen(k)]=V}else{h["data-"+k]=V}});var $=jQuery("<div/>",h);var c=sap.ui.core.DeclarativeSupport._createControl($.get(0),v);if(p){c.bindElement(p)}if(!d){this.addAggregation("controls",c)}return c};
+sap.ui.core.tmpl.TemplateControl.prototype.createControl=function(s,p,d,v){var h={};jQuery.each(s,function(k,V){h["data-"+jQuery.sap.hyphen(k)]=V});var $=jQuery("<div/>",h);var c=sap.ui.core.DeclarativeSupport._createControl($.get(0),v);if(p){c.bindElement(p)}if(!d){this.addAggregation("controls",c)}return c};

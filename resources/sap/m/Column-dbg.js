@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -400,8 +400,7 @@ sap.ui.core.Element.extend("sap.m.Column", { metadata : {
  * Control itself uses this function to compare values of two repeating cells.
  * Default value "getText" is suitable for Label and Text control.
  * e.g. For "Icon" control "getSrc" can be used.
- * 
- * Note: You can pass one string parameter to given function name after "#" sign. e.g. "data#myparameter"
+ * Note: You can pass one string parameter to given function after "#" sign. e.g. "data#myparameter"
  *
  * Default value is <code>getText</code>
  *

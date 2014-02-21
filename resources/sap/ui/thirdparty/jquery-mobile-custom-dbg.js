@@ -1532,13 +1532,7 @@ function triggerVirtualEvent( eventType, event, flags ) {
 function mouseEventCallback( event ) {
 	var touchID = $.data( event.target, touchTargetPropertyName );
 
-	//SAP MODIFICATION
-	//!$.support.touch is added to avoid firing the virtual events for the second time in mobile browsers.
-	//Those virtual events are fired already by listening to those touch events.
-	//This fixes the problem that virtual events being caught by the underneath html element when the original target
-	// is moved out of the visible area. (for example, the back button in the page header which is moved out when navigating
-	// back to the previous page, and this also triggers the previous page's back button as well)
-	if ( !blockMouseTriggers && ( !lastTouchID || lastTouchID !== touchID ) && !$.support.touch){
+	if ( !blockMouseTriggers && ( !lastTouchID || lastTouchID !== touchID ) ){
 		var ve = triggerVirtualEvent( "v" + event.type, event );
 		if ( ve ) {
 			if ( ve.isDefaultPrevented() ) {
@@ -1633,7 +1627,14 @@ function handleTouchEnd( event ) {
 
 	if ( !didScroll ) {
 		var ve = triggerVirtualEvent( "vclick", event, flags );
-		if ( ve && ve.isDefaultPrevented() ) {
+
+		// SAP MODIFICATION
+		// The following code is executed when runs on a touch event supported device
+		// because calling preventDefault on vclick (touchend) event breaks other things such as:
+		// 1. On screen keyboard can't be opened on touch enabled device.
+		// 2. Focused input can't get blurred by tapping outside the input.
+		// Therefore the ve.isDefaultPrevented() is replaced with $.support.touch
+		if ( ve && $.support.touch) {
 			// The target of the mouse events that follow the touchend
 			// event don't necessarily match the target used during the
 			// touch. This means we need to rely on coordinates for blocking
@@ -1642,7 +1643,10 @@ function handleTouchEnd( event ) {
 			clickBlockList.push({
 				touchID: lastTouchID,
 				x: t.clientX,
-				y: t.clientY
+				y: t.clientY,
+				// SAP MODIFICATION
+				// the touchend event target is needed by suppressing mousedown, mouseup, click event
+				target: event.target
 			});
 
 			// Prevent any mouse events that follow from triggering
@@ -1791,7 +1795,7 @@ for ( var i = 0; i < virtualEventNames.length; i++ ) {
 // Note that we require event capture support for this so if the device
 // doesn't support it, we punt for now and rely solely on mouse events.
 if ( eventCaptureSupported ) {
-	document.addEventListener( "click", function( e ) {
+	function suppressEvent ( e ) {
 		var cnt = clickBlockList.length,
 			target = e.target,
 			x, y, ele, i, o, touchID;
@@ -1839,6 +1843,14 @@ if ( eventCaptureSupported ) {
 								$.data( ele, touchTargetPropertyName ) === o.touchID ) {
 						// XXX: We may want to consider removing matches from the block list
 						//      instead of waiting for the reset timer to fire.
+
+						// SAP MODIFICATION
+						// The event is suppressed only when its target is different than the touchend event's target.
+						// This ensures that only the unnecessary events are suppressed.
+						if ( target === o.target ) {
+							return;
+						}
+
 						e.preventDefault();
 						e.stopPropagation();
 						return;
@@ -1847,7 +1859,23 @@ if ( eventCaptureSupported ) {
 				ele = ele.parentNode;
 			}
 		}
-	}, true);
+	}
+
+	// SAP MODIFICATION
+	// In the original version, only the click event is suppressed.
+	// But this can't solve the issue that on screen keyboard is opened 
+	// when clicking on the current page switches to an input DOM element 
+	// on the same position. This keyboard opening is caused by mousedown
+	// and mouseup event which have delay reach on the underneath input.
+	// Thus the mousedown and mouseup events should also be suppressed.
+	//
+	// The mousedown, mouseup and click events are suppressed only when their
+	// coordinate is proximitely the same as the coordinate of recorded touch
+	// events and the mouse event's target is different than the target of the
+	// touch event.
+	document.addEventListener( "mousedown", suppressEvent, true );
+	document.addEventListener( "mouseup", suppressEvent, true );
+	document.addEventListener( "click", suppressEvent, true );
 }
 })( jQuery, window, document );
 
@@ -2031,8 +2059,12 @@ if ( eventCaptureSupported ) {
 					stop = $.event.special.swipe.stop( event );
 
 					// prevent scrolling
-					if ( Math.abs( start.coords[ 0 ] - stop.coords[ 0 ] ) > $.event.special.swipe.scrollSupressionThreshold ) {
-						event.preventDefault();
+					// SAP MODIFICATION: skip this behavior on chrome+desktop, as it prevents text selection on non-input fields (CSN #3696977/2013)
+					// NOTE: other browsers (Firefox, IE, Safari) don't stop the text selection when calling preventDefault, so we only alter the behaviour for Chrome to be as close to the original implementation of jQuery 
+					if(!sap.ui.Device.system.desktop || sap.ui.Device.browser.name !== "cr") {
+						if ( Math.abs( start.coords[ 0 ] - stop.coords[ 0 ] ) > $.event.special.swipe.scrollSupressionThreshold ) {
+							event.preventDefault();
+						}
 					}
 				}
 

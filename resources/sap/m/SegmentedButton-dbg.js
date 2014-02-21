@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -385,6 +385,12 @@ sap.m.SegmentedButton.prototype.init = function() {
 	this._oItemNavigation = new sap.ui.core.delegate.ItemNavigation();
 	this._oItemNavigation.setCycling(true);
 	this.addDelegate(this._oItemNavigation);
+	
+	//Make sure when a button gets removed to reset the selected button
+	this.removeButton = function(sButton) {
+		sap.m.SegmentedButton.prototype.removeButton.call(this, sButton)
+		this.setSelectedButton(this.getButtons()[0]);
+	};
 };
 
 sap.m.SegmentedButton.prototype.onBeforeRendering = function() {
@@ -413,7 +419,7 @@ sap.m.SegmentedButton.prototype._setGhostButtonText = function(oButton) {
 	var sText = oButton.getText();
 	//refresh the dom instance
 	var ghostButton = jQuery("#segMtBtn_calc")
-	if(oButton.getIcon() === "") {
+	if(oButton.getIcon().length == 0 && oButton.getWidth().length == 0) {
 		ghostButton.find("span").text(sText);
 		this._aButtonWidth.push(ghostButton.width());
 	}else {
@@ -486,9 +492,17 @@ sap.m.SegmentedButton.prototype._fCalcBtnWidth = function() {
 		//if parent width is bigger than actual screen width set parent width to screen width => android 2.3
 		iParentWidth = (jQuery(window).width() < $this.parent().outerWidth()) ? jQuery(window).width() : $this.parent().width();
 	if(this.getWidth() && this.getWidth().indexOf("%") === -1) {
-		iMaxWidth = parseInt(this.getWidth()) / iItm;
-		var iMaxOuterWidth = Math.max.apply(null, this._aButtonWidth);
-		iMaxWidth = iMaxWidth - iMaxOuterWidth;
+		iMaxWidth = parseInt(this.getWidth());
+		var iCustomBtnWidths = iItm; 
+		for (var i=0; i < iItm; i++) {
+			var sWidth = this.getButtons()[i].getWidth();
+			if(sWidth.length > 0 && sWidth.indexOf("%") === -1) {
+				iMaxWidth = iMaxWidth - parseInt(sWidth);
+				iCustomBtnWidths--;
+			}
+		}
+		iMaxWidth = iMaxWidth / iCustomBtnWidths;
+		iMaxWidth = iMaxWidth - iInnerWidth;
 	} else {
 		iMaxWidth = Math.max.apply(null, this._aButtonWidth);
 		if (((iParentWidth -iCntOutWidth) > iMaxWidth * iItm || this._bInsideBar) && this.getWidth().indexOf("%") === -1) {
@@ -503,7 +517,14 @@ sap.m.SegmentedButton.prototype._fCalcBtnWidth = function() {
 		if (!isNaN(iMaxWidth) && iMaxWidth > 0) {
 			//Bug: +2px for IE9(10)
 			iMaxWidth = this._isMie ? iMaxWidth+2 : iMaxWidth;
-			$this.children('#' + this.getButtons()[i].getId()).width(iMaxWidth);
+			//use the given width of the button (when present)
+			if(this.getButtons()[i].getWidth().length > 0) {
+				var sBtnWidth = this.getButtons()[i].getWidth();
+				var iWidth = sBtnWidth.indexOf("%") == -1 ? ( parseInt(sBtnWidth) - iInnerWidth ) : sBtnWidth
+				$this.children('#' + this.getButtons()[i].getId()).width(iWidth);
+			}else {
+				$this.children('#' + this.getButtons()[i].getId()).width(iMaxWidth);
+			}
 		}
 	}
 };

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1679,14 +1679,9 @@ sap.m.SplitContainer.prototype.init = function() {
 		this._oShowMasterBtn = new sap.m.Button(this.getId() + "-MasterBtn", {
 			text: (sap.ui.Device.os.ios && this._isPlatformDependent) ? this._rb.getText("SPLITCONTAINER_NAVBUTTON_TEXT") : "",
 			icon: !this._isPlatformDependent ? sap.ui.core.IconPool.getIconURI("menu2") : "",
-			type: (sap.ui.Device.os.ios || !this._isPlatformDependent) ? sap.m.ButtonType.Default : sap.m.ButtonType.Up
+			type: (sap.ui.Device.os.ios || !this._isPlatformDependent) ? sap.m.ButtonType.Default : sap.m.ButtonType.Up,
+			press: jQuery.proxy(this._onMasterButtonTap, this)
 		}).addStyleClass("sapMSplitContainerMasterBtn"); 
-		
-		this._oShowMasterBtn.addDelegate({
-			ontap: function(oEvent){
-				oEvent._masterButtonClickedForSplitContainer = true;
-			}
-		});
 		
 		//initialize the popover
 		this._oPopOver = new sap.m.Popover(this.getId() + "-Popover", {
@@ -1768,7 +1763,7 @@ sap.m.SplitContainer.prototype.exit = function() {
 
 sap.m.SplitContainer.prototype.onAfterRendering = function() {
 	if(!sap.ui.Device.system.phone) {
-		if(this._oPopOver.isOpen()){
+		if(this._oPopOver && this._oPopOver.isOpen()){
 			this._oPopOver.close();
 		}
 		if(!this._fnOrientationChange){
@@ -1814,42 +1809,24 @@ sap.m.SplitContainer.prototype.onswiperight = function(oEvent) {
 
 //handles closing of master navContainer and navigation inside it
 sap.m.SplitContainer.prototype.ontap = function(oEvent) {
-	if(!sap.ui.Device.system.phone) {
-		var	_bButtonIsBack = !!oEvent._navButtonClickedForSplitContainer,
-			_bIsMasterNav = true;
+	if(sap.ui.Device.system.phone){
+		return;
+	}
 
-		if(jQuery(oEvent.target).parents(".sapMSplitContainerDetail").length > 0) {
-			_bIsMasterNav = false;
-		}
+	var bIsMasterNav = true;
 
-		// when press not in MasterNav, master will be hidden
-		// this should happen when:
-		// 1. showhidemode in portrait
-		// 2. hidemode
-		if(((!this._oldIsLandscape && this.getMode() == "ShowHideMode") || this.getMode() == "HideMode")
-				&& !_bIsMasterNav 
-				&& !_bButtonIsBack 
-				&& this._bMasterisOpen){
-			this.hideMaster();
-		}
+	if(jQuery(oEvent.target).parents(".sapMSplitContainerDetail").length > 0) {
+		bIsMasterNav = false;
+	}
 
-		if(oEvent._masterButtonClickedForSplitContainer) {
-			if(!this._oldIsLandscape){
-				if(this.getMode() == "PopoverMode") {
-					if(!this._oPopOver.oPopup.isOpen()){
-						this._oPopOver.openBy(this._oShowMasterBtn, true);
-					}else {
-						this._oPopOver.close();
-					}
-				} else {
-					this.showMaster();
-				}
-			}else{
-				if(this.getMode() === "HideMode"){
-					this.showMaster();
-				}
-			}
-		}
+	// when press not in MasterNav, master will be hidden
+	// this should happen when:
+	// 1. showhidemode in portrait
+	// 2. hidemode
+	if(((!this._oldIsLandscape && this.getMode() == "ShowHideMode") || this.getMode() == "HideMode")
+			&& !bIsMasterNav
+			&& this._bMasterisOpen){
+		this.hideMaster();
 	}
 };
 
@@ -1859,6 +1836,28 @@ sap.m.SplitContainer.prototype.onswipeleft = function(oEvent) {
 		&& (this._portraitHide() || this._hideMode()) 
 		&& !this._bIgnoreSwipe) {
 		this.hideMaster();
+	}
+};
+
+sap.m.SplitContainer.prototype._onMasterButtonTap = function(oEvent){
+	if(sap.ui.Device.system.phone){
+		return;
+	}
+
+	if(!this._oldIsLandscape){
+		if(this.getMode() == "PopoverMode") {
+			if(!this._oPopOver.isOpen()){
+				this._oPopOver.openBy(this._oShowMasterBtn, true);
+			}else{
+				this._oPopOver.close();
+			}
+		}else{
+			this.showMaster();
+		}
+	}else{
+		if(this.getMode() === "HideMode"){
+			this.showMaster();
+		}
 	}
 };
 /**************************************************************
@@ -1930,13 +1929,11 @@ sap.m.SplitContainer.prototype.backToTopDetail = function(backData, oTransitionP
 
 sap.m.SplitContainer.prototype.addMasterPage = function(oPage) {
 	var oRealPage = this._getRealPage(oPage);
-	if(oRealPage && oRealPage._navBtn){
-		oRealPage._navBtn.addDelegate({
-			ontap: function(oEvent){
-				oEvent._navButtonClickedForSplitContainer = true;
-			}
-		});
+
+	if(this._hasPageInArray(this._aMasterPages, oPage)) {
+		return;
 	}
+
 	// When the same NavContainer is used for both aggregations, calling "addPage()" will not do anything in case the oPage is already
 	// aggregated by this NavContainer, but in the other "virtual" aggregation of this SplitContainer (i.e. moved from detailPages to masterPages).
 	// This would lead to the page being added to the "master" array, but not removed from the "detail" array because the patched method
@@ -1954,6 +1951,10 @@ sap.m.SplitContainer.prototype.addDetailPage = function(oPage) {
 		oRealPage = this._getRealPage(oPage),
 		oCore = this.oCore,
 		sPageId = oRealPage ? oRealPage.getId() : "";
+
+	if(this._hasPageInArray(this._aDetailPages, oPage)) {
+		return;
+	}
 	
 	//processing the header in page
 	oPage.addDelegate({
@@ -2803,6 +2804,21 @@ sap.m.SplitContainer._mFunctionMapping = {
 	"removeAggregation" : "removePage",
 	"removeAllAggregation" : "removeAllPages"
 };
+
+/*
+ * @private
+ */
+sap.m.SplitContainer.prototype._hasPageInArray= function (array, oPage) {
+	var bFound = false;
+	
+	array.forEach(function(oArrayEntry) {
+		if(oPage === oArrayEntry) {
+			bFound = true;
+		}
+	})
+	return bFound;
+}
+
 /**************************************************************
 * END - Static methods
 **************************************************************/

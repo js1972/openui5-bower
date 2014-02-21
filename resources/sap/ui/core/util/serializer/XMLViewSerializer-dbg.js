@@ -1,6 +1,6 @@
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.thirdparty.vkbeautify");
  * @class XMLViewSerializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.util.serializer.XMLViewSerializer
  * @experimental Since 1.15.1. The XMLViewSerializer is still under construction, so some implementation details can be changed in future.
  */
@@ -84,8 +84,8 @@ sap.ui.core.util.serializer.XMLViewSerializer.prototype.serialize = function () 
 	
 	// write view start
 	var sView = [];
-	sView.push('<sap.ui.core:View');
-	if (this._oView.getControllerName()) {
+	sView.push('<sap.ui.core.mvc:View');
+	if (this._oView.getControllerName && this._oView.getControllerName()) {
 		sView.push(' controllerName="' + this._oView.getControllerName() + '"');
 	}
 	
@@ -104,7 +104,7 @@ sap.ui.core.util.serializer.XMLViewSerializer.prototype.serialize = function () 
 	// write the main content
 	sView.push(" >");
 	sView.push(sResult);
-	sView.push("</sap.ui.core:View>");
+	sView.push("</sap.ui.core.mvc:View>");
 	
 	return vkbeautify.xml(sView.join(""));
 };

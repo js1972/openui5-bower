@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -139,7 +139,7 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
 
 /**
  * Getter for property <code>type</code>.
- * Type of a button (e.g. default, accept, reject, back, icon, etc.)
+ * Type of a button (e.g. Default, Accept, Reject, Back, etc.)
  *
  * Default value is <code>Default</code>
  *
@@ -590,7 +590,6 @@ sap.m.Button.prototype.ontap = function(oEvent) {
 		}
 		// check if target which started the event is the same
 		if ((!!this._target) && (this._target === oEvent.target)) {
-			this.focus();
 			this.fireTap({/* no parameters */}); // (This event is deprecated, use the "press" event instead)
 			this.firePress({/* no parameters */});
 		}
@@ -695,7 +694,6 @@ sap.m.Button.prototype._activeButton = function() {
 	if (jQuery.device.is.desktop) {
 		if (this.$().hasClass("sapMBtnHover")) {
 			this.$().removeClass("sapMBtnHover");
-			this._bRestoreHover = true;
 		}
 	}
 	// active handling for android/blackberry
@@ -708,7 +706,7 @@ sap.m.Button.prototype._activeButton = function() {
 			this._image.setSrc(this.getActiveIcon());
 		}
 	}
-};
+};	
 
 
 /**
@@ -720,12 +718,6 @@ sap.m.Button.prototype._inactiveButton = function() {
 	var $this = this.$();
 	if($this.hasClass("sapMBtnActive")){
 		$this.removeClass("sapMBtnActive");
-		// add hover because mouse pointer should be over the button (only on desktop)
-		if (jQuery.device.is.desktop && this._bRestoreHover) {
-			$this.addClass("sapMBtnHover");
-			this._bRestoreHover = false;
-		}
-
 		// handling active icon
 		if (this.getEnabled()) {
 			if (this.getIcon() && this.getActiveIcon() && this._image instanceof sap.m.Image) {

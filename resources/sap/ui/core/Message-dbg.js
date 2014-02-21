@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -34,7 +34,8 @@ jQuery.sap.require("sap.ui.core.Element");
  * <li>{@link #getText text} : string</li>
  * <li>{@link #getTimestamp timestamp} : string</li>
  * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
- * <li>{@link #getLevel level} : sap.ui.core.MessageType (default: sap.ui.core.MessageType.None)</li></ul>
+ * <li>{@link #getLevel level} : sap.ui.core.MessageType (default: sap.ui.core.MessageType.None)</li>
+ * <li>{@link #getReadOnly readOnly} : boolean (default: false)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -61,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -81,7 +82,8 @@ sap.ui.core.Element.extend("sap.ui.core.Message", { metadata : {
 		"text" : {type : "string", group : "Misc", defaultValue : null},
 		"timestamp" : {type : "string", group : "Misc", defaultValue : null},
 		"icon" : {type : "sap.ui.core.URI", group : "Misc", defaultValue : null},
-		"level" : {type : "sap.ui.core.MessageType", group : "Misc", defaultValue : sap.ui.core.MessageType.None}
+		"level" : {type : "sap.ui.core.MessageType", group : "Misc", defaultValue : sap.ui.core.MessageType.None},
+		"readOnly" : {type : "boolean", group : "Misc", defaultValue : false}
 	}
 }});
 
@@ -199,6 +201,33 @@ sap.ui.core.Element.extend("sap.ui.core.Message", { metadata : {
  * @return {sap.ui.core.Message} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.core.Message#setLevel
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>readOnly</code>.
+ * Determines whether the message should be read only. This helps the application to handle a message a different way if the application differentiates between read-only and common messages.
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>readOnly</code>
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.core.Message#getReadOnly
+ * @function
+ */
+
+/**
+ * Setter for property <code>readOnly</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bReadOnly  new value for property <code>readOnly</code>
+ * @return {sap.ui.core.Message} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.core.Message#setReadOnly
  * @function
  */
 

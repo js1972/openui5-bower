@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -244,6 +244,10 @@ sap.m.Tile.prototype.setPos = function(iX,iY){
 	} else if ("MozTransform" in o.style) {
 		this.$().css('-moz-transform','translate3d('+iX+'px,'+iY+'px,0)');
 	}
+	if(this._invisible){
+		this.$().css("visibility","");
+		delete this._invisible;
+	}
 	//jQuery.sap.log.info("Set tile pos, id:" + this.getId() + ", x:" + iX + ", y:" + iY);
 	
 };
@@ -350,3 +354,13 @@ sap.m.Tile.prototype.ontap = function() {
 		this.firePress({});
 	}
 };
+
+/**
+ * Set initial visibility of the tile
+ * @param {boolean} bVisible visibility
+ * @private
+ */ 
+sap.m.Tile.prototype._setVisible = function(bVisible){
+	this._invisible = !bVisible;
+	return this;
+}

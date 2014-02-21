@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.layout.BorderLayout");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout",{metadata:{publicMethods:["createArea","setAreaData","addContent","insertContent","removeContent","removeAllContent","getContent","indexOfContent","destroyContent","getAreaData","getAreaById","getArea"],library:"sap.ui.commons",properties:{"rtl":{type:"boolean",group:"Appearance",defaultValue:false,deprecated:true},"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:'100%'},"height":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:'100%'}},aggregations:{"top":{type:"sap.ui.commons.layout.BorderLayoutArea",multiple:false},"begin":{type:"sap.ui.commons.layout.BorderLayoutArea",multiple:false},"center":{type:"sap.ui.commons.layout.BorderLayoutArea",multiple:false},"end":{type:"sap.ui.commons.layout.BorderLayoutArea",multiple:false},"bottom":{type:"sap.ui.commons.layout.BorderLayoutArea",multiple:false}}}});

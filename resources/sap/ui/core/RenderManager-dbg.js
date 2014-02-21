@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8,6 +8,7 @@
 jQuery.sap.declare("sap.ui.core.RenderManager");
 
 jQuery.sap.require("jquery.sap.encoder");
+jQuery.sap.require("jquery.sap.act");
 jQuery.sap.require("sap.ui.base.Object");
 jQuery.sap.require("sap.ui.base.Interface");
 
@@ -38,7 +39,7 @@ jQuery.sap.require("sap.ui.base.Interface");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -377,6 +378,8 @@ sap.ui.core.RenderManager.prototype.getHTML = function(oControl) {
 		this.aRenderedControls = [];
 		this.aBuffer = [];
 		this.aStyleStack = [{}];
+		
+		jQuery.sap.act.refresh();
 	};
 
 	/**
@@ -965,15 +968,18 @@ sap.ui.core.RenderManager.prototype.writeAttribute = function(sName, value) {
 
 /**
  * Writes the attribute and its value into the HTML
+ * 
+ * The value is properly escaped to avoid XSS attacks.
+ * 
  * @param sName the name of the attribute
- * @param sValue the value of the attribute
+ * @param vValue the value of the attribute
  * @return {sap.ui.core.RenderManager} this render manager instance to allow chaining
  * @public
  * @SecSink {0|XSS}
  */
-sap.ui.core.RenderManager.prototype.writeAttributeEscaped = function(sName, sValue) {
+sap.ui.core.RenderManager.prototype.writeAttributeEscaped = function(sName, vValue) {
 	// writeAttribute asserts
-	this.writeAttribute(sName, jQuery.sap.escapeHTML(sValue));
+	this.writeAttribute(sName, jQuery.sap.escapeHTML(String(vValue)));
 	return this;
 };
 
@@ -1097,7 +1103,7 @@ sap.ui.core.RenderManager.prototype.writeAccessibilityState = function(oElement,
 
 	for(var p in mAriaProps) {
 		if(mAriaProps[p] != null && mAriaProps[p] !== ""){ //allow 0 and false but no null, undefined or empty string
-			this.writeAttribute(p === "role" ? p : "aria-"+p, mAriaProps[p]);
+			this.writeAttributeEscaped(p === "role" ? p : "aria-"+p, mAriaProps[p]);
 		}
 	}
 

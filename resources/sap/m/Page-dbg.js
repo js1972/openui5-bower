@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1063,9 +1063,9 @@ sap.m.Page.prototype._getAnyHeader = function() {
 	if (oCustomHeader) {
 		oCustomHeader._context = 'header';
 		// return aggregated header, if it exists
-		return oCustomHeader.addStyleClass('sapMPageHeader').addStyleClass("sapMHeader-CTX");
+		return oCustomHeader.addStyleClass("sapMPageHeader sapMHeader-CTX");
 	} else {
-		return this._getInternalHeader().addStyleClass('sapMPageHeader').addStyleClass("sapMHeader-CTX");
+		return this._getInternalHeader().addStyleClass("sapMPageHeader sapMHeader-CTX");
 	}
 };
 

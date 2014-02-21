@@ -9576,15 +9576,15 @@ if ( !$.curCSS ) {
 }( jQuery ));
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10126,6 +10126,13 @@ if(typeof window.sap.ui !== "object"){
 						version: version,
 						mobile: oExpMobile.test(ua),
 						webkit: true
+					}
+				}else{
+					// unknown webkit browser
+					return {
+						mobile: oExpMobile.test(ua),
+						webkit: true,
+						webkitVersion: webkitVersion
 					}
 				}
 			}
@@ -10771,9 +10778,11 @@ if(typeof window.sap.ui !== "object"){
 	var bResize = false;
 	var iOrientationTimeout;
 	var iResizeTimeout;
+	var iClearFlagTimeout;
 	var iWindowHeightOld = windowSize()[1];
 	var iWindowWidthOld = windowSize()[0];
 	var bKeyboardOpen = false;
+	var iLastResizeTime;
 	
 	function isLandscape(bFromOrientationChange){
 		if (device.support.touch && device.support.orientation) {
@@ -10799,9 +10808,9 @@ if(typeof window.sap.ui !== "object"){
 
 	function handleMobileOrientationResizeChange(evt) {
 		if (evt.type == "resize") {
-			
 			var iWindowHeightNew = windowSize()[1];
 			var iWindowWidthNew = windowSize()[0];
+			var iTime = new Date().getTime();
 			//skip multiple resize events by only one orientationchange
 			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
 				return;
@@ -10810,12 +10819,27 @@ if(typeof window.sap.ui !== "object"){
 			//on mobile devices opening the keyboard on some devices leads to a resize event
 			//in this case only the height changes, not the width
 			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
-				bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
+				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
+				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
+				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
+					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				}
 				handleResizeChange();
 			} else {
 				iWindowWidthOld = iWindowWidthNew;
 			}
+			iLastResizeTime = iTime;
 			iWindowHeightOld = iWindowHeightNew;
+			
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+			//Some Android build-in browser fires a resize event after the viewport is applied.
+			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
+			//a UI5 resize event will be fired with the wrong window size.
+			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
 		} else if (evt.type == "orientationchange") {
 			bOrientationchange = true;
 		}
@@ -10833,8 +10857,18 @@ if(typeof window.sap.ui !== "object"){
 			handleResizeChange();
 			bOrientationchange = false;
 			bResize = false;
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
 		}
 		iOrientationTimeout = null;
+	};
+	
+	function clearFlags(){
+		bOrientationchange = false;
+		bResize = false;
+		iClearFlagTimeout = null;
 	};
 	
 //******** System Detection ********
@@ -10945,6 +10979,9 @@ if(typeof window.sap.ui !== "object"){
 	
 	function setSystem(_simMobileOnDesktop) {
 		device.system = getSystem(_simMobileOnDesktop);
+		if (device.system.tablet || device.system.phone) {
+			device.browser.mobile = true;
+		}
 	}
 	setSystem();
 
@@ -12924,8 +12961,8 @@ p.escapeQuerySpace = function(v) {
 return URI;
 }));
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13008,7 +13045,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -13181,8 +13218,8 @@ return URI;
 	 */
 	var _oBootstrap = (function() {
 		var oTag, sUrl, sResourceRoot,
-			reConfigurator = /\/download\/configurator[\/\?]/,
-			reBootScripts = /\/(sap-ui-(core|custom|boot|merged)(-.*)?)\.js([?#]|$)/,
+			reConfigurator = /^(.*\/)?download\/configurator[\/\?]/,
+			reBootScripts = /^(.*\/)?(sap-ui-(core|custom|boot|merged)(-.*)?)\.js([?#]|$)/,
 			reResources = /^(.*\/)?resources\//;
 
 		// check all script tags that have a src attribute
@@ -13193,13 +13230,13 @@ return URI;
 				// guess 1: script tag src contains "/download/configurator[/?]" (for dynamically created bootstrap files)
 				oTag = this;
 				sUrl = src;
-				sResourceRoot = src.substring(0, m.index) + "/resources/";
+				sResourceRoot = (m[1] || "") + "resources/";
 				return false;
 			} else if ( m = src.match(reBootScripts) ) {
 				// guess 2: src contains one of the well known boot script names
 				oTag = this;
 				sUrl = src;
-				sResourceRoot = src.substring(0, m.index) + "/";
+				sResourceRoot = m[1] || "";
 				return false;
 			} else if ( this.id == 'sap-ui-bootstrap' && (m=src.match(reResources)) ) {
 				// guess 2: script tag has well known id and src contains "resources/"
@@ -13321,9 +13358,9 @@ return URI;
 		}
 
 		var oScriptTag = _oBootstrap.tag,
-        oCfg = _window["sap-ui-config"],
-        sCfgFile = "sap-ui-config.json";
-
+		    oCfg = _window["sap-ui-config"],
+		    sCfgFile = "sap-ui-config.json";
+		
 		// load the configuration from an external JSON file 
 		if (typeof oCfg === "string") {
 			_earlyLog("warning", "Loading external bootstrap configuration from \"" + oCfg + "\". This is a design time feature and not for productive usage!");
@@ -13394,7 +13431,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @namespace
 	 * @public
 	 * @static
@@ -13411,7 +13448,7 @@ return URI;
 		if(!window.localStorage){
 			return null;
 		}
-		
+
 		function reloadHint(bUsesDbgSrc){
 			alert("Usage of debug sources is " + (bUsesDbgSrc ? "on" : "off") + " now.\nFor the change to take effect, you need to reload the page.");
 		};
@@ -13425,6 +13462,28 @@ return URI;
 		}
 
 		return window.localStorage.getItem("sap-ui-debug") == "X";
+	};
+
+	// -------------------------- STATISTICS LOCAL STORAGE -------------------------------------
+
+	jQuery.sap.statistics = function(bEnable) {
+		if(!window.localStorage){
+			return null;
+		}
+
+		function reloadHint(bUsesDbgSrc){
+			alert("Usage of Gateway statistics " + (bUsesDbgSrc ? "on" : "off") + " now.\nFor the change to take effect, you need to reload the page.");
+		};
+
+		if (bEnable === true) {
+			window.localStorage.setItem("sap-ui-statistics", "X");
+			reloadHint(true);
+		} else if (bEnable === false) {
+			window.localStorage.removeItem("sap-ui-statistics");
+			reloadHint(false);
+		}
+
+		return window.localStorage.getItem("sap-ui-statistics") == "X";
 	};
 
 	// -------------------------- Logging -------------------------------------
@@ -13510,9 +13569,9 @@ return URI;
 						date     : pad0(oNow.getFullYear(),4) + "-" + pad0(oNow.getMonth()+1,2) + "-" + pad0(oNow.getDate(),2),
 						timestamp: oNow.getTime(),
 						level    : iLevel,
-						message  : sMessage || "",
-						details  : sDetails || "",
-						component: sComponent || ""
+						message  : String(sMessage || ""),
+						details  : String(sDetails || ""),
+						component: String(sComponent || "")
 					};
 				aLog.push( oLogEntry );
 				if (oListener) {
@@ -15848,8 +15907,8 @@ jQuery.sap.declare('sap.ui.thirdparty.URI'); // raw module, declared by SAPUI5 C
 jQuery.sap.declare('jquery.sap.global'); // raw module, declared by SAPUI5 CreateModule Ant-Task
 if ( !jQuery.sap.isDeclared('sap.ui.core.Core') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -15858,8 +15917,8 @@ jQuery.sap.declare("sap.ui.core.Core");
 
 if ( !jQuery.sap.isDeclared('jquery.sap.dom') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16142,52 +16201,6 @@ jQuery.sap.declare("jquery.sap.dom", false);
 		}
 	};
 
-	//**********************************************************
-	
-	/*!
-	 * The following code is partially taken from 
-	 * jQuery Javascript Library v1.10.1 - 2013-07-03T13:48Z
-	 * jquery-1.10.1.js
-	 * 
-	 * http://jquery.com/
-	 * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
-	 */
-	
-	//TODO: Get rid of this coding when jQuery version less than 1.10.1 is no longer supported and the framework was switched to jQuery 1.10.1.
-	if (jQuery.sap.Version(jQuery.fn.jquery).compareTo("1.10.1") < 0) {
-		var rnative = /^[^{]+\{\s*\[native \w/,
-			preferredDoc = window.document,
-			fnContains = function(a, b) {
-				var adown = a.nodeType === 9 ? a.documentElement : a,
-					bup = b && b.parentNode;
-				return a === bup || !!(bup && bup.nodeType === 1 && (
-					adown.contains ?
-						adown.contains(bup) :
-						a.compareDocumentPosition && a.compareDocumentPosition(bup) & 16
-				));
-			},
-			fnContainsFallback = function(a, b) {
-				if (b) {
-					while ((b = b.parentNode)) {
-						if (b === a) {
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-		
-		jQuery.contains = function(context, elem){
-			var doc = context ? context.ownerDocument || context : preferredDoc,
-				docElem = doc.documentElement;
-			
-			return rnative.test(docElem.contains) || docElem.compareDocumentPosition ?
-				fnContains(context, elem) : 
-				fnContainsFallback(context, elem);
-		};
-	}
-
-	//*********************************************************
 
 	/**
 	 * Returns whether oDomRefChild is oDomRefContainer or is contained in oDomRefContainer.
@@ -16763,8 +16776,8 @@ jQuery.sap.declare("jquery.sap.dom", false);
 
 if ( !jQuery.sap.isDeclared('jquery.sap.events') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16772,8 +16785,8 @@ if ( !jQuery.sap.isDeclared('jquery.sap.events') ) {
 jQuery.sap.declare("jquery.sap.events", false);
 if ( !jQuery.sap.isDeclared('jquery.sap.keycodes') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -17304,7 +17317,6 @@ jQuery.sap.KeyCodes = {
 }; // end of jquery.sap.keycodes.js
 
 
-
 (function() {
 
 	jQuery.sap._touchToMouseEvent = true;
@@ -17400,7 +17412,7 @@ jQuery.sap.KeyCodes = {
 
 					// As we are only interested in the first touch target, we remember it
 					oTarget = oTouch.target;
-					if(oTarget.nodeType == 3) {
+					if (oTarget.nodeType === 3) {
 
 						// no text node
 						oTarget = oTarget.parentNode;
@@ -17529,7 +17541,6 @@ jQuery.sap.KeyCodes = {
 		"paste",
 		"cut"
 	];
-
 
 	/**
 	 * Enumeration of all so called "pseudo events", a useful classification
@@ -18015,7 +18026,6 @@ jQuery.sap.KeyCodes = {
 	 */
 	var PSEUDO_EVENTS = ["sapdown", "sapdownmodifiers", "sapshow", "sapup", "sapupmodifiers", "saphide", "sapleft", "sapleftmodifiers", "sapright", "saprightmodifiers", "saphome", "saphomemodifiers", "saptop", "sapend", "sapendmodifiers", "sapbottom", "sappageup", "sappageupmodifiers", "sappagedown", "sappagedownmodifiers", "sapselect", "sapselectmodifiers", "sapspace", "sapspacemodifiers", "sapenter", "sapentermodifiers", "sapexpand", "sapbackspace", "sapbackspacemodifiers", "sapdelete", "sapdeletemodifiers", "sapexpandmodifiers", "sapcollapse", "sapcollapsemodifiers", "sapcollapseall", "sapescape", "saptabnext", "saptabprevious", "sapskipforward", "sapskipback", "sapprevious", "sappreviousmodifiers", "sapnext", "sapnextmodifiers", "sapdecrease", "sapdecreasemodifiers", "sapincrease", "sapincreasemodifiers", "sapdelayeddoubleclick"];
 
-
 	//Add mobile touch events if touch is supported or we run in special dev test mode
 	(function initTouchEventSupport() {
 
@@ -18175,14 +18185,14 @@ jQuery.sap.KeyCodes = {
 		}
 	}());
 
-
 	/**
 	 * Function for initialization of an Array containing all basic event types of the available pseudo events.
 	 * @private
 	 */
 	function initPseudoEventBasicTypes(){
-		var mEvents = jQuery.sap.PseudoEvents;
-		var aResult = [];
+		var mEvents = jQuery.sap.PseudoEvents,
+			aResult = [];
+
 		for (var sName in mEvents) {
 			if (mEvents[sName].aTypes) {
 				for (var j = 0, js = mEvents[sName].aTypes.length; j < js; j++) {
@@ -18193,6 +18203,7 @@ jQuery.sap.KeyCodes = {
 				}
 			}
 		}
+
 		return aResult;
 	}
 
@@ -18204,6 +18215,7 @@ jQuery.sap.KeyCodes = {
 
 	/**
 	 * Convenience method to check an event for a certain combination of modifier keys
+	 *
 	 * @private
 	 */
 	function checkModifierKeys(oEvent, bCtrlKey, bAltKey, bShiftKey) {
@@ -18212,6 +18224,7 @@ jQuery.sap.KeyCodes = {
 
 	/**
 	 * Convenience method to check an event for any modifier key
+	 *
 	 * @private
 	 */
 	function hasModifierKeys(oEvent) {
@@ -18220,24 +18233,27 @@ jQuery.sap.KeyCodes = {
 
 	/**
 	 * Convenience method for handling of Ctrl key, meta key etc.
+	 *
 	 * @private
 	 */
 	function getCtrlKey(oEvent) {
 		return !!(oEvent.metaKey || oEvent.ctrlKey); // double negation doesn't have effect on boolean but ensures null and undefined are equivalent to false.
 	}
 
-
 	/**
 	 * Returns an array of names (as strings) identifying {@link jQuery.sap.PseudoEvents} that are fulfilled by this very Event instance.
+	 *
 	 * @returns {String[]} Array of names identifying {@link jQuery.sap.PseudoEvents} that are fulfilled by this very Event instance.
 	 * @public
 	 */
 	jQuery.Event.prototype.getPseudoTypes = function() {
 		var aPseudoTypes = [];
+
 		if (jQuery.inArray(this.type, PSEUDO_EVENTS_BASIC_TYPES) != -1) {
 			var aPseudoEvents = PSEUDO_EVENTS;
 			var ilength = aPseudoEvents.length;
 			var oPseudo = null;
+
 			for(var i=0; i<ilength; i++){
 				oPseudo = jQuery.sap.PseudoEvents[aPseudoEvents[i]];
 				if(oPseudo.aTypes
@@ -18256,13 +18272,15 @@ jQuery.sap.KeyCodes = {
 
 	/**
 	 * Checks whether this instance of {@link jQuery.Event} is of the given <code>sType</code> pseudo type.
+	 *
 	 * @param {string} sType The name of the pseudo type this event should be checked for.
 	 * @returns {boolean} <code>true</code> if this instance of jQuery.Event is of the given sType, <code>false</code> otherwise.
 	 * @public
 	 */
 	jQuery.Event.prototype.isPseudoType = function(sType) {
 		var aPseudoTypes = this.getPseudoTypes();
-		if ( sType ) {
+
+		if (sType) {
 			return jQuery.inArray(sType, aPseudoTypes) > -1;
 		} else {
 			return aPseudoTypes.length > 0;
@@ -18282,9 +18300,11 @@ jQuery.sap.KeyCodes = {
 		_preventDefault.apply(this, arguments);
 
 		var e = this.originalEvent;
+
 		if ( !e ) {
 			return;
 		}
+
 		if ( e.keyCode != 0 ) {
 			try { // Sometimes setting keycode results in "Access Denied"
 				if(!!!sap.ui.Device.browser.firefox) {
@@ -18295,9 +18315,9 @@ jQuery.sap.KeyCodes = {
 
 	};
 
-
 	/**
-	 * Binds all events for listening with the given callback function
+	 * Binds all events for listening with the given callback function.
+	 *
 	 * @param {function} fnCallback Callback function
 	 * @public
 	 */
@@ -18308,7 +18328,8 @@ jQuery.sap.KeyCodes = {
 	};
 
 	/**
-	 * Unbinds all events for listening with the given callback function
+	 * Unbinds all events for listening with the given callback function.
+	 *
 	 * @param {function} fnCallback Callback function
 	 * @public
 	 */
@@ -18321,6 +18342,7 @@ jQuery.sap.KeyCodes = {
 	/**
 	 * Checks a given mouseover or mouseout event whether it is
 	 * equivalent to a mouseenter or mousleave event regarding the given DOM reference.
+	 *
 	 * @param {jQuery.Event} oEvent
 	 * @param {element} oDomRef
 	 * @public
@@ -18333,10 +18355,12 @@ jQuery.sap.KeyCodes = {
 		var isMouseEnterLeave = false;
 		var element = oDomRef;
 		var parent = oEvent.relatedTarget;
+
 		try {
 			while ( parent && parent !== element ) {
 				parent = parent.parentNode;
 			}
+
 			if ( parent !== element ) {
 				isMouseEnterLeave = true;
 			}
@@ -18358,6 +18382,7 @@ jQuery.sap.KeyCodes = {
 
 	/**
 	 * Returns OffsetX of Event. In jQuery there is a bug. In IE the value is in offsetX, in FF in layerX
+	 *
 	 * @returns offsetX
 	 * @public
 	 */
@@ -18379,7 +18404,8 @@ jQuery.sap.KeyCodes = {
 	};
 
 	/**
-	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY
+	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY.
+	 *
 	 * @returns offsetY
 	 * @public
 	 */
@@ -18400,15 +18426,15 @@ jQuery.sap.KeyCodes = {
 		return 0;
 	};
 
-	
 	// we still call the original stopImmediatePropagation
 	var fnStopImmediatePropagation = jQuery.Event.prototype.stopImmediatePropagation;
 	
-	/*
+	/**
 	 * PRIVATE EXTENSION: allows to immediately stop the propagation of events in
-	 * the event handler execution - means that "before" delegates can stop the 
-	 * propagation of the event to other delegates or the element and so on. 
-	 * @see sap.ui.core.Element.prototype._callEventHandles 
+	 * the event handler execution - means that "before" delegates can stop the
+	 * propagation of the event to other delegates or the element and so on.
+	 *
+	 * @see sap.ui.core.Element.prototype._callEventHandles
 	 * @param {boolean} bStopDelegate
 	 */
 	jQuery.Event.prototype.stopImmediatePropagation = function(bStopHandlers) {
@@ -18423,21 +18449,45 @@ jQuery.sap.KeyCodes = {
 		
 	};
 
-	/*
-	 * PRIVATE EXTENSION: check if the handler propagation has been stopped
+	/**
+	 * PRIVATE EXTENSION: check if the handler propagation has been stopped.
+	 *
 	 * @see sap.ui.core.Element.prototype._callEventHandles 
 	 */
 	jQuery.Event.prototype.isImmediateHandlerPropagationStopped = function() {
-			return !!this._bIsStopHandlers;
-	}
+		return !!this._bIsStopHandlers;
+	};
+	
+	/**
+	 * PRIVATE EXTENSION: jQuery.Event
+	 *
+	 * Mark the event for components that needs to know if the event was handled by the control
+	 * @param {String} [sKey=handledByControl]
+	 */
+	jQuery.Event.prototype.setMarked = function(sKey) {
+		sKey = sKey || "handledByControl";
+		(this.originalEvent || {})["_sapui_" + sKey] = true;
+	};
+	
+	/**
+	 * PRIVATE EXTENSION: jQuery.Event
+	 *
+	 * Check the event whether is marked by the child control or not
+	 * @param {String} [sKey=handledByControl]
+	 * @returns {Boolean}
+	 */
+	jQuery.Event.prototype.isMarked = function(sKey) {
+		sKey = sKey || "handledByControl";
+		return !!(this.originalEvent || {})["_sapui_" + sKey];
+	};
 
 }());
 }; // end of jquery.sap.events.js
 
 if ( !jQuery.sap.isDeclared('jquery.sap.mobile') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18447,17 +18497,22 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 
 
 
-(function( $ ) {
+(function($) {
 	var FAKE_OS_PATTERN = /(?:\?|&)sap-ui-xx-fakeOS=([^&]+)/,
 		mFakeFonts = undefined;
+
 	$.sap.simulateMobileOnDesktop = false;
 
 	// OS overriding mechanism
 	if ((jQuery.browser.webkit || (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) >= 10)) && !jQuery.support.touch) { // on non-touch webkit browsers and IE10 we are interested in overriding
+
 		var result = document.location.search.match(FAKE_OS_PATTERN);
 		var resultUA = result && result[1] || jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-xx-fakeOS");
+
 		if (resultUA) {
+
 			$.sap.simulateMobileOnDesktop = true;
+
 			var ua = { // for "ios"/"android"/"blackberry" we have defined fake user-agents; these will affect all other browser/platform detection mechanisms
 					ios: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) AppleWebKit/534.48 (KHTML, like Gecko) Version/5.1 Mobile/9A406 Safari/7534.48.3",
 					iphone: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) AppleWebKit/534.48 (KHTML, like Gecko) Version/5.1 Mobile/9A406 Safari/7534.48.3",
@@ -18471,14 +18526,14 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 
 			if (ua &&
 					(jQuery.browser.webkit && resultUA !== "winphone" || jQuery.browser.msie && resultUA === "winphone")) { // only for the working combinations
-				
+
 				mFakeFonts = {
 					ios: "'Helvetica Neue'",
 					android: "Roboto,'Droid Sans'",
 					blackberry: "'BBGlobal Sans','DejaVu Sans'",
 					winphone: "'Segoe WP', 'Segoe UI'"
 				};
-				
+
 				// code for modifying the real user-agent
 				if (jQuery.browser.safari) {
 					var __originalNavigator = window.navigator;
@@ -18493,16 +18548,18 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 					});
 				}
 
-				if(jQuery.browser.webkit) {
-					// all downstream checks will be fine with the faked user-agent. 
+				if (jQuery.browser.webkit) {
+
+					// all downstream checks will be fine with the faked user-agent.
 					// But now we also need to adjust the wrong upstream settings in jQuery:
 					jQuery.browser.msie = jQuery.browser.opera = jQuery.browser.mozilla = false;
 					jQuery.browser.webkit = true;
 					jQuery.browser.version = "534.46"; // this is not exactly true for all UAs, but there are much bigger shortcomings of this approach than a minor version of the browser, so giving the exact value is not worth the effort
 				} else {
+
 					// in IE10 with winphone emulation, jQuery.browser has already the correct information
 				}
-				
+
 				sap.ui.Device._update($.sap.simulateMobileOnDesktop);
 			}
 		}
@@ -18511,12 +18568,14 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	// OS detection
 	function getOS(userAgent) {
 		userAgent = userAgent || navigator.userAgent;
-		var platform = /\(([a-zA-Z ]+);\s(?:[U]?[;]?)([\D]+)((?:[\d._]*))(?:.*[\)][^\d]*)([\d.]*)\s/;
-		var result = userAgent.match(platform);
+		var platform = /\(([a-zA-Z ]+);\s(?:[U]?[;]?)([\D]+)((?:[\d._]*))(?:.*[\)][^\d]*)([\d.]*)\s/,
+			result = userAgent.match(platform);
+
 		if (result) {
 			var appleDevices = /iPhone|iPad|iPod/;
 			var bbDevices = /PlayBook|BlackBerry/;
-			if (result[0].match(appleDevices)){
+
+			if (result[0].match(appleDevices)) {
 				result[3] = result[3].replace(/_/g, ".");
 				//result[1] contains info of devices
 				return({os:"ios", version:result[3]});
@@ -18526,11 +18585,13 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			} else if (result[0].match(bbDevices)) {
 				return({os:"blackberry", version:result[4]});
 			} else {
+
 				// currently we only support iOS, Android, BlackBerry 10.0+ , everything else will be ignored, if more platforms should be supported, logic can be placed here
 				return;
 			}
-			
-		} else if (userAgent.indexOf("(BB10;") > 0) { 
+
+		} else if (userAgent.indexOf("(BB10;") > 0) {
+
 			// BlackBery 10 has a different structure...
 			platform = /\sVersion\/([\d.]+)\s/;
 			result = userAgent.match(platform);
@@ -18539,8 +18600,9 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			} else {
 				return {os: "blackberry", version:10};
 			}
-			
+
 		} else {
+
 			// Windows phone has a different structure, so we need to check with another regExp.
 			platform = /Windows Phone (?:OS )?([\d.]*)/;
 			result = userAgent.match(platform);
@@ -18556,7 +18618,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		oHtml = window.document.documentElement,
 		iDocumentWidth = 0,
 		iDocumentHeight = 0;
-	
+
 	//save the window size values when viewport meta tag is inserted
 	function saveWindowSize(){
 		iDocumentWidth = oHtml.clientWidth;
@@ -18574,18 +18636,21 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		 * @public
 		 */
 		$.os = $.extend(/** @lends jQuery.os */ {
+
 			/**
 			 * The name of the operating system; currently supported are: "ios", "android", "blackberry"
 			 * @type {string}
 			 * @public
 			 */
 			os: os.os,
+
 			/**
 			 * The version of the operating system as a string (including minor versions)
 			 * @type {string}
 			 * @public
 			 */
 			version: os.version,
+
 			/**
 			 * The version of the operating system parsed as a float (major and first minor version)
 			 * @type {float}
@@ -18593,19 +18658,23 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			 */
 			fVersion: f
 		}, $.os);
+
 		$.os[os.os] = true;
+
 		/**
 		 * Whether the current operating system is Android
 		 * @type {boolean}
 		 * @public
 		 * @name jQuery.os.android
 		 */
+
 		/**
 		 * Whether the current operating system is BlackBerry
 		 * @type {boolean}
 		 * @public
 		 * @name jQuery.os.blackberry
 		 */
+
 		/**
 		 * Whether the current operating system is Apple iOS
 		 * @type {boolean}
@@ -18624,31 +18693,35 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 
 	// feature and state detection
 	$.extend( $.support, {
+
 		/**
 		 * Whether the device has a retina display (window.devicePixelRatio >= 2)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		retina: window.devicePixelRatio >= 2
 	});
-	
+
 	var sAvoidRepeatTimer = null;
 
-	function isLandscape(){
-		if(jQuery.support.touch){
-			if(sAvoidRepeatTimer){
+	function isLandscape() {
+
+		if (jQuery.support.touch) {
+			if(sAvoidRepeatTimer) {
 				return $.device.is.landscape;
 			}
-			
+
 			sAvoidRepeatTimer = window.setTimeout(function(){
 				sAvoidRepeatTimer = null;
 			}, 50);
 		}
-		
+
 		var iWidth = oHtml.clientWidth,
 			iHeight = oHtml.clientHeight,
 			bKeyboardOpen = false;
-		if($.support.touch){
+
+		if ($.support.touch) {
+
 			//if runs in real device, landscape/portrait detection is skipped when keyboard opens
 			//when keyboard opens, only height changes.
 			//we can't simply compare the width and height on window because when keyboard is open in android, it makes the window smaller which can turn a device from portrait to landscape, for example in Nexus 7
@@ -18656,18 +18729,20 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			if((iWidth === iDocumentWidth) && (iHeight !== iDocumentHeight)){
 				bKeyboardOpen = true;
 			}
+
 			//return window.orientation === undefined || window.orientation === 90 || window.orientation === -90;
 		}
 		
 		iDocumentWidth = iWidth;
 		iDocumentHeight = iHeight;
-		
+
 		//if keyboard opens, landscape value doesn't change. otherwise, compare width with height.
 		return bKeyboardOpen ? $.device.is.landscape : iWidth > iHeight;
 	}
 
 	var landscape = oHtml.clientWidth > oHtml.clientHeight;
 	var android_phone = (/(?=android)(?=.*mobile)/i.test(navigator.userAgent));
+
 	/**
 	 * @name jQuery.device
 	 * @namespace
@@ -18683,36 +18758,42 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	 * @public
 	 */
 	$.device.is = $.extend( /** @lends jQuery.device.is */ {
+
 		/**
 		 * Whether the application runs in standalone mode without browser UI (launched from the iOS home screen)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		standalone: window.navigator.standalone,
+
 		/**
 		 * Whether the device is in "landscape" orientation (also "true" when the device does not know about the orientation)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		landscape: landscape,
+
 		/**
 		 * Whether the device is in portrait orientation
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		portrait: !landscape,
+
 		/**
 		 * Whether the application runs on an iPhone
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		iphone: /iphone/i.test(navigator.userAgent),
+
 		/**
 		 * Whether the application runs on an iPad
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		ipad: /ipad/i.test(navigator.userAgent),
+
 		/**
 		 * Whether the application runs on an Android phone - based not on screen size but user-agent (so this is not guaranteed to be equal to jQuery.device.is.phone on Android)
 		 * https://developers.google.com/chrome/mobile/docs/user-agent
@@ -18722,6 +18803,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		 * @public
 		 */
 		android_phone: android_phone,
+
 		/**
 		 * Whether the application runs on an Android tablet - based not on screen size but user-agent (so this is not guaranteed to be equal to jQuery.device.is.tablet on Android)
 		 * https://developers.google.com/chrome/mobile/docs/user-agent
@@ -18731,6 +18813,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		 * @public
 		 */
 		android_tablet: (!!$.os.android && !android_phone),
+
 		/**
 		 * Whether the running device is a tablet.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -18741,6 +18824,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		 * @public
 		 */
 		tablet: sap.ui.Device.system.tablet,
+
 		/**
 		 * Whether the running device is a phone.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -18751,6 +18835,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		 * @public
 		 */
 		phone: sap.ui.Device.system.phone,
+
 		/**
 		 * Whether the running device is a desktop browser.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -18768,16 +18853,15 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 		$.device.is.portrait = !landscape;
 	});
 
-
 	var _bInitMobileTriggered = false;
 
 	/**
 	 * Does some basic modifications to the HTML page that make it more suitable for mobile apps.
 	 * Only the first call to this method is executed, subsequent calls are ignored. Note that this method is also called by the constructor of toplevel controls like sap.m.App, sap.m.SplitApp and sap.m.Shell.
 	 * Exception: if no homeIcon was set, subsequent calls have the chance to set it.
-	 * 
+	 *
 	 * The "options" parameter configures what exactly should be done.
-	 *  
+	 *
 	 * It can have the following properties:
 	 * <ul>
 	 * <li>viewport: whether to set the viewport in a way that disables zooming (default: true)</li>
@@ -18789,8 +18873,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	 * <li>useFullScreenHeight: a boolean that defines whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height (default: true)</li>
 	 * <li>homeIcon: deprecated since 1.12, use jQuery.sap.setIcons instead.
 	 * </ul>
-	 * 
-	 * 
+	 *
 	 * @param {object}  [options] configures what exactly should be done
 	 * @param {boolean} [options.viewport=true] whether to set the viewport in a way that disables zooming
 	 * @param {string}  [options.statusBar='default'] the iOS status bar color, "default", "black" or "black-translucent"
@@ -18798,17 +18881,17 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	 * @param {boolean} [options.preventScroll=true] whether native scrolling should be disabled in order to prevent the "rubber-band" effect where the whole window is moved
 	 * @param {boolean} [options.preventPhoneNumberDetection=true] whether Safari mobile should be prevented from transforming any numbers that look like phone numbers into clickable links
 	 * @param {string}  [options.rootId] the ID of the root element that should be made fullscreen; only used when hideBrowser is set. If not set, the body is used
-	 * @param {boolean} [options.useFullScreenHeight=true] whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height 
+	 * @param {boolean} [options.useFullScreenHeight=true] whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height
 	 * @param {string}  [options.homeIcon=undefined] deprecated since 1.12, use jQuery.sap.setIcons instead.
-	 * @param {boolean} [options.homeIconPrecomposed=false] deprecated since 1.12, use jQuery.sap.setIcons instead. 
-	 * 
+	 * @param {boolean} [options.homeIconPrecomposed=false] deprecated since 1.12, use jQuery.sap.setIcons instead.
+	 *
 	 * @name jQuery.sap.initMobile
 	 * @function
 	 * @public
 	 */
 	$.sap.initMobile = function(options) {
 		var $head = $("head");
-		
+
 		if (!_bInitMobileTriggered) { // only one initialization per HTML page
 			_bInitMobileTriggered = true;
 
@@ -18821,11 +18904,10 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 				useFullScreenHeight: true,
 				homeIconPrecomposed: false
 			}, options);
-			
+
 			// en-/disable automatic link generation for phone numbers
 			if ($.os.ios && options.preventPhoneNumberDetection) {
 				$head.append($('<meta name="format-detection" content="telephone=no">')); // this only works for all DOM created afterwards
-				
 			} else if ($.browser.msie) {
 				$head.append($('<meta http-equiv="cleartype" content="on">'));
 				$head.append($('<meta name="msapplication-tap-highlight" content="no"/>'));
@@ -18835,10 +18917,11 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			// initialize viewport
 			if (options.viewport) {
 				var sMeta;
-				//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
-				//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
-				if(bIsIOS7Safari && sap.ui.Device.system.phone) {
-					sMeta = 'initial-scale=1.0,maximum-scale=1.0,user-scalable=0';
+				if (bIsIOS7Safari && sap.ui.Device.system.phone) {
+					//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
+					//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
+					//the important part seems to be setting the device height.
+					sMeta = 'minimal-ui, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
 				} else if ($.device.is.iphone && (Math.max(window.screen.height, window.screen.width) === 568)) {
 					// iPhone 5
 					sMeta = "user-scalable=0, initial-scale=1.0";
@@ -18847,6 +18930,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 				} else if ($.os.winphone){
 					sMeta = "width=320, user-scalable=no";
 				} else {
+
 					// all other devices
 					sMeta = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 				}
@@ -18866,9 +18950,9 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			}
 
 			if (options.preventScroll) {
-				$(window).bind("touchmove", function sapInitMobileTouchMoveHandle(oEvent){
-					if (!oEvent.isDefaultPrevented()) {
-						oEvent.preventDefault();	// this one prevents the rubber-band effect - and disables native scrolling
+				$(window).bind("touchmove", function sapInitMobileTouchMoveHandle(oEvent) {
+					if (!oEvent.isMarked()) {
+						oEvent.preventDefault(); // prevent the rubber-band effect
 					}
 				});
 			}
@@ -18878,39 +18962,45 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 					document.documentElement.style.height = "100%"; // set html root tag to 100% height
 				});
 			}
-			
+
 			//save the size of window object for detecting if keyboard is open on non-ios devices.
 			saveWindowSize();
 		}
-		
+
 		if (options.homeIcon) {
+
 			var oIcons;
+
 			if (typeof options.homeIcon === "string") {
-				oIcons = {phone:options.homeIcon};
+				oIcons = { phone: options.homeIcon };
 			} else {
 				oIcons = $.extend({}, options.homeIcon);
 			}
-			
+
 			oIcons.precomposed = options.homeIconPrecomposed || oIcons.precomposed;
 			oIcons.favicon = options.homeIcon.icon || oIcons.favicon;
 			oIcons.icon = undefined;
 			$.sap.setIcons(oIcons);
 		}
-	};	
+	};
+
 	
+
+	
+
 	/**
 	 * Sets the bookmark icon for desktop browsers and the icon to be displayed on the home screen of iOS devices after the user does "add to home screen".
-	 * 
-	 * Only call this method once and call it early when the page is loading: browsers behave differently when the favicon is modified while the page is alive. 
+	 *
+	 * Only call this method once and call it early when the page is loading: browsers behave differently when the favicon is modified while the page is alive.
 	 * Some update the displayed icon inside the browser but use an old icon for bookmarks.
 	 * When a favicon is given, any other existing favicon in the document will be removed.
 	 * When at least one home icon is given, all existing home icons will be removed and new home icon tags for all four resolutions will be created.
-	 * 
-	 * The home icons must be in PNG format and given in different sizes for iPad/iPhone with and without retina display. 
-	 * The favicon is used in the browser and for desktop shortcuts and should optimally be in ICO format: 
+	 *
+	 * The home icons must be in PNG format and given in different sizes for iPad/iPhone with and without retina display.
+	 * The favicon is used in the browser and for desktop shortcuts and should optimally be in ICO format:
 	 * PNG does not seem to be supported by Internet Explorer and ICO files can contain different image sizes for different usage locations. E.g. a 16x16px version
 	 * is used inside browsers.
-	 * 
+	 *
 	 * All icons are given in an an object holding icon URLs and other settings. The properties of this object are:
 	 * <ul>
 	 * <li>phone: a 57x57 pixel version for non-retina iPhones</li>
@@ -18920,7 +19010,7 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	 * <li>precomposed: whether the home icons already have some glare effect (otherwise iOS will add it) (default: false)</li>
 	 * <li>favicon: the ICO file to be used inside the browser and for desktop shortcuts</li>
 	 * </ul>
-	 * 
+	 *
 	 * One example is:
 	 * <pre>
 	 * {
@@ -18940,11 +19030,12 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 	 * @public
 	 */
 	$.sap.setIcons = function(oIcons) {
+
 		if (!oIcons || (typeof oIcons !== "object")) {
 			$.sap.log.warning("Call to jQuery.sap.setIcons() has been ignored because there were no icons given or the argument was not an object.");
-			return ;
+			return;
 		}
-		
+
 		var $head = $("head"),
 			precomposed = oIcons.precomposed ? "-precomposed" : "",
 			getBestFallback = function(res) {
@@ -18952,34 +19043,35 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			},
 			mSizes = {
 				"phone": "",
-				"tablet": "72x72", 
+				"tablet": "72x72",
 				"phone@2": "114x114",
 				"tablet@2": "144x144"
 			};
-		
+
 		// desktop icon
 		if (oIcons["favicon"]) {
+
 			// remove any other favicons
 			var $fav = $head.find("[rel^=shortcut]"); // cannot search for "shortcut icon"
+
 			$fav.each(function(){
 				if (this.rel === "shortcut icon") {
 					$(this).remove();
 				}
 			});
-			
+
 			// create favicon
 			$head.append($('<link rel="shortcut icon" href="' + oIcons["favicon"] + '" />'));
 		}
-		
-		
+
 		// mobile home screen icons
-		
 		if (getBestFallback("phone")) {
+
 			// if any home icon is given remove old ones
 			$head.find("[rel=apple-touch-icon]").remove();
 			$head.find("[rel=apple-touch-icon-precomposed]").remove();
 		}
-		
+
 		for (var platform in mSizes) {
 			oIcons[platform] = oIcons[platform] || getBestFallback(platform);
 			if (oIcons[platform]) {
@@ -18988,14 +19080,15 @@ jQuery.sap.declare("jquery.sap.mobile", false);
 			}
 		}
 	};
+
 })(jQuery);
 
 }; // end of jquery.sap.mobile.js
 
 if ( !jQuery.sap.isDeclared('jquery.sap.properties') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19003,8 +19096,8 @@ if ( !jQuery.sap.isDeclared('jquery.sap.properties') ) {
 jQuery.sap.declare("jquery.sap.properties", false);
 if ( !jQuery.sap.isDeclared('jquery.sap.sjax') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19216,7 +19309,7 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -19466,8 +19559,8 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 
 if ( !jQuery.sap.isDeclared('jquery.sap.resources') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19476,8 +19569,8 @@ jQuery.sap.declare("jquery.sap.resources", false);
 
 if ( !jQuery.sap.isDeclared('jquery.sap.strings') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19815,7 +19908,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -20180,8 +20273,8 @@ jQuery.sap.declare("jquery.sap.strings", false);
 
 if ( !jQuery.sap.isDeclared('jquery.sap.script') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -20280,7 +20373,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -21020,10 +21113,177 @@ jQuery.sap.declare("jquery.sap.script", false);
 
 }; // end of jquery.sap.script.js
 
+if ( !jQuery.sap.isDeclared('jquery.sap.act') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides functionality for activity detection
+jQuery.sap.declare("jquery.sap.act", false);
+
+(function() {
+	
+	if(typeof window.jQuery.sap.act === "object" || typeof window.jQuery.sap.act === "function" ){
+		return;
+	}
+	
+//	Date.now = Date.now || function() {
+//		return new Date().getTime();
+//	};
+	
+	/**
+	 * @public
+	 * @name jQuery.sap.act
+	 * @namespace
+	 * @static
+	 */
+	
+	var _act = {},
+		_active = true,
+		_deactivatetimer = null,
+		_I_MAX_IDLE_TIME = 10000, //max. idle time in ms
+		_deactivateSupported = !!window.addEventListener, //Just skip IE8
+		_aActivateListeners = [],
+		_aDeactivateListeners = [],
+		_domChangeObserver = null;
+	
+	function _reInitializeDeactivateTimer(){
+		if(_deactivatetimer){
+			clearTimeout(_deactivatetimer);
+			_deactivatetimer = null;
+		}
+		setTimeout(_onDeactivate, _I_MAX_IDLE_TIME);
+	};
+	
+	function _onDeactivate(){
+		_active = false;
+		_deactivatetimer = null;
+		//_triggerEvent(_aDeactivateListeners); //Maybe provide later
+		_domChangeObserver.observe(document.documentElement, {childList: true, attributes: true, subtree: true, characterData: true});
+	};
+	
+	function _onActivate(){
+		if(!_active){
+			_active = true;
+			_triggerEvent(_aActivateListeners);
+			_domChangeObserver.disconnect();
+		}
+		_reInitializeDeactivateTimer();
+	};
+	
+	function _triggerEvent(aListeners){
+		if(aListeners.length == 0) {
+			return;
+		}
+		var aEventListeners = aListeners.slice();
+		setTimeout(function(){
+			var oInfo;
+			for (var i = 0, iL = aEventListeners.length; i < iL; i++) {
+				oInfo = aEventListeners[i];
+				oInfo.fFunction.call(oInfo.oListener || window);
+			}
+		}, 0);
+	};
+	
+	
+	/**
+	 * Registers the given handler to the activity event, which is fired when an activity was detected after a certain period of inactivity.
+	 * 
+	 * The Event is not fired for Internet Explorer 8.
+	 * 
+	 * @param {Function} fnFunction The function to call, when an activity event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @protected
+	 * 
+	 * @function
+	 * @name jQuery.sap.act#attachActivate
+	 */
+	_act.attachActivate = function(fnFunction, oListener){
+		_aActivateListeners.push({oListener: oListener, fFunction:fnFunction});
+	};
+	
+	/**
+	 * Deregisters a previously registered handler from the activity event.
+	 * 
+	 * @param {Function} fnFunction The function to call, when an activity event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @protected
+	 * 
+	 * @function
+	 * @name jQuery.sap.act#detachActivate
+	 */
+	_act.detachActivate = function(fnFunction, oListener){
+		for (var i = 0, iL = _aActivateListeners.length; i < iL; i++) {
+			if (_aActivateListeners[i].fFunction === fnFunction && _aActivateListeners[i].oListener === oListener) {
+				_aActivateListeners.splice(i,1);
+				break;
+			}
+		}
+	};
+	
+	/**
+	 * Checks whether recently an activity was detected.
+	 * 
+	 * Not supported for Internet Explorer 8.
+	 * 
+	 * @return true if recently an activity was detected, false otherwise
+	 * @protected
+	 * 
+	 * @function
+	 * @name jQuery.sap.act#isActive
+	 */
+	_act.isActive = !_deactivateSupported ? function(){return true;} : function(){return _active;};
+	
+	/**
+	 * Reports an activity.
+	 * 
+	 * @public
+	 * 
+	 * @function
+	 * @name jQuery.sap.act#refresh
+	 */
+	_act.refresh = !_deactivateSupported ? function(){} : _onActivate;
+	
+	
+	// Setup and registering handlers
+	
+	if (_deactivateSupported) {
+		var aEvents = ["resize", "orientationchange", "mousemove", "mousedown", "mouseup", //"mouseout", "mouseover",
+		               "touchstart", "touchmove", "touchend", "touchcancel", "paste", "cut", "keydown", "keyup",
+		               "DOMMouseScroll", "mousewheel"];
+		for(var i=0; i<aEvents.length; i++){
+			window.addEventListener(aEvents[i], _act.refresh, true);
+		}
+		
+		if(window.MutationObserver){
+			_domChangeObserver = new window.MutationObserver(_act.refresh);
+    	}else if(window.WebKitMutationObserver){
+    		_domChangeObserver = new window.WebKitMutationObserver(_act.refresh);
+    	}else{
+    		_domChangeObserver = {
+    			observe : function(){
+    				document.documentElement.addEventListener("DOMSubtreeModified", _act.refresh);
+    			},
+    			disconnect : function(){
+    				document.documentElement.removeEventListener("DOMSubtreeModified", _act.refresh);
+    			}
+    		};
+    	}
+		
+		_onActivate();
+	}
+	
+	jQuery.sap.act = _act;
+	
+}());
+}; // end of jquery.sap.act.js
+
 if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21041,7 +21301,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
  * sap.ui.lazyRequire("sap.ui.core/Control");
  * sap.ui.lazyRequire("sap.ui.commons/Button");
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -21062,7 +21322,7 @@ jQuery.sap.declare("sap.ui.Global");
  * The <code>sap</code> namespace is automatically registered with the
  * OpenAjax hub if it exists.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @public
  * @name sap
@@ -21075,7 +21335,7 @@ if ( typeof window.sap !== "object" && typeof window.sap !== "function"  ) {
  * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
  * point for UI related JavaScript functionality provided by SAP.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui
  * @public
@@ -21088,8 +21348,8 @@ sap.ui = jQuery.extend(sap.ui, {
 		 * The version of the SAP UI Library
 		 * @type string
 		 */
-		version: "1.16.8-SNAPSHOT",
-		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201312172109" }
+		version: "1.18.8",
+		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201402191958" }
 	});
 
 /**
@@ -21288,8 +21548,8 @@ sap.ui.localResources = function(sNamespace) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.EventProvider') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21297,8 +21557,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.base.EventProvider') ) {
 jQuery.sap.declare("sap.ui.base.EventProvider");
 if ( !jQuery.sap.isDeclared('sap.ui.base.Object') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21314,8 +21574,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.base.Object') ) {
 jQuery.sap.declare("sap.ui.base.Object");
 if ( !jQuery.sap.isDeclared('sap.ui.base.Interface') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21329,7 +21589,7 @@ jQuery.sap.declare("sap.ui.base.Interface");
  *        only the defined functions will be visible, no internals of the class can be accessed.
  *
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @param {sap.ui.base.Object}
  *            oObject the instance that needs an interface created
  * @param {string[]}
@@ -21375,8 +21635,8 @@ sap.ui.base.Interface = function(oObject, aMethods) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.Metadata') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21392,7 +21652,7 @@ jQuery.sap.declare("sap.ui.base.Metadata");
  *
  * @class Metadata for a class.
  * @author Frank Weigel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 0.8.6
  * @public
  */
@@ -21718,7 +21978,7 @@ sap.ui.base.Metadata.createClass = function (fnBaseClass, sClassName, oClassInfo
  * @class Base class for all SAPUI5 Objects
  * @abstract
  * @author Malte Wedel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @public
  * @name sap.ui.base.Object
  */
@@ -21869,8 +22129,8 @@ sap.ui.base.Object.defineClass = function(sClassName, oStaticInfo, FNMetaImpl) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.Event') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21889,7 +22149,7 @@ jQuery.sap.declare("sap.ui.base.Event");
  * @extends sap.ui.base.Object
  * @implements sap.ui.base.Poolable
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.base.Event
  * @public
  */
@@ -22015,8 +22275,8 @@ sap.ui.base.Event.prototype.preventDefault = function() {
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.ObjectPool') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22055,7 +22315,7 @@ jQuery.sap.declare("sap.ui.base.ObjectPool");
  *
  * @extends sap.ui.base.Object
  * @author Malte Wedel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @name sap.ui.base.ObjectPool
  * @public
@@ -22159,7 +22419,7 @@ sap.ui.base.ObjectPool.prototype.returnObject = function(oObject) {
  * @abstract
  * @extends sap.ui.base.Object
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @public
  * @name sap.ui.base.EventProvider
@@ -22454,8 +22714,8 @@ sap.ui.base.EventProvider.prototype.destroy = function() {
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.DataType') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22555,6 +22815,34 @@ sap.ui.base.DataType.prototype.parseValue = function(sValue) {
  * @public
  */
 sap.ui.base.DataType.prototype.isValid = undefined;
+
+/**
+ * Sets the normalizer function for that data type
+ * 
+ * @param {function} fnNormalizer the function to call for normalizing. Will be called with the value
+ * as the first parameter. It must return the (normalized) value.
+ * @public
+ */
+sap.ui.base.DataType.prototype.setNormalizer = function(fnNormalizer) {
+	jQuery.sap.assert(typeof fnNormalizer === "function", "DataType.setNormalizer: fnNormalizer must be a function");
+	this._fnNormalizer = fnNormalizer;
+};
+
+/**
+ * Changes a value using the normalizer specified for this datatype
+ * 
+ * @param the value to be normalized
+ * @return the normalized value
+ * @public
+ */
+sap.ui.base.DataType.prototype.normalize = function(oValue) {
+	if (typeof this._fnNormalizer === "function") {
+		return this._fnNormalizer(oValue);
+	} else {
+		return oValue;
+	}
+};
+
 
 (function() {
 
@@ -22744,8 +23032,8 @@ sap.ui.base.DataType.prototype.isValid = undefined;
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.Configuration') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22754,8 +23042,8 @@ jQuery.sap.declare("sap.ui.core.Configuration");
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.Locale') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22791,7 +23079,7 @@ jQuery.sap.declare("sap.ui.core.Locale");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.Locale
@@ -22801,6 +23089,13 @@ jQuery.sap.declare("sap.ui.core.Locale");
 		constructor : function(sLocaleId) {
 			sap.ui.base.Object.apply(this);
 			var aResult = rLocale.exec(sLocaleId.replace(/_/g, "-"));
+			
+			// If the given Locale string cannot be parsed by the regular expression above we 
+			// should at least tell the developer why the core fails to load.
+			if (aResult === null) {
+				throw "The given language does not adhere to BCP-47.";
+			}
+			
 			this.sLocaleId = sLocaleId;
 			this.sLanguage = aResult[1] || null;
 			this.sScript = aResult[2] || null;
@@ -23160,16 +23455,17 @@ jQuery.sap.declare("sap.ui.core.Locale");
 					"xx-accessibilityMode"  : { type : "boolean",  defaultValue : false },
 					"xx-supportedLanguages" : { type : "string[]", defaultValue : [] }, // *=any, sapui5 or list of locales
 					"xx-bootTask"           : { type : "function", defaultValue : undefined, noUrl:true },
-					"xx-suppressDeactivationOfControllerCode" : { type : "boolean",  defaultValue : false } //temporarily to suppress the deactivation of controller code in design mode
+					"xx-suppressDeactivationOfControllerCode" : { type : "boolean",  defaultValue : false }, //temporarily to suppress the deactivation of controller code in design mode
+					"statistics"            : { type : "boolean",  defaultValue : false }
 			};
-			
+
 			var M_COMPAT_FEATURES = {
 					"xx-test"               : "1.15", //for testing purposes only
 					"flexBoxPolyfill"       : "1.14",
 					"sapMeTabContainer"     : "1.14",
 					"sapMeProgessIndicator" : "1.14",
-					"sapMGrowingList"		: "1.14",
-					"sapMListAsTable"		: "1.14",
+					"sapMGrowingList"       : "1.14",
+					"sapMListAsTable"       : "1.14",
 					"sapMDialogWithPadding" : "1.14"
 			};
 
@@ -23222,28 +23518,16 @@ jQuery.sap.declare("sap.ui.core.Locale");
 			}
 
 			function validateThemeRoot(sThemeRoot) {
-
-				// might in future be checked against a whitelist - for now it is a hardcoded URL prefix
-				var rThemeRepository = /^\/sap\/public\/bc\/themes\//i,
-					oPage,
-					oThemeRoot,
+				var oThemeRoot,
 					sPath;
 
 				try {
-					oPage = new URI().normalize();
 					oThemeRoot = new URI(sThemeRoot, window.location.href).normalize();
-					if ( oThemeRoot.hostname() === oPage.hostname() ) {
-						sPath = oThemeRoot.path();
-						if ( rThemeRepository.test(oThemeRoot.path()) ) {
-							return sPath + (sPath.slice(-1) === '/' ? '' : '/') + "UI5/";
-						} else {
-							return sPath;
-						}
-					}
+					sPath = oThemeRoot.path();
+					return sPath + (sPath.slice(-1) === '/' ? '' : '/') + "UI5/";
 				} catch (e) {
 					// malformed URL are also not accepted 
 				}
-				jQuery.sap.log.error("Invalid Theme Root URL: URL must point into the central theme repository on the same server - setting ignored");
 			}
 
 			// 1. collect the defaults
@@ -23355,6 +23639,11 @@ jQuery.sap.declare("sap.ui.core.Locale");
 					}
 				}
 
+				if (oUriParams.mParams['sap-statistics']) {
+					var sValue = oUriParams.get('sap-statistics');
+					setValue('statistics', sValue);
+				}
+
 				// now analyze sap-ui parameters
 				for (var n in M_SETTINGS) {
 					if ( M_SETTINGS[n].noUrl ) {
@@ -23396,7 +23685,7 @@ jQuery.sap.declare("sap.ui.core.Locale");
 			if ( aLangs.length === 0 || (aLangs.length === 1 && aLangs[0] === '*') ) {
 				aLangs = [];
 			} else if ( aLangs.length === 1 && aLangs[0] === 'default' ) {
-				aLangs = "ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
+				aLangs = ",ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
 				if ( aLangs.length === 1 && aLangs[0].slice(0,1) === '@' ) {
 					aLangs = [];
 				}
@@ -23861,7 +24150,7 @@ jQuery.sap.declare("sap.ui.core.Locale");
 			mChanges.__count++;
 			return mChanges;
 		},
-		
+
 		_endCollect : function() {
 			var mChanges = this.mChanges;
 			if ( mChanges && (--mChanges.__count) === 0 ) {
@@ -23869,6 +24158,20 @@ jQuery.sap.declare("sap.ui.core.Locale");
 				this._oCore && this._oCore.fireLocalizationChanged(mChanges);
 				delete this.mChanges;
 			}
+		},
+
+		/**
+		 * Flag if statistics are requested
+		 *
+		 * Flag set by TechnicalInfo Popup will also be checked
+		 * So its active if set by ULP parameter or by TechnicalInfo property
+		 *
+		 * @returns {boolean} statistics flag
+		 * @private
+		 * @since 1.20.0
+		 */
+		getStatistics : function() {
+			return this.statistics || window.localStorage.getItem("sap-ui-statistics") == "X";
 		}
 
 	});
@@ -23879,7 +24182,7 @@ jQuery.sap.declare("sap.ui.core.Locale");
 		"1Q" : "en-US-x-saptrc",
 		"2Q" : "en-US-x-sappsd"
 	};
-	
+
 	var M_ABAP_DATE_FORMAT_PATTERN = {
 		"" : {pattern: null},
 		"1": {pattern: "dd.MM.yyyy"},
@@ -24214,8 +24517,8 @@ jQuery.sap.declare("sap.ui.core.Locale");
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.ElementMetadata') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -24223,8 +24526,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.ElementMetadata') ) {
 jQuery.sap.declare("sap.ui.core.ElementMetadata");
 if ( !jQuery.sap.isDeclared('sap.ui.base.ManagedObjectMetadata') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -24241,7 +24544,7 @@ jQuery.sap.declare("sap.ui.base.ManagedObjectMetadata");
  *
  * @class
  * @author Frank Weigel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 0.8.6
  */
 sap.ui.base.ManagedObjectMetadata = function(sClassName, oClassInfo) {
@@ -24832,7 +25135,8 @@ sap.ui.base.ManagedObjectMetadata.prototype.generateAccessors = function() {
 		method("attach", n, function(d,f,o) { this.attachEvent(n,d,f,o); return this; }, info.deprecated);
 		method("detach", n, function(f,o) { this.detachEvent(n,f,o); return this; });
 		var n1 = !!info.allowPreventDefault;
-		method("fire", n, function(p) { return this.fireEvent(n,p, n1); });
+		var n2 = !!info.enableEventBubbling;
+		method("fire", n, function(p) { return this.fireEvent(n,p, n1, n2); });
 	});
 
 };
@@ -24905,7 +25209,7 @@ sap.ui.base.ManagedObjectMetadata.prototype.generateAccessors = function() {
  *
  * @class
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 0.8.6
  */
 sap.ui.core.ElementMetadata = function(sClassName, oClassInfo) {
@@ -25017,8 +25321,8 @@ sap.ui.core.ElementMetadata.prototype.isHidden = function() {
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.Element') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25028,8 +25332,8 @@ jQuery.sap.declare("sap.ui.core.Element");
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.ManagedObject') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25041,10 +25345,11 @@ jQuery.sap.declare("sap.ui.base.ManagedObject");
 
 
 
+
 if ( !jQuery.sap.isDeclared('sap.ui.model.Model') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25053,8 +25358,8 @@ jQuery.sap.declare("sap.ui.model.Model");
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.BindingMode') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25099,8 +25404,8 @@ sap.ui.model.BindingMode = {
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.Context') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25197,7 +25502,7 @@ sap.ui.model.Context.prototype.getProperty = function(sPath) {
  * @return {object} the context object
  */
 sap.ui.model.Context.prototype.getObject = function() {
-	return this.oModel.getProperty(this.sPath);
+	return this.oModel.getObject(this.sPath);
 };
 
 /** 
@@ -25233,7 +25538,7 @@ sap.ui.model.Context.prototype.toString = function() {
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @public
@@ -25261,7 +25566,7 @@ sap.ui.base.EventProvider.extend("sap.ui.model.Model", /** @lends sap.ui.model.M
 			"bindProperty", "bindList", "bindTree", "bindContext", "createBindingContext", "destroyBindingContext", "getProperty",
 			"getDefaultBindingMode", "setDefaultBindingMode", "isBindingModeSupported", "attachParseError", "detachParseError",
 			"attachRequestCompleted", "detachRequestCompleted", "attachRequestFailed", "detachRequestFailed", "attachRequestSent",
-			"detachRequestSent", "setSizeLimit", "refresh"
+			"detachRequestSent", "setSizeLimit", "refresh", "isList", "getObject"
 	  ]
 	
 	  /* the following would save code, but requires the new ManagedObject (1.9.1) 
@@ -25692,7 +25997,8 @@ sap.ui.model.Model.prototype.fireRequestCompleted = function(mArguments) {
  * @param {function}
  *         fnCallBack the function which should be called after the binding context has been created
  * @param {boolean}
- *         [bForceUpdate] force update even if data is already available 
+ *         [bReload] force reload even if data is already available. For server side models this should 
+ *                   refetch the data from the server 
  *         
  * @public
  */
@@ -25723,24 +26029,41 @@ sap.ui.model.Model.prototype.fireRequestCompleted = function(mArguments) {
  */
 
 /**
+ * Implement in inheriting classes
+ * @abstract
+ *
+ * @name sap.ui.model.Model.prototype.getObject
+ * @function
+ * @param {string}
+ *         sPath the path to where to read the object
+ * @param {object}
+ *		   [oContext=null] the context with which the path should be resolved
+ * @public
+ */
+sap.ui.model.Model.prototype.getObject = function(sPath, oContext) {
+	return this.getProperty(sPath, oContext);
+};
+
+
+/**
  * Create ContextBinding
+ * @abstract
  * 
  * @name sap.ui.model.Model.prototype.bindContext
  * @function
- * @param {string}
- *         sPath the path pointing to the property that should be bound
+ * @param {string | object}
+ *         sPath the path pointing to the property that should be bound or an object 
+ *         which contains the following parameter properties: path, context, parameters
  * @param {object}
  *         [oContext=null] the context object for this databinding (optional)
  * @param {object}
  *         [mParameters=null] additional model specific parameters (optional)
+ * @param {object}
+ *         [oEvents=null] event handlers can be passed to the binding ({change:myHandler})
  * @return {sap.ui.model.ContextBinding}
  *
  * @public
  */
-sap.ui.model.Model.prototype.bindContext = function(sPath, oContext, mParameters) {
-	var oBinding = new sap.ui.model.ContextBinding(this, sPath, oContext, mParameters);
-	return oBinding;
-};
 
 /**
  * Gets a binding context. If context already exists, return it from the map,
@@ -25924,13 +26247,25 @@ sap.ui.model.Model.prototype.checkUpdate = function(bForceUpdate) {
 	});
 };
 
+/**
+ * Returns id the provided path is a list (aggregation) or an entity
+ *
+ * @abstract
+ * @name sap.ui.model.Model.prototype.bindContext
+ * @function
+ * @param {string} sPath the path pointing to the property that should be bound
+ * @param {object} [oContext=null] the context object for this databinding (optional)
+ * @return {boolean} 
+ * @since 1.17.1 
+ * @public
+ */
 
 }; // end of sap/ui/model/Model.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.Type') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25948,7 +26283,7 @@ jQuery.sap.declare("sap.ui.model.Type");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @public
@@ -26002,8 +26337,8 @@ sap.ui.model.Type.prototype.getName = function() {
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.CompositeBinding') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26011,8 +26346,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.CompositeBinding') ) {
 jQuery.sap.declare("sap.ui.model.CompositeBinding");
 if ( !jQuery.sap.isDeclared('sap.ui.model.PropertyBinding') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26020,8 +26355,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.PropertyBinding') ) {
 jQuery.sap.declare("sap.ui.model.PropertyBinding");
 if ( !jQuery.sap.isDeclared('sap.ui.model.Binding') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26029,8 +26364,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.Binding') ) {
 jQuery.sap.declare("sap.ui.model.Binding");
 if ( !jQuery.sap.isDeclared('sap.ui.model.ChangeReason') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26090,7 +26425,8 @@ sap.ui.model.ChangeReason = {
  *
  * @param {sap.ui.model.Model} the model
  * @param {String} sPath the path
- * @param {Object} oContext the context object
+ * @param {sap.ui.model.Context} oContext the context object
+ * @param {object} [mParameters]
  * @abstract
  * @public
  * @name sap.ui.model.Binding
@@ -26100,13 +26436,13 @@ sap.ui.base.EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model
 	constructor : function(oModel, sPath, oContext, mParameters){
 		sap.ui.base.EventProvider.apply(this);
 		
+		this.oModel = oModel;
 		this.bRelative = !jQuery.sap.startsWith(sPath,'/');
 		this.sPath = sPath;
 		this.oContext = oContext;
-		this.oModel = oModel;
 		this.mParameters = mParameters;
 		this.bInitial = false;
-	
+		
 	},
 
 	metadata : {
@@ -26174,40 +26510,40 @@ sap.ui.model.Binding.prototype.getModel = function() {
 
 // Eventing and related
 /**
- * Attach event-handler <code>fnFunction</code> to the '_change' event of this <code>sap.ui.model.Model</code>.<br/>
+ * Attach event-handler <code>fnFunction</code> to the 'change' event of this <code>sap.ui.model.Model</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  */
 sap.ui.model.Binding.prototype.attachChange = function(fnFunction, oListener) {
-	if (!this.hasListeners("_change")) {
+	if (!this.hasListeners("change")) {
 		this.oModel.addBinding(this);
 	}
-	this.attachEvent("_change", fnFunction, oListener);
+	this.attachEvent("change", fnFunction, oListener);
 };
 
 /**
- * Detach event-handler <code>fnFunction</code> from the '_change' event of this <code>sap.ui.model.Model</code>.<br/>
+ * Detach event-handler <code>fnFunction</code> from the 'change' event of this <code>sap.ui.model.Model</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  */
 sap.ui.model.Binding.prototype.detachChange = function(fnFunction, oListener) {
-	this.detachEvent("_change", fnFunction, oListener);
-	if (!this.hasListeners("_change")) {
+	this.detachEvent("change", fnFunction, oListener);
+	if (!this.hasListeners("change")) {
 		this.oModel.removeBinding(this);
 	}
 };
 
 /**
- * Fire event _change to attached listeners.
+ * Fire event change to attached listeners.
 
  * @param {Map}
  *         mArguments the arguments to pass along with the event.
  * @private
  */
 sap.ui.model.Binding.prototype._fireChange = function(mArguments) {
-	this.fireEvent("_change", mArguments);
+	this.fireEvent("change", mArguments);
 };
 
 /**
@@ -26309,6 +26645,16 @@ sap.ui.model.Binding.prototype.refresh = function(bForceUpdate) {
 };
 
 /**
+ * Initialize the binding. The message should be called when creating a binding.
+ * The default implementation calls checkUpdate(true). 
+ * 
+ * @protected
+ */
+sap.ui.model.Binding.prototype.initialize = function() {
+	this.checkUpdate(true);
+};
+
+/**
  * _refresh for compatibility
  * @private
  */
@@ -26335,12 +26681,80 @@ sap.ui.model.Binding.prototype.isRelative = function() {
 	return this.bRelative;
 };
 
+/**
+ * attach multiple events
+ * @protected
+ */
+sap.ui.model.Binding.prototype.attachEvents = function(oEvents) {
+	if (!oEvents) {
+		return this;
+	}
+	var that = this;
+	jQuery.each(oEvents, function(sEvent, fnHandler) {
+		var sMethod = "attach" + sEvent.substring(0,1).toUpperCase() + sEvent.substring(1);
+		if (that[sMethod]) {
+			that[sMethod](fnHandler);
+		} else {
+			jQuery.sap.log.warning(that.toString()+ " has no handler for event '" +sEvent+"'");
+		}
+	});
+	return this;
+};
+
+/**
+ * detach multiple events
+ * @protected
+ */
+sap.ui.model.Binding.prototype.detachEvents = function(oEvents) {
+	if (!oEvents) {
+		return this;
+	}
+	var that = this;
+	jQuery.each(oEvents, function(sEvent, fnHandler) {
+		var sMethod = "detach" + sEvent.substring(0,1).toUpperCase() + sEvent.substring(1);
+		if (that[sMethod]) {
+			that[sMethod](fnHandler);
+		} else {
+			jQuery.sap.log.warning(that.toString()+ " has no handler for event '" +sEvent+"'");
+		}
+	});
+	return this;
+};
+
+/**
+ * Attach event-handler <code>fnFunction</code> to the 'refresh' event of this <code>sap.ui.model.Binding</code>.<br/>
+ * @param {function} fnFunction The function to call, when the event occurs.
+ * @param {object} [oListener] object on which to call the given function.
+ * @protected
+ */
+sap.ui.model.Binding.prototype.attachRefresh = function(fnFunction, oListener) {
+	this.attachEvent("refresh", fnFunction, oListener);
+};
+
+/**
+ * Detach event-handler <code>fnFunction</code> from the 'refresh' event of this <code>sap.ui.model.Binding</code>.<br/>
+ * @param {function} fnFunction The function to call, when the event occurs.
+ * @param {object} [oListener] object on which to call the given function.
+ * @protected
+ */
+sap.ui.model.Binding.prototype.detachRefresh = function(fnFunction, oListener) {
+	this.detachEvent("refresh", fnFunction, oListener);
+};
+
+/**
+ * Fire event refresh to attached listeners.
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @private
+ */
+sap.ui.model.Binding.prototype._fireRefresh = function(mArguments) {
+	this.fireEvent("refresh", mArguments);
+};
 }; // end of sap/ui/model/Binding.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.SimpleType') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26349,8 +26763,8 @@ jQuery.sap.declare("sap.ui.model.SimpleType");
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.ParseException') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26358,8 +26772,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.ParseException') ) {
 jQuery.sap.declare("sap.ui.model.ParseException");
 if ( !jQuery.sap.isDeclared('sap.ui.base.Exception') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26412,8 +26826,8 @@ sap.ui.model.ParseException.prototype = jQuery.sap.newObject(sap.ui.base.Excepti
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.ValidateException') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26438,8 +26852,8 @@ sap.ui.model.ValidateException.prototype = jQuery.sap.newObject(sap.ui.base.Exce
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.FormatException') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26473,7 +26887,7 @@ sap.ui.model.FormatException.prototype = jQuery.sap.newObject(sap.ui.base.Except
  * @extends sap.ui.model.Type
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor
  * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -26583,9 +26997,10 @@ sap.ui.model.SimpleType.prototype.setFormatOptions = function(oFormatOptions) {
  * The PropertyBinding is used to access single data values in the data model.
  *
  * @param {sap.ui.model.Model} oModel
- * @param {String} sPath
- * @param {Object} oContext
- * @abstract
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {object} [mParameters]
+ * 
  * @public
  * @name sap.ui.model.PropertyBinding
  */
@@ -26594,15 +27009,12 @@ sap.ui.model.Binding.extend("sap.ui.model.PropertyBinding", /** @lends sap.ui.mo
 
 	constructor : function (oModel, sPath, oContext, mParameters) {
 		sap.ui.model.Binding.apply(this, arguments);
-		this.oType;
-		this.fnFormatter;
-		this.sInternalType;
 	},
 	metadata : {
 		"abstract" : true,
 		
 	  publicMethods : [
-		  "getValue", "setValue", "setType", "getType", "setFormatter", "getFormatter", "getExternalValue", "setExternalValue"
+		  "getValue", "setValue", "setType", "getType", "setFormatter", "getFormatter", "getExternalValue", "setExternalValue", "getBindingMode"
 	  ]
 	}
 
@@ -26736,6 +27148,24 @@ sap.ui.model.PropertyBinding.prototype.getFormatter = function() {
 	return this.fnFormatter;
 };
 
+/**
+ *  Returns the binding mode 
+ *  @returns {sap.ui.model.BindingMode} the binding mode
+ *  @public
+ */
+sap.ui.model.PropertyBinding.prototype.getBindingMode = function() {
+	return this.sMode;
+};
+
+/**
+ *  Sets the binding mode 
+ *  @params {sap.ui.model.BindingMode} sBindingMode the binding mode
+ *  @protected
+ */
+sap.ui.model.PropertyBinding.prototype.setBindingMode = function(sBindingMode) {
+	this.sMode = sBindingMode;
+};
+
 }; // end of sap/ui/model/PropertyBinding.js
 
 
@@ -26754,7 +27184,8 @@ sap.ui.model.PropertyBinding.prototype.getFormatter = function() {
 sap.ui.model.PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding */ {
 
 	constructor : function (aBindings, bRawValues) {
-		sap.ui.model.Binding.apply(this, [null,""]); // TODO is this needed?
+		sap.ui.model.PropertyBinding.apply(this, [null,""]);
+		var that = this;
 		this.aBindings = aBindings;
 		this.bRawValues = bRawValues;
 	},
@@ -26904,10 +27335,13 @@ sap.ui.model.CompositeBinding.prototype.getBindings = function() {
 * @protected
 */
 sap.ui.model.CompositeBinding.prototype.attachChange = function(fnFunction, oListener) {
-	
-	jQuery.each(this.aBindings, function(i, oBinding){
-		oBinding.attachChange(fnFunction, oListener);
-	});
+	this.attachEvent("change", fnFunction, oListener);
+	if (this.aBindings) {
+		var that = this;
+		jQuery.each(this.aBindings, function(i,oBinding) {
+			oBinding.attachChange(that.checkUpdate, that);
+		});
+	}
 };
 
 /**
@@ -26917,9 +27351,13 @@ sap.ui.model.CompositeBinding.prototype.attachChange = function(fnFunction, oLis
 * @protected
 */
 sap.ui.model.CompositeBinding.prototype.detachChange = function(fnFunction, oListener) {
-	jQuery.each(this.aBindings, function(i, oBinding){
-		oBinding.detachChange(fnFunction, oListener);
-	});
+	this.detachEvent("change", fnFunction, oListener);
+	if (this.aBindings) {
+		var that = this;
+		jQuery.each(this.aBindings, function(i,oBinding) {
+			oBinding.detachChange(that.checkUpdate, that);
+		});
+	}
 };
 
 /**
@@ -26934,16 +27372,27 @@ sap.ui.model.CompositeBinding.prototype.updateRequired = function(oModel) {
 		bUpdateRequired = bUpdateRequired || oBinding.updateRequired(oModel);
 	});
 	return bUpdateRequired;
-
 };
-
-
+/**
+ * Check whether this Binding would provide new values and in case it changed,
+ * inform interested parties about this.
+ * 
+ * @param {boolean} bForceupdate
+ * 
+ */
+sap.ui.model.CompositeBinding.prototype.checkUpdate = function(bForceupdate){
+	var oValue = this.getExternalValue();
+	if(!jQuery.sap.equal(oValue, this.oValue) || bForceupdate) {// optimize for not firing the events when unneeded
+		this.oValue = oValue;
+		this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+	}
+};
 }; // end of sap/ui/model/CompositeBinding.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.model.ContextBinding') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26961,23 +27410,16 @@ jQuery.sap.declare("sap.ui.model.ContextBinding");
  * @param {String} sPath
  * @param {Object} oContext
  * @param {Object} [mParameters]
+ * @param {Object} [oEvents] object defining event handlers
  * @abstract
  * @public
  * @name sap.ui.model.ContextBinding
  */
 sap.ui.model.Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding */ {
 	
-	constructor : function(oModel, sPath, oContext, mParameters){
-		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters);
-		var that = this;
+	constructor : function(oModel, sPath, oContext, mParameters, oEvents){
+		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters, oEvents);
 		this.bInitial = true;
-		this.fireDataRequested();
-		oModel.createBindingContext(sPath, oContext, mParameters, function(oContext) {
-			that.bInitial = false;
-			that.oElementContext = oContext;
-			that._fireChange();
-			that.fireDataReceived();
-		});
 	},
 
 	metadata : {
@@ -27023,36 +27465,6 @@ sap.ui.model.ContextBinding.prototype.checkUpdate = function(bForceupdate) {
  * 
  * @public
  */
-sap.ui.model.ContextBinding.prototype.refresh = function(bForceUpdate) {
-	var that = this;
-	//recreate Context: force update
-	this.fireDataRequested();
-	this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-		if (that.oElementContext === oContext) {
-			that.oModel.checkUpdate(true,oContext);
-		} else {
-			that.oElementContext = oContext;
-			that._fireChange(); 
-		}
-		that.fireDataReceived();
-	}, true);
-};
-
-/**
- * Set the binding context 
- */
-sap.ui.model.ContextBinding.prototype.setContext = function(oContext) {
-	var that = this;
-	if (this.oContext != oContext) {
-		this.oContext = oContext;
-		this.fireDataRequested();
-		this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-			that.oElementContext = oContext;
-			that._fireChange();
-			that.fireDataReceived();
-		});
-	}
-};
 
 /**
  * Return the bound context
@@ -27060,12 +27472,13 @@ sap.ui.model.ContextBinding.prototype.setContext = function(oContext) {
 sap.ui.model.ContextBinding.prototype.getBoundContext = function(oContext) {
 	return this.oElementContext;
 };
+
 }; // end of sap/ui/model/ContextBinding.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.base.BindingParser') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -27340,7 +27753,7 @@ jQuery.sap.declare("sap.ui.base.BindingParser");
  * @class Base Class for managed objects.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @public
  * @name sap.ui.base.ManagedObject
  * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -27356,7 +27769,12 @@ sap.ui.base.EventProvider.extend("sap.ui.base.ManagedObject", {
 	  aggregations : {
 	  },
 	  associations : {},
-	  events : {}
+	  events : { 
+		  "validationSuccess" : { enableEventBubbling : true },
+		  "validationError" : { enableEventBubbling : true },
+		  "parseError" : { enableEventBubbling : true }, 
+		  "formatError" : { enableEventBubbling : true } 
+	  }
 	},
 
 	constructor : function(sId, mSettings, oScope) {
@@ -27760,9 +28178,11 @@ sap.ui.base.ManagedObject.prototype.setProperty = function(sPropertyName, oValue
 	if (jQuery.sap.equal(oOldValue, oValue)) {
 		return this;
 	} // no change
-
+	
 	// set suppress invalidate flag
 	if (bSuppressInvalidate) {
+		//Refresh only for property changes with suppressed invalidation (others lead to rerendering and refresh is handled there)
+		jQuery.sap.act.refresh();
 		this.iSuppressInvalidate++;
 	}
 
@@ -27854,14 +28274,13 @@ sap.ui.base.ManagedObject.prototype.validateProperty = function(sPropertyName, o
 	// In case null is passed as the value return the default value, either from the property or from the type
 	if (oValue === null || oValue === undefined) {
 		if (oProperty.defaultValue !== null) {
-			return oProperty.defaultValue;
+			oValue = oProperty.defaultValue;
 		} else {
-			return oType.getDefaultValue();
+			oValue = oType.getDefaultValue();
 		}
-	}
+	} else if (oType instanceof sap.ui.base.DataType) {
+		// Implicit casting for string only, other types are causing errors
 
-	// Implicit casting for string only, other types are causing errors
-	if (oType instanceof sap.ui.base.DataType) {
 		if (oType.getName() == "string") {
 			if (!(typeof oValue == "string" || oValue instanceof String)) {
 				oValue = "" + oValue;
@@ -27878,6 +28297,11 @@ sap.ui.base.ManagedObject.prototype.validateProperty = function(sPropertyName, o
 		}
 	} else if (!(oValue in oType)){ // Enumeration
 		throw new Error("\"" + oValue + "\" is not a valid entry of the enumeration for property \"" + sPropertyName + "\" of " + this);
+	}
+
+	// Normalize the value (if a normalizer was set using the setNormalizer method on the type)
+	if (oType && oType.normalize && typeof oType.normalize === "function") {
+		oValue = oType.normalize(oValue);
 	}
 
 	return oValue;
@@ -28647,17 +29071,22 @@ sap.ui.base.ManagedObject.prototype._removeChild = function(oChild, sAggregation
  */
 sap.ui.base.ManagedObject.prototype.setParent = function(oParent, sAggregationName, bSuppressInvalidate) {
 	var that = this;
-	
+
 	if ( !oParent ) {
 		this.oParent = null;
 		this.sParentAggregationName = null;
 		this.oPropagatedProperties = {oModels:{}, oBindingContexts:{}};
+		
+		jQuery.sap.act.refresh();
+		
 		// Note: no need (and no way how) to invalidate
 		return;
 	}
 
 	// set suppress invalidate flag
 	if (bSuppressInvalidate) {
+		//Refresh only for changes with suppressed invalidation (others lead to rerendering and refresh is handled there)
+		jQuery.sap.act.refresh();
 		this.iSuppressInvalidate++;
 	}
 
@@ -28893,6 +29322,7 @@ sap.ui.base.ManagedObject.prototype.bindObject = function(sPath, mParameters) {
 		sPath = oBindingInfo.path;
 		mParameters = oBindingInfo.parameters;
 		sModelName = oBindingInfo.model;
+		boundObject.events = oBindingInfo.events;
 	}
 	// if a model separator is found in the path, extract model name and path
 	iSeparatorPos = sPath.indexOf(">");
@@ -28907,6 +29337,7 @@ sap.ui.base.ManagedObject.prototype.bindObject = function(sPath, mParameters) {
 	oldBoundObject = this.mBoundObjects[sModelName];
 	if (oldBoundObject && oldBoundObject.binding) {
 		oldBoundObject.binding.detachChange(oldBoundObject.fChangeHandler);
+		oldBoundObject.binding.detachEvents(oldBoundObject.events);
 	}
 	this.mBoundObjects[sModelName] = boundObject;
 
@@ -28943,9 +29374,9 @@ sap.ui.base.ManagedObject.prototype._bindObject = function(sModelName, oBoundObj
 	oBoundObject.binding = oBinding;
 	oBoundObject.fChangeHandler = fChangeHandler;
 	
-	if (!oBinding.isInitial()) {
-		fChangeHandler();
-	}
+	oBinding.attachEvents(oBoundObject.events);
+	
+	oBinding.initialize();
 };
 
 /**
@@ -28987,6 +29418,7 @@ sap.ui.base.ManagedObject.prototype.unbindObject = function(sModelName) {
 	if (oBoundObject) {
 		if (oBoundObject.binding) {
 			oBoundObject.binding.detachChange(oBoundObject.fChangeHandler)
+			oBoundObject.binding.detachEvents(oBoundObject.events);
 		}
 		delete this.mBoundObjects[sModelName]
 		delete this.oBindingContexts[sModelName];
@@ -29064,7 +29496,7 @@ sap.ui.base.ManagedObject.prototype.bindProperty = function(sName, oBindingInfo)
 			formatOptions: oBindingInfo.formatOptions,
 			constraints: oBindingInfo.constraints,
 			model: oBindingInfo.model,
-			mode: oBindingInfo.mode 
+			mode: oBindingInfo.mode, 
 		};
 		delete oBindingInfo.path;
 		delete oBindingInfo.mode;
@@ -29110,27 +29542,35 @@ sap.ui.base.ManagedObject.prototype.bindProperty = function(sName, oBindingInfo)
 
 sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo) {
 	var oModel,
-	oContext,
-	oBinding,
-	oType,
-	clType,
-	oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
-	that = this,
-	aBindings = [],
-	fModelChangeHandler = function() {
-		try {			
-			var oValue = oBinding.getExternalValue();
-			oBindingInfo.skipModelUpdate = true;
-			that[oPropertyInfo._sMutator](oValue);
-			oBindingInfo.skipModelUpdate = false;
-		}catch (oException) {
-			if (oException instanceof sap.ui.model.FormatException) {
-					sap.ui.getCore().fireFormatError({element : that, property : sName, type : oBinding.getType(), newValue : oBinding.getValue(), oldValue : that.getProperty(sName), exception: oException});
-			}else {
-				throw oException;
+		sMode,
+		oContext,
+		oBinding,
+		oType,
+		clType,
+		oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
+		that = this,
+		aBindings = [],
+		fModelChangeHandler = function() {
+			try {			
+				var oValue = oBinding.getExternalValue();
+				oBindingInfo.skipModelUpdate = true;
+				that[oPropertyInfo._sMutator](oValue);
+				oBindingInfo.skipModelUpdate = false;
+			}catch (oException) {
+				if (oException instanceof sap.ui.model.FormatException) {
+					that.fireFormatError({
+						element : that,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oBinding.getValue(),
+						oldValue : that.getProperty(sName),
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
+				}else {
+					throw oException;
+				}
 			}
-		}
-	};
+		};
 
 	// Only use context for bindings on the primary model
 	oContext = this.getBindingContext(oBindingInfo.model);
@@ -29151,10 +29591,8 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 		oBinding.setType(oType, oPropertyInfo.type);
 		oBinding.setFormatter(oPart.formatter);
 		
-		// TODO check if multiple bindings work with resource model 
-		if (!oPart.mode || !oModel.isBindingModeSupported(oPart.mode)) {
-			oPart.mode = oModel.getDefaultBindingMode();
-		}
+		sMode = !oPart.mode ? oModel.getDefaultBindingMode() : oPart.mode; 
+		oBinding.setBindingMode(sMode);
 		
 		aBindings.push(oBinding);
 	});
@@ -29169,16 +29607,12 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 		}
 		oBinding = new sap.ui.model.CompositeBinding(aBindings, oBindingInfo.useRawValues);
 		oBinding.setType(oType, oPropertyInfo.type);
+		oBinding.setBindingMode(oBindingInfo.mode);
 	} else {
 		oBinding = aBindings[0];
 	}
 	
-	// Attach to the change event of the binding and initialize value
-	// all composite bindings have already one way mode, so only check the first binding for its mode. 
-	// Because if no composite binding is used there is only one binding.
-	if (oBindingInfo.parts[0].mode != sap.ui.model.BindingMode.OneTime) {
-		oBinding.attachChange(fModelChangeHandler);
-	}
+	oBinding.attachChange(fModelChangeHandler);
 	
 	// set only one formatter function if any
     // because the formatter gets the context of the element we have to set the context via proxy to ensure compatibility 
@@ -29190,9 +29624,14 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 	oBindingInfo.skipModelUpdate = false;
 	oBindingInfo.binding = oBinding;
 	oBindingInfo.modelChangeHandler = fModelChangeHandler;
+	
+	oBinding.attachEvents(oBindingInfo.events);
 
-	if (!oBinding.isInitial()) {
-		fModelChangeHandler();
+	oBinding.initialize();
+	
+	if (oBinding.getBindingMode() === sap.ui.model.BindingMode.OneTime) {
+		oBinding.detachChange(fModelChangeHandler);
+		oBinding.detachEvents(oBindingInfo.events);
 	}
 };
 
@@ -29210,6 +29649,7 @@ sap.ui.base.ManagedObject.prototype.unbindProperty = function(sName, bSuppressRe
 	if(oBindingInfo) {
 		if (oBindingInfo.binding) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 		}
 		delete this.mBindingInfos[sName];
 		if (!bSuppressReset) {
@@ -29231,21 +29671,40 @@ sap.ui.base.ManagedObject.prototype.updateModelProperty = function(sName, oValue
 		var oBindingInfo = this.mBindingInfos[sName],
 			oBinding = oBindingInfo.binding;
 		// only one property binding should work with two way mode...composite binding does not work with two way binding 
-		if (oBindingInfo.parts[0].mode == sap.ui.model.BindingMode.TwoWay
-				&& oBinding
+		if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay
 				&& !oBindingInfo.skipModelUpdate) {
 			try {
 				oBinding.setExternalValue(oValue);
 				// Only fire validation success, if a type is used
 				if (oBinding.getType()) {
-					sap.ui.getCore().fireValidationSuccess({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue});
+					this.fireValidationSuccess({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}
 			}
 			catch (oException) {
 				if (oException instanceof sap.ui.model.ParseException) {
-					sap.ui.getCore().fireParseError({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue, exception: oException});
+					this.fireParseError({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue,
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}else if (oException instanceof sap.ui.model.ValidateException) {
-					sap.ui.getCore().fireValidationError({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue, exception: oException});
+					this.fireValidationError({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue,
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}
 				else {
 					throw oException;
@@ -29360,6 +29819,14 @@ sap.ui.base.ManagedObject.prototype._bindAggregation = function(sName, oBindingI
 			} else {
 				that.updateAggregation(sName);
 			}
+		},
+		fModelRefreshHandler = function(oEvent){
+			var sRefresher = "refresh" + sName.substr(0,1).toUpperCase() + sName.substr(1);
+			if (that[sRefresher]) {
+				that[sRefresher](oEvent.getParameter("reason"));
+			} else {
+				fModelChangeHandler(oEvent);
+			}
 		};
 		var oModel = this.getModel(oBindingInfo.model);
 		if (this.isTreeBinding(sName)) {
@@ -29374,11 +29841,15 @@ sap.ui.base.ManagedObject.prototype._bindAggregation = function(sName, oBindingI
 
 	oBindingInfo.binding = oBinding;
 	oBindingInfo.modelChangeHandler = fModelChangeHandler;
+	oBindingInfo.modelRefreshHandler = fModelRefreshHandler;
 
 	oBinding.attachChange(fModelChangeHandler);
-	if (!oBinding.isInitial()) {
-		fModelChangeHandler();
-	}
+	
+	oBinding.attachRefresh(fModelRefreshHandler);
+	
+	oBinding.attachEvents(oBindingInfo.events);
+	
+	oBinding.initialize();
 };
 
 /**
@@ -29395,6 +29866,8 @@ sap.ui.base.ManagedObject.prototype.unbindAggregation = function(sName, bSuppres
 	if(oBindingInfo) {
 		if (oBindingInfo.binding) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			oBindingInfo.binding.detachRefresh(oBindingInfo.modelRefreshHandler);
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 		}
 		delete this.mBindingInfos[sName];
 		if (!bSuppressReset) {
@@ -29492,6 +29965,10 @@ sap.ui.base.ManagedObject.prototype.updateBindings = function(bUpdateAll, sModel
 		// if there is a binding and if it became invalid through the current model change, then remove it 
 		if ( oBindingInfo.binding && becameInvalid(oBindingInfo) ) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			if (oBindingInfo.modelRefreshHandler) { // only list bindings currently have a refresh handler attached
+				oBindingInfo.binding.detachRefresh(oBindingInfo.modelRefreshHandler);				
+			}
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 			delete oBindingInfo.binding;
 		}
 
@@ -29592,6 +30069,17 @@ sap.ui.base.ManagedObject.prototype.isBound = function(sName){
  */
 sap.ui.base.ManagedObject.prototype.getObjectBinding = function(sModelName){
 	return this.mBoundObjects[sModelName] && this.mBoundObjects[sModelName].binding;
+};
+
+/**
+ * Returns the parent managed object as new eventing parent to enable control event bubbling
+ * or <code>null</code> if this object hasn't been added to a parent yet. 
+ * 
+ * @return {sap.ui.base.EventProvider} the parent event provider
+ * @protected
+ */
+sap.ui.base.ManagedObject.prototype.getEventingParent = function() {
+	return this.oParent;
 };
 
 /**
@@ -30253,7 +30741,7 @@ sap.ui.base.ManagedObject.prototype.findAggregatedObjects = function(bRecursive)
  * @class Base Class for Elements.
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @public
  * @name sap.ui.core.Element
  */
@@ -30593,32 +31081,42 @@ sap.ui.core.Element.prototype.toString = function() {
 
 
 /**
- * Returns the best suitable DOM node that represents this Element.
- * By default the DOM node with the same ID as this Element is returned.
+ * Returns the best suitable DOM Element that represents this UI5 Element.
+ * By default the DOM Element with the same ID as this Element is returned.
  * Subclasses should override this method if the lookup via id is not sufficient.
  *
- * Note that such a DOM node does not necessarily exist in all cases.
+ * Note that such a DOM Element does not necessarily exist in all cases.
  * Some elements or controls might not have a DOM representation at all (e.g.
  * a naive FlowLayout) while others might not have one due to their current
  * state (e.g. an initial, not yet rendered control).
  *
- * @return {DOMNode} The element's DOM reference or null
+ * If an ID suffix is given, the ID of this Element is concatenated with the suffix 
+ * (separated by a single dash) and the DOM node with that compound ID will be returned.
+ * This matches the UI5 naming convention for named inner DOM nodes of a control. 
+ * 
+ * @param {string} [sSuffix] ID suffix to get the DOMRef for
+ * @return {Element} The Element's DOM Element sub DOM Element or null
  * @protected
  */
-sap.ui.core.Element.prototype.getDomRef = function() {
-	return jQuery.sap.domById(this.getId());
+sap.ui.core.Element.prototype.getDomRef = function(sSuffix) {
+	return jQuery.sap.domById(sSuffix ? this.getId() + "-" + sSuffix : this.getId());
 };
 
 /**
  * Returns the best suitable DOM node that represents this Element wrapped as jQuery object.
  * I.e. the element returned by {@link sap.ui.core.Element#getDomRef} is wrapped and returned.
  *
+ * If an ID suffix is given, the ID of this Element is concatenated with the suffix 
+ * (separated by a single dash) and the DOM node with that compound ID will be wrapped by jQuery.
+ * This matches the UI5 naming convention for named inner DOM nodes of a control. 
+ * 
+ * @param {string} [sSuffix] ID suffix to get a jQuery object for
  * @return {jQuery} The jQuery wrapped element's DOM reference
  * @protected
  */
 
-sap.ui.core.Element.prototype.$ = function() {
-	return jQuery(this.getDomRef());
+sap.ui.core.Element.prototype.$ = function(sSuffix) {
+	return jQuery(this.getDomRef(sSuffix));
 };
 
 /**
@@ -31304,8 +31802,8 @@ sap.ui.core.Element.prototype.getElementBinding = function(sModelName){
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.Control') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -31330,7 +31828,7 @@ jQuery.sap.declare("sap.ui.core.Control");
  * @extends sap.ui.core.Element
  * @abstract
  * @author Martin Schaus, Daniel Brinkmann
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.Control
  */
 sap.ui.core.Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -31417,8 +31915,8 @@ sap.ui.core.Control.prototype.clone = function() {
 // must appear after clone() method and metamodel definition
 if ( !jQuery.sap.isDeclared('sap.ui.core.CustomStyleClassSupport') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32199,8 +32697,8 @@ sap.ui.core.Control.prototype.destroy = function(bSuppressInvalidate) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.FocusHandler') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32449,18 +32947,18 @@ jQuery.sap.declare("sap.ui.core.FocusHandler");
 	};*/
 
 }());
-
 }; // end of sap/ui/core/FocusHandler.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.ResizeHandler') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 // Provides class sap.ui.core.ResizeHandler
 jQuery.sap.declare("sap.ui.core.ResizeHandler");
+
 
 
 
@@ -32502,14 +33000,23 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 			this.fDestroyHandler = jQuery.proxy(this.destroy, this);
 
 			jQuery(window).bind("unload", this.fDestroyHandler);
+			
+			jQuery.sap.act.attachActivate(initListener, this);
 		}
 
 	});
 	
-	function clearListener(oResizeHandler){
-		if(oResizeHandler.bRegistered){
-			oResizeHandler.bRegistered = false;
-			sap.ui.getCore().detachIntervalTimer(oResizeHandler.checkSizes, oResizeHandler);
+	function clearListener(){
+		if(this.bRegistered){
+			this.bRegistered = false;
+			sap.ui.getCore().detachIntervalTimer(this.checkSizes, this);
+		}
+	};
+	
+	function initListener(){
+		if(!this.bRegistered && this.aResizeListeners.length > 0){
+			this.bRegistered = true;
+			sap.ui.getCore().attachIntervalTimer(this.checkSizes, this);
 		}
 	};
 
@@ -32521,10 +33028,11 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 	 * @private
 	 */
 	sap.ui.core.ResizeHandler.prototype.destroy = function(oEvent) {
+		jQuery.sap.act.detachActivate(initListener, this);
 		jQuery(window).unbind("unload", this.fDestroyHandler);
 		oCoreRef = null;
 		this.aResizeListeners = [];
-		clearListener(this);
+		clearListener.apply(this);
 	};
 
 	/**
@@ -32543,14 +33051,11 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 			sId = "rs-" + new Date().valueOf() + "-" + this.iIdCounter++,
 			dbg = (bIsControl ? ("Control " + oRef.getId()) : (oRef.id ? oRef.id : String(oRef)));
 
-		if(!this.bRegistered){
-			this.bRegistered = true;
-			sap.ui.getCore().attachIntervalTimer(this.checkSizes, this);
-		}
-
 		this.aResizeListeners.push({sId: sId, oDomRef: bIsControl ? null : oRef, oControl: bIsControl ? oRef : null, fHandler: fHandler, iWidth: iWidth, iHeight: iHeight, dbg: dbg});
 		log.debug("registered " + dbg);
 
+		initListener.apply(this);
+		
 		return sId;
 	};
 
@@ -32572,7 +33077,7 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 
 		// if list is empty now, stop interval
 		if(this.aResizeListeners.length == 0){
-			clearListener(this);
+			clearListener.apply(this);
 		}
 	};
 
@@ -32619,6 +33124,15 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 				}
 			}
 		});
+		
+		if(sap.ui.core.ResizeHandler._keepActive != true && sap.ui.core.ResizeHandler._keepActive != false){
+			//initialize default
+			sap.ui.core.ResizeHandler._keepActive = false;
+		}
+		
+		if(!jQuery.sap.act.isActive() && !sap.ui.core.ResizeHandler._keepActive){
+			clearListener.apply(this);
+		}
 	};
 
 	/**
@@ -32683,8 +33197,8 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.RenderManager') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32693,8 +33207,8 @@ jQuery.sap.declare("sap.ui.core.RenderManager");
 
 if ( !jQuery.sap.isDeclared('jquery.sap.encoder') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32725,7 +33239,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for HTML escaping
 	 */
-	var rHtml = /[\x00-\x2b\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/g,
+	var rHtml = /[\x00-\x2b\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\xff\u2028\u2029]/g,
 		rHtmlReplace = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]/,
 		mHtmlLookup = {
 			"<": "&lt;",
@@ -32791,7 +33305,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for JS escaping
 	 */
-	var rJS = /[\x00-\x2b\x2d\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/g,
+	var rJS = /[\x00-\x2b\x2d\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\xff\u2028\u2029]/g,
 		mJSLookup = {};
 
 	var fJS = function(sChar) {
@@ -32879,7 +33393,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	/**
 	 * RegExp and escape function for CSS escaping
 	 */
-	var rCSS = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\uffff][0-9A-Fa-f]?/g;
+	var rCSS = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\xff\u2028\u2029][0-9A-Fa-f]?/g;
 
 	var fCSS = function(sChar) {
 		var iChar = sChar.charCodeAt(0);
@@ -32992,7 +33506,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 			sQuery = result[5],
 			sHash = result[6];
 
-		var rCheck = /[\x00-\x24\x26-\x29\x2b\x2c\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\uffff]/;
+		var rCheck = /[\x00-\x24\x26-\x29\x2b\x2c\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x7d\x7f-\uffff]/;
 		var rCheckMail = /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 		// protocol
@@ -33076,7 +33590,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 					}
 					if (bOk){
 						// host OK
-						if (!aWhitelist[i].port || sPort == aWhitelist[i].port) {
+						if ((!sHost && !sPort) || !aWhitelist[i].port || sPort == aWhitelist[i].port) {
 							// port OK
 							if (aWhitelist[i].path && /\*$/.test(aWhitelist[i].path)) {
 								// check for wildcard search at end
@@ -33097,7 +33611,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 				}
 			}
 			if (!bFound) {
-				return bFound;
+				return false;
 			}
 		}
 
@@ -33169,6 +33683,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 
 
 
+
 (function() {
 
 	var aCommonMethods = ["renderControl", "write", "writeEscaped", "translate", "writeAcceleratorKey", "writeControlData",
@@ -33196,7 +33711,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -33535,6 +34050,8 @@ sap.ui.core.RenderManager.prototype.getHTML = function(oControl) {
 		this.aRenderedControls = [];
 		this.aBuffer = [];
 		this.aStyleStack = [{}];
+		
+		jQuery.sap.act.refresh();
 	};
 
 	/**
@@ -34123,15 +34640,18 @@ sap.ui.core.RenderManager.prototype.writeAttribute = function(sName, value) {
 
 /**
  * Writes the attribute and its value into the HTML
+ * 
+ * The value is properly escaped to avoid XSS attacks.
+ * 
  * @param sName the name of the attribute
- * @param sValue the value of the attribute
+ * @param vValue the value of the attribute
  * @return {sap.ui.core.RenderManager} this render manager instance to allow chaining
  * @public
  * @SecSink {0|XSS}
  */
-sap.ui.core.RenderManager.prototype.writeAttributeEscaped = function(sName, sValue) {
+sap.ui.core.RenderManager.prototype.writeAttributeEscaped = function(sName, vValue) {
 	// writeAttribute asserts
-	this.writeAttribute(sName, jQuery.sap.escapeHTML(sValue));
+	this.writeAttribute(sName, jQuery.sap.escapeHTML(String(vValue)));
 	return this;
 };
 
@@ -34255,7 +34775,7 @@ sap.ui.core.RenderManager.prototype.writeAccessibilityState = function(oElement,
 
 	for(var p in mAriaProps) {
 		if(mAriaProps[p] != null && mAriaProps[p] !== ""){ //allow 0 and false but no null, undefined or empty string
-			this.writeAttribute(p === "role" ? p : "aria-"+p, mAriaProps[p]);
+			this.writeAttributeEscaped(p === "role" ? p : "aria-"+p, mAriaProps[p]);
 		}
 	}
 
@@ -34339,12 +34859,13 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 		this.write("</span>");
 	}
 };
+
 }; // end of sap/ui/core/RenderManager.js
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.UIArea') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -34352,8 +34873,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.UIArea') ) {
 jQuery.sap.declare("sap.ui.core.UIArea");
 if ( !jQuery.sap.isDeclared('jquery.sap.ui') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -34383,7 +34904,7 @@ jQuery.sap.declare("jquery.sap.ui", false);
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.16.8-SNAPSHOT
+//	 * @version 1.18.8
 //	 * @namespace
 //	 * @public
 //	 */
@@ -34528,6 +35049,7 @@ jQuery.sap.declare("jquery.sap.ui", false);
 
 
 
+
 /**
  * @class An area in a page that hosts a tree of UI elements.
  *
@@ -34535,7 +35057,7 @@ jQuery.sap.declare("jquery.sap.ui", false);
  *
  * @extends sap.ui.base.ManagedObject
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
  * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
  * @public
@@ -34862,6 +35384,16 @@ sap.ui.core.UIArea.prototype.getBindingContext = function(){
 	return null;
 };
 
+/**
+ * Returns the Core as new eventing parent to enable control event bubbling to the core to ensure compatibility with the core validation events. 
+ * 
+ * @return {sap.ui.base.EventProvider} the parent event provider
+ * @protected
+ */
+sap.ui.core.UIArea.prototype.getEventingParent = function() {
+	return this.oCore;
+};
+
 // ###########################################################################
 // Convenience for methods
 // e.g. Process Events for inner Controls
@@ -35050,6 +35582,8 @@ sap.ui.core.UIArea.prototype._handleEvent = function(/**event*/oEvent) {
 	// TODO: this should be the 'lowest' SAPUI5 Control of this very
 	// UIArea instance's scope -> nesting scenario
 	oElement = jQuery(oEvent.target).control(0);
+	
+	jQuery.sap.act.refresh();
 	
 	if(oElement === null){
 		return;
@@ -35266,8 +35800,8 @@ sap.ui.core.UIArea.prototype.clone = function() {
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.ThemeCheck') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -35414,22 +35948,29 @@ function checkTheme(oThemeCheck) {
 /* checks if a particular class is available at the beginning of the core styles
  */
 function checkCustom (oThemeCheck){
-	var ruleName = null;
+	var ruleName = null,
+	bSuccess = false;
+
 	//get the core styles
 	jQuery.each(document.styleSheets, function(iIndex, oStyleSheet) {
 			if (!!oStyleSheet.ownerNode && /sap.ui.core/.test(oStyleSheet.ownerNode.id) && oStyleSheet.cssRules && oStyleSheet.cssRules.length > 0){
 				ruleName = oStyleSheet.cssRules[0].selectorText;
+				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
+					bSuccess = true;
+					return false;
+				}
 			}
 			else if(!!oStyleSheet.owningElement && /sap.ui.core/.test(oStyleSheet.owningElement.id) && oStyleSheet.rules && oStyleSheet.rules.length > 0){
 					//ie8 doesn't know ownerNode
 				ruleName = oStyleSheet.rules[0].selectorText;
+				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
+					bSuccess = true;
+					return false;
+				}
 			}
 	});
 	// we should now have some rule name ==> try to match against custom check
-	if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
-		return true;
-	}
-	return false;
+	return bSuccess;
 }
 
 function delayedCheckTheme(bFirst) {
@@ -35456,8 +35997,8 @@ function delayedCheckTheme(bFirst) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.Component') ) {
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -35466,8 +36007,8 @@ jQuery.sap.declare("sap.ui.core.Component");
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.ComponentMetadata') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -35485,7 +36026,7 @@ jQuery.sap.declare("sap.ui.core.ComponentMetadata");
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  * @class
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 1.9.2
  */
 sap.ui.core.ComponentMetadata = function(sClassName, oClassInfo) {
@@ -35851,7 +36392,7 @@ sap.ui.core.ComponentMetadata.prototype._loadDependencies = function() {
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.Component
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  */
@@ -35967,6 +36508,9 @@ sap.ui.core.Component.prototype.getInterface = function() {
  */
 sap.ui.core.Component.prototype._initCompositeSupport = function(mSettings) {
 
+	// registry of mock servers
+	this._mMockServers = {};
+	
 	// register the component instance
 	this.getMetadata().onInitComponent();
 	
@@ -36055,20 +36599,19 @@ sap.ui.core.Component.prototype.getComponentData = function() {
  * 
  * @private
  */
-sap.ui.core.Component.prototype.initComponentModels = function() {
+sap.ui.core.Component.prototype.initComponentModels = function(mModels, mServices) {
 	
 	var oMetadata = this.getMetadata();
 	
 	// get the application configuration
-	var oModelsConfig = oMetadata.getModels(),
-	    oServicesConfig = oMetadata.getServices();
+	var oModelsConfig = mModels || oMetadata.getModels(),
+	    oServicesConfig = mServices || oMetadata.getServices();
 
 	// iterate over the model configurations and create and register the 
 	// models base on the configuration if available
 	if (oModelsConfig) {
 		
 		// create and start the mock server
-		this._mMockServers = [];
 		var fnCreateMockServer = function(sName, sUri, sMetadataUrl, sMockdataBaseUrl) {
 			
 			// kill the existing mock server
@@ -36394,8 +36937,8 @@ sap.ui.component.load = function(oComponent) {
 
 if ( !jQuery.sap.isDeclared('sap.ui.core.tmpl.Template') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -36424,7 +36967,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.Template");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.tmpl.Template
  * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
  */
@@ -36991,16 +37534,16 @@ sap.ui.core.tmpl.Template.registerType(sap.ui.core.tmpl.Template.DEFAULT_TEMPLAT
 
 if ( !jQuery.sap.isDeclared('sap.ui.app.Application') ) {
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 jQuery.sap.declare("sap.ui.app.Application");
 if ( !jQuery.sap.isDeclared('sap.ui.app.ApplicationMetadata') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -37018,7 +37561,7 @@ jQuery.sap.declare("sap.ui.app.ApplicationMetadata");
  * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
  * @class
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 1.13.2
  */
 sap.ui.app.ApplicationMetadata = function(sClassName, oClassInfo) {
@@ -37122,7 +37665,7 @@ sap.ui.app.ApplicationMetadata.prototype.getServices = function() {
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @name sap.ui.app.Application
 	 * @experimental Since 1.11.1. The Application class is still under construction, so some implementation details can be changed in future.
 	 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
@@ -37510,7 +38053,7 @@ sap.ui.app.ApplicationMetadata.prototype.getServices = function() {
  * @extends sap.ui.base.EventProvider
  * @final
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @constructor
  * @name sap.ui.core.Core 
  * @public
@@ -38942,6 +39485,8 @@ sap.ui.core.Core.prototype.fireThemeChanged = function(mParameters) {
 		oElement._handleEvent(oEvent);
 	});
 	
+	jQuery.sap.act.refresh();
+	
 	// notify the listeners via a control event
 	this.fireEvent(sEventId, mParameters);
 };
@@ -39677,6 +40222,7 @@ sap.ui.core.Core.prototype.getEventBus = function() {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'validationError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  *
  * @param {function}
@@ -39712,6 +40258,7 @@ sap.ui.core.Core.prototype.detachValidationError = function(fnFunction, oListene
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'parseError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the
@@ -39746,6 +40293,7 @@ sap.ui.core.Core.prototype.detachParseError = function(fnFunction, oListener) {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'formatError' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the
@@ -39780,6 +40328,7 @@ sap.ui.core.Core.prototype.detachFormatError = function(fnFunction, oListener) {
 
 /**
  * Attach event-handler <code>fnFunction</code> to the 'validationSuccess' event of <code>sap.ui.core.Core</code>.<br/>
+ * Please note that this event is a bubbling event and may already be canceled before reaching the core.<br/>
  *
  * @param {function}
  *            fnFunction The function to call, when the event occurs. This function will be called on the

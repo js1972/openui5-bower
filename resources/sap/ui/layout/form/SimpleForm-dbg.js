@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -69,7 +69,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -286,7 +286,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 /**
  * Getter for property <code>labelSpanM</code>.
  * Default span for labels in medium size.
- * This property is used for full size containers. if more than one Container is in one line, labelSpanL is used.
+ * This property is used for full size containers. If more than one Container is in one line, labelSpanL is used.
  * (This property is only used if a ResponsiveGridLayout is used as Layout.)
  *
  * Default value is <code>2</code>
@@ -544,16 +544,15 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
  * Add a Label control to start a new row (Element).
  * Add controls as Input fields, text fields or other as needed.
  * Use LayoutData to influence the layout for special cases in the single controls.
- * For example, if a ResponsiveLayout is used as layout the form content is weighted using weight 3 for the labels and weight 5 for the fields part. Per default the label column become 192 pixels wide.
- * If your Input controls like to influence their width you can add sap.ui.layout.ResponsiveFlowLayoutData to them via setLayoutData method.
+ * For example, if a ResponsiveLayout is used as layout the form content is weighted using weight 3 for the labels and weight 5 for the fields part. Per default the label column is 192 pixels wide.
+ * If your Input controls should influence their width you can add sap.ui.layout.ResponsiveFlowLayoutData to them via setLayoutData method.
  * Ensure that the sum of the weights in the ResponsiveFlowLayoutData does not use more than 5 as this is the total width of Input control part of each form row.
- * Example for on row where the Input takes 4 and the Text takes 1 weight:
+ * Example for a row where the Input takes 4 and the Text takes 1 weight:
  * new sap.ui.commons.Label({text:"Label"});
  * new sap.ui.commons.TextField({value:"Weight 4",
  * layoutData:new sap.ui.layout.ResponsiveFlowLayoutData({weight:4})}),
  * new sap.ui.commons.TextView({text:"Weight 1",
  * layoutData: new sap.ui.layout.ResponsiveFlowLayoutData({weight:1})}),
- * 
  * 
  * @return {sap.ui.core.Element[]}
  * @public

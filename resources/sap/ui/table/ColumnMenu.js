@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.table.ColumnMenu");jQuery.sap.require("sap.ui.table.library");jQuery.sap.require("sap.ui.commons.Menu");sap.ui.commons.Menu.extend("sap.ui.table.ColumnMenu",{metadata:{library:"sap.ui.table"}});jQuery.sap.require("sap.ui.core.RenderManager");jQuery.sap.require("sap.ui.commons.Menu");jQuery.sap.require("sap.ui.commons.MenuItem");jQuery.sap.require("sap.ui.commons.TextField");

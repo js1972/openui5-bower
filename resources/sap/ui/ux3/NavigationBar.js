@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.NavigationBar");jQuery.sap.require("sap.ui.ux3.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.ux3.NavigationBar",{metadata:{publicMethods:["setAssociatedItems","isSelectedItemValid"],library:"sap.ui.ux3",properties:{"toplevelVariant":{type:"boolean",group:"Misc",defaultValue:false},"visible":{type:"boolean",group:"Appearance",defaultValue:true}},defaultAggregation:"items",aggregations:{"items":{type:"sap.ui.ux3.NavigationItem",multiple:true,singularName:"item"},"overflowMenu":{type:"sap.ui.commons.Menu",multiple:false,visibility:"hidden"}},associations:{"selectedItem":{type:"sap.ui.ux3.NavigationItem",multiple:false},"associatedItems":{type:"sap.ui.ux3.NavigationItem",multiple:true,singularName:"associatedItem"}},events:{"select":{allowPreventDefault:true}}}});sap.ui.ux3.NavigationBar.M_EVENTS={'select':'select'};jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");jQuery.sap.require("jquery.sap.dom");sap.ui.ux3.NavigationBar.SCROLL_STEP=250;

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50,7 +50,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -266,7 +266,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -303,7 +303,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {

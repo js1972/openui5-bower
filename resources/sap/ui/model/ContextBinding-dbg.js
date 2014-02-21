@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,23 +18,16 @@ jQuery.sap.require("sap.ui.model.Binding");
  * @param {String} sPath
  * @param {Object} oContext
  * @param {Object} [mParameters]
+ * @param {Object} [oEvents] object defining event handlers
  * @abstract
  * @public
  * @name sap.ui.model.ContextBinding
  */
 sap.ui.model.Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding */ {
 	
-	constructor : function(oModel, sPath, oContext, mParameters){
-		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters);
-		var that = this;
+	constructor : function(oModel, sPath, oContext, mParameters, oEvents){
+		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters, oEvents);
 		this.bInitial = true;
-		this.fireDataRequested();
-		oModel.createBindingContext(sPath, oContext, mParameters, function(oContext) {
-			that.bInitial = false;
-			that.oElementContext = oContext;
-			that._fireChange();
-			that.fireDataReceived();
-		});
 	},
 
 	metadata : {
@@ -80,36 +73,6 @@ sap.ui.model.ContextBinding.prototype.checkUpdate = function(bForceupdate) {
  * 
  * @public
  */
-sap.ui.model.ContextBinding.prototype.refresh = function(bForceUpdate) {
-	var that = this;
-	//recreate Context: force update
-	this.fireDataRequested();
-	this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-		if (that.oElementContext === oContext) {
-			that.oModel.checkUpdate(true,oContext);
-		} else {
-			that.oElementContext = oContext;
-			that._fireChange(); 
-		}
-		that.fireDataReceived();
-	}, true);
-};
-
-/**
- * Set the binding context 
- */
-sap.ui.model.ContextBinding.prototype.setContext = function(oContext) {
-	var that = this;
-	if (this.oContext != oContext) {
-		this.oContext = oContext;
-		this.fireDataRequested();
-		this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-			that.oElementContext = oContext;
-			that._fireChange();
-			that.fireDataReceived();
-		});
-	}
-};
 
 /**
  * Return the bound context

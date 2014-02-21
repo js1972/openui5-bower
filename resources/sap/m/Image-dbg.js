@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -541,15 +541,19 @@ sap.m.Image.prototype.onerror = function(oEvent){
 		$domNode.attr("src", this._generateSrcByDensity(this._isActiveState ? this.getActiveSrc() : this.getSrc(), 1));
 	}else if(d === 1.5){
 		if(this._bVersion2Tried){
-			//if version 2 isn't on the server, load the default image
-			this._iLoadImageDensity = 1;
-			$domNode.attr("src", this._generateSrcByDensity(this._isActiveState ? this.getActiveSrc() : this.getSrc(), 1));
+			setTimeout(jQuery.proxy(function(){
+				//if version 2 isn't on the server, load the default image
+				this._iLoadImageDensity = 1;
+				$domNode.attr("src", this._generateSrcByDensity(this._isActiveState ? this.getActiveSrc() : this.getSrc(), 1));
+			}, this), 0);
 		}else{
-			//special treatment for density 1.5
-			//verify if the version for density 2 is provided or not
-			this._iLoadImageDensity = 2;
-			$domNode.attr("src", this._generateSrcByDensity(this._isActiveState ? this.getActiveSrc() : this.getSrc(), 2));
-			this._bVersion2Tried = true;
+			setTimeout(jQuery.proxy(function(){
+				//special treatment for density 1.5
+				//verify if the version for density 2 is provided or not
+				this._iLoadImageDensity = 2;
+				$domNode.attr("src", this._generateSrcByDensity(this._isActiveState ? this.getActiveSrc() : this.getSrc(), 2));
+				this._bVersion2Tried = true;
+			}, this), 0);
 		}
 	}
 };

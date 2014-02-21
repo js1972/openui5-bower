@@ -9576,15 +9576,15 @@ if ( !$.curCSS ) {
 }( jQuery ));
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10126,6 +10126,13 @@ if(typeof window.sap.ui !== "object"){
 						version: version,
 						mobile: oExpMobile.test(ua),
 						webkit: true
+					}
+				}else{
+					// unknown webkit browser
+					return {
+						mobile: oExpMobile.test(ua),
+						webkit: true,
+						webkitVersion: webkitVersion
 					}
 				}
 			}
@@ -10771,9 +10778,11 @@ if(typeof window.sap.ui !== "object"){
 	var bResize = false;
 	var iOrientationTimeout;
 	var iResizeTimeout;
+	var iClearFlagTimeout;
 	var iWindowHeightOld = windowSize()[1];
 	var iWindowWidthOld = windowSize()[0];
 	var bKeyboardOpen = false;
+	var iLastResizeTime;
 	
 	function isLandscape(bFromOrientationChange){
 		if (device.support.touch && device.support.orientation) {
@@ -10799,9 +10808,9 @@ if(typeof window.sap.ui !== "object"){
 
 	function handleMobileOrientationResizeChange(evt) {
 		if (evt.type == "resize") {
-			
 			var iWindowHeightNew = windowSize()[1];
 			var iWindowWidthNew = windowSize()[0];
+			var iTime = new Date().getTime();
 			//skip multiple resize events by only one orientationchange
 			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
 				return;
@@ -10810,12 +10819,27 @@ if(typeof window.sap.ui !== "object"){
 			//on mobile devices opening the keyboard on some devices leads to a resize event
 			//in this case only the height changes, not the width
 			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
-				bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
+				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
+				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
+				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
+					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				}
 				handleResizeChange();
 			} else {
 				iWindowWidthOld = iWindowWidthNew;
 			}
+			iLastResizeTime = iTime;
 			iWindowHeightOld = iWindowHeightNew;
+			
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+			//Some Android build-in browser fires a resize event after the viewport is applied.
+			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
+			//a UI5 resize event will be fired with the wrong window size.
+			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
 		} else if (evt.type == "orientationchange") {
 			bOrientationchange = true;
 		}
@@ -10833,8 +10857,18 @@ if(typeof window.sap.ui !== "object"){
 			handleResizeChange();
 			bOrientationchange = false;
 			bResize = false;
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
 		}
 		iOrientationTimeout = null;
+	};
+	
+	function clearFlags(){
+		bOrientationchange = false;
+		bResize = false;
+		iClearFlagTimeout = null;
 	};
 	
 //******** System Detection ********
@@ -10945,6 +10979,9 @@ if(typeof window.sap.ui !== "object"){
 	
 	function setSystem(_simMobileOnDesktop) {
 		device.system = getSystem(_simMobileOnDesktop);
+		if (device.system.tablet || device.system.phone) {
+			device.browser.mobile = true;
+		}
 	}
 	setSystem();
 
@@ -12924,8 +12961,8 @@ p.escapeQuerySpace = function(v) {
 return URI;
 }));
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13008,7 +13045,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -13181,8 +13218,8 @@ return URI;
 	 */
 	var _oBootstrap = (function() {
 		var oTag, sUrl, sResourceRoot,
-			reConfigurator = /\/download\/configurator[\/\?]/,
-			reBootScripts = /\/(sap-ui-(core|custom|boot|merged)(-.*)?)\.js([?#]|$)/,
+			reConfigurator = /^(.*\/)?download\/configurator[\/\?]/,
+			reBootScripts = /^(.*\/)?(sap-ui-(core|custom|boot|merged)(-.*)?)\.js([?#]|$)/,
 			reResources = /^(.*\/)?resources\//;
 
 		// check all script tags that have a src attribute
@@ -13193,13 +13230,13 @@ return URI;
 				// guess 1: script tag src contains "/download/configurator[/?]" (for dynamically created bootstrap files)
 				oTag = this;
 				sUrl = src;
-				sResourceRoot = src.substring(0, m.index) + "/resources/";
+				sResourceRoot = (m[1] || "") + "resources/";
 				return false;
 			} else if ( m = src.match(reBootScripts) ) {
 				// guess 2: src contains one of the well known boot script names
 				oTag = this;
 				sUrl = src;
-				sResourceRoot = src.substring(0, m.index) + "/";
+				sResourceRoot = m[1] || "";
 				return false;
 			} else if ( this.id == 'sap-ui-bootstrap' && (m=src.match(reResources)) ) {
 				// guess 2: script tag has well known id and src contains "resources/"
@@ -13321,9 +13358,9 @@ return URI;
 		}
 
 		var oScriptTag = _oBootstrap.tag,
-        oCfg = _window["sap-ui-config"],
-        sCfgFile = "sap-ui-config.json";
-
+		    oCfg = _window["sap-ui-config"],
+		    sCfgFile = "sap-ui-config.json";
+		
 		// load the configuration from an external JSON file 
 		if (typeof oCfg === "string") {
 			_earlyLog("warning", "Loading external bootstrap configuration from \"" + oCfg + "\". This is a design time feature and not for productive usage!");
@@ -13394,7 +13431,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @namespace
 	 * @public
 	 * @static
@@ -13411,7 +13448,7 @@ return URI;
 		if(!window.localStorage){
 			return null;
 		}
-		
+
 		function reloadHint(bUsesDbgSrc){
 			alert("Usage of debug sources is " + (bUsesDbgSrc ? "on" : "off") + " now.\nFor the change to take effect, you need to reload the page.");
 		};
@@ -13425,6 +13462,28 @@ return URI;
 		}
 
 		return window.localStorage.getItem("sap-ui-debug") == "X";
+	};
+
+	// -------------------------- STATISTICS LOCAL STORAGE -------------------------------------
+
+	jQuery.sap.statistics = function(bEnable) {
+		if(!window.localStorage){
+			return null;
+		}
+
+		function reloadHint(bUsesDbgSrc){
+			alert("Usage of Gateway statistics " + (bUsesDbgSrc ? "on" : "off") + " now.\nFor the change to take effect, you need to reload the page.");
+		};
+
+		if (bEnable === true) {
+			window.localStorage.setItem("sap-ui-statistics", "X");
+			reloadHint(true);
+		} else if (bEnable === false) {
+			window.localStorage.removeItem("sap-ui-statistics");
+			reloadHint(false);
+		}
+
+		return window.localStorage.getItem("sap-ui-statistics") == "X";
 	};
 
 	// -------------------------- Logging -------------------------------------
@@ -13510,9 +13569,9 @@ return URI;
 						date     : pad0(oNow.getFullYear(),4) + "-" + pad0(oNow.getMonth()+1,2) + "-" + pad0(oNow.getDate(),2),
 						timestamp: oNow.getTime(),
 						level    : iLevel,
-						message  : sMessage || "",
-						details  : sDetails || "",
-						component: sComponent || ""
+						message  : String(sMessage || ""),
+						details  : String(sDetails || ""),
+						component: String(sComponent || "")
 					};
 				aLog.push( oLogEntry );
 				if (oListener) {

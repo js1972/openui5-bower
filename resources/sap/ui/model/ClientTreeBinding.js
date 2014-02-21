@@ -1,11 +1,12 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.model.ClientTreeBinding");jQuery.sap.require("sap.ui.model.TreeBinding");sap.ui.model.TreeBinding.extend("sap.ui.model.ClientTreeBinding",{constructor:function(m,p,c,f,P){sap.ui.model.TreeBinding.apply(this,arguments);if(!this.oContext){this.oContext=""}this.filterInfo={};this.filterInfo.aFilteredContexts=[];this.filterInfo.oParentContext={};if(this.aFilters){if(this.oModel._getObject(this.sPath,this.oContext)){this.filter(f)}}}});
-sap.ui.model.ClientTreeBinding.prototype.getRootContexts=function(){var c=this.oModel.getContext(this.sPath);return this.getNodeContexts(c)};
+sap.ui.model.ClientTreeBinding.prototype.getRootContexts=function(){if(!this.oModel.isList(this.sPath)){var c=this.oModel.getContext(this.sPath);if(this.bDisplayRootNode){return[c]}else{return this.getNodeContexts(c)}}else{var C=[],t=this;jQuery.each(this.oModel._getObject(this.sPath),function(i,o){C.push(t.oModel.getContext(t.sPath+(jQuery.sap.endsWith(t.sPath,"/")?"":"/")+i))});return C}};
 sap.ui.model.ClientTreeBinding.prototype.getNodeContexts=function(c){var C=c.getPath();if(!jQuery.sap.endsWith(C,"/")){C=C+"/"}if(!jQuery.sap.startsWith(C,"/")){C="/"+C}var a=[],t=this,n=this.oModel._getObject(C),o,A=this.mParameters&&this.mParameters.arrayNames,b;if(A&&jQuery.isArray(A)){jQuery.each(A,function(i,s){b=n[s];if(b){jQuery.each(b,function(S,d){t._saveSubContext(d,a,C,s+"/"+S)})}})}else{if(n){jQuery.sap.each(n,function(N,o){if(jQuery.isArray(o)){jQuery.each(o,function(s,S){t._saveSubContext(S,a,C,N+"/"+s)})}else if(typeof o=="object"){t._saveSubContext(o,a,C,N)}})}}return a};
+sap.ui.model.ClientTreeBinding.prototype.hasChildren=function(c){return c?this.getNodeContexts(c).length>0:false};
 sap.ui.model.ClientTreeBinding.prototype._saveSubContext=function(n,c,C,N){if(typeof n=="object"){var o=this.oModel.getContext(C+N);if(this.aFilters&&!this.bIsFiltering){if(jQuery.inArray(o,this.filterInfo.aFilteredContexts)!=-1){c.push(o)}}else{c.push(o)}}};
 sap.ui.model.ClientTreeBinding.prototype.filter=function(f){this.filterInfo.aFilteredContexts=[];this.filterInfo.oParentContext={};if(!f||!jQuery.isArray(f)||f.length==0){this.aFilters=null}else{this.aFilters=f;var c=new sap.ui.model.Context(this.oModel,this.sPath);this.filterRecursive(c)}this._fireChange({reason:"filter"});this._fireFilter({filters:f})};
 sap.ui.model.ClientTreeBinding.prototype.filterRecursive=function(p){this.bIsFiltering=true;var c=this.getNodeContexts(p);this.bIsFiltering=false;if(c.length>0){var t=this;jQuery.each(c,function(i,C){t.filterRecursive(C)});this.applyFilter(p)}};

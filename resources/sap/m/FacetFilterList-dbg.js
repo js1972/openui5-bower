@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -76,7 +76,7 @@ sap.ui.core.Control.extend("sap.m.FacetFilterList", { metadata : {
 	// ---- object ----
 	publicMethods : [
 		// methods
-		"getSelectedItems"
+		"getSelectedItems", "removeSelections"
 	],
 
 	// ---- control specific ----
@@ -273,7 +273,7 @@ sap.m.FacetFilterList.M_EVENTS = {'listOpen':'listOpen','listClose':'listClose'}
 
 /**
  * Getter for property <code>growing</code>.
- * Sets the growing(paging) feature of control.
+ * Sets the growing (paging) feature of control.
  *
  * Default value is <code>true</code>
  *
@@ -563,6 +563,17 @@ sap.m.FacetFilterList.M_EVENTS = {'listOpen':'listOpen','listClose':'listClose'}
  */
 
 
+/**
+ * Removes all selections visible and hidden.
+ *
+ * @name sap.m.FacetFilterList.prototype.removeSelections
+ * @function
+
+ * @type sap.m.FacetFilterList
+ * @public
+ */
+
+
 // Start of sap\m\FacetFilterList.js
 jQuery.sap.require("sap.m.List");
 jQuery.sap.require("sap.m.StandardListItem");
@@ -571,80 +582,84 @@ jQuery.sap.require("sap.m.ButtonType");
 jQuery.sap.require("sap.ui.model.Filter");
 jQuery.sap.require("sap.ui.model.FilterOperator");
 
-/**
- * This file defines behavior for the control,
- */
 sap.m.FacetFilterList.prototype.init = function() {
+
+	var that = this;
+
+	// Internal sap.m.List used to display filter items in the popover and dialog.
+	this._viewList = null;
+	
+	// Prevents rerendering of FacetFilter when there is no change 
+	// in the context of the model bound to this FacetFilterList.
+	// For example if the same model is bound to two FFLs with different contexts
+	// the changes to one FFL will trigger update in the second FFL even 
+	// when there were no changes to the second FFL data.
+	this.bUseExtendedChangeDetection=true;
+
+	this._oODataItemCache = {};
 
 	this._bundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 
-	var that = this;
-	this._list = new sap.m.List(this.getId() + "-filterlist", {
-		growing : this.getGrowing(),
-		growingThreshold : this.getGrowingThreshold(),
-		growingTriggerText : this.getGrowingTriggerText(),
-		showNoData : true,
-		scrollToLoad : false,
-		rememberSelections: false,
-		mode : this.getMultiSelect() ? sap.m.ListMode.MultiSelect : sap.m.ListMode.SingleSelectMaster,
+	var headerBar = new sap.m.Bar(this.getId() + "-headerbar");
 
-		selectionChange : function(oEvent) {
-			that._handleSelectionChange(oEvent);
-		},
-		
-		updateFinished : function(oEvent) {
-			that._updateFinished(oEvent);
-		},
-		includeItemInSelection : true
-	});
+	// Checkbox bar that contains the select all checkbox used to select all filter items in the view list
+	this._checkboxBar = null;
 
-	this._searchField = new sap.m.SearchField(this.getId() + "-searchField", {
-		width : "100%",
-		placeholder : that._bundle.getText("FACETFILTER_SEARCH"),
-		search : function(oEvent) {
-
-			that._setItemsFilter();
-		}
-	});
-	var headerBar = new sap.m.Bar(this.getId() + "-headerbar", {
-		contentMiddle : this._searchField
-	});
-
-	this._cbSelectAll = new sap.m.CheckBox(this.getId() + "-selectAll", {
-		selected : true,
-		text: this._bundle.getText("FACETFILTER_ALL", [""]),
-		select : function(oEvent) {
-
-			if (!oEvent.getParameter("selected")) {
-				this.setSelected(true);
-			} else {
-				that._deselectAll();
-				that._list.removeSelections(true);
-			}
-		}
-	});
-
+	// Flag that indicates that popover is opened or about to open. 
+	// It is used to suppress rendering of FacetFilter when popover is opened, because it makes popover close.
+	this._popoverOpened = false;
+	
+	// Popover allowing the user to view, select, and search filter items
 	this._popover = new sap.m.Popover(this.getId() + "-popup", {
+
 		placement : sap.m.PlacementType.Bottom,
-		showHeader : true,
 		beforeOpen : function(oEvent) {
 
-			if(that.getMultiSelect() && !this.getSubHeader()) {
-				var subHeaderBar = new sap.m.Bar({
-					contentLeft : that._cbSelectAll
-				});
-				this.setSubHeader(subHeaderBar);
+			this.getCustomHeader().addContentMiddle(that._getSearchField());
+
+			// Add the "Select All" checkbox when the list is multi-select
+			if (that.getMultiSelect()) {
+				var subHeaderBar = this.getSubHeader();
+				if (!subHeaderBar) {
+					this.setSubHeader(that._getSelectAllCheckboxBar());
+				}
 			}
-			
-			this.setInitialFocus(that.getId() + "-searchField");
+
+			// Add a new list each time the popover is opened
+			this.addContent(that._createFilterItemsList());
+			that._showPopoverOkButton();
+
+			this.setInitialFocus(that._getSearchField());
 		},
 		afterClose : function(oEvent) {
 
-			that._handlePopoverCloseEvent(oEvent);
+			// The facet button will not be removed when the remove icon is pressed if we don't delay hiding the icon in ie 9.
+			//
+			// CSS 0120061532 0004101226 2013 "sap.m.FacetFilterList - getActive inconsistent result"
+			// Moved "fireListCloseEvent" into the setTimeout function for IE9
+			//
+			// TODO: Remove when ie 9 is no longer supported
+			if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10) {
+
+				setTimeout(function() {
+
+					that._fireListCloseEvent();
+					that._displayRemoveIcon(false);
+					that._popover.removeContent(that._viewList);
+					that._destroyListControls();
+					that._popoverOpened = false;
+				}, 100);
+			} else {
+				that._fireListCloseEvent();
+				that._displayRemoveIcon(false);
+				this.removeContent(that._viewList);
+				that._destroyListControls();
+				that._popoverOpened = false;
+			}
+
 		},
 		horizontalScrolling : false,
-		customHeader : headerBar,
-		content : [ that._list ]
+		customHeader : headerBar
 	});
 
 	// Use this to set the minimum width of the popover. This is not the same
@@ -652,104 +667,108 @@ sap.m.FacetFilterList.prototype.init = function() {
 	this._popover.addStyleClass("sapMFFPop");
 };
 
-sap.m.FacetFilterList.prototype.setGrowing = function(bGrowing) {
-	this._list.setGrowing(bGrowing);
-	this.setProperty("growing", bGrowing);
-};
-
-sap.m.FacetFilterList.prototype.setGrowingThreshold = function(iGrowingThreshold) {
-	this._list.setGrowingThreshold(iGrowingThreshold);
-	this.setProperty("growingThreshold", iGrowingThreshold);
- };
-
-sap.m.FacetFilterList.prototype.setGrowingTriggerText = function(sGrowingTriggerText) {
-	this._list.setGrowingTriggerText(sGrowingTriggerText);
-	this.setProperty("growingTriggerText", sGrowingTriggerText);	
-};
-
 /**
+ * Update the selected state of the changed FacetFilterItem. For a single select list we also need to deselect the previously selected item.
+ * 
  * @private
  */
-sap.m.FacetFilterList.prototype._deselectAll = function(oEvent) {
+sap.m.FacetFilterList.prototype._handleSelectionChangeEvent = function(oEvent) {
+
+	var listItem = oEvent.getParameters().listItem;
+	var bSelected = oEvent.getParameters().selected;
 	var aFacetFilterItems = this.getItems();
+	var bSingleSelect = !this.getMultiSelect();
+	var listItemPath = listItem.getBindingContext(this._modelName).getPath();
 
-	jQuery.each(aFacetFilterItems, function(index, value) {
-		value.setProperty("selected", false, true);
-	});
-};
+	if (!listItem.getBindingInfo("selected")) {
 
-/**
- * @private
- */
-sap.m.FacetFilterList.prototype._updateFinished = function(oEvent) {
-	this._copySelectionToPopover();
-};
+		var bFound = false;
+		for ( var i = 0; i < aFacetFilterItems.length; i++) {
+			if (!bFound && aFacetFilterItems[i].getBindingContext(this._modelName).getPath() === listItemPath) {
+				aFacetFilterItems[i].setSelected(bSelected);
+				bFound = true;
 
-/**
- * @private
- */
-sap.m.FacetFilterList.prototype._handleSelectionChange = function(oEvent) {
-	var values = oEvent.getParameters().listItems;
-	var sModelName = this._modelName;
-	var aFacetFilterItems = this.getItems();
-	var that = this;
+				// With multi-select lists the rest of the items already have the correct selected state, so we can stop iterating. For
+				// single select we need to make sure the previously selected is deselected.
+				if (!bSingleSelect) {
+					break;
+				}
+			} else if (bSingleSelect) {
+				aFacetFilterItems[i].setProperty("selected", false, true);
+			}
+		}
+	} else if (bSingleSelect && this._getViewList().getItems().length < aFacetFilterItems.length) {
 
-	jQuery.each(values, function(index, value) {
-		if (value && !value.getBindingInfo("selected")) {
-			var path = value.getBindingContext(sModelName).getPath();
-			var bSingleSelect = !that.getMultiSelect();
-			var bFound = false;
-			for ( var i = 0; i < aFacetFilterItems.length; i++) {			
-				if (!bFound && aFacetFilterItems[i].getBindingContext(sModelName).getPath() === path) {
-					aFacetFilterItems[i].setProperty("selected",oEvent.getParameters().selected, true);
-					bFound = true;
-				} else if(bSingleSelect) {
+		// If the selected property is bound, the list is single select and not growing, and it has been filtered
+		// (user search), then the previously selected FacetFilterItem will remain selected unless we
+		// deselect it here. This is because the list will only update items that are visible. So if
+		// the user selects an item, then searches the list causing the selected item to be filtered out,
+		// and then selects one of the remaining items, the previously selected item's selected property will
+		// not be updated to false.
+
+		for ( var i = 0; i < aFacetFilterItems.length; i++) {
+			if (aFacetFilterItems[i].getBindingContext(this._modelName).getPath() !== listItemPath) {
+				if (aFacetFilterItems[i].getSelected()) {
 					aFacetFilterItems[i].setProperty("selected", false, true);
+					break;
 				}
 			}
 		}
-	});
-	
+	}
+
 	this._setCBSelectAll();
 };
 
 /**
  * @private
  */
-sap.m.FacetFilterList.prototype._setItemsFilter = function() {
+sap.m.FacetFilterList.prototype._handleSearchEvent = function(oEvent) {
 
-	var value = this._searchField.getValue();
-	var binding = this._list.getBinding("items");
-	if (binding) { // May not have a binding
-		var path = this._list.getBindingInfo("items").template.getBindingInfo("title").parts[0].path;
-		if (binding && path) {
-			var filter = new sap.ui.model.Filter(path, sap.ui.model.FilterOperator.Contains, value);
-			binding.filter([ filter ]);
-			this._copySelectionToPopover();
-			this._setCBSelectAll();
-		}
+	var sSearchVal = oEvent.getParameters()["query"];
+	if (sSearchVal === undefined) {
+		sSearchVal = oEvent.getParameters()["newValue"];
 	}
+	this._searchValue = sSearchVal;
+	this._executeSearch(sSearchVal);
 };
+
 /**
  * @private
  */
-sap.m.FacetFilterList.prototype._applyPopoverPersonalization = function() {
+sap.m.FacetFilterList.prototype._executeSearch = function(sSearchVal) {
+
+	var oBinding = this._getViewList().getBinding("items");
+	if (oBinding) { // May not have a binding
+		var path = this._getViewList().getBindingInfo("items").template.getBindingInfo("title").parts[0].path;
+		if (path) {
+			var oUserFilter = new sap.ui.model.Filter(path, sap.ui.model.FilterOperator.Contains, sSearchVal);
+			var oFinalFilter = new sap.ui.model.Filter([oUserFilter], true);
+			oBinding.filter(oFinalFilter, sap.ui.model.FilterType.Control);
+		}
+	}
+};
+
+/**
+ * Add/remove the OK popover button depending on the corresponding setting
+ * 
+ * @private
+ */
+sap.m.FacetFilterList.prototype._showPopoverOkButton = function() {
 
 	var that = this;
 
 	if (this.getParent()) {
-		if (this.getParent().getShowPersonalization()) {
-			if (!this._deleteFilterButton) {
-				this._deleteFilterButton = new sap.m.Button(this.getId() + "-remove", {
-					text : that._bundle.getText("FACETFILTER_REMOVE_FILTER"),
+		if (this.getParent().getShowPopoverOKButton()) {
+			if (!this._okFilterButton) {
+				this._okFilterButton = new sap.m.Button(this.getId() + "-ok", {
+					text : that._bundle.getText("FACETFILTER_ACCEPT"),
 					width : "100%",
 					press : function() {
 
-						that.setActive(false);
 						that._popover.close();
 					}
 				});
-				this._popover.setFooter(this._deleteFilterButton);
+				this._popover.setFooter(this._okFilterButton);
 			}
 		} else {
 
@@ -757,7 +776,7 @@ sap.m.FacetFilterList.prototype._applyPopoverPersonalization = function() {
 			if (oButton) {
 				this._popover.setFooter(null);
 				oButton.destroy();
-				delete this._deleteFilterButton;
+				delete this._okFilterButton;
 			}
 		}
 	}
@@ -766,49 +785,31 @@ sap.m.FacetFilterList.prototype._applyPopoverPersonalization = function() {
 /**
  * @private
  */
-sap.m.FacetFilterList.prototype._copySelectionToPopover = function() {
+sap.m.FacetFilterList.prototype._copySelectionsToList = function() {
 
-	var aListItems = this._list.getItems();
+	var that = this;
+	var aListItems = this._getViewList().getItems();
 	var aFacetFilterItems = this.getItems();
 	var sModelName = this._modelName;
 	var lastIndex = 0;
 
-	jQuery.each(aFacetFilterItems, function(index, value) {
-
-		if (!value.getBindingInfo("selected")) {
-			for ( var i = lastIndex; i < aListItems.length; i++) {
-				if (value.getBindingContext(sModelName) && value.getBindingContext(sModelName).getPath()){
-					var path = value.getBindingContext(sModelName).getPath();
-					if (aListItems[i].getBindingContext(sModelName) && aListItems[i].getBindingContext(sModelName).getPath()=== path){
-						aListItems[i].setSelected(value.getSelected());
+	// &* iterate each collection separately instead of iterating the view list items for each facet filter item
+	for ( var j = 0; j < aFacetFilterItems.length; j++) {
+		var item = aFacetFilterItems[j];
+		if (!item.getBindingInfo("selected")) {
+			if (item.getBindingContext(sModelName) && item.getBindingContext(sModelName).getPath()) {
+				var path = item.getBindingContext(sModelName).getPath();
+				that._restoreItemFromODataItemCache(item);
+				for ( var i = lastIndex; i < aListItems.length; i++) {
+					if (aListItems[i].getBindingContext(sModelName) && aListItems[i].getBindingContext(sModelName).getPath() === path) {
+						aListItems[i].setSelected(item.getSelected());
 						lastIndex = i;
 						break;
 					}
 				}
 			}
 		}
-	});
-
-};
-
-/**
- * @private
- */
-sap.m.FacetFilterList.prototype._displayFacetFilterPopover = function(oEvent) {
-
-	this._applyPopoverPersonalization();
-	this.fireListOpen({});
-	this._copySelectionToPopover();
-	this._setCBSelectAll();
-	this._popover.openBy(this._getFacetButton());
-};
-
-/**
- * @private
- */
-sap.m.FacetFilterList.prototype._handlePopoverCloseEvent = function(oEvent) {
-
-	this._fireListCloseEvent();
+	}
 };
 
 /**
@@ -819,7 +820,7 @@ sap.m.FacetFilterList.prototype._fireListCloseEvent = function() {
 	var aSelectedItems = this.getSelectedItems();
 
 	if (this.getParent().getType() === sap.m.FacetFilterType.Simple) {
-		this._getFacetButton().setText(this._getSelectionText(aSelectedItems));
+		this._getFacetButton().setText(this._getSelectionText());
 	}
 
 	var bAllSelected = aSelectedItems.length === this.getItems().length || aSelectedItems.length === 0;
@@ -841,13 +842,49 @@ sap.m.FacetFilterList.prototype._getFacetButton = function() {
 			type : sap.m.ButtonType.Transparent,
 			press : function(oEvent) {
 
-				that._displayFacetFilterPopover(oEvent);
+				// Don't open again if user has clicked the button while the popover is already open, otherwise the popover will
+				// display an empty list.
+				if (!that._popover.isOpen()) {
+					that._popoverOpened = true;
+					that.fireListOpen({});
+					that._popover.openBy(that._getFacetButton());
+					that._displayRemoveIcon(true);
+				}
 			},
 			id : this.getId() + "-button"
 		});
+
+		// The button text will not be updated unless its parent is the FacetFilter.
 		this._button.setParent(this.getParent());
 	}
 	return this._button;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._getFacetRemoveIcon = function() {
+
+	var that = this;
+
+	if (!this._facetRemoveIcon) {
+		this._facetRemoveIcon = new sap.ui.core.Icon(this.getId() + "-remove", {
+
+			src : sap.ui.core.IconPool.getIconURI("sys-cancel"),
+			press : function(oEvent) {
+
+				that.removeSelections();
+				that.setActive(false);
+			}
+		});
+
+		this._facetRemoveIcon.addStyleClass("sapMFFLRemoveIcon");
+
+		// The remove icon needs to be handled the same way as the facet button
+		this._facetRemoveIcon.setParent(this.getParent());
+	}
+	this._displayRemoveIcon(false);
+	return this._facetRemoveIcon;
 };
 
 /**
@@ -860,15 +897,18 @@ sap.m.FacetFilterList.prototype.exit = function() {
 		this._button = undefined;
 	}
 
+	if (this._facetRemoveIcon) {
+		this._facetRemoveIcon.destroy();
+		this._facetRemoveIcon = undefined;
+	}
+
 	if (this._popover) {
 		this._popover.destroy();
 		this._popover = undefined;
 	}
-	
-	if(this._cbSelectAll) {
-		this._cbSelectAll.destroy();
-		this._cbSelectAll = undefined;
-	}
+
+	this._clearODataItemCache();
+	this._destroyListControls();
 };
 
 /**
@@ -888,38 +928,27 @@ sap.m.FacetFilterList.prototype.getSelectedItems = function() {
 			}
 		}
 	}
+	this._getItemsFromCache(aSelectedItems);
 
 	return aSelectedItems;
 };
 
 /**
- * Get index value from StandardListItem custom data
- * 
- * @private
- */
-sap.m.FacetFilterList.prototype._getIndex = function(oListItem) {
-
-	var customData = oListItem.getCustomData();
-	for ( var i = 0; i < customData.length; i++) {
-		if (customData[i].getKey() === "index") {
-			return customData[i].getValue();
-		}
-	}
-};
-
-/*
- * Set value for multiSelect property
+ * Removes all selections visible and hidden.
  * 
  * @public
  */
-sap.m.FacetFilterList.prototype.setMultiSelect = function(bMultiSelect) {
+sap.m.FacetFilterList.prototype.removeSelections = function() {
 
-	if(bMultiSelect || bMultiSelect === undefined || bMultiSelect === null) {
-		this._list.setMode(sap.m.ListMode.MultiSelect);
-	} else {
-		this._list.setMode(sap.m.ListMode.SingleSelectMaster);
-	}
-	this.setProperty("multiSelect", bMultiSelect, true);
+	var aFacetFilterItems = this.getItems();
+
+	jQuery.each(aFacetFilterItems, function(index, value) {
+
+		value.setProperty("selected", false, true);
+	});
+	this._clearODataItemCache();
+
+	return this;
 };
 
 /**
@@ -927,30 +956,28 @@ sap.m.FacetFilterList.prototype.setMultiSelect = function(bMultiSelect) {
  * 
  * @private
  */
-sap.m.FacetFilterList.prototype._getSelectionText = function(aSelectedItems) {
+sap.m.FacetFilterList.prototype._getSelectionText = function() {
 
 	var sText = "";
-	if (!aSelectedItems) {
-		aSelectedItems = this.getSelectedItems();
-	}
+	var aSelectedItems = this.getSelectedItems();
 
 	if (aSelectedItems.length > 0 && aSelectedItems.length < this.getItems().length) {
 
 		if (aSelectedItems.length === 1) { // Use selected item value for button label if only one selected
-			sText = this._bundle.getText("FACETFILTER_ONE_SELECTION", [ this.getTitle(), aSelectedItems[0].getText() ]);
+			sText = this._bundle.getText("FACETFILTER_ITEM_SELECTION", [ this.getTitle(), aSelectedItems[0].getText() ]);
 		} else {
-			sText = this._bundle.getText("FACETFILTER_SUM_SELECTIONS", [ this.getTitle(), aSelectedItems.length ]);
+			sText = this._bundle.getText("FACETFILTER_ITEM_SELECTION", [ this.getTitle(), aSelectedItems.length ]);
 		}
 	} else {
-		sText = this._bundle.getText("FACETFILTER_ALL", [ this.getTitle() ]);
+		sText = this._bundle.getText("FACETFILTER_ALL_SELECTED", [ this.getTitle() ]);
 	}
 	return sText;
 };
 
 sap.m.FacetFilterList.prototype.unbindAggregation = function(sName, bSuppressReset) {
 
-	if (sName === "items") {
-		this._list.unbindAggregation(sName, bSuppressReset);
+	if (sName === "items" && this._getViewList()) {
+		this._getViewList().unbindAggregation(sName, bSuppressReset);
 	}
 	sap.ui.base.ManagedObject.prototype.unbindAggregation.apply(this, arguments);
 };
@@ -958,7 +985,7 @@ sap.m.FacetFilterList.prototype.unbindAggregation = function(sName, bSuppressRes
 sap.m.FacetFilterList.prototype.bindAggregation = function(sName, oBindingInfo) {
 
 	if (sName === "items") {
-		var sPath, oTemplate, aSorters, aFilters;
+		var sPath, oTemplate, aSorters, aFilters, oParameters;
 
 		var oStandardListItemTemplate = new sap.m.StandardListItem();
 		var bIsArgsArray = typeof oBindingInfo == "string";
@@ -973,13 +1000,15 @@ sap.m.FacetFilterList.prototype.bindAggregation = function(sName, oBindingInfo) 
 			oTemplate = oBindingInfo.template;
 			aSorters = oBindingInfo.sorter;
 			aFilters = oBindingInfo.filters;
+			oParameters = oBindingInfo.parameters;
 		}
 
 		var oListBindingInfo = {
 			path : sPath,
 			template : oStandardListItemTemplate,
 			sorter : aSorters,
-			filters : aFilters
+			filters : aFilters,
+			parameters : oParameters
 		};
 
 		var oTextBinding = oTemplate.getBindingInfo("text");
@@ -996,77 +1025,37 @@ sap.m.FacetFilterList.prototype.bindAggregation = function(sName, oBindingInfo) 
 
 		sap.ui.base.ManagedObject.prototype.bindAggregation.apply(this, arguments);
 
-		this._list.bindAggregation(sName, oListBindingInfo);
-		
-		if(this._modelSync) {
-			this._modelSync(this._list.getModel(this._modelName));
+		oListBindingInfo.model = this._modelName = this.getBindingInfo(sName).model;
+		this._oListBindingInfo = oListBindingInfo;
+
+		// Binding may be executed within an ODataModel callback after the _viewList is already created, so we
+		// need to do the binding in that case as well.
+		if (this._viewList) {
+
+			this._initializeViewList();
 		}
-		
 	} else {
 		sap.ui.base.ManagedObject.prototype.bindAggregation.apply(this, arguments);
 	}
 };
 
-sap.m.FacetFilterList.prototype.setBindingContext = function(oContext, sName) {
-
-	this._list.setBindingContext(oContext, sName);
-	this._list.setModel(oContext.getModel());
-
-	sap.ui.base.ManagedObject.prototype.setBindingContext.apply(this, arguments);
-};
-
-sap.m.FacetFilterList.prototype.setModel = function(oModel, sName) {
-
-	this._modelName = sName;
-	this._list.setModel(oModel, sName);
-	sap.ui.base.ManagedObject.prototype.setModel.apply(this, arguments);
-	return this;
-};
-
+// &* don't we also need to override insertItem?
+// &* why do we need this override for caching again?
 sap.m.FacetFilterList.prototype.addItem = function(oItem) {
 
-	if (!this.isBound("items")) {
-		this._addStandardListItem(oItem);
-	}
+	this._restoreItemFromODataItemCache(oItem);
+
 	this.addAggregation("items", oItem, true);
 	return this;
 };
 
-sap.m.FacetFilterList.prototype.removeAllItems = function() {
+sap.m.FacetFilterList.prototype.destroyItems = function() {
 
-	if (!this.isBound("items")) {
-		this._list.removeAllAggregation("items");
-	}
-	return this.removeAllAggregation("items", true);
-};
+	// Override to suppress invalidation, otherwise popover closes
+	// when list items are loaded asynchronously.
+	var bSuppressInvalidate = this._popoverOpened;
 
-sap.m.FacetFilterList.prototype.removeItem = function(oItem) {
-
-	if (!this.isBound("items")) {
-		this._list.removeItem(this._list.getItems()[this.indexOfItem(oItem)]);
-	}
-	return this.removeAggregation("items", oItem, true);
-};
-
-sap.m.FacetFilterList.prototype.destroyItems = function(iIndex) {
-
-	if (!this.isBound("items")) {
-		this._list.destroyAggregation("items");
-	}
-	return this.destroyAggregation("items", true);
-};
-
-/**
- * @private
- */
-sap.m.FacetFilterList.prototype._addStandardListItem = function(oItem) {
-
-	var oStandardListItem = new sap.m.StandardListItem({
-		title : oItem.getText(),
-		counter : oItem.getCount(),
-		selected : oItem.getSelected()
-	});
-	this._list.addItem(oStandardListItem);
+	return this.destroyAggregation("items", bSuppressInvalidate);
 };
 
 /**
@@ -1074,20 +1063,318 @@ sap.m.FacetFilterList.prototype._addStandardListItem = function(oItem) {
  */
 sap.m.FacetFilterList.prototype._setCBSelectAll = function() {
 
-	if(this.getMultiSelect()) {
+	if (this.getMultiSelect()) {
 		var size = this.getSelectedItems().length;
-		this._cbSelectAll.setSelected(size === 0);
+		this._getSelectAllCheckbox().setSelected(size === 0 && this.getActive());
 	}
 };
 
 /**
-* @private
-*/
-sap.m.FacetFilterList.prototype._setLiveSearch = function(bLiveSearch) {
+ * @private
+ */
+sap.m.FacetFilterList.prototype._isModelTypeOData = function() {
+
+	var oUiModel = sap.ui.model, oBindingInfo = this.getBindingInfo("items"), oBinding = oBindingInfo && oBindingInfo.binding, fnODataListBinding = oUiModel && oUiModel.odata
+			&& oUiModel.odata.ODataListBinding;
+	return fnODataListBinding && oBinding instanceof fnODataListBinding;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._clearODataItemCache = function() {
+
+	if (this._oODataItemCache) {
+		jQuery.each(this._oODataItemCache, function(key, value) {
+
+			value.destroy();
+		});
+		this._oODataItemCache = {};
+	}
+
+	return this;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._isODataItemCacheNeeded = function(oItem) {
+
+	return this._isModelTypeOData() && !oItem.getBindingInfo("selected");
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._addItemToODataItemCache = function(oItem) {
+
+	if (this._isODataItemCacheNeeded(oItem)) {
+		if (!this.getMultiSelect()) {
+			this._clearODataItemCache();
+		}
+
+		var path = oItem.getBindingContext(this._modelName).getPath();
+		this._oODataItemCache[path] = new sap.m.FacetFilterItem({
+			text : oItem.getText(),
+			key : oItem.getKey()
+		});
+	}
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._removeItemFromODataItemCache = function(oItem) {
+
+	if (this._isODataItemCacheNeeded(oItem)) {
+		var path = oItem.getBindingContext(this._modelName).getPath();
+		var value = this._oODataItemCache[path];
+		if (value) {
+			value.destroy();
+		}
+		delete this._oODataItemCache[path];
+	}
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._restoreItemFromODataItemCache = function(oItem) {
+
+	if (this._isODataItemCacheNeeded(oItem)) {
+		var path = oItem.getBindingContext(this._modelName).getPath();
+		oItem.setSelected(!!this._oODataItemCache[path]);
+	}
+};
+
+/**
+ * If the model is oData then cached items are added to the aSelectedItems array.
+ * 
+ * @private
+ */
+sap.m.FacetFilterList.prototype._getItemsFromCache = function(aSelectedItems) {
+
+	if (this._isModelTypeOData()) {
+		var cache = this._oODataItemCache;
+		var oExistingItems = {};
+		var iSize = aSelectedItems.length;
+		for (var i=0; i<iSize;i++){
+			oExistingItems[aSelectedItems[i].getBindingContext(this._modelName).getPath()] = true;
+		}
+		jQuery.each(cache, function(index, value) {
+
+			if (!oExistingItems[index]) {
+				aSelectedItems.push(value);
+			}
+		});
+	}
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._getViewList = function() {
+
+	return this._viewList;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._createFilterItemsList = function() {
+
+	var that = this;
+
+	this._viewList = new sap.m.List(this.getId() + "-filterlist", {
+		growing : this.getGrowing(),
+		growingThreshold : this.getGrowingThreshold(),
+		growingTriggerText : this.getGrowingTriggerText(),
+		showNoData : true,
+		scrollToLoad : false,
+		rememberSelections : false,
+
+		mode : this.getMultiSelect() ? sap.m.ListMode.MultiSelect : sap.m.ListMode.SingleSelectMaster,
+
+		selectionChange : function(oEvent) {
+
+			that._handleSelectionChangeEvent(oEvent);
+		},
+
+		includeItemInSelection : true
+	});
+
+	var fnUpdateListOrig = this._viewList.updateItems;
+	this._viewList.updateItems = function() {
+
+		// Always call the base update items whether growing or not, otherwise items will not be added to the list.
+		fnUpdateListOrig.apply(that._viewList, arguments);
+
+		// If growing this logic will be handled by the growing delegate updateItems function override (below), so
+		// don't duplicate the processing here.
+		if (!that.getGrowing()) {
+			that._copySelectionsToList();
+			that._setCBSelectAll();
+		}
+	};
+
+	// GrowingEnablement also defines updateItems when the list grows, so we have
+	// to override the function here so that list selections are restored upon growing.
+	var oGrowingDelegate = this._viewList._oGrowingDelegate;
+	if (oGrowingDelegate && oGrowingDelegate.updateItems) {
+		var fnUpdateGrowingOrig = oGrowingDelegate.updateItems;
+		oGrowingDelegate.updateItems = function() {
+
+			fnUpdateGrowingOrig.apply(oGrowingDelegate, arguments);
+			that._copySelectionsToList();
+			that._setCBSelectAll();
+		};
+	}
+
+	this._initializeViewList();
+
+	// Restore previous search results if there is a search value
+	var sSearchValue = this._searchField.getValue();
+	if (sSearchValue) {
+		this._executeSearch(sSearchValue);
+	}
+
+	return this._viewList;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilterList.prototype._destroyListControls = function() {
+
+	if (this._viewList) {
+		this._viewList.destroy();
+		delete this._viewList;
+	}
+
+	if (this._searchField) {
+
+		var oParent = this._searchField.getParent();
+		if (oParent) {
+			oParent.removeContentMiddle(this._searchField);
+		}
+		this._searchField.destroy();
+		delete this._searchField;
+	}
+
+	if (this._checkboxBar) {
+		this._checkboxBar.destroy();
+		delete this._checkboxBar;
+}	
+};
+
+/**
+ * Get the SearchField control for this list. If not already created, create the search field and initialize the live search handler.
+ * 
+ * @private
+ */
+sap.m.FacetFilterList.prototype._getSearchField = function() {
+
+	if (!this._searchField) {
+		var that = this;
+		this._searchField = new sap.m.SearchField(this.getId() + "-searchField", {
+			value : this._searchValue,
+			width : "100%",
+			search : function(oEvent) {
+
+				that._handleSearchEvent(oEvent);
+			}
+		});
+	}
+
+	// Always detach the handler at first regardless of bLiveSearch, otherwise multiple calls of this method will add
+	// a separate change handler to the search field.
+	this._searchField.detachLiveChange(this._handleSearchEvent, this);
+	if (this.getParent() && this.getParent().getLiveSearch()) {
+		this._searchField.attachLiveChange(this._handleSearchEvent, this);
+	}
+	return this._searchField;
+};
+
+/**
+ * Get the select all checkbox for this list. If already created, destroy the checkbox field and create a new one. Initialize the selected property.
+ * 
+ * @private
+ */
+sap.m.FacetFilterList.prototype._getSelectAllCheckbox = function() {
 	
-	if(bLiveSearch) {
-		this._searchField.attachLiveChange(this._setItemsFilter, this);
+	return this._checkboxBar.getContentLeft()[0];
+};
+
+sap.m.FacetFilterList.prototype._getSelectAllCheckboxBar = function() {
+	
+	if (!this._checkboxBar) {
+		var that = this;
+
+		this._checkboxBar = new sap.m.Bar();
+		this._checkboxBar.ontap = function(oEvent) {
+			
+			if(oEvent.srcControl.getId() === this.getId()) {
+				var bSelected = that._getSelectAllCheckbox().getSelected();
+				if (bSelected) {
+					that._getSelectAllCheckbox().setSelected(that.getActive());
+				} else {
+					that._getViewList().removeSelections(true);
+					that.removeSelections();
+					if (that.getActive()) {
+						that._setCBSelectAll();
+					}
+				}			
+			}
+		};
+		
+		var checkbox = new sap.m.CheckBox(this.getId() + "-selectAll", {
+			text : this._bundle.getText("FACETFILTER_CHECKBOX_ALL"),
+			select : function(oEvent) {
+
+				if (!oEvent.getParameter("selected")) {
+					this.setSelected(that.getActive());
+				} else {
+					that._getViewList().removeSelections(true);
+					that.removeSelections();
+					if (that.getActive()) {
+						that._setCBSelectAll();
+					}
+				}
+			}			
+		});
+		this._checkboxBar.addContentLeft(checkbox);
+	}
+	return this._checkboxBar;	
+};
+
+sap.m.FacetFilterList.prototype._displayRemoveIcon = function(bDisplay) {
+
+	if (this._facetRemoveIcon) {
+
+		if (bDisplay) {
+
+			this._facetRemoveIcon.removeStyleClass("sapMFFLHiddenRemoveIcon");
+			this._facetRemoveIcon.addStyleClass("sapMFFLVisibleRemoveIcon");
+		} else {
+
+			this._facetRemoveIcon.removeStyleClass("sapMFFLVisibleRemoveIcon");
+			this._facetRemoveIcon.addStyleClass("sapMFFLHiddenRemoveIcon");
+		}
+	}
+};
+
+sap.m.FacetFilterList.prototype._initializeViewList = function() {
+
+	if (this.getBindingContext(this._modelName)) {
+
+		// Set the context before the model (model does not have the path) since it contains the model and the path
+		this._viewList.setBindingContext(this.getBindingContext(this._modelName), this._modelName);
+		this._viewList.setModel(this.getBindingContext(this._modelName).getModel(), this._modelName);
 	} else {
-		this._searchField.detachLiveChange(this._setItemsFilter, this);
-	}	
+		this._viewList.setModel(this.getModel(this._modelName), this._modelName);
+	}
+
+	if (this._oListBindingInfo) {
+		this._viewList.bindAggregation("items", this._oListBindingInfo);
+	}
 };

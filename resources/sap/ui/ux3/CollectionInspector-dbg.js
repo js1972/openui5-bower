@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -802,6 +802,9 @@ sap.ui.ux3.CollectionInspector.prototype.closeSidebar = function() {
 sap.ui.ux3.CollectionInspector.prototype.insertCollection = function(oCollection, iIndex) {
 	var oButton = new sap.ui.commons.Button();
 	oButton.setText(oCollection.getTitle());
+	oCollection.attachEvent('_titleChanged', function(oEvent) {
+		oButton.setText(oEvent.getParameter("newTitle"));
+	});
 	var that = this;
 	oCollection.attachSelectionChanged(function() {
 		that.refreshSelectionHighlighting();
@@ -827,6 +830,9 @@ sap.ui.ux3.CollectionInspector.prototype.insertCollection = function(oCollection
 sap.ui.ux3.CollectionInspector.prototype.addCollection = function(oCollection) {
 	var oButton = new sap.ui.commons.Button();
 	oButton.setText(oCollection.getTitle());
+	oCollection.attachEvent('_titleChanged', function(oEvent) {
+		oButton.setText(oEvent.getParameter("newTitle"));
+	});
 	var that = this;
 	oCollection.attachSelectionChanged(function() {
 		that.refreshSelectionHighlighting();
@@ -876,6 +882,19 @@ sap.ui.ux3.CollectionInspector.prototype.removeAllCollections = function() {
 	this._oCollectionSelector.removeAllButtons();
 	this.setSelectedCollection(null);
 	return this.removeAllAggregation("collections");
+};
+
+/**
+ * Destroys the collection aggregation
+ * @return {sap.ui.ux3.CollectionInspector} this to allow method chaining
+ * @public
+ * @name sap.ui.ux3.CollectionInspector#destroyCollections
+ * @function
+ */
+sap.ui.ux3.CollectionInspector.prototype.destroyCollections = function() {
+	this._oCollectionSelector.destroyButtons();
+	this.setSelectedCollection(null);
+	return this.destroyAggregation("collections");
 };
 
 sap.ui.ux3.CollectionInspector.prototype.setSelectedCollection = function(oCollection) {

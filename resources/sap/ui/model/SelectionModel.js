@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.model.SelectionModel");jQuery.sap.require("sap.ui.base.EventProvider");sap.ui.base.EventProvider.extend("sap.ui.model.SelectionModel",{constructor:function(s){sap.ui.base.EventProvider.apply(this);this.iSelectionMode=s||sap.ui.model.SelectionModel.SINGLE_SELECTION;this.aSelectedIndices=[];this.iLeadIndex=-1;this.fnSort=function(a,b){return a-b};this.fnSortReverse=function(a,b){return b-a}}});sap.ui.model.SelectionModel.SINGLE_SELECTION=0;sap.ui.model.SelectionModel.MULTI_SELECTION=1;

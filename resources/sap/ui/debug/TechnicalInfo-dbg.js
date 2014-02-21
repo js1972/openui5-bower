@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,6 +62,7 @@ jQuery.sap.require("sap.ui.core.Popup");
 				bOU = jQuery.sap.syncHead(sOUUrl);
 			}
 			var bUseDbgSrc = jQuery.sap.debug();
+			var bUseStatistics = jQuery.sap.statistics();
 			var sWeinreId = jQuery.sap.uid();
 			var sWeinreClientUrl = sap.ui.getCore().getConfiguration().getWeinreServer() + "/client/#" + sWeinreId;
 			{
@@ -81,8 +82,8 @@ jQuery.sap.require("sap.ui.core.Popup");
 				}
 				if ( bOU ) {
 					html.push("<tr><td></td><td><a id=\"sap-ui-techinfo-optimizeModuleSet\" href=\"" + sOUUrl + "\">Calculate Optimized Module Set URL</a></td></tr>");
-				}	
-				html.push("<tr><td align='right' valign='top' rowSpan='3'><b>Debug Tools</b></td>", "<td><input id='sap-ui-techinfo-useDbgSources' type='checkbox'",
+				}
+				html.push("<tr><td align='right' valign='top' rowSpan='4'><b>Debug Tools</b></td>", "<td><input id='sap-ui-techinfo-useDbgSources' type='checkbox'",
 						bUseDbgSrc?" checked='checked'":"",
 						"><span ",
 						">Use Debug Sources (reload)</span></input></td></tr>");
@@ -98,6 +99,10 @@ jQuery.sap.require("sap.ui.core.Popup");
 						"><span ",
 						bEmbedded?"":" style='color:grey'",
 						">Show Log Viewer</span></input></td></tr>");
+				html.push("<tr><td><input id='sap-ui-techinfo-useStatistics' type='checkbox' ",
+						bUseStatistics?" checked='checked'":"",
+						"><span ",
+						">Enable SAP-statistics for oData calls</span></input></td></tr>");
 				html.push("<tr><td colspan='2' align='center' valign='bottom' height='40'><button id='sap-ui-techinfo-close' class='sapUiBtn sapUiBtnS sapUiBtnNorm sapUiBtnStd'>Close</button></td></tr>");
 				html.push("</table>");
 				if ( bDC ) {
@@ -129,6 +134,7 @@ jQuery.sap.require("sap.ui.core.Popup");
 				this._$Ref.find('#sap-ui-techinfo-customModule').click(jQuery.proxy(this.onCreateCustomModule, this));
 				this._$Ref.find('#sap-ui-techinfo-optimizeModuleSet').click(jQuery.proxy(this.onOptimizeModuleSet, this));
 				this._$Ref.find('#sap-ui-techinfo-weinre').click(jQuery.proxy(this.onOpenWebInspector, this));
+				this._$Ref.find('#sap-ui-techinfo-useStatistics').click(jQuery.proxy(this.onUseStatistics, this));
 			}
 			this._oPopup = new sap.ui.core.Popup(this._$Ref.get(0), /*modal*/true, /*shadow*/true, /*autoClose*/false);
 			var bValidBrowser = !!!sap.ui.Device.browser.internet_explorer || !!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version > 8;
@@ -270,6 +276,10 @@ jQuery.sap.require("sap.ui.core.Popup");
 
 		onUseDbgSources : function(e) {
 			var bUsesDbgSrc = jQuery.sap.debug(!!e.target.checked);
+		},
+
+		onUseStatistics : function(e) {
+			var bStatistics = jQuery.sap.statistics(!!e.target.checked);
 		},
 
 		onOpenWebInspector: function(e) {

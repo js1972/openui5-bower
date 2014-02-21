@@ -346,8 +346,8 @@ sap.ui.suite.VerticalProgressIndicatorRenderer.render = function(oRenderManager,
 }; // end of sap/ui/suite/VerticalProgressIndicatorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.suite.library') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -357,7 +357,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.suite.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.suite (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.suite (1.18.8)
  */
 jQuery.sap.declare("sap.ui.suite.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -388,11 +388,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.suite.VerticalProgressIndicator"
   ],
   elements: [],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -408,7 +408,7 @@ jQuery.sap.declare("sap.ui.suite.TaskCircleColor");
 /**
  * @class Defined color values for the Task Circle Control
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -443,8 +443,8 @@ sap.ui.suite.TaskCircleColor = {
 }; // end of sap/ui/suite/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.suite.TaskCircle') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -504,7 +504,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author Svetozar Buzdumovic 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -837,8 +837,8 @@ sap.ui.suite.TaskCircle.prototype.focus = function() {
 }; // end of sap/ui/suite/TaskCircle.js
 if ( !jQuery.sap.isDeclared('sap.ui.suite.VerticalProgressIndicator') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -895,7 +895,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author Svetozar Buzdumovic 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public

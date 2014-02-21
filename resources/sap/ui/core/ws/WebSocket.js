@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.ws.WebSocket");jQuery.sap.require("sap.ui.core.ws.ReadyState");jQuery.sap.require("sap.ui.base.EventProvider");jQuery.sap.require("sap.ui.Device");sap.ui.base.EventProvider.extend("sap.ui.core.ws.WebSocket",{constructor:function(u){sap.ui.base.EventProvider.apply(this);if(!sap.ui.Device.support.websocket){throw new Error("Browser does not support WebSockets.")}if(typeof(u)!=="string"){throw new Error("sUrl must be a string.")}this._openConnection(u)},metadata:{publicMethods:["send","close","getReadyState"]}});

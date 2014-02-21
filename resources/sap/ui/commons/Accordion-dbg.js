@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -476,6 +476,10 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
 * the first enabled section is opened by default.
 ****************************************************/
 jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
+jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-core");
+jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-widget");
+jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-mouse");
+jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-sortable");
 
 //*"*************************************************
 //* CONSTANTS DECLARATION - CLASS ATTRIBUTES
@@ -506,16 +510,8 @@ sap.ui.commons.Accordion.prototype.init = function(){
    // Get messagebundle.properties for sap.ui.commons
    this.rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
 
-   // Drag and drop events
-   jQuery(window.document).bind("dragover", this.ondragover);
-   jQuery(window.document).bind("dragenter", this.ondragenter);
-   jQuery(window.document).bind("dragleave", this.ondragleave);
-   jQuery(window.document).bind("dragend", this.ondragend);
-
    // Array used to store all section titles
    this.aSectionTitles = [];
-
-   this.bDragBeforeFirst = false;
 
    sap.ui.commons.Accordion.aAccordions.push(this);
 
@@ -635,8 +631,7 @@ sap.ui.commons.Accordion.prototype.onsapupmodifiers = function(oEvent){
 		return;
 	}
 
-	var oDomTargetSection = jQuery(oDomSection).prev().first()[0]
-;
+	var oDomTargetSection = jQuery(oDomSection).prev().first()[0];
 	var bInsertFirst = false;
 	if(this.__idxOfSec(oDomTargetSection.id)==0){
 		bInsertFirst = true;
@@ -647,8 +642,6 @@ sap.ui.commons.Accordion.prototype.onsapupmodifiers = function(oEvent){
 	// Ensure the focus is on the right section
 	var aSections = this.getSections();
 	aSections[this.__idxOfSec(oDomSection.id)].focus();
-
-
 
 };
 
@@ -837,123 +830,12 @@ sap.ui.commons.Accordion.prototype.getCurrentSection = function(oDomElement){
 
 };
 
-
 /***********************************************************************************
  * DRAG AND DROP
  * Drag and drop is used to move a single section at once up/down in the accordion
  * This can be achieved via a mouse click (down/up) and also via some keyboard
  * shortcuts (Ctrl-up and Ctrl-down)
  ***********************************************************************************/
-/**
- * On drag start event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragstart = function(oEvent){
-
-	//Drag & Drop not supported in IE yet.
-	if(!!sap.ui.Device.browser.internet_explorer){
-		return;
-	}
-
-	var target = jQuery(oEvent.target);
-
-	//Keep a trace of the dragged section
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcdSectionHdr")){
-		this.draggedSection = oEvent.target;
-	}
-	else{
-		var aParents = target.parentsUntil('.sapUiAcd');
-		this.draggedSection = aParents[aParents.length - 1];
-	}
-
-
-	//Disable dragging on the scrollbars
-	if(target.hasClass("sapUiAcdSectionCont")){
-		return;
-	}
-
-	var container = target.children(".sapUiAcdSectionCont");
-	container = container[0];
-
-	//Hide Scrollbar
-	var containerStyle = jQuery(container).addClass("sapUiAcdSectionContDragged");
-
-	target.addClass("sapUiAcdSectionDragged");
-
-
-	oEvent.originalEvent.dataTransfer.effectAllowed='move';
-	oEvent.originalEvent.dataTransfer.setData("Text", target.attr("id"));
-
-	if(oEvent.originalEvent.dataTransfer.setDragImage){
-		var domHeader = jQuery.sap.domById(this.draggedSection.id + "-hdr");
-		oEvent.originalEvent.dataTransfer.setDragImage(domHeader,0,0);
-	}
-
-};
-
-/**
-* On drop start event
-* @param {jQuery.Event} oEvent The browser event
-* @private
-*/
-sap.ui.commons.Accordion.prototype.ondrop = function(oEvent){
-
-
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-	var section;
-	var accordion;
-	var bInsertFirst = false;
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target before the firsts section.
-		var aSections = this.getSections();
-		section = jQuery.sap.domById(aSections[0].getId());
-		accordion = jQuery.sap.domById(this.getId());
-		bInsertFirst = true;
-	}
-	else if(jQuery(oEvent.target).hasClass("sapUiAcd") ){
-		//Over the accordion itself. It means we are just before the first section
-		bInsertFirst = true;
-		accordion = oEvent.target;
-		var aChildren = jQuery(accordion).children();
-		//First section is at index 1
-		section   = aChildren[1];
-	}
-	else{
-		//Otherwise, over a section
-		var target = jQuery(oEvent.target);
-		var aParents = target.parentsUntil('.sapUiAcd');
-		section = aParents[aParents.length - 1];
-		accordion = jQuery(section).parent()[0];
-	}
-
-
-
-	//We have to move the dragged section after the target section.
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-	var droppedObj = jQuery.sap.domById(dropId);
-
-	//Dropping in a different accordion is not allowed
-	if(!sap.ui.commons.Accordion.areInSameAccordion(droppedObj, section)){
-		return;
-	}
-
-	//When dragging up, we need to adjust the section
-	var aDomSections = jQuery(accordion).children(".sapUiAcdSection").toArray();
-	if(jQuery.inArray(droppedObj, aDomSections)>jQuery.inArray(section, aDomSections)){
-		//We are dragging up, let provide the next section dom object to adjust
-		section = aDomSections[aDomSections.indexOf(section)+1];
-	}
-
-	this.dropSection(droppedObj,section,bInsertFirst);
-
-};
-
 /**
  * Drops a section to a new index
  * @param {DOMNode} oDomSection	Section to drop to a new index
@@ -976,244 +858,6 @@ sap.ui.commons.Accordion.prototype.dropSection = function(oDomSection, oDomTarge
 
 	//Update accordion with the change
 	this.moveSection(oDomSection.id,iIndexToInsert);
-
-};
-
-/**
- * On drag end event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragend = function(oEvent){
-
-	if(this.bDragBeforeFirst){
-
-		this.replaceSectionFirst();
-
-	}
-
-	if(sap.ui.commons.Accordion.aAccordionsToReplace.length != 0){
-		for(var i = 0;i<sap.ui.commons.Accordion.aAccordionsToReplace.length;i++){
-			sap.ui.commons.Accordion.replaceAccordionById(sap.ui.commons.Accordion.aAccordionsToReplace[i].id)
-		}
-		sap.ui.commons.Accordion.aAccordionsToReplace = [];
-	}
-
-	var target			= jQuery(oEvent.target);
-	target.removeClass("sapUiAcdSectionDragged");
-
-	var container		= target.children(".sapUiAcdSectionCont");
-	var containerStyle	= container.removeClass("sapUiAcdSectionContDragged");
-
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-	this.bDragBeforeFirst = false;
-	this.currentDragTargetId = null;
-	this.draggedSection = null;
-
-};
-
-/**
- * On drag over event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragover = function(oEvent){
-
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-
-	var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-	var oDomSection = parents[parents.length - 1];
-
-	if(!sap.ui.commons.Accordion.areInSameAccordion(oEvent.target, jQuery.sap.domById(dropId))){
-		//Dropping in a different Accordion is not allowed
-		return true;
-	}
-
-	//Identifying valid drop target
-	if (this.bDragBeforeFirst){
-		//When we are dragging before the first section, it still the drop target as long we don't go over another section
-		return false;
-	}
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget") ){
-		//Drop target before the first section is valid
-		return false;
-	}
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd") ){
-		//Drop target before the first section is valid. (Equivalent of drop target itself)
-		return false;
-	}
-
-	if(oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-		//A section is valid
-		return false;
-	}
-
-
-};
-
-/**
-* Returns true if the two provided DOM elements belong to the same accordion
-* @param {DOMNode} oDomElement1 First DOM element
-* @param {DOMNode} oDomElement2 Second DOM element
-* @return {boolean} Whether the given two DOMNodes belong to the same Accordion
-* @private
-*/
-sap.ui.commons.Accordion.areInSameAccordion = function(oDomElement1, oDomElement2){
-
-	if(!oDomElement1 || !oDomElement2){
-		return true;
-	}
-
-
-
-	var oDomAccordion1;
-	if(	jQuery(oDomElement1).hasClass("sapUiAcdSection") ||
-		jQuery(oDomElement1).hasClass("sapUiAcd-droptarget")){
-		oDomAccordion1  = jQuery(oDomElement1).parent();
-	}
-	else{
-		var aParents1		= jQuery(oDomElement1).parentsUntil('.sapUiAcd');
-		var oDomSection1	= aParents1[aParents1.length - 1];
-		oDomAccordion1		= jQuery(oDomSection1).parent();
-	}
-
-	var oDomAccordion2;
-	if(	jQuery(oDomElement2).hasClass("sapUiAcdSection") ||
-		jQuery(oDomElement2).hasClass("sapUiAcd-droptarget")){
-		oDomAccordion2  = jQuery(oDomElement2).parent();
-	}
-	else{
-		var aParents2		= jQuery(oDomElement2).parentsUntil('.sapUiAcd');
-		var oDomSection2	= aParents2[aParents2.length - 1];
-		oDomAccordion2		= jQuery(oDomSection2).parent();
-	}
-
-
-	if(oDomAccordion1.attr('id')==oDomAccordion2.attr('id')){
-		return true;
-	}
-	else{
-		return false;
-	}
-};
-
-/**
- * On drag enter event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragenter = function(oEvent){
-
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-
-
-
-	if(!sap.ui.commons.Accordion.areInSameAccordion(oEvent.target, jQuery.sap.domById(dropId))){
-		//Dropping in a different Accordion is not allowed
-		return ;
-	}
-
-	if(this.bDragBeforeFirst == undefined){return;}
-
-
-	var oDomSection;
-
-	//Depending of the place we are over, we retrieve the corresponding DOM Section accordingly.
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target, we change the mode. It will be set to Off the next time we go over another section
-		this.bDragBeforeFirst = true;
-		var aSections = this.getSections();
-		oDomSection = jQuery.sap.domById(aSections[0].getId());
-	}
-	else{
-		var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-		oDomSection = parents[parents.length - 1];
-
-		//Are we back on a section coming from the drop target ?
-		if (this.bDragBeforeFirst && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-			//DragBeforeFirst mode is over as we are dragging over another section
-			this.bDragBeforeFirst = false;
-		}
-
-		if (this.bDragBeforeFirst){
-			//We are still in the top drop target. Do not move the section
-			return;
-
-		}
-
-	}
-
-
-	if(!this.currentDragTargetId && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-
-		//Over a section(or its corresponding child), slide the section to show the dragging state
-		this.slideSectionDown(oDomSection, this.bDragBeforeFirst);
-		this.currentDragTargetId = oDomSection.id;
-
-	}
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-};
-
-
-
-/**
- * On drag leave event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragleave = function(oEvent){
-
-	if(this.bDragBeforeFirst == undefined){
-		//We are dragging outside the accordion. This means that "this" is not pointing at the accordion but the window.
-		//Exit to avoid problems
-		return;
-	}
-
-	if (this.bDragBeforeFirst){
-		//In this mode, nothing to do
-		return;
-	}
-
-	//Depending of the place we are over, we retrieve the corresponding DOM Section accordingly.
-	var oDomSection;
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target before the first section
-		var bMoveFirst = true;
-		var aSections = this.getSections();
-		oDomSection = jQuery.sap.domById(aSections[0].getId());
-	}
-	else{
-		//Over the section
-		var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-		oDomSection = parents[parents.length - 1];
-	}
-
-	if(this.currentDragTargetId && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-
-		//Sliding section back to their original position
-		var oldTarget = jQuery.sap.domById(this.currentDragTargetId);
-		this.replaceSection();
-		this.currentDragTargetId = null;
-
-	}
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
 
 };
 
@@ -1263,121 +907,21 @@ sap.ui.commons.Accordion.prototype.moveSection = function(sSectionId, iTargetInd
 
 };
 
+sap.ui.commons.Accordion.prototype._onSortChange = function(oEvent, oUi){
 
-/**
- * Slides some section down to show a space. This space is the drop target.
- * @param {sap.ui.commons.AccordionSection} oSection The section being moved
- * @param {boolean} moveFirst
- * @private
- */
-sap.ui.commons.Accordion.prototype.slideSectionDown = function(oSection, moveFirst){
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
 
-  if(moveFirst){
-	  //We are over the first section. We then slide it down also
-	 jQuery(oSection).addClass("sapUiAcdSection-down");
-	 sap.ui.commons.Accordion.aAccordionsToReplace.push(jQuery(oSection).parent()[0]);
+	var oDomSection = oUi.item[0];
+	var SectionId = oUi.item[0].getAttribute("Id");
 
-  }
+	//Get accordion DOM object
+	var oDomAccordion = jQuery(oDomSection).parent()[0];
 
-  //Increase accordion Height to fit a blank space
-  var accordion = jQuery.sap.domById(this.getId());
-  accordion.style.height = (accordion.offsetHeight + 20) + "px";
+	var aChildren = jQuery(oDomAccordion).children(".sapUiAcdSection").toArray();
+	var iIndexToInsert = jQuery.inArray(oDomSection, aChildren);
 
-  var aNextSections = jQuery(oSection).nextAll();
-
-  for(var i=0;i<aNextSections.length;i++){
-	  jQuery(aNextSections[i]).addClass("sapUiAcdSection-down");
-  }
-
-
-};
-
-/**
- * Once the dragging is over or changed, replace the section to their original places
- * @private
- */
-sap.ui.commons.Accordion.prototype.replaceSection = function(){
-
-
-  var accordion = jQuery.sap.domById(this.getId());
-
-  sap.ui.commons.Accordion.replaceAccordion(this);
-
-};
-
-/**
- * Once the dragging is over or changed, replace the section to their original places
- * @private
- */
-sap.ui.commons.Accordion.prototype.replaceSectionFirst = function(){
-
-
-  var accordion = jQuery.sap.domById(this.getId());
-
-  sap.ui.commons.Accordion.replaceAccordionFirst(this);
-
-};
-
-/**
- * Replace with the given Id
- * @param {string} iAccordionId
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordionById = function(iAccordionId){
-
-  for(var i=0;i<sap.ui.commons.Accordion.aAccordions.length;i++){
-	  if(sap.ui.commons.Accordion.aAccordions[i].getId() == iAccordionId){
-		  sap.ui.commons.Accordion.replaceAccordion(sap.ui.commons.Accordion.aAccordions[i]);
-		  return true;
-	  }
-
-  }
-
-};
-
-/**
- * Replace a given accordion
- * @param {sap.ui.commons.Accordion} oAccordion
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordion = function(oAccordion){
-
-  var oDomAccordion = jQuery.sap.domById(oAccordion.getId());
-
-  //Back to original height
-  oDomAccordion.style.height = (oDomAccordion.offsetHeight - 24) + "px";
-
-  //Slide the section itself
-  var aSections = oAccordion.getSections();
-
-  //Remove the CSS class that slides the section down
-  for(var i=0;i<aSections.length;i++){
-	  var iSectionId = aSections[i].getId();
-	  var oDomSection = jQuery.sap.domById(iSectionId);
-	  jQuery(oDomSection).removeClass("sapUiAcdSection-down");
-  }
-
-};
-
-/**
- * Replace a given accordion when a section is dragged before the first section.
- * @param {sap.ui.commons.Accordion} oAccordion
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordionFirst = function(oAccordion){
-
-  var oDomAccordion = jQuery.sap.domById(oAccordion.getId());
-
-  //Slide the section itself
-  var aSections = oAccordion.getSections();
-
-  //Remove the CSS class that slides the section down
-  for(var i=0;i<aSections.length;i++){
-	  var iSectionId = aSections[i].getId();
-	  var oDomSection = jQuery.sap.domById(iSectionId);
-	  jQuery(oDomSection).removeClass("sapUiAcdSection-down");
-  }
-
+	this.moveSection(SectionId,iIndexToInsert);
 };
 
 /***********************************************************************************
@@ -1740,4 +1284,9 @@ sap.ui.commons.Accordion.prototype.onAfterRendering = function() {
 	}
 	var borderTotal = parseFloat(leftBorder.substring(0, leftBorder.indexOf("px"))) + parseFloat(rightBorder.substring(0, rightBorder.indexOf("px")));
 	accordion.style.height = accordion.offsetHeight - borderTotal - 7 + "px";
+
+	this.$().sortable({
+		handle: "> div > div",
+		stop: jQuery.proxy(this._onSortChange, this)
+	});
 };

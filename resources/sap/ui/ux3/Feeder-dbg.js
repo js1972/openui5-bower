@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -252,7 +252,8 @@ jQuery.sap.require("sap.ui.commons.Button");
 sap.ui.ux3.Feeder.prototype.init = function(){
 	this.rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3");
 	this.oSendButton = new sap.ui.commons.Button( this.getId() + "-send", {
-			style: sap.ui.commons.ButtonStyle.Emph
+			style: sap.ui.commons.ButtonStyle.Emph,
+			icon: "sap-icon://feeder-arrow"
 		}).setParent(this);
 	this.oSendButton.attachEvent('press', this.handleSendButtonPress, this); // attach event this way to have the right this-reference in handler
 
@@ -265,32 +266,6 @@ sap.ui.ux3.Feeder.prototype.initSendButton = function(){
 	if (this.getText() == "") {
 		// no re-rendering as button is not rendered now.
 		this.oSendButton.setProperty('enabled', false, true);
-	}
-
-	var sArrow = "";
-
-	switch (this.getType()){
-	case( sap.ui.ux3.FeederType.Medium):
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowMediumUrl');
-	break;
-	case( sap.ui.ux3.FeederType.Comment):
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowSmallUrl');
-	break;
-	default: // large feeder is default
-		sArrow = sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowLargeUrl');
-	break;
-	}
-
-	if (!sArrow || sArrow == "") {
-		// no arrow image
-		// no re-rendering as button is not rendered now.
-		this.oSendButton.setProperty('text', '-->', true);
-	} else {
-		// no re-rendering as button is not rendered now.
-		if (sap.ui.getCore().getConfiguration().getRTL()) {
-			sArrow = sArrow.replace(/\/img\//, "/img-RTL/");
-		}
-		this.oSendButton.setProperty('icon', jQuery.sap.getModulePath("sap.ui.ux3", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sArrow, true);
 	}
 
 };

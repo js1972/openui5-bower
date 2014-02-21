@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -535,7 +535,13 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @private
  */
 sap.ui.commons.CheckBox.prototype.onclick = function(oEvent) {
-	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
+	//According to CSN2581852 2012 a readonly CB should be in the tabchain
+	// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+	// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+	// End of 2013 is have to be again in the tabchain.
+	// But not in the Form. But this is handled in the FromLayout control
+	// Let's see what happens 2014... ;-)
+	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused
 		jQuery.sap.byId(this.getId()).attr("tabindex", 0).addClass("sapUiCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
@@ -549,8 +555,13 @@ sap.ui.commons.CheckBox.prototype.onclick = function(oEvent) {
  * @private
  */
 sap.ui.commons.CheckBox.prototype.onfocusout = function(oEvent) {
-
-	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
+	//According to CSN2581852 2012 a readonly CB should be in the tabchain
+	// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+	// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+	// End of 2013 is have to be again in the tabchain.
+	// But not in the Form. But this is handled in the FromLayout control
+	// Let's see what happens 2014... ;-)
+	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused - now unset this again
 		jQuery.sap.byId(this.getId()).attr("tabindex", -1).removeClass("sapUiCbFoc");

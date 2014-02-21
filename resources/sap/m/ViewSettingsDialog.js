@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.ViewSettingsDialog");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.ViewSettingsDialog",{metadata:{publicMethods:["open","getSelectedFilters","getSelectedFilterString","getSelectedFilterKeys","setSelectedFilterKeys"],library:"sap.m",properties:{"title":{type:"string",group:"Behavior",defaultValue:null},"sortDescending":{type:"boolean",group:"Behavior",defaultValue:false},"groupDescending":{type:"boolean",group:"Behavior",defaultValue:false}},aggregations:{"sortItems":{type:"sap.m.ViewSettingsItem",multiple:true,singularName:"sortItem",bindable:"bindable"},"groupItems":{type:"sap.m.ViewSettingsItem",multiple:true,singularName:"groupItem",bindable:"bindable"},"filterItems":{type:"sap.m.ViewSettingsItem",multiple:true,singularName:"filterItem",bindable:"bindable"},"presetFilterItems":{type:"sap.m.ViewSettingsItem",multiple:true,singularName:"presetFilterItem",bindable:"bindable"}},associations:{"selectedSortItem":{type:"sap.m.ViewSettingsItem",multiple:false},"selectedGroupItem":{type:"sap.m.ViewSettingsItem",multiple:false},"selectedPresetFilterItem":{type:"sap.m.ViewSettingsItem",multiple:false}},events:{"confirm":{},"cancel":{},"resetFilters":{}}}});sap.m.ViewSettingsDialog.M_EVENTS={'confirm':'confirm','cancel':'cancel','resetFilters':'resetFilters'};jQuery.sap.require("sap.ui.core.IconPool");

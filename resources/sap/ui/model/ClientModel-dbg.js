@@ -1,11 +1,11 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 /**
- * JSON-based DataBinding
+ * client-based DataBinding
  *
  * @namespace
  * @name sap.ui.model.json
@@ -16,6 +16,7 @@
 jQuery.sap.declare("sap.ui.model.ClientModel");
 jQuery.sap.require("sap.ui.model.Model");
 jQuery.sap.require("sap.ui.model.ClientPropertyBinding");
+jQuery.sap.require("sap.ui.model.ClientContextBinding");
 jQuery.sap.require("sap.ui.model.ClientListBinding");
 jQuery.sap.require("sap.ui.model.ClientTreeBinding");
 
@@ -29,7 +30,7 @@ jQuery.sap.require("sap.ui.model.ClientTreeBinding");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @param {object} oData URL where to load the data from
  * @constructor
@@ -72,10 +73,10 @@ sap.ui.model.Model.extend("sap.ui.model.ClientModel", /** @lends sap.ui.model.Cl
  */
 
 /**
- * Returns the current JSON data of the model.
+ * Returns the current data of the model.
  * Be aware that the returned object is a reference to the model data so all changes to that data will also change the model data.
  *
- * @return the JSON data object
+ * @return the data object
  * @public
  */
 sap.ui.model.ClientModel.prototype.getData = function(){
@@ -126,6 +127,14 @@ sap.ui.model.ClientModel.prototype.createBindingContext = function(sPath, oConte
  */
 sap.ui.model.ClientModel.prototype.destroyBindingContext = function(oContext) {
 	// TODO: what todo here?
+};
+
+/**
+ * @see sap.ui.model.Model.prototype.bindContext
+ */
+sap.ui.model.ClientModel.prototype.bindContext = function(sPath, oContext, mParameters) {
+	var oBinding = new sap.ui.model.ClientContextBinding(this, sPath, oContext, mParameters);
+	return oBinding;
 };
 
 /**

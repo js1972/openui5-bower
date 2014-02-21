@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -283,52 +283,6 @@ jQuery.sap.require("sap.ui.Device");
 		}
 	};
 
-	//**********************************************************
-	
-	/*!
-	 * The following code is partially taken from 
-	 * jQuery Javascript Library v1.10.1 - 2013-07-03T13:48Z
-	 * jquery-1.10.1.js
-	 * 
-	 * http://jquery.com/
-	 * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
-	 */
-	
-	//TODO: Get rid of this coding when jQuery version less than 1.10.1 is no longer supported and the framework was switched to jQuery 1.10.1.
-	if (jQuery.sap.Version(jQuery.fn.jquery).compareTo("1.10.1") < 0) {
-		var rnative = /^[^{]+\{\s*\[native \w/,
-			preferredDoc = window.document,
-			fnContains = function(a, b) {
-				var adown = a.nodeType === 9 ? a.documentElement : a,
-					bup = b && b.parentNode;
-				return a === bup || !!(bup && bup.nodeType === 1 && (
-					adown.contains ?
-						adown.contains(bup) :
-						a.compareDocumentPosition && a.compareDocumentPosition(bup) & 16
-				));
-			},
-			fnContainsFallback = function(a, b) {
-				if (b) {
-					while ((b = b.parentNode)) {
-						if (b === a) {
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-		
-		jQuery.contains = function(context, elem){
-			var doc = context ? context.ownerDocument || context : preferredDoc,
-				docElem = doc.documentElement;
-			
-			return rnative.test(docElem.contains) || docElem.compareDocumentPosition ?
-				fnContains(context, elem) : 
-				fnContainsFallback(context, elem);
-		};
-	}
-
-	//*********************************************************
 
 	/**
 	 * Returns whether oDomRefChild is oDomRefContainer or is contained in oDomRefContainer.

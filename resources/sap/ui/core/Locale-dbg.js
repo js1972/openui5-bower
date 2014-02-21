@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.base.Object");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.Locale
@@ -46,6 +46,13 @@ jQuery.sap.require("sap.ui.base.Object");
 		constructor : function(sLocaleId) {
 			sap.ui.base.Object.apply(this);
 			var aResult = rLocale.exec(sLocaleId.replace(/_/g, "-"));
+			
+			// If the given Locale string cannot be parsed by the regular expression above we 
+			// should at least tell the developer why the core fails to load.
+			if (aResult === null) {
+				throw "The given language does not adhere to BCP-47.";
+			}
+			
 			this.sLocaleId = sLocaleId;
 			this.sLanguage = aResult[1] || null;
 			this.sScript = aResult[2] || null;

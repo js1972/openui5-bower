@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.InputBase");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.InputBase",{metadata:{library:"sap.m",properties:{"value":{type:"string",group:"Data",defaultValue:null,bindable:"bindable"},"width":{type:"sap.ui.core.CSSSize",group:"Appearance",defaultValue:null},"enabled":{type:"boolean",group:"Behavior",defaultValue:true},"visible":{type:"boolean",group:"Appearance",defaultValue:true},"valueState":{type:"sap.ui.core.ValueState",group:"Data",defaultValue:sap.ui.core.ValueState.None},"name":{type:"string",group:"Misc",defaultValue:null},"placeholder":{type:"string",group:"Misc",defaultValue:null},"editable":{type:"boolean",group:"Misc",defaultValue:true}},events:{"change":{}}}});sap.m.InputBase.M_EVENTS={'change':'change'};jQuery.sap.require("sap.ui.core.EnabledPropagator");sap.ui.core.EnabledPropagator.call(sap.m.InputBase.prototype);jQuery.sap.require("sap.ui.core.IconPool");sap.ui.core.IconPool.insertFontFaceStyle();
@@ -12,9 +12,9 @@ sap.m.InputBase.prototype.exit=function(){delete this._$input;delete this._$labe
 sap.m.InputBase.prototype.getFocusDomRef=function(){return(this.getDomRef()?this._$input[0]:null)};
 sap.m.InputBase.prototype.getIdForLabel=function(){return this.getId()+'-inner'};
 sap.m.InputBase.prototype.ontouchstart=function(e){e.originalEvent._sapui_handledByControl=true};
-sap.m.InputBase.prototype.setValueState=function(v){var o=this.getValueState();v=this.validateProperty("valueState",v);if(v==o){return this}if(!this.getDomRef()){return this.setProperty("valueState",v)}var $=this.$();this.setProperty("valueState",v,true);if(o&&o!="None"){$.removeClass("sapMInputBase"+o);this._$input.removeClass("sapMInputBase"+o+"Inner")}if(v&&v!="None"){$.addClass("sapMInputBase"+v);this._$input.addClass("sapMInputBase"+v+"Inner")}return this};
+sap.m.InputBase.prototype.setValueState=function(v){var o=this.getValueState();v=this.validateProperty("valueState",v);if(v==o){return this}if(!this.getDomRef()){return this.setProperty("valueState",v)}var $=this.$();this.setProperty("valueState",v,true);if(o&&o!="None"){$.removeClass("sapMInputBase"+o);this._$input.removeClass("sapMInputBase"+o+"Inner")}if(v&&v!="None"){$.addClass("sapMInputBase"+v);this._$input.addClass("sapMInputBase"+v+"Inner")}var t=sap.ui.core.ValueStateSupport.enrichTooltip(this,this.getTooltip_AsString());this.$().attr("title",(t!==undefined?t:""));return this};
 sap.m.InputBase.prototype.setValue=function(v){v=this.validateProperty("value",v);v=this._getInputValue(v);if(v!=this.getValue()){this._lastValue=v;this.setProperty("value",v,true);if(this.getDomRef()&&this._$input.val()!=v){this._$input.val(v);this._setLabelVisibility();this._curpos=this._$input.cursorPos()}}return this};
-sap.m.InputBase.prototype.setWidth=function(w){this.setProperty("width",w,true);if(this.getDomRef()){this.$().width(this.getWidth())}return this};
+sap.m.InputBase.prototype.setWidth=function(w){this.setProperty("width",w,true);if(this.getDomRef()){this.$().css("width",this.getWidth())}return this};
 sap.m.InputBase.prototype.setPlaceholder=function(p){this.setProperty("placeholder",p,true);if(this.getDomRef()){if(this._$label){this._$label.text(this.getPlaceholder())}else{this._$input.attr("placeholder",this.getPlaceholder())}}return this};
 sap.m.InputBase.prototype.setMaxLength=function(m){if(m<0){return this}this.setProperty("maxLength",m,true);if(this.getDomRef()){if(m==0){this._$input.removeAttr("maxlength")}else{this._$input.val(this._$input.val().substring(0,m));this._$input.attr("maxlength",m)}}return this};
 sap.m.InputBase.prototype._setLabelVisibility=function(){if(this.getDomRef()&&this._$label){this._$label.css("display",this.getValue()?"none":"inline")}};

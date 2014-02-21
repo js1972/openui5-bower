@@ -1,6 +1,6 @@
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -31,7 +31,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.Component
  * @abstract
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.UIComponent
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  */
@@ -109,33 +109,33 @@ sap.ui.core.UIComponent.prototype.init = function() {
 			return that.createId(sId);
 		};
 	}
-	
+
+	// create the routing
+	var oMetadata = this.getMetadata();
+	// extend the metadata config, so that the metadata object cannot be modified afterwards
+	var oRoutingConfig = jQuery.extend({}, oMetadata.getRoutingConfig());
+	var aRoutes = oMetadata.getRoutes();
+
+	// create the router for the component instance
+	if (aRoutes) {
+		jQuery.sap.require("sap.ui.core.routing.Router");
+		this._oRouter = new sap.ui.core.routing.Router(aRoutes, oRoutingConfig, this);
+	}
+
 	// create the content
 	sap.ui.base.ManagedObject.runWithOwner(function() {
 		sap.ui.base.ManagedObject.runWithPreprocessors(function() {
 			that.setAggregation("rootControl", that.createContent());
 		}, oPreprocessors);
 	}, this);
-	
-	// create the routing
-	var oMetadata = this.getMetadata(),
-	    oRoutingConfig = oMetadata.getRoutingConfig() || {},
-	    aRoutes = oMetadata.getRoutes(),
-	    oRootControl = this.getAggregation("rootControl");
-	
+
 	// only for root "views" we automatically define the target parent
+	var oRootControl = this.getAggregation("rootControl");
 	if (oRootControl instanceof sap.ui.core.mvc.View) {
-		oRoutingConfig = jQuery.extend({}, {
-			targetParent : oRootControl.getId()
-		}, oRoutingConfig);
+		if(oRoutingConfig.targetParent === undefined) {
+			oRoutingConfig.targetParent = oRootControl.getId();
+		}
 	}
-	
-	// create the router for the component instance
-	if (aRoutes) {
-		jQuery.sap.require("sap.ui.core.routing.Router");
-		this._oRouter = new sap.ui.core.routing.Router(aRoutes, oRoutingConfig, this);
-	}
-	
 };
 
 /*
@@ -276,6 +276,14 @@ sap.ui.core.UIComponent.prototype.render = function(oRenderManager) {
  */
 sap.ui.core.UIComponent.prototype.getUIArea = function() {
 	return (this.oContainer ? this.oContainer.getUIArea() : null);
+};
+
+/**
+ * @see sap.ui.base.EventProvider#getEventingParent
+ * @protected
+ */
+sap.ui.core.UIComponent.prototype.getEventingParent = function() {
+	return this.getUIArea();
 };
 
 /**

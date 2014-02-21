@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem,sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -281,9 +281,8 @@ sap.ui.core.Control.extend("sap.ui.commons.Label", { metadata : {
 
 /**
  * Getter for property <code>icon</code>.
- * 
  * Icon to be displayed in the control.
- * 
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -417,36 +416,65 @@ sap.ui.core.Control.extend("sap.ui.commons.Label", { metadata : {
 jQuery.sap.require("sap.ui.core.Popup");
 
 sap.ui.commons.Label.prototype.onAfterRendering = function () {
-	if (this.getLabelForRendering() && (this.getTooltip_AsString() == "" || !(this.getTooltip() instanceof sap.ui.core.TooltipBase))) {
-		var oFor = sap.ui.getCore().byId(this.getLabelForRendering());
-		// no own tooltip use RichTooltip of labeled control if available
-		if (oFor && (oFor.getTooltip() instanceof sap.ui.core.TooltipBase)) {
-			this.oForTooltip = oFor.getTooltip();
-			this.addDelegate(this.oForTooltip);
+
+	var sFor = this.getLabelForRendering();
+
+	if (sFor) {
+		var oFor = sap.ui.getCore().byId(sFor);
+
+		if (oFor) {
+			if (this.getTooltip_AsString() == "" || !(this.getTooltip() instanceof sap.ui.core.TooltipBase)) {
+				// no own tooltip use RichTooltip of labeled control if available
+				if (oFor.getTooltip() instanceof sap.ui.core.TooltipBase) {
+					this.oForTooltip = oFor.getTooltip();
+					this.addDelegate(this.oForTooltip);
+				}
+			}
+
+			// attach to change of required flag of labeled control
+			oFor.attachEvent("requiredChanged",this._handleRequiredChanged, this);
+			this._oFor = oFor;
 		}
 	}
+
 };
 
 sap.ui.commons.Label.prototype.onBeforeRendering = function () {
+
 	if (this.oForTooltip) {
 		this.removeDelegate(this.oForTooltip);
 		this.oForTooltip = null;
 	}
+
 	if (this._oPopup) {
 		this._oPopup.destroy();
 		delete this._oPopup;
 	}
+
+	if (this._oFor) {
+		this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
+		this._oFor = undefined;
+	}
+
 };
 
 sap.ui.commons.Label.prototype.exit = function(){
+
 	if (this.oForTooltip) {
 		this.removeDelegate(this.oForTooltip);
 		this.oForTooltip = null;
 	}
+
 	if (this._oPopup) {
 		this._oPopup.destroy();
 		delete this._oPopup;
 	}
+
+	if (this._oFor) {
+		this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
+		this._oFor = undefined;
+	}
+
 };
 
 /**
@@ -459,6 +487,16 @@ sap.ui.commons.Label.prototype.isRequired = function(){
 	// have a getRequired method, this is treated like a return value of "false".
 	var oFor = sap.ui.getCore().byId(this.getLabelForRendering());
 	return this.getRequired() || (oFor && oFor.getRequired && oFor.getRequired() === true);
+
+};
+
+/*
+ * if required flag of labeled control changes after Label is rendered,
+ * Label must be rendered again
+ */
+sap.ui.commons.Label.prototype._handleRequiredChanged = function(){
+
+	this.invalidate();
 
 };
 

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -497,18 +497,10 @@ sap.ui.commons.Tree.prototype.init = function(){
    this.iOldScrollTop = null;
 
    //Create Buttons for Header
-	var sIconPrefix		= jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme();
-
-	if(!sap.ui.getCore().getConfiguration().getRTL()){
-		sIconPrefix		+= "/img/tree/";
-	}
-	else{
-		sIconPrefix		+= "/img-RTL/tree/";
-	}
 
 	var oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
-	this.oCollapseAllButton = new sap.ui.commons.Button(this.getId() + "-CollapseAll", { icon: sIconPrefix + "CollapseAll.png", tooltip: oResourceBundle.getText("TREE_COLLAPSE_ALL"), lite: true });
-	this.oExpandAllButton	= new sap.ui.commons.Button(this.getId() + "-ExpandAll", { icon: sIconPrefix + "ExpandAll.png", tooltip: oResourceBundle.getText("TREE_EXPAND_ALL"), lite: true });
+	this.oCollapseAllButton = new sap.ui.commons.Button(this.getId() + "-CollapseAll", { icon: this.getIconPrefix() + "CollapseAll.png", tooltip: oResourceBundle.getText("TREE_COLLAPSE_ALL"), lite: true });
+	this.oExpandAllButton	= new sap.ui.commons.Button(this.getId() + "-ExpandAll", { icon: this.getIconPrefix() + "ExpandAll.png", tooltip: oResourceBundle.getText("TREE_EXPAND_ALL"), lite: true });
 	this.oCollapseAllButton.attachPress(this.onCollapseAll,this);
 	this.oExpandAllButton.attachPress(this.onExpandAll,this);
 	this.oCollapseAllButton.addStyleClass("sapUiTreeCol");
@@ -535,6 +527,13 @@ sap.ui.commons.Tree.prototype.exit = function(){
 * EVENTS HANDLING
 ***********************************************************************************/
 
+/** Handler for "Theme Changed" event.
+ * @private
+ */
+sap.ui.commons.Tree.prototype.onThemeChanged = function(){
+	this.oCollapseAllButton.setIcon(this.getIconPrefix() + "CollapseAll.png");
+	this.oExpandAllButton.setIcon(this.getIconPrefix() + "ExpandAll.png");
+};
 
 /** Handler for "Expand All" button.
  * @private
@@ -652,6 +651,22 @@ sap.ui.commons.Tree.prototype.onsapcollapseall = function(oEvent) {
 /***********************************************************************************
 * HELPER METHODS - DOM NAVIGATION
 ***********************************************************************************/
+
+/**
+ * Determine the icon prefix for the embedded button icons
+ * @private
+ */
+sap.ui.commons.Tree.prototype.getIconPrefix = function() {
+	var sIconPrefix		= jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme();
+	
+	if(!sap.ui.getCore().getConfiguration().getRTL()){
+		sIconPrefix		+= "/img/tree/";
+	}
+	else{
+		sIconPrefix		+= "/img-RTL/tree/";
+	}
+	return sIconPrefix;
+};
 
 /**Returns the first Sibling tree node based on DOM Tree node provided
  * @param oDomNode The DOM Tree node from which calculate the first sibling
@@ -867,15 +882,51 @@ sap.ui.commons.Tree.prototype.isTreeBinding = function(sName) {
  * @private
  */
 sap.ui.commons.Tree.prototype.updateNodes = function(){
-	var sId = this.oSelectedNode && this.oSelectedNode.getId(), 
+	var oContext = this.oSelectedContext, 
 		oNode;
 	this.oSelectedNode = null;
 	this.oSelectedContext = null;
 	this.updateAggregation("nodes");
-	if (sId) {
-		oNode = sap.ui.getCore().byId(sId);
+	if (oContext) {
+		oNode = this.getNodeByContext(oContext);
 		this.setSelection(oNode, true);
  	}
+};
+
+
+/**
+ * Returns the node with the given context, or null if no such node currently exists
+ * 
+ * @param {sap.ui.model.Context} oContext the context of the node to be retrieved
+ * @public
+ * @since 1.19
+ */
+sap.ui.commons.Tree.prototype.getNodeByContext = function(oContext){
+	return this.findNode(this, function(oNode) {
+		return oNode.getBindingContext() == oContext;
+	});
+};
+
+/**
+ * Search through all existing nodes and return the first node which matches using
+ * the given matching function
+ * 
+ * @param {function} fnMatch the matching function
+ * @param {sap.ui.commons.Tree|sap.ui.commons.TreeNode} oNode the node to check
+ * @returns The found node
+ * @private
+ */
+sap.ui.commons.Tree.prototype.findNode = function(oNode, fnMatch) {
+	var oFoundNode,
+		that = this;
+	if (fnMatch(oNode)) {
+		return oNode;
+	}
+	jQuery.each(oNode.getNodes(), function(i, oNode) {
+		oFoundNode = that.findNode(oNode, fnMatch);
+		if (oFoundNode) return false;
+	});
+	return oFoundNode;
 };
 
 /**Returns the selected node in the tree. If not selection, returns false.

@@ -2,8 +2,8 @@
 jQuery.sap.declare('sap.ui.commons.library-all');
 if ( !jQuery.sap.isDeclared('sap.ui.commons.AccordionRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -44,7 +44,6 @@ sap.ui.commons.AccordionRenderer.render = function(oRenderManager, oAccordion){
 
 	rm.write("<div id='" + oAccordion.getId()+ "-dropTarget" + "' style='width:"+ oAccordion.getWidth() +"' tabIndex='-1' class='sapUiAcd-droptarget'></div>");
 
-
 	var aSections = oAccordion.getSections();
 	var aDefaultSections = oAccordion.getOpenedSectionsId().split(",");
 
@@ -65,13 +64,13 @@ sap.ui.commons.AccordionRenderer.render = function(oRenderManager, oAccordion){
 	   sap.ui.commons.AccordionRenderer.renderSection(rm, aSections[i]);
 
 	}
-	
+
 	rm.write('<SPAN id="' + oAccordion.getId() + '-Descr" style="visibility: hidden; display: none;">');
 	rm.write(oAccordion.rb.getText("ACCORDION_DSC"));
 	rm.write('</SPAN>');
 
 	rm.write("</div>");
-	
+
 	oAccordion.bInitialRendering = false;
 
 };
@@ -114,7 +113,10 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 	rm.writeStyles();
 
 	// header
-	rm.write("><div draggable=\"true\" class='sapUiAcdSectionHdr' tabindex='0'");
+	rm.write("><div class='sapUiAcdSectionHdr'");
+	if (oControl.getEnabled()) {
+		rm.write(" tabindex='0'");
+	}
 	rm.writeAttribute("id", oControl.getId() + "-hdr");
 	if (accessibility) {
 		rm.writeAttribute('role', 'tab');
@@ -137,9 +139,9 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 	rm.write("<span id='" + oControl.getId() + "-hdrL'>");
 
 	if (oControl.getEnabled()){
-		rm.write("<a draggable='false' id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow' href='javascript:void(0)' title='Collapse/Expand'");
+		rm.write("<a id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow' href='javascript:void(0)' title='Collapse/Expand'");
 	}else{
-		rm.write("<a draggable='false' id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow sapUiAcdCursorText' href='javascript:void(0)' title='Collapse/Expand'");
+		rm.write("<a id='" + oControl.getId() + "-minL' class='sapUiAcdSectionMinArrow sapUiAcdCursorText' href='javascript:void(0)' title='Collapse/Expand'");
 	}
 
 	rm.write(" tabindex='-1' ");
@@ -216,7 +218,7 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 		} else {
 			rm.write(" style='position:relative;top:0px;'"); // for IE7, when Panel contains relatively positioned elements
 		}
-		
+
 		if ( sap.ui.getCore().getConfiguration().getAccessibility()){
 			rm.writeAttribute('role', 'tabpanel');
 		}
@@ -233,13 +235,13 @@ sap.ui.commons.AccordionRenderer.renderSection = function(oRenderManager, oContr
 
 	}
 	// End of Panel
-		rm.write("</div>");
+	rm.write("</div>");
 };
 }; // end of sap/ui/commons/AccordionRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ApplicationHeaderRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -352,8 +354,8 @@ sap.ui.commons.ApplicationHeaderRenderer.renderWelcomeAndLogoffAreas = function(
 }; // end of sap/ui/commons/ApplicationHeaderRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ButtonRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -363,7 +365,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonRenderer");
 /**
  * @class
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  */
 sap.ui.commons.ButtonRenderer = {
@@ -455,8 +457,17 @@ sap.ui.commons.ButtonRenderer.render = function(rm, oButton) {
 		this.renderButtonContentBefore(rm, oButton);
 	}
 
-	if (this._getIconForState(oButton, "base") && oButton.getIconFirst()) {
-		this.writeImgHtml(rm, oButton, bImageOnly);
+	var bUseIconFont = false;
+	if (sap.ui.core.IconPool.isIconURI(oButton.getIcon())) {
+		bUseIconFont = true;
+	}
+
+	if (oButton.getIconFirst()) {
+		if (bUseIconFont) {
+			this.writeIconHtml(rm, oButton, bImageOnly);
+		} else if(this._getIconForState(oButton, "base")) {
+			this.writeImgHtml(rm, oButton, bImageOnly);
+		}
 	}
 
 	// write the button label
@@ -470,8 +481,12 @@ sap.ui.commons.ButtonRenderer.render = function(rm, oButton) {
 		}
 	}
 
-	if (this._getIconForState(oButton, "base") && !oButton.getIconFirst()) {
-		this.writeImgHtml(rm, oButton, bImageOnly);
+	if (!oButton.getIconFirst()) {
+		if (bUseIconFont) {
+			this.writeIconHtml(rm, oButton, bImageOnly);
+		} else if(this._getIconForState(oButton, "base")) {
+			this.writeImgHtml(rm, oButton, bImageOnly);
+		}
 	}
 
 	if(this.renderButtonContentAfter){
@@ -570,7 +585,7 @@ sap.ui.commons.ButtonRenderer._getIconForState = function(oButton, sState) {
 };
 
 /**
- * HTML for icon
+ * HTML for icon as image
  */
 sap.ui.commons.ButtonRenderer.writeImgHtml = function(oRenderManager, oButton, bImageOnly) {
 	var rm = oRenderManager,
@@ -602,23 +617,61 @@ sap.ui.commons.ButtonRenderer.writeImgHtml = function(oRenderManager, oButton, b
 	rm.write("/>");
 };
 
-sap.ui.commons.ButtonRenderer.changeIcon = function(oButton) {
+/**
+ * HTML for icon as icon font
+ */
+sap.ui.commons.ButtonRenderer.writeIconHtml = function(oRenderManager, oButton, bImageOnly) {
 
-	if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnAct")) {
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "active"));
-	} else if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnFoc")){
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "focus"));
-	} else if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnStd")){
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "base"));
+	var rm = oRenderManager;
+	var oIconInfo = sap.ui.core.IconPool.getIconInfo(oButton.getIcon());
+	var aClasses = [];
+	var mAttributes = {};
+
+	mAttributes["id"] = oButton.getId() + "-icon";
+
+	aClasses.push("sapUiBtnIco");
+	if (oButton.getText()) { // only add a distance to the text if there is text
+		var bRTL = rm.getConfiguration().getRTL();
+		if ((oButton.getIconFirst() && (!bRTL || oIconInfo.skipMirroring)) || (!oButton.getIconFirst() && !oIconInfo.skipMirroring && bRTL)) {
+			aClasses.push("sapUiBtnIcoL");
+		} else {
+			aClasses.push("sapUiBtnIcoR");
+		}
 	}
+
+	rm.writeIcon(oButton.getIcon(), aClasses, mAttributes);
 
 };
 
+sap.ui.commons.ButtonRenderer.changeIcon = function(oButton) {
+
+	if (sap.ui.core.IconPool.isIconURI(oButton.getIcon())) {
+		var oIconInfo = sap.ui.core.IconPool.getIconInfo(oButton.getIcon());
+		var oIcon = oButton.$("icon");
+		if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9) {
+			oIcon.text(oIconInfo.content);
+		} else {
+			oIcon.attr("data-sap-ui-icon-content", oIconInfo.content);
+		}
+		if(!oIconInfo.skipMirroring) {
+			oIcon.addClass("sapUiIconMirrorInRTL");
+		} else {
+			oIcon.removeClass("sapUiIconMirrorInRTL");
+		}
+	} else if (oButton.$().hasClass("sapUiBtnAct")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "active"));
+	} else if (oButton.$().hasClass("sapUiBtnFoc")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "focus"));
+	} else if (oButton.$().hasClass("sapUiBtnStd")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "base"));
+	}
+
+};
 }; // end of sap/ui/commons/ButtonRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CalloutBaseRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -712,8 +765,8 @@ sap.ui.commons.CalloutBaseRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/CalloutBaseRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CalloutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -790,8 +843,8 @@ sap.ui.commons.CalloutRenderer.addArrowClasses = function(oRenderManager, oContr
 }; // end of sap/ui/commons/CalloutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CarouselRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -951,8 +1004,8 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 }; // end of sap/ui/commons/CarouselRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CheckBoxRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1012,15 +1065,21 @@ sap.ui.commons.CheckBoxRenderer.render = function(oRenderManager, oCheckBox) {
 	var myTabIndex = 0;
 	var bReadOnly = false;
 
+	if (!editable) {
+		bReadOnly = true;
+		rm.addClass("sapUiCbRo");
+		// According to CSN 2581852 2012 a readonly CB should be in the tabchain
+		// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+		// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+		// End of 2013 is have to be again in the tabchain.
+		// But not in the Form. But this is handled in the FromLayout control
+		// Let's see what happens 2014... ;-)
+		myTabIndex = 0;
+	}
 	if (!enabled) {
 		bReadOnly = true;
 		rm.addClass("sapUiCbDis");
 		myTabIndex = -1;
-	}
-	if (!editable) {
-		bReadOnly = true;
-		rm.addClass("sapUiCbRo");
-		//myTabIndex = -1; //According to CSN2581852 2012 a readonly CB should be in the tabchain 
 	}
 	if (inErrorState) {
 		rm.addClass("sapUiCbErr");
@@ -1108,8 +1167,8 @@ sap.ui.commons.CheckBoxRenderer.renderText = function(oRenderManager, sText, eTe
 }; // end of sap/ui/commons/CheckBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ColorPickerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1145,8 +1204,8 @@ sap.ui.commons.ColorPickerRenderer.render = function(oRm, oControl){
 }; // end of sap/ui/commons/ColorPickerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DialogRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1294,8 +1353,8 @@ sap.ui.commons.DialogRenderer.render = function(rm, oControl) {
 }; // end of sap/ui/commons/DialogRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploaderRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1377,8 +1436,8 @@ sap.ui.commons.FileUploaderRenderer.render = function(oRenderManager, oFileUploa
 }; // end of sap/ui/commons/FileUploaderRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FormattedTextViewRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.FormattedTextViewRenderer");
@@ -1462,8 +1521,8 @@ sap.ui.commons.FormattedTextViewRenderer._renderReplacement = function(rm, contr
 }; // end of sap/ui/commons/FormattedTextViewRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.HorizontalDividerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1520,8 +1579,8 @@ sap.ui.commons.HorizontalDividerRenderer.render = function(oRenderManager, oCont
 }; // end of sap/ui/commons/HorizontalDividerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ImageMapRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1619,8 +1678,8 @@ sap.ui.commons.ImageMapRenderer.render = function(oImageRenderManager, oImageMap
 }; // end of sap/ui/commons/ImageMapRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ImageRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1716,8 +1775,8 @@ sap.ui.commons.ImageRenderer.render = function(oRenderManager, oImage) {
 }; // end of sap/ui/commons/ImageRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.InPlaceEditRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1856,8 +1915,8 @@ sap.ui.commons.InPlaceEditRenderer.renderEditContent = function(rm, oInPlaceEdit
 }; // end of sap/ui/commons/InPlaceEditRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.LabelRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -1983,19 +2042,21 @@ sap.ui.commons.LabelRenderer.render = function(oRenderManager, oLabel) {
 
 sap.ui.commons.LabelRenderer.writeImgHtml = function(oRenderManager, oLabel) {
 	var rm = oRenderManager;
-	var iconUrl = oLabel.getIcon();
+	var sIconUrl = oLabel.getIcon();
 	var oConfig = oRenderManager.getConfiguration();
-	rm.write("<img");
-	rm.writeAttributeEscaped("src", iconUrl);
-	rm.addClass("sapUiLblIco");
+	var aClasses = [];
+	var mAttributes = {};
+
+	aClasses.push("sapUiLblIco");
 	if ((oLabel.getTextDirection()==sap.ui.core.TextDirection.RTL && !oConfig.getRTL()) || (oLabel.getTextDirection()==sap.ui.core.TextDirection.LTR && oConfig.getRTL())) {
 		// if text direction is different to global text direction, icon margin must be switched.
-		rm.addClass("sapUiLblIcoR");
+		aClasses.push("sapUiLblIcoR");
 	} else {
-		rm.addClass("sapUiLblIcoL");
+		aClasses.push("sapUiLblIcoL");
 	}
-	rm.writeClasses();
-	rm.write("/>");
+
+	rm.writeIcon(sIconUrl, aClasses, mAttributes);
+
 };
 
 /**
@@ -2008,8 +2069,8 @@ sap.ui.commons.LabelRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign;
 }; // end of sap/ui/commons/LabelRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.LinkRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2094,8 +2155,8 @@ sap.ui.commons.LinkRenderer.render = function(rm, oLink) {
 }; // end of sap/ui/commons/LinkRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ListBoxRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2110,7 +2171,7 @@ jQuery.sap.require('jquery.sap.strings'); // unlisted dependency retained
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -2300,14 +2361,34 @@ sap.ui.commons.ListBoxRenderer.renderItemList = function (oListBox, rm) {
 
 			// write icon column if required
 			if (oListBox.getDisplayIcons()) {
-				rm.write("<span class='sapUiLbxIIco'><img src='");
-				// if the item has an icon, use it; otherwise use something empty
-				if (item.getIcon && item.getIcon()) { // allow usage of sap.ui.core.Item
-					rm.writeEscaped(item.getIcon());
-				} else {
-					rm.write(sap.ui.resource('sap.ui.commons', 'img/1x1.gif'));
+				var sIcon;
+				if (item.getIcon) {
+					sIcon = item.getIcon();
 				}
-				rm.write("'/></span>");
+				rm.write("<span");
+				// if the item has an icon, use it; otherwise use something empty
+				if (sap.ui.core.IconPool.isIconURI(sIcon)) {
+					rm.addClass("sapUiLbxIIco");
+					rm.addClass("sapUiLbxIIcoFont");
+					var oIconInfo = sap.ui.core.IconPool.getIconInfo(sIcon);
+					rm.addStyle("font-family", "'" + oIconInfo.fontFamily + "'");
+					if(oIconInfo && !oIconInfo.skipMirroring){
+						rm.addClass("sapUiIconMirrorInRTL");
+					}
+					rm.writeClasses();
+					rm.writeStyles();
+					rm.write(">");
+					rm.write(oIconInfo.content);
+				}else{
+					rm.write(" class='sapUiLbxIIco'><img src='");
+					if (sIcon) { // allow usage of sap.ui.core.Item
+						rm.writeEscaped(sIcon);
+					} else {
+						rm.write(sap.ui.resource('sap.ui.commons', 'img/1x1.gif'));
+					}
+					rm.write("'/>");
+				}
+				rm.write("</span>");
 			}
 
 			// write the main text
@@ -2423,8 +2504,8 @@ sap.ui.commons.ListBoxRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign;
 }; // end of sap/ui/commons/ListBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuBarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2540,8 +2621,8 @@ sap.ui.commons.MenuBarRenderer.writeAria = function(rm, sRole, sText, bDisabled,
 }; // end of sap/ui/commons/MenuBarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuButtonRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2590,8 +2671,8 @@ sap.ui.commons.MenuButtonRenderer.renderButtonContentAfter = function(rm, oContr
 }; // end of sap/ui/commons/MenuButtonRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2603,7 +2684,7 @@ jQuery.sap.declare("sap.ui.commons.MenuRenderer");
  * @class Menu renderer.
  * @author SAP - TD Core UI&AM UI Infra
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  */
 sap.ui.commons.MenuRenderer = {
@@ -2714,8 +2795,8 @@ sap.ui.commons.MenuRenderer.render = function(oRenderManager,oMenu) {
 }; // end of sap/ui/commons/MenuRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageBarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2790,8 +2871,8 @@ sap.ui.commons.MessageBarRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/MessageBarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageListRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2836,8 +2917,8 @@ sap.ui.commons.MessageListRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/MessageListRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2900,8 +2981,8 @@ sap.ui.commons.MessageRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/MessageRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageToastRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -2959,8 +3040,8 @@ sap.ui.commons.MessageToastRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/MessageToastRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.PaginatorRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3135,8 +3216,8 @@ sap.ui.commons.PaginatorRenderer.updateBackAndForward = function(oPaginator) {
 }; // end of sap/ui/commons/PaginatorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.PanelRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3277,13 +3358,16 @@ sap.ui.commons.PanelRenderer.render = function(oRenderManager, oControl) {
 	// if (oTitle) {
 	if (oTitle && oTitle.getIcon()) {
 		// header icon, if available
-		rm.write("<img id='" + id + "-ico' class='sapUiPanelHdrItem sapUiPanelIco' src='");
-		rm.writeEscaped(oTitle.getIcon());
-		rm.write("'");
-		if (accessibility) {
-			rm.write(" role='presentation' alt=''"); // role and alt added as per accessibility requirement
-		}
-		rm.write("/>");
+		var sIcon = oTitle.getIcon();
+		var aClasses = [];
+		var mAttributes = {};
+
+		mAttributes["id"] = id + "-ico";
+		aClasses.push("sapUiPanelIco");
+		aClasses.push("sapUiPanelHdrItem");
+		aClasses.push("sapUiTv"+sLevel); // use same font-size like header level (if icon font is used (for image it dosn't matters)
+
+		rm.writeIcon(sIcon, aClasses, mAttributes);
 	}
 
 	// header title text
@@ -3361,8 +3445,8 @@ sap.ui.commons.PanelRenderer.render = function(oRenderManager, oControl) {
 }; // end of sap/ui/commons/PanelRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ProgressIndicatorRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3539,8 +3623,8 @@ sap.ui.commons.ProgressIndicatorRenderer.render = function(oRenderManager, oProg
 }; // end of sap/ui/commons/ProgressIndicatorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RadioButtonGroupRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3656,8 +3740,8 @@ sap.ui.commons.RadioButtonGroupRenderer.render = function(oRenderManager, oRBGro
 }; // end of sap/ui/commons/RadioButtonGroupRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RadioButtonRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -3843,8 +3927,8 @@ sap.ui.commons.RadioButtonRenderer.setSelected = function(oRadioButton, bSelecte
 }; // end of sap/ui/commons/RadioButtonRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RatingIndicatorRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4039,8 +4123,8 @@ sap.ui.commons.RatingIndicatorRenderer.getThemeSymbol = function(sType, oRating)
 }; // end of sap/ui/commons/RatingIndicatorRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ResponsiveContainerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4096,8 +4180,8 @@ sap.ui.commons.ResponsiveContainerRenderer.render = function(oRenderManager, oCo
 }; // end of sap/ui/commons/ResponsiveContainerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RichTooltipRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -4204,8 +4288,8 @@ sap.ui.commons.RichTooltipRenderer.render = function(rm, oRichTooltip){
 }; // end of sap/ui/commons/RichTooltipRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RoadMapRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5118,8 +5202,8 @@ var updateScrollState = function(oRoadMap, iNewPos, bSkipAnim, fEndCallBack){
 }; // end of sap/ui/commons/RoadMapRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SearchFieldRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5189,8 +5273,8 @@ sap.ui.commons.SearchFieldRenderer.render = function(oRenderManager, oControl){
 }; // end of sap/ui/commons/SearchFieldRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SegmentedButtonRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5252,8 +5336,8 @@ sap.ui.commons.SegmentedButtonRenderer.renderButtons = function(oRenderManager, 
 }; // end of sap/ui/commons/SegmentedButtonRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SliderRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5438,8 +5522,8 @@ sap.ui.commons.SliderRenderer.controlAdditionalCode = function(rm, oSlider){
 }; // end of sap/ui/commons/SliderRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SplitterRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5522,7 +5606,7 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	rm.write("</div>");
 
 	/*rendering the splitter bar*/
-	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"Press SHIFT+ARROW keys to move\" "); 
+	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"" + oControl.getText("SPLITTER_MOVE") + "\"");
 	if (orientation == sap.ui.commons.Orientation.Vertical) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiVerticalSplitterBar");
@@ -5575,8 +5659,8 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 }; // end of sap/ui/commons/SplitterRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TabStripRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5709,12 +5793,15 @@ sap.ui.commons.TabStripRenderer.render = function(oRenderManager, oControl){
 
 		// title with icon
 		if (oTitle) {
-			if (oTitle.getIcon()) {
-				rm.write("<img class=\"sapUiTabIco\"");
-				rm.writeAttributeEscaped("src", oTitle.getIcon());
-				rm.write("/>");
+			var sIcon = oTitle.getIcon();
+			if (sIcon) {
+				var aClasses = [];
+				var mAttributes = {};
+
+				aClasses.push("sapUiTabIco");
+				rm.writeIcon(sIcon, aClasses, mAttributes);
 			}
-			rm.writeEscaped(oTab.getTitle().getText());
+			rm.writeEscaped(oTitle.getText());
 		} else {
 			jQuery.sap.log.warning("No title configured for " + oTab + ". Either set a string as 'text' property or a sap.ui.core.Title as 'title' aggregation.");
 		}
@@ -5782,8 +5869,8 @@ sap.ui.commons.TabStripRenderer.renderTabContents = function(rm, oControl) {
 }; // end of sap/ui/commons/TabStripRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextFieldRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -5799,7 +5886,7 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
  * @class
  * @static
  * @author Daniel Brinkmann / Sebastian Allmann
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @since 0.9.0
  */
 sap.ui.commons.TextFieldRenderer = {};
@@ -6199,8 +6286,8 @@ sap.ui.commons.TextFieldRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlig
 }; // end of sap/ui/commons/TextFieldRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextViewRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6348,8 +6435,8 @@ sap.ui.commons.TextViewRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign
 }; // end of sap/ui/commons/TextViewRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ToggleButtonRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6433,8 +6520,8 @@ sap.ui.commons.ToggleButtonRenderer._getIconForState = function(oButton, sState)
 }; // end of sap/ui/commons/ToggleButtonRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ToolbarRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6662,8 +6749,8 @@ sap.ui.commons.ToolbarRenderer.unsetActive = function(oToolbar) {
 }; // end of sap/ui/commons/ToolbarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TreeRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -6888,8 +6975,8 @@ sap.ui.commons.TreeRenderer.renderNode = function(oRenderManager, oNode, iLevel,
 }; // end of sap/ui/commons/TreeRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TriStateCheckBoxRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7043,8 +7130,8 @@ sap.ui.commons.TriStateCheckBoxRenderer.render = function(oRm, oControl) {
 }; // end of sap/ui/commons/TriStateCheckBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ValueHelpFieldRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7093,26 +7180,37 @@ sap.ui.commons.ValueHelpFieldRenderer.renderOuterAttributes = function(rm, oCont
  */
 sap.ui.commons.ValueHelpFieldRenderer.renderOuterContent = function(rm, oControl){
 
-	rm.write('<img id=', oControl.getId() + '-icon');
+	var sIconUrl = oControl.getIconURL();
+	var aClasses = [];
+	var mAttributes = {};
+	mAttributes["id"] = oControl.getId() + "-icon";
+	mAttributes["role"] = "button";
+
 	// As mentioned above, a more generic "sapUiTfIcon" className could have been used...
 	// One would just have had to add its own icon className!
 	// Using "sapUiTfValueHelpIcon" for now, as it proved easier to define instead of overwriting
 	// the ComboBox image sources and backgrounds.
-	rm.addClass("sapUiTfValueHelpIcon");
-	if (oControl.getEnabled() && oControl.getEditable()) {
-		rm.addClass("sapUiTfValueHelpRegularIcon");
+	aClasses.push("sapUiTfValueHelpIcon");
+
+	if (sIconUrl && sap.ui.core.IconPool.isIconURI(sIconUrl)) {
+		oControl.bIsIconURI = true;
+	} else {
+		oControl.bIsIconURI = false;
+		if (oControl.getEnabled() && oControl.getEditable()) {
+			aClasses.push("sapUiTfValueHelpRegularIcon");
+		}
+
+		sIconUrl = this.renderIcon(rm, oControl, aClasses);
 	}
 
-	this.renderIcon(rm, oControl);
-	rm.writeClasses();
-	rm.writeAttribute("role","button");
-	rm.write(">");
+	rm.writeIcon(sIconUrl, aClasses, mAttributes);
+
 };
 
 /**
  * as onBeforeRendering only runs while re-rendering this module is called in renderer
  */
-sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
+sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl, aClasses){
 
 	var sIcon = "";
 
@@ -7121,8 +7219,7 @@ sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
 			oControl.sIconDsblUrl = oControl.getIconDisabledURL();
 		} else if (oControl.getIconURL()) {
 			oControl.sIconDsblUrl = oControl.getIconURL();
-			var oIcon  = jQuery.sap.domById(oControl.getId() + '-icon');
-			rm.addClass('sapUiTfValueHelpDsblIcon');
+			aClasses.push('sapUiTfValueHelpDsblIcon');
 		}
 		sIcon = oControl.sIconDsblUrl;
 	} else {
@@ -7131,7 +7228,8 @@ sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
 		}
 		sIcon = oControl.sIconRegularUrl;
 	}
-	rm.writeAttributeEscaped('src', sIcon);
+	return sIcon;
+
 };
 
 ///**
@@ -7160,11 +7258,12 @@ sap.ui.commons.ValueHelpFieldRenderer.renderIcon = function(rm, oControl){
 //		// So there is not much point about doing more about this at the moment.
 //	}
 //};
+
 }; // end of sap/ui/commons/ValueHelpFieldRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.FormLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.form.FormLayoutRenderer");
@@ -7178,8 +7277,8 @@ sap.ui.commons.form.FormLayoutRenderer = sap.ui.core.Renderer.extend(sap.ui.layo
 }; // end of sap/ui/commons/form/FormLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.FormRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7193,8 +7292,8 @@ sap.ui.commons.form.FormRenderer = sap.ui.core.Renderer.extend(sap.ui.layout.for
 }; // end of sap/ui/commons/form/FormRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.GridLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.form.GridLayoutRenderer");
@@ -7207,8 +7306,8 @@ sap.ui.commons.form.GridLayoutRenderer = sap.ui.core.Renderer.extend(sap.ui.layo
 }; // end of sap/ui/commons/form/GridLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.ResponsiveLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.form.ResponsiveLayoutRenderer");
@@ -7221,8 +7320,8 @@ sap.ui.commons.form.ResponsiveLayoutRenderer = sap.ui.core.Renderer.extend(sap.u
 }; // end of sap/ui/commons/form/ResponsiveLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.SimpleFormRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.form.SimpleFormRenderer");
@@ -7235,8 +7334,8 @@ sap.ui.commons.form.SimpleFormRenderer = sap.ui.core.Renderer.extend(sap.ui.layo
 }; // end of sap/ui/commons/form/SimpleFormRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.AbsoluteLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7432,8 +7531,8 @@ var getComputedStyles = function(oPosition) {
 }; // end of sap/ui/commons/layout/AbsoluteLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.BorderLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7655,8 +7754,8 @@ sap.ui.commons.layout.BorderLayoutRenderer = {};
 }; // end of sap/ui/commons/layout/BorderLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.HorizontalLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -7670,8 +7769,8 @@ sap.ui.commons.layout.HorizontalLayoutRenderer = sap.ui.core.Renderer.extend(sap
 }; // end of sap/ui/commons/layout/HorizontalLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.MatrixLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8309,8 +8408,8 @@ sap.ui.commons.layout.MatrixLayoutRenderer.getValueUnit = function(sSize) {
 }; // end of sap/ui/commons/layout/MatrixLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.ResponsiveFlowLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.layout.ResponsiveFlowLayoutRenderer");
@@ -8323,8 +8422,8 @@ sap.ui.commons.layout.ResponsiveFlowLayoutRenderer = sap.ui.core.Renderer.extend
 }; // end of sap/ui/commons/layout/ResponsiveFlowLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.VerticalLayoutRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8340,8 +8439,8 @@ sap.ui.commons.layout.VerticalLayoutRenderer = sap.ui.core.Renderer.extend(sap.u
 }; // end of sap/ui/commons/layout/VerticalLayoutRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.library') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8351,7 +8450,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.commons (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.commons (1.18.8)
  */
 jQuery.sap.declare("sap.ui.commons.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -8502,11 +8601,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.layout.PositionContainer",
     "sap.ui.commons.layout.ResponsiveFlowLayoutData"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8522,7 +8621,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonStyle");
 /**
  * @class different styles for a button.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8564,8 +8663,8 @@ sap.ui.commons.ButtonStyle = {
  */
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8581,7 +8680,7 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerHeight");
 /**
  * @class Enumeration of possible HorizontalDivider height settings.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8613,8 +8712,8 @@ sap.ui.commons.HorizontalDividerHeight = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8630,7 +8729,7 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerType");
 /**
  * @class Enumeration of possible HorizontalDivider types.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8650,8 +8749,8 @@ sap.ui.commons.HorizontalDividerType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8667,7 +8766,7 @@ jQuery.sap.declare("sap.ui.commons.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8687,8 +8786,8 @@ sap.ui.commons.LabelDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8704,7 +8803,7 @@ jQuery.sap.declare("sap.ui.commons.MenuBarDesign");
 /**
  * @class Determines the visual design of a MenuBar. The feature might be not supported by all themes.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8724,8 +8823,8 @@ sap.ui.commons.MenuBarDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8741,7 +8840,7 @@ jQuery.sap.declare("sap.ui.commons.MessageType");
 /**
  * @class [Enter description for MessageType]
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8767,8 +8866,8 @@ sap.ui.commons.MessageType = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8784,7 +8883,7 @@ jQuery.sap.declare("sap.ui.commons.Orientation");
 /**
  * @class Orientation of an UI element
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8804,8 +8903,8 @@ sap.ui.commons.Orientation = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8821,7 +8920,7 @@ jQuery.sap.declare("sap.ui.commons.PaginatorEvent");
 /**
  * @class Disctinct paginator event types
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8859,8 +8958,8 @@ sap.ui.commons.PaginatorEvent = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8876,7 +8975,7 @@ jQuery.sap.declare("sap.ui.commons.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8902,8 +9001,8 @@ sap.ui.commons.RatingIndicatorVisualMode = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8919,7 +9018,7 @@ jQuery.sap.declare("sap.ui.commons.RowRepeaterDesign");
 /**
  * @class Determines the visual design of a RowRepeater.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -8945,8 +9044,8 @@ sap.ui.commons.RowRepeaterDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8976,8 +9075,8 @@ sap.ui.commons.SplitterSize = sap.ui.base.DataType.createType('sap.ui.commons.Sp
 );
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -8993,7 +9092,7 @@ jQuery.sap.declare("sap.ui.commons.TextViewColor");
 /**
  * @class Semantic Colors of a text.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9025,8 +9124,8 @@ sap.ui.commons.TextViewColor = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9042,7 +9141,7 @@ jQuery.sap.declare("sap.ui.commons.TextViewDesign");
 /**
  * @class Designs for TextView.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9122,8 +9221,8 @@ sap.ui.commons.TextViewDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9139,7 +9238,7 @@ jQuery.sap.declare("sap.ui.commons.ToolbarDesign");
 /**
  * @class Determines the visual design of a Toolbar.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9183,8 +9282,8 @@ sap.ui.commons.ToolbarDesign = {
  */
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9200,7 +9299,7 @@ jQuery.sap.declare("sap.ui.commons.ToolbarSeparatorDesign");
 /**
  * @class Design of the Toolbar Separator.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9220,8 +9319,8 @@ sap.ui.commons.ToolbarSeparatorDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9237,7 +9336,7 @@ jQuery.sap.declare("sap.ui.commons.TriStateCheckBoxState");
 /**
  * @class States for TriStateCheckBox
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  * @since 1.7.2
@@ -9264,8 +9363,8 @@ sap.ui.commons.TriStateCheckBoxState = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9281,7 +9380,7 @@ jQuery.sap.declare("sap.ui.commons.enums.AreaDesign");
 /**
  * @class Value set for the background design of areas
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9307,8 +9406,8 @@ sap.ui.commons.enums.AreaDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9324,7 +9423,7 @@ jQuery.sap.declare("sap.ui.commons.enums.BorderDesign");
 /**
  * @class Value set for the border design of areas
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9344,8 +9443,8 @@ sap.ui.commons.enums.BorderDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9361,7 +9460,7 @@ jQuery.sap.declare("sap.ui.commons.enums.Orientation");
 /**
  * @class Orientation of a UI element
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9381,8 +9480,8 @@ sap.ui.commons.enums.Orientation = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9400,7 +9499,7 @@ jQuery.sap.declare("sap.ui.commons.layout.BackgroundDesign");
  * Background design (i.e. color), e.g. of a layout cell.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9464,8 +9563,8 @@ sap.ui.commons.layout.BackgroundDesign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9481,7 +9580,7 @@ jQuery.sap.declare("sap.ui.commons.layout.BorderLayoutAreaTypes");
 /**
  * @class The type (=position) of a BorderLayoutArea
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9519,8 +9618,8 @@ sap.ui.commons.layout.BorderLayoutAreaTypes = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9540,7 +9639,7 @@ jQuery.sap.declare("sap.ui.commons.layout.HAlign");
  * others do not.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9588,8 +9687,8 @@ sap.ui.commons.layout.HAlign = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9610,7 +9709,7 @@ jQuery.sap.declare("sap.ui.commons.layout.Padding");
  * or end of a line, in the current locale's writing direction.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9664,8 +9763,8 @@ sap.ui.commons.layout.Padding = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9684,7 +9783,7 @@ jQuery.sap.declare("sap.ui.commons.layout.Separation");
  * defined width, with or without a vertical line in its middle.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9748,8 +9847,8 @@ sap.ui.commons.layout.Separation = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9767,7 +9866,7 @@ jQuery.sap.declare("sap.ui.commons.layout.VAlign");
  * Vertical alignment, e.g. of a layout cell's content within the cell's borders.
  * 
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -9842,8 +9941,8 @@ if (!sap.ui.layout.form.FormHelper || !sap.ui.layout.form.FormHelper.bFinal) {
 }; // end of sap/ui/commons/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Accordion') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9902,7 +10001,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -10321,6 +10420,14 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
 ****************************************************/
 jQuery.sap.require('sap.ui.core.delegate.ItemNavigation'); // unlisted dependency retained
 
+jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-core'); // unlisted dependency retained
+
+jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-widget'); // unlisted dependency retained
+
+jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-mouse'); // unlisted dependency retained
+
+jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-sortable'); // unlisted dependency retained
+
 
 //*"*************************************************
 //* CONSTANTS DECLARATION - CLASS ATTRIBUTES
@@ -10351,16 +10458,8 @@ sap.ui.commons.Accordion.prototype.init = function(){
    // Get messagebundle.properties for sap.ui.commons
    this.rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
 
-   // Drag and drop events
-   jQuery(window.document).bind("dragover", this.ondragover);
-   jQuery(window.document).bind("dragenter", this.ondragenter);
-   jQuery(window.document).bind("dragleave", this.ondragleave);
-   jQuery(window.document).bind("dragend", this.ondragend);
-
    // Array used to store all section titles
    this.aSectionTitles = [];
-
-   this.bDragBeforeFirst = false;
 
    sap.ui.commons.Accordion.aAccordions.push(this);
 
@@ -10480,8 +10579,7 @@ sap.ui.commons.Accordion.prototype.onsapupmodifiers = function(oEvent){
 		return;
 	}
 
-	var oDomTargetSection = jQuery(oDomSection).prev().first()[0]
-;
+	var oDomTargetSection = jQuery(oDomSection).prev().first()[0];
 	var bInsertFirst = false;
 	if(this.__idxOfSec(oDomTargetSection.id)==0){
 		bInsertFirst = true;
@@ -10492,8 +10590,6 @@ sap.ui.commons.Accordion.prototype.onsapupmodifiers = function(oEvent){
 	// Ensure the focus is on the right section
 	var aSections = this.getSections();
 	aSections[this.__idxOfSec(oDomSection.id)].focus();
-
-
 
 };
 
@@ -10682,123 +10778,12 @@ sap.ui.commons.Accordion.prototype.getCurrentSection = function(oDomElement){
 
 };
 
-
 /***********************************************************************************
  * DRAG AND DROP
  * Drag and drop is used to move a single section at once up/down in the accordion
  * This can be achieved via a mouse click (down/up) and also via some keyboard
  * shortcuts (Ctrl-up and Ctrl-down)
  ***********************************************************************************/
-/**
- * On drag start event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragstart = function(oEvent){
-
-	//Drag & Drop not supported in IE yet.
-	if(!!sap.ui.Device.browser.internet_explorer){
-		return;
-	}
-
-	var target = jQuery(oEvent.target);
-
-	//Keep a trace of the dragged section
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcdSectionHdr")){
-		this.draggedSection = oEvent.target;
-	}
-	else{
-		var aParents = target.parentsUntil('.sapUiAcd');
-		this.draggedSection = aParents[aParents.length - 1];
-	}
-
-
-	//Disable dragging on the scrollbars
-	if(target.hasClass("sapUiAcdSectionCont")){
-		return;
-	}
-
-	var container = target.children(".sapUiAcdSectionCont");
-	container = container[0];
-
-	//Hide Scrollbar
-	var containerStyle = jQuery(container).addClass("sapUiAcdSectionContDragged");
-
-	target.addClass("sapUiAcdSectionDragged");
-
-
-	oEvent.originalEvent.dataTransfer.effectAllowed='move';
-	oEvent.originalEvent.dataTransfer.setData("Text", target.attr("id"));
-
-	if(oEvent.originalEvent.dataTransfer.setDragImage){
-		var domHeader = jQuery.sap.domById(this.draggedSection.id + "-hdr");
-		oEvent.originalEvent.dataTransfer.setDragImage(domHeader,0,0);
-	}
-
-};
-
-/**
-* On drop start event
-* @param {jQuery.Event} oEvent The browser event
-* @private
-*/
-sap.ui.commons.Accordion.prototype.ondrop = function(oEvent){
-
-
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-	var section;
-	var accordion;
-	var bInsertFirst = false;
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target before the firsts section.
-		var aSections = this.getSections();
-		section = jQuery.sap.domById(aSections[0].getId());
-		accordion = jQuery.sap.domById(this.getId());
-		bInsertFirst = true;
-	}
-	else if(jQuery(oEvent.target).hasClass("sapUiAcd") ){
-		//Over the accordion itself. It means we are just before the first section
-		bInsertFirst = true;
-		accordion = oEvent.target;
-		var aChildren = jQuery(accordion).children();
-		//First section is at index 1
-		section   = aChildren[1];
-	}
-	else{
-		//Otherwise, over a section
-		var target = jQuery(oEvent.target);
-		var aParents = target.parentsUntil('.sapUiAcd');
-		section = aParents[aParents.length - 1];
-		accordion = jQuery(section).parent()[0];
-	}
-
-
-
-	//We have to move the dragged section after the target section.
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-	var droppedObj = jQuery.sap.domById(dropId);
-
-	//Dropping in a different accordion is not allowed
-	if(!sap.ui.commons.Accordion.areInSameAccordion(droppedObj, section)){
-		return;
-	}
-
-	//When dragging up, we need to adjust the section
-	var aDomSections = jQuery(accordion).children(".sapUiAcdSection").toArray();
-	if(jQuery.inArray(droppedObj, aDomSections)>jQuery.inArray(section, aDomSections)){
-		//We are dragging up, let provide the next section dom object to adjust
-		section = aDomSections[aDomSections.indexOf(section)+1];
-	}
-
-	this.dropSection(droppedObj,section,bInsertFirst);
-
-};
-
 /**
  * Drops a section to a new index
  * @param {DOMNode} oDomSection	Section to drop to a new index
@@ -10821,244 +10806,6 @@ sap.ui.commons.Accordion.prototype.dropSection = function(oDomSection, oDomTarge
 
 	//Update accordion with the change
 	this.moveSection(oDomSection.id,iIndexToInsert);
-
-};
-
-/**
- * On drag end event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragend = function(oEvent){
-
-	if(this.bDragBeforeFirst){
-
-		this.replaceSectionFirst();
-
-	}
-
-	if(sap.ui.commons.Accordion.aAccordionsToReplace.length != 0){
-		for(var i = 0;i<sap.ui.commons.Accordion.aAccordionsToReplace.length;i++){
-			sap.ui.commons.Accordion.replaceAccordionById(sap.ui.commons.Accordion.aAccordionsToReplace[i].id)
-		}
-		sap.ui.commons.Accordion.aAccordionsToReplace = [];
-	}
-
-	var target			= jQuery(oEvent.target);
-	target.removeClass("sapUiAcdSectionDragged");
-
-	var container		= target.children(".sapUiAcdSectionCont");
-	var containerStyle	= container.removeClass("sapUiAcdSectionContDragged");
-
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-	this.bDragBeforeFirst = false;
-	this.currentDragTargetId = null;
-	this.draggedSection = null;
-
-};
-
-/**
- * On drag over event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragover = function(oEvent){
-
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-
-	var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-	var oDomSection = parents[parents.length - 1];
-
-	if(!sap.ui.commons.Accordion.areInSameAccordion(oEvent.target, jQuery.sap.domById(dropId))){
-		//Dropping in a different Accordion is not allowed
-		return true;
-	}
-
-	//Identifying valid drop target
-	if (this.bDragBeforeFirst){
-		//When we are dragging before the first section, it still the drop target as long we don't go over another section
-		return false;
-	}
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget") ){
-		//Drop target before the first section is valid
-		return false;
-	}
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd") ){
-		//Drop target before the first section is valid. (Equivalent of drop target itself)
-		return false;
-	}
-
-	if(oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-		//A section is valid
-		return false;
-	}
-
-
-};
-
-/**
-* Returns true if the two provided DOM elements belong to the same accordion
-* @param {DOMNode} oDomElement1 First DOM element
-* @param {DOMNode} oDomElement2 Second DOM element
-* @return {boolean} Whether the given two DOMNodes belong to the same Accordion
-* @private
-*/
-sap.ui.commons.Accordion.areInSameAccordion = function(oDomElement1, oDomElement2){
-
-	if(!oDomElement1 || !oDomElement2){
-		return true;
-	}
-
-
-
-	var oDomAccordion1;
-	if(	jQuery(oDomElement1).hasClass("sapUiAcdSection") ||
-		jQuery(oDomElement1).hasClass("sapUiAcd-droptarget")){
-		oDomAccordion1  = jQuery(oDomElement1).parent();
-	}
-	else{
-		var aParents1		= jQuery(oDomElement1).parentsUntil('.sapUiAcd');
-		var oDomSection1	= aParents1[aParents1.length - 1];
-		oDomAccordion1		= jQuery(oDomSection1).parent();
-	}
-
-	var oDomAccordion2;
-	if(	jQuery(oDomElement2).hasClass("sapUiAcdSection") ||
-		jQuery(oDomElement2).hasClass("sapUiAcd-droptarget")){
-		oDomAccordion2  = jQuery(oDomElement2).parent();
-	}
-	else{
-		var aParents2		= jQuery(oDomElement2).parentsUntil('.sapUiAcd');
-		var oDomSection2	= aParents2[aParents2.length - 1];
-		oDomAccordion2		= jQuery(oDomSection2).parent();
-	}
-
-
-	if(oDomAccordion1.attr('id')==oDomAccordion2.attr('id')){
-		return true;
-	}
-	else{
-		return false;
-	}
-};
-
-/**
- * On drag enter event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragenter = function(oEvent){
-
-	var format = oEvent.originalEvent.dataTransfer.types ? "text/plain" : "Text";
-	var dropId = oEvent.originalEvent.dataTransfer.getData(format);
-
-
-
-	if(!sap.ui.commons.Accordion.areInSameAccordion(oEvent.target, jQuery.sap.domById(dropId))){
-		//Dropping in a different Accordion is not allowed
-		return ;
-	}
-
-	if(this.bDragBeforeFirst == undefined){return;}
-
-
-	var oDomSection;
-
-	//Depending of the place we are over, we retrieve the corresponding DOM Section accordingly.
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target, we change the mode. It will be set to Off the next time we go over another section
-		this.bDragBeforeFirst = true;
-		var aSections = this.getSections();
-		oDomSection = jQuery.sap.domById(aSections[0].getId());
-	}
-	else{
-		var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-		oDomSection = parents[parents.length - 1];
-
-		//Are we back on a section coming from the drop target ?
-		if (this.bDragBeforeFirst && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-			//DragBeforeFirst mode is over as we are dragging over another section
-			this.bDragBeforeFirst = false;
-		}
-
-		if (this.bDragBeforeFirst){
-			//We are still in the top drop target. Do not move the section
-			return;
-
-		}
-
-	}
-
-
-	if(!this.currentDragTargetId && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-
-		//Over a section(or its corresponding child), slide the section to show the dragging state
-		this.slideSectionDown(oDomSection, this.bDragBeforeFirst);
-		this.currentDragTargetId = oDomSection.id;
-
-	}
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-
-};
-
-
-
-/**
- * On drag leave event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Accordion.prototype.ondragleave = function(oEvent){
-
-	if(this.bDragBeforeFirst == undefined){
-		//We are dragging outside the accordion. This means that "this" is not pointing at the accordion but the window.
-		//Exit to avoid problems
-		return;
-	}
-
-	if (this.bDragBeforeFirst){
-		//In this mode, nothing to do
-		return;
-	}
-
-	//Depending of the place we are over, we retrieve the corresponding DOM Section accordingly.
-	var oDomSection;
-
-	if(jQuery(oEvent.target).hasClass("sapUiAcd-droptarget")){
-		//Over the drop target before the first section
-		var bMoveFirst = true;
-		var aSections = this.getSections();
-		oDomSection = jQuery.sap.domById(aSections[0].getId());
-	}
-	else{
-		//Over the section
-		var parents = jQuery(oEvent.target).parentsUntil('.sapUiAcd');
-		oDomSection = parents[parents.length - 1];
-	}
-
-	if(this.currentDragTargetId && oDomSection && jQuery(oDomSection).hasClass("sapUiAcdSection")){
-
-		//Sliding section back to their original position
-		var oldTarget = jQuery.sap.domById(this.currentDragTargetId);
-		this.replaceSection();
-		this.currentDragTargetId = null;
-
-	}
-
-	//Stop the event here
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
 
 };
 
@@ -11108,121 +10855,21 @@ sap.ui.commons.Accordion.prototype.moveSection = function(sSectionId, iTargetInd
 
 };
 
+sap.ui.commons.Accordion.prototype._onSortChange = function(oEvent, oUi){
 
-/**
- * Slides some section down to show a space. This space is the drop target.
- * @param {sap.ui.commons.AccordionSection} oSection The section being moved
- * @param {boolean} moveFirst
- * @private
- */
-sap.ui.commons.Accordion.prototype.slideSectionDown = function(oSection, moveFirst){
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
 
-  if(moveFirst){
-	  //We are over the first section. We then slide it down also
-	 jQuery(oSection).addClass("sapUiAcdSection-down");
-	 sap.ui.commons.Accordion.aAccordionsToReplace.push(jQuery(oSection).parent()[0]);
+	var oDomSection = oUi.item[0];
+	var SectionId = oUi.item[0].getAttribute("Id");
 
-  }
+	//Get accordion DOM object
+	var oDomAccordion = jQuery(oDomSection).parent()[0];
 
-  //Increase accordion Height to fit a blank space
-  var accordion = jQuery.sap.domById(this.getId());
-  accordion.style.height = (accordion.offsetHeight + 20) + "px";
+	var aChildren = jQuery(oDomAccordion).children(".sapUiAcdSection").toArray();
+	var iIndexToInsert = jQuery.inArray(oDomSection, aChildren);
 
-  var aNextSections = jQuery(oSection).nextAll();
-
-  for(var i=0;i<aNextSections.length;i++){
-	  jQuery(aNextSections[i]).addClass("sapUiAcdSection-down");
-  }
-
-
-};
-
-/**
- * Once the dragging is over or changed, replace the section to their original places
- * @private
- */
-sap.ui.commons.Accordion.prototype.replaceSection = function(){
-
-
-  var accordion = jQuery.sap.domById(this.getId());
-
-  sap.ui.commons.Accordion.replaceAccordion(this);
-
-};
-
-/**
- * Once the dragging is over or changed, replace the section to their original places
- * @private
- */
-sap.ui.commons.Accordion.prototype.replaceSectionFirst = function(){
-
-
-  var accordion = jQuery.sap.domById(this.getId());
-
-  sap.ui.commons.Accordion.replaceAccordionFirst(this);
-
-};
-
-/**
- * Replace with the given Id
- * @param {string} iAccordionId
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordionById = function(iAccordionId){
-
-  for(var i=0;i<sap.ui.commons.Accordion.aAccordions.length;i++){
-	  if(sap.ui.commons.Accordion.aAccordions[i].getId() == iAccordionId){
-		  sap.ui.commons.Accordion.replaceAccordion(sap.ui.commons.Accordion.aAccordions[i]);
-		  return true;
-	  }
-
-  }
-
-};
-
-/**
- * Replace a given accordion
- * @param {sap.ui.commons.Accordion} oAccordion
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordion = function(oAccordion){
-
-  var oDomAccordion = jQuery.sap.domById(oAccordion.getId());
-
-  //Back to original height
-  oDomAccordion.style.height = (oDomAccordion.offsetHeight - 24) + "px";
-
-  //Slide the section itself
-  var aSections = oAccordion.getSections();
-
-  //Remove the CSS class that slides the section down
-  for(var i=0;i<aSections.length;i++){
-	  var iSectionId = aSections[i].getId();
-	  var oDomSection = jQuery.sap.domById(iSectionId);
-	  jQuery(oDomSection).removeClass("sapUiAcdSection-down");
-  }
-
-};
-
-/**
- * Replace a given accordion when a section is dragged before the first section.
- * @param {sap.ui.commons.Accordion} oAccordion
- * @private
- */
-sap.ui.commons.Accordion.replaceAccordionFirst = function(oAccordion){
-
-  var oDomAccordion = jQuery.sap.domById(oAccordion.getId());
-
-  //Slide the section itself
-  var aSections = oAccordion.getSections();
-
-  //Remove the CSS class that slides the section down
-  for(var i=0;i<aSections.length;i++){
-	  var iSectionId = aSections[i].getId();
-	  var oDomSection = jQuery.sap.domById(iSectionId);
-	  jQuery(oDomSection).removeClass("sapUiAcdSection-down");
-  }
-
+	this.moveSection(SectionId,iIndexToInsert);
 };
 
 /***********************************************************************************
@@ -11585,12 +11232,17 @@ sap.ui.commons.Accordion.prototype.onAfterRendering = function() {
 	}
 	var borderTotal = parseFloat(leftBorder.substring(0, leftBorder.indexOf("px"))) + parseFloat(rightBorder.substring(0, rightBorder.indexOf("px")));
 	accordion.style.height = accordion.offsetHeight - borderTotal - 7 + "px";
+
+	this.$().sortable({
+		handle: "> div > div",
+		stop: jQuery.proxy(this._onSortChange, this)
+	});
 };
 }; // end of sap/ui/commons/Accordion.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.AccordionSection') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -11652,7 +11304,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -12222,8 +11874,8 @@ sap.ui.commons.AccordionSection.prototype.onscroll = function (oEvent) {
 }; // end of sap/ui/commons/AccordionSection.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ApplicationHeader') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -12282,7 +11934,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -12604,8 +12256,8 @@ sap.ui.commons.ApplicationHeader.prototype.setDisplayLogoff = function(bDisplayL
 }; // end of sap/ui/commons/ApplicationHeader.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Area') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -12665,7 +12317,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -12828,8 +12480,8 @@ sap.ui.commons.Area.prototype.onclick = function(oEvent) {
 }; // end of sap/ui/commons/Area.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Button') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -12900,7 +12552,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -13100,9 +12752,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>icon</code>.
- * 
  * Icon to be displayed as graphical element within the button.
- * 
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is <code>''</code>
  *
@@ -13127,9 +12778,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>iconHovered</code>.
- * 
  * Icon to be displayed as graphical element within the button when it is hovered (only if also a base icon was specified). If not specified the base icon is used.
- * 
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is <code>''</code>
  *
@@ -13154,9 +12804,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>iconSelected</code>.
- * 
  * Icon to be displayed as graphical element within the button when it is selected (only if also a base icon was specified). If not specified the base or hovered icon is used.
- * 
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is <code>''</code>
  *
@@ -13457,6 +13106,8 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 // Start of sap\ui\commons\Button.js
 jQuery.sap.require('sap.ui.core.EnabledPropagator'); // unlisted dependency retained
 
+jQuery.sap.require('sap.ui.core.IconPool'); // unlisted dependency retained
+
 
 sap.ui.core.EnabledPropagator.call(sap.ui.commons.Button.prototype);
 
@@ -13613,8 +13264,24 @@ sap.ui.commons.Button.prototype.setIconSelected = function(sIcon) {
 sap.ui.commons.Button.prototype._setIcon = function(sIcon, sProperty) {
 
 	var sIconOld = this.getProperty(sProperty);
+
+	if (sIconOld == sIcon) {
+		// icon not changed -> nothing to do
+		return;
+	}
+
+	var bUseIconFontOld = false;
+	if (sap.ui.core.IconPool.isIconURI(sIconOld)) {
+		bUseIconFontOld = true;
+	}
+
+	var bUseIconFontNew = false;
+	if (sap.ui.core.IconPool.isIconURI(sIcon)) {
+		bUseIconFontNew = true;
+	}
+
 	var bSupressRerender = true;
-	if ((!sIconOld && sIcon) || (sIconOld && !sIcon)) {
+	if ((!sIconOld && sIcon) || (sIconOld && !sIcon) || (bUseIconFontOld != bUseIconFontNew)) {
 		// Icon new added or removed -> need to rerender
 		bSupressRerender = false;
 	}
@@ -13626,11 +13293,12 @@ sap.ui.commons.Button.prototype._setIcon = function(sIcon, sProperty) {
 	}
 
 };
+
 }; // end of sap/ui/commons/Button.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CalloutBase') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13691,7 +13359,7 @@ jQuery.sap.require('sap.ui.core.TooltipBase'); // unlisted dependency retained
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -14636,8 +14304,8 @@ sap.ui.commons.CalloutBase.prototype.setPosition = function(myPosition, atPositi
 }; // end of sap/ui/commons/CalloutBase.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Carousel') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -14700,7 +14368,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -15212,7 +14880,7 @@ sap.ui.commons.Carousel.prototype.onAfterRendering = function() {
 sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 	var $this = this.$();
 	var $scrollList = jQuery.sap.byId(this.getId() + "-scrolllist");
-	
+
 	if (!this._oItemNavigation) {
 		this._oItemNavigation = new sap.ui.core.delegate.ItemNavigation();
 		this._oItemNavigation.setCycling(true);
@@ -15222,6 +14890,24 @@ sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 		this._oItemNavigation.attachEvent(sap.ui.core.delegate.ItemNavigation.Events.AfterFocus, function(oEvent) {
 			var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea'),
 				$ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+
+			// ItemNavigation should only handle keyboard, do not set the focus on a carousel item if clicked on control inside
+			var oOrgEvent = oEvent.getParameter("event");
+			if (oOrgEvent && oOrgEvent.type == "mousedown") {
+				var bItem = false;
+				for ( var i = 0; i < $ScrollList.children().length; i++) {
+					var oItem = $ScrollList.children()[i];
+					if (oOrgEvent.target.id == oItem.id) {
+						bItem = true;
+						break;
+					}
+				}
+				if (!bItem) {
+					// something inside carousel item clicked -> focus this one
+					oOrgEvent.target.focus();
+				}
+			}
+
 			if (sap.ui.getCore().getConfiguration().getRTL()) {
 				$ContentArea.scrollLeft($ScrollList.width()  - $ContentArea.width());
 			} else {
@@ -15229,7 +14915,7 @@ sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 			}
 		}, this);
 	}
-	
+
 	this._oItemNavigation.setRootDomRef($scrollList[0]);
 	this._oItemNavigation.setItemDomRefs($scrollList.children());
 }
@@ -15748,11 +15434,12 @@ sap.ui.commons.Carousel.prototype.setFirstVisibleIndex = function(iFirstVisibleI
 		return result;
 	};
 }) (jQuery.fn.clone);
+
 }; // end of sap/ui/commons/Carousel.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.CheckBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -15818,7 +15505,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -16288,7 +15975,13 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @private
  */
 sap.ui.commons.CheckBox.prototype.onclick = function(oEvent) {
-	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
+	//According to CSN2581852 2012 a readonly CB should be in the tabchain
+	// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+	// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+	// End of 2013 is have to be again in the tabchain.
+	// But not in the Form. But this is handled in the FromLayout control
+	// Let's see what happens 2014... ;-)
+	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused
 		jQuery.sap.byId(this.getId()).attr("tabindex", 0).addClass("sapUiCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
@@ -16302,8 +15995,13 @@ sap.ui.commons.CheckBox.prototype.onclick = function(oEvent) {
  * @private
  */
 sap.ui.commons.CheckBox.prototype.onfocusout = function(oEvent) {
-
-	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
+	//According to CSN2581852 2012 a readonly CB should be in the tabchain
+	// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
+	// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
+	// End of 2013 is have to be again in the tabchain.
+	// But not in the Form. But this is handled in the FromLayout control
+	// Let's see what happens 2014... ;-)
+	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused - now unset this again
 		jQuery.sap.byId(this.getId()).attr("tabindex", -1).removeClass("sapUiCbFoc");
@@ -16345,8 +16043,8 @@ sap.ui.commons.CheckBox.prototype.toggle = function() {
 }; // end of sap/ui/commons/CheckBox.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ColorPicker') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16402,7 +16100,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -16669,8 +16367,8 @@ sap.ui.commons.ColorPicker.prototype.init = function(){
 	//	create global variables
 	this.HexString = "FFFFFF";
 	this.rgbString = "";
-	this.$cpBox = "";
-	this.$cpCur = "";
+	this.$cpBox = null;
+	this.$cpCur = null;
 	this.RGB = {
 			r : 0,
 			g : 0,
@@ -16882,7 +16580,10 @@ sap.ui.commons.ColorPicker.prototype.init = function(){
 sap.ui.commons.ColorPicker.prototype.exit = function(){
 
 	//	unbind Mouse-Event-Handler
-	this.$cpBox.unbind("mousedown", this.handleMouseDown);
+	if (this.$cpBox) {
+		this.$cpBox.unbind("mousedown", this.handleMouseDown);
+	}
+
 	jQuery(document)
 	.unbind("mousemove", this.handleMousePos)
 	.unbind("mouseup", this.handleMouseUp);
@@ -17919,11 +17620,12 @@ sap.ui.commons.ColorPicker.prototype.getRGB = function (){
 	return {r:this.Color.r, g:this.Color.g, b:this.Color.b};
 
 }
+
 }; // end of sap/ui/commons/ColorPicker.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ComboBoxRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18084,8 +17786,8 @@ sap.ui.commons.ComboBoxRenderer.renderARIAInfo = function(rm, oCmb) {
 }; // end of sap/ui/commons/ComboBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Dialog') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18160,7 +17862,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -19149,11 +18851,13 @@ sap.ui.commons.Dialog.prototype.open = function() {
 	this._bOpen = true;
 };
 
-sap.ui.commons.Dialog.prototype.handleOpened = function() {
-	this.oPopup.detachEvent("opened", this.handleOpened, this);
 
+/**
+ * @private
+ */
+sap.ui.commons.Dialog.prototype._handleOpened = function() {
 	var sInitFocus = this.getInitialFocus(),
-		oFocusCtrl;
+	oFocusCtrl;
 	if(sInitFocus && (oFocusCtrl = sap.ui.getCore().getControl(sInitFocus))){ // an additional previous check was  oFocusCtrl.getParent() === this  which prevented nested children from being focused
 		oFocusCtrl.focus();
 		this._bInitialFocusSet = true;
@@ -19170,6 +18874,21 @@ sap.ui.commons.Dialog.prototype.handleOpened = function() {
 			this.getContent()[0].focus();
 			this._bInitialFocusSet = true;
 		}
+	}
+};
+
+sap.ui.commons.Dialog.prototype.handleOpened = function() {
+	this.oPopup.detachEvent("opened", this.handleOpened, this);
+
+	if (sap.ui.Device.browser.internet_explorer &&  sap.ui.Device.browser.version === 11) {
+		// a delayed call is needed for IE11. Since it fires the opened event before all stuff
+		// is visible. All stuff is added to the DOM though and all operations can be done
+		// but a focus seems to work (there is no error) but the focus can't be set to something
+		// that isn't really visible
+		jQuery.sap.clearDelayedCall(this._delayedCallId);
+		this._delayedCallId = jQuery.sap.delayedCall(0, this, this._handleOpened); 
+	} else {
+		this._handleOpened();
 	}
 };
 
@@ -19218,7 +18937,7 @@ sap.ui.commons.Dialog.prototype.restorePreviousFocus = function() {
 
 sap.ui.commons.Dialog.prototype.setTitle = function (sText) {
 	this.setProperty("title", sText, true); // last parameter avoids invalidation
-	jQuery.sap.byId(this.getId() + "-lbl").html(sText);
+	jQuery.sap.byId(this.getId() + "-lbl").text(sText);
 	return this;
 };
 
@@ -19677,8 +19396,8 @@ sap.ui.commons.Dialog.getAutoClose = function(){
 }; // end of sap/ui/commons/Dialog.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DropdownBoxRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19773,8 +19492,8 @@ sap.ui.commons.DropdownBoxRenderer.renderARIAInfo = function(rm, oDdb) {
 }; // end of sap/ui/commons/DropdownBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploader') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -19840,7 +19559,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -20829,8 +20548,8 @@ sap.ui.commons.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
 }; // end of sap/ui/commons/FileUploader.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploaderParameter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -20888,7 +20607,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -20983,8 +20702,8 @@ sap.ui.core.Element.extend("sap.ui.commons.FileUploaderParameter", { metadata : 
 }; // end of sap/ui/commons/FileUploaderParameter.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FormattedTextView') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21042,7 +20761,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -21448,8 +21167,8 @@ jQuery.sap.require('jquery.sap.encoder'); // unlisted dependency retained
 }; // end of sap/ui/commons/FormattedTextView.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.HorizontalDivider') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21506,7 +21225,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -21649,8 +21368,8 @@ sap.ui.core.Control.extend("sap.ui.commons.HorizontalDivider", { metadata : {
 }; // end of sap/ui/commons/HorizontalDivider.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Image') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -21713,7 +21432,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.commons.FormattedTextViewControl
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -22019,8 +21738,8 @@ sap.ui.commons.Image.prototype.onsapenter = sap.ui.commons.Image.prototype.oncli
 }; // end of sap/ui/commons/Image.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ImageMap') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22076,7 +21795,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -22414,8 +22133,8 @@ sap.ui.commons.ImageMap.prototype.exit = function() {
 }; // end of sap/ui/commons/ImageMap.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Label') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22482,7 +22201,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -22697,9 +22416,8 @@ sap.ui.core.Control.extend("sap.ui.commons.Label", { metadata : {
 
 /**
  * Getter for property <code>icon</code>.
- * 
  * Icon to be displayed in the control.
- * 
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -22834,36 +22552,65 @@ jQuery.sap.require('sap.ui.core.Popup'); // unlisted dependency retained
 
 
 sap.ui.commons.Label.prototype.onAfterRendering = function () {
-	if (this.getLabelForRendering() && (this.getTooltip_AsString() == "" || !(this.getTooltip() instanceof sap.ui.core.TooltipBase))) {
-		var oFor = sap.ui.getCore().byId(this.getLabelForRendering());
-		// no own tooltip use RichTooltip of labeled control if available
-		if (oFor && (oFor.getTooltip() instanceof sap.ui.core.TooltipBase)) {
-			this.oForTooltip = oFor.getTooltip();
-			this.addDelegate(this.oForTooltip);
+
+	var sFor = this.getLabelForRendering();
+
+	if (sFor) {
+		var oFor = sap.ui.getCore().byId(sFor);
+
+		if (oFor) {
+			if (this.getTooltip_AsString() == "" || !(this.getTooltip() instanceof sap.ui.core.TooltipBase)) {
+				// no own tooltip use RichTooltip of labeled control if available
+				if (oFor.getTooltip() instanceof sap.ui.core.TooltipBase) {
+					this.oForTooltip = oFor.getTooltip();
+					this.addDelegate(this.oForTooltip);
+				}
+			}
+
+			// attach to change of required flag of labeled control
+			oFor.attachEvent("requiredChanged",this._handleRequiredChanged, this);
+			this._oFor = oFor;
 		}
 	}
+
 };
 
 sap.ui.commons.Label.prototype.onBeforeRendering = function () {
+
 	if (this.oForTooltip) {
 		this.removeDelegate(this.oForTooltip);
 		this.oForTooltip = null;
 	}
+
 	if (this._oPopup) {
 		this._oPopup.destroy();
 		delete this._oPopup;
 	}
+
+	if (this._oFor) {
+		this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
+		this._oFor = undefined;
+	}
+
 };
 
 sap.ui.commons.Label.prototype.exit = function(){
+
 	if (this.oForTooltip) {
 		this.removeDelegate(this.oForTooltip);
 		this.oForTooltip = null;
 	}
+
 	if (this._oPopup) {
 		this._oPopup.destroy();
 		delete this._oPopup;
 	}
+
+	if (this._oFor) {
+		this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
+		this._oFor = undefined;
+	}
+
 };
 
 /**
@@ -22876,6 +22623,16 @@ sap.ui.commons.Label.prototype.isRequired = function(){
 	// have a getRequired method, this is treated like a return value of "false".
 	var oFor = sap.ui.getCore().byId(this.getLabelForRendering());
 	return this.getRequired() || (oFor && oFor.getRequired && oFor.getRequired() === true);
+
+};
+
+/*
+ * if required flag of labeled control changes after Label is rendered,
+ * Label must be rendered again
+ */
+sap.ui.commons.Label.prototype._handleRequiredChanged = function(){
+
+	this.invalidate();
 
 };
 
@@ -22942,8 +22699,8 @@ sap.ui.commons.Label.prototype._handleOpened = function(){
 }; // end of sap/ui/commons/Label.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Link') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -23010,7 +22767,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.commons.FormattedTextViewControl
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -23438,8 +23195,8 @@ sap.ui.commons.Link.prototype.onsapenter = function(oEvent) {
 }; // end of sap/ui/commons/Link.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ListBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -23512,7 +23269,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -24371,6 +24128,8 @@ jQuery.sap.require('sap.ui.core.delegate.ItemNavigation'); // unlisted dependenc
 
 jQuery.sap.require('jquery.sap.strings'); // unlisted dependency retained
 
+jQuery.sap.require('sap.ui.core.IconPool'); // unlisted dependency retained
+
 
 /**
  * Initializes the ListBox control
@@ -25144,14 +24903,12 @@ sap.ui.commons.ListBox.prototype.setSelectedKeys = function(aSelectedKeys) {
 	var key;
 	var mKeyMap = {};
 	for (var i = 0; i < aSelectedKeys.length; i++) { // put the keys into a map to hopefully search faster below
-		if (key = aSelectedKeys[i]) {
-			mKeyMap[key] = true;
-		}
+		mKeyMap[aSelectedKeys[i]] = true;
 	}
 
 	var aIndices = [];
 	for (var j = 0; j < aItems.length; j++) {
-		if ((key = aItems[j].getKey()) && (mKeyMap[key])) {
+		if (mKeyMap[aItems[j].getKey()]) {
 			aIndices.push(j);
 		}
 	}
@@ -25427,8 +25184,8 @@ sap.ui.commons.ListBox.prototype._handleItemChanged = function(oEvent) {
 }; // end of sap/ui/commons/ListBox.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItemBase') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25489,7 +25246,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -25752,8 +25509,8 @@ sap.ui.commons.MenuItemBase.prototype.onmouseover = function(oEvent){
 }; // end of sap/ui/commons/MenuItemBase.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Message') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25810,7 +25567,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -26194,8 +25951,8 @@ sap.ui.commons.Message.prototype.bindDetails = function(fnCallBack) {
 }; // end of sap/ui/commons/Message.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageBar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -26254,7 +26011,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -27223,8 +26980,8 @@ sap.ui.commons.MessageBar.prototype.setVisible = function(bVisible) {
 }; // end of sap/ui/commons/MessageBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageList') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -27280,7 +27037,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -27562,8 +27319,8 @@ sap.ui.commons.MessageList.prototype.setVisible = function(bVisible) {
 }; // end of sap/ui/commons/MessageList.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageToast') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -27618,7 +27375,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -27964,8 +27721,8 @@ sap.ui.commons.MessageToast.prototype.isIdle = function() {
 }; // end of sap/ui/commons/MessageToast.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Paginator') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -28021,7 +27778,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -28211,6 +27968,9 @@ sap.ui.commons.Paginator.prototype.init = function(){
  */
 sap.ui.commons.Paginator.prototype.onclick = function(oEvent){
 	if (oEvent && oEvent.target) {
+
+		// Supress triggering beforeunload in IE
+		oEvent.preventDefault();
 
 		// go up one node if unnamed element is the source
 		var target = oEvent.target;
@@ -28552,8 +28312,8 @@ sap.ui.commons.Paginator.prototype.applyFocusInfo = function(mFocusInfo) {
 }; // end of sap/ui/commons/Paginator.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Panel') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -28621,7 +28381,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -29812,18 +29572,20 @@ sap.ui.commons.Panel.prototype._handleTrigger = function(oEvent) {
 	// minimize button toggled
 	if((oEvent.target.id === id + "-collArrow") ||
 			(oEvent.target.id === id + "-collIco") ||
-			(oEvent.target.id === id && this.getShowCollapseIcon())) {
+			// toggle triggered via space key
+			(oEvent.target.id === id && oEvent.type === "sapspace" && this.getShowCollapseIcon())) {
 		this.setCollapsed(!this.getProperty("collapsed"));
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
 		this.fireEvent("collapsedToggled"); //private event used in ResponsiveLayout
 	}
 };
+
 }; // end of sap/ui/commons/Panel.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.PasswordFieldRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -29888,8 +29650,8 @@ sap.ui.commons.PasswordFieldRenderer.setEnabled = function(oTextField, bEnabled)
 }; // end of sap/ui/commons/PasswordFieldRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ProgressIndicator') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -29950,7 +29712,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -30404,8 +30166,8 @@ sap.ui.commons.ProgressIndicator.prototype.setPercentValue = function(iPercentVa
 }; // end of sap/ui/commons/ProgressIndicator.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RadioButton') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -30473,7 +30235,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -31083,8 +30845,8 @@ sap.ui.commons.RadioButton.prototype.getTooltipDomRefs = function() {
 }; // end of sap/ui/commons/RadioButton.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RadioButtonGroup') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -31148,7 +30910,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -32120,8 +31882,8 @@ sap.ui.commons.RadioButtonGroup.prototype._handleAfterFocus = function(oControlE
 }; // end of sap/ui/commons/RadioButtonGroup.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RangeSliderRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32216,8 +31978,8 @@ sap.ui.commons.RangeSliderRenderer.controlAdditionalCode = function(rm, oSlider)
 }; // end of sap/ui/commons/RangeSliderRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RatingIndicator') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32283,7 +32045,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -33099,8 +32861,8 @@ sap.ui.commons.RatingIndicator.prototype.setMaxValue = function(iMaxValue) {
 }; // end of sap/ui/commons/RatingIndicator.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ResponsiveContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -33158,7 +32920,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -33544,8 +33306,8 @@ sap.ui.commons.ResponsiveContainer.prototype.findMatchingRange = function() {
 }; // end of sap/ui/commons/ResponsiveContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ResponsiveContainerRange') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -33602,7 +33364,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -33745,8 +33507,8 @@ sap.ui.core.Control.extend("sap.ui.commons.ResponsiveContainerRange", { metadata
 }; // end of sap/ui/commons/ResponsiveContainerRange.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RichTooltip') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -33808,7 +33570,7 @@ jQuery.sap.require('sap.ui.core.TooltipBase'); // unlisted dependency retained
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -34095,8 +33857,8 @@ sap.ui.commons.RichTooltip.prototype.onfocusin = function(oEvent) {
 }; // end of sap/ui/commons/RichTooltip.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RoadMap') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -34157,7 +33919,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -34971,8 +34733,8 @@ var refreshFocus = function(oThis, sDir){
 }; // end of sap/ui/commons/RoadMap.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RoadMapStep') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -35034,7 +34796,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -35468,8 +35230,8 @@ var setProperty = function(oThis, sName, oValue, fDomAdaptationCallback){
 }; // end of sap/ui/commons/RoadMapStep.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RowRepeater') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -35538,7 +35300,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -37736,8 +37498,8 @@ sap.ui.commons.RowRepeater.prototype.invalidate = function(oOrigin) {
 }; // end of sap/ui/commons/RowRepeater.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RowRepeaterFilter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -37796,7 +37558,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -37918,8 +37680,8 @@ sap.ui.core.Element.extend("sap.ui.commons.RowRepeaterFilter", { metadata : {
 }; // end of sap/ui/commons/RowRepeaterFilter.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RowRepeaterSorter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -37978,7 +37740,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -38100,8 +37862,8 @@ sap.ui.core.Element.extend("sap.ui.commons.RowRepeaterSorter", { metadata : {
 }; // end of sap/ui/commons/RowRepeaterSorter.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SearchProvider') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -38157,7 +37919,7 @@ jQuery.sap.require('sap.ui.core.search.OpenSearchProvider'); // unlisted depende
  * @extends sap.ui.core.search.OpenSearchProvider
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -38210,8 +37972,8 @@ sap.ui.commons.SearchProvider.prototype._doSuggest = function(oSearchField, sSug
 }; // end of sap/ui/commons/SearchProvider.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SegmentedButton') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -38270,7 +38032,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -38624,7 +38386,7 @@ sap.ui.commons.SegmentedButton.prototype._setAriaInfo = function(oButton, i) {
 	$button.attr("aria-setsize",length);
 	$button.attr("role", "radio");
 	if (oButton.getId() === this.getSelectedButton()) {
-		$button.attr("aria-checked",true);
+		$button.attr("aria-checked", "true");
 		$button.removeAttr("aria-describedby");
 	} else {
 		$button.removeAttr("aria-checked");
@@ -38759,8 +38521,8 @@ sap.ui.commons.SegmentedButton.prototype.getFocusDomRef = function() {
 }; // end of sap/ui/commons/SegmentedButton.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Slider') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -38831,7 +38593,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author Sebastian Allmann 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -40817,8 +40579,8 @@ sap.ui.commons.Slider.prototype.getIdForLabel = function () {
 }; // end of sap/ui/commons/Slider.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Splitter') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -40882,7 +40644,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -42128,11 +41890,20 @@ sap.ui.commons.Splitter.prototype.onsapskipback = function(oEvent) {
 	this.setFocusPreviousSplitterElement(oEvent);
 };
 
+sap.ui.commons.Splitter.prototype.getText = function(sKey, aArgs) {
+	var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
+	if(rb) {
+		return rb.getText(sKey, aArgs);
+	}
+	return sKey;
+};
+
+
 }; // end of sap/ui/commons/Splitter.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Tab') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -42191,7 +41962,7 @@ jQuery.sap.declare("sap.ui.commons.Tab");
  * @extends sap.ui.commons.Panel
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -42507,8 +42278,8 @@ sap.ui.commons.Tab.prototype._handleTrigger = function(oEvent) {
 }; // end of sap/ui/commons/Tab.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TabStrip') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -42569,7 +42340,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -43410,8 +43181,8 @@ sap.ui.commons.TabStrip.prototype._warningInvalidSelectedIndex = function(iSelec
 }; // end of sap/ui/commons/TabStrip.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextAreaRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -43518,8 +43289,8 @@ sap.ui.commons.TextAreaRenderer.renderInnerContent = function(oRenderManager, oT
 }; // end of sap/ui/commons/TextAreaRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextField') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -43593,7 +43364,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -44703,6 +44474,9 @@ sap.ui.commons.TextField.prototype.setRequired = function(bRequired) {
 				this.getRenderer().setRequired(this, bRequired);
 			}
 		}
+
+		// fire internal event to inform Label about the change
+		this.fireEvent("requiredChanged", {required: bRequired});
 	}
 
 	return this;
@@ -44781,7 +44555,13 @@ sap.ui.commons.TextField.prototype.setTooltip = function(oTooltip) {
  * @protected
  */
 sap.ui.commons.TextField.prototype.getInputDomRef = function(){
-	return this.getFocusDomRef();
+
+	if (!this._getRenderOuter()) {
+		return this.getDomRef() || null;
+	} else {
+		return this.getDomRef("input") || null;
+	}
+
 };
 
 /**
@@ -44860,21 +44640,18 @@ sap.ui.commons.TextField.prototype.getIdForLabel = function () {
  * Overwrites default implementation
  * the focus is always on the input field
  * @public
- */sap.ui.commons.TextField.prototype.getFocusDomRef = function() {
+ */
+sap.ui.commons.TextField.prototype.getFocusDomRef = function() {
 
-	if (!this._getRenderOuter()) {
-		return this.getDomRef() || null;
-	} else {
-		return jQuery.sap.domById(this.getId()+'-input') || null;
-	}
+	return this.getInputDomRef();
 
 };
 
 }; // end of sap/ui/commons/TextField.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextView') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -44941,7 +44718,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -45446,8 +45223,8 @@ sap.ui.commons.TextView.prototype._handleOpened = function(){
 }; // end of sap/ui/commons/TextView.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Title') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -45503,7 +45280,7 @@ jQuery.sap.require('sap.ui.core.Title'); // unlisted dependency retained
  * @extends sap.ui.core.Title
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -45570,8 +45347,8 @@ sap.ui.core.Title.extend("sap.ui.commons.Title", { metadata : {
 }; // end of sap/ui/commons/Title.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ToggleButton') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -45627,7 +45404,7 @@ jQuery.sap.declare("sap.ui.commons.ToggleButton");
  * @extends sap.ui.commons.Button
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -45731,8 +45508,8 @@ sap.ui.commons.ToggleButton.prototype.onAfterRendering = function() {
 }; // end of sap/ui/commons/ToggleButton.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Toolbar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -45792,7 +45569,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -46168,6 +45945,8 @@ sap.ui.commons.Toolbar.prototype.onAfterRendering = function() {
 	this.bHasRightItems = iRightItemsLength > 0;
 	if (this.bHasRightItems) {
 		this.sRightSideResizeListenerId = sap.ui.core.ResizeHandler.register(this.oDomRef.lastChild, jQuery.proxy(this.onrightsideresize, this));
+		// Re-initialize the ItemNavigation with changed DomRefs after rendering and set the overflow icon properly
+		this.updateAfterResize(true);
 		this._observeVisibleItemCountChange(40);
 	} else {
 		// Re-initialize the ItemNavigation with changed DomRefs after rendering and set the overflow icon properly
@@ -46400,7 +46179,6 @@ sap.ui.commons.Toolbar.prototype.getVisibleItemInfo = function() {
 			currentOffsetLeft = oElement.offsetLeft;
 
 			// find out whether the current element is a line *below* the last element
-			
 			if (i == 1) {
 				lastOffsetWidth = aElements[0].offsetWidth;
 				lastOffsetLeft = aElements[0].offsetLeft;
@@ -46879,16 +46657,19 @@ sap.ui.core.Element.extend("sap.ui.commons.ToolbarOverflowPopup", /** @lends sap
 });
 
 /**
- * Called if an item is rerendered to update the item navigation
+ * Called if an item is rerendered to update the item navigation.
  *
  * @private
  */
 sap.ui.commons.Toolbar.prototype._itemRendered = function() {
-	if (!this.sUpdateItemNavigationTimer) {
-		this.sUpdateItemNavigationTimer = jQuery.sap.delayedCall(0, this, "updateAfterResize", [true])
-	}
+    if (this.oItemNavigation) {
+          this.updateAfterResize(true);
+    } else {
+    	if (!this.sUpdateItemNavigationTimer) {
+    		this.sUpdateItemNavigationTimer = jQuery.sap.delayedCall(0, this, "updateAfterResize", [true])
+    	}
+    }
 };
-
 
 /**
  * Handles the window resize event.
@@ -46977,11 +46758,12 @@ sap.ui.commons.Toolbar.prototype.cleanup = function() {
 
 };
 
+
 }; // end of sap/ui/commons/Toolbar.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ToolbarSeparator') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -47040,7 +46822,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -47136,8 +46918,8 @@ sap.ui.commons.ToolbarSeparator.prototype.getFocusDomRef = function() {
 }; // end of sap/ui/commons/ToolbarSeparator.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Tree') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -47199,7 +46981,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -47635,18 +47417,10 @@ sap.ui.commons.Tree.prototype.init = function(){
    this.iOldScrollTop = null;
 
    //Create Buttons for Header
-	var sIconPrefix		= jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme();
-
-	if(!sap.ui.getCore().getConfiguration().getRTL()){
-		sIconPrefix		+= "/img/tree/";
-	}
-	else{
-		sIconPrefix		+= "/img-RTL/tree/";
-	}
 
 	var oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
-	this.oCollapseAllButton = new sap.ui.commons.Button(this.getId() + "-CollapseAll", { icon: sIconPrefix + "CollapseAll.png", tooltip: oResourceBundle.getText("TREE_COLLAPSE_ALL"), lite: true });
-	this.oExpandAllButton	= new sap.ui.commons.Button(this.getId() + "-ExpandAll", { icon: sIconPrefix + "ExpandAll.png", tooltip: oResourceBundle.getText("TREE_EXPAND_ALL"), lite: true });
+	this.oCollapseAllButton = new sap.ui.commons.Button(this.getId() + "-CollapseAll", { icon: this.getIconPrefix() + "CollapseAll.png", tooltip: oResourceBundle.getText("TREE_COLLAPSE_ALL"), lite: true });
+	this.oExpandAllButton	= new sap.ui.commons.Button(this.getId() + "-ExpandAll", { icon: this.getIconPrefix() + "ExpandAll.png", tooltip: oResourceBundle.getText("TREE_EXPAND_ALL"), lite: true });
 	this.oCollapseAllButton.attachPress(this.onCollapseAll,this);
 	this.oExpandAllButton.attachPress(this.onExpandAll,this);
 	this.oCollapseAllButton.addStyleClass("sapUiTreeCol");
@@ -47673,6 +47447,13 @@ sap.ui.commons.Tree.prototype.exit = function(){
 * EVENTS HANDLING
 ***********************************************************************************/
 
+/** Handler for "Theme Changed" event.
+ * @private
+ */
+sap.ui.commons.Tree.prototype.onThemeChanged = function(){
+	this.oCollapseAllButton.setIcon(this.getIconPrefix() + "CollapseAll.png");
+	this.oExpandAllButton.setIcon(this.getIconPrefix() + "ExpandAll.png");
+};
 
 /** Handler for "Expand All" button.
  * @private
@@ -47790,6 +47571,22 @@ sap.ui.commons.Tree.prototype.onsapcollapseall = function(oEvent) {
 /***********************************************************************************
 * HELPER METHODS - DOM NAVIGATION
 ***********************************************************************************/
+
+/**
+ * Determine the icon prefix for the embedded button icons
+ * @private
+ */
+sap.ui.commons.Tree.prototype.getIconPrefix = function() {
+	var sIconPrefix		= jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme();
+	
+	if(!sap.ui.getCore().getConfiguration().getRTL()){
+		sIconPrefix		+= "/img/tree/";
+	}
+	else{
+		sIconPrefix		+= "/img-RTL/tree/";
+	}
+	return sIconPrefix;
+};
 
 /**Returns the first Sibling tree node based on DOM Tree node provided
  * @param oDomNode The DOM Tree node from which calculate the first sibling
@@ -48005,15 +47802,51 @@ sap.ui.commons.Tree.prototype.isTreeBinding = function(sName) {
  * @private
  */
 sap.ui.commons.Tree.prototype.updateNodes = function(){
-	var sId = this.oSelectedNode && this.oSelectedNode.getId(), 
+	var oContext = this.oSelectedContext, 
 		oNode;
 	this.oSelectedNode = null;
 	this.oSelectedContext = null;
 	this.updateAggregation("nodes");
-	if (sId) {
-		oNode = sap.ui.getCore().byId(sId);
+	if (oContext) {
+		oNode = this.getNodeByContext(oContext);
 		this.setSelection(oNode, true);
  	}
+};
+
+
+/**
+ * Returns the node with the given context, or null if no such node currently exists
+ * 
+ * @param {sap.ui.model.Context} oContext the context of the node to be retrieved
+ * @public
+ * @since 1.19
+ */
+sap.ui.commons.Tree.prototype.getNodeByContext = function(oContext){
+	return this.findNode(this, function(oNode) {
+		return oNode.getBindingContext() == oContext;
+	});
+};
+
+/**
+ * Search through all existing nodes and return the first node which matches using
+ * the given matching function
+ * 
+ * @param {function} fnMatch the matching function
+ * @param {sap.ui.commons.Tree|sap.ui.commons.TreeNode} oNode the node to check
+ * @returns The found node
+ * @private
+ */
+sap.ui.commons.Tree.prototype.findNode = function(oNode, fnMatch) {
+	var oFoundNode,
+		that = this;
+	if (fnMatch(oNode)) {
+		return oNode;
+	}
+	jQuery.each(oNode.getNodes(), function(i, oNode) {
+		oFoundNode = that.findNode(oNode, fnMatch);
+		if (oFoundNode) return false;
+	});
+	return oFoundNode;
 };
 
 /**Returns the selected node in the tree. If not selection, returns false.
@@ -48069,8 +47902,8 @@ sap.ui.commons.Tree.prototype.onBeforeRendering = function() {
 }; // end of sap/ui/commons/Tree.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TreeNode') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -48135,7 +47968,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -49034,8 +48867,8 @@ sap.ui.commons.TreeNode.prototype.getTooltip_AsString = function() {
 }; // end of sap/ui/commons/TreeNode.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TriStateCheckBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -49099,7 +48932,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -49521,8 +49354,8 @@ sap.ui.commons.TriStateCheckBox.prototype.toggle = function(destState) {
 }; // end of sap/ui/commons/TriStateCheckBox.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ValueHelpField') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -49581,7 +49414,7 @@ jQuery.sap.declare("sap.ui.commons.ValueHelpField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -49626,6 +49459,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconURL</code>.
  * Url of the standard icon for the value help. If no parameter is supplied the default icon image will be shown.
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -49651,6 +49485,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconHoverURL</code>.
  * URL of the icon for the value help when hovered. If no parameter is supplied the standard icon image will be shown.
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -49676,6 +49511,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconDisabledURL</code>.
  * URL of the icon for the value help when disabled. If no parameter is supplied the default icon image will be shown.
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -49759,6 +49595,8 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 // Start of sap\ui\commons\ValueHelpField.js
 jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency retained
 
+jQuery.sap.require('sap.ui.core.IconPool'); // unlisted dependency retained
+
 
 sap.ui.commons.ValueHelpField.prototype.onBeforeRendering = function(){
 	var sIcon = sap.ui.core.theming.Parameters.get('sap.ui.commons.ValueHelpField:sapUiValueHelpIconDsblUrl');
@@ -49773,7 +49611,7 @@ sap.ui.commons.ValueHelpField.prototype.onBeforeRendering = function(){
 
 sap.ui.commons.ValueHelpField.prototype.onmouseover = function (oEvent) {
 
-	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable()) {
+	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable() && !this.bIsIconURI) {
 		if (this.getIconHoverURL()) {
 			this.sIconHoverUrl = this.getIconHoverURL();
 		} else if (this.getIconURL()) {
@@ -49788,7 +49626,7 @@ sap.ui.commons.ValueHelpField.prototype.onmouseover = function (oEvent) {
 };
 
 sap.ui.commons.ValueHelpField.prototype.onmouseout = function (oEvent) {
-	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable()) {
+	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable() && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(oEvent.target.id);
 		oIcon.attr( 'src', this.sIconRegularUrl );
 	}
@@ -49804,7 +49642,7 @@ sap.ui.commons.ValueHelpField.prototype.setEnabled = function(bEnabled) {
 	var bOldEnabled = this.getEnabled();
 	sap.ui.commons.TextField.prototype.setEnabled.apply(this, arguments);
 
-	if (this.getDomRef() && bOldEnabled != bEnabled) {
+	if (this.getDomRef() && bOldEnabled != bEnabled && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
 		if (bEnabled) {
 			oIcon.attr( 'src', this.sIconRegularUrl );
@@ -49822,7 +49660,7 @@ sap.ui.commons.ValueHelpField.prototype.setEditable = function(bEditable) {
 	var bOldEditable = this.getEditable();
 	sap.ui.commons.TextField.prototype.setEditable.apply(this, arguments);
 
-	if (this.getDomRef() && bOldEditable != bEditable) {
+	if (this.getDomRef() && bOldEditable != bEditable && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
 		if (bEditable) {
 			oIcon.removeClass('sapUiTfValueHelpDsblIcon');
@@ -49884,8 +49722,8 @@ sap.ui.commons.ValueHelpField.prototype.exit = function(){
 }; // end of sap/ui/commons/ValueHelpField.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.Form') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -49943,7 +49781,7 @@ jQuery.sap.require('sap.ui.layout.form.Form'); // unlisted dependency retained
  * @extends sap.ui.layout.form.Form
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50014,8 +49852,8 @@ sap.ui.layout.form.Form.extend("sap.ui.commons.form.Form", { metadata : {
 }; // end of sap/ui/commons/form/Form.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.FormContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50072,7 +49910,7 @@ jQuery.sap.require('sap.ui.layout.form.FormContainer'); // unlisted dependency r
  * @extends sap.ui.layout.form.FormContainer
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50143,8 +49981,8 @@ sap.ui.layout.form.FormContainer.extend("sap.ui.commons.form.FormContainer", { m
 }; // end of sap/ui/commons/form/FormContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.FormElement') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50200,7 +50038,7 @@ jQuery.sap.require('sap.ui.layout.form.FormElement'); // unlisted dependency ret
  * @extends sap.ui.layout.form.FormElement
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50270,8 +50108,8 @@ sap.ui.layout.form.FormElement.extend("sap.ui.commons.form.FormElement", { metad
 }; // end of sap/ui/commons/form/FormElement.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.FormLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50328,7 +50166,7 @@ jQuery.sap.require('sap.ui.layout.form.FormLayout'); // unlisted dependency reta
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50372,8 +50210,8 @@ sap.ui.layout.form.FormLayout.extend("sap.ui.commons.form.FormLayout", { metadat
 }; // end of sap/ui/commons/form/FormLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.GridContainerData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50430,7 +50268,7 @@ jQuery.sap.require('sap.ui.layout.form.GridContainerData'); // unlisted dependen
  * @extends sap.ui.layout.form.GridContainerData
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50477,8 +50315,8 @@ sap.ui.layout.form.GridContainerData.extend("sap.ui.commons.form.GridContainerDa
 }; // end of sap/ui/commons/form/GridContainerData.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.GridElementData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50535,7 +50373,7 @@ jQuery.sap.require('sap.ui.layout.form.GridElementData'); // unlisted dependency
  * @extends sap.ui.layout.form.GridElementData
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50582,8 +50420,8 @@ sap.ui.layout.form.GridElementData.extend("sap.ui.commons.form.GridElementData",
 }; // end of sap/ui/commons/form/GridElementData.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.GridLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50641,7 +50479,7 @@ jQuery.sap.require('sap.ui.layout.form.GridLayout'); // unlisted dependency reta
  * @extends sap.ui.layout.form.GridLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50684,8 +50522,8 @@ sap.ui.layout.form.GridLayout.extend("sap.ui.commons.form.GridLayout", { metadat
 }; // end of sap/ui/commons/form/GridLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.ResponsiveLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50741,7 +50579,7 @@ jQuery.sap.require('sap.ui.layout.form.ResponsiveLayout'); // unlisted dependenc
  * @extends sap.ui.layout.form.ResponsiveLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50784,8 +50622,8 @@ sap.ui.layout.form.ResponsiveLayout.extend("sap.ui.commons.form.ResponsiveLayout
 }; // end of sap/ui/commons/form/ResponsiveLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.form.SimpleForm') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50841,7 +50679,7 @@ jQuery.sap.require('sap.ui.layout.form.SimpleForm'); // unlisted dependency reta
  * @extends sap.ui.layout.form.SimpleForm
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -50911,8 +50749,8 @@ sap.ui.layout.form.SimpleForm.extend("sap.ui.commons.form.SimpleForm", { metadat
 }; // end of sap/ui/commons/form/SimpleForm.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.BorderLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -50975,7 +50813,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -51597,8 +51435,8 @@ sap.ui.commons.layout.BorderLayout.prototype.destroyContent = function(sAreaId) 
 }; // end of sap/ui/commons/layout/BorderLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.BorderLayoutArea') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -51661,7 +51499,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -51971,8 +51809,8 @@ sap.ui.commons.layout.BorderLayoutArea.prototype.setVisible = function(bVisible,
 }; // end of sap/ui/commons/layout/BorderLayoutArea.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.HorizontalLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52028,7 +51866,7 @@ jQuery.sap.require('sap.ui.layout.HorizontalLayout'); // unlisted dependency ret
  * @extends sap.ui.layout.HorizontalLayout
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -52065,8 +51903,8 @@ sap.ui.layout.HorizontalLayout.extend("sap.ui.commons.layout.HorizontalLayout", 
 }; // end of sap/ui/commons/layout/HorizontalLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.MatrixLayoutCell') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52132,7 +51970,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author d029921 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -52538,8 +52376,8 @@ sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.layout.MatrixLayoutCell
 }; // end of sap/ui/commons/layout/MatrixLayoutCell.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.MatrixLayoutRow') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52599,7 +52437,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author d029921 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -52830,8 +52668,8 @@ sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.layout.MatrixLayoutRow.
 }; // end of sap/ui/commons/layout/MatrixLayoutRow.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.PositionContainer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -52894,7 +52732,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -53496,8 +53334,8 @@ var onPropertyChanges = function(oEvent){
 }; // end of sap/ui/commons/layout/PositionContainer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.ResponsiveFlowLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53553,7 +53391,7 @@ jQuery.sap.require('sap.ui.layout.ResponsiveFlowLayout'); // unlisted dependency
  * @extends sap.ui.layout.ResponsiveFlowLayout
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -53594,8 +53432,8 @@ sap.ui.layout.ResponsiveFlowLayout.extend("sap.ui.commons.layout.ResponsiveFlowL
 }; // end of sap/ui/commons/layout/ResponsiveFlowLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.ResponsiveFlowLayoutData') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53651,7 +53489,7 @@ jQuery.sap.require('sap.ui.layout.ResponsiveFlowLayoutData'); // unlisted depend
  * @extends sap.ui.layout.ResponsiveFlowLayoutData
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -53721,8 +53559,8 @@ sap.ui.layout.ResponsiveFlowLayoutData.extend("sap.ui.commons.layout.ResponsiveF
 }; // end of sap/ui/commons/layout/ResponsiveFlowLayoutData.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.VerticalLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53778,7 +53616,7 @@ jQuery.sap.require('sap.ui.layout.VerticalLayout'); // unlisted dependency retai
  * @extends sap.ui.layout.VerticalLayout
  *
  * @author SAP 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -53818,8 +53656,8 @@ sap.ui.layout.VerticalLayout.extend("sap.ui.commons.layout.VerticalLayout", { me
 }; // end of sap/ui/commons/layout/VerticalLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.AutoCompleteRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53884,8 +53722,8 @@ sap.ui.commons.AutoCompleteRenderer.renderARIAInfo = function(rm, oCtrl) {
 }; // end of sap/ui/commons/AutoCompleteRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Callout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -53941,7 +53779,7 @@ jQuery.sap.declare("sap.ui.commons.Callout");
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -54064,8 +53902,8 @@ sap.ui.commons.CalloutBase.extend("sap.ui.commons.Callout", { metadata : {
 }; // end of sap/ui/commons/Callout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.ComboBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -54129,7 +53967,7 @@ jQuery.sap.declare("sap.ui.commons.ComboBox");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -54712,7 +54550,7 @@ sap.ui.commons.ComboBox.prototype._checkChange = function(oEvent, bImmediate) {
 					this._addDummyOption(sNewVal);
 				}else{
 					this._removeDummyOption();
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+					this.getDomRef("select").selectedIndex = iIndex;
 				}
 			}
 		}else {
@@ -54958,7 +54796,7 @@ sap.ui.commons.ComboBox.prototype._doTypeAhead = function(){
 			bFound = true;
 			if(this.mobile){
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = i;
+				this.getDomRef("select").selectedIndex = i;
 			}
 			return;
 		}
@@ -55076,11 +54914,11 @@ sap.ui.commons.ComboBox.prototype._doSelect = function(iStart, iEnd){
  * Returns the DomRef which represents the icon for value help.
  * Could be overwritten in child-classes
  *
- * @return {DOMNode} The F4-element's DOM reference or null
+ * @return {Element} The F4-element's DOM reference or null
  * @protected
  */
 sap.ui.commons.ComboBox.prototype.getF4ButtonDomRef = function() {
-	return jQuery.sap.domById(this.getId() + "-icon");
+	return this.getDomRef("icon");
 };
 
 
@@ -55209,7 +55047,7 @@ sap.ui.commons.ComboBox.prototype._open = function(iDuration){
 	oPopup.setInitialFocusId(this.getId()+'-input'); // to prevent popup to set focus to the ListBox -> stay in input field
 
 	// now, as everything is set, ensure HTML is up-to-date
-	// This is separated in a function because controls which inherit the Combobox (e.g. SearchField) might overriden this
+	// This is separated in a function because controls which inherit the Combobox (e.g. SearchField) might override this
 	// Here is also the possibility to interrupt the open procedure of the list (e.g. when the list is empty)
 	var bSkipOpen = this._rerenderListBox(oListBox);
 	if(bSkipOpen) {
@@ -55580,7 +55418,7 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 		}
 		if (this.mobile) {
 			// refresh und rebulid select options because not ever known what exactly changed
-			var oSelect = jQuery.sap.domById(this.getId()+"-select");
+			var oSelect = this.getDomRef("select");
 			while (oSelect.length > 0) {
 				oSelect.remove(0);
 			}
@@ -55669,8 +55507,8 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 
 	if (this.mobile) {
 		var that = this;
-		jQuery.sap.byId(this.getId()+"-select").bind("change", function(){
-			var newVal = jQuery.sap.byId(that.getId()+"-select").attr("value");
+		this.$("select").bind("change", function(){
+			var newVal = that.$("select").val();
 			//as iPad ignores disabled attibute on option - check if item is enabled -> otherwise ignore
 			var aItems = that.getItems();
 			var bEnabled = true;
@@ -55691,7 +55529,7 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 				that.setValue(newVal);
 				that.fireChange({newValue:newVal, selectedItem: sap.ui.getCore().byId(that.getSelectedItemId())});
 			}else{
-				jQuery.sap.domById(that.getId()+"-select").selectedIndex = iOldIndex;
+				that.getDomRef("select").selectedIndex = iOldIndex;
 			}
 		});
 		// set initial selected item
@@ -55699,7 +55537,7 @@ sap.ui.commons.ComboBox.prototype.onAfterRendering = function(oEvent){
 			for ( var i = 0; i < this.getItems().length; i++) {
 				var oItem = this.getItems()[i];
 				if (this.getSelectedItemId() == oItem.getId()) {
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = i;
+					this.getDomRef("select").selectedIndex = i;
 					break;
 				}
 			}
@@ -55775,11 +55613,8 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 		return this;
 	}
 
-	if (!sSelectedKey) {
+	if (!sSelectedKey && this._isSetEmptySelectedKeyAllowed()) {
 		// selectedKey explicit not set -> select no item and initialize value
-		this.setProperty("selectedKey", sSelectedKey, true); // no rerendering needed
-		this.setProperty("selectedItemId", "", true); // no rerendering needed
-		this.setValue("", true);
 		return this;
 	}
 
@@ -55811,7 +55646,7 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 			jQuery(this.getInputDomRef()).attr("aria-posinset", iIndex+1);
 			if (this.mobile) {
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+				this.getDomRef("select").selectedIndex = iIndex;
 			}
 		}
 		this._sWantedSelectedKey = undefined;
@@ -55826,6 +55661,19 @@ sap.ui.commons.ComboBox.prototype.setSelectedKey = function(sSelectedKey) {
 };
 
 /*
+ * To be overwritten by DropdownBox
+ * in ComboBox an empty selected Key is allowed, then select no item and initialize value
+ */
+sap.ui.commons.ComboBox.prototype._isSetEmptySelectedKeyAllowed = function() {
+
+		this.setProperty("selectedKey", "", true); // no rerendering needed
+		this.setProperty("selectedItemId", "", true); // no rerendering needed
+		this.setValue("", true);
+		return true;
+
+};
+
+/*
  * Overwrite of standard function
  */
 sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) {
@@ -55835,11 +55683,8 @@ sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) 
 		return this;
 	}
 
-	if (!sSelectedItemId) {
-		// selectedKey explicit not set -> select no item and initialize value
-		this.setProperty("selectedKey", "", true); // no rerendering needed
-		this.setProperty("selectedItemId", sSelectedItemId, true); // no rerendering needed
-		this.setValue("", true);
+	if (!sSelectedItemId && this._isSetEmptySelectedKeyAllowed()) {
+		// selectedItemId explicit not set -> select no item and initialize value
 		return this;
 	}
 
@@ -55871,7 +55716,7 @@ sap.ui.commons.ComboBox.prototype.setSelectedItemId = function(sSelectedItemId) 
 			jQuery(this.getInputDomRef()).attr("aria-posinset", iIndex+1);
 			if (this.mobile) {
 				this._removeDummyOption();
-				jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+				this.getDomRef("select").selectedIndex = iIndex;
 			}
 		}
 		this._sWantedSelectedItemId = undefined;
@@ -55926,7 +55771,7 @@ sap.ui.commons.ComboBox.prototype.setValue = function(sValue, bNotSetSelectedKey
 					this._addDummyOption(sValue);
 				}else{
 					this._removeDummyOption();
-					jQuery.sap.domById(this.getId()+"-select").selectedIndex = iIndex;
+					this.getDomRef("select").selectedIndex = iIndex;
 				}
 			}
 		}
@@ -55991,29 +55836,39 @@ sap.ui.commons.ComboBox.prototype.clone = function(sIdSuffix){
 
 sap.ui.commons.ComboBox.prototype._addDummyOption = function(sValue){
 
-	var oOption = jQuery.sap.domById(this.getId()+"-dummyOption");
+	var oOption = this.getDomRef("dummyOption");
 	if(!oOption){
 		var aItems = this.getItems();
 		oOption = document.createElement("option");
 		oOption.text = sValue;
 		oOption.id = this.getId()+"-dummyOption";
 		if (aItems.length > 0) {
-			jQuery.sap.domById(this.getId()+"-select").add(oOption, jQuery.sap.domById(this.getId()+"-"+aItems[0].getId()));
+			this.getDomRef("select").add(oOption, jQuery.sap.domById(this.getId()+"-"+aItems[0].getId()));
 		}else{
-			jQuery.sap.domById(this.getId()+"-select").add(oOption, null);
+			this.getDomRef("select").add(oOption, null);
 		}
 	}else{
 		oOption.text = sValue;
 	}
-	jQuery.sap.domById(this.getId()+"-select").selectedIndex = 0;
+	this.getDomRef("select").selectedIndex = 0;
 
 };
 
 sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
 
-	var oOption = jQuery.sap.domById(this.getId()+"-dummyOption");
+	var oOption = this.getDomRef("dummyOption");
 	if (oOption) {
-		jQuery.sap.domById(this.getId()+"-select").remove(0);
+		this.getDomRef("select").remove(0);
+	}
+
+};
+
+sap.ui.commons.ComboBox.prototype.getFocusDomRef = function() {
+
+	if (this.mobile) {
+		return this.getDomRef("select") || null;
+	} else {
+		return this.getDomRef("input") || null;
 	}
 
 };
@@ -56026,7 +55881,7 @@ sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
  * Expects following event parameters:
  * <ul>
  * <li>'newValue' of type <code>string</code> The new / changed value of the textfield.</li>
- * <li>'selectedItem' of type <code>sap.ui.core/ListItem</code> selected item </li>
+ * <li>'selectedItem' of type <code>sap.ui.core.ListItem</code> selected item </li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -56046,15 +55901,15 @@ sap.ui.commons.ComboBox.prototype._removeDummyOption = function(){
  * @param {object} oControlEvent.getParameters
 
  * @param {string} oControlEvent.getParameters.newValue The new / changed value of the ComboBox.
- * @param {sap.ui.core/ListItem} oControlEvent.getParameters.selectedItem The new / changed item of the ComboBox.
+ * @param {sap.ui.core.ListItem} oControlEvent.getParameters.selectedItem The new / changed item of the ComboBox.
  * @public
  */
 
 }; // end of sap/ui/commons/ComboBox.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DatePicker') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -56113,7 +55968,7 @@ jQuery.sap.declare("sap.ui.commons.DatePicker");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -57557,8 +57412,8 @@ sap.ui.commons.DatePicker.prototype._checkChange = function(oEvent) {
 }; // end of sap/ui/commons/DatePicker.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DatePickerRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57722,8 +57577,8 @@ sap.ui.commons.DatePickerRenderer.convertPlaceholder = function(oDatePicker) {
 }; // end of sap/ui/commons/DatePickerRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DropdownBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57785,7 +57640,7 @@ jQuery.sap.declare("sap.ui.commons.DropdownBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -59583,11 +59438,21 @@ sap.ui.commons.DropdownBox.prototype.ondrop = function(oEvent) {
 	oEvent.preventDefault();
 
 };
+
+/*
+ * in ComboBox an empty selected Key is not allowed (execute same logig as for defined keys)
+ */
+sap.ui.commons.ComboBox.prototype._isSetEmptySelectedKeyAllowed = function() {
+
+		return false;
+
+};
+
 }; // end of sap/ui/commons/DropdownBox.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.InPlaceEdit') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59646,7 +59511,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -60660,17 +60525,16 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
 		if (oInPlaceEdit._oUndoButton){
 			var sIcon = sap.ui.core.theming.Parameters.get('sapUiIpeUndoImageURL');
 			var sIconHovered = sap.ui.core.theming.Parameters.get('sapUiIpeUndoImageDownURL');
-			var sText = "X";
 			if (sIcon) {
 				sIcon = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIcon;
-				sText = "";
+			}else{
+				sIcon = "sap-icon://decline";
 			}
 			if (sIconHovered) {
 				sIconHovered = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIconHovered;
 			}
 			oInPlaceEdit._oUndoButton.setIcon(sIcon);
 			oInPlaceEdit._oUndoButton.setIconHovered(sIconHovered);
-			oInPlaceEdit._oUndoButton.setText(sText);
 		}
 
 	};
@@ -60740,17 +60604,16 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
 		if (oInPlaceEdit._oEditButton){
 			var sIcon = sap.ui.core.theming.Parameters.get('sapUiIpeEditImageURL');
 			var sIconHovered = sap.ui.core.theming.Parameters.get('sapUiIpeEditImageDownURL');
-			var sText = "✎"; //&#9998;
 			if (sIcon) {
 				sIcon = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIcon;
-				sText = "";
+			}else{
+				sIcon = "sap-icon://edit";
 			}
 			if (sIconHovered) {
 				sIconHovered = jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme() + sIconHovered;
 			}
 			oInPlaceEdit._oEditButton.setIcon(sIcon);
 			oInPlaceEdit._oEditButton.setIconHovered(sIconHovered);
-			oInPlaceEdit._oEditButton.setText(sText);
 		}
 
 	};
@@ -60838,12 +60701,11 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
 	};
 
 }());
-
 }; // end of sap/ui/commons/InPlaceEdit.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Menu') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -60900,7 +60762,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -61376,6 +61238,10 @@ sap.ui.commons.Menu.prototype.close = function() {
 	if(!this.bOpen || sap.ui.commons.Menu._dbg /*Avoid closing for debugging purposes*/) {
 		return;
 	}
+	
+	// Remove fixed flag if it existed
+	delete this._bFixed;
+
 
 	jQuery.sap.unbindAnyEvent(this.fAnyEventHandlerProxy);
 	if(this._bOrientationChangeBound){
@@ -61567,7 +61433,7 @@ sap.ui.commons.Menu.prototype.onmouseover = function(oEvent){
 
 	this.setHoveredItem(oItem);
 
-	if (this.oOpenedSubMenu) {
+	if (this.oOpenedSubMenu && !this.oOpenedSubMenu._bFixed) {
 		this.oOpenedSubMenu.close();
 		this.oOpenedSubMenu = null;
 	}
@@ -61577,7 +61443,7 @@ sap.ui.commons.Menu.prototype.onmouseover = function(oEvent){
 	}
 
 	if(this.checkEnabled(oItem)) {
-		this.openSubmenu(oItem, false);
+		this.openSubmenu(oItem, false, true);
 	}
 };
 
@@ -61736,27 +61602,45 @@ sap.ui.commons.Menu.prototype.setHoveredItem = function(oItem){
 	}
 };
 
-sap.ui.commons.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard){
+sap.ui.commons.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard, bWithHover){
 	var oSubMenu = oItem.getSubmenu();
 	if(!oSubMenu) {
 		return;
 	}
 
-	if(this.oOpenedSubMenu === oSubMenu){
-		// Sub menu is already open. Close it.
+	if(this.oOpenedSubMenu && this.oOpenedSubMenu !== oSubMenu){
+		// Another sub menu is open and has not been fixed. Close it at first.
+		this.oOpenedSubMenu.close();
 		this.oOpenedSubMenu = null;
-		oSubMenu.close();
-	}else{
-		if(this.oOpenedSubMenu){
-			// Another sub menu is open. Close it at first.
-			this.oOpenedSubMenu.close();
-			this.oOpenedSubMenu = null;
-		}
+	}
+	
+	if (this.oOpenedSubMenu) {
+		// Already open. Keep open, bring to front and fix/unfix menu...
+
+		// Fix/Unfix Menu if clicked. Do not change status if just hovering over
+		this.oOpenedSubMenu._bFixed = 
+			   (bWithHover && this.oOpenedSubMenu._bFixed) 
+			|| (!bWithHover && !this.oOpenedSubMenu._bFixed);
+		
+		this.oOpenedSubMenu._bringToFront();
+	} else {
 		// Open the sub menu
 		this.oOpenedSubMenu = oSubMenu;
 		var eDock = sap.ui.core.Popup.Dock;
 		oSubMenu.open(bWithKeyboard, this, eDock.BeginTop, eDock.EndTop, oItem, "0 0");
 	}
+};
+
+/**
+ * Brings this menu to the front of the menu stack.
+ * This simulates a mouse-event and raises the z-index which is internally tracked by the Popup.
+ * 
+ * @private
+ */
+sap.ui.commons.Menu.prototype._bringToFront = function() {
+	// This is a hack. We "simulate" a mouse-down-event on the submenu so that it brings itself
+	// to the front.
+	this.getPopup().onmousedown();
 };
 
 sap.ui.commons.Menu.prototype.checkEnabled = function(oItem){
@@ -62085,8 +61969,8 @@ jQuery.ui.position._sapUiCommonsMenuFlip = {
 }; // end of sap/ui/commons/Menu.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuButton') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62147,7 +62031,7 @@ jQuery.sap.declare("sap.ui.commons.MenuButton");
  * @extends sap.ui.commons.Button
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -62554,8 +62438,8 @@ var onItemSelected = function(oEvent){
 }; // end of sap/ui/commons/MenuButton.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItem') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62613,7 +62497,7 @@ jQuery.sap.declare("sap.ui.commons.MenuItem");
  * @extends sap.ui.commons.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -62771,8 +62655,8 @@ sap.ui.commons.MenuItem.prototype.hover = function(bHovered, oMenu){
 }; // end of sap/ui/commons/MenuItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuTextFieldItem') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62831,7 +62715,7 @@ jQuery.sap.declare("sap.ui.commons.MenuTextFieldItem");
  * @extends sap.ui.commons.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -63185,8 +63069,8 @@ sap.ui.commons.MenuTextFieldItem.prototype.setValue = function(sValue, bSupR){
 }; // end of sap/ui/commons/MenuTextFieldItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.PasswordField') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63241,7 +63125,7 @@ jQuery.sap.declare("sap.ui.commons.PasswordField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -63278,8 +63162,8 @@ sap.ui.commons.TextField.extend("sap.ui.commons.PasswordField", { metadata : {
 }; // end of sap/ui/commons/PasswordField.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RangeSlider') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63336,7 +63220,7 @@ jQuery.sap.declare("sap.ui.commons.RangeSlider");
  * @extends sap.ui.commons.Slider
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -64000,8 +63884,8 @@ sap.ui.commons.RangeSlider.prototype.setAriaState = function() {
 }; // end of sap/ui/commons/RangeSlider.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.RowRepeaterRenderer') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -64157,6 +64041,7 @@ sap.ui.commons.RowRepeaterRenderer.renderTitle = function(oRenderManager, oContr
 		oRenderManager.write("<div");
 		oRenderManager.addClass("sapUiRrTitle");
 		oRenderManager.writeClasses();
+		oRenderManager.writeAttribute("role", "heading");
 		oRenderManager.write(">");
 
 		oRenderManager.writeEscaped(oTitle.getText());
@@ -64369,8 +64254,8 @@ sap.ui.commons.RowRepeaterRenderer.renderFooter = function(oRenderManager, oCont
 }; // end of sap/ui/commons/RowRepeaterRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.SearchField') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -64446,7 +64331,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -65930,8 +65815,8 @@ sap.ui.commons.ComboBox.extend("sap.ui.commons.SearchField.CB", {
 }; // end of sap/ui/commons/SearchField.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TextArea') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -65993,7 +65878,7 @@ jQuery.sap.declare("sap.ui.commons.TextArea");
  * @extends sap.ui.commons.TextField
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -66528,8 +66413,8 @@ sap.ui.commons.TextArea.prototype.setCursorPos = function(iCursorPos) {
 }; // end of sap/ui/commons/TextArea.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.AbsoluteLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -66590,7 +66475,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -67341,8 +67226,8 @@ var setProp = function(oThis, sProp, oValue, sChangeType) {
 }; // end of sap/ui/commons/layout/AbsoluteLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.layout.MatrixLayout') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67422,7 +67307,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author d029921 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -67802,8 +67687,8 @@ sap.ui.commons.layout.MatrixLayout.prototype.setWidths = function( aWidths ) {
 }; // end of sap/ui/commons/layout/MatrixLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.AutoComplete') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67863,7 +67748,7 @@ jQuery.sap.declare("sap.ui.commons.AutoComplete");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -68345,8 +68230,8 @@ sap.ui.commons.AutoComplete.prototype.setSelectedItemId = function(){
 }; // end of sap/ui/commons/AutoComplete.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuBar') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -68408,7 +68293,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -68751,15 +68636,23 @@ sap.ui.commons.MenuBar.prototype.onresize = function(oEvent) {
  * @private
  */
 sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
+	var sId = this.getId();
 	var jTarget = jQuery(oEvent.target);
 	var jTargetId = jTarget.attr("id");
-	if(!jTargetId || jTargetId == this.getId() || jTargetId == this.getId()+"-area"){
-		var jItems = jQuery.sap.byId(this.getId()+"-area").children();
+	var jItems = jQuery.sap.byId(sId + "-area").children();
+	if(!jTargetId || jTargetId == sId || jTargetId == sId + "-area"){
 		this.sCurrentFocusedItemRefId = jItems.length == 0 ? null : jQuery(jItems.get(0)).attr("id");
-		if(this.sCurrentFocusedItemRefId) {
-			jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0).focus();
-		}
+	} else {
+		// Make sure the parent menu item get the focus when a menu is closed via
+		// keyboard in order to keep keyboard navigation working
+		this.sCurrentFocusedItemRefId = jTargetId;
 	}
+
+	var oFocusElement = jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0);
+	if(oFocusElement) {
+		oFocusElement.focus();
+	}
+	
 	jQuery.sap.byId(this.getId()).attr("tabindex", "-1");
 };
 
@@ -69119,8 +69012,8 @@ var focusStep = function(oThis, oEvent, sDir){
 }; // end of sap/ui/commons/MenuBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageBox') ) {
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 

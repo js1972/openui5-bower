@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.DatePickerRenderer");jQuery.sap.require("sap.ui.commons.TextFieldRenderer");jQuery.sap.require("sap.ui.commons.DatePicker");(function($){var r=$.datepicker.regional;function d(l,s){r[l]=jQuery.extend(r[l]||{},s)}d('en',{firstDay:0,yearSuffix:''})}(jQuery));sap.ui.commons.DatePickerRenderer=sap.ui.core.Renderer.extend(sap.ui.commons.TextFieldRenderer);

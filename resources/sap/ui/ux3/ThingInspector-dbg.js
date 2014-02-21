@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1249,6 +1249,16 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 		}
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfAction = function(oAction) {
+		var result = -1;
+		if (this.getActionBar()) {
+			result = this.getActionBar().indexOfBusinessAction(oAction);
+		}
+		return result;
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.getFacets = function() {
 		return this._oThingViewer.getFacets();
@@ -1281,6 +1291,11 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 		this._oThingViewer.destroyFacets();
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfFacet = function(oFacet) {
+		return this._oThingViewer.indexOfFacet(oFacet);
+	};
+	
 	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setFollowState = function(oFollowState) {
@@ -1382,6 +1397,12 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 	sap.ui.ux3.ThingInspector.prototype.getFacetContent = function() {
 		return this._oThingViewer.getFacetContent();
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfFacetContent = function(oFacetContent) {
+		return this._oThingViewer.indexOfFacetContent(oFacetContent);
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setActionBar = function(oActionBar) {
 		this._oThingViewer.setActionBar(oActionBar);
@@ -1424,6 +1445,12 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 		this._oThingViewer.destroyHeaderContent();
 		return this;
 	};
+	
+	sap.ui.ux3.ThingInspector.prototype.indexOfHeaderContent = function(oHeaderContent) {
+		return this._oThingViewer.indexOfHeaderContent(oHeaderContent);
+	};
+	
+	
 	// Implementation of API method
 	sap.ui.ux3.ThingInspector.prototype.setSelectedFacet = function(selectedFacet) {
 		this._oThingViewer.setSelectedFacet(selectedFacet);

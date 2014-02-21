@@ -42,10 +42,8 @@ img/menu/menuitem-sub.gif
 img/menu/trg-dis.png
 img/menu/trg.png
 img/menubutton
-img/menubutton/arrow.gif
-img/menubutton/arrowDisabled.gif
-img/menubutton/arrowDisabledRTL.gif
-img/menubutton/arrowRTL.gif
+img/menubutton/Menu_Disabled.png
+img/menubutton/Menu_Regular.png
 img/messagebar
 img/messagebar/collapsed.gif
 img/messagebar/collapsedRTL.gif
@@ -160,6 +158,7 @@ RichTooltip.css
 RoadMap.css
 RowRepeater.css
 SearchField.css
+SegmentedButton.css
 Slider.css
 Splitter.css
 TabStrip.css

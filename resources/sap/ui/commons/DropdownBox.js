@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.DropdownBox");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.commons.ComboBox");sap.ui.commons.ComboBox.extend("sap.ui.commons.DropdownBox",{metadata:{publicMethods:["clearHistory"],library:"sap.ui.commons",properties:{"searchHelpEnabled":{type:"boolean",group:"Behavior",defaultValue:false},"searchHelpText":{type:"string",group:"Appearance",defaultValue:null},"searchHelpAdditionalText":{type:"string",group:"Appearance",defaultValue:null},"searchHelpIcon":{type:"sap.ui.core.URI",group:"Appearance",defaultValue:null},"maxHistoryItems":{type:"int",group:"Behavior",defaultValue:0}},events:{"searchHelp":{}}}});sap.ui.commons.DropdownBox.M_EVENTS={'searchHelp':'searchHelp'};jQuery.sap.require("sap.ui.core.History");jQuery.sap.require("sap.ui.core.SeparatorItem");
@@ -54,3 +54,4 @@ sap.ui.commons.DropdownBox.prototype.checkValueInItems=function(){var v=this.get
 sap.ui.commons.DropdownBox.prototype.setMaxHistoryItems=function(m){var o=this.getMaxHistoryItems();var I=this.getId()+"-h-";var a;this.setProperty('maxHistoryItems',m,true);if(m<o){var l=this._getListBox();for(var i=Math.max(m,0);i<o;i++){a=sap.ui.getCore().byId(I+i);if(a){l.removeItem(a);a.destroy()}}if(m<=0&&this.__oSeparator){l.removeItem(this.__oSeparator)}}};
 sap.ui.commons.DropdownBox.prototype.clearHistory=function(){this._oHistory.clear();var I=this.getId()+"-h-";var l=this._getListBox();var o;for(var i=0;i<this.getMaxHistoryItems();i++){if(o=sap.ui.getCore().byId(I+i)){l.removeItem(o);o.destroy()}}if(this.__oSeparator){l.removeItem(this.__oSeparator)}};
 sap.ui.commons.DropdownBox.prototype.ondrop=function(e){e.preventDefault()};
+sap.ui.commons.ComboBox.prototype._isSetEmptySelectedKeyAllowed=function(){return false};

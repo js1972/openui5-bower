@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -357,7 +357,7 @@ sap.m.TextArea.prototype.setCols = function(iCols) {
 sap.m.TextArea.prototype.setHeight = function(sHeight) {
 	this.setProperty("height", sHeight, true);
 	if (this.getDomRef()) {
-		this._$input.height(this.getHeight());
+		this._$input.css("height", this.getHeight());
 	}
 	return this;
 };
@@ -408,7 +408,11 @@ sap.m.TextArea.prototype._onTouchStart = function(oEvent) {
 		this._oIScroll = sap.m.getIScroll(this);
 	}
 	this._startY = oEvent.touches[0].pageY;
+	this._startX = oEvent.touches[0].pageX;
+	this._bHorizontalScroll = undefined;
 	this._iDirection = 0;
+
+	oEvent.setMarked("swipestartHandled"); //disable swipe in jQuery-mobile
 };
 
 
@@ -419,22 +423,33 @@ sap.m.TextArea.prototype._onTouchStart = function(oEvent) {
  * @param {jQuery.EventObject} oEvent The event object
  */
 sap.m.TextArea.prototype._onTouchMove = function(oEvent) {
-	if (!this._oIScroll) {
-		return;
-	}
 
 	var textarea = this._$input[0],	// dom reference
 		pageY = oEvent.touches[0].pageY,
 		isTop = textarea.scrollTop <= 0,
 		isBottom = textarea.scrollTop + textarea.clientHeight >= textarea.scrollHeight,
 		isGoingUp = this._startY > pageY,
-		isGoingDown =  this._startY < pageY;
+		isGoingDown =  this._startY < pageY,
+		isOnEnd = isTop && isGoingDown || isBottom && isGoingUp;
+
+	// Native scrolling:
+	if(!this._oIScroll){
+		if(this._bHorizontalScroll === undefined){ // do once
+			this._bHorizontalScroll = Math.abs(this._startY - pageY) < Math.abs(this._startX - oEvent.touches[0].pageX);
+		}
+		if(this._bHorizontalScroll || !isOnEnd){ // mark if it can scroll itself
+			oEvent.setMarked();
+		}
+		return;
+	}
+	
+	// iScroll:
 
 	// update position
 	this._startY = pageY;
 
 	// if we reached the edges of textarea then enable page scrolling
-	if ((isTop && isGoingDown) || (isBottom && isGoingUp)) {
+	if (isOnEnd) {
 		var iDirection = (isGoingDown) ? -1 : 1;
 		if (!(this._iDirection == iDirection) && this._oIScroll) {
 			// set current touch point as iscroll last point

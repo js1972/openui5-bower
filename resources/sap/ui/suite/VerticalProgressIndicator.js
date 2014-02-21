@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.suite.VerticalProgressIndicator");jQuery.sap.require("sap.ui.suite.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.suite.VerticalProgressIndicator",{metadata:{publicMethods:["focus"],library:"sap.ui.suite",properties:{"percentage":{type:"int",group:"Misc",defaultValue:null}},associations:{"ariaLabelledBy":{type:"sap.ui.core.Control",multiple:true,singularName:"ariaLabelledBy"},"ariaDescribedBy":{type:"sap.ui.core.Control",multiple:true,singularName:"ariaDescribedBy"}},events:{"press":{}}}});sap.ui.suite.VerticalProgressIndicator.M_EVENTS={'press':'press'};jQuery.sap.require("sap.ui.core.EnabledPropagator");sap.ui.core.EnabledPropagator.call(sap.ui.suite.VerticalProgressIndicator.prototype);

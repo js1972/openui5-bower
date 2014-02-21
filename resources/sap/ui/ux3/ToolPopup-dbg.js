@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -39,7 +39,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getInverted inverted} : boolean (default: true)</li>
  * <li>{@link #getAutoClose autoClose} : boolean (default: false)</li>
  * <li>{@link #getMaxHeight maxHeight} : sap.ui.core.CSSSize</li>
- * <li>{@link #getMaxWidth maxWidth} : sap.ui.core.CSSSize</li></ul>
+ * <li>{@link #getMaxWidth maxWidth} : sap.ui.core.CSSSize</li>
+ * <li>{@link #getOpenDuration openDuration} : int (default: 400)</li>
+ * <li>{@link #getCloseDuration closeDuration} : int (default: 400)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -75,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -100,7 +102,9 @@ sap.ui.core.Control.extend("sap.ui.ux3.ToolPopup", { metadata : {
 		"inverted" : {type : "boolean", group : "Misc", defaultValue : true},
 		"autoClose" : {type : "boolean", group : "Misc", defaultValue : false},
 		"maxHeight" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
-		"maxWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null}
+		"maxWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
+		"openDuration" : {type : "int", group : "Misc", defaultValue : 400},
+		"closeDuration" : {type : "int", group : "Misc", defaultValue : 400}
 	},
 	defaultAggregation : "content",
 	aggregations : {
@@ -376,6 +380,60 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @public
  * @since 1.15.0
  * @name sap.ui.ux3.ToolPopup#setMaxWidth
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>openDuration</code>.
+ * Time in miliseconds for the open animation.
+ *
+ * Default value is <code>400</code>
+ *
+ * @return {int} the value of property <code>openDuration</code>
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#getOpenDuration
+ * @function
+ */
+
+/**
+ * Setter for property <code>openDuration</code>.
+ *
+ * Default value is <code>400</code> 
+ *
+ * @param {int} iOpenDuration  new value for property <code>openDuration</code>
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#setOpenDuration
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>closeDuration</code>.
+ * Time in miliseconds for the close animation.
+ *
+ * Default value is <code>400</code>
+ *
+ * @return {int} the value of property <code>closeDuration</code>
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#getCloseDuration
+ * @function
+ */
+
+/**
+ * Setter for property <code>closeDuration</code>.
+ *
+ * Default value is <code>400</code> 
+ *
+ * @param {int} iCloseDuration  new value for property <code>closeDuration</code>
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.19.0
+ * @name sap.ui.ux3.ToolPopup#setCloseDuration
  * @function
  */
 
@@ -897,6 +955,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *
  * @name sap.ui.ux3.ToolPopup#opened
  * @event
+ * @since 1.19.0
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -920,6 +979,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#attachOpened
  * @function
  */
@@ -935,6 +995,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  *            oListener Context object on which the given function had to be called.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#detachOpened
  * @function
  */
@@ -945,6 +1006,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
+ * @since 1.19.0
  * @name sap.ui.ux3.ToolPopup#fireOpened
  * @function
  */
@@ -1282,6 +1344,7 @@ var fnPopupOpened = function(){
 	this._proxyFixSize();
 	
 	// forward the Popup's opened event accordingly
+	// was added in "1.19.0" as a fix for a CSN and was downported to "1.18.2" and "1.16.6"
 	this.fireOpened();
 };
 
@@ -1388,7 +1451,7 @@ sap.ui.ux3.ToolPopup.prototype.open = function(my, at) {
 	fnCheckOpener(this);
 	
 	// function(iDuration, my, at, of, offset, collision /*empty to avoid any override*/, followOf /*true*/)
-	this.oPopup.open(400, this._my, this._at, $OpenerRef, this.sOffset, "", true);
+	this.oPopup.open(this.getOpenDuration(), this._my, this._at, $OpenerRef, this.sOffset, "", true);
 	fnSetArrow(this);
 	
 	return this;
@@ -1658,7 +1721,7 @@ sap.ui.ux3.ToolPopup.prototype.close = function(bPreventRestoreFocus) {
 			delete this._bBoundOnResize;
 		}
 
-		this.oPopup.close(400);
+		this.oPopup.close(this.getCloseDuration());
 		this._bPreventRestoreFocus = bPreventRestoreFocus;
 	}
 	return this;

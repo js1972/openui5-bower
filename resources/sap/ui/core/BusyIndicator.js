@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.BusyIndicator");jQuery.sap.require("sap.ui.core.Popup");sap.ui.core.BusyIndicator=jQuery.extend(jQuery.sap.newObject(sap.ui.base.EventProvider.prototype),{oPopup:null,oDomRef:null,bOpenRequested:false,iDEFAULT_DELAY_MS:1000,sDOM_ID:"sapUiBusyIndicator"});sap.ui.base.EventProvider.apply(sap.ui.core.BusyIndicator);sap.ui.core.BusyIndicator.M_EVENTS={Open:"Open",Close:"Close"};

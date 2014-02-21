@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10,7 +10,7 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.table (1.16.8-SNAPSHOT)
+ * Initialization Code and shared classes of library sap.ui.table (1.18.8)
  */
 jQuery.sap.declare("sap.ui.table.library");
 jQuery.sap.require("sap.ui.core.Core");
@@ -49,11 +49,11 @@ sap.ui.getCore().initLibrary({
     "sap.ui.table.Column",
     "sap.ui.table.Row"
   ],
-  version: "1.16.8-SNAPSHOT"});
+  version: "1.18.8"});
 
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -69,7 +69,7 @@ jQuery.sap.declare("sap.ui.table.NavigationMode");
 /**
  * @class Navigation mode of the table
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -89,8 +89,8 @@ sap.ui.table.NavigationMode = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -106,7 +106,7 @@ jQuery.sap.declare("sap.ui.table.SelectionBehavior");
 /**
  * @class Selection behavior of the table
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -132,8 +132,8 @@ sap.ui.table.SelectionBehavior = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -149,12 +149,18 @@ jQuery.sap.declare("sap.ui.table.SelectionMode");
 /**
  * @class Selection mode of the table
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
 sap.ui.table.SelectionMode = {
   
+    /**
+     * Select multiple rows at a time (toggle behavior). 
+     * @public
+     */
+    MultiToggle : "MultiToggle",
+
     /**
      * Select multiple rows at a time. 
      * @public
@@ -175,8 +181,8 @@ sap.ui.table.SelectionMode = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -192,7 +198,7 @@ jQuery.sap.declare("sap.ui.table.SortOrder");
 /**
  * @class Sort order of a column
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -212,8 +218,8 @@ sap.ui.table.SortOrder = {
 
   };
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -229,7 +235,7 @@ jQuery.sap.declare("sap.ui.table.VisibleRowCountMode");
 /**
  * @class VisibleRowCountMode of the table
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  * @public
  */
@@ -262,6 +268,5 @@ sap.ui.table.VisibleRowCountMode = {
 // map the new Column to the old ColumnHeader
 sap.ui.table.ColumnHeader = sap.ui.table.Column;
 
-// map the SelectionMode All and MultiToggle to Multi
+// map the SelectionMode All to Multi
 sap.ui.table.SelectionMode.All = sap.ui.table.SelectionMode.Multi;
-sap.ui.table.SelectionMode.MultiToggle = sap.ui.table.SelectionMode.Multi;

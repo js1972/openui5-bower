@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.ListBase");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -314,7 +314,7 @@ sap.m.Table.prototype.ontap = function(oEvent) {
 };
 
 sap.m.Table.prototype.getTableDomRef = function() {
-	return jQuery.sap.domById(this.getId("listUl"));
+	return this.getDomRef("listUl");
 };
 
 /*
@@ -323,7 +323,7 @@ sap.m.Table.prototype.getTableDomRef = function() {
  * @overwrite
  */
 sap.m.Table.prototype.getItemsContainerDomRef = function() {
-	return jQuery.sap.domById(this.getId("tblBody"));
+	return this.getDomRef("tblBody");
 };
 
 /*
@@ -472,4 +472,18 @@ sap.m.Table.prototype.getColCount = function() {
  */
 sap.m.Table.prototype.hasPopin = function() {
 	return !!this._hasPopin;
+};
+
+// keyboard handling
+sap.m.Table.prototype.onsapspace = function(oEvent) {
+	if (oEvent.isMarked()) {
+		return;
+	}
+
+	// toggle select all header checkbox and fire its event
+	if (oEvent.target === this.getDomRef("tblHeader") && this._selectAllCheckBox) {
+		this._selectAllCheckBox.setSelected(!this._selectAllCheckBox.getSelected()).fireSelect();
+		oEvent.preventDefault();
+		oEvent.setMarked();
+	}
 };

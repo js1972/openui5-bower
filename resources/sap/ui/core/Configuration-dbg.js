@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -109,16 +109,17 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 					"xx-accessibilityMode"  : { type : "boolean",  defaultValue : false },
 					"xx-supportedLanguages" : { type : "string[]", defaultValue : [] }, // *=any, sapui5 or list of locales
 					"xx-bootTask"           : { type : "function", defaultValue : undefined, noUrl:true },
-					"xx-suppressDeactivationOfControllerCode" : { type : "boolean",  defaultValue : false } //temporarily to suppress the deactivation of controller code in design mode
+					"xx-suppressDeactivationOfControllerCode" : { type : "boolean",  defaultValue : false }, //temporarily to suppress the deactivation of controller code in design mode
+					"statistics"            : { type : "boolean",  defaultValue : false }
 			};
-			
+
 			var M_COMPAT_FEATURES = {
 					"xx-test"               : "1.15", //for testing purposes only
 					"flexBoxPolyfill"       : "1.14",
 					"sapMeTabContainer"     : "1.14",
 					"sapMeProgessIndicator" : "1.14",
-					"sapMGrowingList"		: "1.14",
-					"sapMListAsTable"		: "1.14",
+					"sapMGrowingList"       : "1.14",
+					"sapMListAsTable"       : "1.14",
 					"sapMDialogWithPadding" : "1.14"
 			};
 
@@ -171,28 +172,16 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			}
 
 			function validateThemeRoot(sThemeRoot) {
-
-				// might in future be checked against a whitelist - for now it is a hardcoded URL prefix
-				var rThemeRepository = /^\/sap\/public\/bc\/themes\//i,
-					oPage,
-					oThemeRoot,
+				var oThemeRoot,
 					sPath;
 
 				try {
-					oPage = new URI().normalize();
 					oThemeRoot = new URI(sThemeRoot, window.location.href).normalize();
-					if ( oThemeRoot.hostname() === oPage.hostname() ) {
-						sPath = oThemeRoot.path();
-						if ( rThemeRepository.test(oThemeRoot.path()) ) {
-							return sPath + (sPath.slice(-1) === '/' ? '' : '/') + "UI5/";
-						} else {
-							return sPath;
-						}
-					}
+					sPath = oThemeRoot.path();
+					return sPath + (sPath.slice(-1) === '/' ? '' : '/') + "UI5/";
 				} catch (e) {
 					// malformed URL are also not accepted 
 				}
-				jQuery.sap.log.error("Invalid Theme Root URL: URL must point into the central theme repository on the same server - setting ignored");
 			}
 
 			// 1. collect the defaults
@@ -304,6 +293,11 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 					}
 				}
 
+				if (oUriParams.mParams['sap-statistics']) {
+					var sValue = oUriParams.get('sap-statistics');
+					setValue('statistics', sValue);
+				}
+
 				// now analyze sap-ui parameters
 				for (var n in M_SETTINGS) {
 					if ( M_SETTINGS[n].noUrl ) {
@@ -345,7 +339,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			if ( aLangs.length === 0 || (aLangs.length === 1 && aLangs[0] === '*') ) {
 				aLangs = [];
 			} else if ( aLangs.length === 1 && aLangs[0] === 'default' ) {
-				aLangs = "ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
+				aLangs = ",ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
 				if ( aLangs.length === 1 && aLangs[0].slice(0,1) === '@' ) {
 					aLangs = [];
 				}
@@ -810,7 +804,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			mChanges.__count++;
 			return mChanges;
 		},
-		
+
 		_endCollect : function() {
 			var mChanges = this.mChanges;
 			if ( mChanges && (--mChanges.__count) === 0 ) {
@@ -818,6 +812,20 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 				this._oCore && this._oCore.fireLocalizationChanged(mChanges);
 				delete this.mChanges;
 			}
+		},
+
+		/**
+		 * Flag if statistics are requested
+		 *
+		 * Flag set by TechnicalInfo Popup will also be checked
+		 * So its active if set by ULP parameter or by TechnicalInfo property
+		 *
+		 * @returns {boolean} statistics flag
+		 * @private
+		 * @since 1.20.0
+		 */
+		getStatistics : function() {
+			return this.statistics || window.localStorage.getItem("sap-ui-statistics") == "X";
 		}
 
 	});
@@ -828,7 +836,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 		"1Q" : "en-US-x-saptrc",
 		"2Q" : "en-US-x-sappsd"
 	};
-	
+
 	var M_ABAP_DATE_FORMAT_PATTERN = {
 		"" : {pattern: null},
 		"1": {pattern: "dd.MM.yyyy"},

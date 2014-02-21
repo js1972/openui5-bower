@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -141,13 +141,16 @@ sap.ui.commons.PanelRenderer.render = function(oRenderManager, oControl) {
 	// if (oTitle) {
 	if (oTitle && oTitle.getIcon()) {
 		// header icon, if available
-		rm.write("<img id='" + id + "-ico' class='sapUiPanelHdrItem sapUiPanelIco' src='");
-		rm.writeEscaped(oTitle.getIcon());
-		rm.write("'");
-		if (accessibility) {
-			rm.write(" role='presentation' alt=''"); // role and alt added as per accessibility requirement
-		}
-		rm.write("/>");
+		var sIcon = oTitle.getIcon();
+		var aClasses = [];
+		var mAttributes = {};
+
+		mAttributes["id"] = id + "-ico";
+		aClasses.push("sapUiPanelIco");
+		aClasses.push("sapUiPanelHdrItem");
+		aClasses.push("sapUiTv"+sLevel); // use same font-size like header level (if icon font is used (for image it dosn't matters)
+
+		rm.writeIcon(sIcon, aClasses, mAttributes);
 	}
 
 	// header title text

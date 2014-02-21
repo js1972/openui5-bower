@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -957,6 +957,7 @@ sap.ui.table.Column.prototype.setEditorTemplate = function(vTemplate) {
  */
 sap.ui.table.Column.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth);
+	this.fireEvent('_widthChanged', { newWidth: sWidth });
 	return this;
 };
 
@@ -1091,8 +1092,10 @@ sap.ui.table.Column.prototype.sort = function(bDescending, bAdd) {
 			
 			// set the sorted flag and sort the model
 			if (oTable.isBound("rows")) {
+				
 				// sort the binding 
 				oTable.getBinding("rows").sort(aSorters);
+				
 			}
 			
 			// update the sort icon
@@ -1310,4 +1313,13 @@ sap.ui.table.Column.prototype._restoreIcons = function() {
 		this._renderFilterIcon();
 	}
 
+};
+
+/**
+ * Returns whether the column should be rendered or not. 
+ * @return {boolean} true, if the column should be rendered
+ * @protected 
+ */
+sap.ui.table.Column.prototype.shouldRender = function() {
+	return this.getVisible() && !this.getGrouped();
 };

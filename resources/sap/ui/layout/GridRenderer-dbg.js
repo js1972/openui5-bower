@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.layout.GridRenderer");
@@ -9,7 +9,7 @@ jQuery.sap.declare("sap.ui.layout.GridRenderer");
  * @class
  * @author SAP AG
  * @version
- * 1.16.8-SNAPSHOT
+ * 1.18.8
  * @static
  */
 sap.ui.layout.GridRenderer = {};
@@ -125,9 +125,9 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 					}
 
 					// Catch the Individual Spans
-					var iSpanLarge = oLay.getSpanLarge();
-					var iSpanMedium = oLay.getSpanMedium();
-					var iSpanSmall = oLay.getSpanSmall();
+					var iSpanLarge = oLay.getSpanL();
+					var iSpanMedium = oLay.getSpanM();
+					var iSpanSmall = oLay.getSpanS();
 
 					span = span.toUpperCase();
 					if ((span.substr(0, 1) === "L") && (iSpanLarge > 0)	&& (iSpanLarge < 13)) {
@@ -169,26 +169,23 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 					}
 					if (indent) {
 						indent = indent.toUpperCase();
-						if (!(/^(L0)? ?(M0)? ?(S0)?$/.exec(indent))) { 
 
-							// Catch the Individual Indents
-							var iIndentLarge = oLay.getIndentLarge();
-							var iIndentMedium = oLay.getIndentMedium();
-							var iIndentSmall = oLay.getIndentSmall();
+						// Catch the Individual Indents
+						var iIndentLarge = oLay.getIndentL();
+						var iIndentMedium = oLay.getIndentM();
+						var iIndentSmall = oLay.getIndentS();
 
-							if ((indent.substr(0, 1) === "L")
-									&& (iIndentLarge > 0)
-									&& (iIndentLarge < 12)) {
-								oRm.addClass("sapUiRespGridIndentL"	+ iIndentLarge);
-							} else if ((indent.substr(0, 1) === "M") 
-									&& (iIndentMedium > 0)
-									&& (iIndentMedium < 12)) {
-								oRm.addClass("sapUiRespGridIndentM"	+ iIndentMedium);
-							} else if ((indent.substr(0, 1) === "S")
-									&& (iIndentSmall > 0)
-									&& (iIndentSmall < 12)) {
-								oRm.addClass("sapUiRespGridIndentS"	+ iIndentSmall);
-							} else {
+						if ((indent.substr(0, 1) === "L") && (iIndentLarge > 0)
+								&& (iIndentLarge < 12)) {
+							oRm.addClass("sapUiRespGridIndentL" + iIndentLarge);
+						} else if ((indent.substr(0, 1) === "M")
+								&& (iIndentMedium > 0) && (iIndentMedium < 12)) {
+							oRm.addClass("sapUiRespGridIndentM"	+ iIndentMedium);
+						} else if ((indent.substr(0, 1) === "S")
+								&& (iIndentSmall > 0) && (iIndentSmall < 12)) {
+							oRm.addClass("sapUiRespGridIndentS" + iIndentSmall);
+						} else {
+							if (!(/^(L0)? ?(M0)? ?(S0)?$/.exec(indent))) {
 								oRm.addClass("sapUiRespGridIndent" + indent);
 							}
 						}
@@ -197,10 +194,12 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 			}
 			
 			
+			
+			
 			// Visibility
-			var l = oLay.getVisibleOnLarge(),
-			m = oLay.getVisibleOnMedium(),
-			s = oLay.getVisibleOnSmall();
+			var l = oLay.getVisibleL(),
+			m = oLay.getVisibleM(),
+			s = oLay.getVisibleS();
 
 			if (!l && m && s) {
 				oRm.addClass("sapUiRespGridHiddenL");
@@ -280,7 +279,7 @@ sap.ui.layout.GridRenderer.render = function(oRm, oControl) {
 						oRm.addClass("sapUiRespGridIndent" + indent.toUpperCase());
 					}
 				}
-			} 
+			}
 		}
 
 		oRm.writeClasses();

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1258,7 +1258,8 @@ sap.ui.commons.Panel.prototype._handleTrigger = function(oEvent) {
 	// minimize button toggled
 	if((oEvent.target.id === id + "-collArrow") ||
 			(oEvent.target.id === id + "-collIco") ||
-			(oEvent.target.id === id && this.getShowCollapseIcon())) {
+			// toggle triggered via space key
+			(oEvent.target.id === id && oEvent.type === "sapspace" && this.getShowCollapseIcon())) {
 		this.setCollapsed(!this.getProperty("collapsed"));
 		oEvent.preventDefault();
 		oEvent.stopPropagation();

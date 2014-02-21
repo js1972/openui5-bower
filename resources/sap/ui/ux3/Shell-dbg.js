@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -83,7 +83,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1631,10 +1631,14 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.commons.Menu");
 
+
+
 sap.ui.ux3.Shell.WSI_MENU_DELAY = 200;
 sap.ui.ux3.Shell.WSI_OVERFLOW_SCROLL_STEP = 250; // how many pixels to scroll with every overflow arrow click
 sap.ui.ux3.Shell.TOOL_PREFIX = "-tool-";
 sap.ui.ux3.Shell.FIRST_RENDERING = true; // used for detecting the single very first rendering of any Shell on the page
+sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
+
 /**
  * The basic width of the ToolPalette if all icons fit into one column. Multiplied if more than
  * one column of items must be used.
@@ -1800,6 +1804,8 @@ sap.ui.ux3.Shell.prototype._updateThemeVariables = function() {
 		sap.ui.core.theming.Parameters.get("sapUiUx3ShellPaneOverflowButtonHeight"),
 		10
 	);
+	// Save the original button height to be referenced as maximum height
+	sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT;
 };
 
 
@@ -1978,6 +1984,8 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 		(this._bRtl ? $PaneListRef.innerHeight() : 0);
 	var iItemBottomPosition = 0;
 	var $Entries = $PaneListRef.children();
+
+	$Entries.css("display", "inline-block");
 	var bItemsInMenu = false;
 	var len = $Entries.length;
 	for (var i = len - 1; i >= 0; --i) {
@@ -2015,11 +2023,7 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 		}
 	}
 
-
-	var $PaneBar = jQuery.sap.byId(sId + "-paneBarRight");
 	var $OverflowButton = jQuery.sap.byId(sId + "-paneBarOverflowButton");
-	// Make sure there is room for overflow menu button
-	$PaneBar.css("padding-bottom", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT + "px");
 	if (bItemsInMenu) {
 		// Overflow is happening. Show button.
 		$OverflowButton.css("display", "block");
@@ -2036,10 +2040,96 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 			sap.ui.core.RenderManager.forceRepaint(document.getElementsByTagName("body")[0]);
 		}
 	}
+	
+	// This is tricky: Because of this method, the overflow-button might change, but since the
+	// calculation depends on the size of the overflow-button we have to check whether something 
+	// changed and then restart the calculation if it did (or else we have an endless loop).
+	var bOverflowButtonChanged = this._changeOverflowButton();
+	if (bOverflowButtonChanged) {
+		this._checkPaneBarOverflow();
+	}
+	
 };
 
 
+/**
+ * Checks the text content of the overflow-button and resizes it depending on the text. The 
+ * maximum height is defined through the less-parameter and written to 
+ * sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT while the current height is saved in
+ * sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT
+ * 
+ * @returns {bool} Returns whether a change to the button height has been made.
+ */
+sap.ui.ux3.Shell.prototype._adaptOverflowButtonHeight = function() {
+	var sId = this.getId();
+	
+	var $Button = jQuery.sap.byId(sId + "-paneBarOverflowButton");
+	var $ButtonWrapper = jQuery.sap.byId(sId + "-paneBarOverflowWrapper");
+	var $ButtonText = jQuery.sap.byId(sId + "-paneBarOverflowText");
+	var $PaneBar = jQuery.sap.byId(sId + "-paneBarRight");
 
+	// Make the span small so it does not increase the button size without having content
+	$ButtonText.css("width", "");
+	
+	
+	var iOldHeight = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT;
+	
+	// We need the scroll_Width_ because the content of the button is rotated by 90°
+	var iScrollWidth = $ButtonText[0].scrollWidth + /* buffer: */ 5;
+	
+	if (iScrollWidth > sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT) {
+		// Use the size specified in the theme as maximum width
+		sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT = sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_MAX_HEIGHT;
+	} else {
+		// The button does not need the maximum amount of allowed space, give it whatever it needs
+		sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT = iScrollWidth;
+	}
+	
+	$Button.css("height", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+	$ButtonWrapper.css("width", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+	// Make the span as large as the surrounding box again, so ellipsis works
+	$ButtonText.css("width", "100%");
+	// Make sure there is room for overflow menu button
+	$PaneBar.css("padding-bottom", sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT + "px");
+
+	
+	return (iOldHeight != sap.ui.ux3.Shell.PANE_OVERFLOW_BUTTON_HEIGHT);
+};
+
+/**
+ * Changes the overflow button from the standard text to the currently active overflowing
+ * item and back.
+ * 
+ * @returns {bool} Returns whether a change to the button height has been made.
+ */
+sap.ui.ux3.Shell.prototype._changeOverflowButton = function() {
+	// Only if this._sOpenPaneId is not null, an overflow item could be active
+	// Whether the item is really in the overflow menu will be checked later by checking
+	// its visible-property
+	var oOverflowItem = null;
+	if (this._sOpenPaneId) {
+		oOverflowItem = sap.ui.getCore().byId(this._sOpenPaneId + "-overflow");
+	}
+	
+	
+	var sText = sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT;
+	var bSelected = false;
+	if (oOverflowItem && oOverflowItem.getVisible()) {
+		// This activation is from an overflow menu item: Change overflow button
+		sText = oOverflowItem.getText();
+		bSelected = true;
+	}
+	
+	sText = sText.toUpperCase(); // TODO: This should be done in CSS, see also renderer
+	
+	var oButtonText = jQuery.sap.byId(this.getId() + "-paneBarOverflowText");
+
+	oButtonText.text(sText);
+	oButtonText.attr("title", sText);
+	oButtonText.toggleClass("sapUiUx3ShellPaneEntrySelected", bSelected);
+	
+	return this._adaptOverflowButtonHeight();
+};
 
 sap.ui.ux3.Shell.prototype._getPaneOverflowMenu = function() {
 	return this.getAggregation("_paneOverflowMenu");
@@ -2118,7 +2208,7 @@ sap.ui.ux3.Shell.prototype.onUserActivation = function(oEvent) {
 		&& parent.parentNode.parentNode.className.indexOf("sapUiUx3ShellToolPaletteArea") > -1) {  // image in tool item clicked
 		this._handleToolItemClick(parent.id);
 
-	} else if (sTargetId === sId + "-paneBarOverflowButtonIcon" || sTargetId === sId + "-paneBarOverflowButton") {
+	} else if (sTargetId === sId + "-paneBarOverflowText") {
 		// Show/Hide overflow menu
 		var oTarget = jQuery.sap.byId(sId + "-paneBarOverflowButton")[0];
 		this._getPaneOverflowMenu().open(
@@ -2133,12 +2223,11 @@ sap.ui.ux3.Shell.prototype.onUserActivation = function(oEvent) {
 		if (parent && parent.className 
 			&& parent.className.indexOf /* not available for SVG elements */
 			&& parent.className.indexOf("sapUiUx3ShellPaneEntries") > -1) {  // pane bar item clicked
+			
 			this._handlePaneBarItemClick(sTargetId);
 		}
 	}
 };
-
-
 
 
 /* ====== WORKSET ITEMS ====== */
@@ -2394,6 +2483,7 @@ sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
 		var oPaneButton = jQuery.sap.byId(sPaneId);
 		oPaneButton.siblings().removeClass("sapUiUx3ShellPaneEntrySelected");
 		oPaneButton.addClass("sapUiUx3ShellPaneEntrySelected");
+		
 		if (!this._sOpenPaneId) {
 			// pane area not open yet, open it
 			this._openPane();
@@ -2423,7 +2513,10 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 	} else { // a pane needs to be displayed
 		this.openPane(sPaneId);
 	}
+	
+	this._checkPaneBarOverflow();
 };
+
 
 
 (function() {
@@ -3361,6 +3454,7 @@ sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
 		// Emulate an event-object to "trick" the Shell into believing a real panel
 		// item was selected
 		var mPseudoEvent = {
+			overflowItem : oEvent.getParameter("item"),
 			target : {
 				id : oEvent.getParameter("id").replace(/-overflow$/, ""),
 				parentNode : {
@@ -3377,11 +3471,13 @@ sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
 		var oItem = sap.ui.getCore().byId(sItemId);
 
 		if (!oItem) {
-			oMenu.addItem(new sap.ui.commons.MenuItem(sItemId, {
+			var oOverflowItem = new sap.ui.commons.MenuItem(sItemId, {
 				text : aPaneBarItems[i].getText(),
 				visible : false,
 				select : fnOnItemSelect
-			}));
+			});
+			
+			oMenu.addItem(oOverflowItem);
 		}
 	}
 

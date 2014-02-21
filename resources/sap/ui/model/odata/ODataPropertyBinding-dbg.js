@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13,15 +13,17 @@ jQuery.sap.require("sap.ui.model.PropertyBinding");
  * @class
  * Property binding implementation for oData format
  *
- * @param sPath
- * @param [oModel]
+ * @param {sap.ui.model.Model} oModel
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {object} [mParameters]
  * 
  * @name sap.ui.model.odata.ODataPropertyBinding
  * @extends sap.ui.model.PropertyBinding
  */
 sap.ui.model.PropertyBinding.extend("sap.ui.model.odata.ODataPropertyBinding", /** @lends sap.ui.model.odata.ODataPropertyBinding */ {
 	
-	constructor : function(oModel, sPath, oContext){
+	constructor : function(oModel, sPath, oContext, mParameters){
 		sap.ui.model.PropertyBinding.apply(this, arguments);
 	
 		this.oValue = this._getValue();

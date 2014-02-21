@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -531,6 +531,10 @@ sap.ui.commons.Menu.prototype.close = function() {
 	if(!this.bOpen || sap.ui.commons.Menu._dbg /*Avoid closing for debugging purposes*/) {
 		return;
 	}
+	
+	// Remove fixed flag if it existed
+	delete this._bFixed;
+
 
 	jQuery.sap.unbindAnyEvent(this.fAnyEventHandlerProxy);
 	if(this._bOrientationChangeBound){
@@ -722,7 +726,7 @@ sap.ui.commons.Menu.prototype.onmouseover = function(oEvent){
 
 	this.setHoveredItem(oItem);
 
-	if (this.oOpenedSubMenu) {
+	if (this.oOpenedSubMenu && !this.oOpenedSubMenu._bFixed) {
 		this.oOpenedSubMenu.close();
 		this.oOpenedSubMenu = null;
 	}
@@ -732,7 +736,7 @@ sap.ui.commons.Menu.prototype.onmouseover = function(oEvent){
 	}
 
 	if(this.checkEnabled(oItem)) {
-		this.openSubmenu(oItem, false);
+		this.openSubmenu(oItem, false, true);
 	}
 };
 
@@ -891,27 +895,45 @@ sap.ui.commons.Menu.prototype.setHoveredItem = function(oItem){
 	}
 };
 
-sap.ui.commons.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard){
+sap.ui.commons.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard, bWithHover){
 	var oSubMenu = oItem.getSubmenu();
 	if(!oSubMenu) {
 		return;
 	}
 
-	if(this.oOpenedSubMenu === oSubMenu){
-		// Sub menu is already open. Close it.
+	if(this.oOpenedSubMenu && this.oOpenedSubMenu !== oSubMenu){
+		// Another sub menu is open and has not been fixed. Close it at first.
+		this.oOpenedSubMenu.close();
 		this.oOpenedSubMenu = null;
-		oSubMenu.close();
-	}else{
-		if(this.oOpenedSubMenu){
-			// Another sub menu is open. Close it at first.
-			this.oOpenedSubMenu.close();
-			this.oOpenedSubMenu = null;
-		}
+	}
+	
+	if (this.oOpenedSubMenu) {
+		// Already open. Keep open, bring to front and fix/unfix menu...
+
+		// Fix/Unfix Menu if clicked. Do not change status if just hovering over
+		this.oOpenedSubMenu._bFixed = 
+			   (bWithHover && this.oOpenedSubMenu._bFixed) 
+			|| (!bWithHover && !this.oOpenedSubMenu._bFixed);
+		
+		this.oOpenedSubMenu._bringToFront();
+	} else {
 		// Open the sub menu
 		this.oOpenedSubMenu = oSubMenu;
 		var eDock = sap.ui.core.Popup.Dock;
 		oSubMenu.open(bWithKeyboard, this, eDock.BeginTop, eDock.EndTop, oItem, "0 0");
 	}
+};
+
+/**
+ * Brings this menu to the front of the menu stack.
+ * This simulates a mouse-event and raises the z-index which is internally tracked by the Popup.
+ * 
+ * @private
+ */
+sap.ui.commons.Menu.prototype._bringToFront = function() {
+	// This is a hack. We "simulate" a mouse-down-event on the submenu so that it brings itself
+	// to the front.
+	this.getPopup().onmousedown();
 };
 
 sap.ui.commons.Menu.prototype.checkEnabled = function(oItem){

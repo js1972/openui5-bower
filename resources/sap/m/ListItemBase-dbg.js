@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -671,8 +671,9 @@ sap.m.ListItemBase.prototype._getDelImage = function(oImgId, oImgStyle, oSrc) {
 sap.m.ListItemBase.prototype.ontap = function(oEvent) {
 	var type = this.getType();
 
-	if (this._includeItemInSelection && (this._mode === "SingleSelect" || this._mode === "SingleSelectLeft" || this._mode == "MultiSelect") || this._mode == "SingleSelectMaster") {
+	if (this._mode === "SingleSelectMaster" || (this._includeItemInSelection && (this._mode === "SingleSelect" || this._mode === "SingleSelectLeft" || this._mode === "MultiSelect"))) {
 		// if _includeItemInSelection all tap events will be used for the mode select and delete
+		// SingleSelectMaster always behaves like includeItemInSelection is set
 		switch (this._mode) {
 			case "SingleSelect":
 			case "SingleSelectLeft":
@@ -829,7 +830,7 @@ sap.m.ListItemBase.prototype._ontouchend = function(oEvent) {
 // toggle active styles for navigation items
 sap.m.ListItemBase.prototype._activeHandlingNav = function() {
 	if (jQuery.os.ios) {
-		jQuery.sap.byId(this.getId() + "-imgNav").toggleClass("sapMLIBImgNavActive", this._active);
+		this.$("imgNav").toggleClass("sapMLIBImgNavActive", this._active);
 	}
 };
 
@@ -844,10 +845,10 @@ sap.m.ListItemBase.prototype._inactiveHandlingInheritor = function() {
 //switch background style... toggle active feedback
 sap.m.ListItemBase.prototype._activeHandling = function() {
 	this.$().toggleClass("sapMLIBActive", this._active);
-	jQuery.sap.byId(this.getId() + "-counter").toggleClass("sapMLIBActiveCounter", this._active);
+	this.$("counter").toggleClass("sapMLIBActiveCounter", this._active);
 
 	if (this.getUnread()) {
-		jQuery.sap.byId(this.getId() + "-unread").toggleClass("sapMLIBActiveUnread", this._active);
+		this.$("unread").toggleClass("sapMLIBActiveUnread", this._active);
 	}
 
 	var oImgDet = sap.ui.getCore().byId(this.getId() + "-imgDet");
@@ -891,6 +892,7 @@ sap.m.ListItemBase.prototype.onsapspace = function(oEvent) {
 	// let the parent know and prevent default not to scroll down
 	sap.ui.getCore().byId(this._listId)._selectTapped(this);
 	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
@@ -907,7 +909,7 @@ sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
 		case "DetailAndActive":
 			this.fireTap({});
 			this.firePress({});
-			oEvent.preventDefault();
+			oEvent.setMarked();
 			break;
 	}
 };
@@ -916,6 +918,7 @@ sap.m.ListItemBase.prototype.onsapdelete = function(oEvent) {
 	if (this._listId && oEvent.srcControl === this && this._mode == "Delete") {
 		this._delete.call(this._delIcon || this._delImage);
 		oEvent.preventDefault();
+		oEvent.setMarked();
 	}
 };
 
@@ -927,14 +930,21 @@ sap.m.ListItemBase.prototype._switchFocus = function(oEvent) {
 	} else if (this._oLastFocused) {
 		jQuery(this._oLastFocused).focus();
 	}
-	oEvent.preventDefault();
 };
 
-sap.m.ListItemBase.prototype.onkeyup = function(oEvent) {
-	var iKeyCode = oEvent.keyCode;
-	var mKeyCodes = jQuery.sap.KeyCodes;
-
-	if (iKeyCode == mKeyCodes.F7) {
+sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
+	// switch focus to row and focused item with F7
+	if (oEvent.which == jQuery.sap.KeyCodes.F7 && !oEvent.isMarked()) {
 		this._switchFocus(oEvent);
+		oEvent.preventDefault();
+		oEvent.setMarked();
+		return;
+	}
+
+	// Ctrl + A to select all
+	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == jQuery.sap.KeyCodes.A) {
+		sap.ui.getCore().byId(this._listId).selectAll(true);
+		oEvent.preventDefault();
+		oEvent.setMarked();
 	}
 };

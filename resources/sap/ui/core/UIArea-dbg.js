@@ -1,12 +1,13 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 // Provides class sap.ui.core.UIArea
 jQuery.sap.declare("sap.ui.core.UIArea");
 jQuery.sap.require("jquery.sap.ui");
+jQuery.sap.require("jquery.sap.act");
 jQuery.sap.require("sap.ui.base.ManagedObject");
 jQuery.sap.require("sap.ui.core.Element");
 
@@ -17,7 +18,7 @@ jQuery.sap.require("sap.ui.core.Element");
  *
  * @extends sap.ui.base.ManagedObject
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
  * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
  * @public
@@ -344,6 +345,16 @@ sap.ui.core.UIArea.prototype.getBindingContext = function(){
 	return null;
 };
 
+/**
+ * Returns the Core as new eventing parent to enable control event bubbling to the core to ensure compatibility with the core validation events. 
+ * 
+ * @return {sap.ui.base.EventProvider} the parent event provider
+ * @protected
+ */
+sap.ui.core.UIArea.prototype.getEventingParent = function() {
+	return this.oCore;
+};
+
 // ###########################################################################
 // Convenience for methods
 // e.g. Process Events for inner Controls
@@ -532,6 +543,8 @@ sap.ui.core.UIArea.prototype._handleEvent = function(/**event*/oEvent) {
 	// TODO: this should be the 'lowest' SAPUI5 Control of this very
 	// UIArea instance's scope -> nesting scenario
 	oElement = jQuery(oEvent.target).control(0);
+	
+	jQuery.sap.act.refresh();
 	
 	if(oElement === null){
 		return;

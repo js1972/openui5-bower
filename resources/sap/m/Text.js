@@ -1,15 +1,16 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.Text");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.Text",{metadata:{library:"sap.m",properties:{"text":{type:"string",group:"",defaultValue:'',bindable:"bindable"},"textDirection":{type:"sap.ui.core.TextDirection",group:"Appearance",defaultValue:sap.ui.core.TextDirection.Inherit},"visible":{type:"boolean",group:"Appearance",defaultValue:true},"wrapping":{type:"boolean",group:"Appearance",defaultValue:true},"textAlign":{type:"sap.ui.core.TextAlign",group:"Appearance",defaultValue:sap.ui.core.TextAlign.Begin},"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:null},"maxLines":{type:"int",group:"Appearance",defaultValue:null}}}});jQuery.sap.require("sap.ui.core.ResizeHandler");sap.m.Text.normalLineHeight=1.2;
 sap.m.Text.prototype.setText=function(t){this.setProperty("text",t,true);var d=this.getDomRef();if(d){d.textContent=this.getText(true)}return this};
 sap.m.Text.prototype.getText=function(n){var t=this.getProperty("text");if(n){return t.replace(/\r\n/g,"\n")}return t};
 sap.m.Text.prototype.onBeforeRendering=function(){this._cleanupResize()};
-sap.m.Text.prototype.onAfterRendering=function(){if(!this.getWrapping()||this.getMaxLines()<2){return}if(sap.m.Text.hasNativeLineClamp){jQuery.sap.delayedCall(0,this,function(){this.$().css("display","-webkit-inline-box")})}else{this._clampText();this._registerResize()}};
+sap.m.Text.prototype.onAfterRendering=function(){if(!this.getWrapping()||this.getMaxLines()<2){return}if(this._canUseNativeLineClamp()){jQuery.sap.delayedCall(0,this,function(){this.$().css("display","-webkit-inline-box")})}else{this._clampText();this._registerResize()}};
 sap.m.Text.prototype.exit=function(){this._cleanupResize()};
 sap.m.Text.hasNativeLineClamp=(function(){return(typeof document.documentElement.style.webkitLineClamp!="undefined")})();sap.m.Text.prototype.ellipsis='…';
+sap.m.Text.prototype._canUseNativeLineClamp=function(){if(!sap.m.Text.hasNativeLineClamp){return false}if(this.getTextDirection()==sap.ui.core.TextDirection.RTL){return false}if(this.getTextDirection()==sap.ui.core.TextDirection.Inherit&&sap.ui.getCore().getConfiguration().getRTL()){return false}return true};
 sap.m.Text.prototype._cleanupResize=function(){this._deregisterResize();this._bClamping=false};
 sap.m.Text.prototype._registerResize=function(){this._fnResizeProxy=this._fnResizeProxy||jQuery.proxy(this._clampText,this);this._sResizeListenerId=sap.ui.core.ResizeHandler.register(this,this._fnResizeProxy)};
 sap.m.Text.prototype._deregisterResize=function(){if(this._sResizeListenerId){sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);delete this._sResizeListenerId}};

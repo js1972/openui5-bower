@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -130,6 +130,8 @@ sap.ui.unified.ShellRenderer._renderIcon = function(rm, oShell) {
 	rm.write("<img id='", oShell.getId(), "-icon'");
 	rm.writeAttributeEscaped("title", sLogoTooltip);
 	rm.writeAttributeEscaped("alt", sLogoTooltip);
-	rm.write("src='", oShell._getIcon(), "' style='", oShell._getIcon() ? "" : "display:none;","'></img>");
+	rm.write("src='");
+	rm.writeEscaped(oShell._getIcon());
+	rm.write("' style='", oShell._getIcon() ? "" : "display:none;","'></img>");
 	rm.write("</div>");
 };

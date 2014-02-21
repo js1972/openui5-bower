@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.RatingIndicator");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.RatingIndicator",{metadata:{library:"sap.ui.commons",properties:{"visible":{type:"boolean",group:"Behavior",defaultValue:true},"editable":{type:"boolean",group:"Behavior",defaultValue:true},"maxValue":{type:"int",group:"Behavior",defaultValue:5},"value":{type:"float",group:"Behavior",defaultValue:0,bindable:"bindable"},"averageValue":{type:"float",group:"Behavior",defaultValue:0},"iconSelected":{type:"sap.ui.core.URI",group:"Behavior",defaultValue:null},"iconUnselected":{type:"sap.ui.core.URI",group:"Behavior",defaultValue:null},"iconHovered":{type:"sap.ui.core.URI",group:"Behavior",defaultValue:null},"visualMode":{type:"sap.ui.commons.RatingIndicatorVisualMode",group:"Behavior",defaultValue:sap.ui.commons.RatingIndicatorVisualMode.Half}},associations:{"ariaDescribedBy":{type:"sap.ui.core.Control",multiple:true,singularName:"ariaDescribedBy"},"ariaLabelledBy":{type:"sap.ui.core.Control",multiple:true,singularName:"ariaLabelledBy"}},events:{"change":{}}}});sap.ui.commons.RatingIndicator.M_EVENTS={'change':'change'};jQuery.sap.require("sap.ui.core.theming.Parameters");sap.ui.commons.RatingIndicator.NoValue=-9999;

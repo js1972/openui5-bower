@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -45,7 +45,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getMarkFlagged markFlagged} : boolean (default: false)</li>
  * <li>{@link #getShowMarkers showMarkers} : boolean (default: false)</li>
  * <li>{@link #getShowTitleSelector showTitleSelector} : boolean (default: false)</li>
- * <li>{@link #getNumberState numberState} : sap.ui.core.ValueState (default: sap.ui.core.ValueState.None)</li></ul>
+ * <li>{@link #getNumberState numberState} : sap.ui.core.ValueState (default: sap.ui.core.ValueState.None)</li>
+ * <li>{@link #getCondensed condensed} : boolean (default: false)</li>
+ * <li>{@link #getBackgroundDesign backgroundDesign} : sap.m.BackgroundDesign (default: sap.m.BackgroundDesign.Transparent)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -75,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -103,7 +105,9 @@ sap.ui.core.Control.extend("sap.m.ObjectHeader", { metadata : {
 		"markFlagged" : {type : "boolean", group : "Misc", defaultValue : false},
 		"showMarkers" : {type : "boolean", group : "Misc", defaultValue : false},
 		"showTitleSelector" : {type : "boolean", group : "Misc", defaultValue : false},
-		"numberState" : {type : "sap.ui.core.ValueState", group : "Misc", defaultValue : sap.ui.core.ValueState.None}
+		"numberState" : {type : "sap.ui.core.ValueState", group : "Misc", defaultValue : sap.ui.core.ValueState.None},
+		"condensed" : {type : "boolean", group : "Appearance", defaultValue : false},
+		"backgroundDesign" : {type : "sap.m.BackgroundDesign", group : "Appearance", defaultValue : sap.m.BackgroundDesign.Transparent}
 	},
 	defaultAggregation : "attributes",
 	aggregations : {
@@ -523,6 +527,57 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * @public
  * @since 1.16.0
  * @name sap.m.ObjectHeader#setNumberState
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>condensed</code>.
+ * Displays the condensed object header with title, one attribute, number and number unit.
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>condensed</code>
+ * @public
+ * @name sap.m.ObjectHeader#getCondensed
+ * @function
+ */
+
+/**
+ * Setter for property <code>condensed</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bCondensed  new value for property <code>condensed</code>
+ * @return {sap.m.ObjectHeader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectHeader#setCondensed
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>backgroundDesign</code>.
+ * Note: only applied when "condensed" is true.
+ * This property is used to set the background color of the ObjectHeader in condensed mode. Depending on the theme you can change the state of the background from "Solid" to "Transparent".
+ *
+ * Default value is <code>Transparent</code>
+ *
+ * @return {sap.m.BackgroundDesign} the value of property <code>backgroundDesign</code>
+ * @public
+ * @name sap.m.ObjectHeader#getBackgroundDesign
+ * @function
+ */
+
+/**
+ * Setter for property <code>backgroundDesign</code>.
+ *
+ * Default value is <code>Transparent</code> 
+ *
+ * @param {sap.m.BackgroundDesign} oBackgroundDesign  new value for property <code>backgroundDesign</code>
+ * @return {sap.m.ObjectHeader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectHeader#setBackgroundDesign
  * @function
  */
 
@@ -1071,7 +1126,6 @@ sap.m.ObjectHeader.prototype.init = function() {
 			
 	this._titleText = new sap.m.Text(this.getId() + "-titleText");
 	this._titleText.setMaxLines(3);
-	
 };
 
 sap.m.ObjectHeader.prototype.ontap = function(oEvent) {
@@ -1174,8 +1228,13 @@ sap.m.ObjectHeader.prototype.onBeforeRendering = function() {
 
 sap.m.ObjectHeader.prototype.onAfterRendering = function() {
 
+	if (this.getShowTitleSelector()) {
+		jQuery.sap.byId(this._oTitleArrowIcon.getId()).css("cursor", "pointer");
+	}
+	
 	if (jQuery.sap.byId(this.getId() + "-number").length > 0) {
 		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef(), jQuery.proxy(this._resizeElements, this));
+		setTimeout(jQuery.proxy(this._resizeElements, this));
 	}
 };
 
@@ -1189,7 +1248,7 @@ sap.m.ObjectHeader.prototype._resizeElements = function() {
 	var bHasWrap = $numberDiv.hasClass("sapMOHNumberWrap");
 
 	if (this._fNumberWidth === undefined) {
-		this._fNumberWidth = $numberDiv.width();
+		this._fNumberWidth = $numberDiv.outerWidth();
 	}
 
 	var bOverflow = $numberDiv.parent().width() * 35 / 100 < this._fNumberWidth;
@@ -1199,6 +1258,7 @@ sap.m.ObjectHeader.prototype._resizeElements = function() {
 		jQuery.sap.byId(id + "-titlediv").toggleClass("sapMOHNumberWrap");
 
 		jQuery(sap.m.ObjectHeader._escapeId(id) + " .sapMOHBottomRow").css("margin-top", bOverflow && jQuery.device.is.phone ? ".25rem" : "");
+		this._titleText.setMaxLines(bOverflow ? 2 : 3).rerender();
 	}
 };
 
@@ -1263,7 +1323,6 @@ sap.m.ObjectHeader.prototype._hasStatus = function() {
 				bHasStatus = true;
 				break;
 			}
-			
 			else if (statuses[i] instanceof sap.m.ProgressIndicator) {
 				bHasStatus = true;
 				break;

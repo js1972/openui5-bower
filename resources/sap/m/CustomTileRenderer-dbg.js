@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.CustomTileRenderer");
@@ -23,9 +23,13 @@ sap.m.CustomTileRenderer = sap.ui.core.Renderer.extend(sap.m.TileRenderer);
 	rm.write("<div ");
 	rm.writeControlData(oControl);
 	rm.addClass("sapMCustomTile");
-    rm.writeClasses();
-    rm.write(">");
-    rm.write("<div id=\"" + oControl.getId() + "-remove\" class=\"sapMTCRemove\"></div>");
+	rm.writeClasses();
+	if(oControl._invisible){
+		rm.addStyle("visibility", "hidden");
+		rm.writeStyles();
+	}
+	rm.write(">");
+	rm.write("<div id=\"" + oControl.getId() + "-remove\" class=\"sapMTCRemove\"></div>");
 	rm.write("<div class=\"sapMCustomTileContent\">");
 	this._renderContent(rm,oControl);
 	rm.write("</div></div>");

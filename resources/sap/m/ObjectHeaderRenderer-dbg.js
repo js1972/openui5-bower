@@ -26,7 +26,7 @@ sap.m.ObjectHeaderRenderer._isEmptyObject = function(oObject) {
 		return true;
 	}
 
-	if ((!oObject._isEmpty || !oObject._isEmpty()) && (!oObject.getVisible || oObject.getVisible())) {
+	if ((!oObject._isEmpty || !oObject._isEmpty())&&(!oObject.getVisible || oObject.getVisible())) {
 		return false;
 	}
 	return true;
@@ -115,6 +115,33 @@ sap.m.ObjectHeaderRenderer._getIcons = function(oOH) {
 	return icons;
 };
 
+
+
+
+/**
+ * Renders the HTML for Attribute.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.ObjectHeader}
+ *            oOH an object to be rendered
+ * @param {sap.m.ObjectAttribute}
+ *            oAttr an attribute to be rendered
+ * @param {boolean} bFullWidth set the attribute width to 100%
+ */
+sap.m.ObjectHeaderRenderer.renderAttribute = function(rm, oOH, oAttr, bFullWidth) {
+	rm.write("<div");
+	rm.addClass("sapMOHAttr");
+	rm.writeClasses();
+	if (bFullWidth) {
+		rm.addStyle("width", "100%");
+		rm.writeStyles();
+	}
+	rm.write(">");
+	rm.renderControl(oAttr);
+	rm.write("</div>");
+};
+
 /**
  * Renders the HTML for single line of Attribute and Status.
  * 
@@ -124,39 +151,29 @@ sap.m.ObjectHeaderRenderer._getIcons = function(oOH) {
  *            oOH an object to be rendered
  * @param {sap.m.ObjectAttribute}
  *            oLeft an attribute to be rendered
- * @param {sap.ui.core.Control[]}
- *            aRight a status or Progress Indicator Array to be rendered
+ * @param {sap.ui.core.Control[]} aRight a status or Progress Indicator Array to be rendered
  */
 sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 
 	if (sap.m.ObjectHeaderRenderer._isEmptyRow(oLeft, aRight)) {
 		return; // nothing to render
 	}
-
+    
 	rm.write("<div"); // Start attribute row container
 	rm.addClass("sapMOHAttrRow");
 	rm.writeClasses();
 	rm.write(">");
 
 	if (!sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft)) {
-		rm.write("<div");
-		rm.addClass("sapMOHAttr");
-		rm.writeClasses();
-		if (sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
-			rm.addStyle("width", "100%");
-			rm.writeStyles();
-		}
-		rm.write(">");
-		rm.renderControl(oLeft);
-		rm.write("</div>");
-	} else if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft) && !sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
-		if (aRight[0] instanceof sap.m.ProgressIndicator) {
+		this.renderAttribute(rm, oOH, oLeft, sap.m.ObjectHeaderRenderer._isEmptyArray(aRight));
+	} else if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft) && !sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {						
+		if (aRight[0] instanceof sap.m.ProgressIndicator) {				
 			rm.write("<div");
 			rm.addClass("sapMOHAttr");
 			rm.writeClasses();
 			rm.write(">");
 			rm.write("</div>");
-		}
+		}		
 	}
 
 	if (!sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
@@ -167,11 +184,11 @@ sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 		}
 		rm.writeClasses();
 
-		if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft)) {
-			if (!(aRight[0] instanceof sap.m.ProgressIndicator)) {
+		if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft)) {				
+			if (!(aRight[0] instanceof sap.m.ProgressIndicator)) {				
 				rm.addStyle("width", "100%");
 				rm.writeStyles();
-			}
+			}			
 		}
 		rm.write(">");
 		sap.m.ObjectHeaderRenderer._renderObjects(rm, aRight);
@@ -193,7 +210,15 @@ sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 
 	var aAttribs = oOH.getAttributes();
-	var iAttribsLength = aAttribs.length;
+	var aVisibleAttribs = [];
+
+	for( var i = 0; i < aAttribs.length; i ++){
+		if( aAttribs[i].getVisible()){
+			aVisibleAttribs.push(aAttribs[i]);
+		}
+	}
+
+	var iAttribsLength = aVisibleAttribs.length;
 
 	var aIconsAndStatuses = [];
 	var aIcons = sap.m.ObjectHeaderRenderer._getIcons(oOH);
@@ -210,11 +235,13 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 	if (oOH.getStatuses()) {
 		var aStatuses = oOH.getStatuses();
 		for ( var i = 0; i < aStatuses.length; i++) {
-			if (aStatuses[i] instanceof sap.m.ObjectStatus || aStatuses[i] instanceof sap.m.ProgressIndicator) {
-				aIconsAndStatuses.push([ aStatuses[i] ]);
-			} else {
-				jQuery.sap.log.warning("Only sap.m.ObjectStatus or sap.m.ProgressIndicator are allowed in \"sap.m.ObjectHeader.statuses\" aggregation." + " Current object is "
+			if(!aStatuses[i].getVisible || aStatuses[i].getVisible()){
+				if (aStatuses[i] instanceof sap.m.ObjectStatus || aStatuses[i] instanceof sap.m.ProgressIndicator) {
+					aIconsAndStatuses.push([ aStatuses[i] ]);
+				} else {
+					jQuery.sap.log.warning("Only sap.m.ObjectStatus or sap.m.ProgressIndicator are allowed in \"sap.m.ObjectHeader.statuses\" aggregation." + " Current object is "
 						+ aStatuses[i].constructor.getMetadata().getName() + " with id \"" + aStatuses[i].getId() + "\"");
+				}
 			}
 		}
 	}
@@ -224,7 +251,7 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 	var iNoOfRows = iAttribsLength > iIconsAndStatusesLength ? iAttribsLength : iIconsAndStatusesLength;
 
 	for ( var i = 0; i < iNoOfRows; i++) {
-		this.renderRow(rm, oOH, aAttribs[i], aIconsAndStatuses[i]);
+		this.renderRow(rm, oOH, aVisibleAttribs[i], aIconsAndStatuses[i]);
 	}
 };
 
@@ -236,24 +263,116 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
  * @param {sap.m.Control}
  *            oOH an object representation of the control that should be rendered
  */
-sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
+sap.m.ObjectHeaderRenderer.renderNumber = function(rm, oOH) {
+	if (oOH.getNumber()) {
+		// Container for a number and a units qualifier.
+		rm.write("<div"); // Start Number/units container
+		rm.writeAttribute("id", oOH.getId() + "-numberdiv");
+		rm.addClass("sapMOHNumberDiv");
+		rm.writeClasses();
+		rm.write(">");
 
-	// return immediately if control is invisible
-	if (!oOH.getVisible()) {
-		return;
+		rm.write("<span");
+		rm.writeAttribute("id", oOH.getId() + "-number");
+		rm.addClass("sapMOHNumber");
+		rm.addClass("sapMOHNumberState" + oOH.getNumberState());
+
+		rm.writeClasses();
+		rm.write(">");
+		rm.writeEscaped(oOH.getNumber());
+
+		rm.write("</span>");
+
+		if (oOH.getNumberUnit()) {
+			rm.write("<span");
+			rm.writeAttribute("id", oOH.getId() + "-numberUnit");
+			rm.addClass("sapMOHNumberUnit");
+			rm.addClass("sapMOHNumberState" + oOH.getNumberState());
+			
+			rm.writeClasses();
+			rm.write(">");
+			rm.writeEscaped(oOH.getNumberUnit());
+			rm.write("</span>");
+		}
+
+		rm.write("</div>"); // End Number/units container
+	}
+};
+
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.renderTitle = function(rm, oOH) {
+	// Start title text and title arrow container
+	oOH._oTitleArrowIcon.setVisible(oOH.getShowTitleSelector());
+	if(oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()){
+		rm.write("<div");
+		rm.addClass("sapMOHTitleAndArrow");
+		rm.writeClasses();
+		rm.write(">");
 	}
 
-	rm.write("<div"); // Start Main container
-	rm.writeControlData(oOH);
-	rm.addClass("sapMOH");
-	rm.writeClasses();
-	var sTooltip = oOH.getTooltip_AsString();
-	if (sTooltip) {
-		rm.writeAttributeEscaped("title", sTooltip);
+	if (oOH.getTitle()) {
+		oOH._titleText.setText(oOH.getTitle());
+		rm.write("<span"); // Start Title Text container
+		rm.writeAttribute("id", oOH.getId() + "-title");
+		rm.addClass("sapMOHTitle");
+		if (oOH.getTitleActive()) {
+			rm.addClass("sapMOHTitleActive");
+		}
+		if(oOH.getShowTitleSelector()){
+			rm.addClass("sapMOHTitleFollowArrow");
+		}
+		rm.writeClasses();
+		rm.write(">");	
+		oOH._titleText.addStyleClass("sapMOHTitle");
+		
+		rm.renderControl(oOH._titleText);
+		rm.write("</span>"); // End Title Text container
+	}	
+	
+	if(oOH.getShowTitleSelector()){
+		rm.write("<span"); // Start title arrow container				
+		rm.addClass("sapMOHTitleArrow");
+		rm.writeClasses();
+		rm.write(">");
+		rm.renderControl(oOH._oTitleArrowIcon);
+		rm.write("</span>"); // end title arrow container	
 	}
+	
+	if(oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()){
+		rm.write("</div>"); // end title text and title arrow container	
+	}
+};
 
-	rm.write(">");
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.renderFullTitle = function(rm, oOH) {
+	if (!oOH.getNumber()) {
+		rm.addClass("sapMOHTitleDivFull");
+	}
+};
 
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.renderFullOH = function(rm, oOH) {
 	// Introductory text at the top of the item, like "On behalf of Julie..."
 	if (oOH.getIntro()) {
 		rm.write("<div");
@@ -285,10 +404,8 @@ sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
 	if (oOH._hasIcon()) {
 		rm.addClass("sapMOHTitleIcon");
 	}
-
-	if (!oOH.getNumber()) {
-		rm.addClass("sapMOHTitleDivFull");
-	}
+	
+	this.renderFullTitle(rm, oOH);
 	rm.writeClasses();
 	rm.write(">");
 
@@ -304,82 +421,13 @@ sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
 		rm.renderControl(oOH._getImageControl());
 		rm.write("</div>"); // end icon container
 	}
-
-	// Start title text and title arrow container
-	oOH._oTitleArrowIcon.setVisible(oOH.getShowTitleSelector());
-	if (oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()) {
-		rm.write("<div");
-		rm.addClass("sapMOHTitleAndArrow");
-		rm.writeClasses();
-		rm.write(">");
-	}
-
-	if (oOH.getTitle()) {
-		oOH._titleText.setText(oOH.getTitle());
-		rm.write("<span"); // Start Title Text container
-		rm.writeAttribute("id", oOH.getId() + "-title");
-		rm.addClass("sapMOHTitle");
-		if (oOH.getTitleActive()) {
-			rm.addClass("sapMOHTitleActive");
-		}
-		if (oOH.getShowTitleSelector()) {
-			rm.addClass("sapMOHTitleFollowArrow");
-		}
-		rm.writeClasses();
-		rm.write(">");
-		oOH._titleText.addStyleClass("sapMOHTitle");
-		rm.renderControl(oOH._titleText);
-		rm.write("</span>"); // End Title Text container
-	}
-
-	if (oOH.getShowTitleSelector()) {
-		rm.write("<span"); // Start title arrow container
-		rm.addClass("sapMOHTitleArrow");
-		rm.writeClasses();
-		rm.write(">");
-		rm.renderControl(oOH._oTitleArrowIcon);
-		rm.write("</span>"); // end title arrow container
-	}
-
-	if (oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()) {
-		rm.write("</div>"); // end title text and title arrow container
-	}
-
+	
+	this.renderTitle(rm, oOH);
+	
 	rm.write("</div>"); // End Title container
 
-	if (oOH.getNumber()) {
-		// Container for a number and a units qualifier.
-		rm.write("<div"); // Start Number/units container
-		rm.writeAttribute("id", oOH.getId() + "-numberdiv");
-		rm.addClass("sapMOHNumberDiv");
-		rm.writeClasses();
-		rm.write(">");
-
-		rm.write("<span");
-		rm.writeAttribute("id", oOH.getId() + "-number");
-		rm.addClass("sapMOHNumber");
-		rm.addClass("sapMOHNumberState" + oOH.getNumberState());
-
-		rm.writeClasses();
-		rm.write(">");
-		rm.writeEscaped(oOH.getNumber());
-
-		rm.write("</span>");
-
-		if (oOH.getNumberUnit()) {
-			rm.write("<span");
-			rm.writeAttribute("id", oOH.getId() + "-numberUnit");
-			rm.addClass("sapMOHNumberUnit");
-			rm.addClass("sapMOHNumberState" + oOH.getNumberState());
-
-			rm.writeClasses();
-			rm.write(">");
-			rm.writeEscaped(oOH.getNumberUnit());
-			rm.write("</span>");
-		}
-
-		rm.write("</div>"); // End Number/units container
-	}
+	this.renderNumber(rm, oOH);
+	
 	rm.write("<div style='clear:both'/>");
 	rm.write("</div>"); // End Top row container
 
@@ -394,6 +442,79 @@ sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
 		rm.write("<div style='clear:both'/>");
 		rm.write("</div>"); // End Bottom row container
 	}
+};
+
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.renderCondensedOH = function(rm, oOH) {
+	// Title container displayed to the left of the number and number units container.
+	rm.write("<div"); // Start Title container
+	rm.writeAttribute("id", oOH.getId() + "-titlediv");
+	rm.addClass("sapMOHTitleDiv");
+	
+	this.renderFullTitle(rm, oOH);
+
+	rm.writeClasses();
+	rm.write(">");
+	
+	this.renderTitle(rm, oOH);
+	
+	rm.write("</div>"); // End Title container
+	
+	this.renderNumber(rm, oOH);
+	
+	var oFirstAttr = oOH.getAttributes()[0];
+	
+	if (oFirstAttr && !oFirstAttr._isEmpty()){
+		this.renderAttribute(rm, oOH, oFirstAttr);
+	}
+};
+
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
+
+	// return immediately if control is invisible
+	if (!oOH.getVisible()) {
+		return;
+	}
+
+	var bCondensed = oOH.getCondensed();
+	
+	rm.write("<div"); // Start Main container
+	rm.writeControlData(oOH);
+	rm.addClass("sapMOH");
+	if (bCondensed){
+		rm.addClass("sapMOHC");
+		rm.addClass("sapMOHBg" + oOH.getBackgroundDesign());
+	}
+	
+	rm.writeClasses();
+	var sTooltip = oOH.getTooltip_AsString();
+	if (sTooltip) {
+		rm.writeAttributeEscaped("title", sTooltip);
+	}
+
+	rm.write(">");
+
+	if (bCondensed) {
+		this.renderCondensedOH(rm, oOH);
+	} else {
+		this.renderFullOH(rm, oOH);
+	}
+	
 	rm.write("<div style='clear:both'/>");
 
 	rm.write("</div>"); // End Main container\

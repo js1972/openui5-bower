@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,8 +62,22 @@ sap.ui.model.TreeBinding.extend("sap.ui.model.ClientTreeBinding", /** @lends sap
  * @protected
  */
 sap.ui.model.ClientTreeBinding.prototype.getRootContexts = function() {
-	var oContext = this.oModel.getContext(this.sPath);
-	return this.getNodeContexts(oContext);
+	if (!this.oModel.isList(this.sPath)) {
+		var oContext = this.oModel.getContext(this.sPath);
+		if (this.bDisplayRootNode) {
+			return [oContext];
+		} else {
+			return this.getNodeContexts(oContext);
+		}
+	} else {
+		var aContexts = [],
+			that = this;
+		jQuery.each(this.oModel._getObject(this.sPath), function(iIndex, oObject) {
+			aContexts.push(that.oModel.getContext(that.sPath + (jQuery.sap.endsWith(that.sPath, "/") ? "" : "/") + iIndex));
+		});
+		return aContexts;
+	}
+
 };
 
 /**
@@ -85,9 +99,9 @@ sap.ui.model.ClientTreeBinding.prototype.getNodeContexts = function(oContext) {
 	var aContexts = [],
 	that = this,
 	oNode = this.oModel._getObject(sContextPath),
-	oChild, 
-    aArrayNames = this.mParameters && this.mParameters.arrayNames,
-    aChildArray;
+	oChild,
+	aArrayNames = this.mParameters && this.mParameters.arrayNames,
+	aChildArray;
 	
 	if (aArrayNames && jQuery.isArray(aArrayNames)) {
 		
@@ -95,7 +109,7 @@ sap.ui.model.ClientTreeBinding.prototype.getNodeContexts = function(oContext) {
 			aChildArray = oNode[sArrayName];
 			if (aChildArray) {
 				jQuery.each(aChildArray, function(sSubName, oSubChild) {
-					that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);           	
+					that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);
 				})
 			}
 		});
@@ -104,7 +118,7 @@ sap.ui.model.ClientTreeBinding.prototype.getNodeContexts = function(oContext) {
 			jQuery.sap.each(oNode, function(sName, oChild) {
 				if (jQuery.isArray(oChild)){
 					jQuery.each(oChild, function(sSubName, oSubChild) {
-						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);           	
+						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);
 					})
 				} else if (typeof oChild == "object") {
 					that._saveSubContext(oChild, aContexts, sContextPath, sName);
@@ -115,6 +129,19 @@ sap.ui.model.ClientTreeBinding.prototype.getNodeContexts = function(oContext) {
 	return aContexts;
 };
 
+/**
+ * Returns if the node has child nodes
+ *
+ * @function
+ * @name sap.ui.model.TreeBinding.prototype.hasChildren
+ * @param {Object} oContext the context element of the node
+ * @return {boolean} true if node has children
+ *
+ * @public
+ */
+sap.ui.model.ClientTreeBinding.prototype.hasChildren = function(oContext) {
+	return oContext ? this.getNodeContexts(oContext).length > 0 : false;
+};
 
 sap.ui.model.ClientTreeBinding.prototype._saveSubContext = function(oNode, aContexts, sContextPath, sName) {
 	if (typeof oNode == "object") {

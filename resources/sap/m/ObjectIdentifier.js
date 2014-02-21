@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.ObjectIdentifier");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.ObjectIdentifier",{metadata:{library:"sap.m",properties:{"title":{type:"string",group:"Misc",defaultValue:null},"text":{type:"string",group:"Misc",defaultValue:null},"badgeNotes":{type:"boolean",group:"Misc",defaultValue:null},"badgePeople":{type:"boolean",group:"Misc",defaultValue:null},"badgeAttachments":{type:"boolean",group:"Misc",defaultValue:null}}}});jQuery.sap.require("sap.ui.core.IconPool");

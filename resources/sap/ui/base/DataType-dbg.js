@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -100,6 +100,34 @@ sap.ui.base.DataType.prototype.parseValue = function(sValue) {
  * @public
  */
 sap.ui.base.DataType.prototype.isValid = undefined;
+
+/**
+ * Sets the normalizer function for that data type
+ * 
+ * @param {function} fnNormalizer the function to call for normalizing. Will be called with the value
+ * as the first parameter. It must return the (normalized) value.
+ * @public
+ */
+sap.ui.base.DataType.prototype.setNormalizer = function(fnNormalizer) {
+	jQuery.sap.assert(typeof fnNormalizer === "function", "DataType.setNormalizer: fnNormalizer must be a function");
+	this._fnNormalizer = fnNormalizer;
+};
+
+/**
+ * Changes a value using the normalizer specified for this datatype
+ * 
+ * @param the value to be normalized
+ * @return the normalized value
+ * @public
+ */
+sap.ui.base.DataType.prototype.normalize = function(oValue) {
+	if (typeof this._fnNormalizer === "function") {
+		return this._fnNormalizer(oValue);
+	} else {
+		return oValue;
+	}
+};
+
 
 (function() {
 

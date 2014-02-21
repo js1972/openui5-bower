@@ -1,6 +1,6 @@
 
-/* SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+/* SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
  *//* Global CSS for 'base' theme */
@@ -289,10 +289,11 @@
 @sapUiUx3ShellSideBarBaseWidth:       40px;
 /** 
   * This parameter is used in the Shell control to calculate the size of the margin when showing
-  * an overflow button in the right pane.
+  * an overflow button in the right pane. As of 1.18.0 this value contains the _maximum_ height
+  * of the overflow button, if the text inside the button is smaller, the button shrinks with it.
   * !!! ONLY PX-VALUES ARE ALLOWED HERE.
   */
-@sapUiUx3ShellPaneOverflowButtonHeight: 40px;
+@sapUiUx3ShellPaneOverflowButtonHeight: 120px;
 
 @sapUiUx3ExactLstExpandOffset: 0 0;
 @sapUiUx3ExactLstRootExpandOffset: 0 3;
@@ -371,6 +372,7 @@
 /* ====================================== */
 /* Global CSS for 'sap_bluecrystal' theme */
 /* ====================================== */
+
 
 // Public Theme Parameters
 
@@ -879,6 +881,7 @@
 @sapScrollBar_Dimension: 16px;
 
 
+
 /* ===================================== */
 /* Semantic Theming Mapping              */
 /* ===================================== */
@@ -1089,11 +1092,6 @@
 
 @sapUiButtonStandardBG:		#f7f7f7;      //  rgb(247, 247, 247)
 @sapUiButtonEmphasizedBG:	@sapUiBrand;  // #009de0  rgb(0, 157, 224)
-
-
-/* Gradients                             */
-
-@sapUiHeaderBG: @sapUiExtraLightBG; /* (top)lighten(@sapUiExtraLightBG,2),(center)@sapUiExtraLightBG,(bottom)darken(@sapUiExtraLightBG,2) */
 
 /* Transparent Backgrounds               */
 
@@ -1385,7 +1383,6 @@
 // Private Theme Parameters
 //-----------------------------------------------------
 
-
 /* ActionSheet                 */
 @sapUiActionSheetBG: @sapUiFooterBG;
 @sapUiActionSheetOnDesktopBG: @sapUiFooterOnDesktopBG;
@@ -1393,11 +1390,9 @@
 @sapUiActionSheetSeparator: darken(@sapUiExtraDarkBG, 20);
 @sapUiActionSheetButtonColor: @sapUiTextInverted;
 
-
 /* App                         */
 @sapUiBackgroundGradientStart: fade(@sapUiWhite, 30);
 @sapUiBackgroundGradientEnd: fade(@sapUiHighlight, 20);
-
 
 /* Bar                         */
 // [Label "Bar Background Color"]
@@ -1405,6 +1400,7 @@
 // [Tags "Color"]
 @sapUiBarBG:          @sapUiExtraLightBG;
 @sapUiBarBrandingBG:  @sapUiBrand;
+@sapUiHeaderBG:       @sapUiBarBG;
 @sapUiSubHeaderBG:    lighten(@sapUiBarBG, 4);
 
 // [Label "Bar Text Color"]
@@ -1416,13 +1412,17 @@
 
 
 /* Busy Indicator              */
-@sapUiBusy:       @sapUiHighlight;
+@sapUiBusy:       @sapUiBrand;
 @sapUiBusyLight:  @sapUiInvertedElement;
 
+/* BusyDialog              */
+@sapUiBusyDlgSimpleIndicatorBG:     fade(@sapUiInvertedElement, 60);
+@sapUiBusyDlgSimpleIndicatorBorder: fade(@sapUiInvertedElement, 10);
 
 /* --------------------------- */
 /* Button                START */
 /* --------------------------- */
+
 @sapUiBtnText: @sapUiDarkText; // #333333
 @sapUiBtnTextActive: @sapUiTextInverted; // #ffffff
 @sapUiBtnTextLink: @sapUiLink; // #00679e
@@ -1519,7 +1519,6 @@
 @sapUiDTICustomFooterOnDesktopBG: @sapUiFooterOnDesktopBG;
 @sapUiDTICustomHeaderBoxShadow: @sapUiLightBorder;
 
-
 /* Input/SearchField           */
 @sapUiInputBaseBG: @sapUiLightestBG;
 @sapUiInputBaseFont: @sapUiFontFamily;
@@ -1537,8 +1536,6 @@
 /* Label           */
 @sapUiLabelText: @sapUiLightText;
 @sapUiLabelFont: @sapUiFontFamily;
-
-
 
 /* List                        */
 @sapUiListBGHeader: @sapUiHoverBG;
@@ -1562,7 +1559,6 @@
 @sapUiListTblPopinSelectedBG: @sapUiLISelected;
 @sapUiListTblIconSize: 1rem;
 @sapUiListTblTextSize: 0.875rem;
-
 
 /* ListItemBase                */
 @sapUiLIBorder: @sapUiExtraLightBorder;
@@ -1627,6 +1623,7 @@
 @sapMUiScrollBarBG: fade(@sapUiBlack, 50);
 @sapMUiScrollBarBorderColor: @sapUiWhite;
 
+
 /* SegmentedButton                */
 @sapUiSegmentedBtnBG: @sapUiButtonStandardBG;
 @sapUiSegmentedBtnBGSelected: @sapUiHighlight;
@@ -1660,8 +1657,13 @@
 @sapUiSelectArrowBGActive: @sapUiHighlight;
 @sapUiSelectFooterSeperator: lighten(@sapUiExtraDarkBG, 20);
 @sapUiSelectFooterSeperatorOnDesktop: lighten(@sapUiFooterOnDesktopBG, 20%);
+
 @sapUiSelectIconColor: @sapUiLightText;
-@sapUiSelectIconColorActive: @sapUiHighlight;
+@sapUiSelectIconColorActive: @sapUiWhite;
+@sapUiSelectIconBGHover: @sapUiBtnBGStandardHover;
+@sapUiSelectIconBGPressed: @sapUiHighlight;
+@sapUiSelectIconBorderColor: @sapUiDarkBorder;
+
 @sapUiSelectFooterBGHover: @sapUiBtnFooterBGStandardHover;
 @sapUiSelectBGTransparentHover: @sapUiBtnBGTransparentHover;
 
@@ -1674,6 +1676,7 @@
 @sapUiSliderProgressBG: @sapUiHighlight;
 @sapUiSliderHandleBorder: @sapUiExtraDarkBorder;
 @sapUiSliderHandleBG: fade(@sapUiExtraDarkBorder, 30);
+@sapUiSliderHandleBGHover: fade(@sapUiExtraDarkBorder, 60);
 @sapUiSliderHandleBorderPressed: @sapUiHighlight;
 @sapUiSliderHandleBGPressed: fade(@sapUiHighlight, 30);
 
@@ -1740,10 +1743,6 @@
 @sapMeTabColorAttachments: @sapUiBlue;
 @sapMeTabIconPeople: group;
 @sapMeTabColorPeople: @sapUiAccent7;
-
-.sapMContainerMargin {
-	padding: 1rem;
-}
 
 /* ============================================= */
 /* CSS for control sap.ui.unified/ContentSwitcher.control */
@@ -2722,6 +2721,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUfdShellCurtain {
 	background-color: @sapUiButtonActiveBackground;
 	color: @sapUiTextInverted;
 }
+
 /** TODO: Move to global.css in core (pending discussion with Jens P and Michael S)
 /* The animation duration must be in ms so it returns the correct integer value when used with parseInt */
 @sapUiUfdSplitContAnimationDuration: 500ms;

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.Table");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.m.ListBase");sap.m.ListBase.extend("sap.m.Table",{metadata:{library:"sap.m",properties:{"backgroundDesign":{type:"sap.m.BackgroundDesign",group:"Appearance",defaultValue:sap.m.BackgroundDesign.Translucent}},aggregations:{"columns":{type:"sap.m.Column",multiple:true,singularName:"column"}}}});
@@ -17,8 +17,8 @@ sap.m.Table.prototype.onAfterPageLoaded=function(){this.updateSelectAllCheckbox(
 sap.m.Table.prototype.onItemSetSelected=function(i,s){sap.m.ListBase.prototype.onItemSetSelected.apply(this,arguments);jQuery.sap.delayedCall(0,this,function(){this.updateSelectAllCheckbox()})};
 sap.m.Table.prototype.ontouchstart=function(e){if(sap.m.ListBase.prototype.ontouchstart){sap.m.ListBase.prototype.ontouchstart.call(this,e)}if(this._hasPopin){sap.m.ColumnListItem.handleEvents(e,"touchstart",this.getDomRef())}};
 sap.m.Table.prototype.ontap=function(e){if(this._hasPopin){sap.m.ColumnListItem.handleEvents(e,"tap",this.getDomRef())}};
-sap.m.Table.prototype.getTableDomRef=function(){return jQuery.sap.domById(this.getId("listUl"))};
-sap.m.Table.prototype.getItemsContainerDomRef=function(){return jQuery.sap.domById(this.getId("tblBody"))};
+sap.m.Table.prototype.getTableDomRef=function(){return this.getDomRef("listUl")};
+sap.m.Table.prototype.getItemsContainerDomRef=function(){return this.getDomRef("tblBody")};
 sap.m.Table.prototype.onColumnResize=function(c){if(!this._hasPopin&&!this._mutex){var h=this.getColumns().some(function(b){return b.isPopin()});if(!h){c.setDisplayViaMedia(this.getTableDomRef());return}}this._dirty=window.innerWidth;if(!this._mutex){var a=window.innerWidth;this._mutex=true;this.rerender();jQuery.sap.delayedCall(200,this,function(){if(Math.abs(this._dirty-a)>10){this._dirty=0;this.rerender()}this._mutex=false})}};
 sap.m.Table.prototype.setTableHeaderVisibility=function(c){if(!this.getDomRef()){return}var $=jQuery(this.getTableDomRef()),a=$.find("thead > tr"),h=!a.hasClass("sapMListTblHeaderNone"),v=a.find(".sapMListTblCell").filter(":visible"),b=v.eq(0);if(v.length==1){b.width("")}else{b.width(b.attr("data-sap-orig-width"))}if(!c&&h){a[0].className="sapMListTblRow sapMListTblHeader"}else if(c&&!h&&!v.length){a[0].className="sapMListTblHeaderNone"}};
 sap.m.Table.prototype._notifyColumns=function(a,p){this.getColumns().forEach(function(c){c["on"+a](p)})};
@@ -27,3 +27,4 @@ sap.m.Table.prototype.updateSelectAllCheckbox=function(){if(this._selectAllCheck
 sap.m.Table.prototype.getColSpan=function(){return(this._colCount||1)-1};
 sap.m.Table.prototype.getColCount=function(){return(this._colCount||0)};
 sap.m.Table.prototype.hasPopin=function(){return!!this._hasPopin};
+sap.m.Table.prototype.onsapspace=function(e){if(e.isMarked()){return}if(e.target===this.getDomRef("tblHeader")&&this._selectAllCheckBox){this._selectAllCheckBox.setSelected(!this._selectAllCheckBox.getSelected()).fireSelect();e.preventDefault();e.setMarked()}};

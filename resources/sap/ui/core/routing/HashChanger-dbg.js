@@ -32,7 +32,6 @@ sap.ui.base.EventProvider.extend("sap.ui.core.routing.HashChanger", {
  * @return false if it was initialized before, true if it was initialized the first time
  */
 sap.ui.core.routing.HashChanger.prototype.init = function() {
-	
 	if(this._initialized) {
 		jQuery.sap.log.info("this HashChanger instance has already been initialized.");
 		return false;
@@ -47,7 +46,8 @@ sap.ui.core.routing.HashChanger.prototype.init = function() {
 		this.fireHashChanged(hasher.getHash());
 	}
 
-	return this._initialized = true;
+	this._initialized = true
+	return this._initialized;
 };
 
 
@@ -102,7 +102,7 @@ sap.ui.core.routing.HashChanger.prototype.getHash = function() {
  * @protected
  */
 sap.ui.core.routing.HashChanger.prototype.destroy = function() {
-	hasher.changed.remove(this.fireHashChanged);
+	hasher.changed.remove(this.fireHashChanged, this);
 	sap.ui.base.EventProvider.prototype.destroy.apply(this, arguments);
 };
 
@@ -131,4 +131,4 @@ sap.ui.core.routing.HashChanger.prototype.destroy = function() {
 		_oHashChanger = oHashChanger;
 	};
 	
-})()
+}());

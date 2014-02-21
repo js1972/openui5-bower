@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,7 +18,7 @@
  * The <code>sap.ui.test.qunit</code> namespace contains helper functionality for
  * QUnit tests.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui.test.qunit
  * @public
@@ -248,14 +248,16 @@ sap.ui.test.qunit.triggerCharacterInput = function(oInput, sChar) {
  * @param {int} iOffsetY The offset Y position of the mouse pointer during the event
  * @param {int} iPageX The page X position of the mouse pointer during the event
  * @param {int} iPageY The page Y position of the mouse pointer during the event
+ * @param {int} iButton The button of the mouse during the event (e.g. 0: LEFT, 1: MIDDLE, 2: RIGHT)
  * @public
  */
-sap.ui.test.qunit.triggerMouseEvent = function(oTarget, sEventType, iOffsetX, iOffsetY, iPageX, iPageY) {
+sap.ui.test.qunit.triggerMouseEvent = function(oTarget, sEventType, iOffsetX, iOffsetY, iPageX, iPageY, iButton) {
 	var oParams = {};
 	oParams.offsetX = iOffsetX;
 	oParams.offsetY = iOffsetY;
 	oParams.pageX = iPageX;
 	oParams.pageY = iPageY;
+	oParams.button = iButton;
 	sap.ui.test.qunit.triggerEvent(sEventType, oTarget, oParams);
 };
 

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.layout.ResponsiveFlowLayoutData");jQuery.sap.require("sap.ui.layout.library");jQuery.sap.require("sap.ui.core.LayoutData");sap.ui.core.LayoutData.extend("sap.ui.layout.ResponsiveFlowLayoutData",{metadata:{library:"sap.ui.layout",properties:{"minWidth":{type:"int",group:"Misc",defaultValue:100},"weight":{type:"int",group:"Misc",defaultValue:1},"linebreak":{type:"boolean",group:"Misc",defaultValue:false},"margin":{type:"boolean",group:"Misc",defaultValue:true},"linebreakable":{type:"boolean",group:"Misc",defaultValue:true}}}});

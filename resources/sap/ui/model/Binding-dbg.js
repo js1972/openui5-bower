@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -20,7 +20,8 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  *
  * @param {sap.ui.model.Model} the model
  * @param {String} sPath the path
- * @param {Object} oContext the context object
+ * @param {sap.ui.model.Context} oContext the context object
+ * @param {object} [mParameters]
  * @abstract
  * @public
  * @name sap.ui.model.Binding
@@ -30,13 +31,13 @@ sap.ui.base.EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model
 	constructor : function(oModel, sPath, oContext, mParameters){
 		sap.ui.base.EventProvider.apply(this);
 		
+		this.oModel = oModel;
 		this.bRelative = !jQuery.sap.startsWith(sPath,'/');
 		this.sPath = sPath;
 		this.oContext = oContext;
-		this.oModel = oModel;
 		this.mParameters = mParameters;
 		this.bInitial = false;
-	
+		
 	},
 
 	metadata : {
@@ -104,40 +105,40 @@ sap.ui.model.Binding.prototype.getModel = function() {
 
 // Eventing and related
 /**
- * Attach event-handler <code>fnFunction</code> to the '_change' event of this <code>sap.ui.model.Model</code>.<br/>
+ * Attach event-handler <code>fnFunction</code> to the 'change' event of this <code>sap.ui.model.Model</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  */
 sap.ui.model.Binding.prototype.attachChange = function(fnFunction, oListener) {
-	if (!this.hasListeners("_change")) {
+	if (!this.hasListeners("change")) {
 		this.oModel.addBinding(this);
 	}
-	this.attachEvent("_change", fnFunction, oListener);
+	this.attachEvent("change", fnFunction, oListener);
 };
 
 /**
- * Detach event-handler <code>fnFunction</code> from the '_change' event of this <code>sap.ui.model.Model</code>.<br/>
+ * Detach event-handler <code>fnFunction</code> from the 'change' event of this <code>sap.ui.model.Model</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  */
 sap.ui.model.Binding.prototype.detachChange = function(fnFunction, oListener) {
-	this.detachEvent("_change", fnFunction, oListener);
-	if (!this.hasListeners("_change")) {
+	this.detachEvent("change", fnFunction, oListener);
+	if (!this.hasListeners("change")) {
 		this.oModel.removeBinding(this);
 	}
 };
 
 /**
- * Fire event _change to attached listeners.
+ * Fire event change to attached listeners.
 
  * @param {Map}
  *         mArguments the arguments to pass along with the event.
  * @private
  */
 sap.ui.model.Binding.prototype._fireChange = function(mArguments) {
-	this.fireEvent("_change", mArguments);
+	this.fireEvent("change", mArguments);
 };
 
 /**
@@ -239,6 +240,16 @@ sap.ui.model.Binding.prototype.refresh = function(bForceUpdate) {
 };
 
 /**
+ * Initialize the binding. The message should be called when creating a binding.
+ * The default implementation calls checkUpdate(true). 
+ * 
+ * @protected
+ */
+sap.ui.model.Binding.prototype.initialize = function() {
+	this.checkUpdate(true);
+};
+
+/**
  * _refresh for compatibility
  * @private
  */
@@ -263,4 +274,73 @@ sap.ui.model.Binding.prototype.isInitial = function() {
  */
 sap.ui.model.Binding.prototype.isRelative = function() {
 	return this.bRelative;
+};
+
+/**
+ * attach multiple events
+ * @protected
+ */
+sap.ui.model.Binding.prototype.attachEvents = function(oEvents) {
+	if (!oEvents) {
+		return this;
+	}
+	var that = this;
+	jQuery.each(oEvents, function(sEvent, fnHandler) {
+		var sMethod = "attach" + sEvent.substring(0,1).toUpperCase() + sEvent.substring(1);
+		if (that[sMethod]) {
+			that[sMethod](fnHandler);
+		} else {
+			jQuery.sap.log.warning(that.toString()+ " has no handler for event '" +sEvent+"'");
+		}
+	});
+	return this;
+};
+
+/**
+ * detach multiple events
+ * @protected
+ */
+sap.ui.model.Binding.prototype.detachEvents = function(oEvents) {
+	if (!oEvents) {
+		return this;
+	}
+	var that = this;
+	jQuery.each(oEvents, function(sEvent, fnHandler) {
+		var sMethod = "detach" + sEvent.substring(0,1).toUpperCase() + sEvent.substring(1);
+		if (that[sMethod]) {
+			that[sMethod](fnHandler);
+		} else {
+			jQuery.sap.log.warning(that.toString()+ " has no handler for event '" +sEvent+"'");
+		}
+	});
+	return this;
+};
+
+/**
+ * Attach event-handler <code>fnFunction</code> to the 'refresh' event of this <code>sap.ui.model.Binding</code>.<br/>
+ * @param {function} fnFunction The function to call, when the event occurs.
+ * @param {object} [oListener] object on which to call the given function.
+ * @protected
+ */
+sap.ui.model.Binding.prototype.attachRefresh = function(fnFunction, oListener) {
+	this.attachEvent("refresh", fnFunction, oListener);
+};
+
+/**
+ * Detach event-handler <code>fnFunction</code> from the 'refresh' event of this <code>sap.ui.model.Binding</code>.<br/>
+ * @param {function} fnFunction The function to call, when the event occurs.
+ * @param {object} [oListener] object on which to call the given function.
+ * @protected
+ */
+sap.ui.model.Binding.prototype.detachRefresh = function(fnFunction, oListener) {
+	this.detachEvent("refresh", fnFunction, oListener);
+};
+
+/**
+ * Fire event refresh to attached listeners.
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @private
+ */
+sap.ui.model.Binding.prototype._fireRefresh = function(mArguments) {
+	this.fireEvent("refresh", mArguments);
 };

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -20,6 +20,7 @@ jQuery.sap.require("sap.ui.thirdparty.crossroads");
 	 * <ul>
 	 *        <li>oConfig.pattern:           the url pattern where it needs to match agains</li>
 	 *        <li>oConfig.name:              the name of the route</li>
+	 *        <li>oConfig.viewId:            An optional id for the view which is created. No automatic id creation will be used for the view of this route.</li>
 	 *        <li>oConfig.view:              The name of a view that will be created, the first time this route will be matched. To place the view into a Control use the targetAggregation and targetControl. Views will only be created once.</li>
 	 *        <li>oConfig.viewType:          The type of the view that is going to be created</li>
 	 *        <li>oConfig.viewPath:          A prefix that will be prependet in front of the view eg: view is set to "myView" and viewPath is set to "myApp" - the created view will be "myApp.myView".</li>
@@ -169,7 +170,7 @@ jQuery.sap.require("sap.ui.thirdparty.crossroads");
 					if (oConfig.viewPath) {
 						sViewName = oConfig.viewPath + "." + sViewName;
 					}
-					oView = oRouter.getView(sViewName, oConfig.viewType);
+					oView = oRouter.getView(sViewName, oConfig.viewType, oConfig.viewId);
 					if (oConfig.clearTarget === true) {
 						oTargetControl[oAggregationInfo._sRemoveAllMutator]();
 					}

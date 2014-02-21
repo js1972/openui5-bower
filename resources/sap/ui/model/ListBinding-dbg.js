@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,9 +18,12 @@ jQuery.sap.require("sap.ui.model.Filter");
  * to populate Tables or ItemLists.
  *
  * @param {sap.ui.model.Model} oModel
- * @param {String} sPath
- * @param {Object} oContext
- * @abstract
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {array} [aSorters] initial sort order (can be either a sorter or an array of sorters)
+ * @param {array} [aFilters] predefined filter/s (can be either a filter or an array of filters)
+ * @param {object} [mParameters]
+ * 
  * @public
  * @name sap.ui.model.ListBinding
  */
@@ -28,6 +31,7 @@ sap.ui.model.Binding.extend("sap.ui.model.ListBinding", /** @lends sap.ui.model.
 	
 	constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters){
 		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters);
+		
 		this.aSorters = aSorters;
 		if (!jQuery.isArray(this.aSorters) && this.aSorters instanceof sap.ui.model.Sorter) {
 			this.aSorters = [this.aSorters];
@@ -121,65 +125,57 @@ sap.ui.model.ListBinding.prototype.getDistinctValues = function(sPath) {
 
 //Eventing and related
 /**
- * Attach event-handler <code>fnFunction</code> to the '_sort' event of this <code>sap.ui.model.ListBinding</code>.<br/>
+ * Attach event-handler <code>fnFunction</code> to the 'sort' event of this <code>sap.ui.model.ListBinding</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  * @deprecated use the change event. It now contains a parameter (reason : "sort") when a sorter event is fired.
  */
 sap.ui.model.ListBinding.prototype.attachSort = function(fnFunction, oListener) {
-	this.attachEvent("_sort", fnFunction, oListener);
+	this.attachEvent("sort", fnFunction, oListener);
 };
 
 /**
- * Detach event-handler <code>fnFunction</code> from the '_sort' event of this <code>sap.ui.model.ListBinding</code>.<br/>
+ * Detach event-handler <code>fnFunction</code> from the 'sort' event of this <code>sap.ui.model.ListBinding</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  * @deprecated use the change event.
  */
 sap.ui.model.ListBinding.prototype.detachSort = function(fnFunction, oListener) {
-	this.detachEvent("_sort", fnFunction, oListener);
+	this.detachEvent("sort", fnFunction, oListener);
 };
 
 /**
- * Fire event _change to attached listeners.
+ * Fire event _sort to attached listeners.
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @private
  * @deprecated use the change event. It now contains a parameter (reason : "sort") when a sorter event is fired.
  */
 sap.ui.model.ListBinding.prototype._fireSort = function(mArguments) {
-	this.fireEvent("_sort", mArguments);
+	this.fireEvent("sort", mArguments);
 };
 
 /**
- * Attach event-handler <code>fnFunction</code> to the '_filter' event of this <code>sap.ui.model.ListBinding</code>.<br/>
+ * Attach event-handler <code>fnFunction</code> to the 'filter' event of this <code>sap.ui.model.ListBinding</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  * @deprecated use the change event. It now contains a parameter (reason : "filter") when a filter event is fired.
  */
 sap.ui.model.ListBinding.prototype.attachFilter = function(fnFunction, oListener) {
-	this.attachEvent("_filter", fnFunction, oListener);
+	this.attachEvent("filter", fnFunction, oListener);
 };
 
 /**
- * Detach event-handler <code>fnFunction</code> from the '_filter' event of this <code>sap.ui.model.ListBinding</code>.<br/>
+ * Detach event-handler <code>fnFunction</code> from the 'filter' event of this <code>sap.ui.model.ListBinding</code>.<br/>
  * @param {function} fnFunction The function to call, when the event occurs.
  * @param {object} [oListener] object on which to call the given function.
  * @protected
  * @deprecated use the change event.
  */
 sap.ui.model.ListBinding.prototype.detachFilter = function(fnFunction, oListener) {
-	this.detachEvent("_filter", fnFunction, oListener);
-};
-
-/**
- * Checks if grouping is enabled for the binding<br/>
- * @public
- */
-sap.ui.model.ListBinding.prototype.isGrouped = function() {
-	return this.aSorters.length > 0 && !!this.aSorters[0].fnGroup;
+	this.detachEvent("filter", fnFunction, oListener);
 };
 
 /**
@@ -189,9 +185,16 @@ sap.ui.model.ListBinding.prototype.isGrouped = function() {
  * @deprecated use the change event. It now contains a parameter (reason : "filter") when a filter event is fired.
  */
 sap.ui.model.ListBinding.prototype._fireFilter = function(mArguments) {
-	this.fireEvent("_filter", mArguments);
+	this.fireEvent("filter", mArguments);
 };
 
+/**
+ * Checks if grouping is enabled for the binding<br/>
+ * @public
+ */
+sap.ui.model.ListBinding.prototype.isGrouped = function() {
+	return this.aSorters.length > 0 && !!this.aSorters[0].fnGroup;
+};
 
 /**
  * Enable extended change detection

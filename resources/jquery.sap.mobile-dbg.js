@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10,17 +10,22 @@ jQuery.sap.require("jquery.sap.dom");
 jQuery.sap.require("jquery.sap.events");
 jQuery.sap.require("sap.ui.Device");
 
-(function( $ ) {
+(function($) {
 	var FAKE_OS_PATTERN = /(?:\?|&)sap-ui-xx-fakeOS=([^&]+)/,
 		mFakeFonts = undefined;
+
 	$.sap.simulateMobileOnDesktop = false;
 
 	// OS overriding mechanism
 	if ((jQuery.browser.webkit || (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) >= 10)) && !jQuery.support.touch) { // on non-touch webkit browsers and IE10 we are interested in overriding
+
 		var result = document.location.search.match(FAKE_OS_PATTERN);
 		var resultUA = result && result[1] || jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-xx-fakeOS");
+
 		if (resultUA) {
+
 			$.sap.simulateMobileOnDesktop = true;
+
 			var ua = { // for "ios"/"android"/"blackberry" we have defined fake user-agents; these will affect all other browser/platform detection mechanisms
 					ios: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) AppleWebKit/534.48 (KHTML, like Gecko) Version/5.1 Mobile/9A406 Safari/7534.48.3",
 					iphone: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) AppleWebKit/534.48 (KHTML, like Gecko) Version/5.1 Mobile/9A406 Safari/7534.48.3",
@@ -34,14 +39,14 @@ jQuery.sap.require("sap.ui.Device");
 
 			if (ua &&
 					(jQuery.browser.webkit && resultUA !== "winphone" || jQuery.browser.msie && resultUA === "winphone")) { // only for the working combinations
-				
+
 				mFakeFonts = {
 					ios: "'Helvetica Neue'",
 					android: "Roboto,'Droid Sans'",
 					blackberry: "'BBGlobal Sans','DejaVu Sans'",
 					winphone: "'Segoe WP', 'Segoe UI'"
 				};
-				
+
 				// code for modifying the real user-agent
 				if (jQuery.browser.safari) {
 					var __originalNavigator = window.navigator;
@@ -56,16 +61,18 @@ jQuery.sap.require("sap.ui.Device");
 					});
 				}
 
-				if(jQuery.browser.webkit) {
-					// all downstream checks will be fine with the faked user-agent. 
+				if (jQuery.browser.webkit) {
+
+					// all downstream checks will be fine with the faked user-agent.
 					// But now we also need to adjust the wrong upstream settings in jQuery:
 					jQuery.browser.msie = jQuery.browser.opera = jQuery.browser.mozilla = false;
 					jQuery.browser.webkit = true;
 					jQuery.browser.version = "534.46"; // this is not exactly true for all UAs, but there are much bigger shortcomings of this approach than a minor version of the browser, so giving the exact value is not worth the effort
 				} else {
+
 					// in IE10 with winphone emulation, jQuery.browser has already the correct information
 				}
-				
+
 				sap.ui.Device._update($.sap.simulateMobileOnDesktop);
 			}
 		}
@@ -74,12 +81,14 @@ jQuery.sap.require("sap.ui.Device");
 	// OS detection
 	function getOS(userAgent) {
 		userAgent = userAgent || navigator.userAgent;
-		var platform = /\(([a-zA-Z ]+);\s(?:[U]?[;]?)([\D]+)((?:[\d._]*))(?:.*[\)][^\d]*)([\d.]*)\s/;
-		var result = userAgent.match(platform);
+		var platform = /\(([a-zA-Z ]+);\s(?:[U]?[;]?)([\D]+)((?:[\d._]*))(?:.*[\)][^\d]*)([\d.]*)\s/,
+			result = userAgent.match(platform);
+
 		if (result) {
 			var appleDevices = /iPhone|iPad|iPod/;
 			var bbDevices = /PlayBook|BlackBerry/;
-			if (result[0].match(appleDevices)){
+
+			if (result[0].match(appleDevices)) {
 				result[3] = result[3].replace(/_/g, ".");
 				//result[1] contains info of devices
 				return({os:"ios", version:result[3]});
@@ -89,11 +98,13 @@ jQuery.sap.require("sap.ui.Device");
 			} else if (result[0].match(bbDevices)) {
 				return({os:"blackberry", version:result[4]});
 			} else {
+
 				// currently we only support iOS, Android, BlackBerry 10.0+ , everything else will be ignored, if more platforms should be supported, logic can be placed here
 				return;
 			}
-			
-		} else if (userAgent.indexOf("(BB10;") > 0) { 
+
+		} else if (userAgent.indexOf("(BB10;") > 0) {
+
 			// BlackBery 10 has a different structure...
 			platform = /\sVersion\/([\d.]+)\s/;
 			result = userAgent.match(platform);
@@ -102,8 +113,9 @@ jQuery.sap.require("sap.ui.Device");
 			} else {
 				return {os: "blackberry", version:10};
 			}
-			
+
 		} else {
+
 			// Windows phone has a different structure, so we need to check with another regExp.
 			platform = /Windows Phone (?:OS )?([\d.]*)/;
 			result = userAgent.match(platform);
@@ -119,7 +131,7 @@ jQuery.sap.require("sap.ui.Device");
 		oHtml = window.document.documentElement,
 		iDocumentWidth = 0,
 		iDocumentHeight = 0;
-	
+
 	//save the window size values when viewport meta tag is inserted
 	function saveWindowSize(){
 		iDocumentWidth = oHtml.clientWidth;
@@ -137,18 +149,21 @@ jQuery.sap.require("sap.ui.Device");
 		 * @public
 		 */
 		$.os = $.extend(/** @lends jQuery.os */ {
+
 			/**
 			 * The name of the operating system; currently supported are: "ios", "android", "blackberry"
 			 * @type {string}
 			 * @public
 			 */
 			os: os.os,
+
 			/**
 			 * The version of the operating system as a string (including minor versions)
 			 * @type {string}
 			 * @public
 			 */
 			version: os.version,
+
 			/**
 			 * The version of the operating system parsed as a float (major and first minor version)
 			 * @type {float}
@@ -156,19 +171,23 @@ jQuery.sap.require("sap.ui.Device");
 			 */
 			fVersion: f
 		}, $.os);
+
 		$.os[os.os] = true;
+
 		/**
 		 * Whether the current operating system is Android
 		 * @type {boolean}
 		 * @public
 		 * @name jQuery.os.android
 		 */
+
 		/**
 		 * Whether the current operating system is BlackBerry
 		 * @type {boolean}
 		 * @public
 		 * @name jQuery.os.blackberry
 		 */
+
 		/**
 		 * Whether the current operating system is Apple iOS
 		 * @type {boolean}
@@ -187,31 +206,35 @@ jQuery.sap.require("sap.ui.Device");
 
 	// feature and state detection
 	$.extend( $.support, {
+
 		/**
 		 * Whether the device has a retina display (window.devicePixelRatio >= 2)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		retina: window.devicePixelRatio >= 2
 	});
-	
+
 	var sAvoidRepeatTimer = null;
 
-	function isLandscape(){
-		if(jQuery.support.touch){
-			if(sAvoidRepeatTimer){
+	function isLandscape() {
+
+		if (jQuery.support.touch) {
+			if(sAvoidRepeatTimer) {
 				return $.device.is.landscape;
 			}
-			
+
 			sAvoidRepeatTimer = window.setTimeout(function(){
 				sAvoidRepeatTimer = null;
 			}, 50);
 		}
-		
+
 		var iWidth = oHtml.clientWidth,
 			iHeight = oHtml.clientHeight,
 			bKeyboardOpen = false;
-		if($.support.touch){
+
+		if ($.support.touch) {
+
 			//if runs in real device, landscape/portrait detection is skipped when keyboard opens
 			//when keyboard opens, only height changes.
 			//we can't simply compare the width and height on window because when keyboard is open in android, it makes the window smaller which can turn a device from portrait to landscape, for example in Nexus 7
@@ -219,18 +242,20 @@ jQuery.sap.require("sap.ui.Device");
 			if((iWidth === iDocumentWidth) && (iHeight !== iDocumentHeight)){
 				bKeyboardOpen = true;
 			}
+
 			//return window.orientation === undefined || window.orientation === 90 || window.orientation === -90;
 		}
 		
 		iDocumentWidth = iWidth;
 		iDocumentHeight = iHeight;
-		
+
 		//if keyboard opens, landscape value doesn't change. otherwise, compare width with height.
 		return bKeyboardOpen ? $.device.is.landscape : iWidth > iHeight;
 	}
 
 	var landscape = oHtml.clientWidth > oHtml.clientHeight;
 	var android_phone = (/(?=android)(?=.*mobile)/i.test(navigator.userAgent));
+
 	/**
 	 * @name jQuery.device
 	 * @namespace
@@ -246,36 +271,42 @@ jQuery.sap.require("sap.ui.Device");
 	 * @public
 	 */
 	$.device.is = $.extend( /** @lends jQuery.device.is */ {
+
 		/**
 		 * Whether the application runs in standalone mode without browser UI (launched from the iOS home screen)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		standalone: window.navigator.standalone,
+
 		/**
 		 * Whether the device is in "landscape" orientation (also "true" when the device does not know about the orientation)
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		landscape: landscape,
+
 		/**
 		 * Whether the device is in portrait orientation
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		portrait: !landscape,
+
 		/**
 		 * Whether the application runs on an iPhone
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		iphone: /iphone/i.test(navigator.userAgent),
+
 		/**
 		 * Whether the application runs on an iPad
 		 * @type {boolean}
-		 * @public 
+		 * @public
 		 */
 		ipad: /ipad/i.test(navigator.userAgent),
+
 		/**
 		 * Whether the application runs on an Android phone - based not on screen size but user-agent (so this is not guaranteed to be equal to jQuery.device.is.phone on Android)
 		 * https://developers.google.com/chrome/mobile/docs/user-agent
@@ -285,6 +316,7 @@ jQuery.sap.require("sap.ui.Device");
 		 * @public
 		 */
 		android_phone: android_phone,
+
 		/**
 		 * Whether the application runs on an Android tablet - based not on screen size but user-agent (so this is not guaranteed to be equal to jQuery.device.is.tablet on Android)
 		 * https://developers.google.com/chrome/mobile/docs/user-agent
@@ -294,6 +326,7 @@ jQuery.sap.require("sap.ui.Device");
 		 * @public
 		 */
 		android_tablet: (!!$.os.android && !android_phone),
+
 		/**
 		 * Whether the running device is a tablet.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -304,6 +337,7 @@ jQuery.sap.require("sap.ui.Device");
 		 * @public
 		 */
 		tablet: sap.ui.Device.system.tablet,
+
 		/**
 		 * Whether the running device is a phone.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -314,6 +348,7 @@ jQuery.sap.require("sap.ui.Device");
 		 * @public
 		 */
 		phone: sap.ui.Device.system.phone,
+
 		/**
 		 * Whether the running device is a desktop browser.
 		 * If a desktop browser runs in mobile device simulation mode (with URL parameter sap-ui-xx-fakeOS or sap-ui-xx-test-mobile), 
@@ -331,16 +366,15 @@ jQuery.sap.require("sap.ui.Device");
 		$.device.is.portrait = !landscape;
 	});
 
-
 	var _bInitMobileTriggered = false;
 
 	/**
 	 * Does some basic modifications to the HTML page that make it more suitable for mobile apps.
 	 * Only the first call to this method is executed, subsequent calls are ignored. Note that this method is also called by the constructor of toplevel controls like sap.m.App, sap.m.SplitApp and sap.m.Shell.
 	 * Exception: if no homeIcon was set, subsequent calls have the chance to set it.
-	 * 
+	 *
 	 * The "options" parameter configures what exactly should be done.
-	 *  
+	 *
 	 * It can have the following properties:
 	 * <ul>
 	 * <li>viewport: whether to set the viewport in a way that disables zooming (default: true)</li>
@@ -352,8 +386,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * <li>useFullScreenHeight: a boolean that defines whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height (default: true)</li>
 	 * <li>homeIcon: deprecated since 1.12, use jQuery.sap.setIcons instead.
 	 * </ul>
-	 * 
-	 * 
+	 *
 	 * @param {object}  [options] configures what exactly should be done
 	 * @param {boolean} [options.viewport=true] whether to set the viewport in a way that disables zooming
 	 * @param {string}  [options.statusBar='default'] the iOS status bar color, "default", "black" or "black-translucent"
@@ -361,17 +394,17 @@ jQuery.sap.require("sap.ui.Device");
 	 * @param {boolean} [options.preventScroll=true] whether native scrolling should be disabled in order to prevent the "rubber-band" effect where the whole window is moved
 	 * @param {boolean} [options.preventPhoneNumberDetection=true] whether Safari mobile should be prevented from transforming any numbers that look like phone numbers into clickable links
 	 * @param {string}  [options.rootId] the ID of the root element that should be made fullscreen; only used when hideBrowser is set. If not set, the body is used
-	 * @param {boolean} [options.useFullScreenHeight=true] whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height 
+	 * @param {boolean} [options.useFullScreenHeight=true] whether the height of the html root element should be set to 100%, which is required for other elements to cover the full height
 	 * @param {string}  [options.homeIcon=undefined] deprecated since 1.12, use jQuery.sap.setIcons instead.
-	 * @param {boolean} [options.homeIconPrecomposed=false] deprecated since 1.12, use jQuery.sap.setIcons instead. 
-	 * 
+	 * @param {boolean} [options.homeIconPrecomposed=false] deprecated since 1.12, use jQuery.sap.setIcons instead.
+	 *
 	 * @name jQuery.sap.initMobile
 	 * @function
 	 * @public
 	 */
 	$.sap.initMobile = function(options) {
 		var $head = $("head");
-		
+
 		if (!_bInitMobileTriggered) { // only one initialization per HTML page
 			_bInitMobileTriggered = true;
 
@@ -384,11 +417,10 @@ jQuery.sap.require("sap.ui.Device");
 				useFullScreenHeight: true,
 				homeIconPrecomposed: false
 			}, options);
-			
+
 			// en-/disable automatic link generation for phone numbers
 			if ($.os.ios && options.preventPhoneNumberDetection) {
 				$head.append($('<meta name="format-detection" content="telephone=no">')); // this only works for all DOM created afterwards
-				
 			} else if ($.browser.msie) {
 				$head.append($('<meta http-equiv="cleartype" content="on">'));
 				$head.append($('<meta name="msapplication-tap-highlight" content="no"/>'));
@@ -398,10 +430,11 @@ jQuery.sap.require("sap.ui.Device");
 			// initialize viewport
 			if (options.viewport) {
 				var sMeta;
-				//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
-				//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
-				if(bIsIOS7Safari && sap.ui.Device.system.phone) {
-					sMeta = 'initial-scale=1.0,maximum-scale=1.0,user-scalable=0';
+				if (bIsIOS7Safari && sap.ui.Device.system.phone) {
+					//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
+					//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
+					//the important part seems to be setting the device height.
+					sMeta = 'minimal-ui, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
 				} else if ($.device.is.iphone && (Math.max(window.screen.height, window.screen.width) === 568)) {
 					// iPhone 5
 					sMeta = "user-scalable=0, initial-scale=1.0";
@@ -410,6 +443,7 @@ jQuery.sap.require("sap.ui.Device");
 				} else if ($.os.winphone){
 					sMeta = "width=320, user-scalable=no";
 				} else {
+
 					// all other devices
 					sMeta = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 				}
@@ -429,9 +463,9 @@ jQuery.sap.require("sap.ui.Device");
 			}
 
 			if (options.preventScroll) {
-				$(window).bind("touchmove", function sapInitMobileTouchMoveHandle(oEvent){
-					if (!oEvent.isDefaultPrevented()) {
-						oEvent.preventDefault();	// this one prevents the rubber-band effect - and disables native scrolling
+				$(window).bind("touchmove", function sapInitMobileTouchMoveHandle(oEvent) {
+					if (!oEvent.isMarked()) {
+						oEvent.preventDefault(); // prevent the rubber-band effect
 					}
 				});
 			}
@@ -441,39 +475,45 @@ jQuery.sap.require("sap.ui.Device");
 					document.documentElement.style.height = "100%"; // set html root tag to 100% height
 				});
 			}
-			
+
 			//save the size of window object for detecting if keyboard is open on non-ios devices.
 			saveWindowSize();
 		}
-		
+
 		if (options.homeIcon) {
+
 			var oIcons;
+
 			if (typeof options.homeIcon === "string") {
-				oIcons = {phone:options.homeIcon};
+				oIcons = { phone: options.homeIcon };
 			} else {
 				oIcons = $.extend({}, options.homeIcon);
 			}
-			
+
 			oIcons.precomposed = options.homeIconPrecomposed || oIcons.precomposed;
 			oIcons.favicon = options.homeIcon.icon || oIcons.favicon;
 			oIcons.icon = undefined;
 			$.sap.setIcons(oIcons);
 		}
-	};	
+	};
+
 	
+
+	
+
 	/**
 	 * Sets the bookmark icon for desktop browsers and the icon to be displayed on the home screen of iOS devices after the user does "add to home screen".
-	 * 
-	 * Only call this method once and call it early when the page is loading: browsers behave differently when the favicon is modified while the page is alive. 
+	 *
+	 * Only call this method once and call it early when the page is loading: browsers behave differently when the favicon is modified while the page is alive.
 	 * Some update the displayed icon inside the browser but use an old icon for bookmarks.
 	 * When a favicon is given, any other existing favicon in the document will be removed.
 	 * When at least one home icon is given, all existing home icons will be removed and new home icon tags for all four resolutions will be created.
-	 * 
-	 * The home icons must be in PNG format and given in different sizes for iPad/iPhone with and without retina display. 
-	 * The favicon is used in the browser and for desktop shortcuts and should optimally be in ICO format: 
+	 *
+	 * The home icons must be in PNG format and given in different sizes for iPad/iPhone with and without retina display.
+	 * The favicon is used in the browser and for desktop shortcuts and should optimally be in ICO format:
 	 * PNG does not seem to be supported by Internet Explorer and ICO files can contain different image sizes for different usage locations. E.g. a 16x16px version
 	 * is used inside browsers.
-	 * 
+	 *
 	 * All icons are given in an an object holding icon URLs and other settings. The properties of this object are:
 	 * <ul>
 	 * <li>phone: a 57x57 pixel version for non-retina iPhones</li>
@@ -483,7 +523,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * <li>precomposed: whether the home icons already have some glare effect (otherwise iOS will add it) (default: false)</li>
 	 * <li>favicon: the ICO file to be used inside the browser and for desktop shortcuts</li>
 	 * </ul>
-	 * 
+	 *
 	 * One example is:
 	 * <pre>
 	 * {
@@ -503,11 +543,12 @@ jQuery.sap.require("sap.ui.Device");
 	 * @public
 	 */
 	$.sap.setIcons = function(oIcons) {
+
 		if (!oIcons || (typeof oIcons !== "object")) {
 			$.sap.log.warning("Call to jQuery.sap.setIcons() has been ignored because there were no icons given or the argument was not an object.");
-			return ;
+			return;
 		}
-		
+
 		var $head = $("head"),
 			precomposed = oIcons.precomposed ? "-precomposed" : "",
 			getBestFallback = function(res) {
@@ -515,34 +556,35 @@ jQuery.sap.require("sap.ui.Device");
 			},
 			mSizes = {
 				"phone": "",
-				"tablet": "72x72", 
+				"tablet": "72x72",
 				"phone@2": "114x114",
 				"tablet@2": "144x144"
 			};
-		
+
 		// desktop icon
 		if (oIcons["favicon"]) {
+
 			// remove any other favicons
 			var $fav = $head.find("[rel^=shortcut]"); // cannot search for "shortcut icon"
+
 			$fav.each(function(){
 				if (this.rel === "shortcut icon") {
 					$(this).remove();
 				}
 			});
-			
+
 			// create favicon
 			$head.append($('<link rel="shortcut icon" href="' + oIcons["favicon"] + '" />'));
 		}
-		
-		
+
 		// mobile home screen icons
-		
 		if (getBestFallback("phone")) {
+
 			// if any home icon is given remove old ones
 			$head.find("[rel=apple-touch-icon]").remove();
 			$head.find("[rel=apple-touch-icon-precomposed]").remove();
 		}
-		
+
 		for (var platform in mSizes) {
 			oIcons[platform] = oIcons[platform] || getBestFallback(platform);
 			if (oIcons[platform]) {
@@ -551,4 +593,5 @@ jQuery.sap.require("sap.ui.Device");
 			}
 		}
 	};
+
 })(jQuery);

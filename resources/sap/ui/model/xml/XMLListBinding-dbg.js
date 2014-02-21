@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -137,7 +137,7 @@ sap.ui.model.xml.XMLListBinding.prototype.checkUpdate = function(bForceupdate){
 				bChangeDetected = true;
 			} else {
 				jQuery.each(this.aLastContexts, function(iIndex, oContext) {
-					var oNewNode = aContexts[iIndex].getObject()[0];
+					var oNewNode = aContexts[iIndex].getObject();
 					var oOldNode = that.oLastContextData && that.oLastContextData[oContext.getPath()];
 					if (oNewNode && oOldNode && !oOldNode.isEqualNode(oNewNode)) {
 						bChangeDetected = true;

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.Overlay");jQuery.sap.require("sap.ui.ux3.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.ux3.Overlay",{metadata:{publicMethods:["open","close","isOpen"],library:"sap.ui.ux3",properties:{"openButtonVisible":{type:"boolean",group:"Misc",defaultValue:true},"closeButtonVisible":{type:"boolean",group:"Misc",defaultValue:true}},events:{"close":{allowPreventDefault:true},"openNew":{},"open":{}}}});sap.ui.ux3.Overlay.M_EVENTS={'close':'close','openNew':'openNew','open':'open'};jQuery.sap.require("sap.ui.core.Popup");

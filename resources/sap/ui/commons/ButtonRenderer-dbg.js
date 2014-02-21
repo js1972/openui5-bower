@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10,7 +10,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonRenderer");
 /**
  * @class
  * @author SAP AG
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  */
 sap.ui.commons.ButtonRenderer = {
@@ -102,8 +102,17 @@ sap.ui.commons.ButtonRenderer.render = function(rm, oButton) {
 		this.renderButtonContentBefore(rm, oButton);
 	}
 
-	if (this._getIconForState(oButton, "base") && oButton.getIconFirst()) {
-		this.writeImgHtml(rm, oButton, bImageOnly);
+	var bUseIconFont = false;
+	if (sap.ui.core.IconPool.isIconURI(oButton.getIcon())) {
+		bUseIconFont = true;
+	}
+
+	if (oButton.getIconFirst()) {
+		if (bUseIconFont) {
+			this.writeIconHtml(rm, oButton, bImageOnly);
+		} else if(this._getIconForState(oButton, "base")) {
+			this.writeImgHtml(rm, oButton, bImageOnly);
+		}
 	}
 
 	// write the button label
@@ -117,8 +126,12 @@ sap.ui.commons.ButtonRenderer.render = function(rm, oButton) {
 		}
 	}
 
-	if (this._getIconForState(oButton, "base") && !oButton.getIconFirst()) {
-		this.writeImgHtml(rm, oButton, bImageOnly);
+	if (!oButton.getIconFirst()) {
+		if (bUseIconFont) {
+			this.writeIconHtml(rm, oButton, bImageOnly);
+		} else if(this._getIconForState(oButton, "base")) {
+			this.writeImgHtml(rm, oButton, bImageOnly);
+		}
 	}
 
 	if(this.renderButtonContentAfter){
@@ -217,7 +230,7 @@ sap.ui.commons.ButtonRenderer._getIconForState = function(oButton, sState) {
 };
 
 /**
- * HTML for icon
+ * HTML for icon as image
  */
 sap.ui.commons.ButtonRenderer.writeImgHtml = function(oRenderManager, oButton, bImageOnly) {
 	var rm = oRenderManager,
@@ -249,14 +262,53 @@ sap.ui.commons.ButtonRenderer.writeImgHtml = function(oRenderManager, oButton, b
 	rm.write("/>");
 };
 
+/**
+ * HTML for icon as icon font
+ */
+sap.ui.commons.ButtonRenderer.writeIconHtml = function(oRenderManager, oButton, bImageOnly) {
+
+	var rm = oRenderManager;
+	var oIconInfo = sap.ui.core.IconPool.getIconInfo(oButton.getIcon());
+	var aClasses = [];
+	var mAttributes = {};
+
+	mAttributes["id"] = oButton.getId() + "-icon";
+
+	aClasses.push("sapUiBtnIco");
+	if (oButton.getText()) { // only add a distance to the text if there is text
+		var bRTL = rm.getConfiguration().getRTL();
+		if ((oButton.getIconFirst() && (!bRTL || oIconInfo.skipMirroring)) || (!oButton.getIconFirst() && !oIconInfo.skipMirroring && bRTL)) {
+			aClasses.push("sapUiBtnIcoL");
+		} else {
+			aClasses.push("sapUiBtnIcoR");
+		}
+	}
+
+	rm.writeIcon(oButton.getIcon(), aClasses, mAttributes);
+
+};
+
 sap.ui.commons.ButtonRenderer.changeIcon = function(oButton) {
 
-	if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnAct")) {
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "active"));
-	} else if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnFoc")){
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "focus"));
-	} else if (jQuery.sap.byId(oButton.getId()).hasClass("sapUiBtnStd")){
-		jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "base"));
+	if (sap.ui.core.IconPool.isIconURI(oButton.getIcon())) {
+		var oIconInfo = sap.ui.core.IconPool.getIconInfo(oButton.getIcon());
+		var oIcon = oButton.$("icon");
+		if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9) {
+			oIcon.text(oIconInfo.content);
+		} else {
+			oIcon.attr("data-sap-ui-icon-content", oIconInfo.content);
+		}
+		if(!oIconInfo.skipMirroring) {
+			oIcon.addClass("sapUiIconMirrorInRTL");
+		} else {
+			oIcon.removeClass("sapUiIconMirrorInRTL");
+		}
+	} else if (oButton.$().hasClass("sapUiBtnAct")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "active"));
+	} else if (oButton.$().hasClass("sapUiBtnFoc")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "focus"));
+	} else if (oButton.$().hasClass("sapUiBtnStd")) {
+		oButton.$("img").attr("src", this._getIconForState(oButton, "base"));
 	}
 
 };

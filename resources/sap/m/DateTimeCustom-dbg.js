@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -221,6 +221,8 @@
 				fnKeyDown, $dialogToClean,
 				oConfig = $.extend({}, oSettings, {
 					preset : sType.toLowerCase(),
+					showOnFocus : oDevice.support.touch,	// focus should not show dialog for desktop
+					showOnTap: oDevice.support.touch,		// we handle tab/click for desktop
 					disabled : !that.getEnabled() || !that.getEditable(),
 					onShow : function($dialog) {
 						// Special treatment for IE: with jQuery < 1.9 focus is fired twice in IE
@@ -244,7 +246,7 @@
 						if (oSettings.display == "bubble") {
 							document.addEventListener($.support.touch ? "touchstart" : "mousedown", fnAutoCloseProxy, true);
 						}
-						if (sap.ui.Device.system.desktop) {
+						if (oDevice.system.desktop) {
 							// Amend keyboard navigation: see sap.m.Dialog.onfocusin for
 							// an analogous procedure
 							var $scrollerCont = $dialog.find('.dwcc'),
@@ -288,9 +290,17 @@
 							$dialogToClean.unbind('keydown', fnKeyDown);
 							$dialogToClean.unbind('keydown.dw', fnHandleBtnKeyDown);
 						}
+
+						// set focus to input back
+						if (!oDevice.support.touch) {
+							setTimeout(function() {
+								that._$input.is(":focusable") && that._$input.focus();
+							}, 0);
+						}
 					},
 					onMarkupReady : function($dialog, inst) {
 						that._restrictMaxWidth($dialog);
+						$dialog.addClass("sapMDTICustom" + that.getType());
 						if (oSettings.theme != "sapMDTICustom") {
 							$dialog.addClass("sapMDTICustom");
 						}

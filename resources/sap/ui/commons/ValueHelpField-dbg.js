@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -104,6 +104,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconURL</code>.
  * Url of the standard icon for the value help. If no parameter is supplied the default icon image will be shown.
+ * This can be an URI to an image or an icon font URI.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -129,6 +130,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconHoverURL</code>.
  * URL of the icon for the value help when hovered. If no parameter is supplied the standard icon image will be shown.
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -154,6 +156,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 /**
  * Getter for property <code>iconDisabledURL</code>.
  * URL of the icon for the value help when disabled. If no parameter is supplied the default icon image will be shown.
+ * If a icon font icon is used, this property is ignored.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -236,6 +239,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 
 // Start of sap\ui\commons\ValueHelpField.js
 jQuery.sap.require("sap.ui.core.theming.Parameters");
+jQuery.sap.require("sap.ui.core.IconPool");
 
 sap.ui.commons.ValueHelpField.prototype.onBeforeRendering = function(){
 	var sIcon = sap.ui.core.theming.Parameters.get('sap.ui.commons.ValueHelpField:sapUiValueHelpIconDsblUrl');
@@ -250,7 +254,7 @@ sap.ui.commons.ValueHelpField.prototype.onBeforeRendering = function(){
 
 sap.ui.commons.ValueHelpField.prototype.onmouseover = function (oEvent) {
 
-	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable()) {
+	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable() && !this.bIsIconURI) {
 		if (this.getIconHoverURL()) {
 			this.sIconHoverUrl = this.getIconHoverURL();
 		} else if (this.getIconURL()) {
@@ -265,7 +269,7 @@ sap.ui.commons.ValueHelpField.prototype.onmouseover = function (oEvent) {
 };
 
 sap.ui.commons.ValueHelpField.prototype.onmouseout = function (oEvent) {
-	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable()) {
+	if (oEvent.target.id == this.getId() + '-icon' && this.getEnabled() && this.getEditable() && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(oEvent.target.id);
 		oIcon.attr( 'src', this.sIconRegularUrl );
 	}
@@ -281,7 +285,7 @@ sap.ui.commons.ValueHelpField.prototype.setEnabled = function(bEnabled) {
 	var bOldEnabled = this.getEnabled();
 	sap.ui.commons.TextField.prototype.setEnabled.apply(this, arguments);
 
-	if (this.getDomRef() && bOldEnabled != bEnabled) {
+	if (this.getDomRef() && bOldEnabled != bEnabled && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
 		if (bEnabled) {
 			oIcon.attr( 'src', this.sIconRegularUrl );
@@ -299,7 +303,7 @@ sap.ui.commons.ValueHelpField.prototype.setEditable = function(bEditable) {
 	var bOldEditable = this.getEditable();
 	sap.ui.commons.TextField.prototype.setEditable.apply(this, arguments);
 
-	if (this.getDomRef() && bOldEditable != bEditable) {
+	if (this.getDomRef() && bOldEditable != bEditable && !this.bIsIconURI) {
 		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
 		if (bEditable) {
 			oIcon.removeClass('sapUiTfValueHelpDsblIcon');

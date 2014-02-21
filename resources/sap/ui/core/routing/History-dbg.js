@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.routing.History");
@@ -70,6 +70,14 @@ sap.ui.core.routing.History.prototype.getDirection = function(sNewHash) {
 };
 
 /**
+ * gets the previous hash in the history - if the last direction was Unknown or there was no navigation yet, undefined will be returned
+ * @returns {string} or undefined
+ */
+sap.ui.core.routing.History.prototype.getPreviousHash = function() {
+	return this._aHistory[this._iHistoryPosition - 1];
+};
+
+/**
  * Empties the history array, and sets the instance back to the unknown state.
  * @private
  */
@@ -84,7 +92,7 @@ sap.ui.core.routing.History.prototype._reset = function() {
 	 * Because the only way from unknown to known state is a new entry in the history.
 	 */
 	this._aHistory[0] = this._oHashChanger.getHash();
-}
+};
 
 /**
  * Determines what the navigation direction for a newly given hash would be

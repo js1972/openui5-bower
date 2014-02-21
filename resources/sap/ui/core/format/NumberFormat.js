@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.format.NumberFormat");jQuery.sap.require("sap.ui.core.LocaleData");sap.ui.base.Object.extend("sap.ui.core.format.NumberFormat",{constructor:function(f){throw new Error()}});sap.ui.core.format.NumberFormat.oDefaultIntegerFormat={minIntegerDigits:1,maxIntegerDigits:99,minFractionDigits:0,maxFractionDigits:0,groupingEnabled:false,groupingSeparator:",",decimalSeparator:".",plusSign:"+",minusSign:"-",isInteger:true};sap.ui.core.format.NumberFormat.oDefaultFloatFormat={minIntegerDigits:1,maxIntegerDigits:99,minFractionDigits:0,maxFractionDigits:99,groupingEnabled:true,groupingSeparator:",",decimalSeparator:".",plusSign:"+",minusSign:"-",isInteger:false};

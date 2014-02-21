@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -45,7 +45,7 @@ jQuery.sap.require("sap.ui.core.DeclarativeSupport");
 	 * @class Fragment
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @public
 	 * @name sap.ui.core.Fragment
 	 * @experimental Since 1.15.0. The entire Fragment concept is experimental. API and behavior may change without notice. 
@@ -429,9 +429,9 @@ jQuery.sap.require("sap.ui.core.DeclarativeSupport");
 					((typeof(mSettings.fragmentContent) === "string") ? jQuery.parseXML(mSettings.fragmentContent).documentElement : mSettings.fragmentContent) : 
 					sap.ui.core.XMLTemplateProcessor.loadTemplate(mSettings.fragmentName, "fragment"); // use specified content or load the content definition
 
-			this._oContainingView = mSettings.containingView || this;
-			if ((this._oContainingView === this) && mSettings.oController) {
-				this._oContainingView.oController = mSettings.oController;
+			this._oContainingView = this._sExplicitId ? this : (mSettings.containingView || this);
+			if ((this._oContainingView === this) ) {
+				this._oContainingView.oController = (mSettings.containingView && mSettings.containingView.oController) || mSettings.oController;
 			}
 
 			var that = this;

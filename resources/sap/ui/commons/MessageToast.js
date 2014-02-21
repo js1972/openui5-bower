@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.MessageToast");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.MessageToast",{metadata:{deprecated:true,publicMethods:["toast","isIdle"],library:"sap.ui.commons",properties:{"anchorId":{type:"string",group:"Misc",defaultValue:null}},events:{"next":{}}}});sap.ui.commons.MessageToast.M_EVENTS={'next':'next'};jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-core");

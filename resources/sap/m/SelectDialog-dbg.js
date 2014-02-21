@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.m.StandardListItem[]</li></ul>
+ * <li>{@link #getItems items} : sap.m.ListItemBase[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -86,7 +86,7 @@ sap.ui.core.Control.extend("sap.m.SelectDialog", { metadata : {
 	},
 	defaultAggregation : "items",
 	aggregations : {
-    	"items" : {type : "sap.m.StandardListItem", multiple : true, singularName : "item"}, 
+    	"items" : {type : "sap.m.ListItemBase", multiple : true, singularName : "item"}, 
     	"_dialog" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
 	},
 	events : {
@@ -219,9 +219,9 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
 
 /**
  * Getter for aggregation <code>items</code>.<br/>
- * The items of the list shown in the search dialog
+ * The items of the list shown in the search dialog. It is recommended to use a StandardListItem for the dialog but other combinations are also possible.
  * 
- * @return {sap.m.StandardListItem[]}
+ * @return {sap.m.ListItemBase[]}
  * @public
  * @name sap.m.SelectDialog#getItems
  * @function
@@ -231,7 +231,7 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
 /**
  * Inserts a item into the aggregation named <code>items</code>.
  *
- * @param {sap.m.StandardListItem}
+ * @param {sap.m.ListItemBase}
  *          oItem the item to insert; if empty, nothing is inserted
  * @param {int}
  *             iIndex the <code>0</code>-based index the item should be inserted at; for 
@@ -248,7 +248,7 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
  * Adds some item <code>oItem</code> 
  * to the aggregation named <code>items</code>.
  *
- * @param {sap.m.StandardListItem}
+ * @param {sap.m.ListItemBase}
  *            oItem the item to add; if empty, nothing is inserted
  * @return {sap.m.SelectDialog} <code>this</code> to allow method chaining
  * @public
@@ -259,8 +259,8 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
 /**
  * Removes an item from the aggregation named <code>items</code>.
  *
- * @param {int | string | sap.m.StandardListItem} vItem the item to remove or its index or id
- * @return {sap.m.StandardListItem} the removed item or null
+ * @param {int | string | sap.m.ListItemBase} vItem the item to remove or its index or id
+ * @return {sap.m.ListItemBase} the removed item or null
  * @public
  * @name sap.m.SelectDialog#removeItem
  * @function
@@ -269,17 +269,17 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
 /**
  * Removes all the controls in the aggregation named <code>items</code>.<br/>
  * Additionally unregisters them from the hosting UIArea.
- * @return {sap.m.StandardListItem[]} an array of the removed elements (might be empty)
+ * @return {sap.m.ListItemBase[]} an array of the removed elements (might be empty)
  * @public
  * @name sap.m.SelectDialog#removeAllItems
  * @function
  */
 
 /**
- * Checks for the provided <code>sap.m.StandardListItem</code> in the aggregation named <code>items</code> 
+ * Checks for the provided <code>sap.m.ListItemBase</code> in the aggregation named <code>items</code> 
  * and returns its index if found or -1 otherwise.
  *
- * @param {sap.m.StandardListItem}
+ * @param {sap.m.ListItemBase}
  *            oItem the item whose index is looked for.
  * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
  * @public
@@ -588,31 +588,30 @@ jQuery.sap.require("sap.m.SearchField");
  */
 sap.m.SelectDialog.prototype.init = function () {
 	var that = this,
-		liveChangeTimer = 0;
-		
-	//Function to allow dialog to close before fire event fired
-	var fnResetAfterClose = function () {
-		that._selectedItem = that._list.getSelectedItem();
+		liveChangeTimer = 0,
+		fnResetAfterClose = function () {
+			that._selectedItem = that._list.getSelectedItem();
 
-		// detach this function
-		that._dialog.detachAfterClose(fnResetAfterClose);
+			// detach this function
+			that._dialog.detachAfterClose(fnResetAfterClose);
 
-		that.fireConfirm({
-			selectedItem: that._selectedItem,
-			selectedItems: that._selectedItems
-		});
-	};
+			that.fireConfirm({
+				selectedItem: that._selectedItem,
+				selectedItems: that._selectedItems
+			});
+		};
 
 	this._bAppendedToUIArea = false;
+	this._bInitBusy = false;
+	this._bFirstRender = true;
 	this._oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+
 	// store a reference to the list for binding management
 	this._list = new sap.m.List(this.getId() + "-list", {
 		growing: true,
 		growingScrollToLoad: true,
-		noDataText: this.getNoDataText(),
 		mode: sap.m.ListMode.SingleSelectMaster,
 		selectionChange: function (oEvent) {
-			var selectedItem = oEvent.getParameter("listItem");
 			if (that._dialog) {
 				if (!that.getMultiSelect()) { 
 					// attach the reset function to afterClose to hide the dialog changes from the end user 
@@ -630,20 +629,20 @@ sap.m.SelectDialog.prototype.init = function () {
 	this._searchField = new sap.m.SearchField(this.getId() + "-searchField", {
 		width: "100%",
 		liveChange: function (oEvent) {
-            var value = oEvent.getSource().getValue(),
-              	delay = (value ? 300 : 0); // no delay if value is empty
+			var value = oEvent.getSource().getValue(),
+				delay = (value ? 300 : 0); // no delay if value is empty
 
-             // execute search after user stops typing for 300ms
-             clearTimeout(liveChangeTimer);
-             if(delay) {
-                liveChangeTimer = setTimeout(function () {
-                that._executeSearch(value, "liveChange");
-              }, delay);
-             } else {
-             that._executeSearch(value, "liveChange");
-             }
-        },
-        // execute the standard search
+			// execute search after user stops typing for 300ms
+			clearTimeout(liveChangeTimer);
+			if (delay) {
+				liveChangeTimer = setTimeout(function () {
+					that._executeSearch(value, "liveChange");
+				}, delay);
+			} else {
+				that._executeSearch(value, "liveChange");
+			}
+		},
+		// execute the standard search
 		search: function (oEvent) {
 			that._executeSearch(oEvent.getSource().getValue(), "search");
 		}
@@ -663,15 +662,25 @@ sap.m.SelectDialog.prototype.init = function () {
 		contentHeight: "2000px",
 		subHeader: this._subHeader,
 		content: [this._busyIndicator, this._list],
-		leftButton: this.getCancelButton()
+		leftButton: this._getCancelButton()
 	}).addStyleClass("sapMSelectDialog", true);
+
+	//CSN# 3863876/2013: ESC key should also cancel dialog, not only close it
+	var fnDialogEscape = this._dialog.onsapescape;
+	this._dialog.onsapescape = function(oEvent) {
+		// call original escape function of the dialog
+		if(fnDialogEscape) {
+			fnDialogEscape.call(that._dialog, oEvent);
+		}
+		// execute cancel action
+		that._onCancel();
+	};
 
 	// internally set top and bottom margin of the dialog to 4rem respectively
 	this._dialog._iVMargin = 8 * parseInt(sap.ui.core.theming.Parameters.get("sapUiFontSize") || 16, 10); //128
 
 	// helper variables for search update behaviour
 	this._searchFieldValue = "";
-	this._searchFieldLastEventType = "";
 
 	// flags to control the busy indicator behaviour because the growing list will always show the no data text when updating
 	this._firstRequest = true; // to only show the busy indicator for the first request when the dialog has been openend
@@ -688,48 +697,84 @@ sap.m.SelectDialog.prototype.exit = function () {
 	this._subHeader = null;
 	this._busyIndicator = null;
 	this._firstRequest = null;
-	this._searchFieldLastEventType = null;
 	this._listUpdateRequested = null;
 	this._searchFieldValue = null;
+	this._bInitBusy = null;
+	this._bFirstRender = null;
 
 	if (this._dialog) {
 		this._dialog.destroy();
 		this._dialog = null;
 	}
 	if (this._okButton) {
-	this._okButton.destroy();
-	this._okbutton = null;
+		this._okButton.destroy();
+		this._okbutton = null;
 	}
+};
+
+/*
+* Is called after renderer is finished to show the busy state
+* @overwrite
+* @protected
+* @returns {this} this pointer for chaining
+*/
+sap.m.SelectDialog.prototype.onAfterRendering = function () {
+	if (this._initBusy && this._bFirstRender) {
+		this._setBusy(true);
+		this._initBusy = false;
+		this._firstRender = false;
+	}
+
+	return this;
+};
+
+/*
+* Invalidates the dialog instead of this control (we don't have a renderer)
+* @overwrite
+* @protected
+* @returns {this} this pointer for chaining
+*/
+sap.m.SelectDialog.prototype.invalidate = function () {
+	if (this._dialog) {
+		this._dialog.invalidate(arguments);
+	}
+
+	return this;
 };
 
 /**
 * Opens the internal dialog with a searchfield and a list.
 * @public
 * @param {string} sValue Value for the list search.
-* @return {sap.m/SelectDialog} this pointer for chaining
+* @returns {this} this pointer for chaining
 */
 sap.m.SelectDialog.prototype.open = function (sSearchValue) {
 	
-	if(!this._bAppendedToUIArea){
+	if (!this._bAppendedToUIArea) {
 		var oStatic = sap.ui.getCore().getStaticAreaRef();
 		oStatic = sap.ui.getCore().getUIArea(oStatic);
 		oStatic.addContent(this, true);
 		this._bAppendedToUIArea = true;
 	}
 
-	// cleanup old data if the same dialog was opened before
-	this._list.removeSelections();
+	// cleanup old selection to allow reuse of dialog
+	this._list.removeSelections(true);
 	delete this._selectedItem;
 	delete this._selectedItems;
-	this._searchFieldLastEventType = "";
+
+	// reset internal variables
 	this._firstRequest = true;
-	this._listUpdateRequested = 0;
 	
 	// set the search value
 	this._searchField.setValue(sSearchValue);
 
 	// open the dialog
 	this._dialog.open();
+
+	// open dialog with busy state if a list update is still in progress
+	if (this._initBusy) {
+		this._setBusy(true);
+	}
 
 	// return Dialog for chaining purposes
 	return this;
@@ -739,7 +784,7 @@ sap.m.SelectDialog.prototype.open = function (sSearchValue) {
 * Sets the growing threshold to the internal list
 * @public
 * @param {int} iValue Value for the list's growing threshold.
-* @return {sap.m/SelectDialog} this pointer for chaining
+* @returns {this} this pointer for chaining
 */
 sap.m.SelectDialog.prototype.setGrowingThreshold = function (iValue) {
 	this._list.setGrowingThreshold(iValue);
@@ -748,101 +793,63 @@ sap.m.SelectDialog.prototype.setGrowingThreshold = function (iValue) {
 	return this;
 };
 
-// store a reference to the ok button
-sap.m.SelectDialog.prototype.getOkButton = function () {
-	var that = this;
-
-	//Function to allow dialog to close before fire event fired
-	var fnOKAfterClose = function () {
-		that._selectedItem = that._list.getSelectedItem();
-		that._selectedItems = that._list.getSelectedItems();
-
-		// detach this function
-		that._dialog.detachAfterClose(fnOKAfterClose);
-
-		that.fireConfirm({
-			selectedItem: that._selectedItem,
-			selectedItems: that._selectedItems
-		});
-	};
-
-	if (!this._okButton) {
-		this._okButton = new sap.m.Button(this.getId() + "-ok", {
-			text: this._oRb.getText("MSGBOX_OK"),
-			press: function () {
-				// attach the reset function to afterClose to hide the dialog changes from the end user 
-				that._dialog.attachAfterClose(fnOKAfterClose);
-				that._dialog.close();
-			}
-		});
-	}	
-	return this._okButton;
-}
-
-// store a reference to the cancel button
-sap.m.SelectDialog.prototype.getCancelButton = function () {
-	var that = this;
-
-	//Function to allow dialog to close before fire event fired
-	var fnCancelAfterClose = function () {
-		that._selectedItem = null;
-		that._selectedItems = new Array();
-		that._searchFieldValue = null;
-
-		// detach this function
-		that._dialog.detachAfterClose(fnCancelAfterClose);
-
-		that.fireCancel();
-	};
-	
-	
-	if (!this._cancelButton) {
-		this._cancelButton = new sap.m.Button(this.getId() + "-cancel", {
-			text: this._oRb.getText("MSGBOX_CANCEL"),
-			press: function () {
-				// attach the reset function to afterClose to hide the dialog changes from the end user 
-				that._dialog.attachAfterClose(fnCancelAfterClose);
-				that._dialog.close();
-			}
-		});
-	}	
-	return this._cancelButton;
-}
-
-// setup multiselect options
+/**
+ * Enable/Disable multi selection mode.
+ * @overwrite
+ * @public
+ * @param {boole} bMulti flag for multi selection mode
+ * @returns {this} this pointer for chaining
+ */
 sap.m.SelectDialog.prototype.setMultiSelect = function (bMulti) {
 	this.setProperty("multiSelect", bMulti, true);
-	if(bMulti){
+	if (bMulti) {
 		this._list.setMode(sap.m.ListMode.MultiSelect); 
 		this._list.setIncludeItemInSelection(true);
-		this._dialog.setEndButton(this.getCancelButton());
-		this._dialog.setBeginButton(this.getOkButton());
+		this._dialog.setEndButton(this._getCancelButton());
+		this._dialog.setBeginButton(this._getOkButton());
 	} else {
 		this._list.setMode(sap.m.ListMode.SingleSelectMaster); 
-		this._dialog.setBeginButton(this.getCancelButton());
+		this._dialog.setBeginButton(this._getCancelButton());
 	}
-}
+
+	return this;
+};
 
 /**
  * Set the title of the internal dialog
  * @overwrite
  * @public
  * @param {string} sTitle the title text for the dialog
+ * @returns {this} this pointer for chaining
  */
 sap.m.SelectDialog.prototype.setTitle = function (sTitle) {
 	this._dialog.setTitle(sTitle);
-	this.setProperty("title", sTitle, true);	
+	this.setProperty("title", sTitle, true);
+
+	return this;
 };
 
 /**
- * Set the no data text of the internal list
+ * Reflector for the internal List's no data text property
  * @overwrite
  * @public
  * @param {string} sNoDataText the no data text for the list
+ * @returns {this} this pointer for chaining
  */
 sap.m.SelectDialog.prototype.setNoDataText = function (sNoDataText) {
 	this._list.setNoDataText(sNoDataText);
-	this.setProperty("noDataText", sNoDataText, true);	
+
+	return this;
+};
+
+/**
+ * Reflector for the internal List's no data text property
+ * @overwrite
+ * @public
+ * @returns {string} the current no data text
+ */
+sap.m.SelectDialog.prototype.getNoDataText = function () {
+	return this._list.getNoDataText();
 };
 
 /* =========================================================== */
@@ -855,22 +862,27 @@ sap.m.SelectDialog.prototype.setNoDataText = function (sNoDataText) {
  * @overwrite
  * @public
  * @param {sap.ui.Model} oModel the model that holds the data for the list
- * @param {string} sName the optional model name
+ * @param {string} sModelName the optional model name
  */
 sap.m.SelectDialog.prototype._setModel = sap.m.SelectDialog.prototype.setModel;
-sap.m.SelectDialog.prototype.setModel = function (oModel, sName) {
+sap.m.SelectDialog.prototype.setModel = function (oModel, sModelName) {
 	var args = Array.prototype.slice.call(arguments),
 		result;
 
-	// pass the model to the list
-	result = this._list.setModel(oModel, sName);
+	// reset busy mode if model was changed
+	this._setBusy(false);
+	this._initBusy = false;
 	
 	// we made a request in this control, so we update the counter
 	this._listUpdateRequested += 1;
 
 	// attach events to listen to model updates and show/hide a busy indicator
-	oModel.attachRequestSent(this._requestSent, this);
-	oModel.attachRequestCompleted(this._requestCompleted, this);
+	/* currently the update finished event is not called properly for oData so we disable the busy feature for now
+	 * this._list.attachUpdateStarted(this._updateStarted, this);
+	 * this._list.attachUpdateFinished(this._updateFinished, this);*/
+
+	// pass the model to the list
+	result = this._list.setModel(oModel, sModelName);
 
 	// and also to the local control to allow binding of own properties
 	return result && sap.m.SelectDialog.prototype._setModel.apply(this, args);
@@ -899,10 +911,10 @@ sap.m.SelectDialog.prototype._callMethodInManagedObject = function (sFunctionNam
  * because the list's select event is only fired when a list selection has been done.
  * @overwrite
  * @public
- * @param {string} sName the name for the binding
+ * @param {string} sAggregationName the name for the binding
  * @param {object} oBindingInfo the configuration parameters for the binding
  */
-sap.m.SelectDialog.prototype.bindAggregation = function (sName, oBindingInfo) {
+sap.m.SelectDialog.prototype.bindAggregation = function (sAggregationName, oBindingInfo) {
 	var args = Array.prototype.slice.call(arguments),
 		result;
 
@@ -953,32 +965,43 @@ sap.m.SelectDialog.prototype.destroyAggregation = function (sAggregationName, bS
 	return this;
 };
 
-sap.m.SelectDialog.prototype.getBinding = function (sName) {
-     return this._callMethodInManagedObject("getBinding", sName);
+sap.m.SelectDialog.prototype.getBinding = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBinding", sAggregationName);
 };
 
-sap.m.SelectDialog.prototype.getBindingContext = function (sName) {
-     return this._callMethodInManagedObject("getBindingContext", sName);
+
+sap.m.SelectDialog.prototype.getBindingInfo = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBindingInfo", sAggregationName);
 };
 
-sap.m.SelectDialog.prototype.getBindingInfo = function (sName) {
-     return this._callMethodInManagedObject("getBindingInfo", sName);
+sap.m.SelectDialog.prototype.getBindingPath = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBindingPath", sAggregationName);
 };
 
-sap.m.SelectDialog.prototype.getBindingPath = function (sName) {
-     return this._callMethodInManagedObject("getBindingPath", sName);
+sap.m.SelectDialog.prototype.getBindingContext = function (sModelName) {
+	return this._list.getBindingContext(sModelName);
 };
 
-sap.m.SelectDialog.prototype.setBindingContext = function (oContext, sName) {
-     this._callMethodInManagedObject("setBindingContext", oContext, sName);
-     return this;
-};
+/*
+ * Set the binding context for the internal list AND the current control so that 
+ * both controls can be used with the context
+ * @overwrite
+ * @public
+ * @param {sap.ui.model.Context} oContext the new context 
+ * @param {string} sModelName the optional model name
+ */
 
-sap.m.SelectDialog.prototype.setBindingContext = function (oContext, sName) {
-     this._callMethodInManagedObject("setBindingContext", oContext, sName);
-     return this;
-};
+sap.m.SelectDialog.prototype._setBindingContext = sap.m.SelectDialog.prototype.setBindingContext;
+sap.m.SelectDialog.prototype.setBindingContext = function (oContext, sModelName) {
+	var args = Array.prototype.slice.call(arguments),
+		result;
 
+	// pass the model to the list
+	result = this._list.setBindingContext(oContext, sModelName);
+
+	// and also to the local control to allow binding of own properties
+	return result && sap.m.SelectDialog.prototype._setBindingContext.apply(this, args);
+};
 
 /* =========================================================== */
 /*           end: forward aggregation  methods to List       */
@@ -989,40 +1012,58 @@ sap.m.SelectDialog.prototype.setBindingContext = function (oContext, sName) {
 /* =========================================================== */
 
 /*
- * fires the search event on the internal when dialog is opened. 
- * This function is called whenever a search related parameter or the value in the search field is changed 
+ * Fires the search event. This function is called whenever a search related parameter or the value in the search field is changed 
  * @private
  * @param {string} sValue the new filter value or undefined if called by management functions
  * @param {string} sEventType the search field event type that has been called (liveChange / search)
+ * @returns {this} this pointer for chaining
  */
 sap.m.SelectDialog.prototype._executeSearch = function (sValue, sEventType) {
 	var list = this._list,
 		listBinding = (list ? list.getBinding("items") : undefined),
 		searchValueDifferent = (this._searchFieldValue !== sValue); // to prevent unwanted duplicate requests
 
-	                // fire either the Search event or the liveChange event when dialog is opened.
-                // 1) when the clear icon is called then both liveChange and search events are fired but we only want to process the first one
-                // 2) when a livechange has been triggered by typing we don't want the next search event to be processed (typing + enter or typing + search button)
-                if (this._dialog.isOpen() && ((searchValueDifferent && sEventType === "liveChange") || sEventType === "search")) {
-                     // set the internal value to the passed value to check if the same value has already been filtered (happens when clear is called, it fires liveChange and change events)
-                     this._searchFieldValue = sValue;
+	// fire either the Search event or the liveChange event when dialog is opened.
+	// 1) when the clear icon is called then both liveChange and search events are fired but we only want to process the first one
+	// 2) when a livechange has been triggered by typing we don't want the next search event to be processed (typing + enter or typing + search button)
+	if (this._dialog.isOpen() && ((searchValueDifferent && sEventType === "liveChange") || sEventType === "search")) {
+		// set the internal value to the passed value to check if the same value has already been filtered (happens when clear is called, it fires liveChange and change events)
+		this._searchFieldValue = sValue;
 
-                       // only set when the binding has already been executed
-                       if (listBinding) {
-                             // we made another request in this control, so we update the counter
-                             this._ListUpdateRequested += 1;
-                                               
-                             if (sEventType == "search") {
-                                // fire the search so the data can be updated externally
-                                this.fireSearch({value: sValue, itemsBinding: listBinding});
-                                } else if (sEventType == "liveChange") {
-                                // fire the liveChange so the data can be updated externally                                                         
-                                this.fireLiveChange({value: sValue, itemsBinding: listBinding});
-                            }
-                      }
-                }
-                // store the last event type for the next check
-                this._searchFieldLastEventType = sEventType;
+		// only set when the binding has already been executed
+		if (listBinding) {
+			// we made another request in this control, so we update the counter
+			this._ListUpdateRequested += 1;
+			if (sEventType === "search") {
+				// fire the search so the data can be updated externally
+				this.fireSearch({value: sValue, itemsBinding: listBinding});
+			} else if (sEventType === "liveChange") {
+				// fire the liveChange so the data can be updated externally				    
+				this.fireLiveChange({value: sValue, itemsBinding: listBinding});
+			}
+		}
+	}
+
+	return this;
+};
+
+sap.m.SelectDialog.prototype._setBusy = function (bBusy) {
+	if (this._listUpdateRequested) { // check if the event was caused by our control
+		if (bBusy) {
+			if (this._firstRequest) { // also hide the header bar for the first request
+				this._subHeader.$().css('display', 'none');
+			}
+			this._list.addStyleClass('sapMSelectDialogListHide');
+			this._busyIndicator.$().css('display', 'inline-block');
+		} else {
+			if (this._firstRequest) { // also show the header bar again for the first request
+				this._subHeader.$().css('display', 'block');
+				this._firstRequest = false;
+			}
+			this._list.removeStyleClass('sapMSelectDialogListHide');
+			this._busyIndicator.$().css('display', 'none');
+		}
+	}
 };
 
 /*
@@ -1031,13 +1072,14 @@ sap.m.SelectDialog.prototype._executeSearch = function (sValue, sEventType) {
  * @private
  * @param {jQuery.EventObject} oEvent The event object
  */
-sap.m.SelectDialog.prototype._requestSent = function (oEvent) {
-	if (this._dialog.isOpen() && this._listUpdateRequested) { // check if the event was caused by our control
-		if (this._firstRequest) { // also hide the header bar for the first request
-			this._subHeader.$().css('display', 'none');
+sap.m.SelectDialog.prototype._updateStarted = function (oEvent) {
+	if (this.getModel() && this.getModel() instanceof sap.ui.model.odata.ODataModel) {
+		if (this._dialog.isOpen() && this._listUpdateRequested) {
+			// only set busy mode when we have an oData model
+			this._setBusy(true);
+		} else {
+			this._initBusy = true;
 		}
-		this._list.addStyleClass('sapMSelectDialogListHide');
-		this._busyIndicator.$().css('display', 'inline-block');
 	}
 };
 
@@ -1047,28 +1089,91 @@ sap.m.SelectDialog.prototype._requestSent = function (oEvent) {
  * @private
  * @param {jQuery.EventObject} oEvent The event object
  */
-sap.m.SelectDialog.prototype._requestCompleted = function (oEvent) {
-	if (this._dialog.isOpen() && this._listUpdateRequested) { // check if there are still open requests from this control
-		if (this._firstRequest) { // also show the header bar again for the first request
-			this._subHeader.$().css('display', 'block');
-			this._firstRequest = false;
-		}
-		this._list.removeStyleClass('sapMSelectDialogListHide');
-		this._busyIndicator.$().css('display', 'none');
-		// we received a request (from this or from another control) so we decrease the counter
-		this._listUpdateRequested -= 1;
+sap.m.SelectDialog.prototype._updateFinished = function (oEvent) {
+	// only reset busy mode when we have an oData model
+	if (this.getModel() && this.getModel() instanceof sap.ui.model.odata.ODataModel) {
+		this._setBusy(false);
+		this._initBusy = false;
 	}
+
+	// we received a request (from this or from another control) so set the counter to 0
+	this._listUpdateRequested = 0;
 };
 
 /*
-* Invalidates the dialog instead of this control (we don't have a renderer)
-* @overwrite
-* @public
-*/
-sap.m.SelectDialog.prototype.invalidate = function () {
-       if(this._dialog) {
-             this._dialog.invalidate(arguments);
-       }
+ * Lazy load the ok button if needed for MultiSelect mode
+ * @private
+ * @returns {sap.m/Button} the button
+ */
+sap.m.SelectDialog.prototype._getOkButton = function () {
+	var that = this,
+		fnOKAfterClose = function () {
+			that._selectedItem = that._list.getSelectedItem();
+			that._selectedItems = that._list.getSelectedItems();
+	
+			// detach this function
+			that._dialog.detachAfterClose(fnOKAfterClose);
+	
+			that.fireConfirm({
+				selectedItem: that._selectedItem,
+				selectedItems: that._selectedItems
+			});
+		};
+
+	if (!this._okButton) {
+		this._okButton = new sap.m.Button(this.getId() + "-ok", {
+			text: this._oRb.getText("MSGBOX_OK"),
+			press: function () {
+				// attach the reset function to afterClose to hide the dialog changes from the end user 
+				that._dialog.attachAfterClose(fnOKAfterClose);
+				that._dialog.close();
+			}
+		});
+	}	
+	return this._okButton;
+};
+
+/*
+ * Lazy load the cancel button
+ * @private
+ * @returns {sap.m/Button} the button
+ */
+sap.m.SelectDialog.prototype._getCancelButton = function () {
+	var that = this;
+
+	if (!this._cancelButton) {
+		this._cancelButton = new sap.m.Button(this.getId() + "-cancel", {
+			text: this._oRb.getText("MSGBOX_CANCEL"),
+			press: function (oEvent) {
+				that._onCancel();
+			}
+		});
+	}	
+	return this._cancelButton;
+};
+
+/*
+ * Internal event handler for the cancel button and ESC key
+ * @private
+ */
+sap.m.SelectDialog.prototype._onCancel = function (oEvent) {
+	var that = this,
+		fnAfterClose = function () {
+			// reset internal selection values
+			that._selectedItem = null;
+			that._selectedItems = [];
+			that._searchFieldValue = null;
+
+			// detach this function
+			that._dialog.detachAfterClose(fnAfterClose);
+
+			// fire cancel event
+			that.fireCancel();
+		};
+
+	// attach the reset function to afterClose to hide the dialog changes from the end user 
+	this._dialog.attachAfterClose(fnAfterClose);
+	this._dialog.close();
 };
 
 /* =========================================================== */

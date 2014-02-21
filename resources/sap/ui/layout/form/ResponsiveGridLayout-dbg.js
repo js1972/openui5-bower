@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -657,11 +657,11 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 					}
 					_setLayoutDataForLinebreak(oPanel, oContainer, iVisibleContainers, oContainerNext);
 				}else{
-					// panel not longer needed
 					if (oLayout.mContainers[sContainerId] && oLayout.mContainers[sContainerId][0]) {
+						// panel not longer needed
 						_deletePanel(oLayout.mContainers[sContainerId][0]);
-						_changeGetLayoutDataOfGrid(oGrid, false);
 					}
+					_changeGetLayoutDataOfGrid(oGrid, false);
 					_setLayoutDataForLinebreak(oGrid, oContainer, iVisibleContainers, oContainerNext);
 				}
 
@@ -901,10 +901,16 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 
 			var oLayout = this.__myParentLayout;
 			if (!oLayout._mainGrid || !oLayout._mainGrid.__bIsUsed ) {
+				// no main grid used -> only 1 container
 				var aContainers = oLayout.getParent().getFormContainers();
-				if(oLayout.mContainers[aContainers[0].getId()][0]){
+				if (!oLayout.mContainers[aContainers[0].getId()] || aContainers[0].getId() != this.__myParentContainerId) {
+					// Form seems to be invalidated (container changed) but rerendering still not done
+					// -> ignore resize, it will be rerendered soon
+					return;
+				}
+				if(oLayout.mContainers[this.__myParentContainerId][0]){
 					// panel used -> get size from panel
-					var oDomRef = oLayout.mContainers[aContainers[0].getId()][0].getDomRef();
+					var oDomRef = oLayout.mContainers[this.__myParentContainerId][0].getDomRef();
 
 					var iCntWidth = oDomRef.clientWidth;
 					if (iCntWidth <= oLayout.getBreakpointM()) {

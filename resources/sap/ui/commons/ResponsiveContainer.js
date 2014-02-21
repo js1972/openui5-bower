@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.ResponsiveContainer");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.ResponsiveContainer",{metadata:{library:"sap.ui.commons",properties:{"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:'100%'},"height":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:'100%'}},aggregations:{"ranges":{type:"sap.ui.commons.ResponsiveContainerRange",multiple:true,singularName:"range"},"content":{type:"sap.ui.core.Control",multiple:false,visibility:"hidden"}},associations:{"defaultContent":{type:"sap.ui.core.Control",multiple:false}},events:{"rangeSwitch":{}}}});sap.ui.commons.ResponsiveContainer.M_EVENTS={'rangeSwitch':'rangeSwitch'};jQuery.sap.require("sap.ui.core.ResizeHandler");

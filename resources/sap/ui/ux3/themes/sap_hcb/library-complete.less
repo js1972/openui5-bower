@@ -1,6 +1,6 @@
 
-/* SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+/* SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
  *//* Global CSS for 'base' theme */
@@ -289,10 +289,11 @@
 @sapUiUx3ShellSideBarBaseWidth:       40px;
 /** 
   * This parameter is used in the Shell control to calculate the size of the margin when showing
-  * an overflow button in the right pane.
+  * an overflow button in the right pane. As of 1.18.0 this value contains the _maximum_ height
+  * of the overflow button, if the text inside the button is smaller, the button shrinks with it.
   * !!! ONLY PX-VALUES ARE ALLOWED HERE.
   */
-@sapUiUx3ShellPaneOverflowButtonHeight: 40px;
+@sapUiUx3ShellPaneOverflowButtonHeight: 120px;
 
 @sapUiUx3ExactLstExpandOffset: 0 0;
 @sapUiUx3ExactLstRootExpandOffset: 0 3;
@@ -1341,7 +1342,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 }
 
 .sapUiUx3DSSVSA {
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 /* ============================================= */
 /* CSS for control sap.ui.ux3/Exact.control */
@@ -2434,6 +2435,24 @@ html[data-sap-ui-browser^="ie"] .sapUiFeederInput > p {
 	height: auto;
 }
 
+.sapUiFeederLarge > button > span.sapUiBtnIco{
+	font-size: 32px;
+	line-height: 32px;
+	height: 32px;
+}
+
+.sapUiFeederMedium > button > span.sapUiBtnIco{
+	font-size: 24px;
+	line-height: 24px;
+	height: 24px;
+}
+
+.sapUiFeederComment > button > span.sapUiBtnIco{
+	font-size: 19px;
+	line-height: 19px;
+	height: 18px;
+}
+
 .sapUiFeederEmptyText {
 	color: @sapUiContentDisabledTextColor;
 }
@@ -3065,6 +3084,9 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierContent .sapUiCommonsHoriDiv {
 .sapUiNotifierSelectable .sapUiNotifierMessage {
 	cursor: pointer;
 }
+.sapUiNotifierSelectable .sapUiNotifierMessage.sapUiNotifierMessageReadOnly {
+	cursor: default;
+}
 
 .sapUiNotifierMessage:hover,
 .sapUiNotifierMessage:focus {
@@ -3107,13 +3129,13 @@ li.sapUiInPlaceMessage div.sapUiNotifierMessageText {
 	max-height: 12px;
 	padding-bottom: 2px;
 	white-space: nowrap;
-}
-
-li.sapUiInPlaceMessage div.sapUiNotifierMessageText,
-li.sapUiInPlaceMessage div.sapUiNotifierMessageText {
 	outline : none;
 }
 
+li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
+	background-color: @sapUiNotifierHoverColor;
+}
+ 
 /* Only if there is an event handler show the messages as clickable */
 .sapUiInPlaceMessageSelectable:hover,
 .sapUiInPlaceMessageSelectable:active {
@@ -3558,7 +3580,7 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseA
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	bottom: 0;
-	width: 40px;
+	width: @sapUiUx3ShellSideBarBaseWidth;
 	top: 108px;
 }
 
@@ -3588,7 +3610,7 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseA
 .sapUiUx3ShellTool {
 	cursor: pointer;
 	display: inline-block;
-	width: 40px;
+	width: @sapUiUx3ShellSideBarBaseWidth;
 	height: 32px;
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -3680,13 +3702,13 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseA
 	position: absolute;
 	right: 0px;
 	top: 0px;
-	width: 40px;
+	width: @sapUiUx3ShellSideBarBaseWidth;
 	display: inline-block;
 	height: 100%;
+	
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	background-color: @sapUiUx3ShellBackgroundColor;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
@@ -3694,28 +3716,75 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseA
 
 /** Overflow button and menu**/
 
-.sapUiUx3ShellPaneBar > .sapUiUx3ShellPaneOverflowButton {
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton {
     position: absolute;
     display: none;
     bottom: 0;
     right: 0;
     margin: 0;
-    height: 30px;
-    width: 40px;
-    background-color: lighten(@sapUiDarkBG, 40%);
-}
 
-.sapUiUx3ShellPaneBar > .sapUiUx3ShellPaneOverflowButton > span {
-    font-size: 20px;
-    font-weight: bold;
+	box-sizing: border-box;
+	border-top: 1px solid lighten(@sapUiDarkBG, 20%);
+
+    width: @sapUiUx3ShellSideBarBaseWidth;
+    height: @sapUiUx3ShellPaneOverflowButtonHeight;
+
     color: lighten(@sapUiMediumText, 10%);
     cursor: pointer;
-    height: 100%;
-    width: 100%;
-    padding-top: 5px;
+    padding: 5px 0px 3px 0px;
     text-align: center;
     vertical-align: middle;
+
+	margin-bottom: 5px;
 }
+
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > .sapUiUx3ShellPaneOverflowWrapper {
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    
+    -moz-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+
+	position: absolute;
+	left: @sapUiUx3ShellSideBarBaseWidth;
+	height: @sapUiUx3ShellSideBarBaseWidth;
+    width: @sapUiUx3ShellPaneOverflowButtonHeight;
+	line-height: @sapUiUx3ShellSideBarBaseWidth;
+}
+
+
+html[data-sap-ui-browser="ie8"] .sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > .sapUiUx3ShellPaneOverflowWrapper {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	position: static;
+}
+
+html[data-sap-ui-browser="ie8"][dir="rtl"] .sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > .sapUiUx3ShellPaneOverflowWrapper {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	text-align: right;
+}
+
+
+html[data-sap-ui-browser="ie8"] .sapUiUx3ShellPaneOverflowText {
+	margin-right: 0;
+}
+
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > div > .sapUiUx3ShellPaneOverflowText {
+	box-sizing: border-box;
+	text-align: right;
+	padding-right: 5px;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
 
 .sapUiUx3ShellPaneEntries {
     -moz-transform: rotate(90deg);
@@ -3724,7 +3793,7 @@ HTML[data-sap-ui-browser='ie8'] .sapUiNotifierCallout .sapUiCltArr.sapUiCltBaseA
     transform: rotate(90deg);
     white-space: nowrap;
     margin: 0;
-    line-height: 40px;
+    line-height: @sapUiUx3ShellSideBarBaseWidth;
     padding-left: 26px;
 }
 
@@ -3811,7 +3880,7 @@ html[data-sap-ui-browser="ie8"][dir="rtl"] .sapUiUx3ShellPaneEntry {
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	right: 40px;
+	right: @sapUiUx3ShellSideBarBaseWidth;
 	/* Do not finally hardcode the width here. This width is only the default and will be overwritten by script code. */
 	width: 250px;
 	overflow: auto;
@@ -4124,14 +4193,16 @@ html[data-sap-ui-browser="ie8"] .sapUiUx3ShellCanvas {
 
 
 /** Overflow button and menu**/
-.sapUiUx3ShellPaneBar > .sapUiUx3ShellPaneOverflowButton,
-.sapUiUx3ShellPaneBar > .sapUiUx3ShellPaneOverflowButton > span {
-	background-color: @sapUiBaseBG;
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton {
 	border-top: 1px solid @sapUiLightBorder;
+	background-color: @sapUiBaseBG;
+}
+
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > span {
 	color: @sapUiBaseText;
 }
 
-.sapUiUx3ShellPaneBar > .sapUiUx3ShellPaneOverflowButton > span:hover {
+.sapUiUx3ShellPaneBarRight > .sapUiUx3ShellPaneOverflowButton > span:hover {
 	background-color: @sapUiHighlight;
 }
 .sapUiUx3ShellColorPicker {
@@ -4616,6 +4687,7 @@ html[data-sap-ui-browser="ie8"] .sapUiUx3ShellCanvas {
 	display: inline-block;
 	width: 48px;
 	height: 48px;
+	font-size: 48px;
 	border: 1px solid @sapUiMediumBorder;
 	border-radius: 6px;
 	-moz-border-radius: 6px;

@@ -1,6 +1,6 @@
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -31,9 +31,8 @@ jQuery.sap.require("sap.m.Button");
  * @class Table Personalization Dialog
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.m.TablePersoDialog
- * @experimental Since 1.15. API is not yet finished and might change completely.
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.TablePersoDialog */
 
@@ -46,7 +45,8 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
 
 	metadata : {
 		properties: {
-			"contentWidth": {type: "sap.ui.core/CSSSize"}
+			"contentWidth": {type: "sap.ui.core/CSSSize"},
+			"persoMap": {type: "object"}
 		},
 		associations: {
 			"persoDialogFor": sap.m.Table
@@ -69,7 +69,6 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
  * @protected
  */
 sap.m.TablePersoDialog.prototype.init = function() {
-	jQuery.sap.log.debug("TablePersoDialog init()");
 	var that = this;
 
 	// Resource bundle, for texts
@@ -204,28 +203,36 @@ sap.m.TablePersoDialog.prototype._resetAll = function () {
 
 };
 
+
 /**
  * Returns table column settings (header text, order, visibility) for a table
  * @private
  * @param {object} oTable the table for which column settings should be returned
  */
 sap.m.TablePersoDialog.prototype._tableColumnInfo = function (oTable) {
-	var aColumns = oTable.getColumns();
-	var aColumnInfo = [];
-	for (var c = 0, cl = aColumns.length; c < cl; c++) {
-		var oColumn = aColumns[c];
-		aColumnInfo.push({
-			text : oColumn.getHeader().getText(),
-			order : oColumn.getOrder(),
-			visible : oColumn.getVisible(),
-			id: oColumn.getId()
-		});
+	//Check if persoMap has been passed into the dialog.
+	//Otherwise, personalization is not possible.
+	if(!!this.getPersoMap()) {
+		var aColumns = oTable.getColumns();
+		var aColumnInfo = [];
+		
+		for (var c = 0, cl = aColumns.length; c < cl; c++) {
+			var oColumn = aColumns[c];
+			
+			aColumnInfo.push({
+				text : oColumn.getHeader().getText(),
+				order : oColumn.getOrder(),
+				visible : oColumn.getVisible(),
+				id: this.getPersoMap()[oColumn]
+			});
+		}
+
+		// Sort to make sure they're presented in the right order
+		aColumnInfo.sort(function(a, b) { return a.order - b.order; });
+
+		return aColumnInfo;
 	}
-
-	// Sort to make sure they're presented in the right order
-	aColumnInfo.sort(function(a, b) { return a.order - b.order; });
-
-	return aColumnInfo;
+	return null;
 };
 
 /**
@@ -258,18 +265,49 @@ sap.m.TablePersoDialog.prototype._moveItem = function (iDirection) {
 	// Do the swap
 	var temp = data.aColumns[swap];
 	data.aColumns[swap] = data.aColumns[item];
+	//Make sure the order member is adapted as well!
+	data.aColumns[swap].order = swap;
 	data.aColumns[item] = temp;
+	//Make sure the order member is adapted as well!
+	data.aColumns[item].order = item;
 
 	// Remove selection before binding
 	oList.removeSelections(true);
 
-	// Re-set the data in the model
-	oModel.setData(data);
+	// Swap in the visible list
+	this._swapListItemContent(oList, item, swap);
 
 	// Switch the selected item
 	oList.setSelectedItem(oList.getItems()[swap], true);
 
 };
+
+/**
+* Exchanges the label property text and the Switch inside the Dialog's List
+* for the two items being swapped, using DOM manipulation (to save re-rendering)
+* @private
+*/
+sap.m.TablePersoDialog.prototype._swapListItemContent = function(oList, iItem, iSwap) {
+
+	var aListItems = oList.getItems();
+
+	// Labels
+	var sLabelItemId = "#" + aListItems[iItem].getId() + " label",
+	sLabelSwapId = "#" + aListItems[iSwap].getId() + " label";
+	var sLabelTemp = jQuery(sLabelSwapId).html();
+
+	// Switches
+	var sSwitchItemId = "#" + aListItems[iItem].getContent()[0].getId();
+	var sSwitchSwapId = "#" + aListItems[iSwap].getContent()[0].getId();
+	var sSwitchTemp = jQuery(sSwitchSwapId).html();
+
+	// Do the swap
+	jQuery(sLabelSwapId).html(jQuery(sLabelItemId).html());
+	jQuery(sLabelItemId).html(sLabelTemp);
+	jQuery(sSwitchSwapId).html(jQuery(sSwitchItemId).html());
+	jQuery(sSwitchItemId).html(sSwitchTemp);
+
+}
 
 /**
  * Reads current column settings from the table and stores in the model

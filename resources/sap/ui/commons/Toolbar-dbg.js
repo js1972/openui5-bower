@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -433,6 +433,8 @@ sap.ui.commons.Toolbar.prototype.onAfterRendering = function() {
 	this.bHasRightItems = iRightItemsLength > 0;
 	if (this.bHasRightItems) {
 		this.sRightSideResizeListenerId = sap.ui.core.ResizeHandler.register(this.oDomRef.lastChild, jQuery.proxy(this.onrightsideresize, this));
+		// Re-initialize the ItemNavigation with changed DomRefs after rendering and set the overflow icon properly
+		this.updateAfterResize(true);
 		this._observeVisibleItemCountChange(40);
 	} else {
 		// Re-initialize the ItemNavigation with changed DomRefs after rendering and set the overflow icon properly
@@ -665,7 +667,6 @@ sap.ui.commons.Toolbar.prototype.getVisibleItemInfo = function() {
 			currentOffsetLeft = oElement.offsetLeft;
 
 			// find out whether the current element is a line *below* the last element
-			
 			if (i == 1) {
 				lastOffsetWidth = aElements[0].offsetWidth;
 				lastOffsetLeft = aElements[0].offsetLeft;
@@ -1144,16 +1145,19 @@ sap.ui.core.Element.extend("sap.ui.commons.ToolbarOverflowPopup", /** @lends sap
 });
 
 /**
- * Called if an item is rerendered to update the item navigation
+ * Called if an item is rerendered to update the item navigation.
  *
  * @private
  */
 sap.ui.commons.Toolbar.prototype._itemRendered = function() {
-	if (!this.sUpdateItemNavigationTimer) {
-		this.sUpdateItemNavigationTimer = jQuery.sap.delayedCall(0, this, "updateAfterResize", [true])
-	}
+    if (this.oItemNavigation) {
+          this.updateAfterResize(true);
+    } else {
+    	if (!this.sUpdateItemNavigationTimer) {
+    		this.sUpdateItemNavigationTimer = jQuery.sap.delayedCall(0, this, "updateAfterResize", [true])
+    	}
+    }
 };
-
 
 /**
  * Handles the window resize event.
@@ -1241,3 +1245,4 @@ sap.ui.commons.Toolbar.prototype.cleanup = function() {
 	}
 
 };
+

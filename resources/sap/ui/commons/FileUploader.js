@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.FileUploader");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.FileUploader",{metadata:{publicMethods:["upload"],library:"sap.ui.commons",properties:{"value":{type:"string",group:"Data",defaultValue:''},"enabled":{type:"boolean",group:"Behavior",defaultValue:true},"visible":{type:"boolean",group:"Behavior",defaultValue:true},"uploadUrl":{type:"sap.ui.core.URI",group:"Data",defaultValue:''},"name":{type:"string",group:"Data",defaultValue:null},"width":{type:"string",group:"Misc",defaultValue:''},"uploadOnChange":{type:"boolean",group:"Behavior",defaultValue:false},"additionalData":{type:"string",group:"Data",defaultValue:null},"sameFilenameAllowed":{type:"boolean",group:"Behavior",defaultValue:false},"buttonText":{type:"string",group:"Misc",defaultValue:null}},aggregations:{"parameters":{type:"sap.ui.commons.FileUploaderParameter",multiple:true,singularName:"parameter"}},events:{"change":{},"uploadComplete":{}}}});sap.ui.commons.FileUploader.M_EVENTS={'change':'change','uploadComplete':'uploadComplete'};

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -147,22 +147,29 @@ function checkTheme(oThemeCheck) {
 /* checks if a particular class is available at the beginning of the core styles
  */
 function checkCustom (oThemeCheck){
-	var ruleName = null;
+	var ruleName = null,
+	bSuccess = false;
+
 	//get the core styles
 	jQuery.each(document.styleSheets, function(iIndex, oStyleSheet) {
 			if (!!oStyleSheet.ownerNode && /sap.ui.core/.test(oStyleSheet.ownerNode.id) && oStyleSheet.cssRules && oStyleSheet.cssRules.length > 0){
 				ruleName = oStyleSheet.cssRules[0].selectorText;
+				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
+					bSuccess = true;
+					return false;
+				}
 			}
 			else if(!!oStyleSheet.owningElement && /sap.ui.core/.test(oStyleSheet.owningElement.id) && oStyleSheet.rules && oStyleSheet.rules.length > 0){
 					//ie8 doesn't know ownerNode
 				ruleName = oStyleSheet.rules[0].selectorText;
+				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
+					bSuccess = true;
+					return false;
+				}
 			}
 	});
 	// we should now have some rule name ==> try to match against custom check
-	if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
-		return true;
-	}
-	return false;
+	return bSuccess;
 }
 
 function delayedCheckTheme(bFirst) {

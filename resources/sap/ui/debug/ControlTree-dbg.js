@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  * @class Control Tree used for the Debug Environment
  * @extends sap.ui.base.EventProvider
  * @author Martin Schaus, Frank Weigel
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.debug.ControlTree
  * @private
  */
@@ -54,10 +54,10 @@ sap.ui.base.EventProvider.extend("sap.ui.debug.ControlTree", /** @lends sap.ui.d
 		this.sSelectedNodeId = "";
 		this.sResourcePath = bRunsEmbedded ? jQuery.sap.getModulePath("", "/") : (window.top.testfwk.sResourceRoot || "../");
 		this.sTestResourcePath = this.sResourcePath + "../test-resources/";
-		this.sSpaceUrl = this.sResourcePath + "testsuite/images/space.gif";
-		this.sMinusUrl = this.sResourcePath + "testsuite/images/minus.gif";
-		this.sPlusUrl = this.sResourcePath + "testsuite/images/plus.gif";
-		this.sLinkUrl = this.sResourcePath + "testsuite/images/link.gif";
+		this.sSpaceUrl = this.sResourcePath + "sap/ui/debug/images/space.gif";
+		this.sMinusUrl = this.sResourcePath + "sap/ui/debug/images/minus.gif";
+		this.sPlusUrl = this.sResourcePath + "sap/ui/debug/images/plus.gif";
+		this.sLinkUrl = this.sResourcePath + "sap/ui/debug/images/link.gif";
 	}
 });
 

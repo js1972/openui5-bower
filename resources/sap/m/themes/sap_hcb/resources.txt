@@ -21,15 +21,6 @@ GroupHeaderListItem.css
 GrowingList.css
 IconTabBar.css
 Image.css
-img
-img/alert.png
-img/checkmark-android.png
-img/checkmark.png
-img/error.png
-img/error2x.png
-img/iphone_bg.png
-img/mandatory.png
-img/mandatory2x.png
 Input.css
 InputBase.css
 InputListItem.css

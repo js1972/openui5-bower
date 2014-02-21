@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -15,10 +15,10 @@ sap.m.SwitchRenderer = {};
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  *
- * @param {sap.ui.core.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
+ * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the Render-Output-Buffer
  * @param {sap.ui.core.Control} oSwitch an object representation of the control that should be rendered
  */
-sap.m.SwitchRenderer.render = function(oRenderManager, oSwitch) {
+sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 	var bState = oSwitch.getState(),
 		sState = bState ? oSwitch._sOn : oSwitch._sOff,
 		sTooltip = oSwitch.getTooltip_AsString(),
@@ -32,103 +32,111 @@ sap.m.SwitchRenderer.render = function(oRenderManager, oSwitch) {
 		return;
 	}
 
-	oRenderManager.write('<div');
-	oRenderManager.addClass("sapMSwtCont");
+	oRm.write('<div');
+	oRm.addClass("sapMSwtCont");
 
 	if (bDisabled) {
-		oRenderManager.addClass("sapMSwtContDisabled");
+		oRm.addClass("sapMSwtContDisabled");
 	}
 
-	oRenderManager.writeClasses();
-	oRenderManager.writeStyles();
-	oRenderManager.writeControlData(oSwitch);
+	oRm.writeClasses();
+	oRm.writeStyles();
+	oRm.writeControlData(oSwitch);
 
 	if (sTooltip) {
-		oRenderManager.writeAttributeEscaped("title", sTooltip);
+		oRm.writeAttributeEscaped("title", sTooltip);
 	}
 
-	oRenderManager.write(">");
+	oRm.write(">");
 
-		oRenderManager.write("<div");
-		oRenderManager.addClass("sapMSwt");
-		bState ? oRenderManager.addClass("sapMSwtOn") : oRenderManager.addClass("sapMSwtOff");
-		oRenderManager.addClass("sapMSwt" + sType);
+		oRm.write("<div");
+		oRm.addClass("sapMSwt");
+		oRm.addClass(bState ? "sapMSwtOn" : "sapMSwtOff");
+		oRm.addClass("sapMSwt" + sType);
 
 		if (bDisabled) {
-			oRenderManager.addClass("sapMSwtDisabled");
+			oRm.addClass("sapMSwtDisabled");
 		}
 
-		oRenderManager.writeClasses();
-		oRenderManager.write('>');
-			oRenderManager.write('<div class="sapMSwtInner">');
+		oRm.writeClasses();
+		oRm.write(">");
+			oRm.write('<div class="sapMSwtInner">');
 
 				// text
-				this._renderText(oRenderManager, oSwitch, bDefault);
+				this._renderText(oRm, oSwitch, bDefault);
 
 				// handle
-				this._renderHandle(oRenderManager, oSwitch, sState, bDisabled);
+				this._renderHandle(oRm, oSwitch, sState, bDisabled);
 
-			oRenderManager.write("</div>");
+			oRm.write("</div>");
 
-		oRenderManager.write("</div>");
+		oRm.write("</div>");
 
 		if (sName) {
 
 			// checkbox
-			this._renderCheckbox(oRenderManager, oSwitch, sName, sState, bState, bDisabled);
+			this._renderCheckbox(oRm, oSwitch, sName, sState, bState, bDisabled);
 		}
 
-	oRenderManager.write("</div>");
+	oRm.write("</div>");
 };
 
-sap.m.SwitchRenderer._renderText = function(oRenderManager, oSwitch, bDefault) {
+sap.m.SwitchRenderer._renderText = function(oRm, oSwitch, bDefault) {
 
 	// on
-	oRenderManager.write('<div class="sapMSwtText sapMSwtTextOn">');
-		oRenderManager.write("<span>");
+	oRm.write('<div class="sapMSwtText sapMSwtTextOn">');
+		oRm.write("<span>");
 			if (bDefault) {
-				oRenderManager.writeEscaped(oSwitch._sOn);
+				oRm.writeEscaped(oSwitch._sOn);
 			}
-		oRenderManager.write("</span>");
-	oRenderManager.write("</div>");
+		oRm.write("</span>");
+	oRm.write("</div>");
 
 	// off
-	oRenderManager.write('<div class="sapMSwtText sapMSwtTextOff">');
-		oRenderManager.write("<span>");
+	oRm.write('<div class="sapMSwtText sapMSwtTextOff">');
+		oRm.write("<span>");
 			if (bDefault) {
-				oRenderManager.writeEscaped(oSwitch._sOff);
+				oRm.writeEscaped(oSwitch._sOff);
 			}
-		oRenderManager.write("</span>");
-	oRenderManager.write("</div>");
+		oRm.write("</span>");
+	oRm.write("</div>");
 };
 
-sap.m.SwitchRenderer._renderHandle = function(oRenderManager, oSwitch, sState, bDisabled) {
-	oRenderManager.write('<div class="sapMSwtHandle"');
+sap.m.SwitchRenderer._renderHandle = function(oRm, oSwitch, sState, bDisabled) {
+	oRm.write("<div");
+	oRm.addClass("sapMSwtHandle");
 
-	if (!bDisabled) {
-		oRenderManager.writeAttribute("tabindex", "0");
+	if (sap.ui.Device.browser.webkit && Number(jQuery.browser.version).toFixed(2) === "537.35") {
+		oRm.addClass("sapMSwtWebKit537-35");
 	}
 
-	oRenderManager.writeAttributeEscaped("data-sap-ui-swt", sState);
-	oRenderManager.write("></div>");
+	oRm.writeClasses();
+
+	if (!bDisabled) {
+		oRm.writeAttribute("tabindex", "0");
+	}
+
+	oRm.writeAttributeEscaped("data-sap-ui-swt", sState);
+	oRm.write(">");
+	oRm.write("</div>");
 };
 
-sap.m.SwitchRenderer._renderCheckbox = function(oRenderManager, oSwitch, sName, sState, bState, bDisabled) {
-	oRenderManager.write('<input type="checkbox"');
+sap.m.SwitchRenderer._renderCheckbox = function(oRm, oSwitch, sName, sState, bState, bDisabled) {
+	oRm.write('<input type="checkbox"');
 
-	oRenderManager.writeAttributeEscaped("name", sName);
+	oRm.writeAttributeEscaped("name", sName);
 
-	oRenderManager.writeAttribute("id", oSwitch.getId() + "-input");
+	oRm.writeAttribute("id", oSwitch.getId() + "-input");
 
 	if (bState) {
-		oRenderManager.writeAttribute("checked", "checked");
+		oRm.writeAttribute("checked", "checked");
 	}
 
 	if (bDisabled) {
-		oRenderManager.writeAttribute("disabled", "disabled");
+		oRm.writeAttribute("disabled", "disabled");
 	}
 
-	oRenderManager.writeAttributeEscaped("value", sState);
+	oRm.writeAttributeEscaped("value", sState);
 
-	oRenderManager.write(">");
+	oRm.write(">");
 };

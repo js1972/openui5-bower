@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -22,7 +22,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 	 * @class This class represents the ControlTree plugin for the support tool functionality of UI5. This class is internal and all its functions must not be used by an application.
 	 * @abstract
 	 * @extends sap.ui.base.Object
-	 * @version 1.16.8-SNAPSHOT
+	 * @version 1.18.8
 	 * @constructor
 	 * @private
 	 * @name sap.ui.core.support.plugins.ControlTree
@@ -178,11 +178,11 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 			var bHasChildren = mElement.aggregation.length > 0 || mElement.association.length > 0;
 			rm.write("<li id=\"sap-debug-controltree-" + mElement.id + "\" class=\"sapUiControlTreeElement\">");
 			var sImage = bHasChildren ? "minus" : "space";
-			rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" src=\"../../../../testsuite/images/" + sImage + ".gif\" />");
+			rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" src=\"../../debug/images/" + sImage + ".gif\" />");
 			var sPath = mElement.library.replace(/\./g, "/") + "/images/controls/" + mElement.type + ".gif";
 
 			if (mElement.isAssociation) {
-				rm.write("<img title=\"Association\" class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" src=\"../../../../testsuite/images/link.gif\" />");
+				rm.write("<img title=\"Association\" class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" src=\"../../debug/images/link.gif\" />");
 			}
 
 			rm.write("<img class=\"sapUiControlPicture\" style=\"height: 16px; width: 16px;\" src=\"../../../../../test-resources/" + sPath + "\" />");
@@ -204,17 +204,19 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 			if (mElement.association.length > 0) {
 				rm.write("<ul>");
 				$.each(mElement.association, function(iIndex, oValue) {
-					
-					if (typeof(oValue) === "string") {
-						rm.write("<li data-sap-ui-controlid=\"" + oValue + "\" class=\"sapUiControlTreeLink\">");
-						rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" align=\"middle\" src=\"../../../../testsuite/images/space.gif\" />");
-						rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" align=\"middle\" src=\"../../../../testsuite/images/link.gif\" />");
-						rm.write("<div><span title='Association to \"" + oValue + "\"'>" + oValue + "</span></div>");
+
+					if (oValue.isAssociationLink) {
+						var sType = oValue.type.lastIndexOf(".") > 0 ? oValue.type.substring(oValue.type.lastIndexOf(".") + 1) : oValue.type;
+						rm.write("<li data-sap-ui-controlid=\"" + oValue.id + "\" class=\"sapUiControlTreeLink\">");
+						rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" align=\"middle\" src=\"../../debug/images/space.gif\" />");
+						rm.write("<img class=\"sapUiControlTreeIcon\" style=\"height: 12px; width: 12px;\" align=\"middle\" src=\"../../debug/images/link.gif\" />");
+						rm.write("<div><span title=\"Association '" + oValue.name + "' to '" + oValue.id + "' with type '" + oValue.type + "'\">" +
+							sType + " - " + oValue.id + " (" + oValue.name + ")</span></div>");
 						rm.write("</li>");
 					} else {
 						renderNode(0 /* not used */, oValue);
 					}
-					
+
 				});
 				rm.write("</ul>");
 			}
@@ -248,7 +250,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 					rm.write("<tr><td>");
 					rm.write("<label class='sapUiSupportLabel'>" + oProperty.name + ((oProperty.isBound) ?
-							'<img title="Value is bound (see Binding Infos)" src="../../../../../resources/testsuite/images/link.gif" style="vertical-align:middle;margin-left:3px">' : "") + "</label>");
+							'<img title="Value is bound (see Binding Infos)" src="../../debug/images/link.gif" style="vertical-align:middle;margin-left:3px">' : "") + "</label>");
 					rm.write("</td><td>");
 
 					if (oProperty.type === "boolean") {
@@ -265,7 +267,13 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 						rm.write("<div><select ");
 						rm.write("data-sap-ui-name='" + oProperty.name + "'>");
 						$.each(oProperty.enumValues, function(sKey, sValue) {
-							rm.write("<option>");
+							rm.write("<option");
+
+							if (sKey === oProperty.value) {
+								rm.write(" selected");
+							}
+
+							rm.write(">");
 							rm.writeEscaped(sKey);
 							rm.write("</option>");
 						});
@@ -428,7 +436,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 				rm.write('<label class="sapUiSupportLabel" style="vertical-align: middle">' + oBindingInfo.name + '</label>');
 				rm.write('<img class="sapUiSupportRefreshBinding" title="Refresh Binding" ' +
-					'src="../../../../../resources/testsuite/images/refresh.gif" style="cursor:pointer;margin-left:5px;vertical-align:middle">');
+					'src="../../debug/images/refresh.gif" style="cursor:pointer;margin-left:5px;vertical-align:middle">');
 
 				rm.write('</span>');
 
@@ -631,7 +639,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 			rm.write('<li><span>' + oValue.name + '</span>' +
 					 '<img class="remove-breakpoint" style="cursor:pointer;margin-left:5px" ' +
-					 'src="../../../../testsuite/images/delete.gif"></li>');
+					 'src="../../debug/images/delete.gif"></li>');
 		});
 
 		rm.write('</ul></div>');
@@ -1074,7 +1082,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 	};
 
 	sap.ui.core.support.plugins.ControlTree.prototype.onsapUiSupportControlTreeRequestControlTreeSerialize = function(oEvent) {
-		var oControl = sap.ui.getCore().byId(oEvent.getParameter("controlID"));
+		var oControl = this.oCore.byId(oEvent.getParameter("controlID"));
 		var sType = oEvent.getParameter("sType");
 		
 		var oViewSerializer = undefined;
@@ -1112,7 +1120,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 					oParentControl.addContent(oControl);
 				}
 			} else {
-				var oUIArea = sap.ui.getCore().getUIArea(oEvent.getParameter("controlID"));
+				var oUIArea = this.oCore.getUIArea(oEvent.getParameter("controlID"));
 				var oView = sap.ui.jsview(sType + "ViewExported");
 				var aContent = oUIArea.getContent();
 				for ( var i = 0; i < aContent.length; i++) {
@@ -1148,7 +1156,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 	sap.ui.core.support.plugins.ControlTree.prototype.onsapUiSupportControlTreeChangeProperty = function(oEvent) {
 
 		var sId = oEvent.getParameter("id");
-		var oControl = sap.ui.getCore().byId(sId);
+		var oControl = this.oCore.byId(sId);
 
 		if (oControl) {
 
@@ -1216,7 +1224,8 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 	sap.ui.core.support.plugins.ControlTree.prototype.getControlTree = function() {
 
-		var aControlTree = [],
+		var oCore = this.oCore,
+			aControlTree = [],
 			mAllElements = {};
 
 		function serializeElement(oElement) {
@@ -1231,11 +1240,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 				});
 			} else {
 				mElement.library = oElement.getMetadata().getLibraryName();
-				if (oElement.getMetadata().getStereotype() === "control") {
-					mElement.type = oElement.getMetadata().getElementName(); // difference to getName() ???
-				} else if(oElement.getMetadata().getStereotype() === "component") {
-					mElement.type = oElement.getMetadata().getName();
-				}
+				mElement.type = oElement.getMetadata().getName();
 				if (oElement.mAggregations) {
 					for (var sAggrName in oElement.mAggregations) {
 						var oAggrElement = oElement.mAggregations[sAggrName];
@@ -1252,12 +1257,14 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 					}
 				}
 				if (oElement.mAssociations) {
+					var mAssocMetadata = oElement.getMetadata().getAllAssociations();
 					for (var sAssocName in oElement.mAssociations) {
 						var sAssocId = oElement.mAssociations[sAssocName];
-						if (sAssocId) {
+						var sAssocType = (mAssocMetadata[sAssocName]) ? mAssocMetadata[sAssocName].type : null;
+						if (sAssocId && sAssocType) {
 							var aAssocIds = $.isArray(sAssocId) ? sAssocId : [sAssocId];
 							$.each(aAssocIds, function(iIndex, oValue) {
-								mElement.association.push(oValue);
+								mElement.association.push({ id: oValue, type: sAssocType, name: sAssocName, isAssociationLink: true });
 							});
 						}
 					}
@@ -1266,7 +1273,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 			return mElement;
 		};
 
-		$.each(this.oCore.mUIAreas, function(iIndex, oUIArea) {
+		$.each(oCore.mUIAreas, function(iIndex, oUIArea) {
 			var mElement = serializeElement(oUIArea);
 			aControlTree.push(mElement);
 		});
@@ -1274,10 +1281,39 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 		function serializeAssociations(iIndex, mElement) {
 
 			for (var i = 0; i < mElement.association.length; i++) {
-				var sAssocId = mElement.association[i];
+				var mAssoc = mElement.association[i];
 
-				if (!mAllElements[sAssocId]) {
-					mElement.association[i] = serializeElement(sap.ui.getCore().byId(sAssocId) || /* TODO: better handling here? */ sap.ui.getCore().getComponent(sAssocId));
+				if (!mAllElements[mAssoc.id]) {
+
+					var oType = jQuery.sap.getObject(mAssoc.type);
+
+					if (!oType) {
+						continue;
+					}
+
+					var sStereotype = oType.getMetadata().getStereotype(),
+						oObj = null;
+
+					switch (sStereotype) {
+					case "element":
+					case "control":
+						oObj = oCore.byId(mAssoc.id);
+						break;
+					case "component":
+						oObj = oCore.getComponent(mAssoc.id);
+						break;
+					case "template":
+						oObj = oCore.getTemplate(mAssoc.id);
+						break;
+					default:
+						break;
+					}
+
+					if (!oObj) {
+						continue;
+					}
+
+					mElement.association[i] = serializeElement(oObj);
 					mElement.association[i].isAssociation = true;
 					serializeAssociations(0, mElement.association[i]);
 				}
@@ -1298,9 +1334,9 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 		var aControlProps = [];
 
-		var oControl = sap.ui.getCore().byId(sId);
+		var oControl = this.oCore.byId(sId);
 
-		if (!oControl && sap.ui.getCore().getUIArea(sId)) {
+		if (!oControl && this.oCore.getUIArea(sId)) {
 
 			aControlProps.push({
 				control: "sap.ui.core.UIArea",
@@ -1382,7 +1418,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 			contexts: []
 		};
 
-		var oControl = sap.ui.getCore().byId(sId);
+		var oControl = this.oCore.byId(sId);
 
 		if (!oControl) return mControlBindingInfos;
 
@@ -1425,11 +1461,16 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 						var oBinding = aBindingBuffer[iIndex],
 							oModel = oBinding.getModel();
 
-						if (oBinding.getContext().getProperty(mData.path) != null) {
-							mData.invalidPath = false;
-						}
+						var sAbsolutePath;
 
-						var sAbsolutePath = oBinding.getModel().resolve(oBinding.getPath(), oBinding.getContext());
+						if (oModel) {
+							sAbsolutePath = oModel.resolve(oBinding.getPath(), oBinding.getContext());
+
+							if (oModel.getProperty(sAbsolutePath) != null) {
+								mData.invalidPath = false;
+							}
+
+						}
 
 						mData.absolutePath = (typeof(sAbsolutePath) === 'undefined') ? 'Unresolvable' : sAbsolutePath;
 						mData.isRelative = oBinding.isRelative();
@@ -1536,9 +1577,9 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 				var oCoreModel = null;
 
 				if (mModelInfo.name === 'undefined') {
-					oCoreModel = sap.ui.getCore().getModel();
+					oCoreModel = this.oCore.getModel();
 				} else {
-					oCoreModel = sap.ui.getCore().getModel(mModelInfo.name);
+					oCoreModel = this.oCore.getModel(mModelInfo.name);
 				}
 
 				if (oCoreModel) {
@@ -1563,7 +1604,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.ViewSerializer");
 
 	sap.ui.core.support.plugins.ControlTree.prototype.refreshBinding = function(sId, sBindingName) {
 
-		var oControl = sap.ui.getCore().byId(sId);
+		var oControl = this.oCore.byId(sId);
 		var mBindingInfo = oControl.mBindingInfos[sBindingName];
 
 		if (!oControl || !mBindingInfo) return;

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -548,7 +548,7 @@ sap.m.SearchField.prototype.onBeforeRendering = function() {
 
 sap.m.SearchField.prototype.onAfterRendering = function() {
 	// DOM element for the embedded HTML input:
-	this._inputElement = jQuery.sap.domById(this.getId() + "-I");
+	this._inputElement = this.getDomRef("I");
 	// Bind events
 	//  search: user has pressed "Enter" button -> fire search event, do search
 	//  change: user has focused another control on the page -> do not trigger a search action
@@ -562,14 +562,10 @@ sap.m.SearchField.prototype.onAfterRendering = function() {
 };
 
 sap.m.SearchField.prototype.clear = function(){
-	if(!this._inputElement) return;
-
-	var value = "";
-	this._inputElement.value = value;
-	this.setProperty("value", value, true);
-	this.$().toggleClass("sapMSFVal", false); // remove the x button
-	this.fireLiveChange({newValue: value});
-	this.fireSearch({query: value});
+	if(!this._inputElement || this.getValue() == "") return;
+	this.setValue("");
+	this.fireLiveChange({newValue: ""});
+	this.fireSearch({query: ""});
 };
 
 sap.m.SearchField.prototype.ontouchstart = function(oEvent) {
@@ -582,11 +578,19 @@ sap.m.SearchField.prototype.ontouchstart = function(oEvent) {
 	if(oSrc.id == this.getId()+"-reset"){
 		if(oEvent.originalEvent.button === 2) return; // no action on the right mouse button
 
+		var bEmpty = !this.getValue();
 		this.clear();
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
-		// keep keyboard opened when a user touches "x", take focus from other elements
-		if(document.activeElement !== this._inputElement) this._inputElement.focus();
+		// When a user presses "x":
+		// - always focus input on desktop
+		// - focus input only if the soft keyboard is already opened on touch devices (avoid keyboard jumping)
+		// When there was no "x" visible (bEmpty):
+		// - always focus
+		var active = document.activeElement;
+		if((sap.ui.Device.system.desktop || bEmpty || /(INPUT|TEXTAREA)/i.test(active.tagName) ) && (active !== this._inputElement)) {
+			this._inputElement.focus();
+		}
 	}
 };
 
@@ -595,6 +599,9 @@ sap.m.SearchField.prototype.onclick = function(oEvent) {
 	if(this.getEnabled() && oEvent.target.tagName == "FORM"){
 		this._inputElement.focus();
 	}
+};
+sap.m.SearchField.prototype.ontap = function(oEvent) {
+	this.onclick(oEvent);
 };
 
 /**
@@ -608,7 +615,7 @@ sap.m.SearchField.prototype.onclick = function(oEvent) {
  */
 sap.m.SearchField.prototype.onSearch = function(event){
 	var value = this._inputElement.value;
-	this.setProperty("value", value, true);
+	this.setValue(value);
 	this.fireSearch({query: value});
 	// If the user has pressed the search button on the soft keyboard - close it,
 	// but only in case of soft keyboard:
@@ -638,8 +645,7 @@ sap.m.SearchField.prototype._blur = function(){
  * @private
  */
 sap.m.SearchField.prototype.onChange = function(event){
-	var value = this._inputElement.value;
-	this.setProperty("value", value, true);
+	this.setValue(this._inputElement.value);
 };
 
 /**
@@ -648,8 +654,7 @@ sap.m.SearchField.prototype.onChange = function(event){
  */
 sap.m.SearchField.prototype.onInput = function(event){
 	var value = this._inputElement.value;
-	this.$().toggleClass("sapMSFVal", !!value);
-	this.setProperty("value", value, true);
+	this.setValue(value);
 	this.fireLiveChange({newValue: value});
 };
 
@@ -767,9 +772,24 @@ sap.m.SearchField.prototype._setIcon = function(icon, delay){
 	}
 };
 
+sap.m.SearchField.prototype.setValue = function(value){
+	if(this._inputElement){
+		if(this._inputElement.value != value){
+			this._inputElement.value = value;
+		}
+		var $this = this.$();
+		if($this.hasClass("sapMSFVal") == !value){
+			$this.toggleClass("sapMSFVal", !!value);
+		}
+	}
+	this.setProperty("value", value, true);
+	return this;
+};
+
 sap.m.SearchField.prototype.setShowRefreshButton = function(showRefresh){
 	this.setProperty("showRefreshButton", showRefresh);
 	this._setIcon(showRefresh? this._sReload : this._sSearch);
+	return this;
 };
 
 sap.m.SearchField.prototype.setRefreshButtonTooltip = function(tooltip){
@@ -777,4 +797,5 @@ sap.m.SearchField.prototype.setRefreshButtonTooltip = function(tooltip){
 	if(this.getShowRefreshButton() && this._oButton){
 		this._oButton.setTooltip(tooltip);
 	}
+	return this;
 };

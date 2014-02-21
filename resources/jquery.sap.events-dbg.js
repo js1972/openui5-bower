@@ -1,13 +1,12 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 // Provides functionality related to eventing.
 jQuery.sap.declare("jquery.sap.events", false);
 jQuery.sap.require("jquery.sap.keycodes");
-
 
 (function() {
 
@@ -104,7 +103,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 					// As we are only interested in the first touch target, we remember it
 					oTarget = oTouch.target;
-					if(oTarget.nodeType == 3) {
+					if (oTarget.nodeType === 3) {
 
 						// no text node
 						oTarget = oTarget.parentNode;
@@ -233,7 +232,6 @@ jQuery.sap.require("jquery.sap.keycodes");
 		"paste",
 		"cut"
 	];
-
 
 	/**
 	 * Enumeration of all so called "pseudo events", a useful classification
@@ -719,7 +717,6 @@ jQuery.sap.require("jquery.sap.keycodes");
 	 */
 	var PSEUDO_EVENTS = ["sapdown", "sapdownmodifiers", "sapshow", "sapup", "sapupmodifiers", "saphide", "sapleft", "sapleftmodifiers", "sapright", "saprightmodifiers", "saphome", "saphomemodifiers", "saptop", "sapend", "sapendmodifiers", "sapbottom", "sappageup", "sappageupmodifiers", "sappagedown", "sappagedownmodifiers", "sapselect", "sapselectmodifiers", "sapspace", "sapspacemodifiers", "sapenter", "sapentermodifiers", "sapexpand", "sapbackspace", "sapbackspacemodifiers", "sapdelete", "sapdeletemodifiers", "sapexpandmodifiers", "sapcollapse", "sapcollapsemodifiers", "sapcollapseall", "sapescape", "saptabnext", "saptabprevious", "sapskipforward", "sapskipback", "sapprevious", "sappreviousmodifiers", "sapnext", "sapnextmodifiers", "sapdecrease", "sapdecreasemodifiers", "sapincrease", "sapincreasemodifiers", "sapdelayeddoubleclick"];
 
-
 	//Add mobile touch events if touch is supported or we run in special dev test mode
 	(function initTouchEventSupport() {
 
@@ -879,14 +876,14 @@ jQuery.sap.require("jquery.sap.keycodes");
 		}
 	}());
 
-
 	/**
 	 * Function for initialization of an Array containing all basic event types of the available pseudo events.
 	 * @private
 	 */
 	function initPseudoEventBasicTypes(){
-		var mEvents = jQuery.sap.PseudoEvents;
-		var aResult = [];
+		var mEvents = jQuery.sap.PseudoEvents,
+			aResult = [];
+
 		for (var sName in mEvents) {
 			if (mEvents[sName].aTypes) {
 				for (var j = 0, js = mEvents[sName].aTypes.length; j < js; j++) {
@@ -897,6 +894,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 				}
 			}
 		}
+
 		return aResult;
 	}
 
@@ -908,6 +906,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	/**
 	 * Convenience method to check an event for a certain combination of modifier keys
+	 *
 	 * @private
 	 */
 	function checkModifierKeys(oEvent, bCtrlKey, bAltKey, bShiftKey) {
@@ -916,6 +915,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	/**
 	 * Convenience method to check an event for any modifier key
+	 *
 	 * @private
 	 */
 	function hasModifierKeys(oEvent) {
@@ -924,24 +924,27 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	/**
 	 * Convenience method for handling of Ctrl key, meta key etc.
+	 *
 	 * @private
 	 */
 	function getCtrlKey(oEvent) {
 		return !!(oEvent.metaKey || oEvent.ctrlKey); // double negation doesn't have effect on boolean but ensures null and undefined are equivalent to false.
 	}
 
-
 	/**
 	 * Returns an array of names (as strings) identifying {@link jQuery.sap.PseudoEvents} that are fulfilled by this very Event instance.
+	 *
 	 * @returns {String[]} Array of names identifying {@link jQuery.sap.PseudoEvents} that are fulfilled by this very Event instance.
 	 * @public
 	 */
 	jQuery.Event.prototype.getPseudoTypes = function() {
 		var aPseudoTypes = [];
+
 		if (jQuery.inArray(this.type, PSEUDO_EVENTS_BASIC_TYPES) != -1) {
 			var aPseudoEvents = PSEUDO_EVENTS;
 			var ilength = aPseudoEvents.length;
 			var oPseudo = null;
+
 			for(var i=0; i<ilength; i++){
 				oPseudo = jQuery.sap.PseudoEvents[aPseudoEvents[i]];
 				if(oPseudo.aTypes
@@ -960,13 +963,15 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	/**
 	 * Checks whether this instance of {@link jQuery.Event} is of the given <code>sType</code> pseudo type.
+	 *
 	 * @param {string} sType The name of the pseudo type this event should be checked for.
 	 * @returns {boolean} <code>true</code> if this instance of jQuery.Event is of the given sType, <code>false</code> otherwise.
 	 * @public
 	 */
 	jQuery.Event.prototype.isPseudoType = function(sType) {
 		var aPseudoTypes = this.getPseudoTypes();
-		if ( sType ) {
+
+		if (sType) {
 			return jQuery.inArray(sType, aPseudoTypes) > -1;
 		} else {
 			return aPseudoTypes.length > 0;
@@ -986,9 +991,11 @@ jQuery.sap.require("jquery.sap.keycodes");
 		_preventDefault.apply(this, arguments);
 
 		var e = this.originalEvent;
+
 		if ( !e ) {
 			return;
 		}
+
 		if ( e.keyCode != 0 ) {
 			try { // Sometimes setting keycode results in "Access Denied"
 				if(!!!sap.ui.Device.browser.firefox) {
@@ -999,9 +1006,9 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	};
 
-
 	/**
-	 * Binds all events for listening with the given callback function
+	 * Binds all events for listening with the given callback function.
+	 *
 	 * @param {function} fnCallback Callback function
 	 * @public
 	 */
@@ -1012,7 +1019,8 @@ jQuery.sap.require("jquery.sap.keycodes");
 	};
 
 	/**
-	 * Unbinds all events for listening with the given callback function
+	 * Unbinds all events for listening with the given callback function.
+	 *
 	 * @param {function} fnCallback Callback function
 	 * @public
 	 */
@@ -1025,6 +1033,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 	/**
 	 * Checks a given mouseover or mouseout event whether it is
 	 * equivalent to a mouseenter or mousleave event regarding the given DOM reference.
+	 *
 	 * @param {jQuery.Event} oEvent
 	 * @param {element} oDomRef
 	 * @public
@@ -1037,10 +1046,12 @@ jQuery.sap.require("jquery.sap.keycodes");
 		var isMouseEnterLeave = false;
 		var element = oDomRef;
 		var parent = oEvent.relatedTarget;
+
 		try {
 			while ( parent && parent !== element ) {
 				parent = parent.parentNode;
 			}
+
 			if ( parent !== element ) {
 				isMouseEnterLeave = true;
 			}
@@ -1062,6 +1073,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 	/**
 	 * Returns OffsetX of Event. In jQuery there is a bug. In IE the value is in offsetX, in FF in layerX
+	 *
 	 * @returns offsetX
 	 * @public
 	 */
@@ -1083,7 +1095,8 @@ jQuery.sap.require("jquery.sap.keycodes");
 	};
 
 	/**
-	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY
+	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY.
+	 *
 	 * @returns offsetY
 	 * @public
 	 */
@@ -1104,15 +1117,15 @@ jQuery.sap.require("jquery.sap.keycodes");
 		return 0;
 	};
 
-	
 	// we still call the original stopImmediatePropagation
 	var fnStopImmediatePropagation = jQuery.Event.prototype.stopImmediatePropagation;
 	
-	/*
+	/**
 	 * PRIVATE EXTENSION: allows to immediately stop the propagation of events in
-	 * the event handler execution - means that "before" delegates can stop the 
-	 * propagation of the event to other delegates or the element and so on. 
-	 * @see sap.ui.core.Element.prototype._callEventHandles 
+	 * the event handler execution - means that "before" delegates can stop the
+	 * propagation of the event to other delegates or the element and so on.
+	 *
+	 * @see sap.ui.core.Element.prototype._callEventHandles
 	 * @param {boolean} bStopDelegate
 	 */
 	jQuery.Event.prototype.stopImmediatePropagation = function(bStopHandlers) {
@@ -1127,12 +1140,36 @@ jQuery.sap.require("jquery.sap.keycodes");
 		
 	};
 
-	/*
-	 * PRIVATE EXTENSION: check if the handler propagation has been stopped
+	/**
+	 * PRIVATE EXTENSION: check if the handler propagation has been stopped.
+	 *
 	 * @see sap.ui.core.Element.prototype._callEventHandles 
 	 */
 	jQuery.Event.prototype.isImmediateHandlerPropagationStopped = function() {
-			return !!this._bIsStopHandlers;
-	}
+		return !!this._bIsStopHandlers;
+	};
+	
+	/**
+	 * PRIVATE EXTENSION: jQuery.Event
+	 *
+	 * Mark the event for components that needs to know if the event was handled by the control
+	 * @param {String} [sKey=handledByControl]
+	 */
+	jQuery.Event.prototype.setMarked = function(sKey) {
+		sKey = sKey || "handledByControl";
+		(this.originalEvent || {})["_sapui_" + sKey] = true;
+	};
+	
+	/**
+	 * PRIVATE EXTENSION: jQuery.Event
+	 *
+	 * Check the event whether is marked by the child control or not
+	 * @param {String} [sKey=handledByControl]
+	 * @returns {Boolean}
+	 */
+	jQuery.Event.prototype.isMarked = function(sKey) {
+		sKey = sKey || "handledByControl";
+		return !!(this.originalEvent || {})["_sapui_" + sKey];
+	};
 
 }());

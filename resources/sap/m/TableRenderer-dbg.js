@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -177,7 +177,7 @@ sap.m.TableRenderer.renderListStartAttributes = function(rm, oControl) {
 sap.m.TableRenderer.renderListHeadAttributes = function(rm, oControl) {
 	this.renderColumns(rm, oControl, "Head");
 	rm.write("<tbody");
-	rm.writeAttribute("id", oControl.getId("tblBody"));
+	rm.writeAttribute("id", oControl.addNavSection(oControl.getId("tblBody")));
 	rm.write(">");
 };
 

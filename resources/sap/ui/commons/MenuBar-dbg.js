@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -404,15 +404,23 @@ sap.ui.commons.MenuBar.prototype.onresize = function(oEvent) {
  * @private
  */
 sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
+	var sId = this.getId();
 	var jTarget = jQuery(oEvent.target);
 	var jTargetId = jTarget.attr("id");
-	if(!jTargetId || jTargetId == this.getId() || jTargetId == this.getId()+"-area"){
-		var jItems = jQuery.sap.byId(this.getId()+"-area").children();
+	var jItems = jQuery.sap.byId(sId + "-area").children();
+	if(!jTargetId || jTargetId == sId || jTargetId == sId + "-area"){
 		this.sCurrentFocusedItemRefId = jItems.length == 0 ? null : jQuery(jItems.get(0)).attr("id");
-		if(this.sCurrentFocusedItemRefId) {
-			jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0).focus();
-		}
+	} else {
+		// Make sure the parent menu item get the focus when a menu is closed via
+		// keyboard in order to keep keyboard navigation working
+		this.sCurrentFocusedItemRefId = jTargetId;
 	}
+
+	var oFocusElement = jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0);
+	if(oFocusElement) {
+		oFocusElement.focus();
+	}
+	
 	jQuery.sap.byId(this.getId()).attr("tabindex", "-1");
 };
 

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.tmpl.Template");jQuery.sap.require("sap.ui.base.ManagedObject");sap.ui.base.ManagedObject.extend("sap.ui.core.tmpl.Template",{constructor:function(i,s){sap.ui.base.ManagedObject.apply(this,arguments)},metadata:{stereotype:"template","abstract":true,properties:{"content":{type:"string",group:"Data",defaultValue:null}},publicMethods:["declareControl","createControl","placeAt","createMetadata","createRenderer"],library:"sap.ui.core"}});

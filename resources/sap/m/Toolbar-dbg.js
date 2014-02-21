@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -421,7 +421,7 @@ sap.ui.core.EnabledPropagator.call(sap.m.Toolbar.prototype);
  * @static
  * @protected
  * @param {String} sWidth
- * @return {Boolean}
+ * @return {boolean}
  */
 sap.m.Toolbar.isRelativeWidth = function(sWidth) {
 	return /^([-+]?\d+%|auto|inherit|)$/i.test(sWidth);
@@ -450,7 +450,7 @@ sap.m.Toolbar.getSubPixelWidth = function(oDomRef) {
  * @static
  * @protected
  * @param {jQuery} $Element jQuery Object
- * @return {Boolean} whether overflow or not
+ * @return {boolean} whether overflow or not
  */
 sap.m.Toolbar.checkOverflow = function($Element) {
 	if (!$Element || !$Element.length) {
@@ -526,11 +526,13 @@ sap.m.Toolbar.checkShrinkable = function($Element, sShrinkClass) {
  * @param {String} [sShrinkClass] shrink item class name
  */
 sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
-	// check element exists and visible. jQuery does not check the visibility with ":hidden" filter
-	if (!$Element || !$Element.length ||  $Element.css("visibility") == "hidden" || $Element.is(":hidden")) {
+
+	// check element exists and has width to calculate
+	if (!$Element || !$Element.length || !$Element.width()) {
 		return;
 	}
 
+	// initial values
 	var iInnerWidth = 0,
 		iTotalPercent = 0,
 		aFlexItems = [],
@@ -621,9 +623,10 @@ sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
 };
 
 // decides toolbar has flexbox support
-sap.m.Toolbar.hasFlexBoxSupport = jQuery.support.flexBoxLayout;
+sap.m.Toolbar.hasFlexBoxSupport = jQuery.support.hasFlexBoxSupport;
 
 // decides toolbar has new flexbox support
+// here we are interested with shrink support
 sap.m.Toolbar.hasNewFlexBoxSupport = (function() {
 	var oStyle = document.documentElement.style;
 	return (oStyle.flex !== undefined || oStyle.msFlex !== undefined);
@@ -818,18 +821,18 @@ sap.m.Toolbar.prototype.setDesign = function(sDesign, bCheckAutoDesign) {
 	sDesign = this.validateProperty("design", sDesign);
 
 	if (this.getDesign() != sDesign) {
-		//For 'Auto', toolbar containers need to specify the
-		//context class themselves (see for example sap.m.ListBaseRenderer)
+		// For 'Auto', toolbar containers need to specify the
+		// context class themselves (see for example sap.m.ListBaseRenderer)
 		if (sap.m.ToolbarDesign.Auto != sDesign) {
 			this._setContextClass("sapMTB-"+ sDesign +"-CTX", !bCheckAutoDesign);
 		} else {
-			//remove current context class
+			// remove current context class
 			var $this = this.$();
-			//remove old class
+			// remove old class
 			$this.removeClass(this._contextClass);
 		}
 
-		//Do suppress rerendering
+		// Do suppress rerendering
 		if (!bCheckAutoDesign) {
 			this.setProperty("design", sDesign, true);
 		}
@@ -846,10 +849,10 @@ sap.m.Toolbar.prototype._setContextClass = function(sClass, bForceChange) {
 	// applied.
 	if (bForceChange || sap.m.ToolbarDesign.Auto === this.getDesign()) {
 		var $this = this.$();
-		//remove old class first
+		// remove old class first
 		$this.removeClass(this._contextClass);
 		this._contextClass = sClass;
-		//now set the new context class
+		// now set the new context class
 		$this.addClass(this._contextClass);
 	}
 };

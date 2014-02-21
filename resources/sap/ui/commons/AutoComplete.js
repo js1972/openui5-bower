@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.AutoComplete");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.commons.ComboBox");sap.ui.commons.ComboBox.extend("sap.ui.commons.AutoComplete",{metadata:{interfaces:["sap.ui.commons.ToolbarItem"],publicMethods:["setFilterFunction"],library:"sap.ui.commons",properties:{"enableScrolling":{type:"boolean",group:"Misc",defaultValue:true}},events:{"suggest":{}}}});sap.ui.commons.AutoComplete.M_EVENTS={'suggest':'suggest'};jQuery.sap.require("jquery.sap.strings");

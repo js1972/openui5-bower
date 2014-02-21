@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.FlexBox");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.FlexBox",{metadata:{library:"sap.m",properties:{"visible":{type:"boolean",group:"Appearance",defaultValue:true},"height":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:''},"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:''},"displayInline":{type:"boolean",group:"Appearance",defaultValue:false},"direction":{type:"sap.m.FlexDirection",group:"Appearance",defaultValue:sap.m.FlexDirection.Row},"fitContainer":{type:"boolean",group:"Appearance",defaultValue:false},"renderType":{type:"sap.m.FlexRendertype",group:"Misc",defaultValue:sap.m.FlexRendertype.Div},"justifyContent":{type:"sap.m.FlexJustifyContent",group:"Appearance",defaultValue:sap.m.FlexJustifyContent.Start},"alignItems":{type:"sap.m.FlexAlignItems",group:"Appearance",defaultValue:sap.m.FlexAlignItems.Stretch}},defaultAggregation:"items",aggregations:{"items":{type:"sap.ui.core.Control",multiple:true,singularName:"item"}}}});jQuery.sap.require("sap.m.FlexBoxStylingHelper");

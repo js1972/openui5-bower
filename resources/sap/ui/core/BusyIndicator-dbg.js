@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -10,11 +10,9 @@ jQuery.sap.require("sap.ui.core.Popup");
 
 
 /**
- * This class is used to display a waiting animation covering the whole page and blocking user interaction.
- *
- * @class sap.ui.core.BusyIndicator
- * @version 1.16.8-SNAPSHOT
- * @constructor
+ * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
+ * @static 
+ * @version 1.18.8
  * @public
  */
 sap.ui.core.BusyIndicator = jQuery.extend(jQuery.sap.newObject(sap.ui.base.EventProvider.prototype), {

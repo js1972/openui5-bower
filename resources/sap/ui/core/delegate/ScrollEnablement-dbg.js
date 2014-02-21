@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -47,7 +47,7 @@ jQuery.sap.require("sap.ui.base.Object");
 		 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 		 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 		 *
-		 * @version 1.16.8-SNAPSHOT
+		 * @version 1.18.8
 		 * @constructor
 		 * @protected
 		 */
@@ -81,8 +81,10 @@ jQuery.sap.require("sap.ui.base.Object");
 		 */
 		setHorizontal : function(bHorizontal) {
 			this._bHorizontal = !!bHorizontal;
-			if(this._scroller) {
+
+			if (this._scroller) {
 				if (this._zynga) {
+
 					// Zynga keeps scrolling options internally
 					this._scroller.options.scrollingX = this._bHorizontal;
 				} else {
@@ -90,10 +92,8 @@ jQuery.sap.require("sap.ui.base.Object");
 					this._scroller.hScroll = this._scroller.hScrollbar = this._bHorizontal;
 					this._scroller._scrollbar('h');
 				}
-			} else { // mouse scrolling
-				var $Container = $.sap.byId(this._sContentId).parent();
-				// make container scrollable into the configured directions
-				$Container.css("overflow-x", this._bHorizontal ? "auto" : "hidden");
+			} else if(this._setOverflow) { // native scrolling
+				this._setOverflow();
 			}
 		},
 
@@ -105,19 +105,20 @@ jQuery.sap.require("sap.ui.base.Object");
 		 */
 		setVertical : function(bVertical) {
 			this._bVertical = !!bVertical;
-			if(this._scroller) {
+
+			if (this._scroller) {
 				if (this._zynga) {
+
 					// Zynga options
 					this._scroller.options.scrollingY = this._bVertical;
 				} else {
+
 					// iScroll
 					this._scroller.vScroll = this._scroller.vScrollbar = this._bVertical;
 					this._scroller._scrollbar('v');
 				}
-			} else { // mouse scrolling
-				var $Container = $.sap.byId(this._sContentId).parent();
-				// make container scrollable into the configured directions
-				$Container.css("overflow-y", this._bVertical ? "auto" : "hidden");
+			} else if(this._setOverflow) { //native scrolling
+				this._setOverflow();
 			}
 		},
 
@@ -148,7 +149,7 @@ jQuery.sap.require("sap.ui.base.Object");
 		 *
 		 * @param {boolean} bBounce new value for property <code>bounce</code>.
 		 * @protected
-		 * @since 1.16.5
+		 * @since 1.17
 		 */
 		setBounce: function(bBounce) {
 			this._bounce = !!bBounce;
@@ -197,23 +198,10 @@ jQuery.sap.require("sap.ui.base.Object");
 			return this;
 		},
 
-
 		scrollTo : function(x, y, time) {
 			this._scrollX = x; // remember for later rendering
 			this._scrollY = y;
-			if (this._scroller) {
-				if(this._zynga){ // Zynga
-					if (!isNaN(time)){
-						this._scroller.options.animationDuration = time;
-					}
-					this._scroller.scrollTo(x, y, !!time);
-
-				} else { // iScroll
-					this._scrollTo(x, y, time);
-				}
-			} else { // NativeMouseScroller
-				this._scrollTo(x, y, time);
-			}
+			this._scrollTo(x, y, time);
 			return this;
 		},
 
@@ -248,12 +236,11 @@ jQuery.sap.require("sap.ui.base.Object");
 	});
 
 
+	/* =========================================================== */
+	/* Delegate members for usage of iScroll library               */
+	/* =========================================================== */
 
 
-
-	/*
-	 * Delegate members for usage of iScroll library
-	 */
 	var oIScrollDelegate = {
 
 		getScrollTop : function() {
@@ -275,6 +262,7 @@ jQuery.sap.require("sap.ui.base.Object");
 		_refresh : function() {
 			if (this._scroller && this._sScrollerId) {
 				var oScroller = $.sap.domById(this._sScrollerId);
+
 				if (oScroller && (oScroller.offsetHeight > 0)) { // only refresh if rendered and not collapsed to zero height (e.g. display: none)
 
 					this._bIgnoreScrollEnd = true; // this refresh may introduce wrong position 0 after invisible rerendering
@@ -301,9 +289,11 @@ jQuery.sap.require("sap.ui.base.Object");
 				this._scroller.stop();
 				this._scrollX = -this._scroller.x; // remember position for after rendering
 				var oScroller = $.sap.domById(this._sScrollerId);
+
 				if (oScroller && (oScroller.offsetHeight > 0)) {
 					this._scrollY = -this._scroller.y;
 				}
+
 				this._scroller.destroy();
 				this._scroller = null;
 			}
@@ -322,6 +312,7 @@ jQuery.sap.require("sap.ui.base.Object");
 			}
 
 			if(bToggle && this._sContentId && $.sap.domById(this._sContentId)){
+
 				//TODO Prevent a double refresh
 				var $fRefresh = $.proxy(this._refresh, this);
 				this._sScrollerResizeListenerId = sap.ui.core.ResizeHandler.register( $.sap.domById(this._sScrollerId), $fRefresh );
@@ -355,6 +346,7 @@ jQuery.sap.require("sap.ui.base.Object");
 				bBounce = (this._bounce !== undefined) ? this._bounce : sap.ui.Device.os.ios;
 
 			var $Content = $.sap.byId(this._sContentId);
+
 			this._sScrollerId = $Content.parent().attr("id");
 
 			// Fix for displaced edit box overlay on scrolled pages in Android 4.x and 2.3.4 browsers:
@@ -369,6 +361,20 @@ jQuery.sap.require("sap.ui.base.Object");
 
 			var x = this._scrollX || 0,
 				y = this._scrollY || 0;
+			
+			// RTL adaptations
+			if (sap.ui.getCore().getConfiguration().getRTL()) {
+				// iScroll does not support RTL, so in RTL mode we need some tweaks (see https://github.com/cubiq/iscroll/issues/247)
+				$Content.attr("dir", "rtl");
+				var $Parent = $Content.parent();
+				$Parent.attr("dir", "ltr");
+				
+				if (!this._bScrollPosInitialized) {
+					x = this._scrollX = $Content.width() - $Parent.width(); // initial scroll position: scrolled to the right edge in RTL
+					this._bScrollPosInitialized = true;
+				}
+			}
+
 			this._scroller = new window.iScroll(this._sScrollerId, {
 				useTransition: true,
 				useTransform: !bDontUseTransform,
@@ -384,23 +390,30 @@ jQuery.sap.require("sap.ui.base.Object");
 				topOffset: this._iTopOffset,
 				scrollbarClass: this._scrollbarClass,
 				onBeforeScrollStart: function(oEvent) {
+
 					// A touch on a scrolling list means "stop scrolling" and not a tap.
-					if(that._isScrolling){
+					if (that._isScrolling) {
+
 						// Do not allow core to convert touchstart+touchend into a tap event during scrolling:
 						oEvent.stopPropagation();
+
 						// Disable native HTML behavior on <a> elements:
 						oEvent.preventDefault();
 					}
 				},
+
 				onScrollEnd: function() {
 					if (!that._bIgnoreScrollEnd && that._scroller) { // that.scroller can be undefined when scrolled into the empty place
 						that._scrollX = -that._scroller.x;
 						that._scrollY = -that._scroller.y;
 					}
+
 					if (that._oPullDown) {
 						that._oPullDown.doScrollEnd();
 					}
+
 					if (that._oGrowingList && that._fnScrollLoadCallback) {
+
 						// start loading if 75% of the scroll container is scrolled
 						var scrollThreshold = Math.floor(this.wrapperH / 4);
 						var bInLoadingLimit = -this.maxScrollY + this.y < scrollThreshold;
@@ -411,16 +424,19 @@ jQuery.sap.require("sap.ui.base.Object");
 						}
 
 					}
+
 					if (that._oIconTabBar && that._fnScrollEndCallback) {
 						that._fnScrollEndCallback();
 					}
 
 					that._isScrolling = false;
 				},
+
 				onRefresh: function(){
 					if (that._oPullDown) {
 						that._oPullDown.doRefresh();
 					}
+
 					// Reset resize listeners after each refresh to avoid concurrent errors like in
 					// the following case:
 					// 1. List height: 2000px. Resize handler remembers it
@@ -431,19 +447,25 @@ jQuery.sap.require("sap.ui.base.Object");
 					// Due to this, refresh and resize handler registration should be done synchronously
 					that._toggleResizeListeners(true);
 				},
-				onScrollMove: function(oEvent){
-					if(!that._isScrolling){
+
+				onScrollMove: function(oEvent) {
+					if (!that._isScrolling) {
+
 						// Workaround for problems with active input and textarea: close keyboard on scroll start
 						var rIsTextField = /(INPUT|TEXTAREA)/i,
 							oActiveEl = document.activeElement;
+
 						if (rIsTextField.test(oActiveEl.tagName) && oEvent.target !== oActiveEl ) {
 							oActiveEl.blur();
 						}
 					}
+
 					that._isScrolling = true;
+
 					if (that._oPullDown) {
 						that._oPullDown.doScrollMove();
 					}
+
 					if (that._oIconTabBar && that._fnScrollStartCallback) {
 						that._fnScrollStartCallback();
 					}
@@ -463,7 +485,7 @@ jQuery.sap.require("sap.ui.base.Object");
 			// SAP modification: disable nested scrolling.
 			this._scroller._move = function(oEvent){
 
-				if(oEvent._sapui_handledByControl){ return; }
+				if(oEvent._sapui_handledByControl && !oEvent._sapui_scroll){ return; }
 
 				// Enable scrolling of outer container when the inner container is scrolled to the end
 				// so that a user can "pull out" contents that have been accidentally moved outside of
@@ -475,11 +497,13 @@ jQuery.sap.require("sap.ui.base.Object");
 						!(this.dirX < 0 && this.x >= 0) &&
 						!(this.dirX > 0 && this.x <= this.maxScrollX);
 				}
+
 				window.iScroll.prototype._move.call(this,oEvent);
 			};
 
 			// re-apply scrolling position after rendering - but only if changed and the height is > 0
 			var oScroller = $Content.parent()[0];
+
 			if (oScroller && (oScroller.offsetHeight > 0)) {
 				if (this._scrollX != -this._scroller.x || this._scrollY != -this._scroller.y){
 					this._scroller.scrollTo(-this._scrollX, -this._scrollY, 0);
@@ -492,21 +516,21 @@ jQuery.sap.require("sap.ui.base.Object");
 		},
 
 		ontouchmove : function(oEvent) {
-			if(this._preventTouchMoveDefault) {
+
+			if (this._preventTouchMoveDefault) {
+
 				//Prevent the default touch action e.g. scrolling the whole page
 				oEvent.preventDefault();
 			}
 		}
 	};
 
+	/* =========================================================== */
+	/* Delegate members for usage of Zynga library                 */
+	/* =========================================================== */
 
-
-
-
-	/*
-	 * Delegate members for usage of Zynga library
-	 */
 	var oZyngaDelegate = {
+
 		_refresh : function() {
 			if (this._scroller && this._sContentId && $.sap.domById(this._sContentId)) {
 				var $Content = $.sap.byId(this._sContentId);
@@ -533,6 +557,15 @@ jQuery.sap.require("sap.ui.base.Object");
 			}
 		},
 
+		_scrollTo : function(x, y, time){
+			if(this._scroller){
+				if (!isNaN(time)){
+					this._scroller.options.animationDuration = time;
+				}
+				this._scroller.scrollTo(x, y, !!time);
+			}
+		},
+
 		onBeforeRendering : function() {
 			this._cleanup();
 		},
@@ -556,6 +589,7 @@ jQuery.sap.require("sap.ui.base.Object");
 		},
 
 		ontouchstart : function(oEvent) {
+
 			// Don't react if initial down happens on a form element
 			if (oEvent.target.tagName.match(/input|textarea|select/i)) {
 				return;
@@ -581,7 +615,11 @@ jQuery.sap.require("sap.ui.base.Object");
 		}
 	};
 
-	var oNativeMouseScrollDelegate = {
+	/* =========================================================== */
+	/* Native scroll delegate                                      */
+	/* =========================================================== */
+
+	var oNativeScrollDelegate = {
 
 		getScrollTop : function() {
 			return this._scrollY || 0;
@@ -592,11 +630,186 @@ jQuery.sap.require("sap.ui.base.Object");
 		},
 
 		getMaxScrollTop : function() {
-			var $Container = $.sap.byId(this._sContentId).parent();
-			if (!$Container.length) {
-				return -1;
+			return (this._$Container && this._$Container.length) ? this._$Container[0].scrollHeight - this._$Container.height() : -1;
+		},
+
+		_setOverflow : function(){
+			var $Container = this._$Container;
+			if(!$Container || !$Container[0]) return;
+
+			// Let container scroll into the configured directions
+			$Container.css("z-index", "0"); // performance hack for webkit
+			if(sap.ui.Device.os.ios){
+				$Container
+					.css("overflow-x", this._bHorizontal ? "scroll" : "hidden")
+					.css("overflow-y", this._bVertical ? "scroll" : "hidden")
+					.css("-webkit-overflow-scrolling", "touch");
+			} else { //other browsers do not support -webkit-overflow-scrolling
+				$Container
+					.css("overflow-x", this._bHorizontal ? "auto" : "hidden")
+					.css("overflow-y", this._bVertical ? "auto" : "hidden");
 			}
-			return $Container[0].scrollHeight - $Container.height();
+
+			// Make sure that contents fits between headers and footers in case of absolute
+			// positioned content section (Page: absolute, Dialog: relative):
+			if(window.getComputedStyle($Container[0]).position == "absolute"){
+				var header = $Container.prev()[0];
+				if(header){
+					var top = header.offsetHeight + header.offsetTop;
+					if($Container[0].offsetTop != top){
+						$Container.css("top", top + "px");
+					}
+				}
+				var footer = $Container.next()[0];
+				if(footer){
+					var bottom = footer.parentElement.clientHeight - footer.offsetTop;
+					if($Container[0].offsetTop + $Container[0].clientHeight != bottom){
+						$Container.css("bottom", bottom + "px");
+					}
+				}
+				// Remove iScroll border hack.
+				$Container.children(".sapMPageScroll").css("border", "none");
+			}
+		},
+
+		_refresh : function(){
+			var $Container = this._$Container;
+			if(!$Container || !$Container.height()) return;
+
+			var $Content = $.sap.byId(this._sContentId);
+
+			var top = 0; // additional space for P2R || growing
+			if(this._oPullDown && this._oPullDown._bTouchMode){
+				// hide pull to refresh (except for state 2 - loading)
+				var domRef = this._oPullDown.getDomRef();
+				if(domRef){
+					top = domRef.offsetHeight + domRef.offsetTop;
+					if(this._oPullDown._iState != 2 && this._scrollY < top){
+						this._scrollY = top;
+					}
+				}
+			} else if(this._fnScrollLoadCallback){ // make growing list always scrollable
+				top = 5;
+			} else if(this._bHorizontal && sap.ui.Device.os.ios){ // allow horizontal scrolling on IOS
+				top = 2;
+			}
+			if(top){
+				// make sure it always scrolls with the growing list and pull to refresh
+				$Content.css("min-height", $Container[0].clientHeight + top + "px");
+			}
+
+			if($Container.scrollTop() != this._scrollY){
+				$Container.scrollTop(this._scrollY);
+			}
+
+			if (!(this._oPullDown && this._oPullDown._bTouchMode)
+				&& !this._fnScrollLoadCallback
+				&& !!!sap.ui.Device.browser.internet_explorer) {
+				// for IE the resize listener must remain in place for the case when navigating away and coming back.
+				// For the other browsers it seems to work fine without.
+				sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
+				this._sResizeListenerId = null;
+			}
+		},
+
+		_onScroll: function(oEvent) {
+			var $Container = this._$Container;
+
+			this._scrollX = $Container.scrollLeft(); // remember position
+			this._scrollY = $Container.scrollTop();
+
+			// Growing List/Table
+			if (this._fnScrollLoadCallback && $Container[0].scrollHeight - $Container.scrollTop() - $Container.height() < 100 ) {
+				this._fnScrollLoadCallback(); // close to the bottom
+			}
+
+			// PullToRefresh in pull/touch mode
+			if(this._oPullDown){
+				this._oPullDown.doScrollMove(this._scrollY, this._bScrolling, true);
+			}
+
+			// IconTabBar.
+			// TODO: allow native scrolling in IconTabBar
+			if(!this._bScrolling && this._fnScrollEndCallback){
+				this._fnScrollEndCallback();
+			}
+		},
+
+		_onStart : function(oEvent){
+			var container = this._$Container[0];
+			if(!container) return;
+
+			// vertically scrollable, for rubber page prevention
+			this._bScrollable = this._bVertical && (container.scrollHeight > container.clientHeight + 1);
+			// enable horizontal scrolling on ios
+			this._bScrollable = this._bScrollable || this._bHorizontal && sap.ui.Device.os.ios;
+
+			if(this._bScrollable){
+				if(sap.ui.Device.os.ios){
+					if(container.scrollTop == 0){
+						container.scrollTop = 1;
+					}
+		
+					var delta = container.scrollHeight - container.clientHeight;
+					if(container.scrollTop === delta){
+						container.scrollTop = delta-1;
+					}
+				}
+				this._bScrolling = true;
+			}
+
+			// IconTabBar
+			if (this._fnScrollStartCallback) {
+				this._bScrolling = true;
+				this._fnScrollStartCallback();
+			}
+
+		},
+
+		_onTouchMove : function(oEvent){
+			// Prevent rubber scroll of the whole application window in IOS.
+			// see jQuery.sap.mobile.js
+			if(this._bScrollable){
+				oEvent.setMarked();
+				if(window.iScroll){ // if both iScroll and native scrolling are used (IconTabBar)
+					oEvent.setMarked("scroll");
+				}
+			}
+		},
+
+		_onEnd : function(){
+			if(!this._bScrolling) return;
+			// Attention: there still may be momentum scrolling  with two more scroll events thereafter,
+			// but PullDown fires the refresh event based on the current scroll state
+			this._bScrolling = false;
+			if (this._oPullDown && this._oPullDown._bTouchMode) { this._oPullDown.doScrollEnd(); }
+			this._refresh();
+
+			// IconTabBar.
+			if (this._fnScrollEndCallback) { this._fnScrollEndCallback(); }
+		},
+
+		// Mouse drag scrolling, optional.
+		// Set options.nonTouchScrolling = true to enable
+		_onMouseDown : function(oEvent){
+			var container = this._$Container[0];
+			if(!container) return;
+
+			if(oEvent.button) return; // react on the left button only
+
+			// Store initial coordinates for mouse drag
+			this._iX = container.scrollLeft + oEvent.pageX;
+			this._iY = container.scrollTop + oEvent.pageY;
+
+			// initialize scrolling
+			this._onStart(oEvent);
+		},
+
+		_onMouseMove : function(oEvent){
+			if(this._bScrolling){
+				this._$Container[0].scrollLeft = this._iX - oEvent.pageX;
+				this._$Container[0].scrollTop = this._iY - oEvent.pageY;
+			}
 		},
 
 		onBeforeRendering: function() {
@@ -605,104 +818,74 @@ jQuery.sap.require("sap.ui.base.Object");
 				this._sResizeListenerId = null;
 			}
 
-			var $Container = $.sap.byId(this._sContentId).parent();
-			if ($Container.length > 0) {
+			var $Container = this._$Container;
+			if ($Container) {
 				if ($Container.height() > 0) {
-					this._scrollX = $Container.scrollLeft(); // remember position for after rendering
+					this._scrollX = $Container.scrollLeft(); // remember position
 					this._scrollY = $Container.scrollTop();
-					// jQuery.sap.log.warning("ScrollEnablement.beforeRendering: scrollY set to " + this._scrollY);
 				}
-				$Container.unbind("scroll", this._onScroll);
+				$Container.off(); // delete all event handlers
 			}
-		},
-
-		_onScroll: function(event) {
-			var $this = $(this);
-			var iContainerHeight = $this.height();
-			var that = event.data.that;
-
-			if (that._fnScrollLoadCallback && this.scrollHeight - $this.scrollTop() - iContainerHeight < 100) {
-				// close to the bottom
-				// TODO: if scrolling down
-				that._fnScrollLoadCallback();
-			}
-
-			event.data.that._scrollX = $this.scrollLeft(); // remember position for after rendering
-			event.data.that._scrollY = $this.scrollTop();
-			// jQuery.sap.log.warning("ScrollEnablement._onScroll: scrollY set to " + this._scrollY);
 		},
 
 		onAfterRendering: function() {
-			var $Container = $.sap.byId(this._sContentId).parent();
 
-			// make container scrollable into the configured directions
-			$Container
-				.css("overflow-x", this._bHorizontal ? "auto" : "hidden")
-				.css("overflow-y", this._bVertical ? "auto" : "hidden");
+			var $Container = this._$Container = $.sap.byId(this._sContentId).parent();
+			var _fnRefresh = jQuery.proxy(this._refresh, this);
+
+			this._setOverflow();
 
 			// apply the previous scroll state
-			$Container.scrollLeft(this._scrollX);
-			var bHasHeight = ($Container.height() > 0);
+			this._scrollTo(this._scrollX, this._scrollY);
 
-			if (bHasHeight) {
-				$Container.scrollTop(this._scrollY);
-			}
+			this._refresh();
 
-			if (!bHasHeight || !!sap.ui.Device.browser.internet_explorer) {
+			if (!$Container.is(":visible")
+				|| !!sap.ui.Device.browser.internet_explorer
+				|| this._oPullDown
+				|| this._fnScrollLoadCallback) {
 				// element may be hidden and have height 0
-				var that = this;
-				this._sResizeListenerId = sap.ui.core.ResizeHandler.register($Container[0], function(){
-					var $Container = $.sap.byId(that._sContentId).parent();
-					if ($Container.height() > 0) {
-						$Container.scrollTop(that._scrollY);
-						that._readActualScrollPosition.apply(that); // store actual scroll position
-
-						if (!!!sap.ui.Device.browser.internet_explorer) { // for IE the resize listener must remain in place for the case when navigating away and coming back. For the other browsers it seems to work fine without.
-							sap.ui.core.ResizeHandler.deregister(that._sResizeListenerId);
-							this._sResizeListenerId = null;
-						}
-					}
-				});
+				this._sResizeListenerId = sap.ui.core.ResizeHandler.register($Container[0], _fnRefresh);
 			}
 
-			// if a GrowingList wants to be informed, track the scrolling and call it once required
-			$Container.scroll({that: this}, this._onScroll);
+			// Set event listeners
+			$Container.scroll(jQuery.proxy(this._onScroll, this));
+			if(sap.ui.Device.support.touch){
+				$Container
+					.on("touchcancel touchend", jQuery.proxy(this._onEnd, this))
+					.on("touchstart", jQuery.proxy(this._onStart, this))
+					.on("touchmove", jQuery.proxy(this._onTouchMove, this));
+			} else if(this._bMouseDrag){
+				//TODO: allow mouse dragging scroll on desktop after the text selection issue is clarified
+				$Container
+					.on("mouseup mouseleave", jQuery.proxy(this._onEnd, this))
+					.mousedown(jQuery.proxy(this._onMouseDown, this))
+					.mousemove(jQuery.proxy(this._onMouseMove, this));
+			}
 		},
 
 		_readActualScrollPosition: function() {
-
 			// if container has a size, this method reads the current scroll position and stores it as desired position
-			var $Container = $.sap.byId(this._sContentId).parent();
-
-			if ($Container.width() > 0) {
-				this._scrollX = $Container.scrollLeft();
+			if (this._$Container.width() > 0) {
+				this._scrollX = this._$Container.scrollLeft();
 			}
-			if ($Container.height() > 0) {
-				this._scrollY = $Container.scrollTop();
-				// jQuery.sap.log.warning("ScrollEnablement.scrollTo: scrollY corrected to " + this._scrollY);
+			if (this._$Container.height() > 0) {
+				this._scrollY = this._$Container.scrollTop();
 			}
 		},
 
 		_scrollTo: function(x, y, time) {
-			// jQuery.sap.log.warning("ScrollEnablement.scrollTo: scrollY set to " + this._scrollY);
-
-			var $Container = $.sap.byId(this._sContentId).parent();
-			if ($Container.length > 0) {
+			if (this._$Container.length > 0) {
 				if (time > 0) {
-					$Container.animate({ scrollTop: y, scrollLeft: x }, time, jQuery.proxy(this._readActualScrollPosition, this));
+					this._$Container.animate({ scrollTop: y, scrollLeft: x }, time, jQuery.proxy(this._readActualScrollPosition, this));
 				} else {
-					$Container.scrollTop(y);
-					$Container.scrollLeft(x);
-
+					this._$Container.scrollTop(y);
+					this._$Container.scrollLeft(x);
 					this._readActualScrollPosition(); // if container is too large no scrolling is possible
 				}
 			}
 		}
 	};
-
-
-
-
 
 	/*
 	 * Init delegator prototype according to various conditions.
@@ -712,64 +895,81 @@ jQuery.sap.require("sap.ui.base.Object");
 
 		if (!$.support.touch && !$.sap.simulateMobileOnDesktop && !oConfig.nonTouchScrolling) {  //TODO: Maybe find some better criteria
 			// nothing to do on desktop browsers when disabled
-			oDelegateMembers = {};
-
-		} else if(!$.support.touch && !$.sap.simulateMobileOnDesktop && oConfig.nonTouchScrolling === "scrollbar") {
-			// non-touch platforms with scrolling type "mouse"
-			oDelegateMembers = {
-				_init : function(oControl, sScrollContentId, oConfig) {
-					$.extend(this, oNativeMouseScrollDelegate);
-				}
-			};
-
-		} else {
-			$.sap.require("jquery.sap.mobile");
-
-			oDelegateMembers = {
-				_init : function(oControl, sScrollContentDom, oConfig) {
-
-					function createZyngaScroller(contentId, horizontal, vertical){
-						var oScroller = new window.Scroller(function(left, top, zoom){
-								var $Container = $.sap.byId(contentId).parent();
-								$Container.scrollLeft(left);
-								$Container.scrollTop(top);
-							}, {
-								scrollingX: horizontal,
-								scrollingY: vertical,
-								bouncing: false
-						});
-						return oScroller;
-					}
-
-					// What library to use?:
-					var sLib = oConfig.zynga? "z":"i";
-					// TODO: sLib = "n" for native scrolling?
-
-					// Initialization
-					this._preventTouchMoveDefault = !!oConfig.preventDefault;
-					this._scroller = null;
-
-					switch (sLib) {
-						case "z": // Zynga library
-							$.sap.require("sap.ui.thirdparty.zyngascroll");
-							$.extend(this, oZyngaDelegate);
-							this._zynga = true;
-							this._scroller = createZyngaScroller(this._sContentId, this._bHorizontal, this._bVertical);
-							break;
-						default: // iScroll library
-							$.sap.require("sap.ui.thirdparty.iscroll");
-							$.extend(this, oIScrollDelegate);
-							break;
-					}
-				},
-
-				_exit : function() {
-					if(this._cleanup){ this._cleanup(); }
-					this._scroller = null;
-				}
-			};
+			return;
 		}
 
+		if(sap.ui.Device.support.touch || $.sap.simulateMobileOnDesktop){
+			$.sap.require("jquery.sap.mobile");
+		}
+
+		oDelegateMembers = {
+			_init : function(oControl, sScrollContentDom, oConfig) {
+
+				function createZyngaScroller(contentId, horizontal, vertical){
+					var oScroller = new window.Scroller(function(left, top, zoom){
+							var $Container = $.sap.byId(contentId).parent();
+							$Container.scrollLeft(left);
+							$Container.scrollTop(top);
+						}, {
+							scrollingX: horizontal,
+							scrollingY: vertical,
+							bouncing: false
+					});
+					return oScroller;
+				}
+
+				function isNativeTouchScrollingSupported() {
+					// No touchend or touchmove in android default browser by scrolling:
+					// https://code.google.com/p/android/issues/detail?id=19827
+					// Android Chrome fires arbitrary touchcancel events:
+					// See https://code.google.com/p/chromium/issues/detail?id=260732
+					if( sap.ui.Device.os.android ||
+						sap.ui.Device.os.blackberry || // TODO: native scroll on BlackBerry
+						sap.ui.Device.os.ios && sap.ui.Device.os.version < 6) {
+						return false;
+					}
+					return true;
+				}
+
+				// What library to use?
+				var sLib = "n";
+				if(oConfig.zynga){
+					sLib = "z";
+				} else if(oConfig.iscroll || !isNativeTouchScrollingSupported()){
+					sLib = "i"; // iScroll
+				}
+
+				// Initialization
+				this._preventTouchMoveDefault = !!oConfig.preventDefault;
+				this._scroller = null;
+				switch (sLib) {
+					case "z": // Zynga library
+						$.sap.require("sap.ui.thirdparty.zyngascroll");
+						$.extend(this, oZyngaDelegate);
+						this._zynga = true;
+						this._scroller = createZyngaScroller(this._sContentId, this._bHorizontal, this._bVertical);
+						break;
+					case "i": // iScroll library
+						$.sap.require("sap.ui.thirdparty.iscroll");
+						$.extend(this, oIScrollDelegate);
+						this._bIScroll = true;
+						break;
+					default: // native scrolling;
+						$.extend(this, oNativeScrollDelegate);
+						if(oConfig.nonTouchScrolling === true){
+							this._bMouseDrag = true; // optional mouse drag scrolling
+						}
+						if (sap.ui.getCore().getConfiguration().getRTL()) {
+							this._scrollX = 9999; // in RTL case initially scroll to the very right
+						}
+						break;
+				}
+			},
+			_exit : function() {
+				if(this._cleanup){ this._cleanup(); }
+				this._scroller = null;
+			}
+		};
 		// Copy over members to prototype
 		$.extend(oScrollerInstance, oDelegateMembers);
 	}

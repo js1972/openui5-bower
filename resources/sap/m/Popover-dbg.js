@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -77,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -1103,6 +1103,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 /* =========================================================== */
 sap.m.Popover._bOneDesign = (sap.ui.core.theming.Parameters.get("sapMPlatformDependent") !== 'true');
 sap.m.Popover._bIE9 = (jQuery.browser.msie && jQuery.browser.fVersion < 10);
+sap.m.Popover._bIOS7 = sap.ui.Device.os.ios && sap.ui.Device.os.version >= 7 && sap.ui.Device.os.version < 8 && sap.ui.Device.browser.name === "sf";
 /**
  * Initializes the popover control
  * @private
@@ -1157,19 +1158,7 @@ sap.m.Popover.prototype.init = function(){
 	//would lead to an error (I have tried it with an IPad)
 	if(jQuery.device.is.desktop) {
 		//the 'followOf' handler for our popup
-		this.oPopup.setFollowOf(this._fnFollowOf);
-
-		//keyboard support for desktop environments
-		var fnOnEscape = jQuery.proxy(function(oEvent) {
-			// when the escape is already handled by inner control, nothing should happen inside dialog
-			if(oEvent.originalEvent && oEvent.originalEvent._sapui_handledByControl){
-				return;
-			}
-			this.close();
-			//event should not trigger any further actions
-			oEvent.stopPropagation();
-		}, this);
-		this.oPopup.onsapescape = fnOnEscape;
+		this.setFollowOf(true);
 	}
 
 	var that = this;
@@ -1187,7 +1176,8 @@ sap.m.Popover.prototype.init = function(){
 		//calculate the best placement of the popover if placementType is horizontal,  vertical or auto
 		var iPlacePos = jQuery.inArray(that.getPlacement(), that._placements);
 		if (iPlacePos > 3 && !that._bPosCalced) {
-			that._calcPlacement(that);
+			that._bResizeAfterPositionCalced = bFromResize;
+			that._calcPlacement();
 			return;
 		}
 
@@ -1209,11 +1199,12 @@ sap.m.Popover.prototype.init = function(){
 		that._bCalSize = false;
 		that._bPosCalced = false;
 		
-		if (bFromResize) {
+		if (that._bResizeAfterPositionCalced || bFromResize) {
 			// if _applyPosition is called within Popup.js, this time point is too early for registering the content resize listener
 			// that's why the registration is only done here when orientation changes or content size changes
 			// register resize listener on scroll area after positioning is done
 			that._registerContentResizeHandler();
+			that._bResizeAfterPositionCalced = false;
 		}
 	};
 	
@@ -1464,8 +1455,9 @@ sap.m.Popover.prototype.close = function(){
 		this.oPopup.close(true);
 		
 		// restore previous focus, if any:
-		if(!this.oPopup.touchEnabled){
+		if(this.oPopup.restoreFocus && this._oPreviousFocus){
 			sap.ui.core.Popup.applyFocusInfo(this._oPreviousFocus);
+			this._oPreviousFocus = null;
 		}
 	}
 	return this;
@@ -1476,6 +1468,32 @@ sap.m.Popover.prototype.isOpen = function(){
 };
 
 /**
+ * The followOf feature from Popup which closes the popover in desktop browser when
+ * the position or the size of open by control changes may leads to unwanted close.
+ * 
+ * This function is for enabling/disabling the followOf feature which has effect only in desktop browsers.
+ * 
+ * @param {boolean} bValue enables the followOf feature when set to true and disable the followOf when set to false 
+ * @return {sap.m.Popover} The popover itself for method chaining
+ * @protected
+ * @since 1.16.8
+ * @name sap.m.Popover#setFollowOf
+ * @function
+ */
+sap.m.Popover.prototype.setFollowOf = function(bValue){
+	if(!sap.ui.Device.system.desktop){
+		return this;
+	}
+
+	if(bValue){
+		this.oPopup.setFollowOf(this._fnFollowOf);
+	}else{
+		this.oPopup.setFollowOf(false);
+	}
+	return this;
+};
+
+/**
  * Setter for property <code>bounce</code>.
  *
  * Default value is empty
@@ -1483,7 +1501,6 @@ sap.m.Popover.prototype.isOpen = function(){
  * @param {boolean} bBounce  new value for property <code>bounce</code>
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @protected
- * @since 1.16.5
  * @name sap.m.Popover#setBounce
  * @function
  */
@@ -1615,6 +1632,25 @@ sap.m.Popover.prototype.onfocusin = function(oEvent){
 			}
 		}
 		jQuery.sap.focus(oFirstFocusableDomref);
+	}
+};
+
+sap.m.Popover.prototype.onkeydown = function(oEvent){
+	var oKC = jQuery.sap.KeyCodes,
+		iKC = oEvent.which || oEvent.keyCode,
+		bAlt = oEvent.altKey;
+
+	// Popover should be closed when ESCAPE key or ATL+F4 is pressed
+	if(iKC === oKC.ESCAPE || (bAlt && iKC === oKC.F4)){
+		// if inner control has already handled the event, dialog doesn't process the event anymore
+		if(oEvent.originalEvent && oEvent.originalEvent._sapui_handledByControl){
+			return;
+		}
+		this.close();
+
+		//event should not trigger any further actions
+		oEvent.stopPropagation();
+		oEvent.preventDefault();
 	}
 };
 
@@ -1944,7 +1980,7 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 	var iWindowLeft = this._$window.scrollLeft(),
 		iWindowTop = this._$window.scrollTop(),
 		iWindowRight = this._$window.width(),
-		iWindowBottom = this._$window.height(),
+		iWindowBottom = (sap.m.Popover._bIOS7 && sap.ui.Device.orientation.landscape && window.innerHeight) ? window.innerHeight : this._$window.height(),
 		iDocumentWidth = iWindowLeft + iWindowRight,
 		iDocumentHeight = iWindowTop + iWindowBottom;
 	
@@ -2246,16 +2282,14 @@ sap.m.Popover.prototype._restoreFocus = function(){
 	}
 };
 
-if(sap.ui.Device.system.desktop){
-	sap.m.Popover.prototype._oFollowOfDelegate = {
-		onBeforeRendering: function(){
-			this.oPopup.setFollowOf(false);
-		},
-		onAfterRendering: function(){
-			this.oPopup.setFollowOf(this._fnFollowOf);
-		}
-	};
-}
+sap.m.Popover.prototype._oFollowOfDelegate = {
+	onBeforeRendering: function(){
+		this.setFollowOf(false);
+	},
+	onAfterRendering: function(){
+		this.setFollowOf(true);
+	}
+};
 
 sap.m.Popover.prototype._registerContentResizeHandler = function(){
 	if(!this._sResizeListenerId){
@@ -2276,7 +2310,9 @@ sap.m.Popover.prototype._storeScrollPosition = function(){
 	}
 	
 	var $content = jQuery.sap.byId(this.getId() + "-cont");
-	this._oScrollPosDesktop = {x: $content.scrollLeft(), y: $content.scrollTop()};
+	if($content.length > 0){
+		this._oScrollPosDesktop = {x: $content.scrollLeft(), y: $content.scrollTop()};
+	}
 };
 
 sap.m.Popover.prototype._restoreScrollPosition = function(){
@@ -2285,10 +2321,13 @@ sap.m.Popover.prototype._restoreScrollPosition = function(){
 	}
 	
 	var $content = jQuery.sap.byId(this.getId() + "-cont");
-	$content.scrollLeft(this._oScrollPosDesktop.x).
+	
+	if($content.length > 0){
+		$content.scrollLeft(this._oScrollPosDesktop.x).
 		scrollTop(this._oScrollPosDesktop.y);
 	
-	this._oScrollPosDesktop = null;
+		this._oScrollPosDesktop = null;
+	}
 };
 
 sap.m.Popover.prototype._addFollowOfDelegate = function(){
@@ -2310,7 +2349,6 @@ sap.m.Popover.prototype._removeFollowOfDelegate = function(){
  *
  * @return {boolean} the value of property <code>bounce</code>
  * @private
- * @since 1.16.5
  * @name sap.m.Popover#getBounce
  * @function
  */

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.CalloutBase");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.TooltipBase");sap.ui.core.TooltipBase.extend("sap.ui.commons.CalloutBase",{metadata:{publicMethods:["adjustPosition","close","setPosition"],library:"sap.ui.commons",events:{"open":{},"close":{},"beforeOpen":{allowPreventDefault:true},"opened":{},"closed":{}}}});sap.ui.commons.CalloutBase.M_EVENTS={'open':'open','close':'close','beforeOpen':'beforeOpen','opened':'opened','closed':'closed'};

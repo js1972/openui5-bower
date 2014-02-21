@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -537,13 +537,13 @@ jQuery.sap.require("sap.ui.core.IconPool");
 sap.ui.core.IconPool.insertFontFaceStyle();
 
 
+sap.m.TileContainer.prototype._bRtl  = sap.ui.getCore().getConfiguration().getRTL();
+
 /**
  * Initializes the control
  * @private
  */
 sap.m.TileContainer.prototype.init = function() {
-
-	this._bRendered = false; // whether the control is rendered or not
 	this._iCurrentTileStartIndex = 0;
 	this._iCurrentPage = 0;
 	this._iPages = 0;
@@ -694,8 +694,8 @@ sap.m.TileContainer.prototype.init = function() {
 			}, this);
 		this.onsaphome = fnOnHome;
 		this.onsapend = fnOnEnd;
-		this.onsapright = fnOnRight;
-		this.onsapleft = fnOnLeft;
+		this.onsapright = this._bRtl ? fnOnLeft : fnOnRight;
+		this.onsapleft  = this._bRtl ? fnOnRight : fnOnLeft;
 		this.onsapup = fnOnUp;
 		this.onsapdown = fnOnDown;
 		this.onsappageup = fnOnPageUp;
@@ -723,7 +723,6 @@ sap.m.TileContainer.prototype.onBeforeRendering = function() {
  */
 sap.m.TileContainer.prototype.onAfterRendering = function() {
 	
-	this._bRendered = true;
 	//init resizing
 	this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef().parentElement,  jQuery.proxy(this._resize, this));
 	//init the dimensions to the container scoll area 
@@ -733,19 +732,6 @@ sap.m.TileContainer.prototype.onAfterRendering = function() {
 	this._sInitialResizeTimeoutId = setTimeout(function() {
 			that._update(true);
 		}, this._iInitialResizeTimeout);
-	
-	//Set initial focus
-	if(jQuery.device.is.desktop) {
-		var oFocusTile = this.getTiles()[0],
-			iTimeout = this._iInitialResizeTimeout;
-		if(!!oFocusTile) {
-			
-			setTimeout(jQuery.proxy(function() {
-				this._findTile(oFocusTile.$()).focus();
-			},this),iTimeout); 
-		}
-	}
-	
 };
 
 /**
@@ -780,26 +766,25 @@ sap.m.TileContainer.prototype._applyDimension = function() {
 		$this = this.$(),
 		oThisPos,
 		iOffset = 10,
-		$Content = jQuery.sap.byId( sId + "-cnt"),
-		contentPos,
-		contentOuterHeight,
+		$scroll = jQuery.sap.byId( sId + "-scrl"),
+		scrollPos,
+		scrollOuterHeight,
 		pagerHeight = jQuery.sap.byId( sId + "-pager").outerHeight();
 	
-	jQuery.sap.byId( sId + "-scrl").css({
+	$scroll.css({
 		width : oDim.outerwidth + "px",
 		height : (oDim.outerheight - pagerHeight) + "px"
 	});
 	
-	$Content.css({
-		height : (oDim.outerheight - pagerHeight) + "px",
+	jQuery.sap.byId( sId + "-cnt").css({
 		visibility : "visible"
 	});
 	
 	$this.css("visibility","visible");
 	oThisPos = $this.position();
 		
-	contentPos  = $Content.position();
-	contentOuterHeight = $Content.outerHeight();
+	scrollPos  = $scroll.position();
+	scrollOuterHeight = $scroll.outerHeight();
 	
 	if (jQuery.device.is.phone) {
 		iOffset = 2;
@@ -808,22 +793,25 @@ sap.m.TileContainer.prototype._applyDimension = function() {
 	}
 	
 	jQuery.sap.byId( sId + "-blind").css({
-		top : (contentPos.top + iOffset) + "px",
-		left : (contentPos.left + iOffset) + "px",
-		width : ($Content.outerWidth() - iOffset) + "px",
-		height : (contentOuterHeight - iOffset) + "px"
+		top : (scrollPos.top + iOffset) + "px",
+		left : (scrollPos.left + iOffset) + "px",
+		right: "auto",
+		width : ($scroll.outerWidth() - iOffset) + "px",
+		height : (scrollOuterHeight - iOffset) + "px"
 	});
 	
 	jQuery.sap.byId( sId + "-rightedge").css({
 		top : (oThisPos.top + iOffset) + "px",
 		right : iOffset + "px",
-		height : (contentOuterHeight - iOffset) + "px"
+		left : "auto",
+		height : (scrollOuterHeight - iOffset) + "px"
 	});
 	
 	jQuery.sap.byId( sId + "-leftedge").css({
 		top : (oThisPos.top + iOffset) + "px",
 		left : (oThisPos.left + iOffset) + "px",
-		height : (contentOuterHeight - iOffset) + "px"
+		right: "auto",
+		height : (scrollOuterHeight - iOffset) + "px"
 	});
 };
 
@@ -866,12 +854,9 @@ sap.m.TileContainer.prototype.exit = function() {
  * @private
  */
 sap.m.TileContainer.prototype._update = function(bAnimated) {
-	if (!this._bRendered) return;
+	if (!this.getDomRef()) return;
 	
 	this._updateTilePositions();
-	if (this._oTileDimension) {
-		jQuery.sap.byId( this.getId() + "-cnt")[0].style.width = ((this._iPages * this._iOffsetX * 2) + (this._iPages * this._iMaxTilesX * this._oTileDimension.width)) + "px";
-	}
 	if (!this._oDragSession) {
 		this.scrollIntoView(this._iCurrentTileStartIndex || 0, bAnimated);
 	}
@@ -926,7 +911,7 @@ sap.m.TileContainer.prototype.addTile = function(oTile) {
  * @public
  */
 sap.m.TileContainer.prototype.insertTile = function(oTile, iIndex) {
-	if (this._bRendered) {
+	if (this.getDomRef()) {
 		this.insertAggregation("tiles",oTile,iIndex,true);
 		if (!this._oDragSession) {
 			var oRm = sap.ui.getCore().createRenderManager(),
@@ -965,7 +950,7 @@ sap.m.TileContainer.prototype.insertTile = function(oTile, iIndex) {
  * @public
  */
 sap.m.TileContainer.prototype.deleteTile = function(oTile) {
-	if (this._bRendered) {
+	if (this.getDomRef()) {
 		var iIndex = this.indexOfAggregation("tiles",oTile)-1;
 		this.removeAggregation("tiles",oTile,true);
 		if (!this._oDragSession) {
@@ -990,7 +975,11 @@ sap.m.TileContainer.prototype.rerender = function() {
  * @public
  */ 
 sap.m.TileContainer.prototype.scrollLeft = function() {
-	this.scrollIntoView(this._iCurrentTileStartIndex - this._iMaxTiles);
+	if(this._bRtl){
+		this.scrollIntoView(this._iCurrentTileStartIndex + this._iMaxTiles);
+	} else {
+		this.scrollIntoView(this._iCurrentTileStartIndex - this._iMaxTiles);
+	}
 };
 
 /**
@@ -998,7 +987,11 @@ sap.m.TileContainer.prototype.scrollLeft = function() {
  * @public
  */ 
 sap.m.TileContainer.prototype.scrollRight = function() {
-	this.scrollIntoView(this._iCurrentTileStartIndex + this._iMaxTiles);
+	if(this._bRtl){
+		this.scrollIntoView(this._iCurrentTileStartIndex - this._iMaxTiles);
+	} else {
+		this.scrollIntoView(this._iCurrentTileStartIndex + this._iMaxTiles);
+	}
 };
 
 
@@ -1008,30 +1001,28 @@ sap.m.TileContainer.prototype.scrollRight = function() {
  * @param {sap.m.Tile|int} vTile The tile or tile index to be scrolled into view
  * @param {boolean} bAnimated Whether the scroll should be animated.
  * @public
- */ 
+ */
 sap.m.TileContainer.prototype.scrollIntoView = function(vTile, bAnimated){
-	
-    var aTiles = this.getTiles(),
-    	iIndex = vTile,
-    	iStartIndex;
-    if (isNaN(vTile)) {
-    	iIndex = this.indexOfAggregation("tiles",vTile);
-    }
-    
-    var oTile = aTiles[iIndex];
-    
-    if (!oTile) {
-    	return;
-    }
-        
-    this._applyPageStartIndex(iIndex);
-    jQuery.sap.byId( this.getId() + "-scrl").scrollLeft(0);
-    
-    iStartIndex = this._iCurrentTileStartIndex;
-    var oTopTile = aTiles[iStartIndex];
-    
-	this._scrollTo(oTopTile._posX - (this._iOffsetX || 0),bAnimated);
-	this._iCurrentPage = Math.floor(iStartIndex / this._iMaxTiles);
+
+	var iContentWidth = this._getContentDimension().outerwidth,
+		iIndex = vTile;
+
+	if (isNaN(vTile)) {
+		iIndex = this.indexOfAggregation("tiles",vTile);
+	}
+	if (!this.getTiles()[iIndex]) {
+		return;
+	}
+
+	this._applyPageStartIndex(iIndex);
+
+	this._iCurrentPage = Math.floor(this._iCurrentTileStartIndex / this._iMaxTiles);
+
+	if(this._bRtl){
+		this._scrollTo((this._iPages - this._iCurrentPage) * iContentWidth, bAnimated);
+	} else {
+		this._scrollTo(this._iCurrentPage * iContentWidth, bAnimated);
+	}
 	this._updatePager();
 };
 
@@ -1048,6 +1039,7 @@ sap.m.TileContainer.prototype._updateTilePositions = function(){
 
 	var aTiles = this.getTiles(),
 		oContentDimension = this._getContentDimension();
+	this._iPages = Math.ceil(aTiles.length / this._iMaxTiles);
 	for (var i=0; i < aTiles.length; i++) {
 		if (aTiles[i].isDragged()) {
 			continue;
@@ -1056,12 +1048,12 @@ sap.m.TileContainer.prototype._updateTilePositions = function(){
 			oTile = aTiles[i],
 			iLeft = (iPage * oContentDimension.outerwidth) + this._iOffsetX + i % this._iMaxTilesX * this._oTileDimension.width,
 			iTop =  this._iOffsetY + Math.floor(i / this._iMaxTilesX) * this._oTileDimension.height - (iPage * this._iMaxTilesY * this._oTileDimension.height);
-		
+		if(this._bRtl){
+			iLeft = (this._iPages - iPage) * oContentDimension.outerwidth - this._iOffsetX - (i % this._iMaxTilesX  + 1) * this._oTileDimension.width;
+		}
 		oTile.setPos(iLeft,iTop);
 		oTile.setSize(this._oTileDimension.width, this._oTileDimension.height);
-		oTile.$().css("visibility","visible");
 	}
-	this._iPages = Math.ceil(aTiles.length / this._iMaxTiles);
 }; 
 
 /**
@@ -1094,17 +1086,29 @@ sap.m.TileContainer.prototype._updatePager = function() {
 		oPager.style.display = "block";
 		oPager.childNodes[this._iCurrentPage].className = "sapMTCActive";
 		if (jQuery.device.is.desktop) {
-			oScrollRight.style.right = this._iCurrentPage == this._iPages-1 ? "-100px" : "1rem";
-			oScrollLeft.style.left = this._iCurrentPage == 0  ? "-100px" : "1rem";
-			oScrollLeft.style.display = "block";
+			var hide = {
+				r: this._iCurrentPage == this._iPages-1,
+				l: this._iCurrentPage == 0
+			};
+			if(this._bRtl){
+				var tmp = hide.r;
+				hide.r = hide.l;
+				hide.l = tmp;
+				// Less builder swaps left and right in RTL styles,
+				// and that is not required here
+				oScrollRight.style.left = "auto";
+				oScrollLeft.style.right = "auto";
+			}
+			oScrollRight.style.right = hide.r ? "-100px" : "1rem";
+			oScrollLeft.style.left   = hide.l ? "-100px" : "1rem";
+			oScrollLeft.style.display  = "block";
 			oScrollRight.style.display = "block";
-			if (this._iCurrentPage == this._iPages-1 ) {
+			if (hide.r) {
 				oScrollRight.style.display = "none";
 			} 
-			if (this._iCurrentPage == 0 ) {
+			if (hide.l) {
 				oScrollLeft.style.display = "none";
-			} 
-			
+			}
 		}
 	} else {
 		oPager.innerHTML = "";
@@ -1122,7 +1126,7 @@ sap.m.TileContainer.prototype._updatePager = function() {
  */
 sap.m.TileContainer.prototype._getContentDimension = function() {
 	
-	if (!this._bRendered) return;
+	if (!this.getDomRef()) return;
 	
 	var oScroll = jQuery.sap.byId( this.getId() + "-scrl");
 	return {
@@ -1140,7 +1144,7 @@ sap.m.TileContainer.prototype._getContentDimension = function() {
  */
 sap.m.TileContainer.prototype._getContainerDimension = function() {
 	
-	if (!this._bRendered) return;
+	if (!this.getDomRef()) return;
 	
 	var oDomRef = this.$();
 	return {
@@ -1158,14 +1162,14 @@ sap.m.TileContainer.prototype._getContainerDimension = function() {
  */
 sap.m.TileContainer.prototype._getTileDimension = function() {
 	
-	if (!this._bRendered) return;
+	if (!this.getDomRef()) return;
 	if (this._oTileDim) return this._oTileDim;
 	
 	//TODO: Why the dimensions of the first Tile?
 	var oTile = this.getTiles()[0];
 	this._oTileDim = {
-		width  : oTile.$().outerWidth(true),
-		height : oTile.$().outerHeight(true)
+		width  : Math.round(oTile.$().outerWidth(true)),
+		height : Math.round(oTile.$().outerHeight(true))
 	};
 	return this._oTileDim;
 };
@@ -1217,7 +1221,7 @@ sap.m.TileContainer.prototype._getTilesFromPosition = function(iX, iY) {
 	
 	if (!this.getTiles().length) return [];
 	iX = iX + this._iScrollLeft;
-	
+
 	var aTiles = this.getTiles(),
 		aResult = [];
 	for (var i=0;i<aTiles.length;i++) {
@@ -1262,7 +1266,12 @@ sap.m.TileContainer.prototype._applyPageStartIndex = function(iIndex) {
 sap.m.TileContainer.prototype._scrollTo = function(iScrollLeft,bAnimated) {
 	if (bAnimated !== false) bAnimated = true; //animated needs to be set explicitly to false
 	this._applyTranslate(jQuery.sap.byId( this.getId() + "-cnt"),-iScrollLeft,0,bAnimated);
-	this._iScrollLeft = iScrollLeft;
+	if(this._bRtl){
+		this._iScrollLeft = iScrollLeft - this._getContentDimension().outerwidth;
+	} else {
+		this._iScrollLeft = iScrollLeft;
+	}
+	
 };
 
 /**
@@ -1279,7 +1288,7 @@ sap.m.TileContainer.prototype._applyTranslate = function(o$,iX,iY,bAnimated) {
 	if ("webkitTransform" in o.style) {
 		o$.css('-webkit-transform','translate3d('+iX+'px,'+iY+'px,0)');
 	} else if ("MozTransform" in o.style) {
-		o$.css('-moz-transform','translate('+iX+'px,'+iY+'px)');		
+		o$.css('-moz-transform','translate('+iX+'px,'+iY+'px)');
 	} else if ("transform" in o.style) {
 		o$.css('transform','translate3d('+iX+'px,'+iY+'px,0)');
 	} else if ("msTransform" in o.style) {
@@ -1304,7 +1313,7 @@ sap.m.TileContainer.prototype._initTouchSession = function(oEvent) {
 			oControl : oEvent.srcControl,
 			iOffsetX :  targetTouches.pageX - oEvent.target.offsetLeft
 		};
-	} else { // mousedown		
+	} else { // mousedown
 		this._oTouchSession = {
 			dStartTime : new Date(),
 			fStartX : oEvent.pageX,
@@ -1429,11 +1438,17 @@ sap.m.TileContainer.prototype._onmove = function(oEvent) {
 			this._bAvoidChildTapEvent = true;
 		}
 	} else if (oTouchSession){
+		var contentWidth = this._getContentDimension().outerwidth;
 		var iNewLeft = -this._iScrollLeft - oTouchSession.fDiffX;
+
 		if (iNewLeft > this._iScrollGap) {
 			return;
-		} else if (iNewLeft < -(((this._iPages-1) * this._getContentDimension().outerwidth) + this._iScrollGap)) {
-		    return;
+		} else if (iNewLeft < -(((this._iPages-1) * contentWidth) + this._iScrollGap)) {
+			return;
+		}
+
+		if(this._bRtl){
+			iNewLeft = iNewLeft - contentWidth;
 		}
 		this._applyTranslate(jQuery.sap.byId( this.getId() + "-cnt"),iNewLeft,0,false);
 	}
@@ -1460,15 +1475,16 @@ sap.m.TileContainer.prototype._onend = function(oEvent) {
 	if (!this._oTouchSession) return;
 	var oTouchSession = this._oTouchSession,
 		oDate = new Date(),
-		bFast = (oDate - oTouchSession.dStartTime < 600);
+		bFast = (oDate - oTouchSession.dStartTime < 600),
+		iRtl = this._bRtl? -1 : 1;
 	//handle fast swipe or tap
 	if (bFast) {
 		var oPager = jQuery.sap.byId( this.getId() + "-pager")[0];
 		if (Math.abs(oTouchSession.fDiffX) > 30) {
-			this._applyPageStartIndex(this._iCurrentTileStartIndex + ((oTouchSession.fDiffX > 0 ? 1 : -1) * this._iMaxTiles));
+			this._applyPageStartIndex(this._iCurrentTileStartIndex + ((oTouchSession.fDiffX * iRtl > 0 ? 1 : -1) * this._iMaxTiles));
 			this._bAvoidChildTapEvent = true;
 		} else if (oEvent.target == oPager && !jQuery.device.is.desktop) {
-			if (oTouchSession.iOffsetX < oPager.offsetWidth/2) {
+			if ((oTouchSession.iOffsetX - oPager.offsetWidth/2) * iRtl < 0) {
 				this.scrollLeft();
 			} else {
 				this.scrollRight();
@@ -1480,7 +1496,7 @@ sap.m.TileContainer.prototype._onend = function(oEvent) {
 	} else {
 		var oContentDimension = this._getContentDimension();
 		if (Math.abs(oTouchSession.fDiffX) > oContentDimension.outerwidth/2) {
-			this._applyPageStartIndex(this._iCurrentTileStartIndex + ((oTouchSession.fDiffX > 0 ? 1 : -1) * this._iMaxTiles));
+			this._applyPageStartIndex(this._iCurrentTileStartIndex + ((oTouchSession.fDiffX * iRtl > 0 ? 1 : -1) * this._iMaxTiles));
 			this._bAvoidChildTapEvent = true;
 		}
 	}
@@ -1573,7 +1589,13 @@ sap.m.TileContainer.prototype._onDrag = function(oEvent) {
 	}
 	
 	//check if scrolling needed
-	if ( (bScrollLeft && this._iCurrentPage > 0) || (bScrollRight && this._iCurrentPage < this._iPages-1) ) {
+	var bScrollNeeded;
+	if(this._bRtl){
+		bScrollNeeded = bScrollRight && this._iCurrentPage > 0 || bScrollLeft && this._iCurrentPage < this._iPages-1;
+	} else {
+		bScrollNeeded = bScrollLeft && this._iCurrentPage > 0 || bScrollRight && this._iCurrentPage < this._iPages-1;
+	}
+	if (bScrollNeeded) {
 		if (this._bTriggerScroll) {
 			if (bScrollLeft) {
 				this.scrollLeft();

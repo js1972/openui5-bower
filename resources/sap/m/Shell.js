@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.Shell");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.Shell",{metadata:{library:"sap.m",properties:{"title":{type:"string",group:"Misc",defaultValue:null},"logo":{type:"sap.ui.core.URI",group:"Appearance",defaultValue:null},"showLogout":{type:"boolean",group:"Behavior",defaultValue:true},"headerRightText":{type:"string",group:"Data",defaultValue:null},"appWidthLimited":{type:"boolean",group:"Appearance",defaultValue:true},"backgroundColor":{type:"string",group:"Appearance",defaultValue:null},"backgroundImage":{type:"sap.ui.core.URI",group:"Appearance",defaultValue:null},"backgroundRepeat":{type:"boolean",group:"Appearance",defaultValue:false},"backgroundOpacity":{type:"float",group:"Appearance",defaultValue:1},"homeIcon":{type:"object",group:"Misc",defaultValue:null}},defaultAggregation:"app",aggregations:{"app":{type:"sap.ui.core.Control",multiple:false}},events:{"logout":{}}}});sap.m.Shell.M_EVENTS={'logout':'logout'};

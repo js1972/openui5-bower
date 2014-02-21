@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -143,20 +143,22 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	rm.write("<ul id='" + sId + "-paneBarEntries' class='sapUiUx3ShellPaneEntries' role='tablist'>");
 	sap.ui.ux3.ShellRenderer.renderPaneBarItems(rm, oControl);
 	rm.write("</ul>");
-	
-	
-	rm.write("</div>");
-	
+
 	// Render overflow button
 	rm.write("<div id='" + sId + "-paneBarOverflowButton' class='sapUiUx3ShellPaneOverflowButton'");
 	rm.addStyle("display", "none;"); // So it does not depend on theme being loaded
 	rm.writeStyles();
 	rm.write(">");
-	rm.writeIcon(sap.ui.core.IconPool.getIconURI("slim-arrow-down"), [], { 
-		"id" : sId + "-paneBarOverflowButtonIcon",
-		"tabindex" : "0"
-	});
+	rm.write("<div id='" + sId + "-paneBarOverflowWrapper' class='sapUiUx3ShellPaneOverflowWrapper'>");
+	rm.write("<span id='" + sId + "-paneBarOverflowText' class='sapUiUx3ShellPaneOverflowText sapUiUx3ShellPaneEntry'>");
+	rm.write(sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT.toUpperCase());
+	rm.write("</span>"); // sapUiUx3ShellPaneOverflowText
+	rm.write("</div>"); // overflow-wrapper
+	rm.write("</div>"); // sapUiUx3ShellPaneOverflowButton
+	
+	
 	rm.write("</div>");
+	
 	
 	rm.write("</aside>   <!-- end of paneBar -->");
 

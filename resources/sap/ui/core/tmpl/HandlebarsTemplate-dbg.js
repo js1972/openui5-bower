@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 /*global Handlebars *///declare unusual global vars for JSLint/SAPUI5 validation
@@ -30,7 +30,7 @@ jQuery.sap.require("sap.ui.thirdparty.handlebars");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.tmpl.HandlebarsTemplate
  * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
  */
@@ -229,48 +229,79 @@ sap.ui.core.tmpl.HandlebarsTemplate.RENDER_HELPERS = (function() {
 			// extract the rest of the information which is required now
 			var oRootControl = options.data.rootControl,
 			    sParentPath = options.data.path,
-			    oParentControl = options.data.parentControl,
-			    sAggregation = options.hash["sap-ui-aggregation"],
-			    sDefaultAggregation = options.data.defaultAggregation,
+			    mParentChildren = options.data.children,
+			    sType = options.hash["sap-ui-type"],
+			    oMetadata = jQuery.sap.getObject(sType).getMetadata(),
+			    sDefaultAggregation = options.hash["sap-ui-default-aggregation"] || oMetadata.getDefaultAggregationName(),
 			    oView = options.data.view;
-			
-			// create the new control (out of the hash information)
-			var oNewControl = oRootControl.createControl(options.hash, options.data.path, !!oParentControl, oView);
 			
 			// Nested controls will get the reference to the parent control in order
 			// to add them to the defined aggregation. Example of nested controls:
 			// {{#control ...}}
 			//   {{control ...}}   <-- nested control
-			// {{/control}} 
+			// {{/control}}
+			var mChildren = {};
 			if (options.fn) {
-				var oChild = options.fn({}, {
+				options.fn({}, {
 					data: {
 						rootControl: oRootControl,
 						path: sParentPath,
-						parentControl: oNewControl,
-						defaultAggregation: options.hash["sap-ui-default-aggregation"] || oNewControl.getMetadata().getDefaultAggregationName(),
+						children: mChildren,
+						defaultAggregation: sDefaultAggregation,
 						view: oView
 					}
 				});
 			}
 			
-			// if we find a parent control reference the control will not return 
-			// the markup - furthermore the control will add itself to the parent
-			// into the desired aggregation
-			if (oParentControl) {
-				var oMetadata = oParentControl.getMetadata(),
-				    sAggrationName = sAggregation || sDefaultAggregation,
-				    oAggregation = oMetadata.getAllAggregations()[sAggrationName],
-				    bMultiple = oAggregation && oAggregation.multiple;
-				if (oAggregation) {
-					if (bMultiple) {
-						oParentControl.addAggregation(sAggrationName, oNewControl);
-					} else {
-						oParentControl.setAggregation(sAggrationName, oNewControl);
-					}
-				} else {
-					throw new Error("Aggregation '" + sAggrationName + "' does not exist for Control '" + oMetadata.getName() + "'.");
+			// remove the found nested children from the mSettings because they will
+			// be handled after the creation of the new control instance
+			var mSettings = jQuery.extend({}, options.hash);
+			jQuery.each(mSettings, function(sKey, oValue) {
+				if (mChildren[sKey]) {
+					delete mSettings[sKey];
 				}
+			});
+			
+			// create the new control (out of the hash information)
+			var oNewControl = oRootControl.createControl(mSettings, options.data.path, !!mParentChildren, oView);
+			
+			// add the created children to current control instance either as template
+			// in case of a binding has been found or as aggregation in case of no
+			// binding was found
+			if (!jQuery.isEmptyObject(mChildren)) {
+				mSettings = options.hash;
+				var oAllAggregation = oMetadata.getAllAggregations();
+				jQuery.each(mChildren, function(sAggregationName, aChildAggregation) {
+					for (var i = 0, l = aChildAggregation.length; i < l; i++) {
+						var oChildControl = aChildAggregation[i],
+						    oAggregation = oAllAggregation[sAggregationName],
+						    bMultiple = oAggregation && oAggregation.multiple;
+						if (typeof mSettings[sAggregationName] === "string") {
+							// the aggregation is bound => so we create a binding info object 
+							// which is used in the createControl function of the TemplateControl
+							// to create a proper binding
+							var oBindingInfo = sap.ui.base.ManagedObject.bindingParser(mSettings[sAggregationName], oView && oView.getController());
+							oBindingInfo.template = oChildControl;
+							oNewControl.bindAggregation(sAggregationName, oBindingInfo);
+						} else {
+							// the aggregation is not bound => so we add nested controls to the aggregation
+							if (bMultiple) {
+								oNewControl.addAggregation(sAggregationName, oChildControl);
+							} else {
+								oNewControl.setAggregation(sAggregationName, oChildControl);
+							}
+						}
+					}
+				});
+			}
+			
+			// if we find a parent children map the control will not return 
+			// the markup - furthermore the control will be added to the parent
+			// control in the section above into the desired aggregation
+			if (mParentChildren) {
+				var sAggregationName = options.hash["sap-ui-aggregation"] || options.data.defaultAggregation;
+				mParentChildren[sAggregationName] = mParentChildren[sAggregationName] || [];
+				mParentChildren[sAggregationName].push(oNewControl);
 				return;
 			}
 			

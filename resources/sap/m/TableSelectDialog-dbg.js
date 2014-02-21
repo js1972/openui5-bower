@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -718,32 +718,29 @@ jQuery.sap.require("sap.m.SearchField");
  */
 sap.m.TableSelectDialog.prototype.init = function () {
 	var that = this,
-		liveChangeTimer = 0;
-
-	//Function to allow dialog to close before fire event fired
-	var fnResetAfterClose = function () {
-		that._selectedItem = that._table.getSelectedItem();
-
-		// detach this function
-		that._dialog.detachAfterClose(fnResetAfterClose);
-
-		that.fireConfirm({
-			selectedItem: that._selectedItem,
-			selectedItems: that._selectedItems
-		});
-	};
+		liveChangeTimer = 0,
+		fnResetAfterClose = function () {
+			that._selectedItem = that._table.getSelectedItem();
+	
+			// detach this function
+			that._dialog.detachAfterClose(fnResetAfterClose);
+	
+			that.fireConfirm({
+				selectedItem: that._selectedItem,
+				selectedItems: that._selectedItems
+			});
+		};
 		
 		
 	this._bAppendedToUIArea = false;
 	this._oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
-	// store a reference to the table for binding management 
+	// store a reference to the table for binding management
 	this._table = new sap.m.Table(this.getId() + "-table", {
 		growing: true,
 		growingScrollToLoad: true,
 		noDataText: this.getNoDataText(),
 		mode: sap.m.ListMode.SingleSelectMaster,
 		selectionChange: function (oEvent) {
-			var selectedItem = oEvent.getParameter("listItem");
 			if (that._dialog) {
 				if (!that.getMultiSelect()) { 
 					// attach the reset function to afterClose to hide the dialog changes from the end user 
@@ -766,7 +763,7 @@ sap.m.TableSelectDialog.prototype.init = function () {
 
 			// execute search after user stopped typing for 300ms
 			clearTimeout(liveChangeTimer);
-			if(delay) {
+			if (delay) {
 				liveChangeTimer = setTimeout(function () {
 					that._executeSearch(value, "liveChange");
 				}, delay);
@@ -792,15 +789,25 @@ sap.m.TableSelectDialog.prototype.init = function () {
 		contentHeight: "2000px",
 		subHeader: this._subHeader,
 		content: [this._busyIndicator, this._table],
-		leftButton: this.getCancelButton()
+		leftButton: this._getCancelButton()
 	});
+
+	//CSN# 3863876/2013: ESC key should also cancel dialog, not only close it
+	var fnDialogEscape = this._dialog.onsapescape;
+	this._dialog.onsapescape = function(oEvent) {
+		// call original escape function of the dialog
+		if(fnDialogEscape) {
+			fnDialogEscape.call(that._dialog, oEvent);
+		}
+		// execute cancel action
+		that._onCancel();
+	};
 
 	// internally set top and bottom margin of the dialog to 8rem respectively
 	this._dialog._iVMargin = 8 * parseInt(sap.ui.core.theming.Parameters.get("sapUiFontSize") || 16, 10); //128
 
 	// helper variables for search update behaviour
 	this._searchFieldValue = "";
-	this._searchFieldLastEventType = "";
 
 	// flags to control the busy indicator behaviour because the growing table will always show the no data text when updating
 	this._firstRequest = true; // to only show the busy indicator for the first request when the dialog has been openend
@@ -819,7 +826,6 @@ sap.m.TableSelectDialog.prototype.exit = function () {
 	this._firstRequest = null;
 	this._tableUpdateRequested = null;
 	this._searchFieldValue = null;
-	this._searchFieldLastEventType = null;
 
 	if (this._dialog) {
 		this._dialog.destroy();
@@ -833,14 +839,27 @@ sap.m.TableSelectDialog.prototype.exit = function () {
 };
 
 /*
+* Invalidates the dialog instead of this control (we don't have a renderer)
+* @overwrite
+* @protected
+* @returns {this} this pointer for chaining
+*/
+sap.m.TableSelectDialog.prototype.invalidate = function () {
+	if (this._dialog) {
+		this._dialog.invalidate(arguments);
+	}
+
+	return this;
+};
+
+/*
 * Opens the internal dialog with a searchfield and a table.
 * @public
 * @param {string} sValue Value for the table search.
-* @return {TableSelectDialog} <code>this</code> to allow method chaining
+* @returns {this} <code>this</code> to allow method chaining
 */
 sap.m.TableSelectDialog.prototype.open = function (sSearchValue) {
-
-	if(!this._bAppendedToUIArea){
+	if (!this._bAppendedToUIArea) {
 		var oStatic = sap.ui.getCore().getStaticAreaRef();
 		oStatic = sap.ui.getCore().getUIArea(oStatic);
 		oStatic.addContent(this, true);
@@ -851,16 +870,15 @@ sap.m.TableSelectDialog.prototype.open = function (sSearchValue) {
 	this._table.removeSelections();
 	delete this._selectedItem;
 	delete this._selectedItems;
-	this._searchFieldLastEventType = "";
 	this._firstRequest = true;
 	this._tableUpdateRequested = 0;
-	
+
 	// set search field value
 	this._searchField.setValue(sSearchValue);
 
 	// open the dialog
 	this._dialog.open();
-	
+
 	//now return the control for chaining
 	return this;
 };
@@ -869,7 +887,7 @@ sap.m.TableSelectDialog.prototype.open = function (sSearchValue) {
 * Sets the growing threshold to the internal table
 * @public
 * @param {int} iValue Value for the table's growing threshold.
-* @return {sap.m/TableSelectDialog} this pointer for chaining
+* @returns {this} this pointer for chaining
 */
 sap.m.TableSelectDialog.prototype.setGrowingThreshold = function (iValue) {
 	this._table.setGrowingThreshold(iValue);
@@ -878,85 +896,39 @@ sap.m.TableSelectDialog.prototype.setGrowingThreshold = function (iValue) {
 	return this;
 };
 
-sap.m.TableSelectDialog.prototype.getOkButton = function () {
-	var that = this;
-
-	//Function to allow dialog to close before fire event fired
-	var fnOKAfterClose = function () {
-		that._selectedItem = that._table.getSelectedItem();
-		that._selectedItems = that._table.getSelectedItems();
-
-		// detach this function
-		that._dialog.detachAfterClose(fnOKAfterClose);
-
-		that.fireConfirm({
-			selectedItem: that._selectedItem,
-			selectedItems: that._selectedItems
-		});
-	};
-	
-	if (!this._okButton) {
-		this._okButton = new sap.m.Button(this.getId() + "-ok", {
-			text: this._oRb.getText("MSGBOX_OK"),
-			press: function () {
-				// attach the reset function to afterClose to hide the dialog changes from the end user 
-				that._dialog.attachAfterClose(fnOKAfterClose);
-				that._dialog.close();
-			}
-		});
-	}	
-	return this._okButton;
-}
-
-sap.m.TableSelectDialog.prototype.getCancelButton = function () {
-	var that = this;
-
-	//Function to allow dialog to close before fire event fired
-	var fnCancelAfterClose = function () {
-		that._selectedItem = null;
-		that._selectedItems = new Array();
-		that._searchFieldValue = null;
-
-		// detach this function
-		that._dialog.detachAfterClose(fnCancelAfterClose);
-
-		that.fireCancel();
-	};
-	
-	if (!this._cancelButton) {
-		this._cancelButton = new sap.m.Button(this.getId() + "-cancel" , {
-			text: this._oRb.getText("MSGBOX_CANCEL"),
-			press: function () {
-				// attach the reset function to afterClose to hide the dialog changes from the end user 
-				that._dialog.attachAfterClose(fnCancelAfterClose);
-				that._dialog.close();
-			}
-		});
-	}	
-	return this._cancelButton;
-}
-
+/**
+ * Enable/Disable multi selection mode.
+ * @overwrite
+ * @public
+ * @param {boole} bMulti flag for multi selection mode
+ * @returns {this} this pointer for chaining
+ */
 sap.m.TableSelectDialog.prototype.setMultiSelect = function (bMulti) {
 	this.setProperty("multiSelect", bMulti, true);
-	if(bMulti){
+	if (bMulti) {
 		this._table.setMode(sap.m.ListMode.MultiSelect); 
 		this._table.setIncludeItemInSelection(true);
-		this._dialog.setRightButton(this.getCancelButton());
-		this._dialog.setLeftButton(this.getOkButton());
+		this._dialog.setRightButton(this._getCancelButton());
+		this._dialog.setLeftButton(this._getOkButton());
 	} else {
 		this._table.setMode(sap.m.ListMode.SingleSelectMaster); 
-		this._dialog.setLeftButton(this.getCancelButton());
+		this._dialog.setLeftButton(this._getCancelButton());
 	}
-}
+
+	return this;
+};
 /*
  * Set the title of the internal dialog
  * @overwrite
  * @public
  * @param {string} sTitle the title text for the dialog
+ * @returns {this} this pointer for chaining
  */
 sap.m.TableSelectDialog.prototype.setTitle = function (sTitle) {
 	this.setProperty("title", sTitle, true);
-	this._dialog.setTitle(sTitle);		
+	this._dialog.setTitle(sTitle);
+
+	return this;
 };
 
 /*
@@ -967,7 +939,9 @@ sap.m.TableSelectDialog.prototype.setTitle = function (sTitle) {
  */
 sap.m.TableSelectDialog.prototype.setNoDataText = function (sNoDataText) {
 	this.setProperty("noDataText", sNoDataText, true);
-	this._table.setNoDataText(sNoDataText);		
+	this._table.setNoDataText(sNoDataText);
+
+	return this;
 };
 
 /* =========================================================== */
@@ -983,12 +957,12 @@ sap.m.TableSelectDialog.prototype.setNoDataText = function (sNoDataText) {
  * @param {string} sName the optional model name
  */
 sap.m.TableSelectDialog.prototype._setModel = sap.m.TableSelectDialog.prototype.setModel;
-sap.m.TableSelectDialog.prototype.setModel = function (oModel, sName) {
+sap.m.TableSelectDialog.prototype.setModel = function (oModel, sModelName) {
 	var args = Array.prototype.slice.call(arguments),
 		result;
 
 	// pass the model to the table
-	result = this._table.setModel(oModel, sName);
+	result = this._table.setModel(oModel, sModelName);
 	
 	// we made a request in this control, so we update the counter
 	this._tableUpdateRequested += 1;
@@ -1024,10 +998,10 @@ sap.m.TableSelectDialog.prototype._callMethodInManagedObject = function (sFuncti
  * Forwards aggregations with the name of items or columns to the internal table.
  * @overwrite
  * @public
- * @param {string} sName the name for the binding
+ * @param {string} sAggregationName the name for the binding
  * @param {object} oBindingInfo the configuration parameters for the binding
  */
-sap.m.TableSelectDialog.prototype.bindAggregation = function (sName, oBindingInfo) {
+sap.m.TableSelectDialog.prototype.bindAggregation = function (sAggregationName, oBindingInfo) {
 	var args = Array.prototype.slice.call(arguments);
 
 	// propagate the bind aggregation function to table
@@ -1075,30 +1049,40 @@ sap.m.TableSelectDialog.prototype.destroyAggregation = function (sAggregationNam
 	return this;
 };
 
-sap.m.TableSelectDialog.prototype.getBinding = function (sName) {
-	return this._callMethodInManagedObject("getBinding", sName);
+sap.m.TableSelectDialog.prototype.getBinding = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBinding", sAggregationName);
 };
 
-sap.m.TableSelectDialog.prototype.getBindingContext = function (sName) {
-	return this._callMethodInManagedObject("getBindingContext", sName);
+sap.m.TableSelectDialog.prototype.getBindingInfo = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBindingInfo", sAggregationName);
 };
 
-sap.m.TableSelectDialog.prototype.getBindingInfo = function (sName) {
-	return this._callMethodInManagedObject("getBindingInfo", sName);
+sap.m.TableSelectDialog.prototype.getBindingPath = function (sAggregationName) {
+	return this._callMethodInManagedObject("getBindingPath", sAggregationName);
 };
 
-sap.m.TableSelectDialog.prototype.getBindingPath = function (sName) {
-	return this._callMethodInManagedObject("getBindingPath", sName);
+sap.m.TableSelectDialog.prototype.getBindingContext = function (sModelName) {
+	return this._table.getBindingContext(sModelName);
 };
 
-sap.m.TableSelectDialog.prototype.setBindingContext = function (oContext, sName) {
-	this._callMethodInManagedObject("setBindingContext", oContext, sName);
-	return this;
-};
+/*
+ * Set the binding context for the internal list AND the current control so that 
+ * both controls can be used with the context
+ * @overwrite
+ * @public
+ * @param {sap.ui.model.Context} oContext the new context 
+ * @param {string} sModelName the optional model name
+ */
+sap.m.TableSelectDialog.prototype._setBindingContext = sap.m.TableSelectDialog.prototype.setBindingContext;
+sap.m.TableSelectDialog.prototype.setBindingContext = function (oContext, sModelName) {
+	var args = Array.prototype.slice.call(arguments),
+		result;
 
-sap.m.TableSelectDialog.prototype.setBindingContext = function (oContext, sName) {
-	this._callMethodInManagedObject("setBindingContext", oContext, sName);
-	return this;
+	// pass the model to the list
+	result = this._table.setBindingContext(oContext, sModelName);
+
+	// and also to the local control to allow binding of own properties
+	return result && sap.m.TableSelectDialog.prototype._setBindingContext.apply(this, args);
 };
 
 /* =========================================================== */
@@ -1110,17 +1094,18 @@ sap.m.TableSelectDialog.prototype.setBindingContext = function (oContext, sName)
 /* =========================================================== */
 
 /*
- * fires the search event on the internal when dialog is opened. 
+ * Fires the search event on the internal when dialog is opened. 
  * This function is also called whenever a search event on the searchfield is triggered 
  * @private
  * @param {string} sValue the new Search value or undefined if called by management functions
  * @param {string} sEventType the search field event type that has been called (liveChange / search)
+ * @returns {this} this pointer for chaining
  */
 sap.m.TableSelectDialog.prototype._executeSearch = function (sValue, sEventType) {
 	var table = this._table,
 		tableBinding = (table ? table.getBinding("items") : undefined),
 		searchValueDifferent = (this._searchFieldValue !== sValue); // to prevent unwanted duplicate requests
-	
+
 	// fire either the Search event or the liveChange event when dialog is opened.
 	// 1) when the clear icon is called then both liveChange and search events are fired but we only want to process the first one
 	// 2) when a livechange has been triggered by typing we don't want the next search event to be processed (typing + enter or typing + search button)
@@ -1133,19 +1118,17 @@ sap.m.TableSelectDialog.prototype._executeSearch = function (sValue, sEventType)
 			// we made another request in this control, so we update the counter
 			this._tableUpdateRequested += 1;
 			
-			if (sEventType == "search") {
+			if (sEventType === "search") {
 				//	fire the search so the data can be updated externally
 				this.fireSearch({value: sValue, itemsBinding: tableBinding});
-			} else if (sEventType == "liveChange") {
+			} else if (sEventType === "liveChange") {
 				//	fire the liveChange so the data can be updated externally				
 				this.fireLiveChange({value: sValue, itemsBinding: tableBinding});
 			}
 		}
 	}
 
-	// store the last event type for the next check
-	this._searchFieldLastEventType = sEventType;
-
+	return this;
 };
 
 /*
@@ -1183,15 +1166,80 @@ sap.m.TableSelectDialog.prototype._requestCompleted = function (oEvent) {
 	}
 };
 
-/**
-* Invalidates the dialog instead of this control (we don't have a renderer)
-* @overwrite
-* @public
-*/
-sap.m.TableSelectDialog.prototype.invalidate = function () {
-	if(this._dialog) {
-			this._dialog.invalidate(arguments);
-	}
+/*
+ * Lazy load the ok button if needed for MultiSelect mode
+ * @private
+ * @return {sap.m/Button} the button
+ */
+sap.m.TableSelectDialog.prototype._getOkButton = function () {
+	var that = this,
+		fnOKAfterClose = function () {
+			that._selectedItem = that._table.getSelectedItem();
+			that._selectedItems = that._table.getSelectedItems();
+
+			// detach this function
+			that._dialog.detachAfterClose(fnOKAfterClose);
+
+			that.fireConfirm({
+				selectedItem: that._selectedItem,
+				selectedItems: that._selectedItems
+			});
+		};
+
+	if (!this._okButton) {
+		this._okButton = new sap.m.Button(this.getId() + "-ok", {
+			text: this._oRb.getText("MSGBOX_OK"),
+			press: function () {
+				// attach the reset function to afterClose to hide the dialog changes from the end user 
+				that._dialog.attachAfterClose(fnOKAfterClose);
+				that._dialog.close();
+			}
+		});
+	}	
+	return this._okButton;
+};
+
+/*
+ * Lazy load the cancel button
+ * @private
+ * @return {sap.m/Button} the button
+ */
+sap.m.TableSelectDialog.prototype._getCancelButton = function () {
+	var that = this;
+
+	if (!this._cancelButton) {
+		this._cancelButton = new sap.m.Button(this.getId() + "-cancel", {
+			text: this._oRb.getText("MSGBOX_CANCEL"),
+			press: function () {
+				that._onCancel();
+			}
+		});
+	}	
+	return this._cancelButton;
+};
+
+/*
+ * Internal event handler for the cancel button and ESC key
+ * @private
+ */
+sap.m.TableSelectDialog.prototype._onCancel = function (oEvent) {
+	var that = this,
+		fnAfterClose = function () {
+			// reset internal selection values
+			that._selectedItem = null;
+			that._selectedItems = [];
+			that._searchFieldValue = null;
+
+			// detach this function
+			that._dialog.detachAfterClose(fnAfterClose);
+
+			// fire cancel event
+			that.fireCancel();
+		};
+
+	// attach the reset function to afterClose to hide the dialog changes from the end user 
+	this._dialog.attachAfterClose(fnAfterClose);
+	this._dialog.close();
 };
 
 /* =========================================================== */

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 /*global crossroads *///declare unusual global vars for JSLint/SAPUI5 validation
@@ -22,8 +22,20 @@ jQuery.sap.require("sap.ui.core.routing.HashChanger");
 	 * 
 	 * @class
 	 *
-	 * @param {object} Default values for route configuration
-	 * @param {sap.ui.core.routing.Router} A router to which all paths are relative to
+	 * @param {object or array} optional - may contain many Route configurations as @see sap.ui.core.routing.Route#constructor.<br/>
+	 * Each of the routes contained in the array/object will be added to the router.<br/>
+	 * The values that may be provided are the same as in @see sap.ui.core.routing.Route#constructor
+	 * 
+	 * @param {object} optional - Default values for route configuration - also takes the same parameters as @see sap.ui.core.routing.Route#constructor<br/>
+	 * Eg: the config object specifies : { viewType : "XML" }<br/>
+	 * The Routes look like this: [ { name : "xmlRoute" }, { name : "jsRoute" , viewType : "JS" } ]<br/>
+	 * <br/>
+	 * Then the effective config will look like this: <br/>
+	 * [ { name : "xmlRoute" , viewType : "XML" }, { name : "jsRoute" , viewType : "JS" } ]<br/>
+	 * <br/>
+	 * Since the xmlRoute does not specify its viewType, XML is taken from the config object. The jsRoute is specifying it, so the viewType will be JS.
+	 * 
+	 * @param {sap.ui.core.UIComponent} optional - The owner of all the views that will be created by this Router.
 	 * @public
 	 * @name sap.ui.core.routing.Router
 	 */
@@ -77,10 +89,7 @@ jQuery.sap.require("sap.ui.core.routing.HashChanger");
 	/**
 	 * Adds a route to the router
 	 * 
-	 * @param {object} oConfig configuration object for the route 
-	 *        oConfig.pattern:  the url pattern where it needs to match agains
-	 *        oConfig.name:     the name of the route
-	 *        oConfig.callback: a function which is executed after the route matched
+	 * @param {object} oConfig configuration object for the route @see sap.ui.core.routing.Route#constructor
 	 * @param {sap.ui.core.routing.Route} oParent the parent of the route
 	 * @public
 	 */
@@ -93,54 +102,87 @@ jQuery.sap.require("sap.ui.core.routing.HashChanger");
 			jQuery.sap.log.error("Route with name " + oConfig.name + " already exists");
 		}
 		this._oRoutes[oConfig.name] = new sap.ui.core.routing.Route(this, oConfig, oParent);
-	}
-	
+	};
+
 	sap.ui.core.routing.Router.prototype.parse = function (sNewHash, sOldHash) {
 		this._oRouter.parse(sNewHash);
 	};
 	
 	/**
-	 * Attaches the router to the hash changer
+	 * Attaches the router to the hash changer @see sap.ui.core.routing.HashChanger
 	 *
 	 * @public
+	 * @returns { sap.ui.core.routing.Router } this for chaining.
 	 */
 	sap.ui.core.routing.Router.prototype.initialize = function () {
 		var that = this,
 			oHashChanger = this.oHashChanger = sap.ui.core.routing.HashChanger.getInstance();
-		
-		this.fnHashChanged = jQuery.proxy(function(oEvent) {
+
+		if(this._isInitialized) {
+			jQuery.sap.log.warning("Router is already initialized.");
+			return this;
+		}
+
+		this._bIsInitialized = true;
+
+		this.fnHashChanged = function(oEvent) {
 			that.parse(oEvent.getParameter("newHash"), oEvent.getParameter("oldHash"));
-		}, this);
-		
+		};
+
 		oHashChanger.attachEvent("hashChanged", this.fnHashChanged);
-		
+
 		if(!oHashChanger.init()) {
 			this.parse(oHashChanger.getHash());
 		}
-		
+
 		return this;
 	};
 	
 	/**
-	 * Removes the router from the hash changer
+	 * @public
+	 * Stops to listen to the hashChange of the browser.</br>
+	 * If you want the router to start again, call initialize again.
+	 * @returns { sap.ui.core.routing.Router } this for chaining.
+	 */
+	sap.ui.core.routing.Router.prototype.stop = function () {
+
+		if (!this._bIsInitialized) {
+			jQuery.sap.log.warning("Router is not initialized. But it got stopped");
+		} 
+
+		if(this.fnHashChanged) {
+			this.oHashChanger.detachEvent("hashChanged", this.fnHashChanged);
+		}
+
+		this._bIsInitialized = false;
+
+		return this;
+
+	};
+
+	/**
+	 * Removes the router from the hash changer @see sap.ui.core.routing.HashChanger
 	 *
 	 * @public
+	 * @returns { sap.ui.core.routing.Router } this for chaining.
 	 */
 	sap.ui.core.routing.Router.prototype.destroy = function () {
 		sap.ui.base.EventProvider.prototype.destroy.apply(this);
 
-		if (!this.fnHashChanged) {
-			jQuery.sap.log.warning("Router is not initialized.");
-			return this;
+		if (!this._bIsInitialized) {
+			jQuery.sap.log.info("Router is not initialized, but got destroyed.");
+		}
+
+		if(this.fnHashChanged) {
+			this.oHashChanger.detachEvent("hashChanged", this.fnHashChanged);
 		}
 
 		this._oOwner = null;
-		
+
 		//will remove all the signals attached to the routes - all the routes will not be useable anymore
 		this._oRouter.removeAllRoutes();
 		this._oRouter = null;
-		
-		this.oHashChanger.detachEvent("hashChanged", this.fnHashChanged);
+
 		return this;
 	};
 	
@@ -171,20 +213,25 @@ jQuery.sap.require("sap.ui.core.routing.HashChanger");
 	 * 
 	 * @param {String} sViewName Name of the view
 	 * @param {String} sViewType Type of the view
+	 * @param {String} sViewId Optional view id
 	 * @return {sap.ui.core.mvc.View} the view instance
 	 * @public
 	 */
-	sap.ui.core.routing.Router.prototype.getView = function (sViewName, sViewType) {
+	sap.ui.core.routing.Router.prototype.getView = function (sViewName, sViewType, sViewId) {
 		if (!sViewName) {
 			jQuery.sap.log.error("A name for the view has to be defined");
 		}
 		
 		if (!this._oViews[sViewName]) {
 			var fnCreateView = function() {
-				return sap.ui.view({ 
+				var oViewOptions = { 
 					type: sViewType,
 					viewName: sViewName,
-				});
+				};
+				if (sViewId) {
+					oViewOptions.id = sViewId;
+				}
+				return sap.ui.view(oViewOptions);
 			};
 			if (this._oOwner) {
 				var that = this;

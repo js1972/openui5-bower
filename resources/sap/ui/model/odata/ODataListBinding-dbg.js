@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,8 +18,12 @@ jQuery.sap.require("sap.ui.core.format.DateFormat");
  * @class
  * List binding implementation for oData format
  *
- * @param sPath
- * @param [oModel]
+ * @param {sap.ui.model.Model} oModel
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {array} [aSorters] initial sort order (can be either a sorter or an array of sorters)
+ * @param {array} [aFilters] predefined filter/s (can be either a filter or an array of filters)
+ * @param {object} [mParameters]
  * 
  * @name sap.ui.model.odata.ODataListBinding
  * @extends sap.ui.model.ListBinding
@@ -51,7 +55,7 @@ sap.ui.model.ListBinding.extend("sap.ui.model.odata.ODataListBinding", /** @lend
 
 		// if nested list is already available, use the data and don't send additional requests
 		// TODO: what if nested list is not complete, because it was too large?
-		var oRef = this.oModel._getObject(sPath, oContext);
+		var oRef = this.oModel._getObject(this.sPath, this.oContext);
 		if (jQuery.isArray(oRef)) {
 			this.aKeys = oRef;
 			this.iLength = oRef.length;
@@ -377,6 +381,7 @@ sap.ui.model.odata.ODataListBinding.prototype.loadData = function(iStartIndex, i
 		
 		that.oRequestHandle = null;
 		that.bPendingRequest = false;
+		that.oModel.checkUpdate(false, that.oContext);
 		that.fireDataReceived();
 	}
 	
@@ -400,7 +405,7 @@ sap.ui.model.odata.ODataListBinding.prototype.loadData = function(iStartIndex, i
 		this.bPendingRequest = true;
 		// execute the request and use the metadata if available
 		this.fireDataRequested();
-		this.oModel._loadData(sPath, aParams, fnSuccess, fnError, this.getContext(), false, fnUpdateHandle);
+		this.oModel._loadData(sPath, aParams, fnSuccess, fnError, false, fnUpdateHandle);
 	}
 
 };
@@ -478,6 +483,10 @@ sap.ui.model.odata.ODataListBinding.prototype._getLength = function() {
 		// (since $count requests are synchronous we skip the withCredentials here)
 		jQuery.ajax({
 			url: oRequest.requestUri,
+			beforeSend: function (request)
+            {
+                request.setRequestHeader("Accept-Language", sap.ui.getCore().getConfiguration().getLanguage());
+            },
 			async: oRequest.async,
 			cache: bCache,
 			username: oRequest.user,
@@ -502,7 +511,16 @@ sap.ui.model.odata.ODataListBinding.prototype._getLength = function() {
 sap.ui.model.odata.ODataListBinding.prototype.refresh = function(bForceUpdate) {
 	this.abortPendingRequest();
 	this.resetData();
-	this._fireChange({reason: sap.ui.model.ChangeReason.Refresh});
+	this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+};
+
+/**
+ * Initialize binding. Fires a refresh 
+ * 
+ * @public
+ */
+sap.ui.model.odata.ODataListBinding.prototype.initialize = function() {
+	this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
 };
 
 /**
@@ -512,8 +530,9 @@ sap.ui.model.odata.ODataListBinding.prototype.refresh = function(bForceUpdate) {
  * @param {boolean} bForceUpdate
  */
 sap.ui.model.odata.ODataListBinding.prototype.checkUpdate = function(bForceUpdate) {
+	var bChangeReason = this.sChangeReason ? this.sChangeReason : sap.ui.model.ChangeReason.Change;
 	if (!this.bUseExtendedChangeDetection) {
-		this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+		this._fireChange({reason: bChangeReason});
 	} else {
 		var bChangeDetected = false;
 		var that = this;
@@ -534,9 +553,10 @@ sap.ui.model.odata.ODataListBinding.prototype.checkUpdate = function(bForceUpdat
 			}
 		}
 		if (bChangeDetected || bForceUpdate) {
-			this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+			this._fireChange({reason: bChangeReason});
 		}
 	}
+	this.sChangeReason = undefined;
 };
 
 /**
@@ -548,10 +568,11 @@ sap.ui.model.odata.ODataListBinding.prototype.resetData = function() {
 	this.aKeys = [];
 	this.iLength = 0;
 	this.bLengthFinal = false;
+	this.sChangeReason = undefined;
 	if (this.oModel.isCountSupported()) {
 		this._getLength();
 	}
-}
+};
 
 /**
  * Aborts the current pending request (if any)
@@ -590,7 +611,13 @@ sap.ui.model.odata.ODataListBinding.prototype.sort = function(aSorters) {
 	this.aKeys = [];
 
 	if (this.bInitialized) {
-		this._fireChange({ reason : sap.ui.model.ChangeReason.Sort });
+		if (this.oRequestHandle) {
+			this.oRequestHandle.abort();
+			this.oRequestHandle = null;
+			this.bPendingRequest = false;
+		}
+		this.sChangeReason = sap.ui.model.ChangeReason.Sort;
+		this._fireRefresh({reason : this.sChangeReason});
 		// TODO remove this if the sort event gets removed which is now deprecated
 		this._fireSort({sorter: aSorters});
 	}
@@ -667,7 +694,13 @@ sap.ui.model.odata.ODataListBinding.prototype.filter = function(aFilters, sFilte
 	this.resetData();
 	
 	if (this.bInitialized) {
-		this._fireChange({reason : sap.ui.model.ChangeReason.Filter });
+		if (this.oRequestHandle) {
+			this.oRequestHandle.abort();
+			this.oRequestHandle = null;
+			this.bPendingRequest = false;
+		}
+		this.sChangeReason = sap.ui.model.ChangeReason.Filter;
+		this._fireRefresh({reason : this.sChangeReason});
 		// TODO remove this if the filter event gets removed which is now deprecated
 		if (sFilterType == sap.ui.model.FilterType.Application) {
 			this._fireFilter({filters: this.aApplicationFilters});

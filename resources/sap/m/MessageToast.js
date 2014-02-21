@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.MessageToast");jQuery.sap.require("sap.ui.core.Popup");jQuery.sap.require("sap.m.InstanceManager");sap.m.MessageToast={};sap.m.MessageToast._OFFSET="0 -64";sap.m.MessageToast._CSSCLASS="sapMMessageToast";sap.m.MessageToast._mSettings={duration:3000,width:"15em",my:"center bottom",at:"center bottom",of:document.defaultView,offset:"0 0",collision:"fit fit",onClose:null,animationTimingFunction:"ease",animationDuration:1000,autoClose:true};sap.m.MessageToast._aPopups=[];sap.m.MessageToast._iOpenedPopups=0;sap.m.MessageToast._bBoundedEvents=false;

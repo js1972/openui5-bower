@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -18,7 +18,7 @@
  * sap.ui.lazyRequire("sap.ui.core/Control");
  * sap.ui.lazyRequire("sap.ui.commons/Button");
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -39,7 +39,7 @@ jQuery.sap.require("jquery.sap.dom");
  * The <code>sap</code> namespace is automatically registered with the
  * OpenAjax hub if it exists.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @public
  * @name sap
@@ -52,7 +52,7 @@ if ( typeof window.sap !== "object" && typeof window.sap !== "function"  ) {
  * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
  * point for UI related JavaScript functionality provided by SAP.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui
  * @public
@@ -65,8 +65,8 @@ sap.ui = jQuery.extend(sap.ui, {
 		 * The version of the SAP UI Library
 		 * @type string
 		 */
-		version: "1.16.8-SNAPSHOT",
-		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201312172109" }
+		version: "1.18.8",
+		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201402191958" }
 	});
 
 /**

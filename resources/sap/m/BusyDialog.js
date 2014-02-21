@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.BusyDialog");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.m.BusyDialog",{metadata:{publicMethods:["open","close"],library:"sap.m",properties:{"text":{type:"string",group:"Appearance",defaultValue:null},"title":{type:"string",group:"Appearance",defaultValue:null},"customIcon":{type:"sap.ui.core.URI",group:"Appearance",defaultValue:null},"customIconRotationSpeed":{type:"int",group:"Appearance",defaultValue:1000},"customIconDensityAware":{type:"boolean",group:"",defaultValue:true},"customIconWidth":{type:"sap.ui.core.CSSSize",group:"Appearance",defaultValue:"30px"},"customIconHeight":{type:"sap.ui.core.CSSSize",group:"Appearance",defaultValue:"44px"},"cancelButtonText":{type:"string",group:"Misc",defaultValue:null},"showCancelButton":{type:"boolean",group:"Appearance",defaultValue:false}},aggregations:{"_busyLabel":{type:"sap.ui.core.Control",multiple:false,visibility:"hidden"},"_busyIndicator":{type:"sap.ui.core.Control",multiple:false,visibility:"hidden"},"_busyButton":{type:"sap.ui.core.Control",multiple:false,visibility:"hidden"}},events:{"close":{}}}});sap.m.BusyDialog.M_EVENTS={'close':'close'};jQuery.sap.require("sap.ui.core.Popup");jQuery.sap.require("sap.ui.core.theming.Parameters");

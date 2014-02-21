@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * @extends sap.ui.core.Item
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -148,6 +148,25 @@ sap.ui.core.Item.extend("sap.m.FacetFilterItem", { metadata : {
 ///**
 // * This file defines behavior for the control,
 // */
-//sap.m.FacetItem.prototype.init = function(){
+//sap.m.FacetFilterItem.prototype.init = function(){
 //   // do something for initialization...
 //};
+
+sap.m.FacetFilterItem.prototype.setSelected = function(bSelected) {
+	
+	var parent = this.getParent();
+	var bSuppressInvalidate = false;
+
+	if (parent instanceof sap.m.FacetFilterList){
+		bSuppressInvalidate = parent._getViewList() === null ? false : true;
+
+		if (bSelected){
+			parent._addItemToODataItemCache(this);
+		}
+		else{
+			parent._removeItemFromODataItemCache(this);
+		}
+	}
+
+	this.setProperty("selected", bSelected, bSuppressInvalidate);
+};

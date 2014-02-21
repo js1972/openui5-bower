@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -444,7 +444,7 @@ sap.ui.core.ScrollBar.prototype.onAfterRendering = function () {
 		stepSize = $ffsize.outerHeight();
 	}
 	$ffsize.remove();
-	
+
 	if (!!sap.ui.Device.browser.webkit) {
 		// document.width - was not supported by Chrome 17 anymore, but works again with Chrome from 18 to 30, and does not work in chrom 31.
 		if  (!document.width) {
@@ -834,8 +834,8 @@ sap.ui.core.ScrollBar.prototype.setCheckedScrollPosition = function (scrollPosit
 sap.ui.core.ScrollBar.prototype.setContentSize = function (sContentSize) {
 
 	// Trigger the rerendering when switching the from step mode.
-	this.setProperty("contentSize", sContentSize, !this._bStepMode);
-	if (!this._bStepMode) {
+	this.setProperty("contentSize", sContentSize);
+	this._bStepMode = false;
 		var $SbCnt = jQuery.sap.byId(this.getId() + "-sbcnt");
 		if ($SbCnt) {
 			if (this.getVertical()) {
@@ -844,7 +844,6 @@ sap.ui.core.ScrollBar.prototype.setContentSize = function (sContentSize) {
 				$SbCnt.width(sContentSize);
 			}
 		}
-	}
 	return this;
 };
 
@@ -894,8 +893,8 @@ sap.ui.core.ScrollBar.prototype._doScroll = function(eAction, bForward) {
 		}
 	} else {
 
-		// Set new scroll position without the rerendering
-		this.setCheckedScrollPosition(iScrollPos, false);
+		// Set new scroll position without the rerendering:
+		this.setProperty("scrollPosition", iScrollPos, true);
 
 		jQuery.sap.log.debug("-----PIXELMODE-----: New ScrollPos: " + iScrollPos + " --- Old ScrollPos: " +  this._iOldScrollPos + " --- Action: " + eAction + " --- Direction is forward: " + bForward);
 		this.fireScroll({ action: eAction, forward: bForward, newScrollPos: iScrollPos, oldScrollPos: this._iOldScrollPos});
@@ -931,6 +930,7 @@ sap.ui.core.ScrollBar.prototype.getNativeScrollPosition = function() {
 
 /**
  * sets the scroll position directly
+
  * @param {int} iNativeScrollPos new native scroll position
  * @private
  */

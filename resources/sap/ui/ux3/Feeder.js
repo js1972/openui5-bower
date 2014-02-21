@@ -1,11 +1,11 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.Feeder");jQuery.sap.require("sap.ui.ux3.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.ux3.Feeder",{metadata:{library:"sap.ui.ux3",properties:{"thumbnailSrc":{type:"sap.ui.core.URI",group:"Data",defaultValue:null},"text":{type:"string",group:"Data",defaultValue:null},"type":{type:"sap.ui.ux3.FeederType",group:"Appearance",defaultValue:sap.ui.ux3.FeederType.Large}},events:{"submit":{}}}});sap.ui.ux3.Feeder.M_EVENTS={'submit':'submit'};jQuery.sap.require("sap.ui.core.theming.Parameters");jQuery.sap.require("sap.ui.commons.Button");
-sap.ui.ux3.Feeder.prototype.init=function(){this.rb=sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3");this.oSendButton=new sap.ui.commons.Button(this.getId()+"-send",{style:sap.ui.commons.ButtonStyle.Emph}).setParent(this);this.oSendButton.attachEvent('press',this.handleSendButtonPress,this)};
-sap.ui.ux3.Feeder.prototype.initSendButton=function(){if(this.getText()==""){this.oSendButton.setProperty('enabled',false,true)}var a="";switch(this.getType()){case(sap.ui.ux3.FeederType.Medium):a=sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowMediumUrl');break;case(sap.ui.ux3.FeederType.Comment):a=sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowSmallUrl');break;default:a=sap.ui.core.theming.Parameters.get('sap.ui.ux3.Feeder:sapUiFeederArrowLargeUrl');break}if(!a||a==""){this.oSendButton.setProperty('text','-->',true)}else{if(sap.ui.getCore().getConfiguration().getRTL()){a=a.replace(/\/img\//,"/img-RTL/")}this.oSendButton.setProperty('icon',jQuery.sap.getModulePath("sap.ui.ux3",'/')+"themes/"+sap.ui.getCore().getConfiguration().getTheme()+a,true)}};
+sap.ui.ux3.Feeder.prototype.init=function(){this.rb=sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3");this.oSendButton=new sap.ui.commons.Button(this.getId()+"-send",{style:sap.ui.commons.ButtonStyle.Emph,icon:"sap-icon://feeder-arrow"}).setParent(this);this.oSendButton.attachEvent('press',this.handleSendButtonPress,this)};
+sap.ui.ux3.Feeder.prototype.initSendButton=function(){if(this.getText()==""){this.oSendButton.setProperty('enabled',false,true)}};
 sap.ui.ux3.Feeder.prototype.exit=function(){this.rb=undefined;this.oInput=undefined;if(this.oSendButton){this.oSendButton.destroy();delete this.oSendButton}};
 sap.ui.ux3.Feeder.prototype.onAfterRendering=function(){this.oInput=jQuery.sap.byId(this.getId()+"-input")};
 sap.ui.ux3.Feeder.prototype.onclick=function(e){var t=e.target.getAttribute('ID');switch(t){case(this.getId()+'-send'):break;case(this.getId()+'-input'):break;default:break}};

@@ -1,6 +1,6 @@
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -32,7 +32,7 @@ jQuery.sap.require("sap.ui.core.Core");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @name sap.ui.core.Component
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  */
@@ -148,6 +148,9 @@ sap.ui.core.Component.prototype.getInterface = function() {
  */
 sap.ui.core.Component.prototype._initCompositeSupport = function(mSettings) {
 
+	// registry of mock servers
+	this._mMockServers = {};
+	
 	// register the component instance
 	this.getMetadata().onInitComponent();
 	
@@ -236,20 +239,19 @@ sap.ui.core.Component.prototype.getComponentData = function() {
  * 
  * @private
  */
-sap.ui.core.Component.prototype.initComponentModels = function() {
+sap.ui.core.Component.prototype.initComponentModels = function(mModels, mServices) {
 	
 	var oMetadata = this.getMetadata();
 	
 	// get the application configuration
-	var oModelsConfig = oMetadata.getModels(),
-	    oServicesConfig = oMetadata.getServices();
+	var oModelsConfig = mModels || oMetadata.getModels(),
+	    oServicesConfig = mServices || oMetadata.getServices();
 
 	// iterate over the model configurations and create and register the 
 	// models base on the configuration if available
 	if (oModelsConfig) {
 		
 		// create and start the mock server
-		this._mMockServers = [];
 		var fnCreateMockServer = function(sName, sUri, sMetadataUrl, sMockdataBaseUrl) {
 			
 			// kill the existing mock server

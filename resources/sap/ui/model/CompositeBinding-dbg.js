@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -23,7 +23,8 @@ jQuery.sap.require("sap.ui.model.SimpleType");
 sap.ui.model.PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding */ {
 
 	constructor : function (aBindings, bRawValues) {
-		sap.ui.model.Binding.apply(this, [null,""]); // TODO is this needed?
+		sap.ui.model.PropertyBinding.apply(this, [null,""]);
+		var that = this;
 		this.aBindings = aBindings;
 		this.bRawValues = bRawValues;
 	},
@@ -173,10 +174,13 @@ sap.ui.model.CompositeBinding.prototype.getBindings = function() {
 * @protected
 */
 sap.ui.model.CompositeBinding.prototype.attachChange = function(fnFunction, oListener) {
-	
-	jQuery.each(this.aBindings, function(i, oBinding){
-		oBinding.attachChange(fnFunction, oListener);
-	});
+	this.attachEvent("change", fnFunction, oListener);
+	if (this.aBindings) {
+		var that = this;
+		jQuery.each(this.aBindings, function(i,oBinding) {
+			oBinding.attachChange(that.checkUpdate, that);
+		});
+	}
 };
 
 /**
@@ -186,9 +190,13 @@ sap.ui.model.CompositeBinding.prototype.attachChange = function(fnFunction, oLis
 * @protected
 */
 sap.ui.model.CompositeBinding.prototype.detachChange = function(fnFunction, oListener) {
-	jQuery.each(this.aBindings, function(i, oBinding){
-		oBinding.detachChange(fnFunction, oListener);
-	});
+	this.detachEvent("change", fnFunction, oListener);
+	if (this.aBindings) {
+		var that = this;
+		jQuery.each(this.aBindings, function(i,oBinding) {
+			oBinding.detachChange(that.checkUpdate, that);
+		});
+	}
 };
 
 /**
@@ -203,6 +211,18 @@ sap.ui.model.CompositeBinding.prototype.updateRequired = function(oModel) {
 		bUpdateRequired = bUpdateRequired || oBinding.updateRequired(oModel);
 	});
 	return bUpdateRequired;
-
 };
-
+/**
+ * Check whether this Binding would provide new values and in case it changed,
+ * inform interested parties about this.
+ * 
+ * @param {boolean} bForceupdate
+ * 
+ */
+sap.ui.model.CompositeBinding.prototype.checkUpdate = function(bForceupdate){
+	var oValue = this.getExternalValue();
+	if(!jQuery.sap.equal(oValue, this.oValue) || bForceupdate) {// optimize for not firing the events when unneeded
+		this.oValue = oValue;
+		this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+	}
+};

@@ -2,7 +2,7 @@
 <library  version="2.0" name="sap.ui.core">
   <module name="jquery-1.7.1.js" size="248235" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="jquery-sap.js" size="380130" dynamicDependencies="true">
+  <module name="jquery-sap.js" size="381550" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -26,27 +26,33 @@
   </module>
   <module name="jquery-ui-position.js" size="423" excludeFromAllInOne="true" dynamicDependencies="true" raw="true">
   </module>
-  <module name="jquery.sap.dom.js" size="28577">
+  <module name="jquery.sap.act.js" size="4580">
+    <description>Provides functionality for activity detection</description>
+    <requires>
+      <module name="jquery.sap.global.js"/>
+    </requires>
+  </module>
+  <module name="jquery.sap.dom.js" size="27128">
     <description>Provides functionality related to DOM analysis and manipulation which is not provided by jQuery itself.</description>
     <requires>
       <module name="sap/ui/Device.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.encoder.js" size="12383">
+  <module name="jquery.sap.encoder.js" size="12451">
     <description>Provides encoding functions for JavaScript.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.events.js" size="39764">
+  <module name="jquery.sap.events.js" size="40494">
     <description>Provides functionality related to eventing.</description>
     <requires>
       <module name="jquery.sap.keycodes.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.global.js" size="101379" dynamicDependencies="true" raw="true">
+  <module name="jquery.sap.global.js" size="102034" dynamicDependencies="true" raw="true">
     <requires>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/jquery/jquery-1.7.1.js"/>
@@ -54,20 +60,20 @@
       <module name="sap/ui/thirdparty/URI.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.history.js" size="22300" compressedSize="4825">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="jquery.sap.history.js" size="22308" compressedSize="4833">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.strings.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.keycodes.js" size="5824">
+  <module name="jquery.sap.keycodes.js" size="5832">
     <description>Provides constants for key codes. Useful in the implementation of keypress/keydown event handlers.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.logger.js" size="355" compressedSize="239">
+  <module name="jquery.sap.logger.js" size="363" compressedSize="247">
     <description>Abandoned, empty module (since 1.1.2). Functionality has been integrated into module 'jquery.sap.global'.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -82,14 +88,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.properties.js" size="8040">
+  <module name="jquery.sap.properties.js" size="8039">
     <description>Provides access to Java-like properties files</description>
     <requires>
       <module name="jquery.sap.sjax.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.resources.js" size="15306">
+  <module name="jquery.sap.resources.js" size="15305">
     <description>Provides access to Java-like resource bundles in properties file format</description>
     <requires>
       <module name="jquery.sap.properties.js"/>
@@ -97,45 +103,45 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.script.js" size="21792">
+  <module name="jquery.sap.script.js" size="21791">
     <description>Provides miscellaneous utility functions that might be useful for any script</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.sjax.js" size="7384">
+  <module name="jquery.sap.sjax.js" size="7392">
     <description>Provides convenience functions for synchronous communication, based on the jQuery.ajax() function.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.storage.js" size="11315" compressedSize="1694">
+  <module name="jquery.sap.storage.js" size="11296" compressedSize="1702">
     <description>Provides methods to store and retrieve data based on Web Storage API.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.strings.js" size="10391">
+  <module name="jquery.sap.strings.js" size="10399">
     <description>Provides useful string operations not available in pure JavaScript.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.ui.js" size="5525">
+  <module name="jquery.sap.ui.js" size="5524">
     <description>A bridge between the jQuery.sap plugin and the SAPUI5 Core</description>
     <requires>
       <module name="sap/ui/Global.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.xml.js" size="5540" compressedSize="2631">
+  <module name="jquery.sap.xml.js" size="5548" compressedSize="2639">
     <description>Provides xml parsing and error checking functionality.</description>
     <requires>
       <module name="sap/ui/Device.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap-ui-core-lean.js" size="458957" dynamicDependencies="true">
+  <module name="sap-ui-core-lean.js" size="460999" dynamicDependencies="true">
     <requires>
       <module name="sap/ui/core/Core.js"/>
     </requires>
@@ -147,7 +153,7 @@
       <module name="jquery.sap.global.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core-nojQuery.js" size="1010006" dynamicDependencies="true">
+  <module name="sap-ui-core-nojQuery.js" size="1025495" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -162,6 +168,7 @@
       <module name="jquery.sap.resources.js"/>
       <module name="jquery.sap.strings.js"/>
       <module name="jquery.sap.script.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/Global.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="sap/ui/base/Object.js"/>
@@ -207,7 +214,7 @@
       <module name="sap/ui/app/ApplicationMetadata.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core.js" size="1267495" dynamicDependencies="true">
+  <module name="sap-ui-core.js" size="1282984" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/thirdparty/jquery/jquery-1.7.1.js"/>
       <module name="sap/ui/thirdparty/jqueryui/jquery-ui-position.js"/>
@@ -224,6 +231,7 @@
       <module name="jquery.sap.resources.js"/>
       <module name="jquery.sap.strings.js"/>
       <module name="jquery.sap.script.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/Global.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="sap/ui/base/Object.js"/>
@@ -269,7 +277,7 @@
       <module name="sap/ui/app/ApplicationMetadata.js"/>
     </includes>
   </module>
-  <module name="sap-ui-debug.js" size="52469">
+  <module name="sap-ui-debug.js" size="52494">
     <description>This file has been generated by the SAPUI5 CreateModule Ant-Task</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -289,7 +297,7 @@
       <module name="sap/ui/debug/PropertyList.js"/>
     </includes>
   </module>
-  <module name="sap-ui-testenv.js" size="21197">
+  <module name="sap-ui-testenv.js" size="21211">
     <description>This file has been generated by the SAPUI5 CreateModule Ant-Task</description>
     <requires>
       <module name="sap/ui/core/Element.js"/>
@@ -304,57 +312,57 @@
       <module name="sap/ui/debug/Highlighter.js"/>
     </includes>
   </module>
-  <module name="sap/ui/Device.js" size="40724" raw="true">
+  <module name="sap/ui/Device.js" size="42111" raw="true">
   </module>
-  <module name="sap/ui/Global.js" size="10220">
+  <module name="sap/ui/Global.js" size="10192">
     <requires>
       <module name="jquery.sap.dom.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/app/Application.js" size="11717">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/app/Application.js" size="11716">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/app/ApplicationMetadata.js"/>
       <module name="sap/ui/base/ManagedObject.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/app/ApplicationMetadata.js" size="3562">
+  <module name="sap/ui/app/ApplicationMetadata.js" size="3561">
     <description>Provides class sap.ui.app.ApplicationMetadata</description>
     <requires>
       <module name="sap/ui/base/ManagedObjectMetadata.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/app/MockServer.js" size="1544" compressedSize="352">
+  <module name="sap/ui/app/MockServer.js" size="1543" compressedSize="360">
     <description>Provides class sap.ui.app.MockServer for mocking a server</description>
     <requires>
       <module name="sap/ui/core/util/MockServer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/BindingParser.js" size="6619">
+  <module name="sap/ui/base/BindingParser.js" size="6627">
     <description>Provides static class sap.ui.base.BindingParser</description>
     <requires>
       <module name="jquery.sap.script.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/DataType.js" size="8191">
+  <module name="sap/ui/base/DataType.js" size="9011">
     <description>Provides class sap.ui.base.DataType</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/Event.js" size="3567">
+  <module name="sap/ui/base/Event.js" size="3566">
     <description>Provides class sap.ui.base.Event</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/EventProvider.js" size="11536">
+  <module name="sap/ui/base/EventProvider.js" size="11535">
     <description>Provides class sap.ui.base.EventProvider</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -363,23 +371,24 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/Exception.js" size="1006">
+  <module name="sap/ui/base/Exception.js" size="1014">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/Interface.js" size="1901">
+  <module name="sap/ui/base/Interface.js" size="1900">
     <description>Provides class sap.ui.base.Interface</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/ManagedObject.js" size="105953">
+  <module name="sap/ui/base/ManagedObject.js" size="108334">
     <description>Provides the base class for all objects with managed properties and aggregations.</description>
     <requires>
       <module name="jquery.sap.script.js"/>
       <module name="jquery.sap.strings.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="sap/ui/base/DataType.js"/>
       <module name="sap/ui/base/ManagedObjectMetadata.js"/>
@@ -391,7 +400,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/ManagedObjectMetadata.js" size="22499">
+  <module name="sap/ui/base/ManagedObjectMetadata.js" size="22541">
     <description>Provides class sap.ui.base.ManagedObjectMetadata</description>
     <requires>
       <module name="sap/ui/base/Metadata.js"/>
@@ -399,14 +408,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/Metadata.js" size="10446">
+  <module name="sap/ui/base/Metadata.js" size="10445">
     <description>Provides class sap.ui.base.Metadata</description>
     <requires>
       <module name="jquery.sap.script.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/Object.js" size="7419">
+  <module name="sap/ui/base/Object.js" size="7418">
     <description>Provides class sap.ui.base.Object</description>
     <requires>
       <module name="sap/ui/base/Interface.js"/>
@@ -414,14 +423,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/base/ObjectPool.js" size="4617">
+  <module name="sap/ui/base/ObjectPool.js" size="4616">
     <description>Provides class sap.ui.base.ObjectPool</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/AppCacheBuster.js" size="16486" compressedSize="4538">
+  <module name="sap/ui/core/AppCacheBuster.js" size="16494" compressedSize="4546">
     <description>Provides the AppCacheBuster mechanism to load application files using a timestamp</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
@@ -429,14 +438,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/BusyIndicator.js" size="7160" compressedSize="3051">
+  <module name="sap/ui/core/BusyIndicator.js" size="7126" compressedSize="3059">
     <description>A static class to show a busy indicator</description>
     <requires>
       <module name="sap/ui/core/Popup.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Component.js" size="17748">
+  <module name="sap/ui/core/Component.js" size="17819">
     <description>Provides base class sap.ui.core.Component for all components</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
@@ -445,7 +454,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ComponentContainer.js" size="12188" compressedSize="2087">
+  <module name="sap/ui/core/ComponentContainer.js" size="12187" compressedSize="2095">
     <description>Provides control sap.ui.core.ComponentContainer.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -453,20 +462,20 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ComponentContainerRenderer.js" size="1936" compressedSize="873">
+  <module name="sap/ui/core/ComponentContainerRenderer.js" size="1944" compressedSize="881">
     <description>A renderer for the ComponentContainer control</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ComponentMetadata.js" size="12243">
+  <module name="sap/ui/core/ComponentMetadata.js" size="12242">
     <description>Provides class sap.ui.core.ComponentMetadata</description>
     <requires>
       <module name="sap/ui/base/ManagedObjectMetadata.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/CompositeSupport.js" size="7989" compressedSize="2725">
+  <module name="sap/ui/core/CompositeSupport.js" size="7997" compressedSize="2733">
     <description>Provides class sap.ui.core.CompositeSupport</description>
     <requires>
       <module name="sap/ui/core/Control.js"/>
@@ -474,7 +483,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Configuration.js" size="43249">
+  <module name="sap/ui/core/Configuration.js" size="43363">
     <description>Provides class sap.ui.core.Configuration</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -483,7 +492,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Control.js" size="26673">
+  <module name="sap/ui/core/Control.js" size="26672">
     <description>Provides base class sap.ui.core.Control for all controls</description>
     <requires>
       <module name="sap/ui/core/Element.js"/>
@@ -491,7 +500,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Core.js" size="92367">
+  <module name="sap/ui/core/Core.js" size="92873">
     <description>Provides the real core class sap.ui.core.Core of SAPUI5</description>
     <requires>
       <module name="jquery.sap.dom.js"/>
@@ -500,6 +509,7 @@
       <module name="jquery.sap.properties.js"/>
       <module name="jquery.sap.resources.js"/>
       <module name="jquery.sap.script.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/Global.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="sap/ui/base/DataType.js"/>
@@ -519,7 +529,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/CustomData.js" size="6613" compressedSize="594">
+  <module name="sap/ui/core/CustomData.js" size="7523" compressedSize="1241">
     <description>Provides control sap.ui.core.CustomData.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -527,27 +537,27 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/CustomStyleClassSupport.js" size="4969">
+  <module name="sap/ui/core/CustomStyleClassSupport.js" size="4977">
     <description>Provides helper sap.ui.core.CustomStyleClassSupport</description>
     <requires>
       <module name="sap/ui/core/Element.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/CustomizingConfiguration.js" size="5899" compressedSize="2013">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/CustomizingConfiguration.js" size="5898" compressedSize="2021">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/DeclarativeSupport.js" size="18496" compressedSize="6567">
+  <module name="sap/ui/core/DeclarativeSupport.js" size="18495" compressedSize="6575">
     <description>Provides class sap.ui.core.DeclarativeSupport</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Element.js" size="42431">
+  <module name="sap/ui/core/Element.js" size="43177">
     <description>Provides the base class for all controls and UI elements.</description>
     <requires>
       <module name="jquery.sap.strings.js"/>
@@ -558,28 +568,28 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ElementMetadata.js" size="3669">
+  <module name="sap/ui/core/ElementMetadata.js" size="3668">
     <description>Provides class sap.ui.core.ElementMetadata</description>
     <requires>
       <module name="sap/ui/base/ManagedObjectMetadata.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/EnabledPropagator.js" size="2856" compressedSize="1234">
+  <module name="sap/ui/core/EnabledPropagator.js" size="2855" compressedSize="1242">
     <description>Provides helper sap.ui.core.EnabledPropagator</description>
     <requires>
       <module name="sap/ui/core/Control.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/EventBus.js" size="7258" compressedSize="1623">
+  <module name="sap/ui/core/EventBus.js" size="7257" compressedSize="1631">
     <description>Provides class sap.ui.core.EventBus</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/FocusHandler.js" size="7943">
+  <module name="sap/ui/core/FocusHandler.js" size="7950">
     <description>Provides class sap.ui.core.FocusHandler</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -589,8 +599,8 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Fragment.js" size="24261" compressedSize="6158">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/Fragment.js" size="24335" compressedSize="6226">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
       <module name="sap/ui/core/XMLTemplateProcessor.js"/>
@@ -598,7 +608,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/HTML.js" size="16269" compressedSize="3286">
+  <module name="sap/ui/core/HTML.js" size="16323" compressedSize="3313">
     <description>Provides control sap.ui.core.HTML.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -606,20 +616,20 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/HTMLRenderer.js" size="879" compressedSize="401">
+  <module name="sap/ui/core/HTMLRenderer.js" size="887" compressedSize="409">
     <description>A renderer for the HTML control</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/History.js" size="3729" compressedSize="1542">
+  <module name="sap/ui/core/History.js" size="3728" compressedSize="1550">
     <description>Provides the history handler sap.ui.core.History</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Icon.js" size="23380" compressedSize="5374">
+  <module name="sap/ui/core/Icon.js" size="23379" compressedSize="5382">
     <description>Provides control sap.ui.core.Icon.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -628,27 +638,27 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/IconPool.js" size="22321" compressedSize="15000">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/IconPool.js" size="22329" compressedSize="15008">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/thirdparty/URI.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/IconRenderer.js" size="2433" compressedSize="1255">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/IconRenderer.js" size="2441" compressedSize="1263">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/IntervalTrigger.js" size="3856" compressedSize="1479">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/IntervalTrigger.js" size="3855" compressedSize="1487">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/EventBus.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Item.js" size="6169" compressedSize="689">
+  <module name="sap/ui/core/Item.js" size="6168" compressedSize="697">
     <description>Provides control sap.ui.core.Item.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -656,7 +666,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/LayoutData.js" size="3782" compressedSize="773">
+  <module name="sap/ui/core/LayoutData.js" size="3781" compressedSize="781">
     <description>Provides control sap.ui.core.LayoutData.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -664,7 +674,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ListItem.js" size="4820" compressedSize="541">
+  <module name="sap/ui/core/ListItem.js" size="4875" compressedSize="549">
     <description>Provides control sap.ui.core.ListItem.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -672,7 +682,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/LocalBusyIndicator.js" size="8562" compressedSize="2685">
+  <module name="sap/ui/core/LocalBusyIndicator.js" size="8561" compressedSize="2693">
     <description>Provides control sap.ui.core.LocalBusyIndicator.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -682,27 +692,27 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/LocalBusyIndicatorRenderer.js" size="1663" compressedSize="905">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/LocalBusyIndicatorRenderer.js" size="1671" compressedSize="913">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/LocalBusyIndicatorSupport.js" size="1149" compressedSize="527">
+  <module name="sap/ui/core/LocalBusyIndicatorSupport.js" size="1157" compressedSize="535">
     <description>Provides helper sap.ui.core.LocalBusyIndicatorSupport</description>
     <requires>
       <module name="sap/ui/core/Element.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Locale.js" size="9589">
+  <module name="sap/ui/core/Locale.js" size="9842">
     <description>Provides the locale object sap.ui.core.Locale</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/LocaleData.js" size="14771" compressedSize="5457">
+  <module name="sap/ui/core/LocaleData.js" size="14770" compressedSize="5465">
     <description>Provides the locale object sap.ui.core.LocaleData</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -711,7 +721,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Message.js" size="9690" compressedSize="2013">
+  <module name="sap/ui/core/Message.js" size="10634" compressedSize="2081">
     <description>Provides control sap.ui.core.Message.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -720,7 +730,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Popup.js" size="68091" compressedSize="25189">
+  <module name="sap/ui/core/Popup.js" size="69895" compressedSize="25913">
     <description>Provides helper class sap.ui.core.Popup</description>
     <requires>
       <module name="jquery.sap.script.js"/>
@@ -733,31 +743,33 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/RenderManager.js" size="43795">
+  <module name="sap/ui/core/RenderManager.js" size="43942">
     <description>Provides the render manager sap.ui.core.RenderManager</description>
     <requires>
       <module name="jquery.sap.encoder.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/base/Object.js"/>
       <module name="sap/ui/base/Interface.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Renderer.js" size="3115" compressedSize="1127">
+  <module name="sap/ui/core/Renderer.js" size="3114" compressedSize="1135">
     <description>Provides (optional) base class for all renderers</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ResizeHandler.js" size="6889">
+  <module name="sap/ui/core/ResizeHandler.js" size="7399">
     <description>Provides class sap.ui.core.ResizeHandler</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="sap/ui/Global.js"/>
       <module name="jquery.sap.script.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ScrollBar.js" size="30704" compressedSize="10593">
+  <module name="sap/ui/core/ScrollBar.js" size="30687" compressedSize="10587">
     <description>Provides control sap.ui.core.ScrollBar.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -765,13 +777,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ScrollBarRenderer.js" size="4458" compressedSize="2027">
+  <module name="sap/ui/core/ScrollBarRenderer.js" size="4466" compressedSize="2035">
     <description>A renderer for the ScrollBar control</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/SeparatorItem.js" size="3398" compressedSize="414">
+  <module name="sap/ui/core/SeparatorItem.js" size="3397" compressedSize="422">
     <description>Provides control sap.ui.core.SeparatorItem.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -779,7 +791,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ThemeCheck.js" size="6216">
+  <module name="sap/ui/core/ThemeCheck.js" size="6376">
     <description>Provides class sap.ui.core.ThemeCheck</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -787,7 +799,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Title.js" size="6425" compressedSize="714">
+  <module name="sap/ui/core/Title.js" size="6424" compressedSize="722">
     <description>Provides control sap.ui.core.Title.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -795,7 +807,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/TooltipBase.js" size="23688" compressedSize="7359">
+  <module name="sap/ui/core/TooltipBase.js" size="23690" compressedSize="7367">
     <description>Provides control sap.ui.core.TooltipBase.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -804,16 +816,17 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/UIArea.js" size="23179">
+  <module name="sap/ui/core/UIArea.js" size="23568">
     <description>Provides class sap.ui.core.UIArea</description>
     <requires>
       <module name="jquery.sap.ui.js"/>
+      <module name="jquery.sap.act.js"/>
       <module name="sap/ui/base/ManagedObject.js"/>
       <module name="sap/ui/core/Element.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/UIComponent.js" size="9672" compressedSize="2925">
+  <module name="sap/ui/core/UIComponent.js" size="9948" compressedSize="3059">
     <description>Provides base class sap.ui.core.Component for all components</description>
     <requires>
       <module name="sap/ui/core/UIComponentMetadata.js"/>
@@ -822,20 +835,20 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/UIComponentMetadata.js" size="3435" compressedSize="1512">
+  <module name="sap/ui/core/UIComponentMetadata.js" size="3434" compressedSize="1520">
     <description>Provides class sap.ui.core.ComponentMetadata</description>
     <requires>
       <module name="sap/ui/core/ComponentMetadata.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ValueStateSupport.js" size="2676" compressedSize="996">
+  <module name="sap/ui/core/ValueStateSupport.js" size="2684" compressedSize="1004">
     <description>Provides helper class ValueStateSupport</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/VariantLayoutData.js" size="6520" compressedSize="550">
+  <module name="sap/ui/core/VariantLayoutData.js" size="6519" compressedSize="558">
     <description>Provides control sap.ui.core.VariantLayoutData.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -843,42 +856,42 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/XMLTemplateProcessor.js" size="21959" compressedSize="7631">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/XMLTemplateProcessor.js" size="22277" compressedSize="7757">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/delegate/ItemNavigation.js" size="33633" compressedSize="14117">
+  <module name="sap/ui/core/delegate/ItemNavigation.js" size="35858" compressedSize="14653">
     <description>Provides class sap.ui.core.delegate.ItemNavigation</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/delegate/ScrollEnablement.js" size="25858" compressedSize="11102">
+  <module name="sap/ui/core/delegate/ScrollEnablement.js" size="32090" compressedSize="14256">
     <description>Provides class sap.ui.core.delegate.ScrollEnablement</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/format/DateFormat.js" size="23945" compressedSize="11196">
+  <module name="sap/ui/core/format/DateFormat.js" size="24474" compressedSize="11475">
     <description>Provides class sap.ui.core.format.DateFormat</description>
     <requires>
       <module name="sap/ui/core/LocaleData.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/format/NumberFormat.js" size="8309" compressedSize="3418">
+  <module name="sap/ui/core/format/NumberFormat.js" size="8317" compressedSize="3426">
     <description>Provides class sap.ui.core.format.NumberFormat</description>
     <requires>
       <module name="sap/ui/core/LocaleData.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/library.js" size="48869" compressedSize="11193">
-    <description>Initialization Code and shared classes of library sap.ui.core (1.16.8-SNAPSHOT)</description>
+  <module name="sap/ui/core/library.js" size="48905" compressedSize="11200">
+    <description>Initialization Code and shared classes of library sap.ui.core (1.18.8)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/base/DataType.js"/>
@@ -913,14 +926,14 @@
       <module name="sap/ui/core/routing/HistoryDirection.js"/>
     </includes>
   </module>
-  <module name="sap/ui/core/mvc/Controller.js" size="8752" compressedSize="2472">
+  <module name="sap/ui/core/mvc/Controller.js" size="9127" compressedSize="2683">
     <description>Provides base class for controllers (part of MVC concept)</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/HTMLView.js" size="11225" compressedSize="3688">
+  <module name="sap/ui/core/mvc/HTMLView.js" size="11224" compressedSize="3696">
     <description>Provides control sap.ui.core.mvc.HTMLView.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -930,14 +943,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/HTMLViewRenderer.js" size="3237" compressedSize="1259">
+  <module name="sap/ui/core/mvc/HTMLViewRenderer.js" size="3245" compressedSize="1267">
     <description>Provides default renderer for JSView</description>
     <requires>
       <module name="sap/ui/core/mvc/ViewRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/JSONView.js" size="7815" compressedSize="2454">
+  <module name="sap/ui/core/mvc/JSONView.js" size="7814" compressedSize="2462">
     <description>Provides control sap.ui.core.mvc.JSONView.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -945,14 +958,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/JSONViewRenderer.js" size="1675" compressedSize="873">
+  <module name="sap/ui/core/mvc/JSONViewRenderer.js" size="1683" compressedSize="881">
     <description>Provides default renderer for JSONView</description>
     <requires>
       <module name="sap/ui/core/mvc/ViewRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/JSView.js" size="7759" compressedSize="1541">
+  <module name="sap/ui/core/mvc/JSView.js" size="7758" compressedSize="1549">
     <description>Provides control sap.ui.core.mvc.JSView.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -960,14 +973,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/JSViewRenderer.js" size="1626" compressedSize="830">
+  <module name="sap/ui/core/mvc/JSViewRenderer.js" size="1634" compressedSize="838">
     <description>Provides default renderer for JSView</description>
     <requires>
       <module name="sap/ui/core/mvc/ViewRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/TemplateView.js" size="5962" compressedSize="1219">
+  <module name="sap/ui/core/mvc/TemplateView.js" size="5961" compressedSize="1227">
     <description>Provides control sap.ui.core.mvc.TemplateView.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -975,14 +988,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/TemplateViewRenderer.js" size="1323" compressedSize="714">
+  <module name="sap/ui/core/mvc/TemplateViewRenderer.js" size="1331" compressedSize="722">
     <description>Provides default renderer for JSView</description>
     <requires>
       <module name="sap/ui/core/mvc/ViewRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/View.js" size="28013" compressedSize="3818">
+  <module name="sap/ui/core/mvc/View.js" size="28012" compressedSize="3826">
     <description>Provides control sap.ui.core.mvc.View.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -990,13 +1003,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/ViewRenderer.js" size="586" compressedSize="448">
+  <module name="sap/ui/core/mvc/ViewRenderer.js" size="594" compressedSize="456">
     <description>Provides default renderer for View</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/XMLView.js" size="9751" compressedSize="3633">
+  <module name="sap/ui/core/mvc/XMLView.js" size="9750" compressedSize="3641">
     <description>Provides control sap.ui.core.mvc.XMLView.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1008,14 +1021,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/mvc/XMLViewRenderer.js" size="2691" compressedSize="1367">
+  <module name="sap/ui/core/mvc/XMLViewRenderer.js" size="2699" compressedSize="1375">
     <description>Provides default renderer for XMLView</description>
     <requires>
       <module name="sap/ui/core/mvc/ViewRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/plugin/DeclarativeSupport.js" size="1835" excludeFromAllInOne="true">
+  <module name="sap/ui/core/plugin/DeclarativeSupport.js" size="1834" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.plugin.DeclarativeSupport</description>
     <requires>
       <module name="sap/ui/core/DeclarativeSupport.js"/>
@@ -1023,14 +1036,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/plugin/LessSupport.js" size="12215" excludeFromAllInOne="true">
+  <module name="sap/ui/core/plugin/LessSupport.js" size="12214" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.plugin.LessSupport</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/plugin/TemplatingSupport.js" size="1706" compressedSize="804">
+  <module name="sap/ui/core/plugin/TemplatingSupport.js" size="1705" compressedSize="812">
     <description>Provides class sap.ui.core.plugin.TemplatingSupport</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
@@ -1038,7 +1051,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/routing/HashChanger.js" size="3774" compressedSize="1678">
+  <module name="sap/ui/core/routing/HashChanger.js" size="3798" compressedSize="1702">
     <description>global hasher</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1047,15 +1060,15 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/routing/History.js" size="8170" compressedSize="3494">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/routing/History.js" size="8482" compressedSize="3618">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/routing/HashChanger.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/routing/Route.js" size="7162" compressedSize="2518">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/routing/Route.js" size="7345" compressedSize="2535">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="sap/ui/thirdparty/signals.js"/>
@@ -1063,7 +1076,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/routing/Router.js" size="13459" compressedSize="4317">
+  <module name="sap/ui/core/routing/Router.js" size="15265" compressedSize="4755">
     <description>declare unusual global vars for JSLint/SAPUI5 validation</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1075,7 +1088,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/search/OpenSearchProvider.js" size="6973" compressedSize="1205">
+  <module name="sap/ui/core/search/OpenSearchProvider.js" size="6972" compressedSize="1213">
     <description>Provides control sap.ui.core.search.OpenSearchProvider.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1084,7 +1097,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/search/SearchProvider.js" size="5492" compressedSize="787">
+  <module name="sap/ui/core/search/SearchProvider.js" size="5491" compressedSize="795">
     <description>Provides control sap.ui.core.search.SearchProvider.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1092,13 +1105,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/PerformanceRecorder.js" size="10126" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/PerformanceRecorder.js" size="10134" excludeFromAllInOne="true">
     <description>EXPERIMENTAL</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/Plugin.js" size="3496" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/Plugin.js" size="4080" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.Plugin</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -1107,7 +1120,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/Support.js" size="12548" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/Support.js" size="12547" excludeFromAllInOne="true">
     <description>Provides the basic UI5 support functionality</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1118,14 +1131,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/Breakpoint.js" size="13901" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/Breakpoint.js" size="13909" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.Breakpoint (Breakpoint support Plugin)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/ControlTree.js" size="51906" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/ControlTree.js" size="52562" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.ControlTree (ControlTree support plugin)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1134,7 +1147,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/Debugging.js" size="12535" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/Debugging.js" size="12544" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.Debugging</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1142,7 +1155,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/MessageTest.js" size="3577" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/MessageTest.js" size="3576" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.MessageTest (Test  plugin for support tool communication)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1150,7 +1163,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/Performance.js" size="7761" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/Performance.js" size="7760" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.Performance</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1158,7 +1171,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/Selector.js" size="3945" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/Selector.js" size="3944" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.Selector (Selector support plugin)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1166,7 +1179,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/TechInfo.js" size="9488" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/TechInfo.js" size="10254" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.TechInfo (TechInfo support plugin)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
@@ -1175,34 +1188,34 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/plugins/Trace.js" size="6884" excludeFromAllInOne="true">
+  <module name="sap/ui/core/support/plugins/Trace.js" size="6883" excludeFromAllInOne="true">
     <description>Provides class sap.ui.core.support.plugins.Trace (Trace support plugin)</description>
     <requires>
       <module name="sap/ui/core/support/Plugin.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/trace/E2eTraceLib.js" size="15592" excludeFromAllInOne="true">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/support/trace/E2eTraceLib.js" size="15600" excludeFromAllInOne="true" raw="true">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/support/trace/EppLib.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/support/trace/EppLib.js" size="4735" excludeFromAllInOne="true">
-    <description>! SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/support/trace/EppLib.js" size="4743" excludeFromAllInOne="true" raw="true">
+    <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/theming/Parameters.js" size="3855" compressedSize="1346">
+  <module name="sap/ui/core/theming/Parameters.js" size="3863" compressedSize="1354">
     <description>@namespace @name sap.ui.core.theming @public</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/DOMAttribute.js" size="5094" compressedSize="760">
+  <module name="sap/ui/core/tmpl/DOMAttribute.js" size="5093" compressedSize="768">
     <description>Provides control sap.ui.core.tmpl.DOMAttribute.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1210,7 +1223,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/DOMElement.js" size="15678" compressedSize="2658">
+  <module name="sap/ui/core/tmpl/DOMElement.js" size="15677" compressedSize="2666">
     <description>Provides control sap.ui.core.tmpl.DOMElement.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1218,13 +1231,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/DOMElementRenderer.js" size="2588" compressedSize="1103">
+  <module name="sap/ui/core/tmpl/DOMElementRenderer.js" size="2596" compressedSize="1111">
     <description>A renderer for the DOM element control</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/HandlebarsTemplate.js" size="13515" compressedSize="4745">
+  <module name="sap/ui/core/tmpl/HandlebarsTemplate.js" size="14953" compressedSize="5045">
     <description>declare unusual global vars for JSLint/SAPUI5 validation</description>
     <requires>
       <module name="sap/ui/core/tmpl/Template.js"/>
@@ -1232,14 +1245,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/Template.js" size="18500">
+  <module name="sap/ui/core/tmpl/Template.js" size="18499">
     <description>Provides base class sap.ui.core.tmpl.Template for all templates</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/TemplateControl.js" size="18769" compressedSize="4000">
+  <module name="sap/ui/core/tmpl/TemplateControl.js" size="18675" compressedSize="3963">
     <description>Provides control sap.ui.core.tmpl.TemplateControl.</description>
     <requires>
       <module name="sap/ui/core/library.js"/>
@@ -1250,13 +1263,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/tmpl/TemplateControlRenderer.js" size="2217" compressedSize="582">
+  <module name="sap/ui/core/tmpl/TemplateControlRenderer.js" size="2225" compressedSize="590">
     <description>A renderer for the ScrollBar control</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/LibraryInfo.js" size="3485" compressedSize="2133">
+  <module name="sap/ui/core/util/LibraryInfo.js" size="3484" compressedSize="2141">
     <description>Provides class sap.ui.core.util.LibraryInfo</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -1264,7 +1277,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/MockServer.js" size="63908" compressedSize="15941">
+  <module name="sap/ui/core/util/MockServer.js" size="45642" compressedSize="16030">
     <description>Provides class sap.ui.core.util.MockServer for mocking a server</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
@@ -1273,8 +1286,8 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/HTMLViewSerializer.js" size="2713" compressedSize="1230">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/HTMLViewSerializer.js" size="2745" compressedSize="1269">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/util/serializer/delegate/HTML.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1282,15 +1295,15 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/Serializer.js" size="5207" compressedSize="1829">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/Serializer.js" size="5206" compressedSize="1837">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/ViewSerializer.js" size="7201" compressedSize="3090">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/ViewSerializer.js" size="7103" compressedSize="3115">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/util/serializer/Serializer.js"/>
       <module name="sap/ui/core/util/serializer/HTMLViewSerializer.js"/>
@@ -1299,8 +1312,8 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/XMLViewSerializer.js" size="3750" compressedSize="1713">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/XMLViewSerializer.js" size="3790" compressedSize="1760">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/util/serializer/delegate/XML.js"/>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1308,41 +1321,41 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/delegate/Delegate.js" size="3162" compressedSize="919">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/delegate/Delegate.js" size="3161" compressedSize="927">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/delegate/HTML.js" size="8929" compressedSize="3490">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/delegate/HTML.js" size="8928" compressedSize="3498">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/util/serializer/delegate/Delegate.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/util/serializer/delegate/XML.js" size="10711" compressedSize="3987">
-    <description>SAP UI development toolkit for HTML5 (SAPUI5) (c) Copyright 2009-2013 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
+  <module name="sap/ui/core/util/serializer/delegate/XML.js" size="10710" compressedSize="3995">
+    <description>SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/util/serializer/delegate/Delegate.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ws/ReadyState.js" size="843" compressedSize="308">
+  <module name="sap/ui/core/ws/ReadyState.js" size="842" compressedSize="316">
     <description>Provides enumeration sap.ui.core.ws.ReadyState</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ws/SapPcpWebSocket.js" size="6973" compressedSize="2314">
+  <module name="sap/ui/core/ws/SapPcpWebSocket.js" size="6972" compressedSize="2322">
     <description>Provides class sap.ui.core.ws.WebSocket for WebSocket support with SAP-PCP Protocol</description>
     <requires>
       <module name="sap/ui/core/ws/WebSocket.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/ws/WebSocket.js" size="15700" compressedSize="4140">
+  <module name="sap/ui/core/ws/WebSocket.js" size="15699" compressedSize="4148">
     <description>Provides class sap.ui.core.ws.WebSocket for standard WebSocket support</description>
     <requires>
       <module name="sap/ui/core/ws/ReadyState.js"/>
@@ -1351,14 +1364,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/ControlTree.js" size="13495" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/ControlTree.js" size="13506" excludeFromAllInOne="true">
     <description>Provides a tree of controls for the testsuite</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/DebugEnv.js" size="11259" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/DebugEnv.js" size="11258" excludeFromAllInOne="true">
     <description>A core plugin that bundles debug features and connects with an embedding testsuite</description>
     <requires>
       <module name="sap/ui/debug/ControlTree.js"/>
@@ -1368,7 +1381,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/Highlighter.js" size="3112" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/Highlighter.js" size="3120" excludeFromAllInOne="true">
     <description>Provides a helper that can highlight a given control</description>
     <requires>
       <module name="jquery.sap.dom.js"/>
@@ -1376,13 +1389,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/LogViewer.js" size="5477" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/LogViewer.js" size="5485" excludeFromAllInOne="true">
     <description>Provides a log viewer for debug purposes</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/PropertyList.js" size="18418" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/PropertyList.js" size="18417" excludeFromAllInOne="true">
     <description>Provides a (modifiable) list of properties for a given control</description>
     <requires>
       <module name="jquery.sap.strings.js"/>
@@ -1393,7 +1406,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/debug/TechnicalInfo.js" size="12062" excludeFromAllInOne="true">
+  <module name="sap/ui/debug/TechnicalInfo.js" size="12546" excludeFromAllInOne="true">
     <description>Provides a popup with technical informations about the running SAPUI5 core</description>
     <requires>
       <module name="jquery.sap.strings.js"/>
@@ -1402,7 +1415,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Binding.js" size="8601">
+  <module name="sap/ui/model/Binding.js" size="10976">
     <description>Provides an abstraction for model bindings</description>
     <requires>
       <module name="sap/ui/model/ChangeReason.js"/>
@@ -1410,19 +1423,26 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/BindingMode.js" size="837">
+  <module name="sap/ui/model/BindingMode.js" size="845">
     <description>Provides enumeration sap.ui.model.FilterOperator</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ChangeReason.js" size="758">
+  <module name="sap/ui/model/ChangeReason.js" size="766">
     <description>Provides enumeration for changes in model</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ClientListBinding.js" size="12454" compressedSize="6132">
+  <module name="sap/ui/model/ClientContextBinding.js" size="3101" compressedSize="1281">
+    <description>Provides an abstraction for list bindings</description>
+    <requires>
+      <module name="sap/ui/model/ContextBinding.js"/>
+      <module name="jquery.sap.global.js"/>
+    </requires>
+  </module>
+  <module name="sap/ui/model/ClientListBinding.js" size="12878" compressedSize="6259">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/ListBinding.js"/>
@@ -1430,31 +1450,32 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ClientModel.js" size="4069" compressedSize="1391">
+  <module name="sap/ui/model/ClientModel.js" size="4377" compressedSize="1586">
     <description>Provides the JSON object based model implementation</description>
     <requires>
       <module name="sap/ui/model/Model.js"/>
       <module name="sap/ui/model/ClientPropertyBinding.js"/>
+      <module name="sap/ui/model/ClientContextBinding.js"/>
       <module name="sap/ui/model/ClientListBinding.js"/>
       <module name="sap/ui/model/ClientTreeBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ClientPropertyBinding.js" size="1735" compressedSize="975">
+  <module name="sap/ui/model/ClientPropertyBinding.js" size="1849" compressedSize="985">
     <description>Provides the JSON model implementation of a property binding</description>
     <requires>
       <module name="sap/ui/model/PropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ClientTreeBinding.js" size="11137" compressedSize="4740">
+  <module name="sap/ui/model/ClientTreeBinding.js" size="11886" compressedSize="5117">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/TreeBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/CompositeBinding.js" size="6298">
+  <module name="sap/ui/model/CompositeBinding.js" size="6999">
     <description>Provides an abstract property binding.</description>
     <requires>
       <module name="sap/ui/model/PropertyBinding.js"/>
@@ -1462,47 +1483,47 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Context.js" size="2829">
+  <module name="sap/ui/model/Context.js" size="2835">
     <description>Provides an abstraction for model bindings</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ContextBinding.js" size="3575">
+  <module name="sap/ui/model/ContextBinding.js" size="2544">
     <description>Provides an abstraction for list bindings</description>
     <requires>
       <module name="sap/ui/model/Binding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Filter.js" size="3723" compressedSize="1226">
+  <module name="sap/ui/model/Filter.js" size="3731" compressedSize="1234">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="sap/ui/model/FilterOperator.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/FilterOperator.js" size="1126" compressedSize="393">
+  <module name="sap/ui/model/FilterOperator.js" size="1134" compressedSize="401">
     <description>Provides enumeration sap.ui.model.FilterOperator</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/FilterType.js" size="592" compressedSize="309">
+  <module name="sap/ui/model/FilterType.js" size="600" compressedSize="317">
     <description>Provides enumeration sap.ui.model.FilterOperator</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/FormatException.js" size="711">
+  <module name="sap/ui/model/FormatException.js" size="719">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="sap/ui/base/Exception.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ListBinding.js" size="7053" compressedSize="1925">
+  <module name="sap/ui/model/ListBinding.js" size="7282" compressedSize="1927">
     <description>Provides an abstraction for list bindings</description>
     <requires>
       <module name="sap/ui/model/Binding.js"/>
@@ -1511,7 +1532,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Model.js" size="25414">
+  <module name="sap/ui/model/Model.js" size="26353">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
@@ -1520,14 +1541,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ParseException.js" size="697">
+  <module name="sap/ui/model/ParseException.js" size="705">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="sap/ui/base/Exception.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/PropertyBinding.js" size="4978">
+  <module name="sap/ui/model/PropertyBinding.js" size="5418">
     <description>Provides an abstract property binding.</description>
     <requires>
       <module name="sap/ui/model/Binding.js"/>
@@ -1535,14 +1556,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/SelectionModel.js" size="13403" compressedSize="3741">
+  <module name="sap/ui/model/SelectionModel.js" size="13402" compressedSize="3749">
     <description>Provides class sap.ui.model.SelectionModel</description>
     <requires>
       <module name="sap/ui/base/EventProvider.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/SimpleType.js" size="3871">
+  <module name="sap/ui/model/SimpleType.js" size="3870">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/Type.js"/>
@@ -1552,34 +1573,34 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Sorter.js" size="2518" compressedSize="626">
+  <module name="sap/ui/model/Sorter.js" size="2526" compressedSize="634">
     <description>Provides the concept of a sorter for list bindings</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/TreeBinding.js" size="4227" compressedSize="802">
+  <module name="sap/ui/model/TreeBinding.js" size="4555" compressedSize="874">
     <description>Provides an abstraction for list bindings</description>
     <requires>
       <module name="sap/ui/model/Binding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/Type.js" size="1739">
+  <module name="sap/ui/model/Type.js" size="1738">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ValidateException.js" size="765">
+  <module name="sap/ui/model/ValidateException.js" size="773">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="sap/ui/base/Exception.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/control/ControlModel.js" size="2518" compressedSize="1523">
+  <module name="sap/ui/model/control/ControlModel.js" size="2517" compressedSize="1531">
     <description>Provides the JSON object based model implementation</description>
     <requires>
       <module name="sap/ui/model/Model.js"/>
@@ -1587,14 +1608,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/control/ControlPropertyBinding.js" size="2121" compressedSize="1127">
+  <module name="sap/ui/model/control/ControlPropertyBinding.js" size="2129" compressedSize="1135">
     <description>Provides the JSON model implementation of a property binding</description>
     <requires>
       <module name="sap/ui/model/PropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/json/JSONListBinding.js" size="4922" compressedSize="2237">
+  <module name="sap/ui/model/json/JSONListBinding.js" size="4930" compressedSize="2245">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/ClientListBinding.js"/>
@@ -1602,7 +1623,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/json/JSONModel.js" size="9854" compressedSize="3194">
+  <module name="sap/ui/model/json/JSONModel.js" size="10041" compressedSize="3330">
     <description>Provides the JSON object based model implementation</description>
     <requires>
       <module name="sap/ui/model/ClientModel.js"/>
@@ -1612,28 +1633,35 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/json/JSONPropertyBinding.js" size="2253" compressedSize="768">
+  <module name="sap/ui/model/json/JSONPropertyBinding.js" size="2261" compressedSize="776">
     <description>Provides the JSON model implementation of a property binding</description>
     <requires>
       <module name="sap/ui/model/ClientPropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/json/JSONTreeBinding.js" size="4757" compressedSize="1240">
+  <module name="sap/ui/model/json/JSONTreeBinding.js" size="4739" compressedSize="1248">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/ClientTreeBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/Filter.js" size="1208" compressedSize="495">
+  <module name="sap/ui/model/odata/Filter.js" size="1216" compressedSize="503">
     <description>Provides a filter for list bindings</description>
     <requires>
       <module name="sap/ui/model/FilterOperator.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataListBinding.js" size="24838" compressedSize="10482">
+  <module name="sap/ui/model/odata/ODataContextBinding.js" size="3779" compressedSize="1722">
+    <description>Provides an abstraction for list bindings</description>
+    <requires>
+      <module name="sap/ui/model/ContextBinding.js"/>
+      <module name="jquery.sap.global.js"/>
+    </requires>
+  </module>
+  <module name="sap/ui/model/odata/ODataListBinding.js" size="26031" compressedSize="11136">
     <description>Provides class sap.ui.model.odata.ODataListBinding</description>
     <requires>
       <module name="sap/ui/model/odata/Filter.js"/>
@@ -1643,34 +1671,43 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataMetadata.js" size="12607" compressedSize="4497">
+  <module name="sap/ui/model/odata/ODataMetadata.js" size="12683" compressedSize="4553">
     <description>Provides class sap.ui.model.odata.ODataMetadata</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataModel.js" size="77659" compressedSize="25779">
+  <module name="sap/ui/model/odata/ODataModel.js" size="85080" compressedSize="28538">
     <description>Provides class sap.ui.model.odata.ODataModel</description>
     <requires>
       <module name="sap/ui/thirdparty/datajs.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
       <module name="sap/ui/model/Model.js"/>
       <module name="sap/ui/model/odata/ODataPropertyBinding.js"/>
+      <module name="sap/ui/model/odata/ODataContextBinding.js"/>
       <module name="sap/ui/model/odata/ODataListBinding.js"/>
+      <module name="sap/ui/model/odata/ODataTreeBinding.js"/>
       <module name="sap/ui/model/odata/ODataMetadata.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataPropertyBinding.js" size="3228" compressedSize="1243">
+  <module name="sap/ui/model/odata/ODataPropertyBinding.js" size="3352" compressedSize="1253">
     <description>Provides class sap.ui.model.odata.ODataPropertyBinding</description>
     <requires>
       <module name="sap/ui/model/PropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
+  <module name="sap/ui/model/odata/ODataTreeBinding.js" size="9795" compressedSize="4100">
+    <description>Provides the OData model implementation of a tree binding</description>
+    <requires>
+      <module name="sap/ui/model/TreeBinding.js"/>
+      <module name="jquery.sap.global.js"/>
+    </requires>
+  </module>
   <module name="sap/ui/model/odata/datajs.js" size="405" excludeFromAllInOne="true" dynamicDependencies="true" raw="true">
   </module>
-  <module name="sap/ui/model/resource/ResourceModel.js" size="5845" compressedSize="1914">
+  <module name="sap/ui/model/resource/ResourceModel.js" size="5844" compressedSize="1922">
     <description>Provides the resource bundle based model implementation</description>
     <requires>
       <module name="sap/ui/model/Model.js"/>
@@ -1678,14 +1715,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/resource/ResourcePropertyBinding.js" size="1781" compressedSize="638">
+  <module name="sap/ui/model/resource/ResourcePropertyBinding.js" size="1789" compressedSize="646">
     <description>Provides the Resource model implementation of a property binding</description>
     <requires>
       <module name="sap/ui/model/PropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/Boolean.js" size="3091" compressedSize="1247">
+  <module name="sap/ui/model/type/Boolean.js" size="3090" compressedSize="1255">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/SimpleType.js"/>
@@ -1693,7 +1730,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/Date.js" size="6289" compressedSize="2506">
+  <module name="sap/ui/model/type/Date.js" size="6288" compressedSize="2514">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/SimpleType.js"/>
@@ -1701,14 +1738,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/DateTime.js" size="2666" compressedSize="735">
+  <module name="sap/ui/model/type/DateTime.js" size="2665" compressedSize="743">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/type/Date.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/Float.js" size="4100" compressedSize="1726">
+  <module name="sap/ui/model/type/Float.js" size="4099" compressedSize="1734">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/SimpleType.js"/>
@@ -1716,7 +1753,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/Integer.js" size="4112" compressedSize="1737">
+  <module name="sap/ui/model/type/Integer.js" size="4111" compressedSize="1745">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/SimpleType.js"/>
@@ -1724,7 +1761,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/String.js" size="5984" compressedSize="2410">
+  <module name="sap/ui/model/type/String.js" size="5983" compressedSize="2418">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/SimpleType.js"/>
@@ -1732,14 +1769,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/type/Time.js" size="2611" compressedSize="711">
+  <module name="sap/ui/model/type/Time.js" size="2610" compressedSize="719">
     <description>Provides the base implementation for all model implementations</description>
     <requires>
       <module name="sap/ui/model/type/Date.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/xml/XMLListBinding.js" size="4701" compressedSize="2434">
+  <module name="sap/ui/model/xml/XMLListBinding.js" size="4706" compressedSize="2439">
     <description>Provides the XML model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/ClientListBinding.js"/>
@@ -1747,7 +1784,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/xml/XMLModel.js" size="12095" compressedSize="5536">
+  <module name="sap/ui/model/xml/XMLModel.js" size="12676" compressedSize="5749">
     <description>Provides the XML object based model implementation</description>
     <requires>
       <module name="sap/ui/model/ClientModel.js"/>
@@ -1758,29 +1795,29 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/xml/XMLPropertyBinding.js" size="1485" compressedSize="725">
+  <module name="sap/ui/model/xml/XMLPropertyBinding.js" size="1493" compressedSize="733">
     <description>Provides the XML model implementation of a property binding</description>
     <requires>
       <module name="sap/ui/model/ClientPropertyBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/xml/XMLTreeBinding.js" size="1945" compressedSize="923">
+  <module name="sap/ui/model/xml/XMLTreeBinding.js" size="1953" compressedSize="931">
     <description>Provides the XML model implementation of a list binding</description>
     <requires>
       <module name="sap/ui/model/ClientTreeBinding.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/qunit/QUnitUtils.js" size="21870" excludeFromAllInOne="true">
-    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.16.8-SNAPSHOT @namespace @name sap.ui.test.qunit @public</description>
+  <module name="sap/ui/qunit/QUnitUtils.js" size="22006" excludeFromAllInOne="true">
+    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.18.8 @namespace @name sap.ui.test.qunit @public</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
   <module name="sap/ui/qunit/qunit.js" size="397" excludeFromAllInOne="true" dynamicDependencies="true" raw="true">
   </module>
-  <module name="sap/ui/test/ControlTree.js" size="4481" excludeFromAllInOne="true">
+  <module name="sap/ui/test/ControlTree.js" size="4480" excludeFromAllInOne="true">
     <description>Provides a control tree to be used in the Eclipse preview editor</description>
     <requires>
       <module name="jquery.sap.strings.js"/>
@@ -1788,7 +1825,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/test/TestEnv.js" size="2741" excludeFromAllInOne="true">
+  <module name="sap/ui/test/TestEnv.js" size="2740" excludeFromAllInOne="true">
     <description>Provides a bridge between the SAPUI5 runtime and the SAPUI5 Eclipse Tooling.</description>
     <requires>
       <module name="sap/ui/test/ControlTree.js"/>
@@ -1814,7 +1851,7 @@
   </module>
   <module name="sap/ui/thirdparty/d3.js" size="255941" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="sap/ui/thirdparty/datajs.js" size="475092" excludeFromAllInOne="true" raw="true">
+  <module name="sap/ui/thirdparty/datajs.js" size="475404" excludeFromAllInOne="true" raw="true">
   </module>
   <module name="sap/ui/thirdparty/flexie.js" size="51393" excludeFromAllInOne="true" topLevelVarDecl="true" raw="true">
   </module>
@@ -1829,7 +1866,7 @@
   </module>
   <module name="sap/ui/thirdparty/iscroll.js" size="33959" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="sap/ui/thirdparty/jquery-mobile-custom.js" size="66655" compressedSize="18912" raw="true">
+  <module name="sap/ui/thirdparty/jquery-mobile-custom.js" size="68176" compressedSize="19081" raw="true">
     <requires>
       <module name="sap/ui/thirdparty/jquery/jquery-1.7.1.js"/>
     </requires>
@@ -1966,6 +2003,8 @@
   </module>
   <module name="sap/ui/thirdparty/less.js" size="137498" excludeFromAllInOne="true" raw="true">
   </module>
+  <module name="sap/ui/thirdparty/mobify-carousel.js" size="16947" excludeFromAllInOne="true" topLevelVarDecl="true" raw="true">
+  </module>
   <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-android-ics.js" size="378" excludeFromAllInOne="true" raw="true">
     <requires>
       <module name="sap/ui/thirdparty/jquery/jquery-1.7.1.js"/>
@@ -2045,12 +2084,6 @@
   <module name="sap/ui/thirdparty/vkbeautify.js" size="10470" compressedSize="6948" raw="true">
   </module>
   <module name="sap/ui/thirdparty/zyngascroll.js" size="45133" excludeFromAllInOne="true" topLevelVarDecl="true" raw="true">
-  </module>
-  <module name="testsuite/js/testfwk.js" size="13132" excludeFromAllInOne="true">
-    <description>Provides helper functions for the testsuite</description>
-    <requires>
-      <module name="jquery.sap.global.js"/>
-    </requires>
   </module>
   <cycle>
     <module name="sap/ui/core/Core.js"/>

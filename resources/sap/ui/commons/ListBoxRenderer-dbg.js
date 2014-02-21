@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -13,7 +13,7 @@ jQuery.sap.require("jquery.sap.strings");
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -203,14 +203,34 @@ sap.ui.commons.ListBoxRenderer.renderItemList = function (oListBox, rm) {
 
 			// write icon column if required
 			if (oListBox.getDisplayIcons()) {
-				rm.write("<span class='sapUiLbxIIco'><img src='");
-				// if the item has an icon, use it; otherwise use something empty
-				if (item.getIcon && item.getIcon()) { // allow usage of sap.ui.core.Item
-					rm.writeEscaped(item.getIcon());
-				} else {
-					rm.write(sap.ui.resource('sap.ui.commons', 'img/1x1.gif'));
+				var sIcon;
+				if (item.getIcon) {
+					sIcon = item.getIcon();
 				}
-				rm.write("'/></span>");
+				rm.write("<span");
+				// if the item has an icon, use it; otherwise use something empty
+				if (sap.ui.core.IconPool.isIconURI(sIcon)) {
+					rm.addClass("sapUiLbxIIco");
+					rm.addClass("sapUiLbxIIcoFont");
+					var oIconInfo = sap.ui.core.IconPool.getIconInfo(sIcon);
+					rm.addStyle("font-family", "'" + oIconInfo.fontFamily + "'");
+					if(oIconInfo && !oIconInfo.skipMirroring){
+						rm.addClass("sapUiIconMirrorInRTL");
+					}
+					rm.writeClasses();
+					rm.writeStyles();
+					rm.write(">");
+					rm.write(oIconInfo.content);
+				}else{
+					rm.write(" class='sapUiLbxIIco'><img src='");
+					if (sIcon) { // allow usage of sap.ui.core.Item
+						rm.writeEscaped(sIcon);
+					} else {
+						rm.write(sap.ui.resource('sap.ui.commons', 'img/1x1.gif'));
+					}
+					rm.write("'/>");
+				}
+				rm.write("</span>");
 			}
 
 			// write the main text

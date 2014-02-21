@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9,6 +9,7 @@ jQuery.sap.declare("sap.ui.base.ManagedObject");
 
 jQuery.sap.require("jquery.sap.script");
 jQuery.sap.require("jquery.sap.strings");
+jQuery.sap.require("jquery.sap.act");
 jQuery.sap.require("sap.ui.base.EventProvider");
 jQuery.sap.require("sap.ui.base.DataType");
 jQuery.sap.require("sap.ui.base.ManagedObjectMetadata");
@@ -59,7 +60,7 @@ jQuery.sap.require("sap.ui.base.BindingParser");
  * @class Base Class for managed objects.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @public
  * @name sap.ui.base.ManagedObject
  * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -75,7 +76,12 @@ sap.ui.base.EventProvider.extend("sap.ui.base.ManagedObject", {
 	  aggregations : {
 	  },
 	  associations : {},
-	  events : {}
+	  events : { 
+		  "validationSuccess" : { enableEventBubbling : true },
+		  "validationError" : { enableEventBubbling : true },
+		  "parseError" : { enableEventBubbling : true }, 
+		  "formatError" : { enableEventBubbling : true } 
+	  }
 	},
 
 	constructor : function(sId, mSettings, oScope) {
@@ -479,9 +485,11 @@ sap.ui.base.ManagedObject.prototype.setProperty = function(sPropertyName, oValue
 	if (jQuery.sap.equal(oOldValue, oValue)) {
 		return this;
 	} // no change
-
+	
 	// set suppress invalidate flag
 	if (bSuppressInvalidate) {
+		//Refresh only for property changes with suppressed invalidation (others lead to rerendering and refresh is handled there)
+		jQuery.sap.act.refresh();
 		this.iSuppressInvalidate++;
 	}
 
@@ -573,14 +581,13 @@ sap.ui.base.ManagedObject.prototype.validateProperty = function(sPropertyName, o
 	// In case null is passed as the value return the default value, either from the property or from the type
 	if (oValue === null || oValue === undefined) {
 		if (oProperty.defaultValue !== null) {
-			return oProperty.defaultValue;
+			oValue = oProperty.defaultValue;
 		} else {
-			return oType.getDefaultValue();
+			oValue = oType.getDefaultValue();
 		}
-	}
+	} else if (oType instanceof sap.ui.base.DataType) {
+		// Implicit casting for string only, other types are causing errors
 
-	// Implicit casting for string only, other types are causing errors
-	if (oType instanceof sap.ui.base.DataType) {
 		if (oType.getName() == "string") {
 			if (!(typeof oValue == "string" || oValue instanceof String)) {
 				oValue = "" + oValue;
@@ -597,6 +604,11 @@ sap.ui.base.ManagedObject.prototype.validateProperty = function(sPropertyName, o
 		}
 	} else if (!(oValue in oType)){ // Enumeration
 		throw new Error("\"" + oValue + "\" is not a valid entry of the enumeration for property \"" + sPropertyName + "\" of " + this);
+	}
+
+	// Normalize the value (if a normalizer was set using the setNormalizer method on the type)
+	if (oType && oType.normalize && typeof oType.normalize === "function") {
+		oValue = oType.normalize(oValue);
 	}
 
 	return oValue;
@@ -1366,17 +1378,22 @@ sap.ui.base.ManagedObject.prototype._removeChild = function(oChild, sAggregation
  */
 sap.ui.base.ManagedObject.prototype.setParent = function(oParent, sAggregationName, bSuppressInvalidate) {
 	var that = this;
-	
+
 	if ( !oParent ) {
 		this.oParent = null;
 		this.sParentAggregationName = null;
 		this.oPropagatedProperties = {oModels:{}, oBindingContexts:{}};
+		
+		jQuery.sap.act.refresh();
+		
 		// Note: no need (and no way how) to invalidate
 		return;
 	}
 
 	// set suppress invalidate flag
 	if (bSuppressInvalidate) {
+		//Refresh only for changes with suppressed invalidation (others lead to rerendering and refresh is handled there)
+		jQuery.sap.act.refresh();
 		this.iSuppressInvalidate++;
 	}
 
@@ -1612,6 +1629,7 @@ sap.ui.base.ManagedObject.prototype.bindObject = function(sPath, mParameters) {
 		sPath = oBindingInfo.path;
 		mParameters = oBindingInfo.parameters;
 		sModelName = oBindingInfo.model;
+		boundObject.events = oBindingInfo.events;
 	}
 	// if a model separator is found in the path, extract model name and path
 	iSeparatorPos = sPath.indexOf(">");
@@ -1626,6 +1644,7 @@ sap.ui.base.ManagedObject.prototype.bindObject = function(sPath, mParameters) {
 	oldBoundObject = this.mBoundObjects[sModelName];
 	if (oldBoundObject && oldBoundObject.binding) {
 		oldBoundObject.binding.detachChange(oldBoundObject.fChangeHandler);
+		oldBoundObject.binding.detachEvents(oldBoundObject.events);
 	}
 	this.mBoundObjects[sModelName] = boundObject;
 
@@ -1662,9 +1681,9 @@ sap.ui.base.ManagedObject.prototype._bindObject = function(sModelName, oBoundObj
 	oBoundObject.binding = oBinding;
 	oBoundObject.fChangeHandler = fChangeHandler;
 	
-	if (!oBinding.isInitial()) {
-		fChangeHandler();
-	}
+	oBinding.attachEvents(oBoundObject.events);
+	
+	oBinding.initialize();
 };
 
 /**
@@ -1706,6 +1725,7 @@ sap.ui.base.ManagedObject.prototype.unbindObject = function(sModelName) {
 	if (oBoundObject) {
 		if (oBoundObject.binding) {
 			oBoundObject.binding.detachChange(oBoundObject.fChangeHandler)
+			oBoundObject.binding.detachEvents(oBoundObject.events);
 		}
 		delete this.mBoundObjects[sModelName]
 		delete this.oBindingContexts[sModelName];
@@ -1783,7 +1803,7 @@ sap.ui.base.ManagedObject.prototype.bindProperty = function(sName, oBindingInfo)
 			formatOptions: oBindingInfo.formatOptions,
 			constraints: oBindingInfo.constraints,
 			model: oBindingInfo.model,
-			mode: oBindingInfo.mode 
+			mode: oBindingInfo.mode, 
 		};
 		delete oBindingInfo.path;
 		delete oBindingInfo.mode;
@@ -1829,27 +1849,35 @@ sap.ui.base.ManagedObject.prototype.bindProperty = function(sName, oBindingInfo)
 
 sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo) {
 	var oModel,
-	oContext,
-	oBinding,
-	oType,
-	clType,
-	oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
-	that = this,
-	aBindings = [],
-	fModelChangeHandler = function() {
-		try {			
-			var oValue = oBinding.getExternalValue();
-			oBindingInfo.skipModelUpdate = true;
-			that[oPropertyInfo._sMutator](oValue);
-			oBindingInfo.skipModelUpdate = false;
-		}catch (oException) {
-			if (oException instanceof sap.ui.model.FormatException) {
-					sap.ui.getCore().fireFormatError({element : that, property : sName, type : oBinding.getType(), newValue : oBinding.getValue(), oldValue : that.getProperty(sName), exception: oException});
-			}else {
-				throw oException;
+		sMode,
+		oContext,
+		oBinding,
+		oType,
+		clType,
+		oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
+		that = this,
+		aBindings = [],
+		fModelChangeHandler = function() {
+			try {			
+				var oValue = oBinding.getExternalValue();
+				oBindingInfo.skipModelUpdate = true;
+				that[oPropertyInfo._sMutator](oValue);
+				oBindingInfo.skipModelUpdate = false;
+			}catch (oException) {
+				if (oException instanceof sap.ui.model.FormatException) {
+					that.fireFormatError({
+						element : that,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oBinding.getValue(),
+						oldValue : that.getProperty(sName),
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
+				}else {
+					throw oException;
+				}
 			}
-		}
-	};
+		};
 
 	// Only use context for bindings on the primary model
 	oContext = this.getBindingContext(oBindingInfo.model);
@@ -1870,10 +1898,8 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 		oBinding.setType(oType, oPropertyInfo.type);
 		oBinding.setFormatter(oPart.formatter);
 		
-		// TODO check if multiple bindings work with resource model 
-		if (!oPart.mode || !oModel.isBindingModeSupported(oPart.mode)) {
-			oPart.mode = oModel.getDefaultBindingMode();
-		}
+		sMode = !oPart.mode ? oModel.getDefaultBindingMode() : oPart.mode; 
+		oBinding.setBindingMode(sMode);
 		
 		aBindings.push(oBinding);
 	});
@@ -1888,16 +1914,12 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 		}
 		oBinding = new sap.ui.model.CompositeBinding(aBindings, oBindingInfo.useRawValues);
 		oBinding.setType(oType, oPropertyInfo.type);
+		oBinding.setBindingMode(oBindingInfo.mode);
 	} else {
 		oBinding = aBindings[0];
 	}
 	
-	// Attach to the change event of the binding and initialize value
-	// all composite bindings have already one way mode, so only check the first binding for its mode. 
-	// Because if no composite binding is used there is only one binding.
-	if (oBindingInfo.parts[0].mode != sap.ui.model.BindingMode.OneTime) {
-		oBinding.attachChange(fModelChangeHandler);
-	}
+	oBinding.attachChange(fModelChangeHandler);
 	
 	// set only one formatter function if any
     // because the formatter gets the context of the element we have to set the context via proxy to ensure compatibility 
@@ -1909,9 +1931,14 @@ sap.ui.base.ManagedObject.prototype._bindProperty = function(sName, oBindingInfo
 	oBindingInfo.skipModelUpdate = false;
 	oBindingInfo.binding = oBinding;
 	oBindingInfo.modelChangeHandler = fModelChangeHandler;
+	
+	oBinding.attachEvents(oBindingInfo.events);
 
-	if (!oBinding.isInitial()) {
-		fModelChangeHandler();
+	oBinding.initialize();
+	
+	if (oBinding.getBindingMode() === sap.ui.model.BindingMode.OneTime) {
+		oBinding.detachChange(fModelChangeHandler);
+		oBinding.detachEvents(oBindingInfo.events);
 	}
 };
 
@@ -1929,6 +1956,7 @@ sap.ui.base.ManagedObject.prototype.unbindProperty = function(sName, bSuppressRe
 	if(oBindingInfo) {
 		if (oBindingInfo.binding) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 		}
 		delete this.mBindingInfos[sName];
 		if (!bSuppressReset) {
@@ -1950,21 +1978,40 @@ sap.ui.base.ManagedObject.prototype.updateModelProperty = function(sName, oValue
 		var oBindingInfo = this.mBindingInfos[sName],
 			oBinding = oBindingInfo.binding;
 		// only one property binding should work with two way mode...composite binding does not work with two way binding 
-		if (oBindingInfo.parts[0].mode == sap.ui.model.BindingMode.TwoWay
-				&& oBinding
+		if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay
 				&& !oBindingInfo.skipModelUpdate) {
 			try {
 				oBinding.setExternalValue(oValue);
 				// Only fire validation success, if a type is used
 				if (oBinding.getType()) {
-					sap.ui.getCore().fireValidationSuccess({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue});
+					this.fireValidationSuccess({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}
 			}
 			catch (oException) {
 				if (oException instanceof sap.ui.model.ParseException) {
-					sap.ui.getCore().fireParseError({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue, exception: oException});
+					this.fireParseError({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue,
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}else if (oException instanceof sap.ui.model.ValidateException) {
-					sap.ui.getCore().fireValidationError({element : this, property : sName, type : oBinding.getType(), newValue : oValue, oldValue : oOldValue, exception: oException});
+					this.fireValidationError({
+						element : this,
+						property : sName,
+						type : oBinding.getType(),
+						newValue : oValue,
+						oldValue : oOldValue,
+						exception: oException
+					}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 				}
 				else {
 					throw oException;
@@ -2079,6 +2126,14 @@ sap.ui.base.ManagedObject.prototype._bindAggregation = function(sName, oBindingI
 			} else {
 				that.updateAggregation(sName);
 			}
+		},
+		fModelRefreshHandler = function(oEvent){
+			var sRefresher = "refresh" + sName.substr(0,1).toUpperCase() + sName.substr(1);
+			if (that[sRefresher]) {
+				that[sRefresher](oEvent.getParameter("reason"));
+			} else {
+				fModelChangeHandler(oEvent);
+			}
 		};
 		var oModel = this.getModel(oBindingInfo.model);
 		if (this.isTreeBinding(sName)) {
@@ -2093,11 +2148,15 @@ sap.ui.base.ManagedObject.prototype._bindAggregation = function(sName, oBindingI
 
 	oBindingInfo.binding = oBinding;
 	oBindingInfo.modelChangeHandler = fModelChangeHandler;
+	oBindingInfo.modelRefreshHandler = fModelRefreshHandler;
 
 	oBinding.attachChange(fModelChangeHandler);
-	if (!oBinding.isInitial()) {
-		fModelChangeHandler();
-	}
+	
+	oBinding.attachRefresh(fModelRefreshHandler);
+	
+	oBinding.attachEvents(oBindingInfo.events);
+	
+	oBinding.initialize();
 };
 
 /**
@@ -2114,6 +2173,8 @@ sap.ui.base.ManagedObject.prototype.unbindAggregation = function(sName, bSuppres
 	if(oBindingInfo) {
 		if (oBindingInfo.binding) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			oBindingInfo.binding.detachRefresh(oBindingInfo.modelRefreshHandler);
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 		}
 		delete this.mBindingInfos[sName];
 		if (!bSuppressReset) {
@@ -2211,6 +2272,10 @@ sap.ui.base.ManagedObject.prototype.updateBindings = function(bUpdateAll, sModel
 		// if there is a binding and if it became invalid through the current model change, then remove it 
 		if ( oBindingInfo.binding && becameInvalid(oBindingInfo) ) {
 			oBindingInfo.binding.detachChange(oBindingInfo.modelChangeHandler);
+			if (oBindingInfo.modelRefreshHandler) { // only list bindings currently have a refresh handler attached
+				oBindingInfo.binding.detachRefresh(oBindingInfo.modelRefreshHandler);				
+			}
+			oBindingInfo.binding.detachEvents(oBindingInfo.events);
 			delete oBindingInfo.binding;
 		}
 
@@ -2311,6 +2376,17 @@ sap.ui.base.ManagedObject.prototype.isBound = function(sName){
  */
 sap.ui.base.ManagedObject.prototype.getObjectBinding = function(sModelName){
 	return this.mBoundObjects[sModelName] && this.mBoundObjects[sModelName].binding;
+};
+
+/**
+ * Returns the parent managed object as new eventing parent to enable control event bubbling
+ * or <code>null</code> if this object hasn't been added to a parent yet. 
+ * 
+ * @return {sap.ui.base.EventProvider} the parent event provider
+ * @protected
+ */
+sap.ui.base.ManagedObject.prototype.getEventingParent = function() {
+	return this.oParent;
 };
 
 /**

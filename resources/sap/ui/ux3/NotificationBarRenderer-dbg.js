@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.ux3.NotificationBarRenderer");
@@ -484,7 +484,8 @@ sap.ui.ux3.NotificationBarRenderer = {};
 				oRm.writeAttribute("tabindex", "-1");
 				oRm.addClass("sapUiNotifierMessageText");
 				oRm.addClass("sapUiInPlaceMessage");
-				if (oMessageNotifier._bEnableMessageSelect) {
+				// if the latest message is read-only don't provide a visual selectable link
+				if (oMessageNotifier._bEnableMessageSelect && !oMA._message.getReadOnly()) {
 					// if there is an event handler show the inplace message
 					// clickable
 					oRm.addClass("sapUiInPlaceMessageSelectable");

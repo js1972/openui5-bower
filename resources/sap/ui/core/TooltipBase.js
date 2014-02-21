@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.core.TooltipBase");jQuery.sap.require("sap.ui.core.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.core.TooltipBase",{metadata:{"abstract":true,library:"sap.ui.core",properties:{"text":{type:"string",group:"Misc",defaultValue:""},"openDuration":{type:"int",group:"Behavior",defaultValue:200},"closeDuration":{type:"int",group:"Behavior",defaultValue:200},"myPosition":{type:"sap.ui.core.Dock",group:"Behavior",defaultValue:'begin top'},"atPosition":{type:"sap.ui.core.Dock",group:"Behavior",defaultValue:'begin bottom'},"offset":{type:"string",group:"Behavior",defaultValue:'10 3'},"collision":{type:"sap.ui.core.Collision",group:"Behavior",defaultValue:'flip'},"openDelay":{type:"int",group:"Misc",defaultValue:500},"closeDelay":{type:"int",group:"Misc",defaultValue:100}}}});jQuery.sap.require("sap.ui.core.Popup");sap.ui.core.TooltipBase.prototype._getPopup=jQuery.sap.getter((function(){var p=new sap.ui.core.Popup();p.setShadow(true);return p}()));

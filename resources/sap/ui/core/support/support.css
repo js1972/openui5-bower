@@ -206,7 +206,8 @@
 	width: 100%;
 }
 
-#sapUiSupportTechInfo-tggleDbgSrc {
+#sapUiSupportTechInfo-tggleDbgSrc,
+#sapUiSupportTechInfo-tggleStatistics {
 	margin-left: 15px;
 }
 

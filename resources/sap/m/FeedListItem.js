@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.FeedListItem");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.m.ListItemBase");sap.m.ListItemBase.extend("sap.m.FeedListItem",{metadata:{library:"sap.m",properties:{"icon":{type:"sap.ui.core.URI",group:"Data",defaultValue:null},"activeIcon":{type:"sap.ui.core.URI",group:"Data",defaultValue:null},"sender":{type:"string",group:"Data",defaultValue:null},"text":{type:"string",group:"Data",defaultValue:null},"info":{type:"string",group:"Data",defaultValue:null},"timestamp":{type:"string",group:"Data",defaultValue:null},"senderActive":{type:"boolean",group:"Behavior",defaultValue:true},"iconActive":{type:"boolean",group:"Behavior",defaultValue:true},"iconDensityAware":{type:"boolean",group:"Appearance",defaultValue:true},"showIcon":{type:"boolean",group:"Behavior",defaultValue:true}},events:{"senderPress":{},"iconPress":{}}}});sap.m.FeedListItem.M_EVENTS={'senderPress':'senderPress','iconPress':'iconPress'};

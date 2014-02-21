@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -243,6 +243,9 @@ sap.ui.core.format.DateFormat.prototype.oStates = {
  * @public
  */
 sap.ui.core.format.DateFormat.prototype.format = function(oDate, bUTC) {
+	if (bUTC === undefined) {
+		bUTC = this.oFormatOptions.UTC;
+	}
 	var aBuffer = [],
 		oPart,
 		iDay = bUTC ? oDate.getUTCDay() : oDate.getDay(),
@@ -423,10 +426,14 @@ sap.ui.core.format.DateFormat.prototype.format = function(oDate, bUTC) {
  * Parse a string which is formatted according to the given format options.
  *
  * @param {string} sValue the string containing a formatted date/time value
+ * @param {boolean} bUTC whether to use UTC, if no timezone is contained
  * @return {Date} the parsed value
  * @public
  */
-sap.ui.core.format.DateFormat.prototype.parse = function(oValue) {
+sap.ui.core.format.DateFormat.prototype.parse = function(oValue, bUTC) {
+	if (bUTC === undefined) {
+		bUTC = this.oFormatOptions.UTC;
+	}
 	var oDate,
 		iIndex = 0,
 		bError = false,
@@ -717,6 +724,15 @@ sap.ui.core.format.DateFormat.prototype.parse = function(oValue) {
 			oDate.setUTCDate(iDay || 1);
 			oDate.setUTCHours(iHours || 0);
 			oDate.setUTCMinutes((iMinutes || 0) + iTZDiff);
+			oDate.setUTCSeconds(iSeconds || 0);
+			oDate.setUTCMilliseconds(iMilliseconds || 0);
+		} else if (bUTC) {
+			oDate = new Date(0);
+			oDate.setUTCFullYear(iYear || 1970);
+			oDate.setUTCMonth(iMonth || 0);
+			oDate.setUTCDate(iDay || 1);
+			oDate.setUTCHours(iHours || 0);
+			oDate.setUTCMinutes(iMinutes || 0);
 			oDate.setUTCSeconds(iSeconds || 0);
 			oDate.setUTCMilliseconds(iMilliseconds || 0);
 		} else {

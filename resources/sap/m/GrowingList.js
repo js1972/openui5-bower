@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.GrowingList");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.m.List");sap.m.List.extend("sap.m.GrowingList",{metadata:{deprecated:true,library:"sap.m",properties:{"threshold":{type:"int",group:"Misc",defaultValue:20},"triggerText":{type:"string",group:"Appearance",defaultValue:null},"scrollToLoad":{type:"boolean",group:"Behavior",defaultValue:false}}}});

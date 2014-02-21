@@ -1,13 +1,13 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -549,6 +549,13 @@ if(typeof window.sap.ui !== "object"){
 						version: version,
 						mobile: oExpMobile.test(ua),
 						webkit: true
+					}
+				}else{
+					// unknown webkit browser
+					return {
+						mobile: oExpMobile.test(ua),
+						webkit: true,
+						webkitVersion: webkitVersion
 					}
 				}
 			}
@@ -1194,9 +1201,11 @@ if(typeof window.sap.ui !== "object"){
 	var bResize = false;
 	var iOrientationTimeout;
 	var iResizeTimeout;
+	var iClearFlagTimeout;
 	var iWindowHeightOld = windowSize()[1];
 	var iWindowWidthOld = windowSize()[0];
 	var bKeyboardOpen = false;
+	var iLastResizeTime;
 	
 	function isLandscape(bFromOrientationChange){
 		if (device.support.touch && device.support.orientation) {
@@ -1222,9 +1231,9 @@ if(typeof window.sap.ui !== "object"){
 
 	function handleMobileOrientationResizeChange(evt) {
 		if (evt.type == "resize") {
-			
 			var iWindowHeightNew = windowSize()[1];
 			var iWindowWidthNew = windowSize()[0];
+			var iTime = new Date().getTime();
 			//skip multiple resize events by only one orientationchange
 			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
 				return;
@@ -1233,12 +1242,27 @@ if(typeof window.sap.ui !== "object"){
 			//on mobile devices opening the keyboard on some devices leads to a resize event
 			//in this case only the height changes, not the width
 			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
-				bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
+				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
+				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
+				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
+					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				}
 				handleResizeChange();
 			} else {
 				iWindowWidthOld = iWindowWidthNew;
 			}
+			iLastResizeTime = iTime;
 			iWindowHeightOld = iWindowHeightNew;
+			
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+			//Some Android build-in browser fires a resize event after the viewport is applied.
+			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
+			//a UI5 resize event will be fired with the wrong window size.
+			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
 		} else if (evt.type == "orientationchange") {
 			bOrientationchange = true;
 		}
@@ -1256,8 +1280,18 @@ if(typeof window.sap.ui !== "object"){
 			handleResizeChange();
 			bOrientationchange = false;
 			bResize = false;
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
 		}
 		iOrientationTimeout = null;
+	};
+	
+	function clearFlags(){
+		bOrientationchange = false;
+		bResize = false;
+		iClearFlagTimeout = null;
 	};
 	
 //******** System Detection ********
@@ -1368,6 +1402,9 @@ if(typeof window.sap.ui !== "object"){
 	
 	function setSystem(_simMobileOnDesktop) {
 		device.system = getSystem(_simMobileOnDesktop);
+		if (device.system.tablet || device.system.phone) {
+			device.browser.mobile = true;
+		}
 	}
 	setSystem();
 

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -58,7 +58,7 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 
 		// handle line clamp
 		if (nMaxLines > 1) {
-			if (sap.m.Text.hasNativeLineClamp) {
+			if (oText._canUseNativeLineClamp()) {
 				oRm.addClass("sapMTextLineClamp");
 				oRm.addStyle("-webkit-line-clamp", nMaxLines);
 			} else {

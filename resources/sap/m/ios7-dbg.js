@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 /*global window, document *///declare unusual global vars for JSLint/SAPUI5 validation
@@ -108,7 +108,7 @@ jQuery.sap.declare("sap.m._Ios7");
 			this._detachNavigationBarPolling();
 			this._iPreviousHeight = null;
 		} else {
-			this._iPreviousHeight = window.innerHeight
+			this._iPreviousHeight = window.innerHeight;
 		}
 	};
 
@@ -188,4 +188,4 @@ jQuery.sap.declare("sap.m._Ios7");
 
 	//expose the singleton
 	sap.m.ios7 = new sap.m._Ios7();
-})();
+}());

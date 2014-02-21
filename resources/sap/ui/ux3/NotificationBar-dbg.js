@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -465,6 +465,9 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.NotifierView", {
 			}
 
 			var oMessage = aMessages[i];
+			if (oMessage._message && oMessage._message.getReadOnly()) {
+				oMessage.addStyleClass("sapUiNotifierMessageReadOnly");
+			}
 			oRm.renderControl(oMessage);
 		}
 
@@ -635,12 +638,15 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	},
 
 	onclick : function(oEvent) {
-		var oNotifier = this._message.getParent();
+		// only fire selected event if the message can be selected at all
+		if (!this._message.getReadOnly()) {
+			var oNotifier = this._message.getParent();
 
-		this._message.getParent().fireMessageSelected({
-			message : this._message,
-			notifier : oNotifier
-		});
+			oNotifier.fireMessageSelected({
+				message : this._message,
+				notifier : oNotifier
+			});
+		}
 	},
 
 	onsapselect : function(oEvent) {
@@ -1229,17 +1235,61 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 		this._oItemNavigation.setRootDomRef(this.getDomRef());
 
 		var aItemDomRefs = [];
-		var mNotifiers = this.getNotifiers();
-		for ( var i = 0; i < mNotifiers.length; i++) {
-			aItemDomRefs.push(mNotifiers[i].getDomRef());
-		}
+		var bIsMaximized = this.getVisibleStatus() === sap.ui.ux3.NotificationBarStatus.Max;
 
-		var oMessageNotifier = this.getMessageNotifier();
-		if (oMessageNotifier != null) {
-			aItemDomRefs.push(oMessageNotifier.getDomRef());
+		// use different elements for navigation in maximized-mode
+		if (bIsMaximized) {
+			// add notifiers and messages reverse so the arrow keys can be used
+			// properly. Or the whole control of the item navigation is
+			// inverted.
+			var oMessageNotifier = this.getMessageNotifier();
+			if (oMessageNotifier != null) {
+				var aMessages = oMessageNotifier.getMessages();
+				var sId = oMessageNotifier.getId() + "-messageNotifierView-messageView-";
 
-			// add the inplace message to the item navigation as well
-			aItemDomRefs.push(jQuery.sap.byId(this.getId() + "-inplaceMessage"));
+				for ( var i = aMessages.length - 1; i >= 0; i--) {
+					var oDomRef = jQuery.sap.domById(sId + aMessages[i].getId());
+					if (oDomRef) {
+						aItemDomRefs.push(oDomRef);
+					}
+				}
+			}
+
+			var aNotifiers = this.getNotifiers();
+			for ( var i = 0; i < aNotifiers.length; i++) {
+				var aMessages = aNotifiers[i].getMessages();
+				var sId = aNotifiers[i].getId() + "-notifierView-messageView-";
+
+				for ( var j = aMessages.length - 1; j >= 0; j--) {
+					var oDomRef = jQuery.sap.domById(sId + aMessages[j].getId());
+					if (oDomRef) {
+						aItemDomRefs.push(oDomRef);
+					}
+				}
+			}
+
+		} else {
+			var aNotifiers = this.getNotifiers();
+			for ( var i = 0; i < aNotifiers.length; i++) {
+				var oDomRef = aNotifiers[i].getDomRef();
+				if (oDomRef) {
+					aItemDomRefs.push(oDomRef);
+				}
+			}
+
+			var oMessageNotifier = this.getMessageNotifier();
+			if (oMessageNotifier != null) {
+				var oDomRef = oMessageNotifier.getDomRef();
+				if (oDomRef) {
+					aItemDomRefs.push(oDomRef);
+				}
+
+				// add the inplace message to the item navigation as well
+				oDomRef = jQuery.sap.domById(this.getId() + "-inplaceMessage");
+				if (oDomRef && jQuery(oDomRef).hasClass("sapUiInPlaceMessageSelectable")) {
+					aItemDomRefs.push(oDomRef);
+				}
+			}
 		}
 
 		this._oItemNavigation.setItemDomRefs(aItemDomRefs);
@@ -1420,6 +1470,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			}, "fast");
 
 			oNotiBar.$().addClass("sapUiNotificationBarMinimized");
+			
+			oNotiBar.$("notifiers").css("display", "none");
 
 			display = "block";
 			break;
@@ -1615,8 +1667,10 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 				if (this.getDomRef()) {
 					fnResize(this, toStatus);
 				} else {
-					this.$().css("height", "0px");
-					this.$().css("display", "none");
+					this.$().css({
+						"height" : "0px",
+						"display" : "none"
+					});
 				}
 			}
 

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -9,6 +9,7 @@ jQuery.sap.declare("sap.ui.core.ResizeHandler");
 jQuery.sap.require("sap.ui.base.Object");
 jQuery.sap.require("sap.ui.Global");
 jQuery.sap.require("jquery.sap.script");
+jQuery.sap.require("jquery.sap.act");
 
 (function(){
 
@@ -47,14 +48,23 @@ jQuery.sap.require("jquery.sap.script");
 			this.fDestroyHandler = jQuery.proxy(this.destroy, this);
 
 			jQuery(window).bind("unload", this.fDestroyHandler);
+			
+			jQuery.sap.act.attachActivate(initListener, this);
 		}
 
 	});
 	
-	function clearListener(oResizeHandler){
-		if(oResizeHandler.bRegistered){
-			oResizeHandler.bRegistered = false;
-			sap.ui.getCore().detachIntervalTimer(oResizeHandler.checkSizes, oResizeHandler);
+	function clearListener(){
+		if(this.bRegistered){
+			this.bRegistered = false;
+			sap.ui.getCore().detachIntervalTimer(this.checkSizes, this);
+		}
+	};
+	
+	function initListener(){
+		if(!this.bRegistered && this.aResizeListeners.length > 0){
+			this.bRegistered = true;
+			sap.ui.getCore().attachIntervalTimer(this.checkSizes, this);
 		}
 	};
 
@@ -66,10 +76,11 @@ jQuery.sap.require("jquery.sap.script");
 	 * @private
 	 */
 	sap.ui.core.ResizeHandler.prototype.destroy = function(oEvent) {
+		jQuery.sap.act.detachActivate(initListener, this);
 		jQuery(window).unbind("unload", this.fDestroyHandler);
 		oCoreRef = null;
 		this.aResizeListeners = [];
-		clearListener(this);
+		clearListener.apply(this);
 	};
 
 	/**
@@ -88,14 +99,11 @@ jQuery.sap.require("jquery.sap.script");
 			sId = "rs-" + new Date().valueOf() + "-" + this.iIdCounter++,
 			dbg = (bIsControl ? ("Control " + oRef.getId()) : (oRef.id ? oRef.id : String(oRef)));
 
-		if(!this.bRegistered){
-			this.bRegistered = true;
-			sap.ui.getCore().attachIntervalTimer(this.checkSizes, this);
-		}
-
 		this.aResizeListeners.push({sId: sId, oDomRef: bIsControl ? null : oRef, oControl: bIsControl ? oRef : null, fHandler: fHandler, iWidth: iWidth, iHeight: iHeight, dbg: dbg});
 		log.debug("registered " + dbg);
 
+		initListener.apply(this);
+		
 		return sId;
 	};
 
@@ -117,7 +125,7 @@ jQuery.sap.require("jquery.sap.script");
 
 		// if list is empty now, stop interval
 		if(this.aResizeListeners.length == 0){
-			clearListener(this);
+			clearListener.apply(this);
 		}
 	};
 
@@ -164,6 +172,15 @@ jQuery.sap.require("jquery.sap.script");
 				}
 			}
 		});
+		
+		if(sap.ui.core.ResizeHandler._keepActive != true && sap.ui.core.ResizeHandler._keepActive != false){
+			//initialize default
+			sap.ui.core.ResizeHandler._keepActive = false;
+		}
+		
+		if(!jQuery.sap.act.isActive() && !sap.ui.core.ResizeHandler._keepActive){
+			clearListener.apply(this);
+		}
 	};
 
 	/**

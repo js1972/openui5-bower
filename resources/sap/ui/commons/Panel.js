@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.commons.Panel");jQuery.sap.require("sap.ui.commons.library");jQuery.sap.require("sap.ui.core.Control");sap.ui.core.Control.extend("sap.ui.commons.Panel",{metadata:{publicMethods:["setDimensions"],library:"sap.ui.commons",properties:{"width":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:'100%'},"height":{type:"sap.ui.core.CSSSize",group:"Dimension",defaultValue:null},"enabled":{type:"boolean",group:"Behavior",defaultValue:true},"visible":{type:"boolean",group:"Appearance",defaultValue:true},"scrollLeft":{type:"int",group:"Behavior",defaultValue:0},"scrollTop":{type:"int",group:"Behavior",defaultValue:0},"applyContentPadding":{type:"boolean",group:"Appearance",defaultValue:true},"collapsed":{type:"boolean",group:"Behavior",defaultValue:false},"areaDesign":{type:"sap.ui.commons.enums.AreaDesign",group:"Appearance",defaultValue:sap.ui.commons.enums.AreaDesign.Fill},"borderDesign":{type:"sap.ui.commons.enums.BorderDesign",group:"Appearance",defaultValue:sap.ui.commons.enums.BorderDesign.Box},"showCollapseIcon":{type:"boolean",group:"Behavior",defaultValue:true},"text":{type:"string",group:"Misc",defaultValue:null}},defaultAggregation:"content",aggregations:{"content":{type:"sap.ui.core.Control",multiple:true,singularName:"content"},"title":{type:"sap.ui.core.Title",multiple:false},"buttons":{type:"sap.ui.commons.Button",multiple:true,singularName:"button"}}}});
@@ -33,4 +33,4 @@ sap.ui.commons.Panel.prototype.setWidth=function(w){this.setProperty("width",w,t
 sap.ui.commons.Panel.prototype.setHeight=function(h){this.setProperty("height",h,true);var d=this.getDomRef();if(d){d.style.height=h}return this};
 sap.ui.commons.Panel.prototype.onclick=function(e){this._handleTrigger(e)};
 sap.ui.commons.Panel.prototype.onsapspace=function(e){this._handleTrigger(e)};
-sap.ui.commons.Panel.prototype._handleTrigger=function(e){var i=this.getId();if((e.target.id===i+"-collArrow")||(e.target.id===i+"-collIco")||(e.target.id===i&&this.getShowCollapseIcon())){this.setCollapsed(!this.getProperty("collapsed"));e.preventDefault();e.stopPropagation();this.fireEvent("collapsedToggled")}};
+sap.ui.commons.Panel.prototype._handleTrigger=function(e){var i=this.getId();if((e.target.id===i+"-collArrow")||(e.target.id===i+"-collIco")||(e.target.id===i&&e.type==="sapspace"&&this.getShowCollapseIcon())){this.setCollapsed(!this.getProperty("collapsed"));e.preventDefault();e.stopPropagation();this.fireEvent("collapsedToggled")}};

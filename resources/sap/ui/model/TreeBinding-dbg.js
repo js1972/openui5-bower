@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -23,8 +23,7 @@ jQuery.sap.require("sap.ui.model.Binding");
  * @param {array}
  *         [aFilters=null] predefined filter/s contained in an array (optional)
  * @param {object}
- *         [mParameters=null] additional model specific parameters (optional)
- * @abstract
+ *         [mParameters=null] additional model specific parameters (optional) 
  * @public
  * @name sap.ui.model.TreeBinding
  */
@@ -33,14 +32,15 @@ sap.ui.model.Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.
 	constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 		sap.ui.model.Binding.call(this, oModel, sPath, oContext, mParameters);
 		this.aFilters = aFilters;
+		this.bDisplayRootNode = mParameters && mParameters.displayRootNode === true;
 	},
 
-  metadata : {
-  	"abstract" : true,
-  	publicMethods : [
-		"getRootContexts", "getNodeContexts", "filter"
-	  ]
-  }
+	metadata : {
+		"abstract" : true,
+		publicMethods : [
+			"getRootContexts", "getNodeContexts", "hasChildren", "filter"
+		]
+	}
 	
 });
 
@@ -80,6 +80,17 @@ sap.ui.model.Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.
  * @name sap.ui.model.TreeBinding.prototype.getNodeContexts
  * @param {Object} oContext the context element of the node
  * @return {Array} the array of child contexts for the given node
+ *
+ * @public
+ */
+
+/**
+ * Returns if the node has child nodes
+ *
+ * @function
+ * @name sap.ui.model.TreeBinding.prototype.hasChildren
+ * @param {Object} oContext the context element of the node
+ * @return {boolean} true if node has children
  *
  * @public
  */

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -108,6 +108,14 @@ jQuery.sap.declare("sap.ui.core.XMLTemplateProcessor");
 		var aResult=[];
 		var oCustomizingConfig = undefined;
 		var sCurrentName = oView.sViewName || oView._sFragmentName; // TODO: should Fragments and Views be separated here?
+		if (!sCurrentName) {
+			var oTopView = oView;
+			var iLoopCounter = 0; // Make sure there are not infinite loops
+			while (++iLoopCounter < 1000 && oTopView && oTopView !== oTopView._oContainingView) {
+				oTopView = oTopView._oContainingView;
+			}
+			sCurrentName = oTopView.sViewName;
+		}
 
 		if (oView.isSubView()) {
 			parseNode(xmlNode, true);
@@ -359,7 +367,7 @@ jQuery.sap.declare("sap.ui.core.XMLTemplateProcessor");
 
 				if (sName === "id") {
 					// special handling for ID
-					mSettings[sName] = oView.createId(sValue);
+					mSettings[sName] = oView._oContainingView.createId(sValue);
 					sOriginalControlId = sValue;
 
 				} else if (sName === "class") {

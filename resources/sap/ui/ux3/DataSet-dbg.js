@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -717,6 +717,23 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 	this._oSearchField.attachSearch(function(oEvent) {
 		that.fireSearch(oEvent.getParameters());
 	});
+	this.selectionModel.attachSelectionChanged(function(oEvent){
+		var oldSelectedIndex;
+		var mParameters = oEvent.getParameters();
+		if (mParameters){
+			var newSelectedIndex = mParameters.leadIndex;
+			// if rowIndices are larger than 1, we have had a leadIndex before, otherwise the 
+			// first array entry contains the new value
+			if (mParameters.rowIndices && mParameters.rowIndices.length > 1){
+				var oldSelectedIndex = mParameters.rowIndices[0]
+			}
+		}
+		that.fireSelectionChanged({
+			oldLeadSelectedIndex: oldSelectedIndex,
+			newLeadSelectedIndex: newSelectedIndex
+		});
+		jQuery.sap.log.debug("Selection Change fired");
+	});
 	oToolbar = new sap.ui.commons.Toolbar();
 	this._setToolbar(oToolbar);
 	this._iShiftStart = null;
@@ -724,7 +741,7 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 
 sap.ui.ux3.DataSet.prototype.exit = function() {
 	this._oSegBut.destroy();
-	this._oSearchField.destroy()
+	this._oSearchField.destroy();
 	this.destroyAggregation("_toolbar");
 };
 
@@ -788,6 +805,16 @@ sap.ui.ux3.DataSet.prototype.sort = function() {
  */
 sap.ui.ux3.DataSet.prototype.addSelectionInterval = function(iIndexFrom, iIndexTo) {
 	this.selectionModel.addSelectionInterval(iIndexFrom, iIndexTo);
+	return this;
+};
+
+/**
+ * sets selection interval to array of selected items.
+ * 
+ * @private
+ */
+sap.ui.ux3.DataSet.prototype.setSelectionInterval = function(iIndexFrom, iIndexTo) {
+	this.selectionModel.setSelectionInterval(iIndexFrom, iIndexTo);
 	return this;
 };
 /**
@@ -862,12 +889,11 @@ sap.ui.ux3.DataSet.prototype.selectItem = function(oEvent) {
 			if (!this._iShiftStart && this._iShiftStart !== 0) {
 				this._iShiftStart = oldSelectedIndex;
 			}
-			if (!oParams.ctrl){
-				this.clearSelection();
-			}
-			if (this._iShiftStart >= 0){
+			if (this._iShiftStart >= 0 && oParams.ctrl){
 				this.addSelectionInterval(this._iShiftStart, iIndex);
-			} else {
+			} else if (this._iShiftStart >= 0 &! oParams.ctrl){
+				this.setSelectionInterval(this._iShiftStart, iIndex);
+			}else{
 				this.setLeadSelection(iIndex);
 				this._iShiftStart = iIndex;
 			}
@@ -882,10 +908,6 @@ sap.ui.ux3.DataSet.prototype.selectItem = function(oEvent) {
 			this._iShiftStart = null;
 		}
 	}
-	this.fireSelectionChanged({
-		oldLeadSelectedIndex: oldSelectedIndex,
-		newLeadSelectedIndex: iIndex
-	});
 };
 
 /**

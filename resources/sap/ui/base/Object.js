@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.base.Object");jQuery.sap.require("sap.ui.base.Interface");jQuery.sap.require("sap.ui.base.Metadata");sap.ui.base.Metadata.createClass("sap.ui.base.Object",{constructor:function(){if(!(this instanceof sap.ui.base.Object)){throw Error("Cannot instantiate object: \"new\" is missing!")}}});

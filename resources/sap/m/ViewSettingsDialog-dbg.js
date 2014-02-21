@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -2150,7 +2150,7 @@ sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
 		if (!this._getPage1().getSubHeader() && !this.getTitle()) {
 			oTitleLabel.setText(this._rb.getText("VIEWSETTINGS_TITLE_SORT"));
 		}
-		if(this._sortContent) {
+		if (this._sortContent) {
 			for (; i < this._sortContent.length; i++) {
 				this._getPage1().addContent(this._sortContent[i]);
 			}

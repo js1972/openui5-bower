@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.ObjectListItem");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.m.ListItemBase");sap.m.ListItemBase.extend("sap.m.ObjectListItem",{metadata:{library:"sap.m",properties:{"title":{type:"string",group:"Misc",defaultValue:null},"number":{type:"string",group:"Misc",defaultValue:null},"numberUnit":{type:"string",group:"Misc",defaultValue:null},"intro":{type:"string",group:"Misc",defaultValue:null},"icon":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"activeIcon":{type:"sap.ui.core.URI",group:"Misc",defaultValue:null},"iconDensityAware":{type:"boolean",group:"Misc",defaultValue:true},"markFavorite":{type:"boolean",group:"Misc",defaultValue:null},"markFlagged":{type:"boolean",group:"Misc",defaultValue:null},"showMarkers":{type:"boolean",group:"Misc",defaultValue:null},"numberState":{type:"sap.ui.core.ValueState",group:"Misc",defaultValue:sap.ui.core.ValueState.None}},defaultAggregation:"attributes",aggregations:{"attributes":{type:"sap.m.ObjectAttribute",multiple:true,singularName:"attribute"},"firstStatus":{type:"sap.m.ObjectStatus",multiple:false},"secondStatus":{type:"sap.m.ObjectStatus",multiple:false}}}});jQuery.sap.require("sap.ui.core.IconPool");

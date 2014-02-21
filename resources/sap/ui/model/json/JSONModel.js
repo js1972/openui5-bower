@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.model.json.JSONModel");jQuery.sap.require("sap.ui.model.ClientModel");jQuery.sap.require("sap.ui.model.json.JSONPropertyBinding");jQuery.sap.require("sap.ui.model.json.JSONListBinding");jQuery.sap.require("sap.ui.model.json.JSONTreeBinding");sap.ui.model.ClientModel.extend("sap.ui.model.json.JSONModel",{constructor:function(d){sap.ui.model.ClientModel.apply(this,arguments);if(d&&typeof d=="object"){this.setData(d)}},metadata:{publicMethods:["setJSON","getJSON"]}});
@@ -14,3 +14,4 @@ sap.ui.model.json.JSONModel.prototype.bindTree=function(p,c,f,P){var b=new sap.u
 sap.ui.model.json.JSONModel.prototype.setProperty=function(p,v,c){var o=p.substring(0,p.lastIndexOf("/")),P=p.substr(p.lastIndexOf("/")+1);if(!this.resolve(p,c)){return}if(!o&&!c){c=this.oData}var O=this._getObject(o,c);if(O){O[P]=v;this.checkUpdate()}};
 sap.ui.model.json.JSONModel.prototype.getProperty=function(p,c){return this._getObject(p,c)};
 sap.ui.model.json.JSONModel.prototype._getObject=function(p,c){var n=this.isLegacySyntax()?this.oData:null;if(c instanceof sap.ui.model.Context){n=this._getObject(c.getPath())}else if(c){n=c}if(!p){return n}var P=p.split("/"),i=0;if(!P[0]){n=this.oData;i++}while(n&&P[i]){n=n[P[i]];i++}return n};
+sap.ui.model.json.JSONModel.prototype.isList=function(p,c){var a=this.resolve(p,c);return jQuery.isArray(this._getObject(a))};

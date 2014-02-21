@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author Frank Weigel 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -272,11 +272,12 @@ sap.ui.core.HTML.M_EVENTS = {'afterRendering':'afterRendering'};
 
 // Start of sap\ui\core\HTML.js
 /**
- * @return {DOMNode} The element's DOM reference or null
+ * @return {Element} The element's DOM reference or null
  * @public
  */
-sap.ui.core.HTML.prototype.getDomRef = function() {
-	return jQuery.sap.domById("sap-ui-dummy-" + this.getId()) || jQuery.sap.domById(this.getId());
+sap.ui.core.HTML.prototype.getDomRef = function(sSuffix) {
+	var sId = sSuffix ? this.getId() + "-" + sSuffix : this.getId();
+	return jQuery.sap.domById("sap-ui-dummy-" + sId) || jQuery.sap.domById(sId);
 };
 
 sap.ui.core.HTML.prototype.setContent = function(sContent) {

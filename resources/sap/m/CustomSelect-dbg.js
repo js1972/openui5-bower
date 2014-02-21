@@ -1,6 +1,6 @@
 /*
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.CustomSelect");
@@ -65,6 +65,9 @@ jQuery.sap.require("sap.m.Select");
 				// text for Set button
 				setText: this._oRb.getText("SELECT_ACCEPT"),
 
+				// specifies a custom string which appears in the popup header
+				headerText: this.getTitle(),
+
 				// language of the scroller
 				lang: this._sLang,
 
@@ -114,6 +117,9 @@ jQuery.sap.require("sap.m.Select");
 				 * @param {string} oScroller Scroller instance
 				 */
 				onMarkupReady: function($Html, oScroller) {
+					if (self.getTitle()) {
+						$Html.addClass("sapMCustomSltHdr");
+					}
 
 					// restrict the width of the popup
 					$Html[0].querySelector(".dwwr").style.maxWidth = fnGetMaxWidth();

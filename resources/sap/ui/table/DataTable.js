@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.table.DataTable");jQuery.sap.require("sap.ui.table.library");jQuery.sap.require("sap.ui.table.TreeTable");sap.ui.table.TreeTable.extend("sap.ui.table.DataTable",{metadata:{deprecated:true,library:"sap.ui.table",properties:{"expandedVisibleRowCount":{type:"int",group:"",defaultValue:null},"expanded":{type:"boolean",group:"",defaultValue:false},"hierarchical":{type:"boolean",group:"",defaultValue:false}},events:{"rowSelect":{}}}});sap.ui.table.DataTable.M_EVENTS={'rowSelect':'rowSelect'};

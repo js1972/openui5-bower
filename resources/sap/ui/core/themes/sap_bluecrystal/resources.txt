@@ -1,4 +1,5 @@
 .theming
+BrowserScrollbar.css
 BusyIndicator.css
 fonts
 fonts/bluecrystal_icons.ttf

@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.base.EventProvider");jQuery.sap.require("sap.ui.base.Object");jQuery.sap.require("sap.ui.base.Event");jQuery.sap.require("sap.ui.base.ObjectPool");sap.ui.base.Object.extend("sap.ui.base.EventProvider",{constructor:function(){sap.ui.base.Object.apply(this);this.mEventRegistry={}}});sap.ui.base.EventProvider.M_EVENTS={EventHandlerChange:"EventHandlerChange"};sap.ui.base.EventProvider.prototype.oEventPool=new sap.ui.base.ObjectPool(sap.ui.base.Event);

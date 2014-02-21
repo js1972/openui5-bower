@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.16.8-SNAPSHOT
+ * @version 1.18.8
  *
  * @constructor   
  * @public
@@ -412,6 +412,13 @@ sap.m.RadioButton.prototype.ontap = function(oEvent) {
 			this.setSelected(true);
 			this.fireSelect({selected:true});
 		}
+		var that = this;
+		//Sets focus on the radiobutton when the label is clicked
+		if(oEvent.srcControl && oEvent.srcControl.getMetadata().getName() == "sap.m.Label") {
+			setTimeout(function() {
+				that.$().find(".sapMRbB").focus();
+			},0)
+		}
 	}else{
 		// readOnly or disabled -> don't allow browser to switch RadioButton on
 		//oEvent.preventDefault();
@@ -463,7 +470,7 @@ sap.m.RadioButton.prototype.setSelected = function(bSelected) {
 	if (bSelected) { // If this radio button is selected, explicitly deselect the other radio buttons of the same group
 		if (this.getGroupName() && (this.getGroupName() !== "")) { // Do it only if groupName is set
 			// TODO: Add control references to some static list when they are constructed, in order to avoid searching every time
-			var others = jQuery("input[name='"+ this.getGroupName() +"']:radio");
+			var others = document.querySelectorAll("input[name='"+ this.getGroupName() +"'][type='radio']")
 			for (var i = 0; i < others.length; i++) {
 				var other = others[i];
 				// Recommendation is that the HTML radio button has an ID ending with "-RB"
@@ -493,10 +500,6 @@ sap.m.RadioButton.prototype.setSelected = function(bSelected) {
 	}
 
 	return this;
-};
-
-sap.m.RadioButton.prototype.setActiveState = function(bActive) {
-	this.$().toggleClass('sapMRbBTouched', bActive);
 };
 
 sap.m.RadioButton.prototype.setText = function(sText){

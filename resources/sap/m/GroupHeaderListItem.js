@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.GroupHeaderListItem");jQuery.sap.require("sap.m.library");jQuery.sap.require("sap.m.ListItemBase");sap.m.ListItemBase.extend("sap.m.GroupHeaderListItem",{metadata:{library:"sap.m",properties:{"title":{type:"string",group:"Data",defaultValue:null},"count":{type:"string",group:"Data",defaultValue:null},"upperCase":{type:"boolean",group:"Appearance",defaultValue:true}}}});

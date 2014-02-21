@@ -1,6 +1,6 @@
 /*!
- * SAP UI development toolkit for HTML5 (SAPUI5)
- * (c) Copyright 2009-2013 SAP AG or an SAP affiliate company. 
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
@@ -16,9 +16,10 @@ jQuery.sap.require("sap.ui.model.SimpleType");
  * The PropertyBinding is used to access single data values in the data model.
  *
  * @param {sap.ui.model.Model} oModel
- * @param {String} sPath
- * @param {Object} oContext
- * @abstract
+ * @param {string} sPath
+ * @param {sap.ui.model.Context} oContext
+ * @param {object} [mParameters]
+ * 
  * @public
  * @name sap.ui.model.PropertyBinding
  */
@@ -27,15 +28,12 @@ sap.ui.model.Binding.extend("sap.ui.model.PropertyBinding", /** @lends sap.ui.mo
 
 	constructor : function (oModel, sPath, oContext, mParameters) {
 		sap.ui.model.Binding.apply(this, arguments);
-		this.oType;
-		this.fnFormatter;
-		this.sInternalType;
 	},
 	metadata : {
 		"abstract" : true,
 		
 	  publicMethods : [
-		  "getValue", "setValue", "setType", "getType", "setFormatter", "getFormatter", "getExternalValue", "setExternalValue"
+		  "getValue", "setValue", "setType", "getType", "setFormatter", "getFormatter", "getExternalValue", "setExternalValue", "getBindingMode"
 	  ]
 	}
 
@@ -167,4 +165,22 @@ sap.ui.model.PropertyBinding.prototype.setFormatter = function(fnFormatter) {
  */
 sap.ui.model.PropertyBinding.prototype.getFormatter = function() {
 	return this.fnFormatter;
+};
+
+/**
+ *  Returns the binding mode 
+ *  @returns {sap.ui.model.BindingMode} the binding mode
+ *  @public
+ */
+sap.ui.model.PropertyBinding.prototype.getBindingMode = function() {
+	return this.sMode;
+};
+
+/**
+ *  Sets the binding mode 
+ *  @params {sap.ui.model.BindingMode} sBindingMode the binding mode
+ *  @protected
+ */
+sap.ui.model.PropertyBinding.prototype.setBindingMode = function(sBindingMode) {
+	this.sMode = sBindingMode;
 };
