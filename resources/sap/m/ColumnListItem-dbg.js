@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -235,6 +235,18 @@ sap.m.ColumnListItem.prototype._activeHandlingInheritor = function() {
 // inactive feedback for pop-in
 sap.m.ColumnListItem.prototype._inactiveHandlingInheritor = function() {
 	this._toggleActiveClass(false);
+};
+
+/*
+ * remove pop-in from DOM when setVisible false is called
+ * @overwite
+ */
+sap.m.ColumnListItem.prototype.setVisible = function() {
+	sap.m.ListItemBase.prototype.setVisible.apply(this, arguments);
+	if (!this.getVisible()) {
+		this.removePopin();
+	}
+	return this;
 };
 
 /**

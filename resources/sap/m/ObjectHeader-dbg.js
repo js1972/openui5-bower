@@ -77,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -836,7 +836,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {string} oControlEvent.getParameters.domRef Dom reference of the object header' title to be used for positioning.
+ * @param {object} oControlEvent.getParameters.domRef Dom reference of the object header' title to be used for positioning.
  * @public
  */
  
@@ -880,7 +880,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'domRef' of type <code>string</code> Dom reference of the object header' title to be used for positioning.</li>
+ * <li>'domRef' of type <code>object</code> Dom reference of the object header' title to be used for positioning.</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -900,7 +900,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {string} oControlEvent.getParameters.domRef Dom reference of the object header' intro to be used for positioning.
+ * @param {object} oControlEvent.getParameters.domRef Dom reference of the object header' intro to be used for positioning.
  * @public
  */
  
@@ -944,7 +944,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'domRef' of type <code>string</code> Dom reference of the object header' intro to be used for positioning.</li>
+ * <li>'domRef' of type <code>object</code> Dom reference of the object header' intro to be used for positioning.</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -964,7 +964,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {string} oControlEvent.getParameters.domRef Dom reference of the object header' icon to be used for positioning.
+ * @param {object} oControlEvent.getParameters.domRef Dom reference of the object header' icon to be used for positioning.
  * @public
  */
  
@@ -1008,7 +1008,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'domRef' of type <code>string</code> Dom reference of the object header' icon to be used for positioning.</li>
+ * <li>'domRef' of type <code>object</code> Dom reference of the object header' icon to be used for positioning.</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -1029,7 +1029,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {string} oControlEvent.getParameters.domRef Dom reference of the object header' titleArrow to be used for positioning.
+ * @param {object} oControlEvent.getParameters.domRef Dom reference of the object header' titleArrow to be used for positioning.
  * @public
  */
  
@@ -1075,7 +1075,7 @@ sap.m.ObjectHeader.M_EVENTS = {'titlePress':'titlePress','introPress':'introPres
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'domRef' of type <code>string</code> Dom reference of the object header' titleArrow to be used for positioning.</li>
+ * <li>'domRef' of type <code>object</code> Dom reference of the object header' titleArrow to be used for positioning.</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.

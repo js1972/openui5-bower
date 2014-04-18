@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -680,20 +680,32 @@ sap.m.Toolbar.prototype.removeAllContent = function() {
 	return aContents;
 };
 
-// handle press event
+// handle tap for active toolbar, do nothing if already handled
 sap.m.Toolbar.prototype.ontap = function(oEvent) {
-	this.getActive() && this.firePress({
-		srcControl : oEvent.srcControl || this
-	});
+	if (this.getActive() && !oEvent.isMarked()) {
+		oEvent.setMarked();
+		this.firePress({
+			srcControl : oEvent.srcControl || this
+		});
+	}
 };
 
-// keyboard handling mimic the tap/click event
-sap.m.Toolbar.prototype.onsapenter = sap.m.Toolbar.prototype.ontap;
-sap.m.Toolbar.prototype.onsapspace = sap.m.Toolbar.prototype.ontap;
+// fire press event when enter is hit on the active toolbar
+sap.m.Toolbar.prototype.onsapenter = function(oEvent) {
+	if (this.getActive() && oEvent.srcControl === this) {
+		oEvent.setMarked();
+		this.firePress({
+			srcControl : this
+		});
+	}
+};
 
+// keyboard space handling mimic the enter event
+sap.m.Toolbar.prototype.onsapspace = sap.m.Toolbar.prototype.onsapenter;
+
+// mark to inform active handling is done by toolbar
 sap.m.Toolbar.prototype.ontouchstart = function(oEvent) {
-	// for control who need to know if they should handle touch events of toolbar
-	oEvent.originalEvent._sapui_handledByControl = this.getActive();
+	this.getActive() && oEvent.setMarked();
 };
 
 // Reset the overflow add mark with classname if overflows

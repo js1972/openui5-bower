@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -505,6 +505,7 @@ jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
 jQuery.sap.require("jquery.sap.events");
 jQuery.sap.require("jquery.sap.keycodes");
 jQuery.sap.require("sap.ui.core.ResizeHandler");
+jQuery.sap.require("sap.ui.core.Popup");
 
 
 sap.ui.commons.Splitter.prototype.onBeforeRendering = function() {
@@ -787,10 +788,15 @@ sap.ui.commons.Splitter.prototype.onmousedown = function(oEvent) {
 	else {
 		cssClass = "sapUiHSBGhost";
 	}
+	
+	var iZIndex = sap.ui.core.Popup.getLastZIndex() + 5;
+	if (iZIndex < 20) {
+		iZIndex = 20;
+	}	
 
 	jQuery(document.body).append(
 			"<div id=\"" + this.getId() + "_ghost\" class=\"" + cssClass + "\" style =\" height:" + height + "px; width:"
-			+ width + "px; left:" + offset.left + "px; top:" + offset.top + "px\" ></div>");
+			+ width + "px; left:" + offset.left + "px; top:" + offset.top + "px;z-index:" + iZIndex + "\"></div>");
 
 	// append overlay over splitter to enable correct functionality of moving the splitter
 	jQuery(this.splitterDIV).append(

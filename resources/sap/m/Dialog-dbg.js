@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1061,7 +1061,7 @@ sap.m.Dialog.prototype.init = function(){
 	this._iVMargin = 16;
 	
 	// used to judge if enableScrolling needs to be disabled
-	this._scrollContentList = [sap.m.NavContainer, sap.m.Page, sap.m.ScrollContainer];
+	this._scrollContentList = ["NavContainer", "Page", "ScrollContainer"];
 	
 	this.oPopup = new sap.ui.core.Popup();
 	this.oPopup.setShadow(true);
@@ -1523,12 +1523,12 @@ sap.m.Dialog.prototype._setDimensions = function() {
 				"right": "0px",
 				"bottom": "0px",
 				"width": iWindowWidth + "px",
+				"min-width": iWindowWidth + "px",
 				"max-height": iWindowHeight + "px"
 			});
 		}else{
 			iMinWidth = 400;
 			$this.css({
-				"min-width": iMinWidth + "px",
 				"max-width": (this._bMessageType ? 480 : iMaxWidth) + "px",
 				"max-height": iMaxHeight + "px"
 			});
@@ -1673,7 +1673,7 @@ sap.m.Dialog.prototype._reposition = function() {
 		return;
 	}
 	
-	this._repositionAfterOpen();
+	this._fnRepositionAfterOpen();
 };
 
 sap.m.Dialog.prototype._repositionAfterOpen = function(){
@@ -1709,7 +1709,7 @@ sap.m.Dialog.prototype._onResize = function(){
 		var iNewWidth = oResizeDomRef.offsetWidth,
 			iNewHeight = oResizeDomRef.offsetHeight;
 		if(that._iResizeDomWidth !== iNewWidth || that._iResizeDomHeight !== iNewHeight){
-			that._reposition();
+			that._fnOrientationChange();
 		}
 		that._sResizeTimer = null;
 		that._iResizeDomWidth = null;
@@ -1742,7 +1742,7 @@ sap.m.Dialog.prototype._hasSingleScrollableContent = function(){
 	
 	if(aContent.length === 1){
 		for(i = 0 ; i < this._scrollContentList.length ; i++){
-			if(aContent[0] instanceof this._scrollContentList[i]){
+			if(aContent[0] instanceof sap.m[this._scrollContentList[i]]){
 				return true;
 			}
 		}

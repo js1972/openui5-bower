@@ -81,6 +81,12 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 			if (!oItem.getEnabled()) {
 				oRM.addClass("sapMITBDisabled");
 			}
+
+			var sTooltip = oItem.getTooltip_AsString();
+			if (sTooltip) {
+				oRM.writeAttributeEscaped("title", sTooltip);
+			}
+
 			oRM.writeClasses();
 			oRM.write(">");
 			oRM.write("<div id='" + oItem.getId() + "-tab' class='sapMITBTab'>");
@@ -95,7 +101,7 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 				oRM.write("<div class='sapMITBHorizontalWrapper'>");
 			}
 			oRM.write("<span ");
-			oRM.addClass("sapMITBCount")
+			oRM.addClass("sapMITBCount");
 			oRM.writeClasses();
 			oRM.write(">");
 			if ((oItem.getCount() === "") && (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal)) {

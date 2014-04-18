@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -406,24 +406,25 @@ sap.ui.core.EnabledPropagator.call(sap.m.RadioButton.prototype);
  *
  * @private
  */
-sap.m.RadioButton.prototype.ontap = function(oEvent) {
-	if (this.getEnabled()) {
-		if (!this.getSelected()) {
-			this.setSelected(true);
-			this.fireSelect({selected:true});
-		}
-		var that = this;
-		//Sets focus on the radiobutton when the label is clicked
-		if(oEvent.srcControl && oEvent.srcControl.getMetadata().getName() == "sap.m.Label") {
-			setTimeout(function() {
-				that.$().find(".sapMRbB").focus();
-			},0)
-		}
-	}else{
-		// readOnly or disabled -> don't allow browser to switch RadioButton on
-		//oEvent.preventDefault();
+sap.m.RadioButton.prototype.ontap = function() {
+	if (!this.getEnabled()) {
+		return;
 	}
+
+	this.$("Button").focus();
+
+	if (this.getSelected()) {
+		return;
+	}
+
+	this.setSelected(true);
+
+	var that = this;
+	setTimeout(function() {
+		that.fireSelect({selected:true});
+	}, 0);
 };
+
 /**
  * Function is called when radiobutton is being touched. Only necessary for Android/Black-Berry.
  *
@@ -557,4 +558,14 @@ sap.m.RadioButton.prototype.setTabIndex = function(iTabIndex) {
 	this._iTabIndex = iTabIndex;
 	this.$().find(".sapMRbB").attr("tabindex", iTabIndex);
 	return this;
+};
+
+sap.m.RadioButton.prototype.getFocusDomRef = function (oFocusInfo) {
+	//set the focus on the radio button wrapper
+	return this.getDomRef("Button");
+};
+
+sap.m.RadioButton.prototype.applyFocusInfo = function () {
+	//set the focus on the radio button wrapper
+	this.$("Button").focus();
 };

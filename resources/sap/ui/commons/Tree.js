@@ -18,7 +18,7 @@ sap.ui.commons.Tree.prototype.onsaphomemodifiers=function(e){this.placeFocus(thi
 sap.ui.commons.Tree.prototype.onsapend=function(e){this.placeFocus(this.getLastSibling(e.target));e.preventDefault()};
 sap.ui.commons.Tree.prototype.onsapendmodifiers=function(e){this.placeFocus(this.getLast());e.preventDefault()};
 sap.ui.commons.Tree.prototype.onsapcollapseall=function(e){if(this.bAllCollapsed){this.expandAll()}else{this.collapseAll()}this.bAllCollapsed=!this.bAllCollapsed};
-sap.ui.commons.Tree.prototype.getIconPrefix=function(){var i=jQuery.sap.getModulePath("sap.ui.commons",'/')+"themes/"+sap.ui.getCore().getConfiguration().getTheme();if(!sap.ui.getCore().getConfiguration().getRTL()){i+="/img/tree/"}else{i+="/img-RTL/tree/"}return i};
+sap.ui.commons.Tree.prototype.getIconPrefix=function(){var i="themes/"+sap.ui.getCore().getConfiguration().getTheme()+"/";if(!sap.ui.getCore().getConfiguration().getRTL()){i+="img/tree/"}else{i+="img-RTL/tree/"}return sap.ui.resource("sap.ui.commons",i)};
 sap.ui.commons.Tree.prototype.getFirstSibling=function(d){var D=jQuery(d).siblings(".sapUiTreeNode:visible").first();if(D.length){return D[0]}return null};
 sap.ui.commons.Tree.prototype.getLastSibling=function(d){var D=jQuery(d).siblings(".sapUiTreeNode:visible").last();if(D.length){return D[0]}return null};
 sap.ui.commons.Tree.prototype.getFirst=function(){var d=jQuery.sap.byId(this.getId()).find(".sapUiTreeNode:visible").first();if(d.length){return d[0]}return null};

@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.SplitContainer");
  * @extends sap.m.SplitContainer
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

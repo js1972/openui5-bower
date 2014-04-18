@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -718,16 +718,12 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 		that.fireSearch(oEvent.getParameters());
 	});
 	this.selectionModel.attachSelectionChanged(function(oEvent){
-		var oldSelectedIndex;
+		var oldSelectedIndex, newSelectedIndex;
 		var mParameters = oEvent.getParameters();
 		if (mParameters){
-			var newSelectedIndex = mParameters.leadIndex;
-			// if rowIndices are larger than 1, we have had a leadIndex before, otherwise the 
-			// first array entry contains the new value
-			if (mParameters.rowIndices && mParameters.rowIndices.length > 1){
-				var oldSelectedIndex = mParameters.rowIndices[0]
-			}
-		}
+			newSelectedIndex = mParameters.leadIndex;
+			oldSelectedIndex = mParameters.oldIndex;
+		} 
 		that.fireSelectionChanged({
 			oldLeadSelectedIndex: oldSelectedIndex,
 			newLeadSelectedIndex: newSelectedIndex

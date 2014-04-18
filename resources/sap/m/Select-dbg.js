@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1233,7 +1233,8 @@ sap.m.Select.prototype._initPopup = function() {
 		return;
 	}
 
-	this.getPopup().addStyleClass(sap.m.SelectRenderer.CSS_CLASS + "Popup")
+	this.getPopup().setHorizontalScrolling(false)
+					.addStyleClass(sap.m.SelectRenderer.CSS_CLASS + "Popup")
 					.attachBeforeOpen(this.onBeforeOpen, this)
 					.attachAfterOpen(this.onAfterOpen, this)
 					.attachBeforeClose(this.onBeforeClose, this)

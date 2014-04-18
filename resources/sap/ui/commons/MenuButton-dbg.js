@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.commons.Button");
  * @extends sap.ui.commons.Button
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

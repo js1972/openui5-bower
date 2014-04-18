@@ -9,5 +9,6 @@ sap.m.ColumnListItem.prototype.hasPopin=function(){return Boolean(this._popinId)
 sap.m.ColumnListItem.prototype.exit=function(){if(sap.m.ListItemBase.prototype.exit){sap.m.ListItemBase.prototype.exit.call(this)}this.destroyAggregation("clonedHeaders",true);return this.removePopin()};
 sap.m.ColumnListItem.prototype._activeHandlingInheritor=function(){this._toggleActiveClass(true)};
 sap.m.ColumnListItem.prototype._inactiveHandlingInheritor=function(){this._toggleActiveClass(false)};
+sap.m.ColumnListItem.prototype.setVisible=function(){sap.m.ListItemBase.prototype.setVisible.apply(this,arguments);if(!this.getVisible()){this.removePopin()}return this};
 sap.m.ColumnListItem.prototype._toggleActiveClass=function(s){if(this._popinId){jQuery.sap.byId(this._popinId).toggleClass("sapMLIBActive",s)}};
 sap.m.ColumnListItem.handleEvents=function(e,E,c){var $=jQuery(e.target).closest(".sapMListTblSubRow",c);if($.length){var C=sap.ui.getCore().byId($.prev().attr("id"));if(C){e.srcControl=sap.ui.getCore().byId(e.target.id)||C;if(C["on"+E]){C["on"+E](e)}}}};

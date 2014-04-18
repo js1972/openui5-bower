@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -303,6 +303,11 @@ jQuery.sap.require("jquery.sap.script");
 
 /**** API ****/
 
+/**
+ * Opens the ShellOverlay.
+ *
+ * @public
+ */
 sap.ui.unified.ShellOverlay.prototype.open = function(){
 	if(this._getPopup().isOpen()){
 		return;
@@ -329,6 +334,11 @@ sap.ui.unified.ShellOverlay.prototype.open = function(){
 	});
 };
 
+/**
+ * Closes the ShellOverlay.
+ *
+ * @public
+ */
 sap.ui.unified.ShellOverlay.prototype.close = function(){
 	if(!this._getPopup().isOpen()){
 		return;

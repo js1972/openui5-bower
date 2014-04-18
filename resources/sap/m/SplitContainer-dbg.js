@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1674,15 +1674,10 @@ sap.m.SplitContainer.prototype.init = function() {
 		
 		this.setAggregation("_navMaster", this._oMasterNav, true);
 		this.setAggregation("_navDetail", this._oDetailNav, true);
-		
+
 		//initialize the navigation button
-		this._oShowMasterBtn = new sap.m.Button(this.getId() + "-MasterBtn", {
-			text: (sap.ui.Device.os.ios && this._isPlatformDependent) ? this._rb.getText("SPLITCONTAINER_NAVBUTTON_TEXT") : "",
-			icon: !this._isPlatformDependent ? sap.ui.core.IconPool.getIconURI("menu2") : "",
-			type: (sap.ui.Device.os.ios || !this._isPlatformDependent) ? sap.m.ButtonType.Default : sap.m.ButtonType.Up,
-			press: jQuery.proxy(this._onMasterButtonTap, this)
-		}).addStyleClass("sapMSplitContainerMasterBtn"); 
-		
+		this._createShowMasterButton();
+
 		//initialize the popover
 		this._oPopOver = new sap.m.Popover(this.getId() + "-Popover", {
 			placement: sap.m.PlacementType.Bottom,
@@ -1819,13 +1814,17 @@ sap.m.SplitContainer.prototype.ontap = function(oEvent) {
 		bIsMasterNav = false;
 	}
 
-	// when press not in MasterNav, master will be hidden
+	// when press not in MasterNav and not the showMasterButton, master will be hidden
 	// this should happen when:
 	// 1. showhidemode in portrait
 	// 2. hidemode
 	if(((!this._oldIsLandscape && this.getMode() == "ShowHideMode") || this.getMode() == "HideMode")
+			// press isn't occuring in master area
 			&& !bIsMasterNav
-			&& this._bMasterisOpen){
+			// master is open
+			&& this._bMasterisOpen
+			// press isn't triggered by the showMasterButton
+			&& !jQuery.sap.containsOrEquals(this._oShowMasterBtn.getDomRef(), oEvent.target)){
 		this.hideMaster();
 	}
 };
@@ -2614,6 +2613,19 @@ sap.m.SplitContainer.prototype._hideMode = function() {
 	return this.getMode() === "HideMode" && !sap.ui.Device.system.phone;
 };
 
+sap.m.SplitContainer.prototype._createShowMasterButton = function() {
+	if (this._oShowMasterBtn && !this._oShowMasterBtn.bIsDestroyed) {
+		return;
+	}
+
+	this._oShowMasterBtn = new sap.m.Button(this.getId() + "-MasterBtn", {
+		text: (sap.ui.Device.os.ios && this._isPlatformDependent) ? this._rb.getText("SPLITCONTAINER_NAVBUTTON_TEXT") : "",
+		icon: !this._isPlatformDependent ? sap.ui.core.IconPool.getIconURI("menu2") : "",
+		type: (sap.ui.Device.os.ios || !this._isPlatformDependent) ? sap.m.ButtonType.Default : sap.m.ButtonType.Up,
+		press: jQuery.proxy(this._onMasterButtonTap, this)
+	}).addStyleClass("sapMSplitContainerMasterBtn");
+};
+
 sap.m.SplitContainer.prototype._setMasterButton = function(oPage, fnCallBack) {
 	if(!oPage){
 		return;
@@ -2642,11 +2654,17 @@ sap.m.SplitContainer.prototype._setMasterButton = function(oPage, fnCallBack) {
 			}
 		}
 		if(!bIsSet) {
+			// showMasterBtn could have already be destroyed by destroying the customHeader of the previous page
+			// When this is the case, showMasterBtn will be instantiated again
+			this._createShowMasterButton();
+
 			this._oShowMasterBtn.removeStyleClass("sapMSplitContainerMasterBtnHidden");
+
 			if(!sap.ui.Device.os.ios && sIcon && this._isPlatformDependent){
 				sap.ui.getCore().byId(oPage.getId() + "-icon").addStyleClass("sapMSplitContainerHiddenChild");
 				this._oShowMasterBtn.setIcon(sIcon);
 			}
+
 			if(oPageHeader){
 				//if the header is empty in android, the title index has to be 1 since the back button needs to be the first item in the header
 				if(!sap.ui.Device.os.ios && this._isPlatformDependent && oContentLeft.length === 0) {

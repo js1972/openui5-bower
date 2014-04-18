@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.core.Element");
  *
  * @extends sap.ui.base.ManagedObject
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
  * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
  * @public

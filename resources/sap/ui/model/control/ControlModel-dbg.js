@@ -27,7 +27,7 @@ jQuery.sap.require("sap.ui.model.control.ControlPropertyBinding");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @name sap.ui.model.control.ControlModel

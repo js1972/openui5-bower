@@ -56,6 +56,8 @@ sap.m.CheckBoxRenderer.render = function(oRm, oCheckBox){
 
 	if (!bEnabled) {
 		oRm.addClass("sapMCbBgDis");
+	} else if(sap.ui.Device.system.desktop) {
+		oRm.addClass("sapMCbHoverable");
 	}
 
 	if (!oCheckBox.getActiveHandling()){

@@ -30,7 +30,7 @@ jQuery.sap.require("sap.ui.Global");
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.18.8
+//	 * @version 1.18.12
 //	 * @namespace
 //	 * @public
 //	 */

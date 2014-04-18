@@ -28,7 +28,7 @@ jQuery.sap.require("sap.ui.model.json.JSONTreeBinding");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData either the URL where to load the JSON from or a JS object
  * @constructor

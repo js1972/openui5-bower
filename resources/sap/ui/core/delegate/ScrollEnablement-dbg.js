@@ -47,7 +47,7 @@ jQuery.sap.require("sap.ui.base.Object");
 		 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 		 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 		 *
-		 * @version 1.18.8
+		 * @version 1.18.12
 		 * @constructor
 		 * @protected
 		 */
@@ -918,24 +918,16 @@ jQuery.sap.require("sap.ui.base.Object");
 					return oScroller;
 				}
 
-				function isNativeTouchScrollingSupported() {
-					// No touchend or touchmove in android default browser by scrolling:
-					// https://code.google.com/p/android/issues/detail?id=19827
-					// Android Chrome fires arbitrary touchcancel events:
-					// See https://code.google.com/p/chromium/issues/detail?id=260732
-					if( sap.ui.Device.os.android ||
-						sap.ui.Device.os.blackberry || // TODO: native scroll on BlackBerry
-						sap.ui.Device.os.ios && sap.ui.Device.os.version < 6) {
-						return false;
-					}
-					return true;
+				function isNativeScrollingSupported() {
+					// native scrolling on non-touch devices (desktop) without simulation and with nonTouchScrolling === "scrollbar"
+					return !sap.ui.Device.support.touch && !$.sap.simulateMobileOnDesktop && oConfig.nonTouchScrolling === "scrollbar";
 				}
 
 				// What library to use?
 				var sLib = "n";
 				if(oConfig.zynga){
 					sLib = "z";
-				} else if(oConfig.iscroll || !isNativeTouchScrollingSupported()){
+				} else if(!isNativeScrollingSupported()){
 					sLib = "i"; // iScroll
 				}
 

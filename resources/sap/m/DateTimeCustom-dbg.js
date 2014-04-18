@@ -41,7 +41,10 @@
 
 	// inject resources
 	$.sap.includeStyleSheet(sCssPath + "mobiscroll-core.css");
-	$.sap.require("sap.ui.thirdparty.mobiscroll.js.mobiscroll-core"); // do not 'calculate' dependency names or analyzer will ignore them
+
+	// do not 'calculate' dependency names or analyzer will ignore them
+	$.sap.require("sap.ui.thirdparty.mobiscroll.js.mobiscroll-core");
+	$.sap.require("sap.ui.thirdparty.mobiscroll.js.mobiscroll-scroller");
 	$.sap.require("sap.ui.thirdparty.mobiscroll.js.mobiscroll-datetime");
 
 	// get default settings
@@ -120,7 +123,7 @@
 		oSettings.theme = (oDevice.os.android) ? sOS + " light" : sOS;
 		$.sap.includeStyleSheet(sCssPath + "mobiscroll-" + sOS + ".css");
 		$.sap.require("sap.ui.thirdparty.mobiscroll.js.mobiscroll-" + sOS);
-		oSettings = $.extend({}, $.mobiscroll.themes[oSettings.theme].defaults, oSettings);
+		oSettings = $.extend({}, $.mobiscroll.themes[oSettings.theme], oSettings);
 	}
 
 	// enable instance management
@@ -320,12 +323,14 @@
 			if (sType == "Date") {
 				sFormat = this._convertDatePattern(sFormat);
 				$.extend(oConfig, {
+					timeWheels : "",
 					dateFormat : sFormat,
 					dateOrder : this._getLongDatePattern(sFormat.replace(/'.*?'/g, "")).replace(/[^ymd ]/ig, ""),
 				});
 			} else if (sType == "Time") {
 				sFormat = this._convertTimePattern(sFormat);
 				$.extend(oConfig, {
+					dateOrder : "",
 					timeFormat : sFormat,
 					timeWheels : sFormat.replace(/'.*?'/g, "").replace(/[^hisa]/ig, "")
 				});
@@ -336,7 +341,7 @@
 				$.extend(oConfig, {
 					dateFormat : sFormat,
 					dateOrder : this._getLongDatePattern(sFormat.replace(/'.*?'/g, "")).replace(/[^ymd ]/ig, ""),
-					rows :  this._getRowForDateTime(),
+					rows : this._getRowForDateTime(),
 					timeWheels : sFormat,
 					timeFormat : "",
 					separator : ""

@@ -34,6 +34,7 @@ jQuery.sap.require("sap.m.NavContainer");
  * You can also specify "transitionParameters" on a Route, to give the transition parameters.</br>
  * </br>
  * If you want to preserve the current view when navigating, but you want to navigate to it when nothing is displayed in the navContainer, you can set preservePageInSplitContainer = true</br>
+ * When the route that has this flag directly matches the pattern, the view will still be switched by the splitContainer.
  * </br>
  * @link {sap.m.NavContainer}
  * 
@@ -117,14 +118,12 @@ sap.m.routing.RouteMatchedHandler.prototype.getCloseDialogs = function () {
  * forwarded to the route's view container (done in _handleRouteMatched)
  * @private
  */
-sap.m.routing.RouteMatchedHandler.prototype._handleRoutePatternMatched = function(evt) {
-	var iTargetViewLevel = +evt.getParameter("config").viewLevel,
+sap.m.routing.RouteMatchedHandler.prototype._handleRoutePatternMatched = function(oEvent) {
+	var iTargetViewLevel = +oEvent.getParameter("config").viewLevel,
 		oHistory = sap.ui.core.routing.History.getInstance(),
 		bBack,
-		oParams,
-		navContainer,
 		//Only one navigation per NavContainer in the queue, it has to be the last one for the container
-		aResultingNavigations = this._createResultingNavigations();
+		aResultingNavigations = this._createResultingNavigations(oEvent.getParameter("name"));
 
 	this._closeDialogs();
 
@@ -145,12 +144,13 @@ sap.m.routing.RouteMatchedHandler.prototype._handleRoutePatternMatched = functio
  * queues up calls
  * @private
  */
-sap.m.routing.RouteMatchedHandler.prototype._onHandleRouteMatched = function(evt) {
+sap.m.routing.RouteMatchedHandler.prototype._onHandleRouteMatched = function(oEvent) {
 	this._aQueue.push({
-		oTargetControl : evt.getParameter("targetControl"),
-		oArguments : evt.getParameter("arguments"),
-		oConfig : evt.getParameter("config"),
-		oView : evt.getParameter("view")
+		oTargetControl : oEvent.getParameter("targetControl"),
+		oArguments : oEvent.getParameter("arguments"),
+		oConfig : oEvent.getParameter("config"),
+		oView : oEvent.getParameter("view"),
+		sRouteName : oEvent.getParameter("name")
 	});
 };
 
@@ -161,7 +161,7 @@ sap.m.routing.RouteMatchedHandler.prototype._onHandleRouteMatched = function(evt
  * Both transitions will be the same. 
  * @private
  */
-sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = function() {
+sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = function(sRouteName) {
 	var i,
 		bFoundTheCurrentNavigation,
 		oCurrentParams,
@@ -189,7 +189,8 @@ sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = functi
 		bPreservePageInSplitContainer = bIsSplitContainer &&
 										oCurrentParams.oConfig.preservePageInSplitContainer &&
 										//only switch the page if the container has a page in this aggregation
-										!!oCurrentContainer.getCurrentPage(oCurrentNavigation.bIsMasterPage);
+										oCurrentContainer.getCurrentPage(oCurrentNavigation.bIsMasterPage)
+										&& sRouteName !== oCurrentParams.sRouteName;
 
 		//Skip no nav container controls
 		if (!(bIsNavContainer || bIsSplitContainer) || !oView) {

@@ -16,7 +16,7 @@ jQuery.sap.require("jquery.sap.script");
  *
  * @class Metadata for a class.
  * @author Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @since 0.8.6
  * @public
  */

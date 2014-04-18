@@ -17,7 +17,7 @@ jQuery.sap.require("sap.ui.debug.PropertyList");
  * @class Central Class for the Debug Environment
  *
  * @author Martin Schaus, Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @private
  */
 sap.ui.debug.DebugEnv = function() {

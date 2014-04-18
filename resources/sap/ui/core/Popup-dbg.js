@@ -34,7 +34,6 @@ jQuery.sap.require("sap.ui.core.IntervalTrigger");
  * <strong>Since 1.12.3</strong> it is possible to add further DOM-element-ids that can get the focus
  * when 'autoclose' is enabled. E.g. the RichTextEditor with running TinyMCE uses this method to
  * be able to focus the Popups of the TinyMCE if the RichTextEditor runs within a Popup/Dialog etc.
- * (see 'onAfterRenderingTinyMCE' within the RichTextEditor)
  * 
  *  To provide an additional DOM-element that can get the focus the following should be done:
  * 	// create an object with the corresponding DOM-id
@@ -1098,7 +1097,7 @@ sap.ui.core.Popup.prototype.getContent = function() {
  * @param {sap.ui.core.Popup.Dock | object {left: {sap.ui.core.CSSSize}, top: {sap.ui.core.CSSSize}}} at specifies the point of the reference element to which the given Content should be aligned
  * @param {string | sap.ui.core.Control | DOMRef | jQuery | jQuery.Event} [of=document] specifies the reference element to which the given content should be aligned as specified in the other parameters
  * @param {string} [offset="0 0"] the offset relative to the docking point, specified as a string with space-separated pixel values (e.g. "0 10" to move the popup 10 pixels to the right). If the docking of both "my" and "at" are both RTL-sensitive ("begin" or "end"), this offset is automatically mirrored in the RTL case as well.
- * @param {string} defines how the position of an element should be adjusted in case it overflows the window in some direction.
+ * @param {string} [collision] defines how the position of an element should be adjusted in case it overflows the window in some direction. The valid values that refer to jQuery-UI's position parameters are "flip", "fit" and "none".
  * @return {sap.ui.core.Popup} <code>this</code> to allow method chaining
  * @public
  */
@@ -1701,6 +1700,10 @@ sap.ui.core.Popup.prototype._showBlockLayer = function() {
 	// push current z-index to stack
 	sap.ui.core.Popup.blStack.push(this._iZIndex - 2);
 	$BlockRef.css("z-index", this._iZIndex - 2).css("visibility","visible").show();
+
+	// prevent HTML page from scrolling
+	jQuery("html").addClass("sapUiBLyBack");
+
 };
 
 sap.ui.core.Popup.prototype._hideBlockLayer = function() {
@@ -1718,6 +1721,10 @@ sap.ui.core.Popup.prototype._hideBlockLayer = function() {
 		// the last dialog was closed so we can hide the block layer now
 		jQuery("#sap-ui-blocklayer-popup").css("visibility","inherit").hide();
 	}
+
+	// allow scrolling in HTML page
+	jQuery("html").removeClass("sapUiBLyBack");
+
 };
 
 //****************************************************

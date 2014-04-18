@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -327,6 +327,8 @@ sap.ui.unified.ContentSwitcher.prototype.init = function(){
 /**
  * Changes the currently active content to the other one. If content 1 is active, content 2 will
  * be activated and the other way around.
+ * 
+ * @public
  */
 sap.ui.unified.ContentSwitcher.prototype.switchContent = function() {
 	this.setActiveContent(this.getActiveContent() == 1 ? 2 : 1);

@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -685,6 +685,7 @@ sap.m.Carousel._ITEM_SELECTOR = ".sapMCrslItem";
 sap.m.Carousel._LEFTMOST_CLASS = "sapMCrslLeftmost";
 sap.m.Carousel._RIGHTMOST_CLASS = "sapMCrslRightmost";
 sap.m.Carousel._LATERAL_CLASSES = "sapMCrslLeftmost sapMCrslRightmost";
+sap.m.Carousel._bIE9 = (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10);
 
 /**
  * Initialize member variables which are needed later on.
@@ -716,10 +717,6 @@ sap.m.Carousel.prototype.exit = function() {
 		delete this._oMobifyCarousel;
 	}
 	
-	if (this._sResizeListenerId) {
-		sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
-		delete this._sResizeListenerId;
-	}
 	if(this._oArrowLeft) {
 		this._oArrowLeft.destroy();
 		delete this._oArrowLeft;
@@ -736,8 +733,12 @@ sap.m.Carousel.prototype.exit = function() {
 	this.$().off('afterSlide');
 	
 	this._cleanUpScrollContainer();
-	delete this._fnAdjustAfterResize;
-	delete this._aScrollContainers;
+	this._fnAdjustAfterResize = null;
+	this._aScrollContainers = null;
+	if(!sap.m.Carousel._bIE9 && this._$InnerDiv) {
+		jQuery(window).off("resize", this._fnAdjustAfterResize);
+	}
+	this._$InnerDiv = null;
 };
 
 /**
@@ -774,6 +775,9 @@ sap.m.Carousel.prototype.onBeforeRendering = function() {
 		sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
 		this._sResizeListenerId = null;
 	}
+	if(!sap.m.Carousel._bIE9 && this._$InnerDiv) {
+		jQuery(window).off("resize", this._fnAdjustAfterResize);
+	}
 	return this;
 };
 
@@ -795,6 +799,8 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 	this.$().carousel();
 	this._oMobifyCarousel = this.getDomRef()._carousel;
 	this._oMobifyCarousel.setLoop(this.getLoop());
+	this._oMobifyCarousel.setRTL(sap.ui.getCore().getConfiguration().getRTL());
+	
 	
 	
 	//Go to active page: this may be necessary after adding or
@@ -808,7 +814,7 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 				//First page is always shown as default
 				this.setAssociation("activePage", this.getPages()[0].getId(), true);
 			}
-		} else if(iIndex != 0) {
+		} else {
 			this._oMobifyCarousel.changeAnimation('sapMCrslNoTransition');
 			//mobify carousel is 1-based
 			this._oMobifyCarousel.move(iIndex + 1);
@@ -833,8 +839,12 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 				newActivePageId: sNewActivePageId});
 		}
 	}, this));
-	
-	this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this.$().find(sap.m.Carousel._INNER_SELECTOR)[0], this._fnAdjustAfterResize);
+	this._$InnerDiv = this.$().find(sap.m.Carousel._INNER_SELECTOR)[0];
+	if(sap.m.Carousel._bIE9) {
+		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this._$InnerDiv, this._fnAdjustAfterResize);
+	} else {
+		jQuery(window).on("resize", this._fnAdjustAfterResize);
+	}
 };
 
 
@@ -1123,9 +1133,10 @@ sap.m.Carousel.prototype._getNavigationArrow = function(sName) {
  */
 sap.m.Carousel.prototype._createScrollContainer = function(oPage) {
 	
-	var oContent = new sap.ui.core.HTML({
+	var cellClasses = oPage instanceof sap.m.Image ? "sapMCrslItemTableCell sapMCrslImg" : "sapMCrslItemTableCell",
+		oContent = new sap.ui.core.HTML({
 		content :	"<div class='sapMCrslItemTable'>" +
-						"<div class='sapMCrslItemTableCell'></div>" +
+						"<div class='" + cellClasses + "'></div>" +
 					"</div>",
 		afterRendering : function(e) {
 			var rm = sap.ui.getCore().createRenderManager();

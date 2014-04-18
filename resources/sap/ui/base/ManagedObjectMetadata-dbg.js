@@ -17,7 +17,7 @@ jQuery.sap.require("sap.ui.base.DataType");
  *
  * @class
  * @author Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @since 0.8.6
  */
 sap.ui.base.ManagedObjectMetadata = function(sClassName, oClassInfo) {

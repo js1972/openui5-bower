@@ -5,6 +5,7 @@
         inputClass: '',
         invalid: [],
         rtl: false,
+        showInput: true,
         group: false,
         groupLabel: 'Groups'
     };
@@ -86,7 +87,7 @@
             return w;
         }
 
-        function setVal(v, fill) {
+        function setVal(v, fill, change) {
             var value = [];
 
             if (multiple) {
@@ -97,6 +98,7 @@
                     sel.push(main[i]);
                     value.push(i);
                 }
+
                 input.val(sel.join(', '));
             } else {
                 input.val(v);
@@ -104,8 +106,11 @@
             }
 
             if (fill) {
-                prevent = true;
-                elm.val(value).change();
+                elm.val(value);
+                if (change) {
+                    prevent = true;
+                    elm.change();
+                }
             }
         }
 
@@ -123,7 +128,7 @@
                 }
 
                 if (inst.live) {
-                    setVal(val, true);
+                    setVal(val, true, true);
                 }
                 return false;
             }
@@ -153,7 +158,11 @@
 
         $('#' + id).remove();
 
-        input = $('<input type="text" id="' + id + '" class="' + s.inputClass + '" readonly />').insertBefore(elm);
+        input = $('<input type="text" id="' + id + '" class="' + s.inputClass + '" readonly />');
+
+        if (s.showInput) {
+            input.insertBefore(elm);
+        }
 
         $('option', elm).each(function () {
             main[$(this).attr('value')] = $(this).text();
@@ -175,7 +184,7 @@
                 inst.setValue(multiple ? elm.val() || [] : [elm.val()], true);
             }
             prevent = false;
-        }).hide().closest('.ui-field-contain').trigger('create');
+        }).addClass('dw-hsel').attr('tabindex', -1).closest('.ui-field-contain').trigger('create');
 
         // Extended methods
         // ---
@@ -184,7 +193,7 @@
             inst._setValue = inst.setValue;
         }
 
-        inst.setValue = function (d, fill, time, noscroll, temp, manual) {
+        inst.setValue = function (d, fill, time, noscroll, temp, change) {
             var value,
                 v = $.isArray(d) ? d[0] : d;
 
@@ -204,19 +213,19 @@
                 value = s.rtl ? [option, group.index()] : [group.index(), option];
                 if (gr !== prev) { // Need to regenerate wheels, if group changed
                     s.wheels = genWheels();
-                    inst.changeWheel([optIdx], undefined, manual);
+                    inst.changeWheel([optIdx]);
                     prev = gr + '';
                 }
             } else {
                 value = [option];
             }
 
-            inst._setValue(value, fill, time, noscroll, temp, manual);
+            inst._setValue(value, fill, time, noscroll, temp);
 
             // Set input/select values
             if (fill) {
                 var changed = multiple ? true : option !== elm.val();
-                setVal(main[option], changed);
+                setVal(main[option], changed, change);
             }
         };
 
@@ -291,17 +300,31 @@
                 } else {
                     option = inst.temp[optIdx];
                 }
-
                 var t = $('.dw-ul', dw).eq(optIdx);
                 $.each(s.invalid, function (i, v) {
                     $('.dw-li[data-val="' + v + '"]', t).removeClass('dw-v');
                 });
             },
+
             onBeforeShow: function (dw) {
+                if (multiple && s.counter) {
+                    s.headerText = function () {
+                        var length = 0;
+                        $.each(inst._selectedValues, function () {
+                            length++;
+                        });
+                        return length + " " + s.selectedText;
+                    };
+                }
                 s.wheels = genWheels();
                 if (s.group) {
                     inst.temp = s.rtl ? [option, group.index()] : [group.index(), option];
                 }
+            },
+            onClear: function (dw) {
+                inst._selectedValues = {};
+                input.val('');
+                $('.dwwl' + optIdx + ' .dw-li', dw).removeClass('dw-msel').removeAttr('aria-selected');
             },
             onMarkupReady: function (dw) {
                 dw.addClass('dw-select');
@@ -323,7 +346,7 @@
             },
             onValueTap: onTap,
             onSelect: function (v) {
-                setVal(v, true);
+                setVal(v, true, true);
                 if (s.group) {
                     inst.values = null;
                 }
@@ -345,7 +368,7 @@
             },
             onDestroy: function () {
                 input.remove();
-                elm.show();
+                elm.removeClass('dw-hsel').removeAttr('tabindex');
             }
         };
     };

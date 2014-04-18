@@ -58,7 +58,7 @@ jQuery.sap.require("sap.m.FlexBox");
  * @extends sap.m.FlexBox
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

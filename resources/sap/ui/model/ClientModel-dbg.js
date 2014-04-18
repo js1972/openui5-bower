@@ -30,7 +30,7 @@ jQuery.sap.require("sap.ui.model.ClientTreeBinding");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData URL where to load the data from
  * @constructor

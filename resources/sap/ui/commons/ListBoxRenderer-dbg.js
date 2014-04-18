@@ -13,7 +13,7 @@ jQuery.sap.require("jquery.sap.strings");
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -75,10 +75,18 @@ sap.ui.commons.ListBoxRenderer.render = function(oRenderManager, oListBox) {
 	rm.writeControlData(oListBox);
 	rm.writeAttribute("tabindex", "-1");
 
-	var width = oListBox.getWidth();
-	rm.addStyle("width", width);
+	var sWidth = oListBox.getWidth();
+	if (sWidth) {
+		rm.addStyle("width", sWidth);
+		var bDisplaySecondaryValues = oListBox.getDisplaySecondaryValues();
+		if (!bDisplaySecondaryValues) {
+			// if fixed width and no secondary values use table-layout:fixed; to enable text-overflow:ellipsis;
+			// not possible with secondary value because of auto width function of table not available with fixed layout
+			rm.addClass("sapUiLbxFixed");
+		}
+	}
 
-	if (!width || (width == "auto") || (width == "inherit")) {
+	if (!sWidth || (sWidth == "auto") || (sWidth == "inherit")) {
 		rm.addClass("sapUiLbxFlexWidth");
 	}
 
@@ -91,8 +99,12 @@ sap.ui.commons.ListBoxRenderer.render = function(oRenderManager, oListBox) {
 		sMinWidth = r.fixWidth(sMinWidth);
 		sMaxWidth = r.fixWidth(sMaxWidth);
 	}
-	rm.addStyle("min-width", sMinWidth);
-	rm.addStyle("max-width", sMaxWidth);
+	if (sMinWidth) {
+		rm.addStyle("min-width", sMinWidth);
+	}
+	if (sMaxWidth) {
+		rm.addStyle("max-width", sMaxWidth);
+	}
 
 	if (oListBox._bHeightInItems) {
 		if (oListBox._sTotalHeight != null) {
@@ -101,7 +113,10 @@ sap.ui.commons.ListBoxRenderer.render = function(oRenderManager, oListBox) {
 			// height will be calculated and set in onAfterRendering
 		}
 	} else {
-		rm.addStyle("height", oListBox.getHeight()); // "normal" CSS height
+		var sHeight = oListBox.getHeight();
+		if(sHeight){
+			rm.addStyle("height", sHeight); // "normal" CSS height
+		}
 	}
 	rm.writeStyles();
 

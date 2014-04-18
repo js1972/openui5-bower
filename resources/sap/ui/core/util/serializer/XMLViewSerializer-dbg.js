@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.thirdparty.vkbeautify");
  * @class XMLViewSerializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.XMLViewSerializer
  * @experimental Since 1.15.1. The XMLViewSerializer is still under construction, so some implementation details can be changed in future.
  */

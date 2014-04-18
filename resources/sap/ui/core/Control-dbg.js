@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  * @abstract
  * @author Martin Schaus, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.Control
  */
 sap.ui.core.Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {

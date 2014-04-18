@@ -15,7 +15,7 @@ jQuery.sap.declare("sap.ui.core.DeclarativeSupport");
  * @class Static class for enabling declarative UI support.  
  *
  * @author Peter Muessig, Tino Butz
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.7.0
  * @public
  */

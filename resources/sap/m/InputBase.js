@@ -12,6 +12,7 @@ sap.m.InputBase.prototype.exit=function(){delete this._$input;delete this._$labe
 sap.m.InputBase.prototype.getFocusDomRef=function(){return(this.getDomRef()?this._$input[0]:null)};
 sap.m.InputBase.prototype.getIdForLabel=function(){return this.getId()+'-inner'};
 sap.m.InputBase.prototype.ontouchstart=function(e){e.originalEvent._sapui_handledByControl=true};
+sap.m.InputBase.prototype.ontouchend=function(e){this._curpos=this._$input.cursorPos()};
 sap.m.InputBase.prototype.setValueState=function(v){var o=this.getValueState();v=this.validateProperty("valueState",v);if(v==o){return this}if(!this.getDomRef()){return this.setProperty("valueState",v)}var $=this.$();this.setProperty("valueState",v,true);if(o&&o!="None"){$.removeClass("sapMInputBase"+o);this._$input.removeClass("sapMInputBase"+o+"Inner")}if(v&&v!="None"){$.addClass("sapMInputBase"+v);this._$input.addClass("sapMInputBase"+v+"Inner")}var t=sap.ui.core.ValueStateSupport.enrichTooltip(this,this.getTooltip_AsString());this.$().attr("title",(t!==undefined?t:""));return this};
 sap.m.InputBase.prototype.setValue=function(v){v=this.validateProperty("value",v);v=this._getInputValue(v);if(v!=this.getValue()){this._lastValue=v;this.setProperty("value",v,true);if(this.getDomRef()&&this._$input.val()!=v){this._$input.val(v);this._setLabelVisibility();this._curpos=this._$input.cursorPos()}}return this};
 sap.m.InputBase.prototype.setWidth=function(w){this.setProperty("width",w,true);if(this.getDomRef()){this.$().css("width",this.getWidth())}return this};
@@ -25,4 +26,4 @@ sap.m.InputBase.prototype.onsapenter=function(e){if(sap.ui.Device.browser.intern
 sap.m.InputBase.prototype.onsapescape=function(e){var v=this.getValue();if(v!=this._lastValue){this.setValue(this._lastValue);if(this.fireLiveChange){this.fireLiveChange({newValue:this._lastValue})}}};
 sap.m.InputBase.prototype.getFocusInfo=function(){return{id:this.getId(),cursorPos:this._curpos}};
 sap.m.InputBase.prototype.applyFocusInfo=function(f){if(this.getDomRef()){sap.ui.core.Element.prototype.applyFocusInfo.call(this,f);this._$input.cursorPos(this._curpos)}return this};
-sap.m.InputBase.prototype.onfocusout=function(){if(sap.ui.Device.os.ios){var s=sap.m.getScrollDelegate(this);if(s){s.refresh()}}};
+sap.m.InputBase.prototype.onfocusout=function(e){if(sap.ui.Device.browser.internet_explorer){this._onChange(e)}if(sap.ui.Device.os.ios){var s=sap.m.getScrollDelegate(this);if(s){s.refresh()}}};

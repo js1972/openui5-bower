@@ -335,7 +335,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  *
  * @class Control Tree used for the Test Environment
  * @author SAPUI5 Designtime
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {sap.ui.core.Core}
  *            oCore the core instance to use for analysis
@@ -559,7 +559,7 @@ sap.ui.debug.Highlighter.prototype.hide = function() {
  * @class Central Class for the Test Environment
  *
  * @author SAPUI5 Designtime
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @private
  */

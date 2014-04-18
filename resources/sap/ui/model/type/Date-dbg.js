@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.core.format.DateFormat");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public

@@ -252,6 +252,14 @@ Mobify.UI.Carousel = (function($, Utils) {
         return this._bLoop;
     }
     
+    //setter and getter  for right-to-left mode
+    Carousel.prototype.setRTL = function(bRTL) {
+        this._bRTL = bRTL;
+    }
+    
+    Carousel.prototype.getRTL = function() {
+        return this._bRTL;
+    }
     //SAP MODIFICATION
     //added private changeAnimation function
     Carousel.prototype.changeAnimation = function(sTransitionClass, fnCallback, oCallbackContext, aCallbackParams) {
@@ -276,7 +284,7 @@ Mobify.UI.Carousel = (function($, Utils) {
     //SAP MODIFICATION
     //added resize function
     Carousel.prototype.resize = function() {
-    	this.changeAnimation('sapMCrslNoTransition');
+    	this.changeAnimation('sapMCrslHideNonActive');
     	
         var $current = this.$items.eq(this._index - 1);
 
@@ -308,17 +316,16 @@ Mobify.UI.Carousel = (function($, Utils) {
         	//SAP MODIFICATION BEGIN
             //add event handler flags
     		var oElement = jQuery(e.target).control(0);
-    		if(oElement instanceof sap.m.Slider || oElement instanceof sap.m.Switch) {
-    			//Make sure that swipe is executed for all controls except slider
-    			//and Switch, which themselves require horizontal swiping
+    		if(oElement instanceof sap.m.Slider || 
+    			oElement instanceof sap.m.Switch ||
+    			oElement instanceof sap.m.IconTabBar) {
+    			//Make sure that swipe is executed for all controls except those that
+    			//themselves require horizontal swiping
     			canceled = true;
     			return;
     		}
-    		e.originalEvent._sapui_handledByControl = true;
         	//SAP MODIFICATION END
         	
-            if (!has.touch) e.preventDefault();
-
             dragging = true;
             canceled = false;
 
@@ -369,9 +376,9 @@ Mobify.UI.Carousel = (function($, Utils) {
             if (!canceled && abs(dx) > opts.moveRadius) {
                 // Move to the next slide if necessary
                 if (dx > 0) {
-                    self.next();
+                	self.getRTL() ? self.prev() : self.next();
                 } else {
-                    self.prev();
+                	self.getRTL() ? self.next() : self.prev();
                 }
             } else {
                 // Reset back to regular position
@@ -382,7 +389,14 @@ Mobify.UI.Carousel = (function($, Utils) {
         }
 
         function click(e) {
-            if (dragThresholdMet) e.preventDefault();
+            if (dragThresholdMet) {
+            	e.preventDefault();
+            	//When 'dragThresholdMet' the carousel will switch to 
+            	//the next page. Therefore no other action shall be performed on 
+            	//the current page
+            	e.stopPropagation();
+            	e.setMarked();
+            }
         }
 
         $inner

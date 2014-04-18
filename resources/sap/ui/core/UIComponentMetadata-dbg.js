@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.core.ComponentMetadata");
  * @experimental Since 1.15.1. The Component concept is still under construction, so some implementation details can be changed in future.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.15.1
  */
 sap.ui.core.UIComponentMetadata = function(sClassName, oClassInfo) {

@@ -67,7 +67,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1109,7 +1109,7 @@ sap.m.Input.prototype._deregisterEvents = function(){
 
 	function destroySuggestionPopup(oInput){
 		if(oInput._oSuggestionPopup){
-			oInput._oSuggestionPopup.destory();
+			oInput._oSuggestionPopup.destroy();
 			oInput._oSuggestionPopup = null;
 		}
 	}
@@ -1340,7 +1340,7 @@ sap.m.Input.prototype._deregisterEvents = function(){
 	sap.m.Input.prototype.onfocusout = function(oEvent) {
 		this.$().removeClass("sapMInputFocused");
 		closeMessage(this);
-		sap.m.InputBase.prototype.onfocusout.apply(this);
+		sap.m.InputBase.prototype.onfocusout.apply(this, arguments);
 	};
 
 })();

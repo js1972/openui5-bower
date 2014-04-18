@@ -7,6 +7,8 @@
 // Provides default renderer for control sap.ui.commons.layout.BorderLayout
 jQuery.sap.declare("sap.ui.commons.layout.BorderLayoutRenderer");
 
+jQuery.sap.require("jquery.sap.encoder");
+
 /**
  * @class BorderLayout renderer.
  * @static
@@ -187,8 +189,8 @@ sap.ui.commons.layout.BorderLayoutRenderer = {};
 		}
 
 		// add overflow definition to the style-attribute value
-		oRm.addStyle("overflow-x", oArea.getOverflowX());
-		oRm.addStyle("overflow-y", oArea.getOverflowY());
+		oRm.addStyle("overflow-x", jQuery.sap.encodeHTML(oArea.getOverflowX() || ""));
+		oRm.addStyle("overflow-y", jQuery.sap.encodeHTML(oArea.getOverflowY() || ""));
 
 		// write alignment
 		var sAlign = oArea.getContentAlign();
@@ -199,7 +201,7 @@ sap.ui.commons.layout.BorderLayoutRenderer = {};
 				sAlign = "right";
 			}
 		}
-		oRm.addStyle("text-align", sAlign);
+		oRm.addStyle("text-align", jQuery.sap.encodeHTML(sAlign || ""));
 
 		oRm.writeClasses(oArea);
 		oRm.writeStyles();

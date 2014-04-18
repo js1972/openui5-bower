@@ -99,7 +99,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public

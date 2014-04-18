@@ -39,7 +39,7 @@ jQuery.sap.require("sap.ui.base.Interface");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -1128,18 +1128,24 @@ sap.ui.core.RenderManager.prototype.writeAccessibilityState = function(oElement,
  */
 sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttributes){
 	jQuery.sap.require("sap.ui.core.IconPool");
-	
+
 	var bIconURI = sap.ui.core.IconPool.isIconURI(sURI),
 		sStartTag = bIconURI ? "<span " : "<img ",
 		bTextNeeded = (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9),
 		sClasses, sProp, oIconInfo;
-	
+
 	if(typeof aClasses === "string"){
 		aClasses = [aClasses];	
 	}
-	
+
 	if(bIconURI){
 		oIconInfo = sap.ui.core.IconPool.getIconInfo(sURI);
+
+		if(!oIconInfo){
+			jQuery.sap.log.error("An unregistered icon: " + sURI + " is used in sap.ui.core.RenderManager's writeIcon method.");
+			return;
+		}
+
 		if(!aClasses){
 			aClasses = [];
 		}
@@ -1148,9 +1154,9 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			aClasses.push("sapUiIconMirrorInRTL")
 		}
 	}
-	
+
 	this.write(sStartTag);
-	
+
 	if(jQuery.isArray(aClasses) && aClasses.length){
 		sClasses = aClasses.join(" ");
 		this.write("class=\"" + sClasses + "\" ");
@@ -1171,7 +1177,7 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			src: sURI
 		}, mAttributes);
 	}
-	
+
 	if(typeof mAttributes === "object"){
 		for(sProp in mAttributes){
 			if(mAttributes.hasOwnProperty(sProp)){
@@ -1179,9 +1185,9 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			}
 		}
 	}
-	
+
 	this.write(bIconURI ? ">" : "/>");
-	
+
 	if(bIconURI){
 		bTextNeeded && this.write(oIconInfo.content);
 		this.write("</span>");

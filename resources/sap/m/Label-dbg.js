@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

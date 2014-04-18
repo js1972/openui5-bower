@@ -151,7 +151,7 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	rm.write(">");
 	rm.write("<div id='" + sId + "-paneBarOverflowWrapper' class='sapUiUx3ShellPaneOverflowWrapper'>");
 	rm.write("<span id='" + sId + "-paneBarOverflowText' class='sapUiUx3ShellPaneOverflowText sapUiUx3ShellPaneEntry'>");
-	rm.write(sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT.toUpperCase());
+	rm.write(sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON"));
 	rm.write("</span>"); // sapUiUx3ShellPaneOverflowText
 	rm.write("</div>"); // overflow-wrapper
 	rm.write("</div>"); // sapUiUx3ShellPaneOverflowButton

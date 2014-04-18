@@ -65,7 +65,7 @@ sap.m.CarouselRenderer.render = function(rm, oCarousel){
 	//do housekeeping
 	oCarousel._cleanUpScrollContainer();
 	
-	for ( var i = 0; i < iPageCount; i++) {
+	var fnRenderPage = function(oPage, iIndex) {
 		//item div
 		rm.write("<div class='sapMCrslItem");
 		if(sPageIndicatorPlacement === sap.m.PlacementType.Bottom) {
@@ -75,14 +75,18 @@ sap.m.CarouselRenderer.render = function(rm, oCarousel){
 			//Invisible element which is used to determine when desktop keyboard navigation
 			//has reached the FIRST focusable element of a page and went beyond. In that case, the controller
 			//will focus the last focusable element of the previous page
-			rm.write("<span class='sapMCrslFirstFE' pageIndex=\"" + i + "\" tabIndex=\"0\"/>");
-			rm.renderControl(oCarousel._createScrollContainer(aPages[i], i));
+			rm.write("<span class='sapMCrslFirstFE' pageIndex=\"" + iIndex + "\" tabIndex=\"0\"/>");
+			rm.renderControl(oCarousel._createScrollContainer(oPage, iIndex));
 			//Invisible element which is used to determine when desktop keyboard navigation
 			//has reached the LAST focusable element of a page and went beyond. In that case, the controller
 			//will focus the first focusable element of the next page
-			rm.write("<span class='sapMCrslLastFE' pageIndex=\"" + i + "\" tabIndex=\"0\"/>");
+			rm.write("<span class='sapMCrslLastFE' pageIndex=\"" + iIndex + "\" tabIndex=\"0\"/>");
 		rm.write("</div>");	
-	}
+	};
+	
+	//Render Pages
+	aPages.forEach(fnRenderPage);
+	
 	
 	rm.write("</div>");	
 	//inner div ends
@@ -125,8 +129,8 @@ sap.m.CarouselRenderer._renderPageIndicator = function(rm, iPageCount, bBottom){
 			(bBottom ? " sapMCrslBottomOffset" : "") +
 			"'>");
 	for ( var i = 1; i <= iPageCount; i++) {
-		//item anchor (not focusable)
-		rm.write("<a href='#' data-slide=" + i + " tabIndex=-1>" + i + "</a>");
+		//item span
+		rm.write("<span data-slide=" + i + ">" + i + "</span>");
 	}
 	rm.write("</div>");	
 };

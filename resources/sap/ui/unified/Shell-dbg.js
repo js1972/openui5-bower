@@ -35,7 +35,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getShowPane showPane} : boolean</li>
  * <li>{@link #getShowCurtain showCurtain} : boolean</li>
  * <li>{@link #getShowCurtainPane showCurtainPane} : boolean</li>
- * <li>{@link #getHeaderHiding headerHiding} : boolean</li></ul>
+ * <li>{@link #getHeaderHiding headerHiding} : boolean</li>
+ * <li>{@link #getSearchVisible searchVisible} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -64,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -82,7 +83,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 		"showPane" : {type : "boolean", group : "Appearance", defaultValue : null},
 		"showCurtain" : {type : "boolean", group : "Appearance", defaultValue : null, deprecated: true},
 		"showCurtainPane" : {type : "boolean", group : "Appearance", defaultValue : null, deprecated: true},
-		"headerHiding" : {type : "boolean", group : "Appearance", defaultValue : null}
+		"headerHiding" : {type : "boolean", group : "Appearance", defaultValue : null},
+		"searchVisible" : {type : "boolean", group : "Appearance", defaultValue : true}
 	},
 	defaultAggregation : "content",
 	aggregations : {
@@ -245,6 +247,33 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.Shell#setHeaderHiding
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>searchVisible</code>.
+ * If set to false, the search area (aggregation 'search') is hidden.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>searchVisible</code>
+ * @public
+ * @since 1.18
+ * @name sap.ui.unified.Shell#getSearchVisible
+ * @function
+ */
+
+/**
+ * Setter for property <code>searchVisible</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bSearchVisible  new value for property <code>searchVisible</code>
+ * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.18
+ * @name sap.ui.unified.Shell#setSearchVisible
  * @function
  */
 
@@ -575,7 +604,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Getter for aggregation <code>headItems</code>.<br/>
- * The buttons shown in the begin (left in left-to-right case) of the Shell header.
+ * The buttons shown in the begin (left in left-to-right case) of the Shell header. Currently max. 3 buttons are supported.
  * 
  * @return {sap.ui.unified.ShellHeadItem[]}
  * @public
@@ -656,7 +685,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Getter for aggregation <code>headEndItems</code>.<br/>
- * The buttons shown in the end (right in left-to-right case) of the Shell header.
+ * The buttons shown in the end (right in left-to-right case) of the Shell header. Currently max. 3 buttons are supported.
  * 
  * @return {sap.ui.unified.ShellHeadItem[]}
  * @public
@@ -856,39 +885,37 @@ sap.ui.unified.Shell.prototype.exit = function(){
 
 
 sap.ui.unified.Shell.prototype.onAfterRendering = function(){
-	var that = this;
-	jQuery.sap.byId(this.getId()+"-icon").bind("load", function(){that._refreshHeader();});
+	var that = this,
+		oIco = this.$("icon").get(0);
+	if(oIco && oIco.addEventListener){
+		oIco.addEventListener("load", function(){
+			that._refreshHeader();
+		});
+	}
 	
 	if(window.addEventListener && !sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE){
 		function headerFocus(oBrowserEvent){
 			var oEvent = jQuery.event.fix(oBrowserEvent);
-			if(jQuery.sap.containsOrEquals(jQuery.sap.domById(that.getId()+"-hdr"), oEvent.target)){
+			if(jQuery.sap.containsOrEquals(that.getDomRef("hdr"), oEvent.target)){
 				that._timedHideHeader(oEvent.type === "focus");
 			}
 		};
 		
-		var oHdr = jQuery.sap.domById(this.getId()+"-hdr");
+		var oHdr = this.getDomRef("hdr");
 		oHdr.addEventListener("focus", headerFocus, true);
 		oHdr.addEventListener("blur", headerFocus, true);
 	}
 	
-	this.onThemeChanged();
+	this._refreshAfterRendering();
 	
-	jQuery.sap.byId(this.getId()+"-hdr-center").toggleClass("sapUiUfdShellAnim", !this._noHeadCenterAnim);
+	this.$("hdr-center").toggleClass("sapUiUfdShellAnim", !this._noHeadCenterAnim);
 };
 
 
 sap.ui.unified.Shell.prototype.onThemeChanged = function(){
-	var oDom = this.getDomRef();
-	
-	if(!oDom){
-		return;
+	if(this._refreshAfterRendering() && this._headBeginRenderer){
+		this._headBeginRenderer.render(); //Refresh Company Logo
 	}
-	
-	this._repaint(oDom);
-	this._refreshHeader();
-	
-	this._timedHideHeader();
 };
 
 sap.ui.unified.Shell.prototype.onfocusin = function(oEvent) {
@@ -896,10 +923,10 @@ sap.ui.unified.Shell.prototype.onfocusin = function(oEvent) {
 	
 	if (oEvent.target.id === sId + "-curt-focusDummyOut") {
 		// Jump back to shell when you reach the end of the curtain
-		jQuery.sap.focus(jQuery.sap.byId(sId + "-hdrcntnt").firstFocusableDomRef());
+		jQuery.sap.focus(this.$("hdrcntnt").firstFocusableDomRef());
 	} else if (oEvent.target.id === sId + "-main-focusDummyOut") {
 		// Jump to the curtain if it is open (can only reached by tabbing back when curtain is open)
-		jQuery.sap.focus(jQuery.sap.byId(sId + "-curtcntnt").firstFocusableDomRef());
+		jQuery.sap.focus(this.$("curtcntnt").firstFocusableDomRef());
 	}
 };
 
@@ -1009,15 +1036,14 @@ sap.ui.unified.Shell.prototype.setShowCurtain = function(bShowCurtain){
 	return this._mod(function(bRendered){
 		return this.setProperty("showCurtain", bShowCurtain, bRendered);
 	}, function(){
-		var sId = this.getId();
-		jQuery.sap.byId(sId + "-main-focusDummyOut").attr("tabindex", bShowCurtain ? 0 : -1);
+		this.$("main-focusDummyOut").attr("tabindex", bShowCurtain ? 0 : -1);
 		this.$().toggleClass("sapUiUfdShellCurtainHidden", !bShowCurtain).toggleClass("sapUiUfdShellCurtainVisible", bShowCurtain);
 		
 		if(bShowCurtain){
 			var zIndex = sap.ui.core.Popup.getNextZIndex();
-			jQuery.sap.byId(sId+"-curt").css("z-index", zIndex+1);
-			jQuery.sap.byId(sId+"-hdr").css("z-index", zIndex+3);
-			jQuery.sap.byId(sId+"-brand").css("z-index", zIndex+7);
+			this.$("curt").css("z-index", zIndex+1);
+			this.$("hdr").css("z-index", zIndex+3);
+			this.$("brand").css("z-index", zIndex+7);
 			this.$().toggleClass("sapUiUfdShellCurtainClosed", false);
 		}
 		
@@ -1031,7 +1057,14 @@ sap.ui.unified.Shell.prototype.setShowCurtain = function(bShowCurtain){
 sap.ui.unified.Shell.prototype.setIcon = function(sIcon){
 	return this._mod(function(bRendered){
 		return this.setProperty("icon", sIcon, bRendered);
-	}, this._headEndRenderer);
+	}, this._headBeginRenderer);
+};
+
+
+sap.ui.unified.Shell.prototype.setSearchVisible = function(bSearchVisible){
+	return this._mod(function(bRendered){
+		return this.setProperty("searchVisible", !!bSearchVisible, bRendered);
+	}, this._headCenterRenderer);
 };
 
 
@@ -1212,7 +1245,7 @@ sap.ui.unified.Shell.prototype._timedHideHeader = function(bClearOnly){
 	}
 	
 	this._headerHidingTimer = jQuery.sap.delayedCall(this._iHeaderHidingDelay, this, function(){
-		if(this._isHeaderHidingActive() && this._iHeaderHidingDelay > 0 && !jQuery.sap.containsOrEquals(jQuery.sap.domById(this.getId()+"-hdr"), document.activeElement)){
+		if(this._isHeaderHidingActive() && this._iHeaderHidingDelay > 0 && !jQuery.sap.containsOrEquals(this.getDomRef("hdr"), document.activeElement)){
 			this._doShowHeader(false);
 		}
 	});
@@ -1235,9 +1268,9 @@ sap.ui.unified.Shell.prototype._timedCurtainClosed = function(bClearOnly){
 	
 	this._curtainClosedTimer = jQuery.sap.delayedCall(duration, this, function(){
 		this._curtainClosedTimer = null;
-		jQuery.sap.byId(this.getId()+"-curt").css("z-index", "");
-		jQuery.sap.byId(this.getId()+"-hdr").css("z-index", "");
-		jQuery.sap.byId(this.getId()+"-brand").css("z-index", "");
+		this.$("curt").css("z-index", "");
+		this.$("hdr").css("z-index", "");
+		this.$("brand").css("z-index", "");
 		this.$().toggleClass("sapUiUfdShellCurtainClosed", true);
 	});
 };
@@ -1267,18 +1300,25 @@ sap.ui.unified.Shell.prototype._refreshHeader = function(){
 	updateItems(this.getHeadItems());
 	updateItems(this.getHeadEndItems());
 	
-	var id = this.getId(),
-		isPhoneSize = jQuery("html").hasClass("sapUiMedia-Std-Phone"),
-		we = jQuery.sap.byId(this.getId()+"-hdr-end").outerWidth(),
-		wb = jQuery.sap.byId(id+"-hdr-begin").outerWidth(),
+	var isPhoneSize = jQuery("html").hasClass("sapUiMedia-Std-Phone"),
+		searchVisible = !this.$("hdr-search").hasClass("sapUiUfdShellHidden"),
+		$logo = this.$("icon");
+	
+	$logo.parent().toggleClass("sapUiUfdShellHidden", isPhoneSize && searchVisible);
+	
+	var	we = this.$("hdr-end").outerWidth(),
+		wb = this.$("hdr-begin").outerWidth(),
 		wmax = Math.max(we, wb),
-		begin = (isPhoneSize ? wb : wmax)+"px",
-		end = (isPhoneSize ? we : wmax)+"px";
+		begin = (isPhoneSize && searchVisible ? wb : wmax)+"px",
+		end = (isPhoneSize && searchVisible ? we : wmax)+"px";
 
-	jQuery.sap.byId(id+"-hdr-center").css({
+	this.$("hdr-center").css({
 		"left": this._rtl ? end : begin,
 		"right": this._rtl ? begin : end
 	});
+	
+	var pad = Math.max(4, Math.floor((this.$("hdrcntnt").height() - $logo.outerHeight())/2));
+	$logo.css("margin-top", pad + "px");
 };
 
 
@@ -1300,6 +1340,23 @@ sap.ui.unified.Shell.prototype._getIcon = function(){
 	
 	return ico || sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif');
 };
+
+
+sap.ui.unified.Shell.prototype._refreshAfterRendering = function(){
+	var oDom = this.getDomRef();
+	
+	if(!oDom){
+		return false;
+	}
+
+	this._repaint(oDom);
+	this._refreshHeader();
+	
+	this._timedHideHeader();
+	
+	return true;
+};
+
 
 sap.ui.unified.Shell.prototype._repaint = function(oDom){
 	if(sap.ui.Device.browser.webkit){

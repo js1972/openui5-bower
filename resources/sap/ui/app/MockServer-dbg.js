@@ -24,7 +24,7 @@ jQuery.sap.require("sap.ui.core.util.MockServer");
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @public
 	 * @name sap.ui.app.MockServer
 	 * @experimental Since 1.13.0. The mock server is still under construction, so some implementation details can be changed in future.

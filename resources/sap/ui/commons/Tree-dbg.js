@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -657,15 +657,15 @@ sap.ui.commons.Tree.prototype.onsapcollapseall = function(oEvent) {
  * @private
  */
 sap.ui.commons.Tree.prototype.getIconPrefix = function() {
-	var sIconPrefix		= jQuery.sap.getModulePath("sap.ui.commons", '/') + "themes/" + sap.ui.getCore().getConfiguration().getTheme();
+	var sIconPrefix = "themes/" + sap.ui.getCore().getConfiguration().getTheme() + "/";
 	
 	if(!sap.ui.getCore().getConfiguration().getRTL()){
-		sIconPrefix		+= "/img/tree/";
+		sIconPrefix		+= "img/tree/";
 	}
 	else{
-		sIconPrefix		+= "/img-RTL/tree/";
+		sIconPrefix		+= "img-RTL/tree/";
 	}
-	return sIconPrefix;
+	return sap.ui.resource("sap.ui.commons", sIconPrefix);
 };
 
 /**Returns the first Sibling tree node based on DOM Tree node provided

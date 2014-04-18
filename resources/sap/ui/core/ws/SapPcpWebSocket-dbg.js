@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.core.ws.WebSocket");
  * @class WebSocket class implementing the pcp-protocol
  * @extends sap.ui.core.ws.WebSocket
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.ws.SapPcpWebSocket
  */
 sap.ui.core.ws.WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket */ {

@@ -69,7 +69,7 @@
     "sapGroup_ContentBorderColor": "#a7a7a7",
     "sapGroup_FooterBackground": "#dddddd",
     "sapToolbar_Background": "#dddddd",
-    "sapToolbar_Separator": "#ffffff",
+    "sapToolbar_SeparatorColor": "#ffffff",
     "sapList_HeaderBackground": "#e0e0e0",
     "sapList_HeaderBorderColor": "#d5d5d5",
     "sapList_HeaderTextColor": "#323232",

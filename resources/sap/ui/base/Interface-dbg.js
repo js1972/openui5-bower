@@ -14,7 +14,7 @@ jQuery.sap.declare("sap.ui.base.Interface");
  *        only the defined functions will be visible, no internals of the class can be accessed.
  *
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @param {sap.ui.base.Object}
  *            oObject the instance that needs an interface created
  * @param {string[]}

@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -468,6 +468,11 @@ sap.m.InputBase.prototype.ontouchstart = function(oEvent) {
 	oEvent.originalEvent._sapui_handledByControl = true;
 };
 
+sap.m.InputBase.prototype.ontouchend = function(oEvent) {
+	// remember the cursor position as early as possible
+	this._curpos = this._$input.cursorPos();
+};
+
 sap.m.InputBase.prototype.setValueState = function(sValueState) {
 	var sOldValueState = this.getValueState();
 	sValueState = this.validateProperty("valueState", sValueState);
@@ -634,9 +639,18 @@ sap.m.InputBase.prototype.applyFocusInfo = function(oFocusInfo) {
 	return this;
 };
 
-sap.m.InputBase.prototype.onfocusout = function() {
+sap.m.InputBase.prototype.onfocusout = function(oEvent) {
+	// IE doesn't fire change event on blur sometimes
+	// set initial value empty, type some text
+	// hit Enter (actually here does not update internal value because does not fire change with enter)
+	// return back to initial value and then blur
+	// no change event is fired
+	if (sap.ui.Device.browser.internet_explorer) {
+		this._onChange(oEvent);
+	}
+
 	// ios Safari changes scrollTop, remove it in case of iScroll
-	if(sap.ui.Device.os.ios){
+	if (sap.ui.Device.os.ios) {
 		var oScrollDelegate = sap.m.getScrollDelegate(this);
 		if (oScrollDelegate) {
 			oScrollDelegate.refresh();

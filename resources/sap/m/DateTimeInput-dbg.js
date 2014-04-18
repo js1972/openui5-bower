@@ -60,7 +60,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -629,7 +629,7 @@ sap.m.DateTimeInput.prototype._showValue = function() {
 			pattern : this.getValueFormat()
 		}).parse(date);
 
-		if (+date == +sap.m.getInvalidDate()) {
+		if (!date) {
 			jQuery.sap.log.error( "Format Error: value property " + this.getValue()
 								+ " does not match with valueFormat " + this.getValueFormat()
 								+ " of " + this );

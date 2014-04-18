@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1041,7 +1041,8 @@ sap.m.NavContainer.prototype.to = function(pageId, transitionName, data, oTransi
 	
 			// render the page that should get visible
 			var oToPageDomRef;
-			if (!(oToPageDomRef = oToPage.getDomRef()) || sap.ui.core.RenderManager.isPreservedContent(oToPageDomRef)) {
+			
+			if (!(oToPageDomRef = oToPage.getDomRef()) || oToPageDomRef.parentNode != this.getDomRef() || sap.ui.core.RenderManager.isPreservedContent(oToPageDomRef)) {
 				oToPage.addStyleClass("sapMNavItemRendering");
 				jQuery.sap.log.debug("Rendering 'to' page '" + oToPage.toString() + "' for 'to' navigation");
 				var rm = sap.ui.getCore().createRenderManager();
@@ -1219,7 +1220,7 @@ sap.m.NavContainer.prototype._backTo = function(sType, backData, oTransitionPara
 			
 			// make sure the to-page is rendered
 			var oToPageDomRef;
-			if (!(oToPageDomRef = oToPage.getDomRef()) || sap.ui.core.RenderManager.isPreservedContent(oToPageDomRef)) {
+			if (!(oToPageDomRef = oToPage.getDomRef()) || oToPageDomRef.parentNode != this.getDomRef() || sap.ui.core.RenderManager.isPreservedContent(oToPageDomRef)) {
 				oToPage.addStyleClass("sapMNavItemRendering");
 				jQuery.sap.log.debug("Rendering 'to' page '" + oToPage.toString() + "' for back navigation");
 				var rm = sap.ui.getCore().createRenderManager();
@@ -1814,6 +1815,33 @@ sap.m.NavContainer.prototype.invalidate = function(oSource) {
 	}
 };
 
+sap.m.NavContainer.prototype.removePage = function(oPage) {
+	oPage = this.removeAggregation("pages", oPage);
+	
+	if (oPage) {
+		oPage.removeStyleClass("sapMNavItemHidden");
+		oPage.removeStyleClass("sapMNavItem");
+	}
+	
+	return oPage;
+};
+
+
+sap.m.NavContainer.prototype.removeAllPages = function() {
+	var aPages = this.getPages();
+	if (!aPages)	{
+		return [];
+	}
+	
+	for (var i = 0; i < aPages.length; i++) {
+		aPages[i].removeStyleClass("sapMNavItemHidden");
+		aPages[i].removeStyleClass("sapMNavItem");
+	}
+
+	return this.removeAllAggregation("pages");
+};
+
+
 sap.m.NavContainer.prototype.addPage = function(oPage) {
 	var aPages = this.getPages();
 	// Routing often adds an already existing page. ManagedObject would remove and re-add it because the order is affected, 
@@ -1822,10 +1850,12 @@ sap.m.NavContainer.prototype.addPage = function(oPage) {
 		return this;
 	}
 	
-	oPage.addStyleClass("sapMNavItem");
-	var iPreviousPageCount = aPages.length;
-	
 	this.addAggregation("pages", oPage, true);
+
+	// sapMNavItem must be added after addAggregation is called because addAggregation can lead
+	// to a removePage-call where the class is removed again.
+	oPage.addStyleClass("sapMNavItem"); 
+	var iPreviousPageCount = aPages.length;
 	
 	if (iPreviousPageCount === 0 && /* get the NEW pages count */ this.getPages().length === 1 && this.getDomRef()) { // the added page is the first and only page and has been newly added
 		this._ensurePageStackInitialized();
@@ -1836,10 +1866,12 @@ sap.m.NavContainer.prototype.addPage = function(oPage) {
 };
 
 sap.m.NavContainer.prototype.insertPage = function(oPage, iIndex) {
+	this.insertAggregation("pages", oPage, iIndex, true);
+
+	// sapMNavItem must be added after addAggregation is called because addAggregation can lead
+	// to a removePage-call where the class is removed again.
 	oPage.addStyleClass("sapMNavItem");
 	var iPreviousPageCount = this.getPages().length;
-	
-	this.insertAggregation("pages", oPage, iIndex, true);
 	
 	if (iPreviousPageCount === 0 && this.getPages().length === 1 && this.getDomRef()) { // the added page is the first and only page and has been newly added
 		this._ensurePageStackInitialized();

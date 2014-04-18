@@ -44,7 +44,7 @@ jQuery.sap.require("jquery.sap.strings");
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -248,18 +248,16 @@ jQuery.sap.require("jquery.sap.strings");
 	/*
 	 * Implements jQuery.sap.util.ResourceBundle.prototype.getText
 	 */
-	Bundle.prototype.getText = function(sKey, aArgs){
+	Bundle.prototype.getText = function(sKey, aArgs, bCustomBundle){
 		var sValue = null;
 		
 		// loop over the custom bundles before resolving this one
 		// lookup the custom resource bundles (last one first!)
 		for (var i = this.aCustomBundles.length - 1; i >= 0; i--) {
-			sValue = this.aCustomBundles[i].getText(sKey, aArgs);
-			// make sure that not the key is returned!
-			if (sValue && sValue.toString() !== sKey) {
+			sValue = this.aCustomBundles[i].getText(sKey, aArgs, true /* bCustomBundle */);
+			// value found - so return it!
+			if (sValue != null) {
 				return sValue; // found!
-			} else {
-				sValue = null;
 			}
 		}
 		
@@ -305,23 +303,26 @@ jQuery.sap.require("jquery.sap.strings");
 			}
 		}
 
-		if(typeof(sValue)!=="string"){
+		if(!bCustomBundle && typeof(sValue)!=="string"){
+			jQuery.sap.assert(false, "could not find any translatable text for key '" + sKey + "' in bundle '" + this.oUrlInfo.url + "'");
 			sValue = sKey;
 		}
 
-		if(aArgs){
-			sValue = jQuery.sap.formatMessage(sValue, aArgs);
-		}
+		if(typeof(sValue)==="string") {
+			if(aArgs){
+				sValue = jQuery.sap.formatMessage(sValue, aArgs);
+			}
 
-		if (this.bIncludeInfo) {
-			sValue = new String(sValue);
-			sValue.originInfo = {
-				source: "Resource Bundle",
-				url: this.oUrlInfo.url,
-				locale: this.sLocale,
-				key: sKey
-			};
-		}
+			if (this.bIncludeInfo) {
+				sValue = new String(sValue);
+				sValue.originInfo = {
+					source: "Resource Bundle",
+					url: this.oUrlInfo.url,
+					locale: this.sLocale,
+					key: sKey
+				};
+			}
+		} 
 
 		return sValue;
 	};

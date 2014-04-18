@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1284,7 +1284,9 @@ sap.ui.commons.TextField.extend("sap.ui.commons.SearchField.TF", {
     },
     
     renderInnerAttributes : function(oRM, oCtrl) {
-      oRM.writeAttribute("type", "search");
+    	if (!sap.ui.Device.os.ios) { //on iOS the input is not focused if type search
+    		oRM.writeAttribute("type", "search");
+    	}
       if(isMobile()){
         oRM.writeAttribute('autocapitalize', 'off');
         oRM.writeAttribute('autocorrect', 'off');
@@ -1542,7 +1544,9 @@ sap.ui.commons.ComboBox.extend("sap.ui.commons.SearchField.CB", {
     },
     
     renderInnerAttributes : function(oRM, oCtrl) {
-    	oRM.writeAttribute("type", "search");
+    	if (!sap.ui.Device.os.ios) { //on iOS the input is not focused if type search
+    		oRM.writeAttribute("type", "search");
+    	}
     	if(isMobile()){
     		oRM.writeAttribute('autocapitalize', 'off');
     		oRM.writeAttribute('autocorrect', 'off');

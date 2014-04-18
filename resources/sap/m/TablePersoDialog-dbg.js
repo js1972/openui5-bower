@@ -31,7 +31,7 @@ jQuery.sap.require("sap.m.Button");
  * @class Table Personalization Dialog
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.m.TablePersoDialog
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.TablePersoDialog */
@@ -85,11 +85,12 @@ sap.m.TablePersoDialog.prototype.init = function() {
 			customTextOn: " ",
 			customTextOff: " "
 		})
-	}).addStyleClass("sapMPersoDialog");
+	}).addStyleClass("sapMPersoDialogLI");
 
 	this._oDialog = new sap.m.Dialog({
 		title : this._oRb.getText("PERSODIALOG_COLUMNS_TITLE"),
-		stretch: jQuery.device.is.phone,
+		stretch: sap.ui.Device.system.phone,
+		horizontalScrolling: false,
 		content : new sap.m.List({
 			includeItemInSelection: true,
 			mode: sap.m.ListMode.SingleSelectMaster
@@ -131,8 +132,8 @@ sap.m.TablePersoDialog.prototype.init = function() {
 				that.fireCancel();
 			}
 		})
-	});
-
+	}).addStyleClass("sapMPersoDialog");
+	
 };
 
 /**

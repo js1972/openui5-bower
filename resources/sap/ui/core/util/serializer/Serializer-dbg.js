@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  * @class Serializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.Serializer
  * @experimental Since 1.15.1. The Serializer is still under construction, so some implementation details can be changed in future.
  */

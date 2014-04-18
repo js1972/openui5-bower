@@ -66,6 +66,7 @@ StandardListItem.css
 StandardTile.css
 Switch.css
 Table.css
+TablePersoDialog.css
 Text.css
 TextArea.css
 Tile.css

@@ -24,7 +24,7 @@ jQuery.sap.require("sap.ui.core.Core");
 	 *        feature - DO NOT USE IN PRODUCTIVE SCENARIOS!!
 	 *
 	 * @author Peter Muessig
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @private
 	 */
 	sap.ui.core.plugin.LessSupport = function() {
@@ -208,7 +208,9 @@ jQuery.sap.require("sap.ui.core.Core");
 		
 		// use the CSS file when the CSS file is newer or equal!
 		if (!bUseLess) {
-			delete oLink.title;
+			if (oLink.title) {
+				delete oLink.title;
+			}
 			oLink.href = sBaseUrl + fileName + ".css";
 			oLink.rel = "stylesheet";
 			this.unregisterLink(oLink);

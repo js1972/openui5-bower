@@ -8,7 +8,7 @@
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -788,7 +788,7 @@ if(typeof window.sap.ui !== "object"){
 			var info = null;
 			for(var i=0, len = aQueries.length; i < len; i++){
 				var q = aQueries[i];
-				if((q != _querysets[name].currentquery || infoOnly) && window.sap.ui.Device.media.matches(q.from, q.to, _querysets[name].unit)){
+				if((q != _querysets[name].currentquery || infoOnly) && device.media.matches(q.from, q.to, _querysets[name].unit)){
 					if(!infoOnly){
 						_querysets[name].currentquery = q;
 					}
@@ -1062,239 +1062,6 @@ if(typeof window.sap.ui !== "object"){
 		delete _querysets[sName];
 	};
 
-	
-//******** Orientation Detection ********
-	
-	/** 
-	 * Orientation Change Event API.
-	 * 
-	 * @namespace
-	 * @name sap.ui.Device.orientation
-	 * @public
-	 */
-
-	device.orientation = {};
-
-	/** 
-	 * Resize Event API.
-	 * 
-	 * @namespace
-	 * @name sap.ui.Device.resize
-	 * @public
-	 */
-	device.resize = {};
-	
-	/**
-	 * Registers the given handler to the orientation change event.
-	 * 
-	 * The handler has one map parameter <code>mParams</code>:
-	 * <ul>
-	 * <li>mParams.landscape: whether the orientation is currently landscape</li>
-	 * </ul>
-	 * 
-	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.orientation#attachHandler
-	 * @function
-	 * @public
-	 */
-	device.orientation.attachHandler = function(fnFunction, oListener){
-		attachEvent("orientation", fnFunction, oListener);
-	};
-
-	/**
-	 * Registers the given handler to the resize event.
-	 * 
-	 * The handler has one map parameter <code>mParams</code>:
-	 * <ul>
-	 * <li>mParams.height: new height of the window</li>
-	 * <li>mParams.width: new width of the window</li>
-	 * </ul>
-	 * 
-	 * @param {Function} fnFunction The function to call, when the resize event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.resize#attachHandler
-	 * @function
-	 * @public
-	 */
-	device.resize.attachHandler = function(fnFunction, oListener){
-		attachEvent("resize", fnFunction, oListener);
-	};
-	
-	/**
-	 * Deregisters a previously registered handler from the orientation change event.
-	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.orientation#detachHandler
-	 * @function
-	 * @public
-	 */
-	device.orientation.detachHandler = function(fnFunction, oListener){
-		detachEvent("orientation", fnFunction, oListener);
-	};
-
-	/**
-	 * Deregisters a previously registered handler from the resize event.
-	 * @param {Function} fnFunction The function to call, when the resize event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.resize#detachHandler
-	 * @function
-	 * @public
-	 */
-	device.resize.detachHandler = function(fnFunction, oListener){
-		detachEvent("resize", fnFunction, oListener);
-	};
-
-	function setOrientationInfo(oInfo){
-		oInfo.landscape = isLandscape(true);
-		oInfo.portrait = !oInfo.landscape;
-	};
-	
-	function handleOrientationChange(){
-		setOrientationInfo(device.orientation);
-		fireEvent("orientation", {landscape: device.orientation.landscape});
-	};
-	
-	function handleResizeChange(){
-		setResizeInfo(device.resize);
-		fireEvent("resize", {height: device.resize.height, width: device.resize.width});
-	};
-
-	function setResizeInfo(oInfo){
-		oInfo.width = windowSize()[0];
-		oInfo.height = windowSize()[1];
-	};
-	
-	function handleOrientationResizeChange(){
-		var wasL = window.sap.ui.Device.orientation.landscape;
-		var isL = isLandscape();
-		if(wasL != isL){
-			handleOrientationChange();
-		}
-		//throttle resize events because most browsers throw one or more resize events per pixel
-		//for every resize event inside the period from 150ms (starting from the first resize event),
-		//we only fire one resize event after this period
-		if (!iResizeTimeout) {
-			iResizeTimeout = window.setTimeout(handleResizeTimeout, 150);
-		}
-	};
-	
-	function handleResizeTimeout() {
-		handleResizeChange();
-		iResizeTimeout = null;
-	};
-
-	if (device.support.touch && device.support.orientation) {
-		//logic for mobile devices which support orientationchange (like ios, android, blackberry)
-		window.addEventListener("resize", handleMobileOrientationResizeChange, false);
-		window.addEventListener("orientationchange", handleMobileOrientationResizeChange, false);
-	} else {
-		if (window.addEventListener) {
-			//most desktop browsers and windows phone/tablet which not support orientationchange
-			window.addEventListener("resize", handleOrientationResizeChange, false);
-		} else {
-			//IE8
-			window.attachEvent("onresize", handleOrientationResizeChange);
-		}
-	}
-
-	var bOrientationchange = false;
-	var bResize = false;
-	var iOrientationTimeout;
-	var iResizeTimeout;
-	var iClearFlagTimeout;
-	var iWindowHeightOld = windowSize()[1];
-	var iWindowWidthOld = windowSize()[0];
-	var bKeyboardOpen = false;
-	var iLastResizeTime;
-	
-	function isLandscape(bFromOrientationChange){
-		if (device.support.touch && device.support.orientation) {
-			//if on screen keyboard is open and the call of this method is from orientation change listener, reverse the last value.
-			//this is because when keyboard opens on android device, the height can be less than the width even in portrait mode.
-			if(bKeyboardOpen && bFromOrientationChange){
-				return !device.orientation.landscape;
-			}
-			//when keyboard opens, the last orientation change value will be retured.
-			if(bKeyboardOpen){
-				return device.orientation.landscape;
-			}
-			//otherwise compare the width and height of window
-		} else {
-			//most desktop browsers and windows phone/tablet which not support orientationchange
-			if(device.support.matchmedia && device.support.orientation){
-				return !!window.matchMedia("(orientation: landscape)").matches;
-			}
-		}
-		var size = windowSize();
-		return size[0] > size[1];
-	};
-
-	function handleMobileOrientationResizeChange(evt) {
-		if (evt.type == "resize") {
-			var iWindowHeightNew = windowSize()[1];
-			var iWindowWidthNew = windowSize()[0];
-			var iTime = new Date().getTime();
-			//skip multiple resize events by only one orientationchange
-			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
-				return;
-			}
-			bResize = true;
-			//on mobile devices opening the keyboard on some devices leads to a resize event
-			//in this case only the height changes, not the width
-			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
-				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
-				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
-				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
-				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
-					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
-				}
-				handleResizeChange();
-			} else {
-				iWindowWidthOld = iWindowWidthNew;
-			}
-			iLastResizeTime = iTime;
-			iWindowHeightOld = iWindowHeightNew;
-			
-			if(iClearFlagTimeout){
-				window.clearTimeout(iClearFlagTimeout);
-				iClearFlagTimeout = null;
-			}
-			//Some Android build-in browser fires a resize event after the viewport is applied.
-			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
-			//a UI5 resize event will be fired with the wrong window size.
-			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
-		} else if (evt.type == "orientationchange") {
-			bOrientationchange = true;
-		}
-
-		if (iOrientationTimeout) {
-			clearTimeout(iOrientationTimeout);
-			iOrientationTimeout = null;
-		}
-		iOrientationTimeout = window.setTimeout(handleMobileTimeout, 50);
-	};
-	
-	function handleMobileTimeout() {
-		if (bOrientationchange && bResize) {
-			handleOrientationChange();
-			handleResizeChange();
-			bOrientationchange = false;
-			bResize = false;
-			if(iClearFlagTimeout){
-				window.clearTimeout(iClearFlagTimeout);
-				iClearFlagTimeout = null;
-			}
-		}
-		iOrientationTimeout = null;
-	};
-	
-	function clearFlags(){
-		bOrientationchange = false;
-		bResize = false;
-		iClearFlagTimeout = null;
-	};
-	
 //******** System Detection ********
 
 	/** 
@@ -1409,6 +1176,231 @@ if(typeof window.sap.ui !== "object"){
 	}
 	setSystem();
 
+//******** Orientation Detection ********
+	/** 
+	 * Orientation Change Event API.
+	 * 
+	 * @namespace
+	 * @name sap.ui.Device.orientation
+	 * @public
+	 */
+
+	device.orientation = {};
+
+	/** 
+	 * Resize Event API.
+	 * 
+	 * @namespace
+	 * @name sap.ui.Device.resize
+	 * @public
+	 */
+	device.resize = {};
+	
+	/**
+	 * Registers the given handler to the orientation change event.
+	 * 
+	 * The handler has one map parameter <code>mParams</code>:
+	 * <ul>
+	 * <li>mParams.landscape: whether the orientation is currently landscape</li>
+	 * </ul>
+	 * 
+	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.orientation#attachHandler
+	 * @function
+	 * @public
+	 */
+	device.orientation.attachHandler = function(fnFunction, oListener){
+		attachEvent("orientation", fnFunction, oListener);
+	};
+
+	/**
+	 * Registers the given handler to the resize event.
+	 * 
+	 * The handler has one map parameter <code>mParams</code>:
+	 * <ul>
+	 * <li>mParams.height: new height of the window</li>
+	 * <li>mParams.width: new width of the window</li>
+	 * </ul>
+	 * 
+	 * @param {Function} fnFunction The function to call, when the resize event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.resize#attachHandler
+	 * @function
+	 * @public
+	 */
+	device.resize.attachHandler = function(fnFunction, oListener){
+		attachEvent("resize", fnFunction, oListener);
+	};
+	
+	/**
+	 * Deregisters a previously registered handler from the orientation change event.
+	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.orientation#detachHandler
+	 * @function
+	 * @public
+	 */
+	device.orientation.detachHandler = function(fnFunction, oListener){
+		detachEvent("orientation", fnFunction, oListener);
+	};
+
+	/**
+	 * Deregisters a previously registered handler from the resize event.
+	 * @param {Function} fnFunction The function to call, when the resize event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.resize#detachHandler
+	 * @function
+	 * @public
+	 */
+	device.resize.detachHandler = function(fnFunction, oListener){
+		detachEvent("resize", fnFunction, oListener);
+	};
+
+	function setOrientationInfo(oInfo){
+		oInfo.landscape = isLandscape(true);
+		oInfo.portrait = !oInfo.landscape;
+	};
+	
+	function handleOrientationChange(){
+		setOrientationInfo(device.orientation);
+		fireEvent("orientation", {landscape: device.orientation.landscape});
+	};
+	
+	function handleResizeChange(){
+		setResizeInfo(device.resize);
+		fireEvent("resize", {height: device.resize.height, width: device.resize.width});
+	};
+
+	function setResizeInfo(oInfo){
+		oInfo.width = windowSize()[0];
+		oInfo.height = windowSize()[1];
+	};
+
+	function handleOrientationResizeChange(){
+		var wasL = device.orientation.landscape;
+		var isL = isLandscape();
+		if(wasL != isL){
+			handleOrientationChange();
+		}
+		//throttle resize events because most browsers throw one or more resize events per pixel
+		//for every resize event inside the period from 150ms (starting from the first resize event),
+		//we only fire one resize event after this period
+		if (!iResizeTimeout) {
+			iResizeTimeout = window.setTimeout(handleResizeTimeout, 150);
+		}
+	};
+
+	function handleResizeTimeout() {
+		handleResizeChange();
+		iResizeTimeout = null;
+	};
+
+	var bOrientationchange = false;
+	var bResize = false;
+	var iOrientationTimeout;
+	var iResizeTimeout;
+	var iClearFlagTimeout;
+	var iWindowHeightOld = windowSize()[1];
+	var iWindowWidthOld = windowSize()[0];
+	var bKeyboardOpen = false;
+	var iLastResizeTime;
+	var rInputTagRegex = /INPUT|TEXTAREA|SELECT/;
+	var bIPhone7_0_XSafari = device.system.phone && device.os.ios && device.os.version >= 7 && device.os.version < 7.1 && device.browser.name === "sf";
+	
+	function isLandscape(bFromOrientationChange){
+		if (device.support.touch && device.support.orientation) {
+			//if on screen keyboard is open and the call of this method is from orientation change listener, reverse the last value.
+			//this is because when keyboard opens on android device, the height can be less than the width even in portrait mode.
+			if(bKeyboardOpen && bFromOrientationChange){
+				return !device.orientation.landscape;
+			}
+			//when keyboard opens, the last orientation change value will be retured.
+			if(bKeyboardOpen){
+				return device.orientation.landscape;
+			}
+			//otherwise compare the width and height of window
+		} else {
+			//most desktop browsers and windows phone/tablet which not support orientationchange
+			if(device.support.matchmedia && device.support.orientation){
+				return !!window.matchMedia("(orientation: landscape)").matches;
+			}
+		}
+		var size = windowSize();
+		return size[0] > size[1];
+	};
+
+	function handleMobileOrientationResizeChange(evt) {
+		if (evt.type == "resize") {
+			// supress the first invalid resize event fired before orientationchange event while keyboard is open on iPhone 7.0.x
+			// because this event has wrong size infos
+			if (bIPhone7_0_XSafari && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
+				return;
+			}
+
+			var iWindowHeightNew = windowSize()[1];
+			var iWindowWidthNew = windowSize()[0];
+			var iTime = new Date().getTime();
+			//skip multiple resize events by only one orientationchange
+			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
+				return;
+			}
+			bResize = true;
+			//on mobile devices opening the keyboard on some devices leads to a resize event
+			//in this case only the height changes, not the width
+			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
+				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
+				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
+				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
+				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
+					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				}
+				handleResizeChange();
+			} else {
+				iWindowWidthOld = iWindowWidthNew;
+			}
+			iLastResizeTime = iTime;
+			iWindowHeightOld = iWindowHeightNew;
+			
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+			//Some Android build-in browser fires a resize event after the viewport is applied.
+			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
+			//a UI5 resize event will be fired with the wrong window size.
+			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
+		} else if (evt.type == "orientationchange") {
+			bOrientationchange = true;
+		}
+
+		if (iOrientationTimeout) {
+			clearTimeout(iOrientationTimeout);
+			iOrientationTimeout = null;
+		}
+		iOrientationTimeout = window.setTimeout(handleMobileTimeout, 50);
+	};
+	
+	function handleMobileTimeout() {
+		if (bOrientationchange && bResize) {
+			handleOrientationChange();
+			handleResizeChange();
+			bOrientationchange = false;
+			bResize = false;
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+		}
+		iOrientationTimeout = null;
+	};
+	
+	function clearFlags(){
+		bOrientationchange = false;
+		bResize = false;
+		iClearFlagTimeout = null;
+	};
+
 //******** Update browser settings for test purposes ********
 
 	device._update = function(_simMobileOnDesktop) {
@@ -1423,10 +1415,25 @@ if(typeof window.sap.ui !== "object"){
 	
 	setResizeInfo(device.resize);
 	setOrientationInfo(device.orientation);
-	
+
 	//Add API to global namespace
 	window.sap.ui.Device = device;
-	
+
+	// Add handler for orientationchange and resize after initialization of Device API (IE8 fires onresize synchronously)
+	if (device.support.touch && device.support.orientation) {
+		//logic for mobile devices which support orientationchange (like ios, android, blackberry)
+		window.addEventListener("resize", handleMobileOrientationResizeChange, false);
+		window.addEventListener("orientationchange", handleMobileOrientationResizeChange, false);
+	} else {
+		if (window.addEventListener) {
+			//most desktop browsers and windows phone/tablet which not support orientationchange
+			window.addEventListener("resize", handleOrientationResizeChange, false);
+		} else {
+			//IE8
+			window.attachEvent("onresize", handleOrientationResizeChange);
+		}
+	}
+
 	//Always initialize the default media range set
 	device.media.initRangeSet();
 
@@ -18784,7 +18791,7 @@ window.vkbeautify = new vkbeautify();
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -19170,7 +19177,7 @@ window.vkbeautify = new vkbeautify();
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @namespace
 	 * @public
 	 * @static
@@ -24400,7 +24407,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -25387,7 +25394,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -25603,7 +25610,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -25640,7 +25647,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {
@@ -26757,7 +26764,7 @@ jQuery.sap.declare("sap.ui.base.Interface");
  *        only the defined functions will be visible, no internals of the class can be accessed.
  *
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @param {sap.ui.base.Object}
  *            oObject the instance that needs an interface created
  * @param {string[]}
@@ -26819,7 +26826,7 @@ jQuery.sap.declare("sap.ui.base.Metadata");
  *
  * @class Metadata for a class.
  * @author Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @since 0.8.6
  * @public
  */
@@ -27163,7 +27170,7 @@ jQuery.sap.declare("sap.ui.base.Object");
  * @class Base class for all SAPUI5 Objects
  * @abstract
  * @author Malte Wedel
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  * @name sap.ui.base.Object
  */
@@ -27353,7 +27360,7 @@ jQuery.sap.declare("sap.ui.base.ObjectPool");
  *
  * @extends sap.ui.base.Object
  * @author Malte Wedel
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.base.ObjectPool
  * @public
@@ -27527,7 +27534,7 @@ jQuery.sap.declare("sap.ui.core.DeclarativeSupport");
  * @class Static class for enabling declarative UI support.  
  *
  * @author Peter Muessig, Tino Butz
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.7.0
  * @public
  */
@@ -28125,7 +28132,7 @@ jQuery.sap.declare("sap.ui.core.History");
  *
  * @extends sap.ui.base.Object
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.core.History
  * @private
@@ -28258,8 +28265,8 @@ jQuery.sap.declare("sap.ui.core.IconPool");
 	if(sap.ui.core.IconPool){
 		return;
 	}
-	var aIconNames = ["accidental-leave","account","wrench","windows-doors","washing-machine","visits","video","travel-expense","temperature","task","synchronize","survey","settings","search","sales-document","retail-store","refresh","product","present","ppt-attachment","pool","pie-chart","picture","photo-voltaic","phone","pending","pdf-attachment","past","outgoing-call","opportunity","opportunities","notes","money-bills","map","log","line-charts","lightbulb","leads","lead","laptop","kpi-managing-my-area","kpi-corporate-performance","incoming-call","inbox","horizontal-bar-chart","history","heating-cooling","gantt-bars","future","fridge","fallback","expense-report","excel-attachment","energy-saving-lightbulb","employee","email","edit","duplicate","download","doc-attachment","dishwasher","delete","decline","complete","competitor","collections-management","chalkboard","cart","card","camera","calendar","begin","basket","bar-chart","attachment","arrow-top","arrow-right","arrow-left","arrow-bottom","approvals","appointment","alphabetical-order","along-stacked-chart","alert","addresses","address-book","add-filter","add-favorite","add","activities","action","accept","hint","group","check-availability","weather-proofing","payment-approval","batch-payments","bed","arobase","family-care","favorite","navigation-right-arrow","navigation-left-arrow","e-care","less","lateness","lab","internet-browser","instance","inspection","image-viewer","home","grid","goalseek","general-leave-request","create-leave-request","flight","filter","favorite-list","factory","endoscopy","employee-pane","employee-approvals","email-read","electrocardiogram","documents","decision","database","customer-history","customer","credit-card","create-entry-time","contacts","compare","clinical-order","chain-link","pull-down","cargo-train","car-rental","business-card","bar-code","folder-blank","passenger-train","question-mark","world","iphone","ipad","warning","sort","course-book","course-program","add-coursebook","print","save","play","pause","record","response","pushpin-on","pushpin-off","unfavorite","learning-assistant","timesheet","time-entry-request","list","action-settings","share","feed","role","flag","post","inspect","inspect-down","appointment-2","target-group","marketing-campaign","notification","comment","shipping-status","collaborate","shortcut","lead-outdated","tools-opportunity","permission","supplier","table-view","table-chart","switch-views","e-learning","manager","switch-classes","simple-payment","signature","sales-order-item","sales-order","request","receipt","puzzle","process","private","popup-window","person-placeholder","per-diem","paper-plane","paid-leave","pdf-reader","overview-chart","overlay","org-chart","number-sign","notification-2","my-sales-order","meal","loan","order-status","customer-order-entry","performance","menu","employee-lookup","education","customer-briefing","customer-and-contacts","my-view","accelerated","to-be-reviewed","warning2","feeder-arrow","quality-issue","workflow-tasks","create","home-share","globe","tags","work-history","x-ray","wounds-doc","web-cam","waiver","vertical-bar-chart","upstacked-chart","trip-report","microphone","unpaid-leave","tree","toaster-up","toaster-top","toaster-down","time-account","theater","taxi","subway-train","study-leave","stethoscope","step","sonography","soccor","physical-activity","pharmacy","official-service","offsite-work","nutrition-activity","newspaper","monitor-payments","map-2","machine","mri-scan","end-user-experience-monitoring","unwired","customer-financial-fact-sheet","retail-store-manager","Netweaver-business-client","electronic-medical-record","eam-work-order","customer-view","crm-service-manager","crm-sales","widgets","commission-check","collections-insight","clinical-tast-tracker","citizen-connect","cart-approval","capital-projects","bo-strategy-management","business-objects-mobile","business-objects-explorer","business-objects-experience","bbyd-dashboard","bbyd-active-sales","business-by-design","business-one","sap-box","manager-insight","accounting-document-verification","hr-approval","idea-wall","Chart-Tree-Map","cart-5","cart-4","wallet","vehicle-repair","upload","unlocked","umbrella","travel-request","travel-expense-report","travel-itinerary","time-overtime","thing-type","technical-object","tag","syringe","syntax","suitcase","simulate","shield","share-2","sales-quote","repost","provision","projector","add-product","pipeline-analysis","add-photo","palette","nurse","sales-notification","mileage","meeting-room","media-forward","media-play","media-pause","media-reverse","media-rewind","measurement-document","measuring-point","measure","map-3","locked","letter","journey-arrive","journey-change","journey-depart","it-system","it-instance","it-host","iphone-2","ipad-2","inventory","insurance-house","insurance-life","insurance-car","initiative","incident","group-2","goal","functional-location","full-screen","form","fob-watch","blank-tag","family-protection","folder","fax-machine","example","eraser","employee-rejections","drop-down-list","draw-rectangle","document","doctor","discussion-2","discussion","dimension","customer-and-supplier","crop","add-contact","compare-2","color-fill","collision","curriculum","chart-axis","full-stacked-chart","full-stacked-column-chart","vertical-bar-chart-2","horizontal-bar-chart-2","horizontal-stacked-chart","vertical-stacked-chart","choropleth-chart","geographic-bubble-chart","multiple-radar-chart","radar-chart","crossed-line-chart","multiple-line-chart","multiple-bar-chart","line-chart","line-chart-dual-axis","bubble-chart","scatter-chart","multiple-pie-chart","column-chart-dual-axis","tag-cloud-chart","area-chart","cause","cart-3","cart-2","bus-public-transport","burglary","building","border","bookmark","badge","attachment-audio","attachment-video","attachment-html","attachment-photo","attachment-e-pub","attachment-zip-file","attachment-text-file","add-equipment","add-activity","activity-individual","activity-2","add-activity-2","activity-items","activity-assigned-to-goal","status-completed","status-error","status-inactive","status-in-process","blank-tag-2","cart-full","locate-me","paging","company-view","document-text","explorer","personnel-view","sorting-ranking","drill-down","drill-up","vds-file","sap-logo-shape","folder-full","system-exit","system-exit-2","close-command-field","open-command-field","sys-enter-2","sys-enter","sys-help-2","sys-help","sys-back","sys-back-2","sys-cancel","sys-cancel-2","open-folder","sys-find-next","sys-find","sys-monitor","sys-prev-page","sys-first-page","sys-next-page","sys-last-page","generate-shortcut","create-session","display-more","enter-more","zoom-in","zoom-out","header","detail-view","collapse","expand","positive","negative","display","menu2","redo","undo","navigation-up-arrow","navigation-down-arrow","down","up","shelf","background","resize","move","show","hide","nav-back","error", "slim-arrow-right", "slim-arrow-left", "slim-arrow-down", "slim-arrow-up", "forward", "overflow", "value-help", "multi-select", "exit-full-screen"];
-	var aIconCodes = ["e000","e001","e002","e003","e004","e005","e006","e007","e008","e009","e00a","e00b","e00c","e00d","e00e","e00f","e010","e011","e012","e013","e014","e015","e016","e017","e018","e019","e01a","e01b","e01c","e01d","e01e","e01f","e020","e021","e022","e023","e024","e025","e026","e027","e028","e029","e02a","e02b","e02c","e02d","e02e","e02f","e030","e031","e032","e033","e034","e035","e036","e037","e038","e039","e03a","e03b","e03c","e03d","e03e","e03f","e040","e041","e042","e043","e044","e045","e046","e047","e048","e049","e04a","e04b","e04c","e04d","e04e","e04f","e050","e051","e052","e053","e054","e055","e056","e057","e058","e059","e05a","e05b","e05c","e05d","e05e","e05f","e060","e061","e062","e063","e064","e065","e066","e067","e068","e069","e06a","e06b","e06c","e06d","e06e","e06f","e070","e071","e072","e073","e074","e075","e076","e077","e078","e079","e07a","e07b","e07c","e07d","e07e","e07f","e080","e081","e082","e083","e084","e085","e086","e087","e088","e089","e08a","e08b","e08c","e08d","e08e","e08f","e090","e091","e092","e093","e094","e095","e096","e097","e098","e099","e09a","e09b","e09c","e09d","e09e","e09f","e0a0","e0a1","e0a2","e0a3","e0a4","e0a5","e0a6","e0a7","e0a8","e0a9","e0aa","e0ab","e0ac","e0ad","e0ae","e0af","e0b0","e0b1","e0b2","e0b3","e0b4","e0b5","e0b6","e0b7","e0b8","e0b9","e0ba","e0bb","e0bc","e0bd","e0be","e0bf","e0c0","e0c1","e0c2","e0c3","e0c4","e0c5","e0c6","e0c7","e0c8","e0c9","e0ca","e0cb","e0cc","e0cd","e0ce","e0cf","e0d0","e0d1","e0d2","e0d3","e0d4","e0d5","e0d6","e0d7","e0d8","e0d9","e0da","e0db","e0dc","e0dd","e0de","e0df","e0e0","e0e1","e0e2","e0e3","e0e4","e0e5","e0e6","e0e7","e0e8","e0e9","e0ea","e0eb","e0ec","e0ed","e0ee","e0ef","e0f0","e0f1","e0f2","e0f3","e0f4","e0f5","e0f6","e0f7","e0f8","e0f9","e0fa","e0fb","e0fc","e0fd","e0fe","e0ff","e100","e101","e102","e103","e104","e105","e106","e107","e108","e109","e10a","e10b","e10c","e10d","e10e","e10f","e110","e111","e112","e113","e114","e115","e116","e117","e118","e119","e11a","e11b","e11c","e11d","e11e","e11f","e120","e121","e122","e123","e124","e125","e126","e127","e128","e129","e12a","e12b","e12c","e12d","e12e","e12f","e130","e131","e132","e133","e134","e135","e136","e137","e138","e139","e13a","e13b","e13c","e13d","e13e","e13f","e140","e141","e142","e143","e144","e145","e146","e147","e148","e149","e14a","e14b","e14c","e14d","e14e","e14f","e150","e151","e152","e153","e154","e155","e156","e157","e158","e159","e15a","e15b","e15c","e15d","e15e","e15f","e160","e161","e162","e163","e164","e165","e166","e167","e168","e169","e16a","e16b","e16c","e16d","e16e","e16f","e170","e171","e172","e173","e174","e175","e176","e177","e178","e179","e17a","e17b","e17c","e17d","e17e","e17f","e180","e181","e182","e183","e184","e185","e186","e187","e188","e189","e18a","e18b","e18c","e18d","e18e","e18f","e190","e191","e192","e193","e194","e195","e196","e197","e198","e199","e19a","e19b","e19c","e19d","e19e","e19f","e1a0","e1a1","e1a2","e1a3","e1a4","e1a5","e1a6","e1a7","e1a8","e1a9","e1aa","e1ab","e1ac","e1ad","e1ae","e1af","e1b0","e1b1","e1b2","e1b3","e1b4","e1b5","e1b6","e1b7","e1b8","e1b9","e1ba","e1bb","e1bc","e1bd","e1be","e1bf","e1c0","e1c1","e1c2","e1c3","e1c4","e1c5","e1c6","e1c7","e1c8","e1c9","e1ca","e1cb","e1cc","e1cd","e1ce","e1cf","e1d0","e1d1","e1d2","e1d3","e1d4","e1d5","e1d6","e1d7","e1d8","e1d9","e1da","e1db","e1dc","e1dd","e1de","e1df","e1e0","e1e1","e1e2","e1e3","e1e4","e1e5","e1e6","e1e7","e1e8","e1e9","e1ea","e1eb","e1ec","e1ed", "e1ee", "e1ef", "e1f0", "e1f1", "e1f2", "e1f3", "e1f4", "e1f5"];
+	var aIconNames = ["accidental-leave","account","wrench","windows-doors","washing-machine","visits","video","travel-expense","temperature","task","synchronize","survey","settings","search","sales-document","retail-store","refresh","product","present","ppt-attachment","pool","pie-chart","picture","photo-voltaic","phone","pending","pdf-attachment","past","outgoing-call","opportunity","opportunities","notes","money-bills","map","log","line-charts","lightbulb","leads","lead","laptop","kpi-managing-my-area","kpi-corporate-performance","incoming-call","inbox","horizontal-bar-chart","history","heating-cooling","gantt-bars","future","fridge","fallback","expense-report","excel-attachment","energy-saving-lightbulb","employee","email","edit","duplicate","download","doc-attachment","dishwasher","delete","decline","complete","competitor","collections-management","chalkboard","cart","card","camera","calendar","begin","basket","bar-chart","attachment","arrow-top","arrow-right","arrow-left","arrow-bottom","approvals","appointment","alphabetical-order","along-stacked-chart","alert","addresses","address-book","add-filter","add-favorite","add","activities","action","accept","hint","group","check-availability","weather-proofing","payment-approval","batch-payments","bed","arobase","family-care","favorite","navigation-right-arrow","navigation-left-arrow","e-care","less","lateness","lab","internet-browser","instance","inspection","image-viewer","home","grid","goalseek","general-leave-request","create-leave-request","flight","filter","favorite-list","factory","endoscopy","employee-pane","employee-approvals","email-read","electrocardiogram","documents","decision","database","customer-history","customer","credit-card","create-entry-time","contacts","compare","clinical-order","chain-link","pull-down","cargo-train","car-rental","business-card","bar-code","folder-blank","passenger-train","question-mark","world","iphone","ipad","warning","sort","course-book","course-program","add-coursebook","print","save","play","pause","record","response","pushpin-on","pushpin-off","unfavorite","learning-assistant","timesheet","time-entry-request","list","action-settings","share","feed","role","flag","post","inspect","inspect-down","appointment-2","target-group","marketing-campaign","notification","comment","shipping-status","collaborate","shortcut","lead-outdated","tools-opportunity","permission","supplier","table-view","table-chart","switch-views","e-learning","manager","switch-classes","simple-payment","signature","sales-order-item","sales-order","request","receipt","puzzle","process","private","popup-window","person-placeholder","per-diem","paper-plane","paid-leave","pdf-reader","overview-chart","overlay","org-chart","number-sign","notification-2","my-sales-order","meal","loan","order-status","customer-order-entry","performance","menu","employee-lookup","education","customer-briefing","customer-and-contacts","my-view","accelerated","to-be-reviewed","warning2","feeder-arrow","quality-issue","workflow-tasks","create","home-share","globe","tags","work-history","x-ray","wounds-doc","web-cam","waiver","vertical-bar-chart","upstacked-chart","trip-report","microphone","unpaid-leave","tree","toaster-up","toaster-top","toaster-down","time-account","theater","taxi","subway-train","study-leave","stethoscope","step","sonography","soccor","physical-activity","pharmacy","official-service","offsite-work","nutrition-activity","newspaper","monitor-payments","map-2","machine","mri-scan","end-user-experience-monitoring","unwired","customer-financial-fact-sheet","retail-store-manager","Netweaver-business-client","electronic-medical-record","eam-work-order","customer-view","crm-service-manager","crm-sales","widgets","commission-check","collections-insight","clinical-tast-tracker","citizen-connect","cart-approval","capital-projects","bo-strategy-management","business-objects-mobile","business-objects-explorer","business-objects-experience","bbyd-dashboard","bbyd-active-sales","business-by-design","business-one","sap-box","manager-insight","accounting-document-verification","hr-approval","idea-wall","Chart-Tree-Map","cart-5","cart-4","wallet","vehicle-repair","upload","unlocked","umbrella","travel-request","travel-expense-report","travel-itinerary","time-overtime","thing-type","technical-object","tag","syringe","syntax","suitcase","simulate","shield","share-2","sales-quote","repost","provision","projector","add-product","pipeline-analysis","add-photo","palette","nurse","sales-notification","mileage","meeting-room","media-forward","media-play","media-pause","media-reverse","media-rewind","measurement-document","measuring-point","measure","map-3","locked","letter","journey-arrive","journey-change","journey-depart","it-system","it-instance","it-host","iphone-2","ipad-2","inventory","insurance-house","insurance-life","insurance-car","initiative","incident","group-2","goal","functional-location","full-screen","form","fob-watch","blank-tag","family-protection","folder","fax-machine","example","eraser","employee-rejections","drop-down-list","draw-rectangle","document","doctor","discussion-2","discussion","dimension","customer-and-supplier","crop","add-contact","compare-2","color-fill","collision","curriculum","chart-axis","full-stacked-chart","full-stacked-column-chart","vertical-bar-chart-2","horizontal-bar-chart-2","horizontal-stacked-chart","vertical-stacked-chart","choropleth-chart","geographic-bubble-chart","multiple-radar-chart","radar-chart","crossed-line-chart","multiple-line-chart","multiple-bar-chart","line-chart","line-chart-dual-axis","bubble-chart","scatter-chart","multiple-pie-chart","column-chart-dual-axis","tag-cloud-chart","area-chart","cause","cart-3","cart-2","bus-public-transport","burglary","building","border","bookmark","badge","attachment-audio","attachment-video","attachment-html","attachment-photo","attachment-e-pub","attachment-zip-file","attachment-text-file","add-equipment","add-activity","activity-individual","activity-2","add-activity-2","activity-items","activity-assigned-to-goal","status-completed","status-error","status-inactive","status-in-process","blank-tag-2","cart-full","locate-me","paging","company-view","document-text","explorer","personnel-view","sorting-ranking","drill-down","drill-up","vds-file","sap-logo-shape","folder-full","system-exit","system-exit-2","close-command-field","open-command-field","sys-enter-2","sys-enter","sys-help-2","sys-help","sys-back","sys-back-2","sys-cancel","sys-cancel-2","open-folder","sys-find-next","sys-find","sys-monitor","sys-prev-page","sys-first-page","sys-next-page","sys-last-page","generate-shortcut","create-session","display-more","enter-more","zoom-in","zoom-out","header","detail-view","collapse","expand","positive","negative","display","menu2","redo","undo","navigation-up-arrow","navigation-down-arrow","down","up","shelf","background","resize","move","show","hide","nav-back","error", "slim-arrow-right", "slim-arrow-left", "slim-arrow-down", "slim-arrow-up", "forward", "overflow", "value-help", "multi-select", "exit-full-screen", "sys-add", "sys-minus", "dropdown", "expand-group", "collapse-group"];
+	var aIconCodes = ["e000","e001","e002","e003","e004","e005","e006","e007","e008","e009","e00a","e00b","e00c","e00d","e00e","e00f","e010","e011","e012","e013","e014","e015","e016","e017","e018","e019","e01a","e01b","e01c","e01d","e01e","e01f","e020","e021","e022","e023","e024","e025","e026","e027","e028","e029","e02a","e02b","e02c","e02d","e02e","e02f","e030","e031","e032","e033","e034","e035","e036","e037","e038","e039","e03a","e03b","e03c","e03d","e03e","e03f","e040","e041","e042","e043","e044","e045","e046","e047","e048","e049","e04a","e04b","e04c","e04d","e04e","e04f","e050","e051","e052","e053","e054","e055","e056","e057","e058","e059","e05a","e05b","e05c","e05d","e05e","e05f","e060","e061","e062","e063","e064","e065","e066","e067","e068","e069","e06a","e06b","e06c","e06d","e06e","e06f","e070","e071","e072","e073","e074","e075","e076","e077","e078","e079","e07a","e07b","e07c","e07d","e07e","e07f","e080","e081","e082","e083","e084","e085","e086","e087","e088","e089","e08a","e08b","e08c","e08d","e08e","e08f","e090","e091","e092","e093","e094","e095","e096","e097","e098","e099","e09a","e09b","e09c","e09d","e09e","e09f","e0a0","e0a1","e0a2","e0a3","e0a4","e0a5","e0a6","e0a7","e0a8","e0a9","e0aa","e0ab","e0ac","e0ad","e0ae","e0af","e0b0","e0b1","e0b2","e0b3","e0b4","e0b5","e0b6","e0b7","e0b8","e0b9","e0ba","e0bb","e0bc","e0bd","e0be","e0bf","e0c0","e0c1","e0c2","e0c3","e0c4","e0c5","e0c6","e0c7","e0c8","e0c9","e0ca","e0cb","e0cc","e0cd","e0ce","e0cf","e0d0","e0d1","e0d2","e0d3","e0d4","e0d5","e0d6","e0d7","e0d8","e0d9","e0da","e0db","e0dc","e0dd","e0de","e0df","e0e0","e0e1","e0e2","e0e3","e0e4","e0e5","e0e6","e0e7","e0e8","e0e9","e0ea","e0eb","e0ec","e0ed","e0ee","e0ef","e0f0","e0f1","e0f2","e0f3","e0f4","e0f5","e0f6","e0f7","e0f8","e0f9","e0fa","e0fb","e0fc","e0fd","e0fe","e0ff","e100","e101","e102","e103","e104","e105","e106","e107","e108","e109","e10a","e10b","e10c","e10d","e10e","e10f","e110","e111","e112","e113","e114","e115","e116","e117","e118","e119","e11a","e11b","e11c","e11d","e11e","e11f","e120","e121","e122","e123","e124","e125","e126","e127","e128","e129","e12a","e12b","e12c","e12d","e12e","e12f","e130","e131","e132","e133","e134","e135","e136","e137","e138","e139","e13a","e13b","e13c","e13d","e13e","e13f","e140","e141","e142","e143","e144","e145","e146","e147","e148","e149","e14a","e14b","e14c","e14d","e14e","e14f","e150","e151","e152","e153","e154","e155","e156","e157","e158","e159","e15a","e15b","e15c","e15d","e15e","e15f","e160","e161","e162","e163","e164","e165","e166","e167","e168","e169","e16a","e16b","e16c","e16d","e16e","e16f","e170","e171","e172","e173","e174","e175","e176","e177","e178","e179","e17a","e17b","e17c","e17d","e17e","e17f","e180","e181","e182","e183","e184","e185","e186","e187","e188","e189","e18a","e18b","e18c","e18d","e18e","e18f","e190","e191","e192","e193","e194","e195","e196","e197","e198","e199","e19a","e19b","e19c","e19d","e19e","e19f","e1a0","e1a1","e1a2","e1a3","e1a4","e1a5","e1a6","e1a7","e1a8","e1a9","e1aa","e1ab","e1ac","e1ad","e1ae","e1af","e1b0","e1b1","e1b2","e1b3","e1b4","e1b5","e1b6","e1b7","e1b8","e1b9","e1ba","e1bb","e1bc","e1bd","e1be","e1bf","e1c0","e1c1","e1c2","e1c3","e1c4","e1c5","e1c6","e1c7","e1c8","e1c9","e1ca","e1cb","e1cc","e1cd","e1ce","e1cf","e1d0","e1d1","e1d2","e1d3","e1d4","e1d5","e1d6","e1d7","e1d8","e1d9","e1da","e1db","e1dc","e1dd","e1de","e1df","e1e0","e1e1","e1e2","e1e3","e1e4","e1e5","e1e6","e1e7","e1e8","e1e9","e1ea","e1eb","e1ec","e1ed", "e1ee", "e1ef", "e1f0", "e1f1", "e1f2", "e1f3", "e1f4", "e1f5", "e1f6", "e1f7", "e1f8", "e1f9", "e200"];
 	var mIconSuppressMirroring = {"chalkboard": true, "calendar": true, "alphabetical-order": true, "address-book": true, "hint": true, "payment-approval": true, "batch-payments": true, "arobase": true, "question-mark": true, "lead": true, "lead-outdated": true, "simple-payment": true, "sales-order-item": true, "sales-order": true, "per-diem": true, "paid-leave": true, "pdf-reader": true, "my-sales-order": true, "loan": true, "globe": true, "waiver": true, "unpaid-leave": true, "customer-financial-fact-sheet": true, "crm-sales": true, "commission-check": true, "collections-insight": true, "capital-projects": true, "business-one": true, "travel-expense": true, "travel-expense-report": true, "travel-request": true, "time-overtime": true, "sales-quote": true, "sales-notification": true, "incident": true, "money-bills": true, "sales-document": true, "opportunities": true, "expense-report": true, "monitor-payments": true, "widgets": true, "sys-help-2": true, "sys-help": true, "accept": true, "accounting-document-verification": true, "activities": true, "activity-2": true, "add-activity": true, "add-activity-2": true, "approvals": true, "bbyd-active-sales": true, "business-by-design": true, "cart-approval": true, "complete": true, "customer-order-entry": true, "employee-approvals": true, "hr-approval": true, "kpi-corporate-performance": true, "kpi-managing-my-area": true, "survey": true, "sys-enter": true, "sys-enter-2": true, "task": true};
 	var sapIconFamily = "SAP-icons";
 	var sProtocolName = "sap-icon";
@@ -28735,7 +28742,7 @@ jQuery.sap.declare("sap.ui.core.Locale");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.Locale
@@ -29023,7 +29030,7 @@ jQuery.sap.declare("sap.ui.core.Renderer");
  * @class Base Class for Renderer.
  *
  * @author Martin Schaus, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -29293,7 +29300,6 @@ jQuery.sap.declare("sap.ui.core.ThemeCheck");
 
 
 (function() {
-
 sap.ui._maxThemeCheckCycles = 100;
 
 /**
@@ -29316,7 +29322,7 @@ sap.ui.base.Object.extend("sap.ui.core.ThemeCheck", /** @lends sap.ui.core.Theme
 	constructor : function(oCore) {
 		this._oCore = oCore;
 		this._iCount = 0; // Prevent endless loop
-		this._CUSTOMCSSCHECK = ".sapUiThemeDesignerCustomCss";
+		this._CUSTOMCSSCHECK = /\.sapUiThemeDesignerCustomCss/i;
 		this._CUSTOMID = "sap-ui-core-customcss";
 		this._customCSSAdded = false;
 		this._themeCheckedForCustom = null;
@@ -29379,80 +29385,84 @@ function clear(oThemeCheck){
 	}
 }
 
-function checkTheme(oThemeCheck) {
-	var mLibs = oThemeCheck._oCore.getLoadedLibraries();
-	var sThemeName = oThemeCheck._oCore.getConfiguration().getTheme();
-	var sPath = oThemeCheck._oCore._getThemePath("sap.ui.core", sThemeName) + "custom.css";
-	var res = true;
-
-	if (!!oThemeCheck._customCSSAdded && oThemeCheck._themeCheckedForCustom === sThemeName){
-		// include custom style sheet here because it has already been added using jQuery.sap.includeStyleSheet
-		// hence, needs to be checked for successful inclusion, too
-		mLibs["sap-ui-theme-"+oThemeCheck._CUSTOMID] = {};
-	}
-
-	jQuery.each(mLibs, function(lib) {
-		res = res && sap.ui.core.ThemeCheck.checkStyle("sap-ui-theme-"+lib, true);
-		if (lib === "sap.ui.core" && res){
-			/* as soon as core css has been loaded, look if there is a flag for custom css inclusion inside, but only
-			 * if this has not been checked before for the same theme
-			 */
-			if(oThemeCheck._themeCheckedForCustom != sThemeName){
-				oThemeCheck._themeCheckedForCustom = sThemeName;
-				if (checkCustom(oThemeCheck)){
-						//load custom css available at sap/ui/core/themename/library.css
-					jQuery.sap.includeStyleSheet(sPath,  oThemeCheck._CUSTOMID);
-					oThemeCheck._customCSSAdded = true;
-					jQuery.sap.log.warning("ThemeCheck delivered custom CSS needs to be loaded, Theme not yet applied");
-					res = false;
-					return false;
-				}
-				else{
-					// remove stylesheet once the particular class is not available (e.g. after theme switch)
-					/*check for custom theme was not successful, so we need to make sure there are no custom style sheets attached*/
-					var customCssLink = jQuery("LINK[id='"+  oThemeCheck._CUSTOMID + "']");
-					if (customCssLink.length > 0){
-						customCssLink.remove();
-						jQuery.sap.log.debug("Custom CSS removed");
-					}
-					oThemeCheck._customCSSAdded = false;
-				}
-			}
+	
+	function checkTheme(oThemeCheck) {
+		var mLibs = oThemeCheck._oCore.getLoadedLibraries();
+		var sThemeName = oThemeCheck._oCore.getConfiguration().getTheme();
+		var sPath = oThemeCheck._oCore._getThemePath("sap.ui.core", sThemeName) + "custom.css";
+		var res = true;
+	
+		if (!!oThemeCheck._customCSSAdded && oThemeCheck._themeCheckedForCustom === sThemeName){
+			// include custom style sheet here because it has already been added using jQuery.sap.includeStyleSheet
+			// hence, needs to be checked for successful inclusion, too
+			mLibs["sap-ui-theme-"+oThemeCheck._CUSTOMID] = {};
 		}
-	});
-	if(!res){
-		jQuery.sap.log.warning("ThemeCheck: Theme not yet applied.");
+	
+		jQuery.each(mLibs, function(lib) {
+			res = res && sap.ui.core.ThemeCheck.checkStyle("sap-ui-theme-"+lib, true);
+			if (!!res){
+			/* as soon as css has been loaded, look if there is a flag for custom css inclusion inside, but only
+				 * if this has not been checked successfully before for the same theme
+				 */
+			if(oThemeCheck._themeCheckedForCustom != sThemeName){
+					if (checkCustom(oThemeCheck, lib)){
+							//load custom css available at sap/ui/core/themename/library.css
+						jQuery.sap.includeStyleSheet(sPath,  oThemeCheck._CUSTOMID);
+						oThemeCheck._customCSSAdded = true;
+						jQuery.sap.log.warning("ThemeCheck delivered custom CSS needs to be loaded, Theme not yet applied");
+						oThemeCheck._themeCheckedForCustom = sThemeName;
+						res = false;
+						return false;
+					}
+					else{
+						// remove stylesheet once the particular class is not available (e.g. after theme switch)
+						/*check for custom theme was not successful, so we need to make sure there are no custom style sheets attached*/
+						var customCssLink = jQuery("LINK[id='"+  oThemeCheck._CUSTOMID + "']");
+						if (customCssLink.length > 0){
+							customCssLink.remove();
+							jQuery.sap.log.debug("Custom CSS removed");
+						}
+						oThemeCheck._customCSSAdded = false;
+					}
+				}
+			}
+		});
+		if(!res){
+			jQuery.sap.log.warning("ThemeCheck: Theme not yet applied.");
+		}
+		else{
+			oThemeCheck._themeCheckedForCustom = sThemeName;
+		}
+		return res;
 	}
-	return res;
-}
-
-/* checks if a particular class is available at the beginning of the core styles
- */
-function checkCustom (oThemeCheck){
-	var ruleName = null,
-	bSuccess = false;
-
-	//get the core styles
-	jQuery.each(document.styleSheets, function(iIndex, oStyleSheet) {
-			if (!!oStyleSheet.ownerNode && /sap.ui.core/.test(oStyleSheet.ownerNode.id) && oStyleSheet.cssRules && oStyleSheet.cssRules.length > 0){
-				ruleName = oStyleSheet.cssRules[0].selectorText;
-				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
-					bSuccess = true;
-					return false;
+	
+	/* checks if a particular class is available at the beginning of the core styles
+	 */
+	function checkCustom (oThemeCheck, lib){
+		var ruleName = null,
+		bSuccess = false;
+	 var lib = new RegExp(lib);
+		//get the core styles
+		jQuery.each(document.styleSheets, function(iIndex, oStyleSheet) {
+				if (!!oStyleSheet.ownerNode && lib.test(oStyleSheet.ownerNode.id) && oStyleSheet.cssRules && oStyleSheet.cssRules.length > 0){
+					ruleName = oStyleSheet.cssRules[0].selectorText;
+					if(oThemeCheck._CUSTOMCSSCHECK.test(ruleName)){
+						bSuccess = true;
+						return false;
+					}
 				}
-			}
-			else if(!!oStyleSheet.owningElement && /sap.ui.core/.test(oStyleSheet.owningElement.id) && oStyleSheet.rules && oStyleSheet.rules.length > 0){
-					//ie8 doesn't know ownerNode
-				ruleName = oStyleSheet.rules[0].selectorText;
-				if(ruleName === oThemeCheck._CUSTOMCSSCHECK){
-					bSuccess = true;
-					return false;
+				else if(!!oStyleSheet.owningElement && lib.test(oStyleSheet.owningElement.id) && oStyleSheet.rules && oStyleSheet.rules.length > 0){
+						//ie8 doesn't know ownerNode
+					ruleName = oStyleSheet.rules[0].selectorText;
+					if(oThemeCheck._CUSTOMCSSCHECK.test(ruleName)){
+						bSuccess = true;
+						return false;
+					}
 				}
-			}
-	});
-	// we should now have some rule name ==> try to match against custom check
-	return bSuccess;
-}
+		});
+		// we should now have some rule name ==> try to match against custom check
+		return bSuccess;
+	}
 
 function delayedCheckTheme(bFirst) {
 	this._iCount++;
@@ -29472,7 +29482,6 @@ function delayedCheckTheme(bFirst) {
 		sap.ui.core.ThemeCheck.themeLoaded = true;
 	}
 }
-
 })();
 }; // end of sap/ui/core/ThemeCheck.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.ValueStateSupport') ) {
@@ -30154,7 +30163,7 @@ jQuery.sap.declare("sap.ui.core.delegate.ScrollEnablement");
 		 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 		 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 		 *
-		 * @version 1.18.8
+		 * @version 1.18.12
 		 * @constructor
 		 * @protected
 		 */
@@ -31025,24 +31034,16 @@ jQuery.sap.declare("sap.ui.core.delegate.ScrollEnablement");
 					return oScroller;
 				}
 
-				function isNativeTouchScrollingSupported() {
-					// No touchend or touchmove in android default browser by scrolling:
-					// https://code.google.com/p/android/issues/detail?id=19827
-					// Android Chrome fires arbitrary touchcancel events:
-					// See https://code.google.com/p/chromium/issues/detail?id=260732
-					if( sap.ui.Device.os.android ||
-						sap.ui.Device.os.blackberry || // TODO: native scroll on BlackBerry
-						sap.ui.Device.os.ios && sap.ui.Device.os.version < 6) {
-						return false;
-					}
-					return true;
+				function isNativeScrollingSupported() {
+					// native scrolling on non-touch devices (desktop) without simulation and with nonTouchScrolling === "scrollbar"
+					return !sap.ui.Device.support.touch && !$.sap.simulateMobileOnDesktop && oConfig.nonTouchScrolling === "scrollbar";
 				}
 
 				// What library to use?
 				var sLib = "n";
 				if(oConfig.zynga){
 					sLib = "z";
-				} else if(oConfig.iscroll || !isNativeTouchScrollingSupported()){
+				} else if(!isNativeScrollingSupported()){
 					sLib = "i"; // iScroll
 				}
 
@@ -31378,7 +31379,7 @@ jQuery.sap.declare("sap.ui.core.util.LibraryInfo");
  *
  * @extends sap.ui.base.Object
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @private
  * @name sap.ui.core.util.LibraryInfo
@@ -31507,7 +31508,7 @@ jQuery.sap.declare("sap.ui.core.ws.ReadyState");
 /**
  * @class Defines the different ready states for a WebSocket connection.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -31889,7 +31890,7 @@ jQuery.sap.declare("sap.ui.model.Type");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -32029,7 +32030,7 @@ jQuery.sap.declare("sap.ui.model.odata.ODataMetadata");
  * Implementation to access oData metadata
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -36016,19 +36017,18 @@ jQuery.sap.declare("jquery.sap.act", false);
 		_deactivateSupported = !!window.addEventListener, //Just skip IE8
 		_aActivateListeners = [],
 		_aDeactivateListeners = [],
+		_activityDetected = false,
 		_domChangeObserver = null;
-	
-	function _reInitializeDeactivateTimer(){
-		if(_deactivatetimer){
-			clearTimeout(_deactivatetimer);
-			_deactivatetimer = null;
-		}
-		setTimeout(_onDeactivate, _I_MAX_IDLE_TIME);
-	};
-	
+
 	function _onDeactivate(){
-		_active = false;
 		_deactivatetimer = null;
+		
+		if(_activityDetected){
+			_onActivate();
+			return;
+		}
+		
+		_active = false;
 		//_triggerEvent(_aDeactivateListeners); //Maybe provide later
 		_domChangeObserver.observe(document.documentElement, {childList: true, attributes: true, subtree: true, characterData: true});
 	};
@@ -36039,7 +36039,12 @@ jQuery.sap.declare("jquery.sap.act", false);
 			_triggerEvent(_aActivateListeners);
 			_domChangeObserver.disconnect();
 		}
-		_reInitializeDeactivateTimer();
+		if(_deactivatetimer){
+			_activityDetected = true;
+		}else{
+			_deactivatetimer = setTimeout(_onDeactivate, _I_MAX_IDLE_TIME);
+			_activityDetected = false;
+		}
 	};
 	
 	function _triggerEvent(aListeners){
@@ -36661,7 +36666,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 				}
 
 			} else { // SETTER code
-				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos);
+				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos, oDomRef);
 				return this;
 			}
 		}
@@ -36722,7 +36727,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 	 * @author SAP AG
 	 * @since 0.20.0
 	 */
-	jQuery.sap.denormalizeScrollLeftRTL = function byId(iNormalizedScrollLeft, oDomRef) {
+	jQuery.sap.denormalizeScrollLeftRTL = function(iNormalizedScrollLeft, oDomRef) {
 
 		if (oDomRef) {
 			if (!!sap.ui.Device.browser.internet_explorer) {
@@ -36820,7 +36825,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 		});
 	}
 
-	if (!jQuery.expr[":"].tabbable) {
+	if (!jQuery.expr[":"].sapTabbable) {
 		/*!
 		 * The following function is taken from jQuery UI 1.8.23
 		 *
@@ -36837,7 +36842,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 			 * If jQuery UI is loaded later on, this implementation here will be overwritten by that one, which is fine,
 			 * as it is semantically the same thing and intended to do exactly the same.
 			 */
-			tabbable: function( element ) {
+			sapTabbable: function( element ) {
 				var tabIndex = jQuery.attr( element, "tabindex" ),
 					isTabIndexNaN = isNaN( tabIndex );
 				return ( isTabIndexNaN || tabIndex >= 0 ) && focusable( element, !isTabIndexNaN );
@@ -37580,8 +37585,8 @@ jQuery.sap.declare("jquery.sap.events", false);
 
 				bHandleEvent = (oTouches.length == 1 && !isInputField(oEvent));
 
+				bIsMoved = false;
 				if (bHandleEvent) {
-					bIsMoved = false;
 					oTouch = oTouches[0];
 
 					// As we are only interested in the first touch target, we remember it
@@ -38203,19 +38208,21 @@ jQuery.sap.declare("jquery.sap.events", false);
 	//Add mobile touch events if touch is supported or we run in special dev test mode
 	(function initTouchEventSupport() {
 
-		function simulateMobileTouchEventSupport(){
-			var sConfigKey = "xx-test-mobile"; //see sap.ui.core.Configuration -> M_SETTINGS
-			var oCfgData = window["sap-ui-config"];
-			var bSimulate = document.location.search.indexOf("sap-ui-"+sConfigKey) > -1 || (oCfgData && oCfgData[sConfigKey]);
-			
-			// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
-			bSimulate = bSimulate || (document.location.search.indexOf("sap-ui-xx-fakeOS") > -1 || !!jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-xx-fakeOS")); // only allowed as URL parameter or in the bootstrap tag
-			
-			// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
-			var sLibs = jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-libs");
-			bSimulate = bSimulate || (sLibs && sLibs.match(/sap.m\b/));
+		function simulateMobileTouchEventSupport() {
+			var oCfgData = window["sap-ui-config"] || {},
+				sLibs = oCfgData.libs || "";
 
-			return bSimulate;
+			// TODO: should be replaced by some function in jQuery.sap.global (e.g. jQuery.sap.config(sKey))
+			function hasConfig(sKey) {
+				return document.location.search.indexOf("sap-ui-"+sKey) > -1 || // URL 
+					!!oCfgData[sKey.toLowerCase()]; // currently, properties of oCfgData are converted to lower case (DOM attributes)
+			}
+
+			return hasConfig("xx-test-mobile") || //see sap.ui.core.Configuration -> M_SETTINGS
+				// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
+				hasConfig("xx-fakeOS") || 
+				// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
+				sLibs.match(/sap.m\b/);
 		}
 
 		jQuery.sap.touchEventMode = "OFF";
@@ -38656,6 +38663,7 @@ jQuery.sap.declare("jquery.sap.events", false);
 	};
 
 }());
+
 }; // end of jquery.sap.events.js
 if ( !jQuery.sap.isDeclared('jquery.sap.history') ) {
 /*!
@@ -40021,7 +40029,7 @@ jQuery.sap.declare("jquery.sap.properties", false);
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -40315,7 +40323,7 @@ jQuery.sap.declare("jquery.sap.resources", false);
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -40519,18 +40527,16 @@ jQuery.sap.declare("jquery.sap.resources", false);
 	/*
 	 * Implements jQuery.sap.util.ResourceBundle.prototype.getText
 	 */
-	Bundle.prototype.getText = function(sKey, aArgs){
+	Bundle.prototype.getText = function(sKey, aArgs, bCustomBundle){
 		var sValue = null;
 		
 		// loop over the custom bundles before resolving this one
 		// lookup the custom resource bundles (last one first!)
 		for (var i = this.aCustomBundles.length - 1; i >= 0; i--) {
-			sValue = this.aCustomBundles[i].getText(sKey, aArgs);
-			// make sure that not the key is returned!
-			if (sValue && sValue.toString() !== sKey) {
+			sValue = this.aCustomBundles[i].getText(sKey, aArgs, true /* bCustomBundle */);
+			// value found - so return it!
+			if (sValue != null) {
 				return sValue; // found!
-			} else {
-				sValue = null;
 			}
 		}
 		
@@ -40576,23 +40582,26 @@ jQuery.sap.declare("jquery.sap.resources", false);
 			}
 		}
 
-		if(typeof(sValue)!=="string"){
+		if(!bCustomBundle && typeof(sValue)!=="string"){
+			jQuery.sap.assert(false, "could not find any translatable text for key '" + sKey + "' in bundle '" + this.oUrlInfo.url + "'");
 			sValue = sKey;
 		}
 
-		if(aArgs){
-			sValue = jQuery.sap.formatMessage(sValue, aArgs);
-		}
+		if(typeof(sValue)==="string") {
+			if(aArgs){
+				sValue = jQuery.sap.formatMessage(sValue, aArgs);
+			}
 
-		if (this.bIncludeInfo) {
-			sValue = new String(sValue);
-			sValue.originInfo = {
-				source: "Resource Bundle",
-				url: this.oUrlInfo.url,
-				locale: this.sLocale,
-				key: sKey
-			};
-		}
+			if (this.bIncludeInfo) {
+				sValue = new String(sValue);
+				sValue.originInfo = {
+					source: "Resource Bundle",
+					url: this.oUrlInfo.url,
+					locale: this.sLocale,
+					key: sKey
+				};
+			}
+		} 
 
 		return sValue;
 	};
@@ -40698,7 +40707,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
  * sap.ui.lazyRequire("sap.ui.core/Control");
  * sap.ui.lazyRequire("sap.ui.commons/Button");
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -40719,7 +40728,7 @@ jQuery.sap.declare("sap.ui.Global");
  * The <code>sap</code> namespace is automatically registered with the
  * OpenAjax hub if it exists.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @namespace
  * @public
  * @name sap
@@ -40732,7 +40741,7 @@ if ( typeof window.sap !== "object" && typeof window.sap !== "function"  ) {
  * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
  * point for UI related JavaScript functionality provided by SAP.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @namespace
  * @name sap.ui
  * @public
@@ -40745,8 +40754,8 @@ sap.ui = jQuery.extend(sap.ui, {
 		 * The version of the SAP UI Library
 		 * @type string
 		 */
-		version: "1.18.8",
-		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201402191958" }
+		version: "1.18.12",
+		buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "20140414-1333" }
 	});
 
 /**
@@ -40964,7 +40973,7 @@ jQuery.sap.declare("sap.ui.base.Event");
  * @extends sap.ui.base.Object
  * @implements sap.ui.base.Poolable
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.base.Event
  * @public
  */
@@ -41108,7 +41117,7 @@ jQuery.sap.declare("sap.ui.base.EventProvider");
  * @abstract
  * @extends sap.ui.base.Object
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @public
  * @name sap.ui.base.EventProvider
@@ -41420,7 +41429,7 @@ jQuery.sap.declare("sap.ui.base.ManagedObjectMetadata");
  *
  * @class
  * @author Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @since 0.8.6
  */
 sap.ui.base.ManagedObjectMetadata = function(sClassName, oClassInfo) {
@@ -42096,7 +42105,7 @@ jQuery.sap.declare("sap.ui.core.ComponentMetadata");
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.9.2
  */
 sap.ui.core.ComponentMetadata = function(sClassName, oClassInfo) {
@@ -43627,7 +43636,7 @@ jQuery.sap.declare("sap.ui.core.ElementMetadata");
  *
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 0.8.6
  */
 sap.ui.core.ElementMetadata = function(sClassName, oClassInfo) {
@@ -43755,7 +43764,7 @@ jQuery.sap.declare("sap.ui.core.EventBus");
  *
  * @extends sap.ui.base.Object
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @public
  * @since 1.8.0
@@ -44217,7 +44226,7 @@ jQuery.sap.declare("sap.ui.core.IntervalTrigger");
 	 * 
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @since 1.11.0
@@ -44353,7 +44362,7 @@ jQuery.sap.declare("sap.ui.core.LocaleData");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData
@@ -44798,7 +44807,7 @@ jQuery.sap.declare("sap.ui.core.RenderManager");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -45887,18 +45896,24 @@ sap.ui.core.RenderManager.prototype.writeAccessibilityState = function(oElement,
  */
 sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttributes){
 	jQuery.sap.require("sap.ui.core.IconPool");
-	
+
 	var bIconURI = sap.ui.core.IconPool.isIconURI(sURI),
 		sStartTag = bIconURI ? "<span " : "<img ",
 		bTextNeeded = (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9),
 		sClasses, sProp, oIconInfo;
-	
+
 	if(typeof aClasses === "string"){
 		aClasses = [aClasses];	
 	}
-	
+
 	if(bIconURI){
 		oIconInfo = sap.ui.core.IconPool.getIconInfo(sURI);
+
+		if(!oIconInfo){
+			jQuery.sap.log.error("An unregistered icon: " + sURI + " is used in sap.ui.core.RenderManager's writeIcon method.");
+			return;
+		}
+
 		if(!aClasses){
 			aClasses = [];
 		}
@@ -45907,9 +45922,9 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			aClasses.push("sapUiIconMirrorInRTL")
 		}
 	}
-	
+
 	this.write(sStartTag);
-	
+
 	if(jQuery.isArray(aClasses) && aClasses.length){
 		sClasses = aClasses.join(" ");
 		this.write("class=\"" + sClasses + "\" ");
@@ -45930,7 +45945,7 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			src: sURI
 		}, mAttributes);
 	}
-	
+
 	if(typeof mAttributes === "object"){
 		for(sProp in mAttributes){
 			if(mAttributes.hasOwnProperty(sProp)){
@@ -45938,9 +45953,9 @@ sap.ui.core.RenderManager.prototype.writeIcon = function(sURI, aClasses, mAttrib
 			}
 		}
 	}
-	
+
 	this.write(bIconURI ? ">" : "/>");
-	
+
 	if(bIconURI){
 		bTextNeeded && this.write(oIconInfo.content);
 		this.write("</span>");
@@ -46214,7 +46229,7 @@ jQuery.sap.declare("sap.ui.core.UIComponentMetadata");
  * @experimental Since 1.15.1. The Component concept is still under construction, so some implementation details can be changed in future.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.15.1
  */
 sap.ui.core.UIComponentMetadata = function(sClassName, oClassInfo) {
@@ -46391,7 +46406,7 @@ jQuery.sap.declare("sap.ui.core.delegate.ItemNavigation");
  * @param {Element[]} aItemDomRefs Array of DOM elements representing the items for the navigation
  * @param {boolean} [bNotInTabChain=false] Whether the selected element should be in the tab chain or not
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.core.delegate.ItemNavigation
  * @public
@@ -48555,7 +48570,7 @@ sap.ui.core.format.NumberFormat.getLocaleFormatOptions = function(oLocaleData) {
  * @public
  */
 sap.ui.core.format.NumberFormat.prototype.format = function(oValue) {
-	var sNumber = "" + oValue,
+	var sNumber = this.convertToDecimal(oValue),
 		sIntegerPart = "",
 		sFractionPart = "",
 		sGroupedIntegerPart = "",
@@ -48566,6 +48581,10 @@ sap.ui.core.format.NumberFormat.prototype.format = function(oValue) {
 		iDotPos = -1,
 		oOptions = this.oFormatOptions;
 
+	if (sNumber == "NaN") {
+		return sNumber;
+	}	
+	
 	// if number is negative remove minus
 	if (bNegative) {
 		sNumber = sNumber.substr(1);
@@ -48668,6 +48687,57 @@ sap.ui.core.format.NumberFormat.prototype.parse = function(sValue) {
 		oResult = parseFloat(sValue);
 	}
 	return oResult;
+};
+
+/**
+ * Convert to decimal representation
+ * Floats larger than 1e+20 or smaller than 1e-6 are shown in exponential format,
+ * but need to be converted to decimal format for further formatting
+ * 
+ * @param {float} fValue
+ * @private
+ */
+sap.ui.core.format.NumberFormat.prototype.convertToDecimal = function(fValue) {
+	var sValue = "" + fValue, 
+		bNegative, sBase, iDecimalLength, iFractionLength, iExponent, iPos;
+	if (sValue.indexOf("e") == -1 && sValue.indexOf("E") == -1) {
+		return sValue;
+	}
+	var aResult = sValue.match(/^([+-]?)((\d+)(?:\.(\d+))?)[eE]([+-]?\d+)$/);
+	bNegative = aResult[1] == "-";
+	sBase = aResult[2].replace(/\./g,"");
+	iDecimalLength = aResult[3] ? aResult[3].length : 0;
+	iFractionLength = aResult[4] ? aResult[4].length : 0;
+	iExponent = parseInt(aResult[5], 10);
+	
+	if (iExponent > 0) {
+		if (iExponent < iFractionLength) {
+			iPos = iDecimalLength + iExponent;
+			sValue = sBase.substr(0, iPos) + "." + sBase.substr(iPos);
+		} else {
+			sValue = sBase;
+			iExponent -= iFractionLength;
+			for (var i = 0; i < iExponent; i++) {
+				sValue += "0";
+			}
+		}
+	} else {
+		if (-iExponent < iDecimalLength) {
+			iPos = iDecimalLength + iExponent;
+			sValue = sBase.substr(0, iPos) + "." + sBase.substr(iPos);
+		} else {
+			sValue = sBase;
+			iExponent += iDecimalLength;
+			for (var i = 0; i > iExponent; i--) {
+				sValue = "0" + sValue;
+			}
+			sValue = "0." + sValue;
+		}
+	}
+	if (bNegative) {
+		sValue = "-" + sValue;
+	}
+	return sValue;
 };
 
 }; // end of sap/ui/core/format/NumberFormat.js
@@ -49830,7 +49900,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.Serializer");
  * @class Serializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.Serializer
  * @experimental Since 1.15.1. The Serializer is still under construction, so some implementation details can be changed in future.
  */
@@ -49963,7 +50033,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.delegate.Delegate");
  * @class Abstract serializer delegate class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.delegate.Delegate
  * @experimental Since 1.15.1. The abstract serializer delegate is still under construction, so some implementation details can be changed in future.
  */
@@ -50063,7 +50133,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.delegate.HTML");
  * @class HTML serializer delegate class.
  * @extends sap.ui.core.util.serializer.delegate.Delegate
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.delegate.HTML
  * @experimental Since 1.15.1. The HTML serializer delegate is still under construction, so some implementation details can be changed in future.
  */
@@ -50330,7 +50400,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.delegate.XML");
  * @class XML serializer delegate class.
  * @extends sap.ui.core.util.serializer.delegate.Delegate
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.delegate.XML
  * @experimental Since 1.15.1. The XML serializer delegate is still under construction, so some implementation details can be changed in future.
  */
@@ -50651,7 +50721,7 @@ jQuery.sap.declare("sap.ui.core.ws.WebSocket");
  * @class Basic WebSocket class
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.ws.WebSocket
  */
 sap.ui.base.EventProvider.extend("sap.ui.core.ws.WebSocket", /** @lends sap.ui.core.ws.WebSocket */ {
@@ -52037,7 +52107,7 @@ jQuery.sap.declare("sap.ui.model.Model");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -52780,7 +52850,7 @@ jQuery.sap.declare("sap.ui.model.SelectionModel");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {int} iSelectionMode <code>sap.ui.model.SelectionModel.SINGLE_SELECTION</code> or <code>sap.ui.model.SelectionModel.MULTI_SELECTION</code>
  *
@@ -52840,7 +52910,7 @@ sap.ui.model.SelectionModel.prototype.getSelectionMode = function() {
  *   In this mode, there's no restriction on what can be selected.
  * </ul>
  *
- * @param iSelectionMode {int} selection mode
+ * @param {int} iSelectionMode selection mode
  * @public
  */
 sap.ui.model.SelectionModel.prototype.setSelectionMode = function(iSelectionMode) {
@@ -52913,8 +52983,9 @@ sap.ui.model.SelectionModel.prototype.getMaxSelectionIndex = function() {
 
 
 /**
- * Returns the selected indices as array
- * @return array of selected indices
+ * Returns the selected indices as array.
+ *
+ * @return {int[]} array of selected indices
  * @public
  */
 sap.ui.model.SelectionModel.prototype.getSelectedIndices = function() {
@@ -53112,7 +53183,9 @@ sap.ui.model.SelectionModel.prototype.detachSelectionChanged = function(fnFuncti
  * <li>'rowIndices' of type <code>int[]</code> Other selected indices (if available)</li>
  * </ul>
  *
- * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @param {object} mArguments the arguments to pass along with the event.
+ * @param {int} mArguments.leadIndex Lead selection index
+ * @param {int[]} [mArguments.rowIndices] Other selected indices (if available)
  * @return {sap.ui.model.SelectionModel} <code>this</code> to allow method chaining
  * @protected
  */
@@ -53125,9 +53198,10 @@ sap.ui.model.SelectionModel.prototype.fireSelectionChanged = function(mArguments
  * Updates the selection models selected indices and the lead selection. Finally
  * it notifies the listeners with an array of changed row indices which can
  * either be removed or added to the selection model.
- * @param {array} selected row indices
- * @param {int} lead selection index
- * @param {array} changed row indices
+
+ * @param {int[]} aSelectedIndices selected row indices
+ * @param {int} iLeadSelection lead selection index
+ * @param {int[]} aChangedRowIndices changed row indices
  * @private
  */
 sap.ui.model.SelectionModel.prototype._update = function(aSelectedIndices, iLeadSelection, aChangedRowIndices) {
@@ -53140,10 +53214,12 @@ sap.ui.model.SelectionModel.prototype._update = function(aSelectedIndices, iLead
 	// update the selected indices
 	this.aSelectedIndices = aSelectedIndices; // TODO: sorting here could avoid additional sorts in min/max and get
 
+	mParams.oldIndex = this.iLeadIndex;
+	
 	// update lead selection (in case of removing the lead selection it is -1)
 	if (this.iLeadIndex !== iLeadSelection) {
 		this.iLeadIndex = iLeadSelection;
-		mParams.leadIndex = iLeadSelection; // or use old selection?
+		mParams.leadIndex = this.iLeadIndex;
 	}
 
 	// fire change event
@@ -53179,7 +53255,7 @@ jQuery.sap.declare("sap.ui.model.SimpleType");
  * @extends sap.ui.model.Type
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -54501,14 +54577,20 @@ sap.ui.model.TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lend
  */
 sap.ui.model.odata.ODataTreeBinding.prototype.getRootContexts = function() {
 	var sNavPath = this._getNavPath(this.sPath),
+		sAbsolutePath = this.oModel.resolve(this.sPath, this.getContext()),
 		that = this,
 		oContext;
+
+	//If path cannot be resolved, we return an empty array
+	if (!sAbsolutePath) {
+		return [];
+	}
 
 	if (!this.oModel.isList(this.sPath)) {
 		//An context is bound
 		if (this.bDisplayRootNode) {
 			//Get the binding context for the root element, it is created if it doesn't exist yet
-			this.oModel.createBindingContext(this.sPath, null, { expand: sNavPath }, function(oNewContext) {
+			this.oModel.createBindingContext(this.sPath, this.getContext(), { expand: sNavPath }, function(oNewContext) {
 				oContext = oNewContext;
 				if (that.oRootContext !== oNewContext) {
 					that.oRootContext = oNewContext;
@@ -54530,7 +54612,7 @@ sap.ui.model.odata.ODataTreeBinding.prototype.getRootContexts = function() {
 		}
 	} else {
 		//An aggregation is bound
-		return this._getContextsForPath(this.sPath, sNavPath);
+		return this._getContextsForPath(sAbsolutePath, sNavPath);
 	}
 
 };
@@ -54723,8 +54805,16 @@ sap.ui.model.odata.ODataTreeBinding.prototype.checkUpdate = function(bForceupdat
 
 sap.ui.model.odata.ODataTreeBinding.prototype._getNavPath = function(sPath) {
 	//Check the last part of the path
-	var sEntityName = sPath.substr(1),
+	var sAbsolutePath = this.oModel.resolve(sPath, this.getContext());
+	
+	if (!sAbsolutePath) {
+		return;
+	}
+
+	var aPathParts = sAbsolutePath.split("/"),
+		sEntityName = aPathParts[aPathParts.length-1],
 		sNavPath;
+	
 	//Only if part contains "(" we are working on a specific entity with children
 	var sCurrent = sEntityName.split("(")[0];
 	if (sCurrent && this.oNavigationPaths[sCurrent]) {
@@ -54782,7 +54872,7 @@ jQuery.sap.declare("sap.ui.model.type.Boolean");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -54888,7 +54978,7 @@ jQuery.sap.declare("sap.ui.model.type.Date");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55077,7 +55167,7 @@ jQuery.sap.declare("sap.ui.model.type.DateTime");
  * @extends sap.ui.model.type.Date
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55149,7 +55239,7 @@ jQuery.sap.declare("sap.ui.model.type.Float");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55287,7 +55377,7 @@ jQuery.sap.declare("sap.ui.model.type.Integer");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55424,7 +55514,7 @@ jQuery.sap.declare("sap.ui.model.type.String");
  * @extends sap.ui.model.SimpleType
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55604,7 +55694,7 @@ jQuery.sap.declare("sap.ui.model.type.Time");
  * @extends sap.ui.model.type.Date
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -55687,7 +55777,7 @@ jQuery.sap.declare("jquery.sap.ui", false);
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.18.8
+//	 * @version 1.18.12
 //	 * @namespace
 //	 * @public
 //	 */
@@ -55849,7 +55939,7 @@ jQuery.sap.declare("sap.ui.app.ApplicationMetadata");
  * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.13.2
  */
 sap.ui.app.ApplicationMetadata = function(sClassName, oClassInfo) {
@@ -55956,7 +56046,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.HTMLViewSerializer");
  * @class HTMLViewSerializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.HTMLViewSerializer
  * @experimental Since 1.15.1. The HTMLViewSerializer is still under construction, so some implementation details can be changed in future.
  */
@@ -56039,7 +56129,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.XMLViewSerializer");
  * @class XMLViewSerializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.XMLViewSerializer
  * @experimental Since 1.15.1. The XMLViewSerializer is still under construction, so some implementation details can be changed in future.
  */
@@ -56145,7 +56235,7 @@ jQuery.sap.declare("sap.ui.core.ws.SapPcpWebSocket");
  * @class WebSocket class implementing the pcp-protocol
  * @extends sap.ui.core.ws.WebSocket
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.ws.SapPcpWebSocket
  */
 sap.ui.core.ws.WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket */ {
@@ -57839,7 +57929,7 @@ sap.ui.model.json.JSONTreeBinding.prototype.getNodeContexts = function(oContext)
 					jQuery.each(oChild, function(sSubName, oSubChild) {
 						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);
 					})
-				} else if (typeof oChild == "object") {
+				} else if (oChild && typeof oChild == "object") {
 					that._saveSubContext(oChild, aContexts, sContextPath, sName);
 				}	
 			});
@@ -58275,7 +58365,7 @@ jQuery.sap.declare("sap.ui.core.util.serializer.ViewSerializer");
  * @class ViewSerializer class.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.ViewSerializer
  * @experimental Since 1.15.1. The ViewSerializer is still under construction, so some implementation details can be changed in future.
  */
@@ -58774,7 +58864,7 @@ jQuery.sap.declare("sap.ui.model.control.ControlModel");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @name sap.ui.model.control.ControlModel
@@ -58962,7 +59052,7 @@ jQuery.sap.require('sap.ui.thirdparty.datajs'); // unlisted dependency retained
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -59032,7 +59122,19 @@ sap.ui.model.Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.mod
 
 		// Remove trailing slash (if any)
 		this.sServiceUrl = this.sServiceUrl.replace(/\/$/, "");
+		
+		// Get/create service specific data container
+		this.oServiceData = sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl];
+		if (!this.oServiceData) {
+			sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl] = {};
+			this.oServiceData = sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl];
+		}
 
+		// Get CSRF token, if already available
+		if (this.bTokenHandling && this.oServiceData.securityToken) {
+			this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
+		}
+		
 		// store user and password
 		this.sUser = sUser;
 		this.sPassword = sPassword;
@@ -59103,6 +59205,11 @@ sap.ui.model.odata.ODataModel.M_EVENTS = {
 		 */
 		MetadataLoaded: "metadataLoaded",
 		MetadataFailed: "metadataFailed"
+};
+
+// Keep a map of service specific data, which can be shared across different model instances
+// on the same OData service
+sap.ui.model.odata.ODataModel.mServiceData = {
 };
 
 sap.ui.model.odata.ODataModel.prototype.fireRejectChange = function(mArguments) {
@@ -59356,31 +59463,16 @@ sap.ui.model.odata.ODataModel.prototype._loadData = function(sPath, aParams, fnS
 		// execute the request and use the metadata if available
 
 		if (that.bUseBatch) {
+			that.clearBatch();
+			// batch requests only need the path without the service URL
+			// extract query of url and combine it with the path...
+			var sUriQuery = URI.parse(oRequest.requestUri).query;
+			var sRequestUrl = sPath.replace(/\/$/, ""); // remove trailing slash if any
+			sRequestUrl += sUriQuery ? "?" + sUriQuery : "";
 
-			var _submitReadBatch = function() {
-				that.clearBatch();
-				// batch requests only need the path without the service URL
-				// extract query of url and combine it with the path...
-				var sUriQuery = URI.parse(oRequest.requestUri).query;
-				var sRequestUrl = sPath.replace(/\/$/, ""); // remove trailing slash if any
-				sRequestUrl += sUriQuery ? "?" + sUriQuery : "";
-
-				var oReadOp = that.createBatchOperation(sRequestUrl, "GET");
-				that.addBatchReadOperations([oReadOp]);
-				oRequestHandle = that.submitBatch(_handleSuccess, _handleError, oRequest.async);
-			}
-			// because we use POST now the server might ask for a token
-			if (that.bTokenHandling && !that.bTokenRequested) {
-				var _fnRefreshTokenSuccess = function(oData, oResponse) {
-					if (oResponse) {
-						oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-					}
-					_submitReadBatch();
-				}
-				that.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
-			} else {
-				_submitReadBatch();
-			}
+			var oReadOp = that.createBatchOperation(sRequestUrl, "GET");
+			that.addBatchReadOperations([oReadOp]);
+			oRequestHandle = that.submitBatch(_handleSuccess, _handleError, oRequest.async);
 		} else {
 			oRequestHandle = OData.read(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, that.oMetadata.getServiceMetadata());
 		}
@@ -59434,7 +59526,9 @@ sap.ui.model.odata.ODataModel.prototype._importData = function(oData) {
 					oEntry[sName] = { __ref: oResult	};
 				}
 			} else {
-				oEntry[sName] = oProperty;
+				if (!oEntry[sName] || ( oEntry[sName] && !oProperty.__deferred )) {
+					oEntry[sName] = oProperty;
+				}
 			}
 		});
 		return sKey;
@@ -59844,6 +59938,29 @@ sap.ui.model.odata.ODataModel.prototype._getObject = function(sPath, oContext) {
 };
 
 /**
+ * Update the security token, if token handling is enabled and token is not available yet
+ */
+sap.ui.model.odata.ODataModel.prototype.updateSecurityToken = function() {
+	if (this.bTokenHandling) {
+		if (!this.oServiceData.securityToken) {
+			this.refreshSecurityToken();
+		}
+		// Update header every time, in case security token was changed by other model
+		if (this.bTokenHandling) {
+			this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
+		}
+	}
+};
+
+/**
+ * Clears the security token, as well from the service data as from the headers object
+ */
+sap.ui.model.odata.ODataModel.prototype.resetSecurityToken = function() {
+	delete this.oServiceData.securityToken;
+	delete this.oHeaders["x-csrf-token"];
+};
+
+/**
  * refresh XSRF token by performing a GET request against the service root URL.
  *
  * @param {function} [fnSuccess] a callback function which is called when the data has
@@ -59858,20 +59975,29 @@ sap.ui.model.odata.ODataModel.prototype._getObject = function(sPath, oContext) {
  * @public
  */
 sap.ui.model.odata.ODataModel.prototype.refreshSecurityToken = function(fnSuccess, fnError, bAsync) {
-	var that = this;
+	var that = this, sToken;
 
-	this.oHeaders["x-csrf-token"] = "Fetch";
-	if (bAsync == undefined) {
-		bAsync = false;
-	}
-	// trigger a read to the service url
+	// bAsync default is false ?!
+	bAsync = bAsync === true;
+	
+	// trigger a read to the service url to fetch the token
 	var oRequest = this._createRequest("/", null, bAsync);
-
+	oRequest.headers["x-csrf-token"] = "Fetch";
+	
 	function _handleSuccess(oData, oResponse) {
 		if (oResponse) {
-			that._convertHeaders("x-csrf-token", oResponse.headers);
-			that.oHeaders["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			that.bTokenRequested = true;
+			sToken = that._getHeader("x-csrf-token", oResponse.headers);
+			if (sToken) {
+				that.oServiceData.securityToken = sToken;
+				// For compatibility with applications, that are using getHeaders() to retrieve the current
+				// CSRF token additionally keep it in the oHeaders object
+				that.oHeaders["x-csrf-token"] = sToken;
+			}
+			else {
+				// Disable token handling, if service does not return tokens
+				that.resetSecurityToken();
+				that.bTokenHandling = false;
+			}
 		}
 
 		if (fnSuccess) {
@@ -59880,8 +60006,10 @@ sap.ui.model.odata.ODataModel.prototype.refreshSecurityToken = function(fnSucces
 	}
 
 	function _handleError(oError) {
+		// Disable token handling, if token request returns an error
+		that.resetSecurityToken();
+		that.bTokenHandling = false;
 		that._handleError(oError);
-		that.bTokenRequested = false;
 
 		if (fnError) {
 			fnError(oError);
@@ -59937,6 +60065,9 @@ sap.ui.model.odata.ODataModel.prototype._submitChange = function(oRequest, fnSuc
 			// delete created entry via POST (CREATE) and DELETE
 			if ((oRequest.method === "POST" && !oRequest.headers["x-http-method"]) || oRequest.method === "DELETE") {
 				var sPath = sName.substr(sName.lastIndexOf('/') + 1);
+				if (sPath.indexOf('?') != -1) {
+					sPath = sPath.substr(0, sPath.indexOf('?'));
+				}
 				delete that.oData[sPath];
 				delete that.mContexts["/" + sPath]; // contexts are stored starting with /
 			}
@@ -59968,43 +60099,32 @@ sap.ui.model.odata.ODataModel.prototype._submitChange = function(oRequest, fnSuc
 			fnError(oError);
 		}
 	}
+	
+	if (this.bUseBatch) {
+		var oParameters = {};
+		this.clearBatch();
+		var sRequestUrl = this._getBatchUrl(oRequest.requestUri);
 
-	if (this.bTokenHandling && !this.bTokenRequested) {
-
-		var _fnRefreshTokenSuccess = function(oData, oResponse) {
-			if (oResponse) {
-				oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			}
-			return _submit();
+		// check MERGE which is converted to POST in _createChangeRequest function
+		if (oRequest.method === "POST" && oRequest.headers["x-http-method"] === "MERGE") {
+			oRequest.method = "MERGE";
 		}
-
-		this.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
+		if(oRequest.headers["If-Match"]){
+			//we have an etag
+			oParameters.sETag = oRequest.headers["If-Match"];
+		}
+		var oChangeOp = this.createBatchOperation(sRequestUrl, oRequest.method, oRequest.data, oParameters);
+		this.addBatchChangeOperations([oChangeOp]);
+		return this.submitBatch(_handleSuccess, _handleError, oRequest.async);
 	} else {
-		return _submit();
-	}
-
-	function _submit(){
-		if (that.bUseBatch) {
-			var oParameters = {};
-			that.clearBatch();
-			var sRequestUrl = that._getBatchUrl(oRequest.requestUri);
-
-			// check MERGE which is converted to POST in _createChangeRequest function
-			if (oRequest.method === "POST" && oRequest.headers["x-http-method"] === "MERGE") {
-				oRequest.method = "MERGE";
-			}
-			if(oRequest.headers["If-Match"]){
-				//we have an etag
-				oParameters.sETag = oRequest.headers["If-Match"];
-			}
-			var oChangeOp = that.createBatchOperation(sRequestUrl, oRequest.method, oRequest.data, oParameters);
-			that.addBatchChangeOperations([oChangeOp]);
-			return that.submitBatch(_handleSuccess, _handleError, oRequest.async);
-		} else {
-			return OData.request(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, that.getServiceMetadata());
+		// request token only if we have change operations 
+		// token needs to be set directly on request headers, as request is already created
+		this.updateSecurityToken();
+		if (this.bTokenHandling) {
+			oRequest.headers["x-csrf-token"] = this.oServiceData.securityToken;
 		}
+		return OData.request(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, this.getServiceMetadata());
 	}
-
 };
 
 /**
@@ -60068,26 +60188,15 @@ sap.ui.model.odata.ODataModel.prototype._submitBatch = function(oRequest, fnSucc
 		}
 	}
 
-	if (this.bTokenHandling && !this.bTokenRequested) {
-
-		var _fnRefreshTokenSuccess = function(oData, oResponse) {
-			if (oResponse) {
-				oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			}
-			return _submit();
-		}
-
-		this.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
-	} else {
-		return _submit();
+	this.updateSecurityToken();
+	if (this.bTokenHandling) {
+		oRequest.headers["x-csrf-token"] = this.oServiceData.securityToken;
 	}
 
-	function _submit() {
-		var oRequestHandle = OData.request(oRequest, _handleSuccess, _handleError, OData.batchHandler, undefined, that.getServiceMetadata());
-		// clear batch stack
-		that.aBatchOperations = [];
-		return oRequestHandle;
-	}
+	var oRequestHandle = OData.request(oRequest, _handleSuccess, _handleError, OData.batchHandler, undefined, this.getServiceMetadata());
+	// clear batch stack
+	this.aBatchOperations = [];
+	return oRequestHandle;
 
 };
 
@@ -60129,22 +60238,17 @@ sap.ui.model.odata.ODataModel.prototype._getBatchErrors = function(oData) {
  * @private
  */
 sap.ui.model.odata.ODataModel.prototype._handleError = function(oError) {
-	var mParameters = {}, fnHandler, that = this;
+	var mParameters = {}, fnHandler, sToken;
 	var sErrorMsg = "The following problem occurred: " + oError.message;
 
 	mParameters.message = oError.message;
 	if (oError.response){
-		// if XSRFToken is not valid we get 403 with the x-csrf-token header : Required.
-		// a new token will be fetched in the refresh afterwards.
-		this._convertHeaders("x-csrf-token", oError.response.headers);
-		if (oError.response.statusCode == '403' && oError.response.headers["x-csrf-token"]) {
-			this.oHeaders["x-csrf-token"] = oError.response.headers["x-csrf-token"];
-			if (oError.response.headers["x-csrf-token"].toLowerCase() === "required" && !this.bRefreshing) {
-				this.bRefreshing = true;
-				fnHandler = function (){
-					that.bRefreshing = false;
-				}
-				this.refreshSecurityToken(fnHandler, fnHandler);
+		if (this.bTokenHandling) {
+			// if XSRFToken is not valid we get 403 with the x-csrf-token header : Required.
+			// a new token will be fetched in the refresh afterwards.
+			sToken = this._getHeader("x-csrf-token", oError.response.headers);
+			if (oError.response.statusCode == '403' && sToken && sToken.toLowerCase() == "required") {
+				this.resetSecurityToken();
 			}
 		}
 		sErrorMsg += oError.response.statusCode + "," +
@@ -61051,20 +61155,16 @@ sap.ui.model.odata.ODataModel.prototype.getHeaders = function() {
 };
 
 /**
- * Searches the specified headers map for the specified header name and converts the found header to the case form of the sConvertHeader
- * e.g. sConvertHeader = "myHeader". mHeader = {"MYHEAder" : "test"}
- * --> will be converted to mHeader = {"myHeader" : "test"}
+ * Searches the specified headers map for the specified header name and returns the found header value
  */
-sap.ui.model.odata.ODataModel.prototype._convertHeaders = function(sConvertHeader, mHeaders) {
-	var sHeaderName, oHeaderValue;
+sap.ui.model.odata.ODataModel.prototype._getHeader = function(sFindHeader, mHeaders) {
+	var sHeaderName;
 	for (sHeaderName in mHeaders) {
-		if (sHeaderName !== sConvertHeader && sHeaderName.toLowerCase() === sConvertHeader.toLowerCase()) {
-			oHeaderValue = mHeaders[sHeaderName];
-			delete mHeaders[sHeaderName];
-			mHeaders[sConvertHeader] = oHeaderValue;
-			break;
+		if (sHeaderName.toLowerCase() === sFindHeader.toLowerCase()) {
+			return mHeaders[sHeaderName];
 		}
 	}
+	return null;
 };
 
 /**
@@ -61313,7 +61413,7 @@ sap.ui.model.odata.ODataModel.prototype.setRefreshAfterChange = function(bRefres
 
 sap.ui.model.odata.ODataModel.prototype.isList = function(sPath, oContext) {
 	var sPath = this.resolve(sPath, oContext);
-	return sPath.substr(sPath.lastIndexOf("/")).indexOf("(") === -1;
+	return sPath && sPath.substr(sPath.lastIndexOf("/")).indexOf("(") === -1;
 };
 
 }; // end of sap/ui/model/odata/ODataModel.js
@@ -61345,7 +61445,7 @@ jQuery.sap.declare("sap.ui.model.resource.ResourceModel");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData parameters used to initialize the ResourceModel; at least either bundleUrl or bundleName must be set on this object; if both are set, bundleName wins
  * @param {string} [oData.bundleUrl] the URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")
@@ -61591,7 +61691,7 @@ jQuery.sap.declare("sap.ui.base.ManagedObject");
  * @class Base Class for managed objects.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  * @name sap.ui.base.ManagedObject
  * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -64002,12 +64102,13 @@ sap.ui.base.ManagedObject.prototype.updateBindingContext = function(bSkipLocal, 
 			oModel = this.getModel(sModelName); 
 			oBoundObject = this.mBoundObjects[sModelName];
 			
-			if (oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
+			if (oModel && oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
 				if(!oBoundObject.binding) {
 					this._bindObject(sModelName, oBoundObject);
 				} else {
+					oParentContext = null;
 					if (this.oParent && oModel == this.oParent.getModel(sModelName)) {
-						oParentContext= this.oParent.getBindingContext(sModelName); 
+						oParentContext = this.oParent.getBindingContext(sModelName); 
 					}
 					if (oParentContext != oBoundObject.binding.getContext()) {
 						oBoundObject.binding.setContext(oParentContext);
@@ -64583,7 +64684,7 @@ jQuery.sap.declare("sap.ui.core.Fragment");
 	 * @class Fragment
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @public
 	 * @name sap.ui.core.Fragment
 	 * @experimental Since 1.15.0. The entire Fragment concept is experimental. API and behavior may change without notice. 
@@ -65612,7 +65713,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.Template");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.tmpl.Template
  * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
  */
@@ -66197,7 +66298,7 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 /*global URI *///declare unusual global vars for JSLint/SAPUI5 validation
 
-(function() {
+(function(jQuery, Device, ManagedObject, sinon) {
 	
 
 	/**
@@ -66213,16 +66314,16 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @public
 	 * @name sap.ui.core.util.MockServer
 	 * @experimental Since 1.15.1. The mock server is still under construction, so some implementation details can be changed in future.
 	 */
-	sap.ui.base.ManagedObject.extend("sap.ui.core.util.MockServer", /** @lends sap.ui.core.util.MockServer */
+	var MockServer = ManagedObject.extend("sap.ui.core.util.MockServer", /** @lends sap.ui.core.util.MockServer */
 	{
 		constructor : function(sId, mSettings, oScope) {
-			sap.ui.base.ManagedObject.apply(this, arguments);
-			sap.ui.core.util.MockServer._aServers.push(this);
+			ManagedObject.apply(this, arguments);
+			MockServer._aServers.push(this);
 		},
 
 		metadata : {
@@ -66306,7 +66407,8 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		_oMockdata: null,
 		_oMetadata: null,
 		_sMetadataUrl: null,
-		_sMockdataBaseUrl: null
+		_sMockdataBaseUrl: null,
+		_mEntitySets: null
 		
 	});
 
@@ -66314,9 +66416,11 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	/**
 	 * Starts the server.
 	 * @public
+	 * @name sap.ui.core.util.MockServer#start
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype.start = function() {
-		this._oServer = sap.ui.core.util.MockServer._getInstance();
+	MockServer.prototype.start = function() {
+		this._oServer = MockServer._getInstance();
 		this._aFilters = [];
 		var aRequests = this.getRequests();
 		var iLength = aRequests.length;
@@ -66330,8 +66434,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	/**
 	 * Stops the server.
 	 * @public
+	 * @name sap.ui.core.util.MockServer#stop
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype.stop = function() {
+	MockServer.prototype.stop = function() {
 		if (this.isStarted()) {
 			this._removeAllRequestHandlers();
 			this._removeAllFilters();
@@ -66345,36 +66451,357 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * 
 	 * @return {boolean} whether the server is started or not.
 	 * @public
+	 * @name sap.ui.core.util.MockServer#isStarted
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype.isStarted = function() {
+	MockServer.prototype.isStarted = function() {
 		return !!this._oServer;
 	};
+	
+	/**
+	 * Applies the OData system query option string on the given array
+	 * @param {object} oFilteredData
+	 * @param {string} sQuery string in the form {query}={value}
+	 * @param {string} sEntitySetName the name of the entitySet the oFilteredData belongs to
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_applyQueryOnCollection
+	 * @function
+	 */
+	MockServer.prototype._applyQueryOnCollection = function(oFilteredData, sQuery , sEntitySetName) {
+		var aQuery = sQuery.split('=');
+		var sODataQueryValue = aQuery[1];
+		if(sODataQueryValue === "") return;
+		if(sODataQueryValue.lastIndexOf(',') === sODataQueryValue.length){
+			throw new Error("400");
+		}
+		switch (aQuery[0]) {
+		case "top":
+			if(!(new RegExp(/^\d+$/).test(sODataQueryValue))){
+				throw new Error("400");
+			}
+			oFilteredData.results = oFilteredData.results.slice(0, sODataQueryValue);
+			break;
+		case "skip":
+			if(!(new RegExp(/^\d+$/).test(sODataQueryValue))){
+				throw new Error("400");
+			}
+			oFilteredData.results =  oFilteredData.results.slice(sODataQueryValue ,oFilteredData.results.length);
+			break;
+		case "orderby":
+			oFilteredData.results = this._getOdataQueryOrderby(oFilteredData.results, sODataQueryValue); 
+			break;
+		case "filter":
+			oFilteredData.results = this._getOdataQueryFilter(oFilteredData.results, sODataQueryValue); 
+			break;
+		case "select":
+			oFilteredData.results = this._getOdataQuerySelect(oFilteredData.results, sODataQueryValue); 
+			break;
+		case "inlinecount":			
+			var iCount =  this._getOdataInlineCount(oFilteredData.results , sODataQueryValue);
+			if(iCount){
+				oFilteredData.__count = iCount;
+			}
+			break;
+		case "expand":			
+			oFilteredData.results = this._getOdataQueryExpand(oFilteredData.results, sODataQueryValue ,sEntitySetName); 
+			break;
+		default:
+			throw new Error("400");
+		}
+		
+	};
 
+	/**
+	 * Applies the OData system query option string on the given entry
+	 * @param {object} oEntry 
+	 * @param {string} sQuery string of the form {query}={value}
+	 * @param {string} sEntitySetName the name of the entitySet the oEntry belongs to
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_applyQueryOnEntry
+	 * @function
+	 */
+	MockServer.prototype._applyQueryOnEntry = function(oEntry, sQuery , sEntitySetName) {
+		var aQuery = sQuery.split('=');
+		var sODataQueryValue = aQuery[1];
+		if(sODataQueryValue === "") return;
+		if(sODataQueryValue.lastIndexOf(',') === sODataQueryValue.length){
+			throw new Error("400");
+		}
+		switch (aQuery[0]) {
+		case "filter":
+			return this._getOdataQueryFilter([oEntry], sODataQueryValue)[0]; 
+		case "select":
+			return this._getOdataQuerySelect([oEntry], sODataQueryValue)[0]; 
+		case "expand":			
+			return this._getOdataQueryExpand([oEntry], sODataQueryValue ,sEntitySetName)[0]; 
+		default:
+			throw new Error("400");
+		}
+	};
+	
+	/**
+	 * Applies the Orderby OData system query option string on the given array
+	 * @param {object} aDataSet 
+	 * @param {string} sODataQueryValue a comma separated list of property navigation paths to sort by, where each property navigation path terminates on a primitive property
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataQueryOrderby
+	 * @function
+	 */
+	MockServer.prototype._getOdataQueryOrderby = function(aDataSet, sODataQueryValue){
+		// sort properties lookup
+		var aProperties = decodeURIComponent(sODataQueryValue).split(',');
+		
+		var fnComparator = function compare(a,b) {
+			
+			for ( var i = 0; i < aProperties.length; i++) {
+				// sort order lookup asc / desc
+				var aSort = aProperties[i].split(' ');
+				// by default the sort is in asc order
+				var iSorter = 1;
+				if(aSort.length > 1){
+					switch (aSort[1]) {
+					case 'asc':
+						iSorter = 1;
+						break;
+					case 'desc':
+						iSorter = -1;
+						break;
+					default:
+						throw new Error("400");
+					}
+				}
+				// support for complex type property
+				var sPropName = aSort[0].replace("/", ".");
+				if(!a.hasOwnProperty(sPropName))
+					throw new Error("400");
+				if (a[sPropName] < b[sPropName])
+					return -1*iSorter;
+				if (a[sPropName] > b[sPropName])
+					return 1*iSorter;
+			}
+			return 0;
+		};
+		return aDataSet.sort(fnComparator);
+	};
 
+	/**
+	 * Applies the Filter OData system query option string on the given array
+	 * @param {object} aDataSet 
+	 * @param {string} sODataQueryValue a boolean expression
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataQueryFilter
+	 * @function
+	 */
+	MockServer.prototype._getOdataQueryFilter = function(aDataSet, sODataQueryValue){
+		sODataQueryValue = decodeURIComponent(sODataQueryValue);
+		// The data needs to be filtered. for the moment only simple filters can be used
+		var sODataFilterMethod = sODataQueryValue.indexOf("(") != -1 ? sODataQueryValue.split("(")[0] : sODataQueryValue.split(" ")[1];
+		var that = this;
+		var fnGetFilteredData = function (bValue, iValueIndex, iPathIndex, fnSelectFilteredData){
+			var aODataFilterValues, sValue;
+			if (!bValue){ //e.g eq, ne, gt, lt, le, ge
+				aODataFilterValues = sODataQueryValue.split(" ");
+				sValue = that._trim(aODataFilterValues[iValueIndex]);
+				sValue = ((sValue.charAt(0) == "'") && (sValue.charAt(sValue.length -1) == "'")) ? sValue.substr(1, aODataFilterValues[2].length - 2) : sValue;
+			}
+			else{ //e.g.substringof, startswith, endswith
+				aODataFilterValues = sODataQueryValue.split("(")[1].split(")")[0].split(",");
+				sValue = that._trim(aODataFilterValues[iValueIndex]).substr(1, aODataFilterValues[0].length - 2);
+			}	
+
+			var sPath = that._trim(aODataFilterValues[iPathIndex]);
+			//check if sPath exists as property of the entityset
+			if(!aDataSet[0].hasOwnProperty(sPath)){
+				throw new Error("400")
+			}
+
+			return fnSelectFilteredData(sPath,sValue);
+		};
+
+		switch (sODataFilterMethod) {
+		case "substringof" :					
+			return fnGetFilteredData (true,0,1, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath].indexOf(sValue) != -1);
+				});
+			})			
+		case "startswith" :
+			return fnGetFilteredData (true,1,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath].indexOf(sValue) == 0);
+				});
+			})			
+		case "endswith" :
+			return fnGetFilteredData (true, 1,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath].indexOf(sValue) == (oMockData[sPath].length - sValue.length));
+				});
+			})			
+		case "eq" :
+			return fnGetFilteredData (false,2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] == sValue);
+				});
+			})		
+		case "ne" :
+			return fnGetFilteredData (false,2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] != sValue);
+				});
+			})		
+		case "gt" :
+			return fnGetFilteredData (false,2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] > sValue);
+				});
+			})
+		case "lt" :
+			return fnGetFilteredData (false,2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] < sValue);
+				});
+			})
+		case "ge" :
+			return fnGetFilteredData (false, 2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] >= sValue);
+				});
+			})
+		case "le" :
+			return fnGetFilteredData (false, 2,0, 
+					function (sPath ,sValue){
+				return jQuery.grep(aDataSet, function(oMockData){
+					return (oMockData[sPath] <= sValue);
+				});
+			})
+		default:
+			throw new Error("400");
+		}
+	};
+
+	/**
+	 * Applies the Select OData system query option string on the given array
+	 * @param {object} aDataSet 
+	 * @param {string} sODataQueryValue a comma separated list of property paths, qualified action names, qualified function names, or the star operator (*)
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataQuerySelect
+	 * @function
+	 */
+	MockServer.prototype._getOdataQuerySelect = function(aDataSet, sODataQueryValue){
+		var aProperties = sODataQueryValue.split(',');
+		if (jQuery.inArray("*", aProperties) !== -1){
+			return aDataSet;
+		}	
+		var aSelectedDataSet = [];
+		
+		//check if all properties exist
+		jQuery.each(aProperties, function(i, sPropertyName){
+			if(!aDataSet[0].hasOwnProperty(sPropertyName)){
+				throw new Error("404")
+			}
+		})
+		//TODO deepDown selection
+		//clone array of objects and delete not selected properties for each object 
+		jQuery.each(aDataSet, function(iIndex, oData){
+			var oPushedObject = jQuery.extend(true, {}, oData);
+			for (var sName in oPushedObject) {
+				if (sName !== "__metadata" && jQuery.inArray(sName, aProperties) === -1){
+					delete oPushedObject[sName];
+				}				
+			}
+			aSelectedDataSet.push(oPushedObject);
+		});	
+		return aSelectedDataSet;
+	};	
+	
+	/**
+	 * Applies the InlineCount OData system query option string on the given array
+	 * @param {object} aDataSet 
+	 * @param {string} sODataQueryValue a value of allpages, or a value of none
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataInlineCount
+	 * @function
+	 */
+	MockServer.prototype._getOdataInlineCount = function(aDataSet , sODataQueryValue){ 
+		var aProperties = sODataQueryValue.split(',');
+		
+		if(aProperties.length !== 1 || (aProperties[0] !== 'none' && aProperties[0] !== 'allpages')){
+			throw new Error("400");
+		}
+		if (aProperties[0] === 'none'){
+			return;
+		}			
+		return aDataSet.length;
+	};	
+	
+	/**
+	 * Applies the Expand OData system query option string on the given array
+	 * @param {object} aDataSet 
+	 * @param {string} sODataQueryValue a comma separated list of navigation property paths
+	 * @param {string} sEntitySetName the name of the entitySet the aDataSet belongs to
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataQueryExpand
+	 * @function
+	 */
+	MockServer.prototype._getOdataQueryExpand = function(aDataSet , sODataQueryValue , sEntitySetName){ 
+		var that = this;
+		var aNavProperties = sODataQueryValue.split(',');
+		var oEntitySetNavProps = that._mEntitySets[sEntitySetName].navprops; 
+		jQuery.each(aDataSet, function(iIndex, oRecord){
+			jQuery.each(aNavProperties, function(iIndex, sNavProp){
+				var aNavProps = sNavProp.split("/");
+				var sNavProp = aNavProps[0];
+				var aNavEntry = jQuery.extend(true, [], that._resolveNavigation(sEntitySetName, oRecord, sNavProp));
+				
+				if(!!aNavEntry && aNavProps.length > 1){
+					var sRestNavProps = aNavProps.splice(1,aNavProps.length).join("/");
+					aNavEntry = that._getOdataQueryExpand(aNavEntry ,sRestNavProps , oEntitySetNavProps[sNavProp].to.entitySet )
+				}
+
+				if(oEntitySetNavProps[sNavProp].to.multiplicity === "*"){
+					oRecord[sNavProp] = {results: aNavEntry};
+				}else{
+					oRecord[sNavProp] = aNavEntry[0] ? aNavEntry[0] : {};
+				}
+			})
+		});
+		return aDataSet;
+	}
+	
 	/**
 	 * Refreshes the service metadata document and the mockdata
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_refreshData
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._refreshData = function() {
-		var that = this;
+	MockServer.prototype._refreshData = function() {
+	
 		
 		// load the metadata
 		this._loadMetadata(this._sMetadataUrl);
 		
 		// here we need to analyse the EDMX and identify the entity sets
-		var mEntitySets = this._findEntitySets(this._oMetadata) 
+		this._mEntitySets = this._findEntitySets(this._oMetadata); 
 
 		if (this._sMockdataBaseUrl == null) {
 			// load the mockdata
-			this._generateMockdata(mEntitySets, this._oMetadata);
+			this._generateMockdata(this._mEntitySets, this._oMetadata);
 		} else {
 			// check the mockdata base URL to end with a slash
 			if (!jQuery.sap.endsWith(this._sMockdataBaseUrl, "/") && !jQuery.sap.endsWith(this._sMockdataBaseUrl, ".json")) {
 				this._sMockdataBaseUrl += "/";
 			}
 			// load the mockdata
-			this._loadMockdata(mEntitySets, this._sMockdataBaseUrl);
+			this._loadMockdata(this._mEntitySets, this._sMockdataBaseUrl);
 		}
 	};
 
@@ -66382,8 +66809,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	/**
 	 * Returns the root URI without query or hash parameters
 	 * @return {string} the root URI without query or hash parameters
+	 * @name sap.ui.core.util.MockServer#_getRootUri
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._getRootUri = function() {
+	MockServer.prototype._getRootUri = function() {
 		var sUri = this.getRootUri();
 		sUri = sUri && /([^?#]*)([?#].*)?/.exec(sUri)[1]; // remove URL parameters or anchors
 		return sUri;
@@ -66395,8 +66824,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {string} sMetadataUrl url to the service metadata document
 	 * @return {XMLDocument} the xml document object 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_loadMetadata
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._loadMetadata = function(sMetadataUrl) {
+	MockServer.prototype._loadMetadata = function(sMetadataUrl) {
 		
 		// load the metadata
 		var oMetadata = jQuery.sap.sjax({url: sMetadataUrl, dataType: "xml"}).data;
@@ -66413,11 +66844,16 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {XMLDocument} oMetadata the metadata XML document
 	 * @return {map} map of entity sets 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_findEntitySets
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._findEntitySets = function(oMetadata) {
+	MockServer.prototype._findEntitySets = function(oMetadata) {
 		
 		// here we need to analyse the EDMX and identify the entity sets
 		var mEntitySets = {};
+		var oPrincipals = jQuery(oMetadata).find("Principal");
+		var oDependents = jQuery(oMetadata).find("Dependent");
+		
 		jQuery(oMetadata).find("EntitySet").each(function(iIndex, oEntitySet) {
 			var $EntitySet = jQuery(oEntitySet);
 			// split the namespace and the name of the entity type (namespace could have dots inside)
@@ -66427,6 +66863,7 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				"schema": aEntityTypeParts[2],
 				"type": aEntityTypeParts[3],
 				"keys": [],
+				"keysType" : {},
 				"navprops": {}
 			};
 		});
@@ -66434,24 +66871,43 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		// helper function to find the entity set and property reference
 		// for the given role name
 		var fnResolveNavProp = function(sRole, bFrom) {
-			var sEntitySet = jQuery(jQuery(oMetadata).find("End[Role=" + sRole + "][EntitySet]")).attr("EntitySet");
-			var aPropRef = [];
-			jQuery(oMetadata).find("[Role=" + sRole + "]").find("PropertyRef").each(function(iIndex, oPropRef) {
-				aPropRef.push(jQuery(oPropRef).attr("Name"));
+			var aRoleEnd = jQuery(oMetadata).find("End[Role=" + sRole + "]");
+			var sEntitySet;
+			var sMultiplicity;
+			jQuery.each(aRoleEnd, function(i,oValue){
+				if(!!jQuery(oValue).attr("EntitySet")){
+					sEntitySet = jQuery(oValue).attr("EntitySet");
+				}else{
+					sMultiplicity = jQuery(oValue).attr("Multiplicity");
+				}
 			});
+			var aPropRef = [];			
+			var oPrinDeps = (bFrom) ? oPrincipals :  oDependents;
+			jQuery(oPrinDeps).each(function(iIndex, oPrinDep){ 
+				if (sRole == (jQuery(oPrinDep).attr("Role"))) {	
+					jQuery(oPrinDep).children("PropertyRef").each(function(iIndex, oPropRef) {
+						aPropRef.push(jQuery(oPropRef).attr("Name"));
+					});
+					return false;
+				}
+			});				
 			return {
 				"role": sRole,
 				"entitySet": sEntitySet,
-				"propRef": aPropRef
+				"propRef": aPropRef,
+				"multiplicity" : sMultiplicity
 			};
 		};
 		
-		// find the navigation properties of the entity types
+		// find the keys and the navigation properties of the entity types
 		jQuery.each(mEntitySets, function(sEntitySetName, oEntitySet) {
 			// find the keys
-			var aKeys = jQuery(oMetadata).find("EntityType[Name=" + oEntitySet.type + "] PropertyRef");
+			var $EntityType = jQuery(oMetadata).find("EntityType[Name=" + oEntitySet.type + "]");
+			var aKeys = jQuery($EntityType).find("PropertyRef");
 			jQuery.each(aKeys, function(iIndex, oPropRef) {
-				oEntitySet.keys.push(jQuery(oPropRef).attr("Name"));
+				var sKeyName = jQuery(oPropRef).attr("Name");
+				oEntitySet.keys.push(sKeyName);
+				oEntitySet.keysType[sKeyName] = jQuery($EntityType).find("Property[Name="+ sKeyName +"]").attr("Type");
 			});
 			// resolve the navigation properties
 			var aNavProps = jQuery(oMetadata).find("EntityType[Name=" + oEntitySet.type + "] NavigationProperty");
@@ -66459,8 +66915,8 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				var $NavProp = jQuery(oNavProp);
 				oEntitySet.navprops[$NavProp.attr("Name")] = {
 					"name": $NavProp.attr("Name"),
-					"from": fnResolveNavProp($NavProp.attr("FromRole")),
-					"to": fnResolveNavProp($NavProp.attr("ToRole"))
+					"from": fnResolveNavProp($NavProp.attr("FromRole"), true),
+					"to": fnResolveNavProp($NavProp.attr("ToRole"), false)
 				};
 			})
 		});
@@ -66476,8 +66932,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {XMLDocument} oMetadata the metadata XML document
 	 * @return {map} map of entity types
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_findEntityTypes
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._findEntityTypes = function (oMetadata) {
+	MockServer.prototype._findEntityTypes = function (oMetadata) {
 		var mEntityTypes = {};
 		jQuery(oMetadata).find("EntityType").each(function (iIndex, oEntityType) {
 			var $EntityType = jQuery(oEntityType);
@@ -66488,10 +66946,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 			};
 			$EntityType.find("Property").each(function (iIndex, oProperty) {
 				var $Property = jQuery(oProperty);
-				var aPropertyTypeParts = $Property.attr("Type").split(".");
+				var type = $Property.attr("Type");
 				mEntityTypes[$EntityType.attr("Name")].properties.push({
-					"schema": aPropertyTypeParts[0],
-					"type": aPropertyTypeParts[1],
+					"schema": type.substring(0, type.lastIndexOf(".")),
+					"type": type.substring(type.lastIndexOf(".") + 1),
 					"name": $Property.attr("Name"),
 					"precision": $Property.attr("Precision"),
 					"scale": $Property.attr("Scale")
@@ -66512,8 +66970,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {XMLDocument} oMetadata the metadata XML document
 	 * @return {map} map of complex types
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_findComplexTypes
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._findComplexTypes = function (oMetadata) {
+	MockServer.prototype._findComplexTypes = function (oMetadata) {
 		var mComplexTypes = {};
 		jQuery(oMetadata).find("ComplexType").each(function (iIndex, oComplexType) {
 			var $ComplexType = jQuery(oComplexType);
@@ -66523,10 +66983,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 			};
 			$ComplexType.find("Property").each(function (iIndex, oProperty) {
 				var $Property = jQuery(oProperty);
-				var aPropertyTypeParts = $Property.attr("Type").split(".");
+				var type = $Property.attr("Type");
 				mComplexTypes[$ComplexType.attr("Name")].properties.push({
-					"schema": aPropertyTypeParts[0],
-					"type": aPropertyTypeParts[1],
+					"schema": type.substring(0, type.lastIndexOf(".")),
+					"type": type.substring(type.lastIndexOf(".") + 1),
 					"name": $Property.attr("Name"),
 					"precision": $Property.attr("Precision"),
 					"scale": $Property.attr("Scale")
@@ -66539,24 +66999,37 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 	/**
 	 * creates a key string for the given keys and entry
-	 * @param {array} aKeys string array of key names
+	 * @param {object} oEntitySet the entity set info
 	 * @param {object} oEntry entity set entry which contains the keys as properties
 	 * @return {string} the keys string
 	 * @private 
+	 * @name sap.ui.core.util.MockServer#_createKeysString
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._createKeysString = function(aKeys, oEntry) {
+	MockServer.prototype._createKeysString = function(oEntitySet, oEntry) {
 		// creates the key string for an entity
+		var that = this;
 		var sKeys = "";
 		if (oEntry) {
-			jQuery.each(aKeys, function(iIndex, sKey) {
+			jQuery.each(oEntitySet.keys, function(iIndex, sKey) {
 				if (sKeys) {
 					sKeys += ",";
 				}
-				sKeys += sKey + "='" + oEntry[sKey] + "'"; // TODO: consider datatype
-			});
-		}
-		return sKeys;
-	};
+
+				var oKeyValue = oEntry[sKey];
+				if(oEntitySet.keysType[sKey] === "Edm.String"){
+					sKeys += sKey + "='" + oKeyValue + "'"; 
+				}
+				else if(oEntitySet.keysType[sKey] === "Edm.DateTime"){
+					sKeys += sKey + "=" + that._getDateInMin(oKeyValue); 
+				}
+				else{
+					sKeys += sKey + "=" + oKeyValue; 
+				}
+		});
+	}
+	return sKeys;
+};
 	
 	
 	/**
@@ -66569,8 +67042,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {string} sBaseUrl the base url which contains the mock data in JSON files or if the url is pointing to a JSON file containing all entity types
 	 * @return {array} the mockdata arary containing the data for the entity sets
 	 * @private 
+	 * @name sap.ui.core.util.MockServer#_loadMockdata
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._loadMockdata = function(mEntitySets, sBaseUrl) {
+	MockServer.prototype._loadMockdata = function(mEntitySets, sBaseUrl) {
 		// load the entity sets (map the entity type data to the entity set)
 		var that = this,
 		    mEntityTypesData = {};
@@ -66629,8 +67104,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {object} oEntitySet the entity set info
 	 * @param {object} oMockData mock data for the entity set
 	 * @private 
+	 * @name sap.ui.core.util.MockServer#_enhanceWithMetadata
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._enhanceWithMetadata = function(oEntitySet, oMockData) {
+	MockServer.prototype._enhanceWithMetadata = function(oEntitySet, oMockData) {
 		if (oMockData) {
 			var that = this,
 			    sRootUri = this._getRootUri(),
@@ -66638,15 +67115,15 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 			jQuery.each(oMockData, function(iIndex, oEntry) {
 				// add the metadata for the entry (type is pointing to the EntityType which is required by datajs to resolve properties)
 				oEntry.__metadata = {
-					id: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet.keys, oEntry) + ")",
+					id: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet, oEntry) + ")",
 					type: oEntitySet.schema + "." + oEntitySet.type, 
-					uri: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet.keys, oEntry) + ")"
+					uri: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet, oEntry) + ")"
 				};
 				// add the navigation properties
 				jQuery.each(oEntitySet.navprops, function(sKey, oNavProp) {
 					oEntry[sKey] = {
 							__deferred: {
-									uri: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet.keys, oEntry) + ")/" + sKey
+									uri: sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet, oEntry) + ")/" + sKey
 							}
 					};
 				});
@@ -66654,6 +67131,44 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		}
 	};
 
+	/**
+	 * verify entitytype keys type ((e.g. Int, String, SByte, Time, DateTimeOffset, Decimal, Double, Single, Boolean, DateTime)
+	 * @param {oEntitySet} the entity set for verification
+	 * @param {aRequestedKeys} aRequestedKeys the requested Keys
+	 * @return boolean
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_isRequestedKeysValid
+	 * @function
+	 */
+	MockServer.prototype._isRequestedKeysValid = function (oEntitySet, aRequestedKeys) {
+		
+		if (aRequestedKeys.length === 1 && !aRequestedKeys[0].split('=')[1]) {
+			aRequestedKeys = [oEntitySet.keys[0] + "=" + aRequestedKeys[0]];
+		}
+		
+		for ( var i = 0; i < aRequestedKeys.length; i++ ) {
+			var aKey = aRequestedKeys[i].split('=');
+			var sKey = this._trim(aKey[0]);
+			var sRequestValue = this._trim(aKey[1]);
+			var sFirstChar = sRequestValue.charAt(0);
+			var sLastChar =  sRequestValue.charAt(sRequestValue.length -1);
+
+			if(oEntitySet.keysType[sKey] === "Edm.String"){
+				if (sFirstChar !== "'" || sLastChar !== "'"){
+					return false;
+				} 
+			}else if(oEntitySet.keysType[sKey] === "Edm.DateTime"){
+				if (sFirstChar === "'" || sLastChar !== "'"){
+					return false;
+				} 
+			}else {
+				if(sFirstChar === "'" || sLastChar === "'"){
+					return false;
+				}
+			}
+		}
+		return true;
+	};
 	
 	/**
 	 * Takes a string '<poperty1>=<value1>, <poperty2>=<value2>,...' and creates an
@@ -66664,16 +67179,19 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {object}
 	 *            object consisting of the parsed properties
 	 */	
-	sap.ui.core.util.MockServer.prototype._parseKeys = function(sKeys) {
+	MockServer.prototype._parseKeys = function(sKeys) {
 	    var oResult = {}; // default is an empty hash map
-	    var sToBeSplit = sKeys.slice(1, sKeys.length-1);
-	    var aProps = sToBeSplit.split(",");
-	    for (var i=0; i<aProps.length; i++) {
-	        var aPair = aProps[i].split("=");
-	        if (aPair.length === 2) {
-	            oResult[aPair[0]] = aPair[1].slice(1,aPair[1].length-1);
-	        }
-	    };
+		    var aProps = sKeys.split(",");
+		    for (var i=0; i<aProps.length; i++) {
+		        var aPair = aProps[i].split("=");
+		        if (aPair.length === 2) {
+		        	if (aPair[1].indexOf('\'') === 0) {
+		            oResult[aPair[0]] = aPair[1].slice(1,aPair[1].length-1);
+		        	} else {
+		        		oResult[aPair[0]] = aPair[1];
+		        	}
+		        }
+		    };
 	    return oResult;
 	};
 	
@@ -66689,14 +67207,17 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 *            oKeys contains already defined key values
 	 * @param {oEntity}
 	 *            oEntity the result object, where the key property/value pairs merged into
+	 * @name sap.ui.core.util.MockServer#_completeKey
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._completeKey = function(oEntitySet,
-			oKeys, oEntity) {
+	MockServer.prototype._completeKey = function(oEntitySet, oKeys, oEntity) {
 		if (oEntity) {
 			jQuery.each(oEntitySet.keys, function(iIndex, sKey) {
 				if (oKeys[sKey]) {
-					// take over the specified key value
-					oEntity[sKey] = oKeys[sKey];
+					if (!oEntity[sKey]) {
+						// take over the specified key value
+						oEntity[sKey] = oKeys[sKey];
+						}
 				} else {
 					// create a new key value
 					if (!oEntitySet.iSequence) {
@@ -66724,31 +67245,60 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 *            mComplexTypes map of the complex types
 	 * @return {object} the mocked entity
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_generateDataFromEntity
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._generateDataFromEntity = function(oEntityType, iIndex, mComplexTypes) {
+	MockServer.prototype._generateDataFromEntity = function(oEntityType, iIndex, mComplexTypes) {
 		var oEntity = {};
 		for (var i = 0; i < oEntityType.properties.length; i++) {
 			var oProperty = oEntityType.properties[i];
 			var oPropertyValue = "";
-			if (oProperty.schema == "Edm") {
-				if (oProperty.type == "String") {
-					oPropertyValue = oEntityType.name + "_" + iIndex + "_" + oProperty.name;
-				} else if (oProperty.type == "DateTime") {
-					var date = new Date();
-					date.setFullYear(2000 + Math.floor(Math.random() * 20));
-					date.setDate(Math.floor(Math.random() * 30));
-					date.setMonth(Math.floor(Math.random() * 12));
-					oPropertyValue = "/Date(" + date.getTime() + ")/";
-				} else if (oProperty.type == "Int32") {
-					oPropertyValue = Math.floor(Math.random() * 10000);
-				} else if (oProperty.type == "Decimal") {
-					oPropertyValue = Math.floor(Math.random() * 1000000) / 100;
+				switch (oProperty.type){
+					case "String": 
+						oEntity[oProperty.name] = oProperty.name + "_" + iIndex;
+						break;
+					case "DateTime":
+						var date = new Date();
+						date.setFullYear(2000 + Math.floor(Math.random() * 20));
+						date.setDate(Math.floor(Math.random() * 30));
+						date.setMonth(Math.floor(Math.random() * 12));
+						date.setMilliseconds(0);
+						oEntity[oProperty.name] = "/Date(" + date.getTime() + ")/";
+						break;
+					case "Int16":
+					case "Int32":
+					case "Int64":
+						oEntity[oProperty.name] = Math.floor(Math.random() * 10000);
+						break;
+					case "Decimal":
+						oEntity[oProperty.name] = Math.floor(Math.random() * 1000000) / 100;
+						break;
+					case "Boolean": 
+						oEntity[oProperty.name] = Math.random()<.5;		
+						break;
+					case "Byte":
+						oEntity[oProperty.name] = Math.floor(Math.random()*10);
+						break;
+					case "Double":
+						oEntity[oProperty.name] = Math.random()*10;
+						break;
+					case "Single":
+						oEntity[oProperty.name] = Math.random() * 1000000000;
+						break;
+					case "SByte":
+						oEntity[oProperty.name] = Math.floor(Math.random()*10);
+						break;
+					case "Time":
+						oEntity[oProperty.name] = Math.floor(Math.random()*23)+":"+ Math.floor(Math.random()*59)+":"+Math.floor(Math.random()*59);
+						break;
+					case "Guid":
+					case "DateTimeOffset":
+						break; //TODO: generate values for GUID and DateTimeOffset
+					default:	
+						oEntity[oProperty.name] = this._generateDataFromEntity(mComplexTypes[oProperty.type], iIndex);
 				}
-			} else {
-				oPropertyValue = this._generateDataFromEntity(mComplexTypes[oProperty.type], iIndex)
-			}
-			oEntity[oProperty.name] = oPropertyValue;
-		}
+
+		}		
 		return oEntity;
 	};
 	
@@ -66760,8 +67310,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {map} mComplexTypes map of the complex types
 	 * @return {array} the array of mocked data
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_generateDataFromEntitySet
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._generateDataFromEntitySet = function(oEntitySet, mEntityTypes, mComplexTypes) {
+	MockServer.prototype._generateDataFromEntitySet = function(oEntitySet, mEntityTypes, mComplexTypes) {
 		var oEntityType = mEntityTypes[oEntitySet.type];
 		var aMockedEntries = [];
 		for ( var i = 0; i < 100; i++) {
@@ -66776,8 +67328,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {map} mEntitySets map of the entity sets
 	 * @param {object} oMetadata the complete metadata for the service
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_generateMockdata
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._generateMockdata = function(mEntitySets, oMetadata) {
+	MockServer.prototype._generateMockdata = function(mEntitySets, oMetadata) {
 		// load the entity sets (map the entity type data to the entity set)
 		var that = this, sRootUri = this._getRootUri(), oMockData = {};
 
@@ -66790,14 +67344,14 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 			jQuery.each(oMockData[sEntitySetName], function(iIndex, oEntry) {
 				// add the metadata for the entry
 				oEntry.__metadata = {
-					uri : sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet.keys, oEntry) + ")",
+					uri : sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet, oEntry) + ")",
 					type : oEntitySet.schema + "." + oEntitySet.type
 				};
 				// add the navigation properties
 				jQuery.each(oEntitySet.navprops, function(sKey, oNavProp) {
 					oEntry[sKey] = {
 						__deferred : {
-							uri : sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet.keys, oEntry) + ")/" + sKey
+							uri : sRootUri + sEntitySetName + "(" + that._createKeysString(oEntitySet, oEntry) + ")/" + sKey
 						}
 					};
 				});
@@ -66806,6 +67360,46 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		this._oMockdata = oMockData;
 	};
 
+	// helper function to resolve a navigation and return the matching entities
+	MockServer.prototype._resolveNavigation = function(sEntitySetName, oFromRecord, sNavProp) {
+		var oEntitySet = this._mEntitySets[sEntitySetName];
+		var oNavProp = oEntitySet.navprops[sNavProp];
+		if(!oNavProp){
+			throw new Error("404");
+		}
+		
+		var aEntries = [];
+		var iPropRefLength = oNavProp.from.propRef.length;
+		//if there is no ref.constraint, the data is return according to the multiplicity 
+		if(iPropRefLength === 0 ){
+			if(oNavProp.to.multiplicity === "*"){
+				return this._oMockdata[oNavProp.to.entitySet];
+			}
+			else{
+				aEntries.push(this._oMockdata[oNavProp.to.entitySet][0]);
+				return aEntries;
+			}
+		}
+		// maybe we can do symbolic links with a function to handle the navigation properties 
+		// instead of copying the data into the nested structures
+		jQuery.each(this._oMockdata[oNavProp.to.entitySet], function(iIndex, oToRecord) {
+
+			// check for property ref being identical
+			var bEquals = true;
+			for (var i = 0; i < iPropRefLength; i++) {
+				if (oFromRecord[oNavProp.from.propRef[i]] != oToRecord[oNavProp.to.propRef[i]]) {
+					bEquals = false;
+					break;
+				}
+			}
+			// if identical we add the to record
+			if (bEquals) {
+				aEntries.push(oToRecord);
+			}
+
+		});
+		return aEntries;
+	};
 
 	
 	/**
@@ -66817,59 +67411,64 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {string} sMetadataUrl url to the service metadata document
 	 * @param {string} sMockdataBaseUrl base url which contains the mockdata as single .json files or the .json file containing the complete mock data 
 	 * 
-	 * @experimental functionality might be enhanced in future - right now only read is supported
+	 * @experimental functionality might be enhanced in future
 	 * @since 1.13.2
 	 * @public
+	 * @name sap.ui.core.util.MockServer#simulate
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype.simulate = function(sMetadataUrl, sMockdataBaseUrl) {
-
+	MockServer.prototype.simulate = function(sMetadataUrl, sMockdataBaseUrl) {
 		var that = this;
 		this._sMetadataUrl = sMetadataUrl;
 		this._sMockdataBaseUrl = sMockdataBaseUrl;
 		
 		this._refreshData();
 		
-		var mEntitySets = this._findEntitySets(this._oMetadata);
-		
 		// helper to find the entity set entry for a given entity set name and the keys of the entry
 		var fnGetEntitySetEntry = function(sEntitySetName, sKeys) {
 			var oFoundEntry;
+			var oEntitySet = that._mEntitySets[sEntitySetName];
+			var aKeys = oEntitySet.keys;
+			// split keys
+			var aRequestedKeys = sKeys.split(',');
+
+			// check number of keys to be equal to the entity keys and validates keys type for quotations
+			if(aRequestedKeys.length !== aKeys.length || !that._isRequestedKeysValid(oEntitySet, aRequestedKeys)) {
+				return oFoundEntry;
+			}
+			
+			if (aRequestedKeys.length === 1 && !aRequestedKeys[0].split('=')[1]) {
+				aRequestedKeys = [aKeys[0] + "=" + aRequestedKeys[0]];
+			}
 			jQuery.each(that._oMockdata[sEntitySetName], function(iIndex, oEntry) {
-				// TODO - consider to implement a proper check
-				if (sKeys === "(" + that._createKeysString(mEntitySets[sEntitySetName].keys, oEntry) + ")") {
-					oFoundEntry = {index: iIndex, entry: oEntry};
-					return false; // = break
+				// check each key for existence and value
+				for ( var i = 0; i < aRequestedKeys.length; i++) {
+					var aKeyVal = aRequestedKeys[i].split('=');
+					var sKey = that._trim(aKeyVal[0]);
+					//key doesn't match, continue to next entry
+					if(jQuery.inArray(sKey, aKeys) === -1){
+						return true; // = continue
+					}
+					
+					var sNewValue = that._trim(aKeyVal[1]);
+					var sOrigiValue = oEntry[sKey];
+					if(oEntitySet.keysType[sKey] === "Edm.String"){
+						//in case of string, remove the quotations
+						sNewValue = sNewValue.replace(/^\'|\'$/g,'');
+					}
+					else if (oEntitySet.keysType[sKey] === "Edm.DateTime"){
+							sOrigiValue = that._getDateInMin(sOrigiValue);
+					}
+
+					//value doesn't match, continue to next entry
+					if ( sOrigiValue !== sNewValue) {
+						return true; // = continue
+					}
 				}
+				oFoundEntry = {index: iIndex, entry: oEntry};
+				return false; // = break
 			});
 			return oFoundEntry;
-		};
-		
-		// helper function to resolve a navigation and return the matching entities
-		var fnResolveNavigation = function(sEntitySetName, oFromRecord, sNavProp) {
-			var oNavProp = mEntitySets[sEntitySetName].navprops[sNavProp];
-			// maybe we can do symbolic links with a function to handle the navigation properties 
-			// instead of copying the data into the nested structures
-			if (oNavProp && oNavProp.to) {
-				var aEntries = [];
-				jQuery.each(that._oMockdata[oNavProp.to.entitySet], function(iIndex, oToRecord) {
-					
-					// check for property ref being identical
-					var bEquals = true;
-					for (var i = 0, l = oNavProp.from.propRef.length; i < l; i++) {
-						if (oFromRecord[oNavProp.from.propRef[i]] != oToRecord[oNavProp.to.propRef[i]]) {
-							bEquals = false;
-							break;
-						}
-					}
-					
-					// if identical we add the to record
-					if (bEquals) {
-						aEntries.push(oToRecord);
-					}
-					
-				});
-				return aEntries;
-			}
 		};
 		
 
@@ -66892,9 +67491,12 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		var initNewEntity = function(oXhr, sTargetEntityName, sKeys, sUrlParams) {
 			var oEntity = JSON.parse(oXhr.requestBody);
 			if (oEntity) {
-				var oKeys = that._parseKeys(sKeys);
-				that._completeKey(mEntitySets[sTargetEntityName], oKeys, oEntity);
-				that._enhanceWithMetadata(mEntitySets[sTargetEntityName], [oEntity]);
+				if (sKeys) {
+					var oKeys = that._parseKeys(sKeys);
+					//TODO is it allowed to create/update an entry without supplying all its keys?
+					that._completeKey(that._mEntitySets[sTargetEntityName], oKeys, oEntity);
+				}
+				that._enhanceWithMetadata(that._mEntitySets[sTargetEntityName], [oEntity]);
 				return oEntity;
 			}
 			return null;
@@ -66906,13 +67508,11 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		// add the CSRF-token request
         aRequests.push({
             method : "GET",
-            path : "",
+            path : new RegExp(".*"),
             response : function(oXhr) {
                 if (oXhr.requestHeaders["x-csrf-token"] == "Fetch" ) {
                     oXhr.respond(200, { "X-CSRF-Token": "42424242424242424242424242424242" });
-                } else {
-                    oXhr.respond(404);
-                }
+                } 
             }
         });
 		
@@ -66925,45 +67525,157 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				oXhr.respond(200, { "Content-Type": "application/xml;charset=utf-8" }, jQuery.sap.serializeXML(that._oMetadata));
 			}
 		});
+
+		// batch processing
+		aRequests.push({
+			method : "POST",
+			path : new RegExp("\\$batch([?#].*)?"),
+			response : function(oXhr) {
+				var fnResovleStatus = function(iStatusCode) {
+					switch (iStatusCode) {
+					case 200:
+						return "200 OK";
+					case 204:
+						return "204 No Content";
+					case 201:
+						return "201 Created";
+					case 400:
+						return "400 Bad Request";
+					case 404:
+						return "404 Not Found";
+					default:
+						break;
+					}
+				};
+				var fnBuildResponseString = function(oResponse) {
+					var sResponseData = JSON.stringify(oResponse.data) || "";
+					if (sResponseData == 'null') {
+						sResponseData = "";
+					}
+					return "HTTP/1.1 " + fnResovleStatus(oResponse.statusCode) + "\r\nContent-Type: application/json\r\nContent-Length: "
+					+ sResponseData.length + "\r\ndataserviceversion: 2.0\r\n\r\n" + sResponseData + "\r\n";
+				};
+				// START BATCH HANDLING
+				var sRequestBody = oXhr.requestBody;
+				var oBoundaryRegex = new RegExp("--batch_[a-z0-9-]*");
+				var sBoundary = oBoundaryRegex.exec(sRequestBody)[0];
+				// boundary is defined in request header
+				if (!!sBoundary) {
+					var aBatchBodyResponse = [];
+					//split requests by boundary
+					var aBatchRequests = sRequestBody.split(sBoundary);
+					var sServiceURL = oXhr.url.split("$")[0];
+
+					var rPut = new RegExp("PUT (.*) HTTP");
+					var rPost = new RegExp("POST (.*) HTTP");
+					var rDelete = new RegExp("DELETE (.*) HTTP");
+					var rGet = new RegExp("GET (.*) HTTP");
+
+					for ( var i = 1; i < aBatchRequests.length - 1; i++) {
+						var sBatchRequest = aBatchRequests[i];
+						//GET Handling
+						if (rGet.test(sBatchRequest) && sBatchRequest.indexOf("multipart/mixed") == -1) {
+							//In case of POST, PUT or DELETE not in ChangeSet
+							if (rPut.test(sBatchRequest) || rPost.test(sBatchRequest) || rDelete.test(sBatchRequest)) {
+								oXhr.respond(400, null, "The Data Services Request could not be understood due to malformed syntax");
+								return;
+							} 
+							var oResponse = jQuery.sap.sjax({
+								url : sServiceURL + rGet.exec(sBatchRequest)[1],
+								dataType : "json"
+							});
+							aBatchBodyResponse.push("\r\nContent-Type: application/http\r\n" + "Content-Length: " + fnBuildResponseString(oResponse).length
+									+ "\r\n" + "content-transfer-encoding: binary\r\n\r\n" + fnBuildResponseString(oResponse));
+						}
+						//CUD handling within changesets    	   
+						else {
+							var aChangesetResponses = [];
+
+							// copying the mock data to support rollback
+							var oCopiedMockdata = jQuery.extend(true, {}, that._oMockdata);
+
+							var fnCUDRequest = function(rCUD, sData, sType) {
+								var oResponse = jQuery.sap.sjax({
+									type : sType,
+									url : sServiceURL + rCUD.exec(sChangesetRequest)[1],
+									dataType : "json",
+									data : sData
+								});
+
+								if (oResponse.statusCode == 400 || oResponse.statusCode == 404) {
+									var sError = "\r\nHTTP/1.1 " + fnResovleStatus(oResponse.statusCode)
+									+ "\r\nContent-Type: application/json\r\nContent-Length: 0\r\n\r\n";
+									throw new Error(sError);
+								}
+								aChangesetResponses.push(fnBuildResponseString(oResponse));
+							};
+							// extract changeset
+							var sChangesetBoundary = sBatchRequest.substring(sBatchRequest.indexOf("boundary=") + 9, sBatchRequest
+									.indexOf("\r\n\r\n"));
+							var aChangesetRequests = sBatchRequest.split("--" + sChangesetBoundary);
+
+							try {
+								for ( var j = 1; j < aChangesetRequests.length - 1; j++) {
+									var sChangesetRequest = aChangesetRequests[j];
+									//Check if GET exists in ChangeSet - Return 400
+									if (rGet.test(sChangesetRequest)) {
+										// rollback
+										that._oMockdata = oCopiedMockdata;
+										oXhr.respond(400, null, "The Data Services Request could not be understood due to malformed syntax");
+										return;
+									} else if (rPut.test(sChangesetRequest)) {
+										// PUT
+										var sData = sChangesetRequest.substring(sChangesetRequest.indexOf("{"),
+												sChangesetRequest.lastIndexOf("}") + 1).replace(/\\/g, '');
+										fnCUDRequest(rPut, sData, 'PUT');
+									} else if (rPost.test(sChangesetRequest)) {
+										// POST
+										var sData = sChangesetRequest.substring(sChangesetRequest.indexOf("{"),
+												sChangesetRequest.lastIndexOf("}") + 1).replace(/\\/g, '');
+										fnCUDRequest(rPost, sData, 'POST');
+
+									} else if (rDelete.test(sChangesetRequest)) {
+										// DELETE
+										fnCUDRequest(rDelete, null, 'DELETE');
+									}
+								}//END ChangeSets FOR
+								var sChangesetRespondData = "\r\nContent-Type: multipart/mixed; boundary=ejjeeffe1\r\n\r\n--ejjeeffe1";
+								for ( var k = 0; k < aChangesetResponses.length; k++) {
+									sChangesetRespondData += "\r\nContent-Type: application/http\r\n" + "Content-Length: "
+									+ aChangesetResponses[k].length + "\r\n" + "content-transfer-encoding: binary\r\n\r\n"
+									+ aChangesetResponses[k] + "--ejjeeffe1";
+								}
+								sChangesetRespondData += "--\r\n";
+								aBatchBodyResponse.push(sChangesetRespondData);
+							} catch (oError) {
+								that._oMockdata = oCopiedMockdata;
+								var sError = "\r\nContent-Type: application/http\r\n" + "Content-Length: " + oError.message.length
+								+ "\r\n" + "content-transfer-encoding: binary\r\n\r\n" + oError.message;
+								aBatchBodyResponse.push(sError);
+							}
+						} //END ChangeSets handling	 
+					}//END Main FOR
+					//CREATE BATCH RESPONSE
+					var sRespondData = "--ejjeeffe0";
+					for ( var i = 0; i < aBatchBodyResponse.length; i++) {
+						sRespondData += aBatchBodyResponse[i] + "--ejjeeffe0";
+					}
+					sRespondData += "--";
+					var mHeaders = {
+							'Content-Type' : "multipart/mixed; boundary=ejjeeffe0"
+					};
+					oXhr.respond(202, mHeaders, sRespondData);
+					//no boundary is defined
+				} else {
+					oXhr.respond(202);
+				}
+			}
+		});
+
 		
 		// add entity sets
-		jQuery.each(mEntitySets, function(sEntitySetName, oEntitySet) {
+		jQuery.each(this._mEntitySets, function(sEntitySetName, oEntitySet) {
 			
-			// navigation property support
-			jQuery.each(oEntitySet.navprops, function(sKey, oNavProp) {
-				
-				// support $count requests on navigation properties
-				aRequests.push({
-					method : "GET",
-					path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/(" + sKey + ")/\\$count/?(.*)?"),
-					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {
-						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
-						if (oEntry) {
-							var aEntries = fnResolveNavigation(sEntitySetName, oEntry.entry, sNavProp);
-							oXhr.respond(200, { "Content-Type": "text/plain;charset=utf-8" }, "" + aEntries.length);
-						} else {
-							oXhr.respond(404);
-						}
-					}
-				});
-				
-				// support access of the entity set navigation property (collection)
-				aRequests.push({
-					method : "GET",
-					path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/(" + sKey + ")/?(.*)?"),
-					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {
-						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
-						if (oEntry) {
-							var aEntries = fnResolveNavigation(sEntitySetName, oEntry.entry, sNavProp);
-							oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d: {results: aEntries }}));
-						} else {
-							oXhr.respond(404);
-						}
-					}
-				});
-				
-			});
-
 			// support $count requests on entity set
 			aRequests.push({
 				method : "GET",
@@ -66973,25 +67685,61 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				}
 			});
 			
-			
-			// support access of the entry of an entity set (collection)
+			// support entity set with and without OData system query options
 			aRequests.push({
 				method : "GET",
-				path : new RegExp("(" + sEntitySetName + ")"),
-				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
-					oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d : { results : that._oMockdata[sEntitySetName]}}));
+				path : new RegExp("(" + sEntitySetName + ")/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
+				response : function(oXhr, sEntitySetName, sUrlParams) {
+					var aData = that._oMockdata[sEntitySetName];
+					if(aData){
+						// using extend to copy the data to a new array
+						var oFilteredData = {results :jQuery.extend(true, [], aData)};
+						if (sUrlParams) {
+							// sUrlParams should not contains ?, but only & in its stead
+							var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+							if (aUrlParams.length > 1){
+								aUrlParams = that._orderQueryOptions(aUrlParams);
+							}	
+							try{
+								jQuery.each(aUrlParams, function(iIndex, sQuery) {
+									that._applyQueryOnCollection(oFilteredData, sQuery, sEntitySetName);
+								});
+							}catch(e){
+								oXhr.respond(parseInt(e.message || e.number, 10));
+								return;
+							}
+						}
+						oXhr.respond(200, {	"Content-Type" : "application/json;charset=utf-8"	}, JSON.stringify({	d : oFilteredData}));		
+					}else{
+						oXhr.respond(404);
+					}
 				}
 			});
 			
-			
-			
-			// support access of the entry of an entity set (collection)
+			// support access of a single entry of an entity set with and without OData system query options
 			aRequests.push({
 				method : "GET",
-				path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/?(.*)?"),
+				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
 				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
-					var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
-					if (oEntry) {
+					
+					var oEntry = jQuery.extend(true, {}, fnGetEntitySetEntry(sEntitySetName, sKeys));
+					if (!jQuery.isEmptyObject(oEntry)) {
+						if (sUrlParams) {
+							// sUrlParams should not contains ?, but only & in its stead
+							var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+							if (aUrlParams.length > 1){
+								aUrlParams = that._orderQueryOptions(aUrlParams);
+							}
+							
+							try{
+								jQuery.each(aUrlParams, function(iIndex, sQuery) {
+									oEntry.entry = that._applyQueryOnEntry(oEntry.entry, sQuery, sEntitySetName);
+								});
+							}catch(e){
+								oXhr.respond(parseInt(e.message || e.number, 10));
+								return;
+							 }
+						}
 						oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d: oEntry.entry}));
 					} else {
 						oXhr.respond(404);
@@ -66999,20 +67747,87 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				}
 			});
 			
+			// support navigation property 
+			jQuery.each(oEntitySet.navprops, function(sNavName, oNavProp) {
+				// support $count requests on navigation properties
+				aRequests.push({
+					method : "GET",
+					path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/(" + sNavName + ")/\\$count/?(.*)?"),
+					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {
+						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
+						if (oEntry) {
+							var aEntries = that._resolveNavigation(sEntitySetName, oEntry.entry, sNavProp);
+							oXhr.respond(200, { "Content-Type": "text/plain;charset=utf-8" }, "" + aEntries.length);
+						} else {
+							oXhr.respond(404);
+						}
+					}
+				});
+				
+				// support access of navigation property with and without OData system query options
+				aRequests.push({
+					method : "GET",
+					path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/(" + sNavName + ")/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
+					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {					
+						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
+						if (oEntry) {
+							var aEntries,oFilteredData={}; 
+							try{
+								aEntries = that._resolveNavigation(sEntitySetName, oEntry.entry, sNavProp);
+
+								if(aEntries){
+									var sMultiplicity = that._mEntitySets[sEntitySetName].navprops[sNavProp].to.multiplicity;
+									if(sMultiplicity === "*"){
+										oFilteredData = {results : jQuery.extend(true, [], aEntries)};
+									}else{
+										oFilteredData = jQuery.extend(true, {}, aEntries[0]);
+									}
+									if (sUrlParams) {
+										// sUrlParams should not contains ?, but only & in its stead
+										var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+
+										if (aUrlParams.length > 1){
+											aUrlParams = that._orderQueryOptions(aUrlParams);
+										}	
+
+										if(sMultiplicity === "*"){
+											jQuery.each(aUrlParams, function(iIndex, sQuery) {
+												that._applyQueryOnCollection(oFilteredData, sQuery, that._mEntitySets[sEntitySetName].navprops[sNavProp].to.entitySet);
+											});
+										}else{
+											jQuery.each(aUrlParams, function(iIndex, sQuery) {
+												oFilteredData = that._applyQueryOnEntry(oFilteredData, sQuery, that._mEntitySets[sEntitySetName].navprops[sNavProp].to.entitySet);
+											});
+										}
+									}
+								}
+								oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d: oFilteredData}));
+								return;
+							}catch (e) {
+								oXhr.respond(parseInt(e.message || e.number, 10));
+								return;
+							}
+						}
+						oXhr.respond(404);
+					}
+				});
+				
+			});
+			
 			// support creation of an entity of a specific type
 			aRequests.push({
 				method : "POST",
-				path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/?(.*)?"),
-				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
+				path : new RegExp("(" + sEntitySetName + ")(\\(([^/\\?#]+)\\)/?(.*)?)?"),
+				response : function(oXhr, sEntitySetName, group2 ,sKeys, sNavName) {
 					var sRespondData = null;
 					var sRespondContentType = null;
 					var iResult = 405; // default: method not allowed
-					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sUrlParams);
+					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sNavName);
 					if (sTargetEntityName) {
-						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sUrlParams);
+						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sNavName);
 						if (oEntity) {
-							var sUri = that._getRootUri() + sTargetEntityName + "(" + that._createKeysString(mEntitySets[sTargetEntityName].keys, oEntity) + ")";
-							sRespondData = '{"uri": "' + sUri + '" }';
+							var sUri = that._getRootUri() + sTargetEntityName + "(" + that._createKeysString(that._mEntitySets[sTargetEntityName], oEntity) + ")";
+							sRespondData = JSON.stringify({d: oEntity, uri: sUri}); //'{"uri": "' + sUri + '" }';
 							sRespondContentType = {"Content-Type": "application/json;charset=utf-8"};
 							that._oMockdata[sTargetEntityName] = that._oMockdata[sTargetEntityName].concat([oEntity]);
 							iResult = 201; 
@@ -67022,112 +67837,52 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				}
 			});
 			
-			// support creation/update of an entity of a specific type
+			// support update of an entity of a specific type
 			aRequests.push({
 				method : "PUT",
-				path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/?(.*)?"),
-				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
-					
+				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(.*)?"),
+				response : function(oXhr, sEntitySetName, sKeys, sNavName) {
 					var iResult = 405; // default: method not allowed 
 					var sRespondData = null;
 					var sRespondContentType = null;
 					
-					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sUrlParams);
+					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sNavName);
 					if (sTargetEntityName) {
-						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sUrlParams);
+						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sNavName);
 						if (oEntity) {
-							var sUri = that._getRootUri() + sTargetEntityName + "(" + that._createKeysString(mEntitySets[sTargetEntityName].keys, oEntity) + ")";
-							sRespondData = '{"uri": "' + sUri + '" }';
+							var sUri = that._getRootUri() + sTargetEntityName + "(" + that._createKeysString(that._mEntitySets[sTargetEntityName], oEntity) + ")";
+							//sRespondData = '{"uri": "' + sUri + '" }';
 							sRespondContentType = {"Content-Type": "application/json;charset=utf-8"};
 							
 							var oExistingEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
 							if (oExistingEntry) { // Overwrite existing
 								that._oMockdata[sEntitySetName][oExistingEntry.index] = oEntity;
-							} else { // really new
+							} else { // really new //TODO don't allow creation of new entries with PUT
 								that._oMockdata[sTargetEntityName] = that._oMockdata[sTargetEntityName].concat([oEntity]);
 							}
-							iResult = 201; 
+							iResult = 204; 
 						}
 					} 
 					oXhr.respond(iResult, sRespondContentType, sRespondData);  
 				}
 			});
 			
-			
-			// support creation of an entity of a specific type
+			// support deletion of an entity of a specific type
 			aRequests.push({
 				method : "DELETE",
-				path : new RegExp("(" + sEntitySetName + ")(\\([^/\\?#]+\\))/?(.*)?"),
+				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(.*)?"),
 				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
-					var iResult = 204; // default: method not allowed 
+					var iResult = 200; 
 					var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
 					if (oEntry) {
-						delete that._oMockdata[sEntitySetName][oEntry.index];
-						iResult = 200;
+						that._oMockdata[sEntitySetName].splice(oEntry.index, 1);
+					} else {
+						iResult = 400;
 					}
-					oXhr.respond(iResult, null, null); 
+					oXhr.respond(iResult, null, null);
 				}
 			});
 			
-			// support access of the entity set (collection)
-			aRequests.push({
-				method : "GET",
-				path : new RegExp("(" + sEntitySetName + ")(\\?\\$)(filter|skip)/?(.*)?"),
-				response : function(oXhr, sEntitySetName, sUrlParams) {
-					// sUrlParams should not contains ?, but only & in its stead
-					// TODO: make this more mature - it is hacky right now
-					sUrlParams = sUrlParams && sUrlParams.replace("?", "&");
-					var parsedQuery = URI.parseQuery(sUrlParams);
-					var aMockData = that._oMockdata[sEntitySetName];
-					var aFilteredData = aMockData;
-					
-					if (parsedQuery.hasOwnProperty("$filter")) {
-						// The data needs to be filtered for the moment only simple filters can be used
-						var sODataFilterExpression = parsedQuery["$filter"],
-						    sODataFilterMethod = sODataFilterExpression.split("(")[0],
-						    aODataFilterValues, 
-						    sPath,
-						    sValue,
-						    oMockData = that._oMockdata;
-						switch (sODataFilterMethod) {
-							case "substringof" :
-								aODataFilterValues = sODataFilterExpression.split("(")[1].split(")")[0].split(",");
-								sValue = aODataFilterValues[0].substr(1, aODataFilterValues[0].length - 2);
-								sPath = aODataFilterValues[1];
-								aFilteredData = jQuery.grep(aMockData, function(oMockData) {
-									return (oMockData[sPath].indexOf(sValue) != -1);
-								});
-								break;
-							case "startswith" :
-								aODataFilterValues = sODataFilterExpression.split("(")[1].split(")")[0].split(",");
-								sValue = aODataFilterValues[1].substr(1, aODataFilterValues[0].length - 2);
-								sPath = aODataFilterValues[0];
-								aFilteredData = jQuery.grep(aMockData, function(oMockData) {
-									return (oMockData[sPath].indexOf(sValue) == 0);
-								});
-								break;
-							case "endswith" :
-								aODataFilterValues = sODataFilterExpression.split("(")[1].split(")")[0].split(",");
-								sValue = aODataFilterValues[1].substr(1, aODataFilterValues[0].length - 2);
-								sPath = aODataFilterValues[0];
-								aFilteredData = jQuery.grep(aMockData, function(oMockData) {
-									var sMockDataValue = oMockData[sPath];
-									return (oMockData[sPath].indexOf(sValue) == (sMockDataValue.length - sValue.length));
-								});
-								break;
-
-						}
-					}
-					
-					if (parsedQuery.hasOwnProperty("$count")) {
-						oXhr.respond(200, {	"Content-Type" : "text/plain;charset=utf-8"	}, "" + aFilteredData.length);
-					} else {
-						oXhr.respond(200, {	"Content-Type" : "application/json;charset=utf-8"	}, JSON.stringify({	d : { results : aFilteredData	}	}));
-					}
-
-				}
-			});
-
 		});
 		
 		// apply the request handlers
@@ -67137,15 +67892,50 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 
 	/**
+	 * Organize query options according to thier execution order
+	 * 
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_orderQueryOptions
+	 * @function
+	 */
+	MockServer.prototype._orderQueryOptions = function(aUrlParams) {	
+		var iFilterIndex, iInlinecountIndex, iSkipIndex, iTopIndex,  iOrderbyIndex, iSelectindex, iExpandIndex, aOrderedUrlParams = [];
+		jQuery.each(aUrlParams, function(iIndex, sQuery) {
+			switch (sQuery.split('=')[0]) {
+				case "top": iTopIndex = jQuery.inArray(sQuery, aUrlParams); break;			
+				case "skip": iSkipIndex = jQuery.inArray(sQuery, aUrlParams); break;			
+				case "orderby": iOrderbyIndex = jQuery.inArray(sQuery, aUrlParams); break;		
+				case "filter": iFilterIndex = jQuery.inArray(sQuery, aUrlParams); break;		
+				case "select": iSelectindex = jQuery.inArray(sQuery, aUrlParams); break;
+				case "inlinecount": iInlinecountIndex = jQuery.inArray(sQuery, aUrlParams); break;
+				case "expand": iExpandIndex = jQuery.inArray(sQuery, aUrlParams); break;
+			}
+		});	
+		
+		if (iFilterIndex >= 0) aOrderedUrlParams.push(aUrlParams[iFilterIndex]);
+		if (iInlinecountIndex >= 0) aOrderedUrlParams.push(aUrlParams[iInlinecountIndex]);
+		if (iSkipIndex >= 0) aOrderedUrlParams.push(aUrlParams[iSkipIndex]);
+		if (iTopIndex >= 0) aOrderedUrlParams.push(aUrlParams[iTopIndex]);
+		if (iSelectindex >= 0) aOrderedUrlParams.push(aUrlParams[iSelectindex]);
+		if (iOrderbyIndex >= 0) aOrderedUrlParams.push(aUrlParams[iOrderbyIndex]);
+		if (iExpandIndex >= 0) aOrderedUrlParams.push(aUrlParams[iExpandIndex]);
+		
+		return aOrderedUrlParams;
+	};
+	
+	
+	/**
 	 * Removes all request handlers.
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_removeAllRequestHandlers
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._removeAllRequestHandlers = function() {
+	MockServer.prototype._removeAllRequestHandlers = function() {
 		var aRequests = this.getRequests();
 		var iLength = aRequests.length;
 		for (var i = 0; i < iLength; i++) {
-			sap.ui.core.util.MockServer._removeResponse(aRequests[i].response);
+			MockServer._removeResponse(aRequests[i].response);
 		}
 	};
 
@@ -67154,10 +67944,12 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * Removes all filters.
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_removeAllFilters
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._removeAllFilters = function() {
+	MockServer.prototype._removeAllFilters = function() {
 		for (var i = 0; i < this._aFilters.length; i++) {
-			sap.ui.core.util.MockServer._removeFilter(this._aFilters[i]);
+			MockServer._removeFilter(this._aFilters[i]);
 		}
 		this._aFilters = null;
 	};
@@ -67174,8 +67966,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 *          fnResponse the response function to call when the request occurs
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_addRequestHandler
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._addRequestHandler = function(sMethod, sPath, fnResponse) {
+	MockServer.prototype._addRequestHandler = function(sMethod, sPath, fnResponse) {
 		sMethod = sMethod ? sMethod.toUpperCase() : sMethod;
 		if (typeof sMethod !== "string") {
 			throw new Error("Error in request configuration: value of 'method' has to be a string");
@@ -67216,8 +68010,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @return {RegExp} the created regular expression.
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_createRegExp
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._createRegExp = function(sPattern) {
+	MockServer.prototype._createRegExp = function(sPattern) {
 		return new RegExp("^" + sPattern + "$");
 	};
 
@@ -67229,8 +68025,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @return {string} the created regular expression pattern.
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_createRegExpPattern
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._createRegExpPattern = function(sPattern) {
+	MockServer.prototype._createRegExpPattern = function(sPattern) {
 		return sPattern.replace(/:([\w\d]+)/g, "([^\/]+)");
 	};
 
@@ -67241,10 +68039,40 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @return {string} the created regular expression pattern.
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_escapeStringForRegExp
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._escapeStringForRegExp = function(sString) {
+	MockServer.prototype._escapeStringForRegExp = function(sString) {
 		return sString.replace(/[\\\/\[\]\{\}\(\)\-\*\+\?\.\^\$\|]/g, "\\$&");
 	};
+	
+	/**
+	 * Creates a trim string
+	 * 
+	 * @return {string} the trimmed string.
+	 * 
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_trim
+	 * @function
+	 */
+	MockServer.prototype._trim = function(sString) {
+		return sString && sString.replace(/^\s+|\s+$/g, "");
+	};
+	
+	/**
+	 * Parses an ISO format date string into a valid date object.
+	 * 
+	 * @return {Date} the date.
+	 * 
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getDateInMin
+	 * @function
+	 */
+	MockServer.prototype._getDateInMin = function(sString) {
+		if(!sString) return;
+		return "datetime'" + new Date(Number(sString.replace("/Date(",'').replace(")/",''))).toJSON().substring(0,19) + "'";			
+		
+	}
 
 	/**
 	 * Adds a filter function. The filter determines whether to fake a response or not. When the filter function
@@ -67252,10 +68080,12 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * 
 	 * @param {function} fnFilter the filter function to add
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_addFilter
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._addFilter = function(fnFilter) {
+	MockServer.prototype._addFilter = function(fnFilter) {
 		this._aFilters.push(fnFilter)
-		sap.ui.core.util.MockServer._addFilter(fnFilter);
+		MockServer._addFilter(fnFilter);
 	};
 
 
@@ -67266,8 +68096,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {RegExp} oRegExp the regular expression to use for this filter
 	 * 
 	 * @private
+	 * @name sap.ui.core.util.MockServer#_createFilter
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype._createFilter = function(sRequestMethod, oRegExp) {
+	MockServer.prototype._createFilter = function(sRequestMethod, oRegExp) {
 		return function(sMethod, sUri, bAsync, sUsername, sPassword) {
 			return sRequestMethod === sMethod && oRegExp.test(sUri);
 		}
@@ -67285,11 +68117,13 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {boolean}
 	 *            [bSuppressInvalidate] if true, this ManagedObject is not marked as changed
 	 * @public
+	 * @name sap.ui.core.util.MockServer#destroy
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.prototype.destroy = function(bSuppressInvalidate) {
-		sap.ui.base.ManagedObject.prototype.destroy.apply(this, arguments);
+	MockServer.prototype.destroy = function(bSuppressInvalidate) {
+		ManagedObject.prototype.destroy.apply(this, arguments);
 		this.stop();
-		var aServers = sap.ui.core.util.MockServer._aServers;
+		var aServers = MockServer._aServers;
 		var iIndex = jQuery.inArray(this, aServers);
 		aServers.splice(iIndex, 1);
 	};
@@ -67299,17 +68133,19 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	// STATICS
 	// =======
 	
-	sap.ui.core.util.MockServer._aFilters = [];
-	sap.ui.core.util.MockServer._oServer = null;
-	sap.ui.core.util.MockServer._aServers = [];
+	MockServer._aFilters = [];
+	MockServer._oServer = null;
+	MockServer._aServers = [];
 
 	/**
 	 * Returns the instance of the sinon fake server.
 	 * 
 	 * @return {object} the server instance
 	 * @private
+	 * @name sap.ui.core.util.MockServer._getInstance
+	 * @function
 	 */
-	sap.ui.core.util.MockServer._getInstance = function() {
+	MockServer._getInstance = function() {
 		// We can not create many fake servers, see bug https://github.com/cjohansen/Sinon.JS/issues/211
 		// This is why we reuse the server and patch it manually
 		if (!this._oServer) {
@@ -67327,8 +68163,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {boolean} [mConfig.autoRespond=true] If set true, all mock servers will respond automatically. If set false you have to call {@link sap.ui.core.util.MockServer#respond} method for response.
 	 * @param {int} [mConfig.autoRespondAfter=0] the time in ms after all mock servers should send their response. 
 	 * @param {boolean} [mConfig.fakeHTTPMethods=false] If set to true, all mock server will find <code>_method</code> parameter in the POST body and use this to override the the actual method. 
+	 * @name sap.ui.core.util.MockServer.config
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.config = function(mConfig) {
+	MockServer.config = function(mConfig) {
 		var oServer = this._getInstance();
 
 		oServer.autoRespond = mConfig.autoRespond === false ? false : true;
@@ -67339,16 +68177,20 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 	/**
 	 * Respond to a request, when the servers are configured not to automatically respond.
+	 * @name sap.ui.core.util.MockServer.respond
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.respond = function() {
+	MockServer.respond = function() {
 		this._getInstance().respond();
 	};
 
 
 	/**
 	 * Starts all registered servers.
+	 * @name sap.ui.core.util.MockServer.startAll
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.startAll = function() {
+	MockServer.startAll = function() {
 		for (var i=0; i < this._aServers.length; i++) {
 			this._aServers[i].start();
 		}
@@ -67357,8 +68199,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 	/**
 	 * Stops all registered servers.
+	 * @name sap.ui.core.util.MockServer.stopAll
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.stopAll = function() {
+	MockServer.stopAll = function() {
 		for (var i=0; i < this._aServers.length; i++) {
 			this._aServers[i].stop();
 		}
@@ -67369,8 +68213,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 
 	/**
 	 * Stops and calls destroy on all registered servers. Use this method for cleaning up.
+	 * @name sap.ui.core.util.MockServer.destroyAll
+	 * @function
 	 */
-	sap.ui.core.util.MockServer.destroyAll = function() {
+	MockServer.destroyAll = function() {
 		this.stopAll();
 		for (var i=0; i < this._aServers.length; i++) {
 			this._aServers[i].destroy();
@@ -67384,8 +68230,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * 
 	 * @param {function} fnFilter the filter function to add
 	 * @private
+	 * @name sap.ui.core.util.MockServer._addFilter
+	 * @function
 	 */
-	sap.ui.core.util.MockServer._addFilter = function(fnFilter) {
+	MockServer._addFilter = function(fnFilter) {
 		this._aFilters.push(fnFilter);
 	};
 
@@ -67396,8 +68244,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {function} fnFilter the filter function to remove
 	 * @return {boolean} whether the filter was removed or not
 	 * @private
+	 * @name sap.ui.core.util.MockServer._removeFilter
+	 * @function
 	 */
-	sap.ui.core.util.MockServer._removeFilter = function(fnFilter) {
+	MockServer._removeFilter = function(fnFilter) {
 		var iIndex = jQuery.inArray(fnFilter, this._aFilters);
 		if (iIndex !== -1) {
 			this._aFilters.splice(iIndex, 1);
@@ -67412,8 +68262,10 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @param {function} fnResponse the response function to remove
 	 * @return {boolean} whether the response was removed or not
 	 * @private
+	 * @name sap.ui.core.util.MockServer._removeResponse
+	 * @function
 	 */
-	sap.ui.core.util.MockServer._removeResponse = function(fnResponse) {
+	MockServer._removeResponse = function(fnResponse) {
 		var aResponses = this._oServer.responses;
 		var iLength = aResponses.length;
 		for (var i = 0; i < iLength; i++) {
@@ -67432,7 +68284,7 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	window.sinon.FakeXMLHttpRequest.useFilters = true;
 
 	window.sinon.FakeXMLHttpRequest.addFilter(function(sMethod, sUri, bAsync, sUsername, sPassword) {
-		var aFilters = sap.ui.core.util.MockServer._aFilters;
+		var aFilters = MockServer._aFilters;
 		for (var i = 0; i < aFilters.length; i++) {
 			var fnFilter = aFilters[i];
 			if (fnFilter(sMethod, sUri, bAsync, sUsername, sPassword)) {
@@ -67491,8 +68343,11 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		mHeaders["Content-Type"] = mHeaders["Content-Type"] || "application/xml";
 		this.respond(iStatus, mHeaders, sXmlData);
 	};
-	
-})();
+
+	// assign the MockServer to the global namespace
+	sap.ui.core.util.MockServer = MockServer;
+
+})(jQuery, sap.ui.Device, sap.ui.base.ManagedObject, window.sinon);
 
 }; // end of sap/ui/core/util/MockServer.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.ClientModel') ) {
@@ -67528,7 +68383,7 @@ jQuery.sap.declare("sap.ui.model.ClientModel");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData URL where to load the data from
  * @constructor
@@ -67686,7 +68541,7 @@ jQuery.sap.declare("sap.ui.model.json.JSONModel");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData either the URL where to load the JSON from or a JS object
  * @constructor
@@ -67982,7 +68837,7 @@ jQuery.sap.declare("sap.ui.model.xml.XMLModel");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData either the URL where to load the XML from or a XML
  * @constructor
@@ -68422,7 +69277,7 @@ jQuery.sap.declare("sap.ui.app.Application");
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @name sap.ui.app.Application
 	 * @experimental Since 1.11.1. The Application class is still under construction, so some implementation details can be changed in future.
 	 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
@@ -68812,7 +69667,7 @@ jQuery.sap.declare("sap.ui.app.MockServer");
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @public
 	 * @name sap.ui.app.MockServer
 	 * @experimental Since 1.13.0. The mock server is still under construction, so some implementation details can be changed in future.
@@ -68857,7 +69712,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.HandlebarsTemplate");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.tmpl.HandlebarsTemplate
  * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
  */
@@ -69362,7 +70217,7 @@ jQuery.sap.declare("sap.ui.core.Element");
  * @class Base Class for Elements.
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  * @name sap.ui.core.Element
  */
@@ -70449,7 +71304,7 @@ jQuery.sap.declare("sap.ui.core.Control");
  * @extends sap.ui.core.Element
  * @abstract
  * @author Martin Schaus, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.Control
  */
 sap.ui.core.Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -71340,7 +72195,7 @@ jQuery.sap.declare("sap.ui.core.UIArea");
  *
  * @extends sap.ui.base.ManagedObject
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
  * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
  * @public
@@ -72117,7 +72972,7 @@ jQuery.sap.declare("sap.ui.core.Component");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.Component
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  */
@@ -72686,7 +73541,7 @@ sap.ui.component.load = function(oComponent) {
  * @extends sap.ui.base.EventProvider
  * @final
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.core.Core 
  * @public
@@ -75792,7 +76647,7 @@ jQuery.sap.declare("sap.ui.core.CustomizingConfiguration");
 	 * gets removed again.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @private
 	 * @since 1.15.1
@@ -75974,7 +76829,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.core (1.18.8)
+ * Initialization Code and shared classes of library sap.ui.core (1.18.12)
  */
 jQuery.sap.declare("sap.ui.core.library");
 
@@ -76064,7 +76919,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.search.SearchProvider",
     "sap.ui.core.tmpl.DOMAttribute"
   ],
-  version: "1.18.8"});
+  version: "1.18.12"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -76086,7 +76941,7 @@ jQuery.sap.declare("sap.ui.core.AccessibleRole");
  * For more information, goto "Roles for Accessible Rich Internet Applications (WAI-ARIA Roles)" at the www.w3.org homepage.
  * 
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76496,7 +77351,7 @@ jQuery.sap.declare("sap.ui.core.BarColor");
 /**
  * @class Configuration options for the colors of a progress bar
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76674,7 +77529,7 @@ jQuery.sap.declare("sap.ui.core.Design");
 /**
  * @class Font design for texts
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76746,7 +77601,7 @@ jQuery.sap.declare("sap.ui.core.HorizontalAlign");
 /**
  * @class Configuration options for horizontal alignments of controls
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76831,7 +77686,7 @@ jQuery.sap.declare("sap.ui.core.IconColor");
 /**
  * @class Semantic Colors of an icon.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76886,7 +77741,7 @@ jQuery.sap.declare("sap.ui.core.ImeMode");
 /**
  * @class State of the Input Method Editor (IME) for the control. Depending on its value, it allows users to enter and edit for example Chinese characters.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -76945,7 +77800,7 @@ jQuery.sap.declare("sap.ui.core.MessageType");
 /**
  * @class Defines the different message types of a message
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77000,7 +77855,7 @@ jQuery.sap.declare("sap.ui.core.OpenState");
 /**
  * @class Defines the different possible states of an element that can be open or closed and does not only toggle between these states, but also spends some time in between (e.g. because of an animation).
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77079,7 +77934,7 @@ jQuery.sap.declare("sap.ui.core.ScrollBarAction");
 /**
  * @class Actions are: Click on track, button, drag of thumb, or mouse wheel click
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77128,7 +77983,7 @@ jQuery.sap.declare("sap.ui.core.Scrolling");
 /**
  * @class Defines the possible values for horizontal and vertical scrolling behavior.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77177,7 +78032,7 @@ jQuery.sap.declare("sap.ui.core.TextAlign");
 /**
  * @class Configuration options for text alignments.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77232,7 +78087,7 @@ jQuery.sap.declare("sap.ui.core.TextDirection");
 /**
  * @class Configuration options for the direction of texts.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77275,7 +78130,7 @@ jQuery.sap.declare("sap.ui.core.TitleLevel");
 /**
  * @class Level of a title.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @since 1.9.1
@@ -77373,7 +78228,7 @@ jQuery.sap.declare("sap.ui.core.ValueState");
 /**
  * @class Marker for the correctness of the current value.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77424,7 +78279,7 @@ jQuery.sap.declare("sap.ui.core.VerticalAlign");
  * Configuration options for vertical alignments, for example of a layout cell content within the borders.
  * 
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77481,7 +78336,7 @@ jQuery.sap.declare("sap.ui.core.Wrapping");
 /**
  * @class Configuration options for text wrapping.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77530,7 +78385,7 @@ jQuery.sap.declare("sap.ui.core.mvc.ViewType");
 /**
  * @class Specifies possible view types
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77585,7 +78440,7 @@ jQuery.sap.declare("sap.ui.core.routing.HistoryDirection");
 /**
  * @class Enumaration for different HistoryDirections
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -77674,7 +78529,7 @@ jQuery.sap.declare("sap.ui.core.plugin.TemplatingSupport");
  * @author Peter Muessig
  * @public
  * @since 1.15.0
- * @version 1.18.8
+ * @version 1.18.12
  */
 sap.ui.core.plugin.TemplatingSupport = function() {
 };
@@ -77772,7 +78627,7 @@ jQuery.sap.declare("sap.ui.core.search.SearchProvider");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -78067,7 +78922,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.DOMAttribute");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -78229,7 +79084,7 @@ jQuery.sap.declare("sap.ui.core.CustomData");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -78399,7 +79254,7 @@ jQuery.sap.declare("sap.ui.core.EnabledPropagator");
  * </code>
  *
  * @author Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @param {boolean} [bDefault=true] the value that should be used as default value for the enhancement of the control.
  * @param {boolean} [bLegacy=false] whether the introduced property should use the old name 'Enabled' 
  * @public
@@ -78523,7 +79378,7 @@ jQuery.sap.declare("sap.ui.core.HTML");
  * @extends sap.ui.core.Control
  *
  * @author Frank Weigel 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -78940,7 +79795,7 @@ jQuery.sap.declare("sap.ui.core.Icon");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -79652,7 +80507,7 @@ jQuery.sap.declare("sap.ui.core.Item");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -79851,7 +80706,7 @@ jQuery.sap.declare("sap.ui.core.LayoutData");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -79974,7 +80829,7 @@ jQuery.sap.declare("sap.ui.core.ListItem");
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -80129,7 +80984,7 @@ jQuery.sap.declare("sap.ui.core.LocalBusyIndicator");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -80414,7 +81269,7 @@ jQuery.sap.declare("sap.ui.core.Message");
  * @extends sap.ui.core.Element
  *
  * @author SAP 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -80742,7 +81597,6 @@ jQuery.sap.declare("sap.ui.core.Popup");
  * <strong>Since 1.12.3</strong> it is possible to add further DOM-element-ids that can get the focus
  * when 'autoclose' is enabled. E.g. the RichTextEditor with running TinyMCE uses this method to
  * be able to focus the Popups of the TinyMCE if the RichTextEditor runs within a Popup/Dialog etc.
- * (see 'onAfterRenderingTinyMCE' within the RichTextEditor)
  * 
  *  To provide an additional DOM-element that can get the focus the following should be done:
  * 	// create an object with the corresponding DOM-id
@@ -81806,7 +82660,7 @@ sap.ui.core.Popup.prototype.getContent = function() {
  * @param {sap.ui.core.Popup.Dock | object {left: {sap.ui.core.CSSSize}, top: {sap.ui.core.CSSSize}}} at specifies the point of the reference element to which the given Content should be aligned
  * @param {string | sap.ui.core.Control | DOMRef | jQuery | jQuery.Event} [of=document] specifies the reference element to which the given content should be aligned as specified in the other parameters
  * @param {string} [offset="0 0"] the offset relative to the docking point, specified as a string with space-separated pixel values (e.g. "0 10" to move the popup 10 pixels to the right). If the docking of both "my" and "at" are both RTL-sensitive ("begin" or "end"), this offset is automatically mirrored in the RTL case as well.
- * @param {string} defines how the position of an element should be adjusted in case it overflows the window in some direction.
+ * @param {string} [collision] defines how the position of an element should be adjusted in case it overflows the window in some direction. The valid values that refer to jQuery-UI's position parameters are "flip", "fit" and "none".
  * @return {sap.ui.core.Popup} <code>this</code> to allow method chaining
  * @public
  */
@@ -82409,6 +83263,10 @@ sap.ui.core.Popup.prototype._showBlockLayer = function() {
 	// push current z-index to stack
 	sap.ui.core.Popup.blStack.push(this._iZIndex - 2);
 	$BlockRef.css("z-index", this._iZIndex - 2).css("visibility","visible").show();
+
+	// prevent HTML page from scrolling
+	jQuery("html").addClass("sapUiBLyBack");
+
 };
 
 sap.ui.core.Popup.prototype._hideBlockLayer = function() {
@@ -82426,6 +83284,10 @@ sap.ui.core.Popup.prototype._hideBlockLayer = function() {
 		// the last dialog was closed so we can hide the block layer now
 		jQuery("#sap-ui-blocklayer-popup").css("visibility","inherit").hide();
 	}
+
+	// allow scrolling in HTML page
+	jQuery("html").removeClass("sapUiBLyBack");
+
 };
 
 //****************************************************
@@ -82659,7 +83521,7 @@ jQuery.sap.declare("sap.ui.core.ScrollBar");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -83603,7 +84465,7 @@ jQuery.sap.declare("sap.ui.core.SeparatorItem");
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -83705,7 +84567,7 @@ jQuery.sap.declare("sap.ui.core.Title");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -83914,7 +84776,7 @@ jQuery.sap.declare("sap.ui.core.TooltipBase");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -84635,7 +85497,7 @@ jQuery.sap.declare("sap.ui.core.VariantLayoutData");
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -84819,7 +85681,7 @@ jQuery.sap.declare("sap.ui.core.mvc.View");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -85642,7 +86504,7 @@ jQuery.sap.declare("sap.ui.core.mvc.XMLView");
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -85895,7 +86757,7 @@ jQuery.sap.declare("sap.ui.core.search.OpenSearchProvider");
  * @extends sap.ui.core.search.SearchProvider
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -86096,7 +86958,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.DOMElement");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -86591,7 +87453,7 @@ jQuery.sap.declare("sap.ui.core.tmpl.TemplateControl");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -87095,7 +87957,7 @@ jQuery.sap.declare("sap.ui.core.BusyIndicator");
 /**
  * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
  * @static 
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  */
 sap.ui.core.BusyIndicator = jQuery.extend(jQuery.sap.newObject(sap.ui.base.EventProvider.prototype), {
@@ -87360,7 +88222,7 @@ jQuery.sap.declare("sap.ui.core.ComponentContainer");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -87968,7 +88830,7 @@ jQuery.sap.declare("sap.ui.core.UIComponent");
  * @extends sap.ui.core.Component
  * @abstract
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.UIComponent
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  */
@@ -88321,7 +89183,7 @@ jQuery.sap.declare("sap.ui.core.mvc.HTMLView");
  * @extends sap.ui.core.mvc.View
  *
  * @author Stefan Hipfel, Tino Butz 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -88655,7 +89517,7 @@ jQuery.sap.declare("sap.ui.core.mvc.JSONView");
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -88872,7 +89734,7 @@ jQuery.sap.declare("sap.ui.core.mvc.JSView");
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -89070,7 +89932,7 @@ jQuery.sap.declare("sap.ui.core.mvc.TemplateView");
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
