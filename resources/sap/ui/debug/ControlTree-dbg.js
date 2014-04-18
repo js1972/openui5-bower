@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  * @class Control Tree used for the Debug Environment
  * @extends sap.ui.base.EventProvider
  * @author Martin Schaus, Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.debug.ControlTree
  * @private
  */

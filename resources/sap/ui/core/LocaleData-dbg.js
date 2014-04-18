@@ -21,7 +21,7 @@ jQuery.sap.require("sap.ui.core.Configuration");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData

@@ -30,7 +30,7 @@ jQuery.sap.require("sap.ui.thirdparty.handlebars");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.tmpl.HandlebarsTemplate
  * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
  */

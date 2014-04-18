@@ -17,7 +17,7 @@ jQuery.sap.require("jquery.sap.dom");
  *
  * @abstract
  * @extends sap.ui.base.Object
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @private
  * @name sap.ui.core.support.Plugin

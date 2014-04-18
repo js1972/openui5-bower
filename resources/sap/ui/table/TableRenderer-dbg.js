@@ -499,6 +499,9 @@ sap.ui.table.TableRenderer.renderRowHdrRow = function(rm, oTable, oRow, iRowInde
 	rm.writeAttribute("id", oTable.getId() + "-rowsel" + iRowIndex);
 	rm.writeAttribute("data-sap-ui-rowindex", iRowIndex);
 	rm.addClass("sapUiTableRowHdr");
+	if (oRow._bHidden) {
+		rm.addClass("sapUiTableRowHidden");
+	}
 	rm.writeClasses();
 	if (oTable.getRowHeight() > 0) {
 		rm.addStyle("height", oTable.getRowHeight() + "px");

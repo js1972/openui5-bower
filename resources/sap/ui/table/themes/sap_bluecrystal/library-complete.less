@@ -86,7 +86,7 @@
 @sapGroup_FooterBackground: @sapGroup_TitleBackground;
 
 @sapToolbar_Background: @sapGroup_TitleBackground;
-@sapToolbar_Separator: #fff;
+@sapToolbar_SeparatorColor: #fff;
 
 @sapList_HeaderBackground: lighten(desaturate(@sapBaseColor, 39), 1);
 @sapList_HeaderBorderColor: @sapList_BorderColor;
@@ -812,7 +812,7 @@
 // [Label "Toolbar Separator Color"]
 // [Description "The color of a toolbar's separators. This parameter is protected and is not yet released for being changed."]
 // [Tags "Base", "Toolbar", "Color", "Protected"]
-@sapToolbar_Separator: #c2c2c2;
+@sapToolbar_SeparatorColor: #c2c2c2;
 
 // [Label "List Header Background Color"]
 // [Description "The background color of the header area of lists. This parameter is protected and is not yet released for being changed."]
@@ -942,7 +942,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -2298,7 +2298,7 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 
 /* FIX for IE fixed columns */
 html[data-sap-ui-browser^="ie"] .sapUiTableColHdrCnt {
-	width: 1000%;
+	width: 100%;
 }
 /*******************************************************************************
  * TABLE PARAMETERS
@@ -2667,21 +2667,6 @@ tr.sapUiTableRowHvr .sapUiLnk:hover,
 	color: @sapUiText;
 	font-size: 12px;
 	font-weight: bold;
-}
-
-.sapUiTableTr[data-sap-ui-level="0"] .sapUiTableTreeIcon {
-}
-
-.sapUiTableTr[data-sap-ui-level="1"] .sapUiTableTreeIcon {
-	margin-left: 40px !important;
-}
-
-.sapUiTableTr[data-sap-ui-level="2"] .sapUiTableTreeIcon {
-	margin-left: 80px !important;
-}
-
-.sapUiTableTr[data-sap-ui-level="3"] .sapUiTableTreeIcon {
-	margin-left: 120px !important;
 }
 
 .sapUiTableTreeIcon {

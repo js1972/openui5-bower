@@ -22,7 +22,7 @@ jQuery.sap.require("sap.ui.model.FormatException");
  * @extends sap.ui.model.Type
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @param {object} [oFormatOptions] options as provided by concrete subclasses

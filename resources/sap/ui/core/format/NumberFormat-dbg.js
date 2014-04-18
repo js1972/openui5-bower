@@ -159,7 +159,7 @@ sap.ui.core.format.NumberFormat.getLocaleFormatOptions = function(oLocaleData) {
  * @public
  */
 sap.ui.core.format.NumberFormat.prototype.format = function(oValue) {
-	var sNumber = "" + oValue,
+	var sNumber = this.convertToDecimal(oValue),
 		sIntegerPart = "",
 		sFractionPart = "",
 		sGroupedIntegerPart = "",
@@ -170,6 +170,10 @@ sap.ui.core.format.NumberFormat.prototype.format = function(oValue) {
 		iDotPos = -1,
 		oOptions = this.oFormatOptions;
 
+	if (sNumber == "NaN") {
+		return sNumber;
+	}	
+	
 	// if number is negative remove minus
 	if (bNegative) {
 		sNumber = sNumber.substr(1);
@@ -272,4 +276,55 @@ sap.ui.core.format.NumberFormat.prototype.parse = function(sValue) {
 		oResult = parseFloat(sValue);
 	}
 	return oResult;
+};
+
+/**
+ * Convert to decimal representation
+ * Floats larger than 1e+20 or smaller than 1e-6 are shown in exponential format,
+ * but need to be converted to decimal format for further formatting
+ * 
+ * @param {float} fValue
+ * @private
+ */
+sap.ui.core.format.NumberFormat.prototype.convertToDecimal = function(fValue) {
+	var sValue = "" + fValue, 
+		bNegative, sBase, iDecimalLength, iFractionLength, iExponent, iPos;
+	if (sValue.indexOf("e") == -1 && sValue.indexOf("E") == -1) {
+		return sValue;
+	}
+	var aResult = sValue.match(/^([+-]?)((\d+)(?:\.(\d+))?)[eE]([+-]?\d+)$/);
+	bNegative = aResult[1] == "-";
+	sBase = aResult[2].replace(/\./g,"");
+	iDecimalLength = aResult[3] ? aResult[3].length : 0;
+	iFractionLength = aResult[4] ? aResult[4].length : 0;
+	iExponent = parseInt(aResult[5], 10);
+	
+	if (iExponent > 0) {
+		if (iExponent < iFractionLength) {
+			iPos = iDecimalLength + iExponent;
+			sValue = sBase.substr(0, iPos) + "." + sBase.substr(iPos);
+		} else {
+			sValue = sBase;
+			iExponent -= iFractionLength;
+			for (var i = 0; i < iExponent; i++) {
+				sValue += "0";
+			}
+		}
+	} else {
+		if (-iExponent < iDecimalLength) {
+			iPos = iDecimalLength + iExponent;
+			sValue = sBase.substr(0, iPos) + "." + sBase.substr(iPos);
+		} else {
+			sValue = sBase;
+			iExponent += iDecimalLength;
+			for (var i = 0; i > iExponent; i--) {
+				sValue = "0" + sValue;
+			}
+			sValue = "0." + sValue;
+		}
+	}
+	if (bNegative) {
+		sValue = "-" + sValue;
+	}
+	return sValue;
 };

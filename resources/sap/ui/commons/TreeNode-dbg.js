@@ -43,7 +43,9 @@ jQuery.sap.require("sap.ui.core.Element");
  * <li>{@link #getNodes nodes} : sap.ui.commons.TreeNode[]</li></ul>
  * </li>
  * <li>Associations
- * <ul></ul>
+ * <ul>
+ * <li>{@link #getAriaDescribedBy ariaDescribedBy} : string | sap.ui.core.Control</li>
+ * <li>{@link #getAriaLabelledBy ariaLabelledBy} : string | sap.ui.core.Control</li></ul>
  * </li>
  * <li>Events
  * <ul>
@@ -64,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -91,6 +93,10 @@ sap.ui.core.Element.extend("sap.ui.commons.TreeNode", { metadata : {
 	defaultAggregation : "nodes",
 	aggregations : {
     	"nodes" : {type : "sap.ui.commons.TreeNode", multiple : true, singularName : "node"}
+	},
+	associations : {
+		"ariaDescribedBy" : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"}, 
+		"ariaLabelledBy" : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaLabelledBy"}
 	},
 	events : {
 		"toggleOpenState" : {}, 
@@ -351,6 +357,80 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
 
 
 /**
+ * Association to controls / ids which describe this control (see WAI-ARIA attribute aria-describedby).
+ * 
+ * @return {string[]}
+ * @public
+ * @name sap.ui.commons.TreeNode#getAriaDescribedBy
+ * @function
+ */
+
+	
+/**
+ *
+ * @param {string | sap.ui.core.Control} vAriaDescribedBy
+ *    Id of a ariaDescribedBy which becomes an additional target of this <code>ariaDescribedBy</code> association.
+ *    Alternatively, a ariaDescribedBy instance may be given. 
+ * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.TreeNode#addAriaDescribedBy
+ * @function
+ */
+
+/**
+ * @param {int | string | sap.ui.core.Control} vAriaDescribedBy the ariaDescribedBy to remove or its index or id
+ * @return {string} the id of the removed ariaDescribedBy or null
+ * @public
+ * @name sap.ui.commons.TreeNode#removeAriaDescribedBy
+ * @function
+ */
+
+/**
+ * @return {string[]} an array with the ids of the removed elements (might be empty)
+ * @public
+ * @name sap.ui.commons.TreeNode#removeAllAriaDescribedBy
+ * @function
+ */
+
+	
+/**
+ * Association to controls / ids which label this control (see WAI-ARIA attribute aria-labelledby).
+ * 
+ * @return {string[]}
+ * @public
+ * @name sap.ui.commons.TreeNode#getAriaLabelledBy
+ * @function
+ */
+
+	
+/**
+ *
+ * @param {string | sap.ui.core.Control} vAriaLabelledBy
+ *    Id of a ariaLabelledBy which becomes an additional target of this <code>ariaLabelledBy</code> association.
+ *    Alternatively, a ariaLabelledBy instance may be given. 
+ * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.TreeNode#addAriaLabelledBy
+ * @function
+ */
+
+/**
+ * @param {int | string | sap.ui.core.Control} vAriaLabelledBy the ariaLabelledBy to remove or its index or id
+ * @return {string} the id of the removed ariaLabelledBy or null
+ * @public
+ * @name sap.ui.commons.TreeNode#removeAriaLabelledBy
+ * @function
+ */
+
+/**
+ * @return {string[]} an array with the ids of the removed elements (might be empty)
+ * @public
+ * @name sap.ui.commons.TreeNode#removeAllAriaLabelledBy
+ * @function
+ */
+
+	
+/**
  * Node state has changed. 
  *
  * @name sap.ui.commons.TreeNode#toggleOpenState
@@ -507,6 +587,9 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
 
 // Start of sap\ui\commons\TreeNode.js
 sap.ui.commons.TreeNode.ANIMATION_DURATION	 = 600;
+
+jQuery.sap.require("sap.ui.core.CustomStyleClassSupport");
+sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.TreeNode.prototype);
 
 //***********************************************************************************
 //* PUBLIC METHODS
@@ -710,38 +793,39 @@ sap.ui.commons.TreeNode.prototype.setSelectable = function(bSelectable) {
  */
 sap.ui.commons.TreeNode.prototype.onclick = function(oEvent){
 
-  var oDomClicked = oEvent.target;
+	var oDomClicked = oEvent.target,
+		oTree = this.getTree();
 
-  if(jQuery(oDomClicked).is(".sapUiTreeNode") || jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable") ){
-	  //When user click a Not-Selectable node text, it behaves as clicking on the node itself
-	  if(jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable")){
-		  //Get the node itself
-		  oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
-	  }
+	if(jQuery(oDomClicked).is(".sapUiTreeNode") || jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable") ){
+		//When user click a Not-Selectable node text, it behaves as clicking on the node itself
+		if(jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable")){
+			//Get the node itself
+			oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
+		}
+		//Expand/Collapse
+		if(jQuery(oDomClicked).hasClass("sapUiTreeNodeExpanded")){
+			this.collapse();
+		}
+		else{
+			this.expand();
+		}
 
-	  //Expand/Collapse
-	  if(jQuery(oDomClicked).hasClass("sapUiTreeNodeExpanded")){
-		  this.collapse();
-	  }
-	  else{
-		  this.expand();
-	  }
+		oTree.placeFocus(oDomClicked);
+		oDomClicked.focus();
 
-	  this.getTree().placeFocus(oDomClicked);
-	  oDomClicked.focus();
+	}
+	else if(jQuery(oDomClicked).is(".sapUiTreeNodeContent") || jQuery(oDomClicked).is(".sapUiTreeIcon")){
 
-  }
-  else if(jQuery(oDomClicked).is(".sapUiTreeNodeContent") || jQuery(oDomClicked).is(".sapUiTreeIcon")){
+		oTree.setSelection(this);
 
-	  this.getTree().setSelection(this);
-
-	  //Set focus
-	  oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
-	  this.getTree().placeFocus(oDomClicked);
-	  oDomClicked.focus();
-  }
+		//Set focus
+		oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
+		oTree.placeFocus(oDomClicked);
+		oDomClicked.focus();
+	}
 
 };
+
 
 //***********************************************************************************
 //* KEYBOARD NAVIGATION
@@ -895,21 +979,18 @@ sap.ui.commons.TreeNode.prototype.isVisible = function(){
 * @return	Returns a function to be called as callback function for jQuery animation
 */
 sap.ui.commons.TreeNode.prototype.getCallbackFunction = function(oNode,oDomNode,bCollapsing){
-
+	var oTree = oNode.getTree();
 	if(bCollapsing){
-		var f =  function(){
-			oNode.getTree().adjustFocus();
-			oNode.getTree().adjustSelectionOnCollapsing(oDomNode);
+		return function(){
+			oTree.adjustFocus();
+			oTree.adjustSelectionOnCollapsing(oDomNode);
 		};
-		return f;
 	}
 	else{
-		var f =  function(){
-			oNode.getTree().adjustSelectionOnExpanding(oDomNode);
+		return function(){
+			oTree.adjustSelectionOnExpanding(oDomNode);
 		};
-		return f;
 	}
-
 };
 
 /**

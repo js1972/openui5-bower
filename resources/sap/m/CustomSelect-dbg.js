@@ -15,6 +15,7 @@ jQuery.sap.require("sap.m.Select");
 
 	_sap.require("sap.m.InstanceManager");
 	_sap.require(sPath + "js.mobiscroll-core");
+	_sap.require(sPath + "js.mobiscroll-scroller");
 	_sap.require(sPath + "js.mobiscroll-select");
 	_sap.includeStyleSheet(_sap.getModulePath(sCSSPath, "/") + "mobiscroll-core.css");
 
@@ -56,7 +57,7 @@ jQuery.sap.require("sap.m.Select");
 			this._$HtmlSelect.scroller({
 
 				/**
-				 *	Options for controlling the modal dialog button labels and header text.
+				 *	Options for controlling the modal dialog button labels.
 				 */
 
 				// text for Cancel button
@@ -64,9 +65,6 @@ jQuery.sap.require("sap.m.Select");
 
 				// text for Set button
 				setText: this._oRb.getText("SELECT_ACCEPT"),
-
-				// specifies a custom string which appears in the popup header
-				headerText: this.getTitle(),
 
 				// language of the scroller
 				lang: this._sLang,
@@ -117,10 +115,6 @@ jQuery.sap.require("sap.m.Select");
 				 * @param {string} oScroller Scroller instance
 				 */
 				onMarkupReady: function($Html, oScroller) {
-					if (self.getTitle()) {
-						$Html.addClass("sapMCustomSltHdr");
-					}
-
 					// restrict the width of the popup
 					$Html[0].querySelector(".dwwr").style.maxWidth = fnGetMaxWidth();
 				},

@@ -510,7 +510,7 @@ jQuery.sap.require("sap.ui.Device");
 				}
 
 			} else { // SETTER code
-				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos);
+				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos, oDomRef);
 				return this;
 			}
 		}
@@ -571,7 +571,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @author SAP AG
 	 * @since 0.20.0
 	 */
-	jQuery.sap.denormalizeScrollLeftRTL = function byId(iNormalizedScrollLeft, oDomRef) {
+	jQuery.sap.denormalizeScrollLeftRTL = function(iNormalizedScrollLeft, oDomRef) {
 
 		if (oDomRef) {
 			if (!!sap.ui.Device.browser.internet_explorer) {
@@ -669,7 +669,7 @@ jQuery.sap.require("sap.ui.Device");
 		});
 	}
 
-	if (!jQuery.expr[":"].tabbable) {
+	if (!jQuery.expr[":"].sapTabbable) {
 		/*!
 		 * The following function is taken from jQuery UI 1.8.23
 		 *
@@ -686,7 +686,7 @@ jQuery.sap.require("sap.ui.Device");
 			 * If jQuery UI is loaded later on, this implementation here will be overwritten by that one, which is fine,
 			 * as it is semantically the same thing and intended to do exactly the same.
 			 */
-			tabbable: function( element ) {
+			sapTabbable: function( element ) {
 				var tabIndex = jQuery.attr( element, "tabindex" ),
 					isTabIndexNaN = isNaN( tabIndex );
 				return ( isTabIndexNaN || tabIndex >= 0 ) && focusable( element, !isTabIndexNaN );

@@ -53,7 +53,7 @@ jQuery.sap.require("sap.ui.Device");
  * @extends sap.ui.base.EventProvider
  * @final
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.core.Core 
  * @public

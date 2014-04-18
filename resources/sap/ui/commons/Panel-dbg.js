@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1115,7 +1115,11 @@ sap.ui.commons.Panel.prototype.getText = function () {
 sap.ui.commons.Panel.prototype.getScrollLeft = function () {
 	var scrollLeft = 0;
 	if (this._oScrollDomRef) {
-		scrollLeft = this._oScrollDomRef.scrollLeft;
+		if (sap.ui.getCore().getConfiguration().getRTL()) {
+			scrollLeft = jQuery(this._oScrollDomRef).scrollLeftRTL();
+		} else {
+			scrollLeft = jQuery(this._oScrollDomRef).scrollLeft();
+		}
 		jQuery.sap.assert(typeof scrollLeft == "number", "scrollLeft read from DOM should be a number");
 		this.setProperty("scrollLeft", scrollLeft, true);
 	}
@@ -1134,7 +1138,11 @@ sap.ui.commons.Panel.prototype.getScrollLeft = function () {
 sap.ui.commons.Panel.prototype.setScrollLeft = function (iPosition) {
 	this.setProperty("scrollLeft", iPosition, true);
 	if (this._oScrollDomRef) {
-		this._oScrollDomRef.scrollLeft = iPosition;
+		if (sap.ui.getCore().getConfiguration().getRTL()) {
+			jQuery(this._oScrollDomRef).scrollLeftRTL(iPosition);
+		} else {
+			jQuery(this._oScrollDomRef).scrollLeft(iPosition);
+		}
 	}
 	return this;
 };

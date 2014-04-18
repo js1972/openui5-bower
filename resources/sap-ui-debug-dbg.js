@@ -38,7 +38,7 @@ jQuery.sap.require('sap.ui.base.EventProvider'); // unlisted dependency retained
  * @class Control Tree used for the Debug Environment
  * @extends sap.ui.base.EventProvider
  * @author Martin Schaus, Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.debug.ControlTree
  * @private
  */
@@ -705,7 +705,7 @@ jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
  *
  * @extends sap.ui.base.EventProvider
  * @author Martin Schaus
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {sap.ui.core.Core}
  *            oCore the core instance to use for analysis
@@ -1218,7 +1218,7 @@ sap.ui.debug.PropertyList.prototype.onmouseout = function(oEvent) {
  * @class Central Class for the Debug Environment
  *
  * @author Martin Schaus, Frank Weigel
- * @version 1.18.8
+ * @version 1.18.12
  * @private
  */
 sap.ui.debug.DebugEnv = function() {

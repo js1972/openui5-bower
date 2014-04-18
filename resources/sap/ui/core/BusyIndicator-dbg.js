@@ -12,7 +12,7 @@ jQuery.sap.require("sap.ui.core.Popup");
 /**
  * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
  * @static 
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  */
 sap.ui.core.BusyIndicator = jQuery.extend(jQuery.sap.newObject(sap.ui.base.EventProvider.prototype), {

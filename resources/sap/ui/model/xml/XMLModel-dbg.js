@@ -29,7 +29,7 @@ jQuery.sap.require("jquery.sap.xml");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData either the URL where to load the XML from or a XML
  * @constructor

@@ -77,7 +77,7 @@ sap.ui.ux3.NavigationBarRenderer.renderItems = function(oRm, oControl) {
 			if (bIsSelected) {
 				oRm.write(" class='sapUiUx3NavBarItemSel'");
 			}
-			var url = item.getHref() || "javascript:void(0);";
+			
 			oRm.write("><a ");
 			
 			// Psssst. This is not right. Don't tell anyone, because it works like this.
@@ -89,7 +89,8 @@ sap.ui.ux3.NavigationBarRenderer.renderItems = function(oRm, oControl) {
 			// TL;DR: Not correct, won't fix - because it works and things might depend on the DOM
 			//        being this way.
 			oRm.writeElementData(item);
-			oRm.write("href='" + url + "' aria-setsize='" + iNoOfItems + "' aria-posinset='" + (i+1) + "' role='menuitemradio' class='sapUiUx3NavBarItem'");
+			oRm.writeAttributeEscaped("href", item.getHref() || "javascript:void(0);");
+			oRm.write(" aria-setsize='" + iNoOfItems + "' aria-posinset='" + (i+1) + "' role='menuitemradio' class='sapUiUx3NavBarItem'");
 			if (bIsSelected) {
 				oRm.write(" tabindex='0'");
 			}

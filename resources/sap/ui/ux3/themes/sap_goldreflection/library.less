@@ -340,7 +340,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -3562,6 +3562,7 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 
 .sapUiUx3OverlayOverlay {
 	background-color: @sapUiDeepBG;
+	opacity: .72;
 }
 /* =================================================== */
 /* CSS for control sap.ui.ux3/OverlayContainer.control */
@@ -4709,7 +4710,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3ShellNotify.sapUiUx3ShellNotifyTI > .sapUiUx3ShellNotifyBG,
 .sapUiUx3ShellNotify.sapUiUx3ShellNotifyOverlay > .sapUiUx3ShellNotifyBG {
 	background-color: @sapUiDeepBG;
-	opacity: .93;
+	opacity: .72;
 }
 
 .sapUiUx3ShellHeadBrandOnly > .sapUiUx3ShellNotify.sapUiUx3ShellNotifyTI > .sapUiUx3ShellNotifyBG {
@@ -4985,6 +4986,10 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHead
 
 .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader {
     height:             31px;
+}
+
+.sapUiUx3ShellDesignCrystal .sapUiUx3ShellHeader-logout:focus {
+	outline: 1px dashed @sapUiTextInverted;
 }
 
 .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader .sapUiUx3ShellHeaderTitleRight {

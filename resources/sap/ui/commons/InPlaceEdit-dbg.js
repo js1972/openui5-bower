@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -80,6 +80,7 @@ sap.ui.core.Control.extend("sap.ui.commons.InPlaceEdit", { metadata : {
 		"undoEnabled" : {type : "boolean", group : "Misc", defaultValue : true},
 		"design" : {type : "sap.ui.commons.TextViewDesign", group : "Data", defaultValue : sap.ui.commons.TextViewDesign.Standard}
 	},
+	defaultAggregation : "content",
 	aggregations : {
     	"content" : {type : "sap.ui.core.Control", multiple : false}
 	},

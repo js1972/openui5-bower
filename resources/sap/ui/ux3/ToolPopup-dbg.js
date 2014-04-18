@@ -77,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -147,7 +147,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>title</code>.
- * The title displayed in the pop up window (optional property)
+ * The title displayed in the pop up window
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -251,8 +251,8 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 /**
  * Getter for property <code>modal</code>.
  * Whether the popup is modal and blocks any user-interaction with controls in the background.
- * Changing this property while the ToolPopup is open is not allowed (and currently has noeffect)
- * Please don't use "modal" and "autoclose" at the same time. In this case a warning will be promted to the console and "autoclose" won't be used.
+ * Changing this property while the ToolPopup is open is not allowed (and currently has no effect)
+ * Please don't use "modal" and "autoclose" at the same time. In this case a warning will be prompted to the console and "autoclose" won't be used.
  *
  * Default value is <code>false</code>
  *
@@ -278,7 +278,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 /**
  * Getter for property <code>inverted</code>.
  * Specifies whether the ToolPopup has a dark or bright background. If set to true the background and borders will be dark. If false this stuff will be bright.
- * This property doesn't cause an effect in the HCB-theme.
+ * This property only has an effect for the GoldReflection-theme.
  *
  * Default value is <code>true</code>
  *
@@ -305,7 +305,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>autoClose</code>.
- * This property tells the ToolPopup to close the ToolPopup if the ToolPopup looses the focus. If the user e.g. clicks outside of the ToolPopup it will be closed. Please don't use "modal" and "autoclose" at the same time. In this case a warning will be promted to the console and "autoclose" won't be used.
+ * This property tells the ToolPopup to close itself if the ToolPopup looses the focus. If the user e.g. clicks outside of the ToolPopup it will be closed. Please don't use "modal" and "autoclose" at the same time. In this case a warning will be prompted to the console and "autoclose" won't be used.
  *
  * Default value is <code>false</code>
  *
@@ -386,7 +386,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>openDuration</code>.
- * Time in miliseconds for the open animation.
+ * Time in milliseconds for the open animation.
  *
  * Default value is <code>400</code>
  *
@@ -413,7 +413,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>closeDuration</code>.
- * Time in miliseconds for the close animation.
+ * Time in milliseconds for the close animation.
  *
  * Default value is <code>400</code>
  *
@@ -1789,17 +1789,24 @@ sap.ui.ux3.ToolPopup.prototype._ensurePopup = function() {
 			sap.ui.core.Popup.prototype._applyPosition.apply(oThis.oPopup, arguments);
 
 			var of = oThis.oPopup._oLastPosition.of;
-			var $of = jQuery.sap.byId(of.id);
-			// only after an open popup the corresponding arrow can be determined
-			// if the position was set manually
-			if (oThis._bPositionSet) {
-				// shell stuff should still use the left arrow
-				if (!$of.hasClass("sapUiUx3ShellTool")) {
-					oThis._my = oThis.oPopup._oLastPosition.my;
-					oThis._at = oThis.oPopup._oLastPosition.at;
+			if (!of) {
+				// In case setPosition is called from the outside and the opener has
+				// been removed, this leads to closing the ToolPopup instead of causing
+				// an error
+				oThis.oPopup.close();
+			} else {
+				var $of = jQuery.sap.byId(of.id);
+				// only after an open popup the corresponding arrow can be determined
+				// if the position was set manually
+				if (oThis._bPositionSet) {
+					// shell stuff should still use the left arrow
+					if (!$of.hasClass("sapUiUx3ShellTool")) {
+						oThis._my = oThis.oPopup._oLastPosition.my;
+						oThis._at = oThis.oPopup._oLastPosition.at;
+					}
 				}
+				fnSetArrow(oThis);
 			}
-			fnSetArrow(oThis);
 		};
 	}
 	return this.oPopup;

@@ -9,7 +9,7 @@
     },
     {
       "name" : "jquery-sap.js",
-      "size" : 381550,
+      "size" : 382242,
       "required" : [],
       "includes" : ["sap/ui/Device.js", "sap/ui/thirdparty/URI.js", "jquery.sap.global.js", "jquery.sap.dom.js", "jquery.sap.events.js", "jquery.sap.keycodes.js", "jquery.sap.mobile.js", "jquery.sap.properties.js", "jquery.sap.sjax.js", "jquery.sap.resources.js", "jquery.sap.strings.js", "jquery.sap.script.js", "jquery.sap.encoder.js", "jquery.sap.xml.js"]
     },
@@ -37,14 +37,14 @@
     {
       "name" : "jquery.sap.act.js",
       "description" : "Provides functionality for activity detection",
-      "size" : 4580,
+      "size" : 4615,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "jquery.sap.dom.js",
       "description" : "Provides functionality related to DOM analysis and manipulation which is not provided by jQuery itself.",
-      "size" : 27128,
+      "size" : 27138,
       "required" : ["sap/ui/Device.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -58,13 +58,13 @@
     {
       "name" : "jquery.sap.events.js",
       "description" : "Provides functionality related to eventing.",
-      "size" : 40494,
+      "size" : 40425,
       "required" : ["jquery.sap.keycodes.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "jquery.sap.global.js",
-      "size" : 102034,
+      "size" : 102036,
       "required" : ["sap/ui/Device.js", "sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/jqueryui/jquery-ui-position.js", "sap/ui/thirdparty/URI.js"],
       "includes" : []
     },
@@ -101,21 +101,21 @@
     {
       "name" : "jquery.sap.properties.js",
       "description" : "Provides access to Java-like properties files",
-      "size" : 8039,
+      "size" : 8040,
       "required" : ["jquery.sap.sjax.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "jquery.sap.resources.js",
       "description" : "Provides access to Java-like resource bundles in properties file format",
-      "size" : 15305,
+      "size" : 15481,
       "required" : ["jquery.sap.properties.js", "jquery.sap.strings.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "jquery.sap.script.js",
       "description" : "Provides miscellaneous utility functions that might be useful for any script",
-      "size" : 21791,
+      "size" : 21792,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -129,7 +129,7 @@
     {
       "name" : "jquery.sap.storage.js",
       "description" : "Provides methods to store and retrieve data based on Web Storage API.",
-      "size" : 11296,
+      "size" : 11299,
       "compressedSize" : 1702,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
@@ -144,7 +144,7 @@
     {
       "name" : "jquery.sap.ui.js",
       "description" : "A bridge between the jQuery.sap plugin and the SAPUI5 Core",
-      "size" : 5524,
+      "size" : 5525,
       "required" : ["sap/ui/Global.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -158,66 +158,66 @@
     },
     {
       "name" : "sap-ui-core-lean.js",
-      "size" : 460999,
+      "size" : 461572,
       "required" : ["sap/ui/core/Core.js"],
       "includes" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/jqueryui/jquery-ui-position.js", "sap/ui/Device.js", "sap/ui/thirdparty/URI.js", "jquery.sap.global.js"]
     },
     {
       "name" : "sap-ui-core-nojQuery.js",
-      "size" : 1025495,
+      "size" : 1026582,
       "required" : [],
       "includes" : ["sap/ui/Device.js", "sap/ui/thirdparty/URI.js", "jquery.sap.global.js", "sap/ui/core/Core.js", "jquery.sap.dom.js", "jquery.sap.events.js", "jquery.sap.keycodes.js", "jquery.sap.mobile.js", "jquery.sap.properties.js", "jquery.sap.sjax.js", "jquery.sap.resources.js", "jquery.sap.strings.js", "jquery.sap.script.js", "jquery.sap.act.js", "sap/ui/Global.js", "sap/ui/base/EventProvider.js", "sap/ui/base/Object.js", "sap/ui/base/Interface.js", "sap/ui/base/Metadata.js", "sap/ui/base/Event.js", "sap/ui/base/ObjectPool.js", "sap/ui/base/DataType.js", "sap/ui/core/Configuration.js", "sap/ui/core/Locale.js", "sap/ui/core/ElementMetadata.js", "sap/ui/base/ManagedObjectMetadata.js", "sap/ui/core/Element.js", "sap/ui/base/ManagedObject.js", "sap/ui/model/Model.js", "sap/ui/model/BindingMode.js", "sap/ui/model/Context.js", "sap/ui/model/Type.js", "sap/ui/model/CompositeBinding.js", "sap/ui/model/PropertyBinding.js", "sap/ui/model/Binding.js", "sap/ui/model/ChangeReason.js", "sap/ui/model/SimpleType.js", "sap/ui/model/ParseException.js", "sap/ui/base/Exception.js", "sap/ui/model/ValidateException.js", "sap/ui/model/FormatException.js", "sap/ui/model/ContextBinding.js", "sap/ui/base/BindingParser.js", "sap/ui/core/Control.js", "sap/ui/core/CustomStyleClassSupport.js", "sap/ui/core/FocusHandler.js", "sap/ui/core/ResizeHandler.js", "sap/ui/core/RenderManager.js", "jquery.sap.encoder.js", "sap/ui/core/UIArea.js", "jquery.sap.ui.js", "sap/ui/core/ThemeCheck.js", "sap/ui/core/Component.js", "sap/ui/core/ComponentMetadata.js", "sap/ui/core/tmpl/Template.js", "sap/ui/app/Application.js", "sap/ui/app/ApplicationMetadata.js"]
     },
     {
       "name" : "sap-ui-core.js",
-      "size" : 1282984,
+      "size" : 1284071,
       "required" : [],
       "includes" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/jqueryui/jquery-ui-position.js", "sap/ui/Device.js", "sap/ui/thirdparty/URI.js", "jquery.sap.global.js", "sap/ui/core/Core.js", "jquery.sap.dom.js", "jquery.sap.events.js", "jquery.sap.keycodes.js", "jquery.sap.mobile.js", "jquery.sap.properties.js", "jquery.sap.sjax.js", "jquery.sap.resources.js", "jquery.sap.strings.js", "jquery.sap.script.js", "jquery.sap.act.js", "sap/ui/Global.js", "sap/ui/base/EventProvider.js", "sap/ui/base/Object.js", "sap/ui/base/Interface.js", "sap/ui/base/Metadata.js", "sap/ui/base/Event.js", "sap/ui/base/ObjectPool.js", "sap/ui/base/DataType.js", "sap/ui/core/Configuration.js", "sap/ui/core/Locale.js", "sap/ui/core/ElementMetadata.js", "sap/ui/base/ManagedObjectMetadata.js", "sap/ui/core/Element.js", "sap/ui/base/ManagedObject.js", "sap/ui/model/Model.js", "sap/ui/model/BindingMode.js", "sap/ui/model/Context.js", "sap/ui/model/Type.js", "sap/ui/model/CompositeBinding.js", "sap/ui/model/PropertyBinding.js", "sap/ui/model/Binding.js", "sap/ui/model/ChangeReason.js", "sap/ui/model/SimpleType.js", "sap/ui/model/ParseException.js", "sap/ui/base/Exception.js", "sap/ui/model/ValidateException.js", "sap/ui/model/FormatException.js", "sap/ui/model/ContextBinding.js", "sap/ui/base/BindingParser.js", "sap/ui/core/Control.js", "sap/ui/core/CustomStyleClassSupport.js", "sap/ui/core/FocusHandler.js", "sap/ui/core/ResizeHandler.js", "sap/ui/core/RenderManager.js", "jquery.sap.encoder.js", "sap/ui/core/UIArea.js", "jquery.sap.ui.js", "sap/ui/core/ThemeCheck.js", "sap/ui/core/Component.js", "sap/ui/core/ComponentMetadata.js", "sap/ui/core/tmpl/Template.js", "sap/ui/app/Application.js", "sap/ui/app/ApplicationMetadata.js"]
     },
     {
       "name" : "sap-ui-debug.js",
       "description" : "This file has been generated by the SAPUI5 CreateModule Ant-Task",
-      "size" : 52494,
+      "size" : 52497,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.dom.js", "jquery.sap.script.js", "jquery.sap.strings.js", "sap/ui/base/DataType.js", "sap/ui/core/Element.js", "sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : ["sap/ui/debug/DebugEnv.js", "sap/ui/debug/ControlTree.js", "sap/ui/debug/Highlighter.js", "sap/ui/debug/LogViewer.js", "sap/ui/debug/PropertyList.js"]
     },
     {
       "name" : "sap-ui-testenv.js",
       "description" : "This file has been generated by the SAPUI5 CreateModule Ant-Task",
-      "size" : 21211,
+      "size" : 21213,
       "required" : ["sap/ui/core/Element.js", "jquery.sap.dom.js", "jquery.sap.script.js", "jquery.sap.global.js"],
       "includes" : ["sap/ui/test/TestEnv.js", "sap/ui/test/ControlTree.js", "jquery.sap.strings.js", "sap/ui/debug/Highlighter.js"]
     },
     {
       "name" : "sap/ui/Device.js",
-      "size" : 42111,
+      "size" : 42682,
       "required" : [],
       "includes" : []
     },
     {
       "name" : "sap/ui/Global.js",
-      "size" : 10192,
+      "size" : 10197,
       "required" : ["jquery.sap.dom.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/app/Application.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 11716,
+      "size" : 11717,
       "required" : ["sap/ui/app/ApplicationMetadata.js", "sap/ui/base/ManagedObject.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/app/ApplicationMetadata.js",
       "description" : "Provides class sap.ui.app.ApplicationMetadata",
-      "size" : 3561,
+      "size" : 3562,
       "required" : ["sap/ui/base/ManagedObjectMetadata.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/app/MockServer.js",
       "description" : "Provides class sap.ui.app.MockServer for mocking a server",
-      "size" : 1543,
+      "size" : 1544,
       "compressedSize" : 360,
       "required" : ["sap/ui/core/util/MockServer.js", "jquery.sap.global.js"],
       "includes" : []
@@ -239,14 +239,14 @@
     {
       "name" : "sap/ui/base/Event.js",
       "description" : "Provides class sap.ui.base.Event",
-      "size" : 3566,
+      "size" : 3567,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/EventProvider.js",
       "description" : "Provides class sap.ui.base.EventProvider",
-      "size" : 11535,
+      "size" : 11536,
       "required" : ["sap/ui/base/Object.js", "sap/ui/base/Event.js", "sap/ui/base/ObjectPool.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -260,42 +260,42 @@
     {
       "name" : "sap/ui/base/Interface.js",
       "description" : "Provides class sap.ui.base.Interface",
-      "size" : 1900,
+      "size" : 1901,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/ManagedObject.js",
       "description" : "Provides the base class for all objects with managed properties and aggregations.",
-      "size" : 108334,
+      "size" : 108374,
       "required" : ["jquery.sap.script.js", "jquery.sap.strings.js", "jquery.sap.act.js", "sap/ui/base/EventProvider.js", "sap/ui/base/DataType.js", "sap/ui/base/ManagedObjectMetadata.js", "sap/ui/model/Model.js", "sap/ui/model/Type.js", "sap/ui/model/CompositeBinding.js", "sap/ui/model/ContextBinding.js", "sap/ui/base/BindingParser.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/ManagedObjectMetadata.js",
       "description" : "Provides class sap.ui.base.ManagedObjectMetadata",
-      "size" : 22541,
+      "size" : 22542,
       "required" : ["sap/ui/base/Metadata.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/Metadata.js",
       "description" : "Provides class sap.ui.base.Metadata",
-      "size" : 10445,
+      "size" : 10446,
       "required" : ["jquery.sap.script.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/Object.js",
       "description" : "Provides class sap.ui.base.Object",
-      "size" : 7418,
+      "size" : 7419,
       "required" : ["sap/ui/base/Interface.js", "sap/ui/base/Metadata.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/base/ObjectPool.js",
       "description" : "Provides class sap.ui.base.ObjectPool",
-      "size" : 4616,
+      "size" : 4617,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -310,7 +310,7 @@
     {
       "name" : "sap/ui/core/BusyIndicator.js",
       "description" : "A static class to show a busy indicator",
-      "size" : 7126,
+      "size" : 7127,
       "compressedSize" : 3059,
       "required" : ["sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
@@ -318,14 +318,14 @@
     {
       "name" : "sap/ui/core/Component.js",
       "description" : "Provides base class sap.ui.core.Component for all components",
-      "size" : 17819,
+      "size" : 17820,
       "required" : ["sap/ui/base/ManagedObject.js", "sap/ui/core/ComponentMetadata.js", "sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/ComponentContainer.js",
       "description" : "Provides control sap.ui.core.ComponentContainer.",
-      "size" : 12187,
+      "size" : 12188,
       "compressedSize" : 2095,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -341,7 +341,7 @@
     {
       "name" : "sap/ui/core/ComponentMetadata.js",
       "description" : "Provides class sap.ui.core.ComponentMetadata",
-      "size" : 12242,
+      "size" : 12243,
       "required" : ["sap/ui/base/ManagedObjectMetadata.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -363,21 +363,21 @@
     {
       "name" : "sap/ui/core/Control.js",
       "description" : "Provides base class sap.ui.core.Control for all controls",
-      "size" : 26672,
+      "size" : 26673,
       "required" : ["sap/ui/core/Element.js", "sap/ui/core/CustomStyleClassSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/Core.js",
       "description" : "Provides the real core class sap.ui.core.Core of SAPUI5",
-      "size" : 92873,
+      "size" : 92874,
       "required" : ["jquery.sap.dom.js", "jquery.sap.events.js", "jquery.sap.mobile.js", "jquery.sap.properties.js", "jquery.sap.resources.js", "jquery.sap.script.js", "jquery.sap.act.js", "sap/ui/Global.js", "sap/ui/base/EventProvider.js", "sap/ui/base/DataType.js", "sap/ui/core/Configuration.js", "sap/ui/core/ElementMetadata.js", "sap/ui/core/Element.js", "sap/ui/core/Control.js", "sap/ui/core/FocusHandler.js", "sap/ui/core/ResizeHandler.js", "sap/ui/core/RenderManager.js", "sap/ui/core/UIArea.js", "sap/ui/core/ThemeCheck.js", "sap/ui/core/Component.js", "sap/ui/core/tmpl/Template.js", "sap/ui/app/Application.js", "sap/ui/Device.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/CustomData.js",
       "description" : "Provides control sap.ui.core.CustomData.",
-      "size" : 7523,
+      "size" : 7524,
       "compressedSize" : 1241,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -392,7 +392,7 @@
     {
       "name" : "sap/ui/core/CustomizingConfiguration.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 5898,
+      "size" : 5899,
       "compressedSize" : 2021,
       "required" : ["sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : []
@@ -400,7 +400,7 @@
     {
       "name" : "sap/ui/core/DeclarativeSupport.js",
       "description" : "Provides class sap.ui.core.DeclarativeSupport",
-      "size" : 18495,
+      "size" : 18496,
       "compressedSize" : 6575,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
@@ -408,21 +408,21 @@
     {
       "name" : "sap/ui/core/Element.js",
       "description" : "Provides the base class for all controls and UI elements.",
-      "size" : 43177,
+      "size" : 43178,
       "required" : ["jquery.sap.strings.js", "sap/ui/base/ManagedObject.js", "sap/ui/core/ElementMetadata.js", "sap/ui/model/SimpleType.js", "sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/ElementMetadata.js",
       "description" : "Provides class sap.ui.core.ElementMetadata",
-      "size" : 3668,
+      "size" : 3669,
       "required" : ["sap/ui/base/ManagedObjectMetadata.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/EnabledPropagator.js",
       "description" : "Provides helper sap.ui.core.EnabledPropagator",
-      "size" : 2855,
+      "size" : 2856,
       "compressedSize" : 1242,
       "required" : ["sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -430,7 +430,7 @@
     {
       "name" : "sap/ui/core/EventBus.js",
       "description" : "Provides class sap.ui.core.EventBus",
-      "size" : 7257,
+      "size" : 7258,
       "compressedSize" : 1631,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
@@ -445,7 +445,7 @@
     {
       "name" : "sap/ui/core/Fragment.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 24335,
+      "size" : 24336,
       "compressedSize" : 6226,
       "required" : ["sap/ui/base/ManagedObject.js", "sap/ui/core/XMLTemplateProcessor.js", "sap/ui/core/DeclarativeSupport.js", "jquery.sap.global.js"],
       "includes" : []
@@ -453,7 +453,7 @@
     {
       "name" : "sap/ui/core/HTML.js",
       "description" : "Provides control sap.ui.core.HTML.",
-      "size" : 16323,
+      "size" : 16324,
       "compressedSize" : 3313,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -469,7 +469,7 @@
     {
       "name" : "sap/ui/core/History.js",
       "description" : "Provides the history handler sap.ui.core.History",
-      "size" : 3728,
+      "size" : 3729,
       "compressedSize" : 1550,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
@@ -477,7 +477,7 @@
     {
       "name" : "sap/ui/core/Icon.js",
       "description" : "Provides control sap.ui.core.Icon.",
-      "size" : 23379,
+      "size" : 23380,
       "compressedSize" : 5382,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "sap/ui/core/IconPool.js", "jquery.sap.global.js"],
       "includes" : []
@@ -485,8 +485,8 @@
     {
       "name" : "sap/ui/core/IconPool.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 22329,
-      "compressedSize" : 15008,
+      "size" : 22439,
+      "compressedSize" : 15108,
       "required" : ["sap/ui/thirdparty/URI.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -501,7 +501,7 @@
     {
       "name" : "sap/ui/core/IntervalTrigger.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 3855,
+      "size" : 3856,
       "compressedSize" : 1487,
       "required" : ["sap/ui/core/EventBus.js", "jquery.sap.global.js"],
       "includes" : []
@@ -509,7 +509,7 @@
     {
       "name" : "sap/ui/core/Item.js",
       "description" : "Provides control sap.ui.core.Item.",
-      "size" : 6168,
+      "size" : 6169,
       "compressedSize" : 697,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -517,7 +517,7 @@
     {
       "name" : "sap/ui/core/LayoutData.js",
       "description" : "Provides control sap.ui.core.LayoutData.",
-      "size" : 3781,
+      "size" : 3782,
       "compressedSize" : 781,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -525,7 +525,7 @@
     {
       "name" : "sap/ui/core/ListItem.js",
       "description" : "Provides control sap.ui.core.ListItem.",
-      "size" : 4875,
+      "size" : 4876,
       "compressedSize" : 549,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Item.js", "jquery.sap.global.js"],
       "includes" : []
@@ -533,7 +533,7 @@
     {
       "name" : "sap/ui/core/LocalBusyIndicator.js",
       "description" : "Provides control sap.ui.core.LocalBusyIndicator.",
-      "size" : 8561,
+      "size" : 8562,
       "compressedSize" : 2693,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "sap/ui/core/theming/Parameters.js", "sap/ui/core/LocalBusyIndicatorRenderer.js", "jquery.sap.global.js"],
       "includes" : []
@@ -557,14 +557,14 @@
     {
       "name" : "sap/ui/core/Locale.js",
       "description" : "Provides the locale object sap.ui.core.Locale",
-      "size" : 9842,
+      "size" : 9843,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/LocaleData.js",
       "description" : "Provides the locale object sap.ui.core.LocaleData",
-      "size" : 14770,
+      "size" : 14771,
       "compressedSize" : 5465,
       "required" : ["sap/ui/base/Object.js", "sap/ui/core/Locale.js", "sap/ui/core/Configuration.js", "jquery.sap.global.js"],
       "includes" : []
@@ -572,7 +572,7 @@
     {
       "name" : "sap/ui/core/Message.js",
       "description" : "Provides control sap.ui.core.Message.",
-      "size" : 10634,
+      "size" : 10635,
       "compressedSize" : 2081,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "sap/ui/core/theming/Parameters.js", "jquery.sap.global.js"],
       "includes" : []
@@ -580,22 +580,22 @@
     {
       "name" : "sap/ui/core/Popup.js",
       "description" : "Provides helper class sap.ui.core.Popup",
-      "size" : 69895,
-      "compressedSize" : 25913,
+      "size" : 70100,
+      "compressedSize" : 25995,
       "required" : ["jquery.sap.script.js", "sap/ui/core/UIArea.js", "sap/ui/base/Object.js", "sap/ui/base/EventProvider.js", "sap/ui/core/Control.js", "sap/ui/core/RenderManager.js", "sap/ui/core/IntervalTrigger.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/RenderManager.js",
       "description" : "Provides the render manager sap.ui.core.RenderManager",
-      "size" : 43942,
+      "size" : 44090,
       "required" : ["jquery.sap.encoder.js", "jquery.sap.act.js", "sap/ui/base/Object.js", "sap/ui/base/Interface.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/Renderer.js",
       "description" : "Provides (optional) base class for all renderers",
-      "size" : 3114,
+      "size" : 3115,
       "compressedSize" : 1135,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
@@ -610,7 +610,7 @@
     {
       "name" : "sap/ui/core/ScrollBar.js",
       "description" : "Provides control sap.ui.core.ScrollBar.",
-      "size" : 30687,
+      "size" : 30688,
       "compressedSize" : 10587,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -626,7 +626,7 @@
     {
       "name" : "sap/ui/core/SeparatorItem.js",
       "description" : "Provides control sap.ui.core.SeparatorItem.",
-      "size" : 3397,
+      "size" : 3398,
       "compressedSize" : 422,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Item.js", "jquery.sap.global.js"],
       "includes" : []
@@ -634,14 +634,14 @@
     {
       "name" : "sap/ui/core/ThemeCheck.js",
       "description" : "Provides class sap.ui.core.ThemeCheck",
-      "size" : 6376,
+      "size" : 6521,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.script.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/Title.js",
       "description" : "Provides control sap.ui.core.Title.",
-      "size" : 6424,
+      "size" : 6425,
       "compressedSize" : 722,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -649,7 +649,7 @@
     {
       "name" : "sap/ui/core/TooltipBase.js",
       "description" : "Provides control sap.ui.core.TooltipBase.",
-      "size" : 23690,
+      "size" : 23691,
       "compressedSize" : 7367,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
@@ -657,14 +657,14 @@
     {
       "name" : "sap/ui/core/UIArea.js",
       "description" : "Provides class sap.ui.core.UIArea",
-      "size" : 23568,
+      "size" : 23569,
       "required" : ["jquery.sap.ui.js", "jquery.sap.act.js", "sap/ui/base/ManagedObject.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/UIComponent.js",
       "description" : "Provides base class sap.ui.core.Component for all components",
-      "size" : 9948,
+      "size" : 9949,
       "compressedSize" : 3059,
       "required" : ["sap/ui/core/UIComponentMetadata.js", "sap/ui/core/Component.js", "sap/ui/core/mvc/View.js", "jquery.sap.global.js"],
       "includes" : []
@@ -672,7 +672,7 @@
     {
       "name" : "sap/ui/core/UIComponentMetadata.js",
       "description" : "Provides class sap.ui.core.ComponentMetadata",
-      "size" : 3434,
+      "size" : 3435,
       "compressedSize" : 1520,
       "required" : ["sap/ui/core/ComponentMetadata.js", "jquery.sap.global.js"],
       "includes" : []
@@ -688,7 +688,7 @@
     {
       "name" : "sap/ui/core/VariantLayoutData.js",
       "description" : "Provides control sap.ui.core.VariantLayoutData.",
-      "size" : 6519,
+      "size" : 6520,
       "compressedSize" : 558,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/LayoutData.js", "jquery.sap.global.js"],
       "includes" : []
@@ -704,7 +704,7 @@
     {
       "name" : "sap/ui/core/delegate/ItemNavigation.js",
       "description" : "Provides class sap.ui.core.delegate.ItemNavigation",
-      "size" : 35858,
+      "size" : 35859,
       "compressedSize" : 14653,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
@@ -712,8 +712,8 @@
     {
       "name" : "sap/ui/core/delegate/ScrollEnablement.js",
       "description" : "Provides class sap.ui.core.delegate.ScrollEnablement",
-      "size" : 32090,
-      "compressedSize" : 14256,
+      "size" : 31806,
+      "compressedSize" : 14214,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -728,16 +728,16 @@
     {
       "name" : "sap/ui/core/format/NumberFormat.js",
       "description" : "Provides class sap.ui.core.format.NumberFormat",
-      "size" : 8317,
-      "compressedSize" : 3426,
+      "size" : 9851,
+      "compressedSize" : 4002,
       "required" : ["sap/ui/core/LocaleData.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.core (1.18.8)",
-      "size" : 48905,
-      "compressedSize" : 11200,
+      "description" : "Initialization Code and shared classes of library sap.ui.core (1.18.12)",
+      "size" : 48925,
+      "compressedSize" : 11201,
       "required" : ["sap/ui/core/Core.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],
       "includes" : ["sap/ui/core/AccessibleRole.js", "sap/ui/core/BarColor.js", "sap/ui/core/CSSColor.js", "sap/ui/core/CSSSize.js", "sap/ui/core/CSSSizeShortHand.js", "sap/ui/core/Collision.js", "sap/ui/core/Design.js", "sap/ui/core/Dock.js", "sap/ui/core/HorizontalAlign.js", "sap/ui/core/ID.js", "sap/ui/core/IconColor.js", "sap/ui/core/ImeMode.js", "sap/ui/core/MessageType.js", "sap/ui/core/OpenState.js", "sap/ui/core/Percentage.js", "sap/ui/core/ScrollBarAction.js", "sap/ui/core/Scrolling.js", "sap/ui/core/TextAlign.js", "sap/ui/core/TextDirection.js", "sap/ui/core/TitleLevel.js", "sap/ui/core/URI.js", "sap/ui/core/ValueState.js", "sap/ui/core/VerticalAlign.js", "sap/ui/core/Wrapping.js", "sap/ui/core/mvc/ViewType.js", "sap/ui/core/routing/HistoryDirection.js"]
     },
@@ -752,7 +752,7 @@
     {
       "name" : "sap/ui/core/mvc/HTMLView.js",
       "description" : "Provides control sap.ui.core.mvc.HTMLView.",
-      "size" : 11224,
+      "size" : 11225,
       "compressedSize" : 3696,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/mvc/View.js", "sap/ui/core/DeclarativeSupport.js", "sap/ui/core/RenderManager.js", "jquery.sap.global.js"],
       "includes" : []
@@ -768,7 +768,7 @@
     {
       "name" : "sap/ui/core/mvc/JSONView.js",
       "description" : "Provides control sap.ui.core.mvc.JSONView.",
-      "size" : 7814,
+      "size" : 7815,
       "compressedSize" : 2462,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/mvc/View.js", "jquery.sap.global.js"],
       "includes" : []
@@ -784,7 +784,7 @@
     {
       "name" : "sap/ui/core/mvc/JSView.js",
       "description" : "Provides control sap.ui.core.mvc.JSView.",
-      "size" : 7758,
+      "size" : 7759,
       "compressedSize" : 1549,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/mvc/View.js", "jquery.sap.global.js"],
       "includes" : []
@@ -800,7 +800,7 @@
     {
       "name" : "sap/ui/core/mvc/TemplateView.js",
       "description" : "Provides control sap.ui.core.mvc.TemplateView.",
-      "size" : 5961,
+      "size" : 5962,
       "compressedSize" : 1227,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/mvc/View.js", "jquery.sap.global.js"],
       "includes" : []
@@ -816,7 +816,7 @@
     {
       "name" : "sap/ui/core/mvc/View.js",
       "description" : "Provides control sap.ui.core.mvc.View.",
-      "size" : 28012,
+      "size" : 28013,
       "compressedSize" : 3826,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -832,7 +832,7 @@
     {
       "name" : "sap/ui/core/mvc/XMLView.js",
       "description" : "Provides control sap.ui.core.mvc.XMLView.",
-      "size" : 9750,
+      "size" : 9751,
       "compressedSize" : 3641,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/mvc/View.js", "jquery.sap.xml.js", "sap/ui/base/DataType.js", "sap/ui/model/resource/ResourceModel.js", "sap/ui/core/XMLTemplateProcessor.js", "jquery.sap.global.js"],
       "includes" : []
@@ -848,7 +848,7 @@
     {
       "name" : "sap/ui/core/plugin/DeclarativeSupport.js",
       "description" : "Provides class sap.ui.core.plugin.DeclarativeSupport",
-      "size" : 1834,
+      "size" : 1835,
       "required" : ["sap/ui/core/DeclarativeSupport.js", "sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -856,7 +856,7 @@
     {
       "name" : "sap/ui/core/plugin/LessSupport.js",
       "description" : "Provides class sap.ui.core.plugin.LessSupport",
-      "size" : 12214,
+      "size" : 12244,
       "required" : ["sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -864,7 +864,7 @@
     {
       "name" : "sap/ui/core/plugin/TemplatingSupport.js",
       "description" : "Provides class sap.ui.core.plugin.TemplatingSupport",
-      "size" : 1705,
+      "size" : 1706,
       "compressedSize" : 812,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/tmpl/Template.js", "jquery.sap.global.js"],
       "includes" : []
@@ -904,7 +904,7 @@
     {
       "name" : "sap/ui/core/search/OpenSearchProvider.js",
       "description" : "Provides control sap.ui.core.search.OpenSearchProvider.",
-      "size" : 6972,
+      "size" : 6973,
       "compressedSize" : 1213,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/search/SearchProvider.js", "jquery.sap.encoder.js", "jquery.sap.global.js"],
       "includes" : []
@@ -912,7 +912,7 @@
     {
       "name" : "sap/ui/core/search/SearchProvider.js",
       "description" : "Provides control sap.ui.core.search.SearchProvider.",
-      "size" : 5491,
+      "size" : 5492,
       "compressedSize" : 795,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -928,7 +928,7 @@
     {
       "name" : "sap/ui/core/support/Plugin.js",
       "description" : "Provides class sap.ui.core.support.Plugin",
-      "size" : 4080,
+      "size" : 4081,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.script.js", "jquery.sap.dom.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -936,7 +936,7 @@
     {
       "name" : "sap/ui/core/support/Support.js",
       "description" : "Provides the basic UI5 support functionality",
-      "size" : 12547,
+      "size" : 12548,
       "required" : ["sap/ui/base/EventProvider.js", "sap/ui/core/support/Plugin.js", "jquery.sap.dom.js", "jquery.sap.script.js", "jquery.sap.encoder.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -952,7 +952,7 @@
     {
       "name" : "sap/ui/core/support/plugins/ControlTree.js",
       "description" : "Provides class sap.ui.core.support.plugins.ControlTree (ControlTree support plugin)",
-      "size" : 52562,
+      "size" : 52563,
       "required" : ["sap/ui/core/support/Plugin.js", "sap/ui/thirdparty/jszip.js", "sap/ui/core/util/serializer/ViewSerializer.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -968,7 +968,7 @@
     {
       "name" : "sap/ui/core/support/plugins/MessageTest.js",
       "description" : "Provides class sap.ui.core.support.plugins.MessageTest (Test  plugin for support tool communication)",
-      "size" : 3576,
+      "size" : 3577,
       "required" : ["sap/ui/core/support/Plugin.js", "sap/ui/core/RenderManager.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -976,7 +976,7 @@
     {
       "name" : "sap/ui/core/support/plugins/Performance.js",
       "description" : "Provides class sap.ui.core.support.plugins.Performance",
-      "size" : 7760,
+      "size" : 7761,
       "required" : ["sap/ui/core/support/Plugin.js", "sap/ui/core/RenderManager.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -984,7 +984,7 @@
     {
       "name" : "sap/ui/core/support/plugins/Selector.js",
       "description" : "Provides class sap.ui.core.support.plugins.Selector (Selector support plugin)",
-      "size" : 3944,
+      "size" : 3945,
       "required" : ["sap/ui/core/support/Plugin.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -992,7 +992,7 @@
     {
       "name" : "sap/ui/core/support/plugins/TechInfo.js",
       "description" : "Provides class sap.ui.core.support.plugins.TechInfo (TechInfo support plugin)",
-      "size" : 10254,
+      "size" : 10255,
       "required" : ["sap/ui/core/support/Plugin.js", "jquery.sap.encoder.js", "jquery.sap.script.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1000,7 +1000,7 @@
     {
       "name" : "sap/ui/core/support/plugins/Trace.js",
       "description" : "Provides class sap.ui.core.support.plugins.Trace (Trace support plugin)",
-      "size" : 6883,
+      "size" : 6884,
       "required" : ["sap/ui/core/support/Plugin.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1008,7 +1008,7 @@
     {
       "name" : "sap/ui/core/support/trace/E2eTraceLib.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 15600,
+      "size" : 16698,
       "required" : ["sap/ui/core/support/trace/EppLib.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1032,7 +1032,7 @@
     {
       "name" : "sap/ui/core/tmpl/DOMAttribute.js",
       "description" : "Provides control sap.ui.core.tmpl.DOMAttribute.",
-      "size" : 5093,
+      "size" : 5094,
       "compressedSize" : 768,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1040,7 +1040,7 @@
     {
       "name" : "sap/ui/core/tmpl/DOMElement.js",
       "description" : "Provides control sap.ui.core.tmpl.DOMElement.",
-      "size" : 15677,
+      "size" : 15678,
       "compressedSize" : 2666,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1056,7 +1056,7 @@
     {
       "name" : "sap/ui/core/tmpl/HandlebarsTemplate.js",
       "description" : "declare unusual global vars for JSLint/SAPUI5 validation",
-      "size" : 14953,
+      "size" : 14954,
       "compressedSize" : 5045,
       "required" : ["sap/ui/core/tmpl/Template.js", "sap/ui/thirdparty/handlebars.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1064,14 +1064,14 @@
     {
       "name" : "sap/ui/core/tmpl/Template.js",
       "description" : "Provides base class sap.ui.core.tmpl.Template for all templates",
-      "size" : 18499,
+      "size" : 18500,
       "required" : ["sap/ui/base/ManagedObject.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/tmpl/TemplateControl.js",
       "description" : "Provides control sap.ui.core.tmpl.TemplateControl.",
-      "size" : 18675,
+      "size" : 18676,
       "compressedSize" : 3963,
       "required" : ["sap/ui/core/library.js", "sap/ui/core/Control.js", "sap/ui/core/tmpl/DOMElement.js", "sap/ui/core/tmpl/DOMAttribute.js", "sap/ui/core/DeclarativeSupport.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1087,7 +1087,7 @@
     {
       "name" : "sap/ui/core/util/LibraryInfo.js",
       "description" : "Provides class sap.ui.core.util.LibraryInfo",
-      "size" : 3484,
+      "size" : 3485,
       "compressedSize" : 2141,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.script.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1095,15 +1095,15 @@
     {
       "name" : "sap/ui/core/util/MockServer.js",
       "description" : "Provides class sap.ui.core.util.MockServer for mocking a server",
-      "size" : 45642,
-      "compressedSize" : 16030,
+      "size" : 71557,
+      "compressedSize" : 24408,
       "required" : ["sap/ui/base/ManagedObject.js", "sap/ui/thirdparty/sinon.js", "sap/ui/thirdparty/sinon-ie.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/core/util/serializer/HTMLViewSerializer.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 2745,
+      "size" : 2746,
       "compressedSize" : 1269,
       "required" : ["sap/ui/core/util/serializer/delegate/HTML.js", "sap/ui/base/EventProvider.js", "sap/ui/thirdparty/vkbeautify.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1111,7 +1111,7 @@
     {
       "name" : "sap/ui/core/util/serializer/Serializer.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 5206,
+      "size" : 5207,
       "compressedSize" : 1837,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1119,7 +1119,7 @@
     {
       "name" : "sap/ui/core/util/serializer/ViewSerializer.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 7103,
+      "size" : 7104,
       "compressedSize" : 3115,
       "required" : ["sap/ui/core/util/serializer/Serializer.js", "sap/ui/core/util/serializer/HTMLViewSerializer.js", "sap/ui/core/util/serializer/XMLViewSerializer.js", "sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1127,7 +1127,7 @@
     {
       "name" : "sap/ui/core/util/serializer/XMLViewSerializer.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 3790,
+      "size" : 3791,
       "compressedSize" : 1760,
       "required" : ["sap/ui/core/util/serializer/delegate/XML.js", "sap/ui/base/EventProvider.js", "sap/ui/thirdparty/vkbeautify.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1135,7 +1135,7 @@
     {
       "name" : "sap/ui/core/util/serializer/delegate/Delegate.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 3161,
+      "size" : 3162,
       "compressedSize" : 927,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1143,7 +1143,7 @@
     {
       "name" : "sap/ui/core/util/serializer/delegate/HTML.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 8928,
+      "size" : 8929,
       "compressedSize" : 3498,
       "required" : ["sap/ui/core/util/serializer/delegate/Delegate.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1151,7 +1151,7 @@
     {
       "name" : "sap/ui/core/util/serializer/delegate/XML.js",
       "description" : "SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 10710,
+      "size" : 10711,
       "compressedSize" : 3995,
       "required" : ["sap/ui/core/util/serializer/delegate/Delegate.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1159,7 +1159,7 @@
     {
       "name" : "sap/ui/core/ws/ReadyState.js",
       "description" : "Provides enumeration sap.ui.core.ws.ReadyState",
-      "size" : 842,
+      "size" : 843,
       "compressedSize" : 316,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
@@ -1167,7 +1167,7 @@
     {
       "name" : "sap/ui/core/ws/SapPcpWebSocket.js",
       "description" : "Provides class sap.ui.core.ws.WebSocket for WebSocket support with SAP-PCP Protocol",
-      "size" : 6972,
+      "size" : 6973,
       "compressedSize" : 2322,
       "required" : ["sap/ui/core/ws/WebSocket.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1175,7 +1175,7 @@
     {
       "name" : "sap/ui/core/ws/WebSocket.js",
       "description" : "Provides class sap.ui.core.ws.WebSocket for standard WebSocket support",
-      "size" : 15699,
+      "size" : 15700,
       "compressedSize" : 4148,
       "required" : ["sap/ui/core/ws/ReadyState.js", "sap/ui/base/EventProvider.js", "sap/ui/Device.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1183,7 +1183,7 @@
     {
       "name" : "sap/ui/debug/ControlTree.js",
       "description" : "Provides a tree of controls for the testsuite",
-      "size" : 13506,
+      "size" : 13507,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1191,7 +1191,7 @@
     {
       "name" : "sap/ui/debug/DebugEnv.js",
       "description" : "A core plugin that bundles debug features and connects with an embedding testsuite",
-      "size" : 11258,
+      "size" : 11259,
       "required" : ["sap/ui/debug/ControlTree.js", "sap/ui/debug/Highlighter.js", "sap/ui/debug/LogViewer.js", "sap/ui/debug/PropertyList.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1215,7 +1215,7 @@
     {
       "name" : "sap/ui/debug/PropertyList.js",
       "description" : "Provides a (modifiable) list of properties for a given control",
-      "size" : 18417,
+      "size" : 18418,
       "required" : ["jquery.sap.strings.js", "sap/ui/base/EventProvider.js", "sap/ui/base/DataType.js", "sap/ui/core/Element.js", "sap/ui/core/Core.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1268,7 +1268,7 @@
     {
       "name" : "sap/ui/model/ClientModel.js",
       "description" : "Provides the JSON object based model implementation",
-      "size" : 4377,
+      "size" : 4378,
       "compressedSize" : 1586,
       "required" : ["sap/ui/model/Model.js", "sap/ui/model/ClientPropertyBinding.js", "sap/ui/model/ClientContextBinding.js", "sap/ui/model/ClientListBinding.js", "sap/ui/model/ClientTreeBinding.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1352,7 +1352,7 @@
     {
       "name" : "sap/ui/model/Model.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 26353,
+      "size" : 26354,
       "required" : ["sap/ui/base/EventProvider.js", "sap/ui/model/BindingMode.js", "sap/ui/model/Context.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1373,15 +1373,15 @@
     {
       "name" : "sap/ui/model/SelectionModel.js",
       "description" : "Provides class sap.ui.model.SelectionModel",
-      "size" : 13402,
-      "compressedSize" : 3749,
+      "size" : 13621,
+      "compressedSize" : 3790,
       "required" : ["sap/ui/base/EventProvider.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/model/SimpleType.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 3870,
+      "size" : 3871,
       "required" : ["sap/ui/model/Type.js", "sap/ui/model/ParseException.js", "sap/ui/model/ValidateException.js", "sap/ui/model/FormatException.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1404,7 +1404,7 @@
     {
       "name" : "sap/ui/model/Type.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 1738,
+      "size" : 1739,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1418,7 +1418,7 @@
     {
       "name" : "sap/ui/model/control/ControlModel.js",
       "description" : "Provides the JSON object based model implementation",
-      "size" : 2517,
+      "size" : 2518,
       "compressedSize" : 1531,
       "required" : ["sap/ui/model/Model.js", "sap/ui/model/control/ControlPropertyBinding.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1442,7 +1442,7 @@
     {
       "name" : "sap/ui/model/json/JSONModel.js",
       "description" : "Provides the JSON object based model implementation",
-      "size" : 10041,
+      "size" : 10042,
       "compressedSize" : 3330,
       "required" : ["sap/ui/model/ClientModel.js", "sap/ui/model/json/JSONPropertyBinding.js", "sap/ui/model/json/JSONListBinding.js", "sap/ui/model/json/JSONTreeBinding.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1458,8 +1458,8 @@
     {
       "name" : "sap/ui/model/json/JSONTreeBinding.js",
       "description" : "Provides the JSON model implementation of a list binding",
-      "size" : 4739,
-      "compressedSize" : 1248,
+      "size" : 4749,
+      "compressedSize" : 1251,
       "required" : ["sap/ui/model/ClientTreeBinding.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1490,7 +1490,7 @@
     {
       "name" : "sap/ui/model/odata/ODataMetadata.js",
       "description" : "Provides class sap.ui.model.odata.ODataMetadata",
-      "size" : 12683,
+      "size" : 12684,
       "compressedSize" : 4553,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
@@ -1498,8 +1498,8 @@
     {
       "name" : "sap/ui/model/odata/ODataModel.js",
       "description" : "Provides class sap.ui.model.odata.ODataModel",
-      "size" : 85080,
-      "compressedSize" : 28538,
+      "size" : 85705,
+      "compressedSize" : 28911,
       "required" : ["sap/ui/thirdparty/datajs.js", "sap/ui/thirdparty/URI.js", "sap/ui/model/Model.js", "sap/ui/model/odata/ODataPropertyBinding.js", "sap/ui/model/odata/ODataContextBinding.js", "sap/ui/model/odata/ODataListBinding.js", "sap/ui/model/odata/ODataTreeBinding.js", "sap/ui/model/odata/ODataMetadata.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1514,8 +1514,8 @@
     {
       "name" : "sap/ui/model/odata/ODataTreeBinding.js",
       "description" : "Provides the OData model implementation of a tree binding",
-      "size" : 9795,
-      "compressedSize" : 4100,
+      "size" : 10143,
+      "compressedSize" : 4250,
       "required" : ["sap/ui/model/TreeBinding.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1529,7 +1529,7 @@
     {
       "name" : "sap/ui/model/resource/ResourceModel.js",
       "description" : "Provides the resource bundle based model implementation",
-      "size" : 5844,
+      "size" : 5845,
       "compressedSize" : 1922,
       "required" : ["sap/ui/model/Model.js", "sap/ui/model/resource/ResourcePropertyBinding.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1545,7 +1545,7 @@
     {
       "name" : "sap/ui/model/type/Boolean.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 3090,
+      "size" : 3091,
       "compressedSize" : 1255,
       "required" : ["sap/ui/model/SimpleType.js", "sap/ui/core/format/NumberFormat.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1553,7 +1553,7 @@
     {
       "name" : "sap/ui/model/type/Date.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 6288,
+      "size" : 6289,
       "compressedSize" : 2514,
       "required" : ["sap/ui/model/SimpleType.js", "sap/ui/core/format/DateFormat.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1561,7 +1561,7 @@
     {
       "name" : "sap/ui/model/type/DateTime.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 2665,
+      "size" : 2666,
       "compressedSize" : 743,
       "required" : ["sap/ui/model/type/Date.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1569,7 +1569,7 @@
     {
       "name" : "sap/ui/model/type/Float.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 4099,
+      "size" : 4100,
       "compressedSize" : 1734,
       "required" : ["sap/ui/model/SimpleType.js", "sap/ui/core/format/NumberFormat.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1577,7 +1577,7 @@
     {
       "name" : "sap/ui/model/type/Integer.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 4111,
+      "size" : 4112,
       "compressedSize" : 1745,
       "required" : ["sap/ui/model/SimpleType.js", "sap/ui/core/format/NumberFormat.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1585,7 +1585,7 @@
     {
       "name" : "sap/ui/model/type/String.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 5983,
+      "size" : 5984,
       "compressedSize" : 2418,
       "required" : ["sap/ui/model/SimpleType.js", "sap/ui/core/format/NumberFormat.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1593,7 +1593,7 @@
     {
       "name" : "sap/ui/model/type/Time.js",
       "description" : "Provides the base implementation for all model implementations",
-      "size" : 2610,
+      "size" : 2611,
       "compressedSize" : 719,
       "required" : ["sap/ui/model/type/Date.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1609,7 +1609,7 @@
     {
       "name" : "sap/ui/model/xml/XMLModel.js",
       "description" : "Provides the XML object based model implementation",
-      "size" : 12676,
+      "size" : 12677,
       "compressedSize" : 5749,
       "required" : ["sap/ui/model/ClientModel.js", "sap/ui/model/xml/XMLPropertyBinding.js", "sap/ui/model/xml/XMLListBinding.js", "sap/ui/model/xml/XMLTreeBinding.js", "jquery.sap.xml.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1632,8 +1632,8 @@
     },
     {
       "name" : "sap/ui/qunit/QUnitUtils.js",
-      "description" : "The <code>sap.ui.test.qunit</code> namespace contains helper functionality for QUnit tests.  @version 1.18.8 @namespace @name sap.ui.test.qunit @public",
-      "size" : 22006,
+      "description" : "The <code>sap.ui.test.qunit</code> namespace contains helper functionality for QUnit tests.  @version 1.18.12 @namespace @name sap.ui.test.qunit @public",
+      "size" : 22007,
       "required" : ["jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1648,7 +1648,7 @@
     {
       "name" : "sap/ui/test/ControlTree.js",
       "description" : "Provides a control tree to be used in the Eclipse preview editor",
-      "size" : 4480,
+      "size" : 4481,
       "required" : ["jquery.sap.strings.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1656,7 +1656,7 @@
     {
       "name" : "sap/ui/test/TestEnv.js",
       "description" : "Provides a bridge between the SAPUI5 runtime and the SAPUI5 Eclipse Tooling.",
-      "size" : 2740,
+      "size" : 2741,
       "required" : ["sap/ui/test/ControlTree.js", "sap/ui/debug/Highlighter.js", "jquery.sap.global.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
@@ -1954,64 +1954,71 @@
     },
     {
       "name" : "sap/ui/thirdparty/mobify-carousel.js",
-      "size" : 16947,
+      "size" : 17423,
       "required" : [],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-android-ics.js",
-      "size" : 378,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 322,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-android.js",
-      "size" : 220,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 173,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js",
-      "size" : 42698,
+      "size" : 3551,
       "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-datetime.js",
-      "size" : 27505,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 33394,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-ios.js",
-      "size" : 322,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 262,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-list.js",
-      "size" : 15243,
+      "size" : 33394,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
+      "includes" : [],
+      "excludeFromAllInOne" : true
+    },
+    {
+      "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js",
+      "size" : 42997,
       "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-select.js",
-      "size" : 11339,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 12172,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },
     {
       "name" : "sap/ui/thirdparty/mobiscroll/js/mobiscroll-wp.js",
-      "size" : 1939,
-      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"],
+      "size" : 1905,
+      "required" : ["sap/ui/thirdparty/jquery/jquery-1.7.1.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"],
       "includes" : [],
       "excludeFromAllInOne" : true
     },

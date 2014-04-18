@@ -83,7 +83,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1631,13 +1631,10 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.commons.Menu");
 
-
-
 sap.ui.ux3.Shell.WSI_MENU_DELAY = 200;
 sap.ui.ux3.Shell.WSI_OVERFLOW_SCROLL_STEP = 250; // how many pixels to scroll with every overflow arrow click
 sap.ui.ux3.Shell.TOOL_PREFIX = "-tool-";
 sap.ui.ux3.Shell.FIRST_RENDERING = true; // used for detecting the single very first rendering of any Shell on the page
-sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
 
 /**
  * The basic width of the ToolPalette if all icons fit into one column. Multiplied if more than
@@ -2112,7 +2109,7 @@ sap.ui.ux3.Shell.prototype._changeOverflowButton = function() {
 	}
 	
 	
-	var sText = sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT;
+	var sText = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
 	var bSelected = false;
 	if (oOverflowItem && oOverflowItem.getVisible()) {
 		// This activation is from an overflow menu item: Change overflow button
@@ -2493,6 +2490,7 @@ sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
 		}
 
 		this._sOpenPaneId = sPaneId;
+		this.focusPaneStart();
 	}
 	return this;
 };

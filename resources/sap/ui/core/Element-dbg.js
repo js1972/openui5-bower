@@ -52,7 +52,7 @@ jQuery.sap.require("sap.ui.model.SimpleType");
  * @class Base Class for Elements.
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  * @name sap.ui.core.Element
  */

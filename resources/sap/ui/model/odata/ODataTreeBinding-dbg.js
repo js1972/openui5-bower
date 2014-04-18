@@ -66,14 +66,20 @@ sap.ui.model.TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lend
  */
 sap.ui.model.odata.ODataTreeBinding.prototype.getRootContexts = function() {
 	var sNavPath = this._getNavPath(this.sPath),
+		sAbsolutePath = this.oModel.resolve(this.sPath, this.getContext()),
 		that = this,
 		oContext;
+
+	//If path cannot be resolved, we return an empty array
+	if (!sAbsolutePath) {
+		return [];
+	}
 
 	if (!this.oModel.isList(this.sPath)) {
 		//An context is bound
 		if (this.bDisplayRootNode) {
 			//Get the binding context for the root element, it is created if it doesn't exist yet
-			this.oModel.createBindingContext(this.sPath, null, { expand: sNavPath }, function(oNewContext) {
+			this.oModel.createBindingContext(this.sPath, this.getContext(), { expand: sNavPath }, function(oNewContext) {
 				oContext = oNewContext;
 				if (that.oRootContext !== oNewContext) {
 					that.oRootContext = oNewContext;
@@ -95,7 +101,7 @@ sap.ui.model.odata.ODataTreeBinding.prototype.getRootContexts = function() {
 		}
 	} else {
 		//An aggregation is bound
-		return this._getContextsForPath(this.sPath, sNavPath);
+		return this._getContextsForPath(sAbsolutePath, sNavPath);
 	}
 
 };
@@ -288,8 +294,16 @@ sap.ui.model.odata.ODataTreeBinding.prototype.checkUpdate = function(bForceupdat
 
 sap.ui.model.odata.ODataTreeBinding.prototype._getNavPath = function(sPath) {
 	//Check the last part of the path
-	var sEntityName = sPath.substr(1),
+	var sAbsolutePath = this.oModel.resolve(sPath, this.getContext());
+	
+	if (!sAbsolutePath) {
+		return;
+	}
+
+	var aPathParts = sAbsolutePath.split("/"),
+		sEntityName = aPathParts[aPathParts.length-1],
 		sNavPath;
+	
 	//Only if part contains "(" we are working on a specific entity with children
 	var sCurrent = sEntityName.split("(")[0];
 	if (sCurrent && this.oNavigationPaths[sCurrent]) {

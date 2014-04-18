@@ -86,7 +86,7 @@
 @sapGroup_FooterBackground: @sapGroup_TitleBackground;
 
 @sapToolbar_Background: @sapGroup_TitleBackground;
-@sapToolbar_Separator: #fff;
+@sapToolbar_SeparatorColor: #fff;
 
 @sapList_HeaderBackground: lighten(desaturate(@sapBaseColor, 39), 1);
 @sapList_HeaderBorderColor: @sapList_BorderColor;
@@ -812,7 +812,7 @@
 // [Label "Toolbar Separator Color"]
 // [Description "The color of a toolbar's separators. This parameter is protected and is not yet released for being changed."]
 // [Tags "Base", "Toolbar", "Color", "Protected"]
-@sapToolbar_Separator: #c2c2c2;
+@sapToolbar_SeparatorColor: #c2c2c2;
 
 // [Label "List Header Background Color"]
 // [Description "The background color of the header area of lists. This parameter is protected and is not yet released for being changed."]
@@ -942,7 +942,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -2160,7 +2160,7 @@
 
 .sapUiUfdShellHeadBegin {
 	left: 0;
-	max-width: 150px;
+	max-width: 250px;
 	white-space: nowrap;
 }
 
@@ -2176,21 +2176,29 @@
 	white-space: nowrap;
 }
 
-.sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco,
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco {
 	height: 100%;
-	max-width: 100px;
-	display: inline;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
 	text-align: right;
-	padding-right: 5px;
+	padding-right: 16px;
 }
 
-.sapUiUfdShellHeadEnd > .sapUiUfdShellIco > img {
-	margin-top: @sapUiUfdShellHeaderBarHeight * 2 / 10;
-	height: @sapUiUfdShellHeaderBarHeight * 6 / 10;
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco {
+	padding-left: 16px;
 }
 
-.sapUiMedia-Std-Tablet .sapUiUfdShellHeadEnd > .sapUiUfdShellIco,
-.sapUiMedia-Std-Phone .sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco > img,
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco > img {
+	max-height: @sapUiUfdShellHeaderBarHeight - @sapUiUfdShellBrandHeight * 2;
+	max-width: 96px;
+}
+
+.sapUiUfdShellIco.sapUiUfdShellHidden {
 	display: none;
 }
 
@@ -2198,8 +2206,9 @@
 	float: right;
 }
 
-.sapUiUfdShellHeadEndContainer {
+.sapUiUfdShellHeadContainer {
 	overflow: hidden;
+	display: inline-block;
 }
 
 .sapUiUfdShellHeadItm {
@@ -2210,6 +2219,10 @@
 	vertical-align: bottom;
 	overflow: hidden;
 	position: relative;
+}
+
+.sapUiUfdShellHeadItm.sapUiUfdShellHidden {
+	display: none;
 }
 
 .sapUiUfdShellHeadItm > span {
@@ -2228,8 +2241,12 @@
 	height: @sapUiUfdShellHeaderBarHeight / 2;
 }
 
-.sapUiUfdShellHeadItm.sapUiUfdShellHeadItmDelim {
-	border-left: 1px solid black;
+.sapUiUfdShellHeadEnd .sapUiUfdShellHeadItm {
+	border-left: 1px solid @sapUiBaseBorder;
+}
+
+.sapUiUfdShellHeadBegin .sapUiUfdShellHeadItm {
+	border-right: 1px solid @sapUiBaseBorder;
 }
 
 .sapUiUfdShellSearch {
@@ -2242,6 +2259,10 @@
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	text-align: left;
+}
+
+.sapUiUfdShellSearch.sapUiUfdShellHidden {
+	display: none;
 }
 
 .sapUiUfdShellHeadItmMarker {
@@ -2362,6 +2383,15 @@
 	background-color: @sapUiBrand;
 }
 
+.sapUiUfdShellHeadEnd .sapUiUfdShellHeadItm,
+.sapUiUfdShellHeadBegin .sapUiUfdShellHeadItm {
+	border-color: darken(@sapUiHeaderBG,10);
+}
+
+.sapUiMedia-Std-Desktop .sapUiUfdShellHeadItm:hover {
+	background-color: @sapUiBtnBGStandardHover;
+}
+
 .sapUiUfdShellHeadItm > span {
 	-webkit-font-smoothing: antialiased;
 	text-shadow: 0 1px 0 fade(@sapUiWhite,50);
@@ -2389,10 +2419,6 @@
 
 .sapUiUfdShellHeadItm.sapUiUfdShellHeadItmSel > span {
 	color: @sapUiHighlight;
-}
-
-.sapUiUfdShellHeadItm.sapUiUfdShellHeadItmDelim {
-	border-color: @sapUiDarkBorder;
 }
 
 .sapUiUfdShellCurtain {
@@ -2714,7 +2740,8 @@ html[data-sap-ui-browser="ie9"] .sapUiUfdShellCurtain {
 .sapUiUfdShellOvrlyHeadClose:hover,
 .sapUiUfdShellOvrlyHeadClose:focus,
 .sapUiUfdShellOvrlyHeadClose:visited {
-	color: @sapUiButtonLiteTextColor;
+	color: @sapUiLightText;
+	text-shadow: 0 1px 0 fade(@sapUiWhite,50);
 }
 
 .sapUiUfdShellOvrlyHeadClose:active {
@@ -2722,6 +2749,18 @@ html[data-sap-ui-browser="ie9"] .sapUiUfdShellCurtain {
 	color: @sapUiTextInverted;
 }
 
+.sapUiUfdShellOvrlyHeadClose {
+	right: 0;
+	border-left: 1px solid darken(@sapUiHeaderBG,10);
+}
+
+.sapUiMedia-Std-Desktop .sapUiUfdShellOvrlyHeadClose:hover {
+	background-color: @sapUiBtnBGStandardHover;
+}
+
+.sapUiMedia-Std-Desktop .sapUiUfdShellOvrlyHeadClose:active:hover {
+	background-color: @sapUiButtonActiveBackground;
+}
 /** TODO: Move to global.css in core (pending discussion with Jens P and Michael S)
 /* The animation duration must be in ms so it returns the correct integer value when used with parseInt */
 @sapUiUfdSplitContAnimationDuration: 500ms;

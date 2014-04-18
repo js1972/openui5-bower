@@ -22,7 +22,7 @@ jQuery.sap.require("sap.ui.Device");
  * @class Basic WebSocket class
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.ws.WebSocket
  */
 sap.ui.base.EventProvider.extend("sap.ui.core.ws.WebSocket", /** @lends sap.ui.core.ws.WebSocket */ {

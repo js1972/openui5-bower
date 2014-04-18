@@ -340,7 +340,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -4016,6 +4016,8 @@ span.sapUiLblIco { /* icon font */
 .sapUiLbxITxt {
 	white-space: nowrap;
 	font-size: @sapUiFontSize;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .sapUiLbx > ul {
@@ -4024,6 +4026,10 @@ span.sapUiLblIco { /* icon font */
 	padding: 0;
 	width: 100%;
 	position: relative;
+}
+
+.sapUiLbx.sapUiLbxFixed > ul {
+	table-layout: fixed; /*To have ellipsis if item is too long*/
 }
 
 .sapUiLbxI {
@@ -7639,13 +7645,8 @@ html[data-sap-ui-browser="ie8"] .sapUiTf.sapUiTxtA{ /* IE8 ignores :not-statemen
 	outline: none; /* disable safari outline */
 }
 
-html[data-sap-ui-os^='iOS'] .sapUiTfInner.sapUiTf{
-	color: @sapUiContentDisabledTextColor; /* inherit does not work on iOS6 here */
-}
-
-html[data-sap-ui-os^="iOS6"] .sapUiTfDsbl > .sapUiTfInner.sapUiTf{
-	/* On iPad with iOS6 for disabled input fields an opacity is set.*/
-	opacity: 1;
+html[data-sap-ui-os^='mac'] .sapUiTfDsbl .sapUiTfInner.sapUiTf{
+	color: darken(@sapUiContentDisabledTextColor, 25); /* color for disabled inputs is lighter by browser */
 }
 
 html[data-sap-ui-browser="ie8"] .sapUiTfInner.sapUiTf{ /* in IE8 above statement is overwritten */
@@ -8476,7 +8477,7 @@ html[data-sap-ui-browser='ie8'] .sapUiBtnS.sapUiBtnLite.sapUiBtnIconOnly.sapUiTo
 	height: 18px;
 	margin-bottom: 8px;
 	width: 2px;
-	background-color: @sapUiToolbarSeparator;
+	background-color: @sapUiToolbarSeparatorColor;
 }
 
 .sapUiTbSeparator.sapUiTbSepFullHeight {
@@ -8627,6 +8628,7 @@ html[dir=rtl] .sapUiTreeTitle {
 	width: 16px;
 	position: relative;
 	top: 3px;
+	font-size: 16px;
 }
 
 .sapUiTreeNode {

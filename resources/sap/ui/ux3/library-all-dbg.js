@@ -1562,7 +1562,7 @@ sap.ui.ux3.NavigationBarRenderer.renderItems = function(oRm, oControl) {
 			if (bIsSelected) {
 				oRm.write(" class='sapUiUx3NavBarItemSel'");
 			}
-			var url = item.getHref() || "javascript:void(0);";
+			
 			oRm.write("><a ");
 			
 			// Psssst. This is not right. Don't tell anyone, because it works like this.
@@ -1574,7 +1574,8 @@ sap.ui.ux3.NavigationBarRenderer.renderItems = function(oRm, oControl) {
 			// TL;DR: Not correct, won't fix - because it works and things might depend on the DOM
 			//        being this way.
 			oRm.writeElementData(item);
-			oRm.write("href='" + url + "' aria-setsize='" + iNoOfItems + "' aria-posinset='" + (i+1) + "' role='menuitemradio' class='sapUiUx3NavBarItem'");
+			oRm.writeAttributeEscaped("href", item.getHref() || "javascript:void(0);");
+			oRm.write(" aria-setsize='" + iNoOfItems + "' aria-posinset='" + (i+1) + "' role='menuitemradio' class='sapUiUx3NavBarItem'");
 			if (bIsSelected) {
 				oRm.write(" tabindex='0'");
 			}
@@ -3470,7 +3471,7 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	rm.write(">");
 	rm.write("<div id='" + sId + "-paneBarOverflowWrapper' class='sapUiUx3ShellPaneOverflowWrapper'>");
 	rm.write("<span id='" + sId + "-paneBarOverflowText' class='sapUiUx3ShellPaneOverflowText sapUiUx3ShellPaneEntry'>");
-	rm.write(sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT.toUpperCase());
+	rm.write(sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON"));
 	rm.write("</span>"); // sapUiUx3ShellPaneOverflowText
 	rm.write("</div>"); // overflow-wrapper
 	rm.write("</div>"); // sapUiUx3ShellPaneOverflowButton
@@ -4171,7 +4172,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.ux3.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.ux3 (1.18.8)
+ * Initialization Code and shared classes of library sap.ui.ux3 (1.18.12)
  */
 jQuery.sap.declare("sap.ui.ux3.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -4243,7 +4244,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.ux3.ThingAction",
     "sap.ui.ux3.ThingGroup"
   ],
-  version: "1.18.8"});
+  version: "1.18.12"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -4263,7 +4264,7 @@ jQuery.sap.declare("sap.ui.ux3.ActionBarSocialActions");
 /**
  * @class Enumeration of available standard actions for 'sap.ui.ux3.ActionBar'. To be used as parameters for function 'sap.ui.ux3.ActionBar.getSocialAction'.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4330,7 +4331,7 @@ jQuery.sap.declare("sap.ui.ux3.ExactOrder");
 /**
  * @class Defines the order of the sub lists of a list in the ExactBrowser.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @since 1.7.1
@@ -4368,7 +4369,7 @@ jQuery.sap.declare("sap.ui.ux3.FeederType");
 /**
  * @class Type of an Feeder.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4413,7 +4414,7 @@ jQuery.sap.declare("sap.ui.ux3.FollowActionState");
 /**
  * @class Defines the states of the follow action
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -4456,7 +4457,7 @@ jQuery.sap.declare("sap.ui.ux3.NotificationBarStatus");
 /**
  * @class This entries are used to set the visibility status of a NotificationBar
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -4505,7 +4506,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellDesignType");
 /**
  * @class Available shell design types.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @since 1.12.0
@@ -4556,7 +4557,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellHeaderType");
 /**
  * @class Available shell header display types.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -4605,7 +4606,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingViewerHeaderType");
 /**
  * @class Available ThingViewer header display types.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  * @since 1.16.3
@@ -4643,7 +4644,7 @@ jQuery.sap.declare("sap.ui.ux3.VisibleItemCountMode");
 /**
  * @class VisibleItemCountMode of the FacetFilter defines if the FacetFilter takes the whole available height (Auto) in the surrounding container, or is so high as needed to show 5 Items ("Fixed " - default).
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */
@@ -4738,7 +4739,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -6739,7 +6740,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -7283,7 +7284,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -8369,7 +8370,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -9026,16 +9027,12 @@ sap.ui.ux3.DataSet.prototype.init = function() {
 		that.fireSearch(oEvent.getParameters());
 	});
 	this.selectionModel.attachSelectionChanged(function(oEvent){
-		var oldSelectedIndex;
+		var oldSelectedIndex, newSelectedIndex;
 		var mParameters = oEvent.getParameters();
 		if (mParameters){
-			var newSelectedIndex = mParameters.leadIndex;
-			// if rowIndices are larger than 1, we have had a leadIndex before, otherwise the 
-			// first array entry contains the new value
-			if (mParameters.rowIndices && mParameters.rowIndices.length > 1){
-				var oldSelectedIndex = mParameters.rowIndices[0]
-			}
-		}
+			newSelectedIndex = mParameters.leadIndex;
+			oldSelectedIndex = mParameters.oldIndex;
+		} 
 		that.fireSelectionChanged({
 			oldLeadSelectedIndex: oldSelectedIndex,
 			newLeadSelectedIndex: newSelectedIndex
@@ -9672,7 +9669,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -9975,7 +9972,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -10806,7 +10803,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -11156,7 +11153,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -11909,7 +11906,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -12933,6 +12930,13 @@ sap.ui.ux3.ExactList.prototype._selectionChanged = function(oAttribute) {
 		return;
 	}
 
+	// In case of TwoWay databinding the attribute might have already changed by now. Make sure
+	// We use the correct one.
+	// This happened for example when the selected property was bound in the same model as
+	// the data for the lists
+	oAttribute = sap.ui.getCore().byId(oAttribute.getId());
+	
+	
 	//Computes recursivly all selected attributes and adds them to the given result list
 	var _computeSelectedAttributes = function(oAtt, aResult){
 		if(!oAtt.getSelected()) {
@@ -12951,6 +12955,7 @@ sap.ui.ux3.ExactList.prototype._selectionChanged = function(oAttribute) {
 		_computeSelectedAttributes(aTopValues[idx], aSelectedAttributes);
 	}
 
+	
 	this.fireAttributeSelected({attribute: oAttribute, allAttributes: aSelectedAttributes});
 };
 
@@ -13694,7 +13699,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -13930,7 +13935,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -14528,7 +14533,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -15029,7 +15034,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -16125,7 +16130,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -16365,7 +16370,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -18055,7 +18060,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -18578,7 +18583,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -19231,7 +19236,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayContainer");
  * @extends sap.ui.ux3.Overlay
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -19510,7 +19515,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayDialog");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -20006,7 +20011,7 @@ jQuery.sap.require('sap.ui.commons.CalloutBase'); // unlisted dependency retaine
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -21257,7 +21262,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -22807,13 +22812,10 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 jQuery.sap.require('sap.ui.commons.Menu'); // unlisted dependency retained
 
 
-
-
 sap.ui.ux3.Shell.WSI_MENU_DELAY = 200;
 sap.ui.ux3.Shell.WSI_OVERFLOW_SCROLL_STEP = 250; // how many pixels to scroll with every overflow arrow click
 sap.ui.ux3.Shell.TOOL_PREFIX = "-tool-";
 sap.ui.ux3.Shell.FIRST_RENDERING = true; // used for detecting the single very first rendering of any Shell on the page
-sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
 
 /**
  * The basic width of the ToolPalette if all icons fit into one column. Multiplied if more than
@@ -23288,7 +23290,7 @@ sap.ui.ux3.Shell.prototype._changeOverflowButton = function() {
 	}
 	
 	
-	var sText = sap.ui.ux3.Shell.OVERFLOW_DEFAULT_TEXT;
+	var sText = sap.ui.getCore().getLibraryResourceBundle("sap.ui.ux3").getText("SHELL_MORE_BUTTON");
 	var bSelected = false;
 	if (oOverflowItem && oOverflowItem.getVisible()) {
 		// This activation is from an overflow menu item: Change overflow button
@@ -23669,6 +23671,7 @@ sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
 		}
 
 		this._sOpenPaneId = sPaneId;
+		this.focusPaneStart();
 	}
 	return this;
 };
@@ -25149,7 +25152,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -25389,7 +25392,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -25720,7 +25723,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -26792,7 +26795,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -26862,7 +26865,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>title</code>.
- * The title displayed in the pop up window (optional property)
+ * The title displayed in the pop up window
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -26966,8 +26969,8 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 /**
  * Getter for property <code>modal</code>.
  * Whether the popup is modal and blocks any user-interaction with controls in the background.
- * Changing this property while the ToolPopup is open is not allowed (and currently has noeffect)
- * Please don't use "modal" and "autoclose" at the same time. In this case a warning will be promted to the console and "autoclose" won't be used.
+ * Changing this property while the ToolPopup is open is not allowed (and currently has no effect)
+ * Please don't use "modal" and "autoclose" at the same time. In this case a warning will be prompted to the console and "autoclose" won't be used.
  *
  * Default value is <code>false</code>
  *
@@ -26993,7 +26996,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 /**
  * Getter for property <code>inverted</code>.
  * Specifies whether the ToolPopup has a dark or bright background. If set to true the background and borders will be dark. If false this stuff will be bright.
- * This property doesn't cause an effect in the HCB-theme.
+ * This property only has an effect for the GoldReflection-theme.
  *
  * Default value is <code>true</code>
  *
@@ -27020,7 +27023,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>autoClose</code>.
- * This property tells the ToolPopup to close the ToolPopup if the ToolPopup looses the focus. If the user e.g. clicks outside of the ToolPopup it will be closed. Please don't use "modal" and "autoclose" at the same time. In this case a warning will be promted to the console and "autoclose" won't be used.
+ * This property tells the ToolPopup to close itself if the ToolPopup looses the focus. If the user e.g. clicks outside of the ToolPopup it will be closed. Please don't use "modal" and "autoclose" at the same time. In this case a warning will be prompted to the console and "autoclose" won't be used.
  *
  * Default value is <code>false</code>
  *
@@ -27101,7 +27104,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>openDuration</code>.
- * Time in miliseconds for the open animation.
+ * Time in milliseconds for the open animation.
  *
  * Default value is <code>400</code>
  *
@@ -27128,7 +27131,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Getter for property <code>closeDuration</code>.
- * Time in miliseconds for the close animation.
+ * Time in milliseconds for the close animation.
  *
  * Default value is <code>400</code>
  *
@@ -28507,17 +28510,24 @@ sap.ui.ux3.ToolPopup.prototype._ensurePopup = function() {
 			sap.ui.core.Popup.prototype._applyPosition.apply(oThis.oPopup, arguments);
 
 			var of = oThis.oPopup._oLastPosition.of;
-			var $of = jQuery.sap.byId(of.id);
-			// only after an open popup the corresponding arrow can be determined
-			// if the position was set manually
-			if (oThis._bPositionSet) {
-				// shell stuff should still use the left arrow
-				if (!$of.hasClass("sapUiUx3ShellTool")) {
-					oThis._my = oThis.oPopup._oLastPosition.my;
-					oThis._at = oThis.oPopup._oLastPosition.at;
+			if (!of) {
+				// In case setPosition is called from the outside and the opener has
+				// been removed, this leads to closing the ToolPopup instead of causing
+				// an error
+				oThis.oPopup.close();
+			} else {
+				var $of = jQuery.sap.byId(of.id);
+				// only after an open popup the corresponding arrow can be determined
+				// if the position was set manually
+				if (oThis._bPositionSet) {
+					// shell stuff should still use the left arrow
+					if (!$of.hasClass("sapUiUx3ShellTool")) {
+						oThis._my = oThis.oPopup._oLastPosition.my;
+						oThis._at = oThis.oPopup._oLastPosition.at;
+					}
 				}
+				fnSetArrow(oThis);
 			}
-			fnSetArrow(oThis);
 		};
 	}
 	return this.oPopup;
@@ -28774,7 +28784,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -29720,7 +29730,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -30945,7 +30955,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -32732,7 +32742,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingInspector");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -34279,7 +34289,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

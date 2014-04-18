@@ -94,7 +94,7 @@ sap.ui.model.json.JSONTreeBinding.prototype.getNodeContexts = function(oContext)
 					jQuery.each(oChild, function(sSubName, oSubChild) {
 						that._saveSubContext(oSubChild, aContexts, sContextPath, sName + "/" + sSubName);
 					})
-				} else if (typeof oChild == "object") {
+				} else if (oChild && typeof oChild == "object") {
 					that._saveSubContext(oChild, aContexts, sContextPath, sName);
 				}	
 			});

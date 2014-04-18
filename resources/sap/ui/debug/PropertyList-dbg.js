@@ -20,7 +20,7 @@ jQuery.sap.require("sap.ui.core.Core");
  *
  * @extends sap.ui.base.EventProvider
  * @author Martin Schaus
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {sap.ui.core.Core}
  *            oCore the core instance to use for analysis

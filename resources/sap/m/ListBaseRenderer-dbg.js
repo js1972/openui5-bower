@@ -123,7 +123,7 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	this.renderListEndAttributes(rm, oControl);
 
 	// render growing delegate if available
-	if (oControl.getGrowing() && oControl._oGrowingDelegate) {
+	if (bRenderItems && oControl.getGrowing() && oControl._oGrowingDelegate) {
 		oControl._oGrowingDelegate.render(rm);
 	}
 

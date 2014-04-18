@@ -78,8 +78,11 @@ sap.ui.unified.ShellRenderer._renderHeaderContent = function(rm, oShell){
 };
 
 sap.ui.unified.ShellRenderer.renderSearch = function(rm, oShell) {
-	rm.write("<div class='sapUiUfdShellSearch'>");
-	var oSearch = oShell.getSearch();
+	var oSearch = oShell.getSearch(),
+		bShowSearch = oShell.getSearchVisible() && !!oSearch;
+	rm.write("<div id='", oShell.getId(), "-hdr-search'");
+	rm.writeAttribute("class", "sapUiUfdShellSearch" + (bShowSearch ? "" : " sapUiUfdShellHidden"));
+	rm.write(">");
 	if(oSearch){
 		rm.renderControl(oSearch);
 	}
@@ -87,13 +90,8 @@ sap.ui.unified.ShellRenderer.renderSearch = function(rm, oShell) {
 };
 
 sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
-	var aItems;
-	if(begin){
-		aItems = oShell.getHeadItems();
-	}else{
-		rm.write("<div class='sapUiUfdShellHeadEndContainer'>");
-		aItems = oShell.getHeadEndItems();
-	}
+	rm.write("<div class='sapUiUfdShellHeadContainer'>");
+	var aItems = begin ? oShell.getHeadItems() : oShell.getHeadEndItems();
 	
 	for(var i=0; i<aItems.length; i++){
 		rm.write("<a tabindex='0' href='javascript:void(0);'");
@@ -101,6 +99,9 @@ sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
 		rm.addClass("sapUiUfdShellHeadItm");
 		if(aItems[i].getStartsSection()){
 			rm.addClass("sapUiUfdShellHeadItmDelim");
+		}
+		if(!aItems[i].getVisible()){
+			rm.addClass("sapUiUfdShellHidden");
 		}
 		if(aItems[i].getSelected()){
 			rm.addClass("sapUiUfdShellHeadItmSel");
@@ -116,22 +117,23 @@ sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
 		rm.write("><span></span><div class='sapUiUfdShellHeadItmMarker'><div></div></div></a>");
 	}
 	
-	if(!begin){
-		rm.write("</div>");
+	rm.write("</div>");
+	if(begin){
 		sap.ui.unified.ShellRenderer._renderIcon(rm, oShell);
 	}
 };
 
 sap.ui.unified.ShellRenderer._renderIcon = function(rm, oShell) {
 	var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.unified"),
-		sLogoTooltip = rb.getText("SHELL_LOGO_TOOLTIP");
+		sLogoTooltip = rb.getText("SHELL_LOGO_TOOLTIP"),
+		sIco = oShell._getIcon();
 	
 	rm.write("<div class='sapUiUfdShellIco'>");
 	rm.write("<img id='", oShell.getId(), "-icon'");
 	rm.writeAttributeEscaped("title", sLogoTooltip);
 	rm.writeAttributeEscaped("alt", sLogoTooltip);
 	rm.write("src='");
-	rm.writeEscaped(oShell._getIcon());
-	rm.write("' style='", oShell._getIcon() ? "" : "display:none;","'></img>");
+	rm.writeEscaped(sIco);
+	rm.write("' style='", sIco ? "" : "display:none;","'></img>");
 	rm.write("</div>");
 };

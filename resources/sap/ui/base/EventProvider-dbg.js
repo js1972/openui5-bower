@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.base.ObjectPool");
  * @abstract
  * @extends sap.ui.base.Object
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @public
  * @name sap.ui.base.EventProvider

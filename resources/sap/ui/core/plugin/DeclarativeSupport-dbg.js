@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.core.Core");
  * @see sap.ui.core.DeclarativeSupport
  * @public
  * @since 1.7.0
- * @version 1.18.8
+ * @version 1.18.12
  */
 sap.ui.core.plugin.DeclarativeSupport = function() {
 };

@@ -17,7 +17,7 @@ jQuery.sap.require("sap.ui.core.tmpl.Template");
  * @author Peter Muessig
  * @public
  * @since 1.15.0
- * @version 1.18.8
+ * @version 1.18.12
  */
 sap.ui.core.plugin.TemplatingSupport = function() {
 };

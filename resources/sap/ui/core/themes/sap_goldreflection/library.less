@@ -340,7 +340,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -686,6 +686,11 @@
 	bottom: 0px;
 	position: fixed;
 	outline: 0 none;
+}
+
+.sapUiBLyBack{
+	/* to prevent HTML page from scrolling if blocked */
+	overflow: hidden;
 }
 
 .sapUiPopupShield{

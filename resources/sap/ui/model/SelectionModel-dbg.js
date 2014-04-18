@@ -17,7 +17,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  * @extends sap.ui.base.Object
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {int} iSelectionMode <code>sap.ui.model.SelectionModel.SINGLE_SELECTION</code> or <code>sap.ui.model.SelectionModel.MULTI_SELECTION</code>
  *
@@ -77,7 +77,7 @@ sap.ui.model.SelectionModel.prototype.getSelectionMode = function() {
  *   In this mode, there's no restriction on what can be selected.
  * </ul>
  *
- * @param iSelectionMode {int} selection mode
+ * @param {int} iSelectionMode selection mode
  * @public
  */
 sap.ui.model.SelectionModel.prototype.setSelectionMode = function(iSelectionMode) {
@@ -150,8 +150,9 @@ sap.ui.model.SelectionModel.prototype.getMaxSelectionIndex = function() {
 
 
 /**
- * Returns the selected indices as array
- * @return array of selected indices
+ * Returns the selected indices as array.
+ *
+ * @return {int[]} array of selected indices
  * @public
  */
 sap.ui.model.SelectionModel.prototype.getSelectedIndices = function() {
@@ -349,7 +350,9 @@ sap.ui.model.SelectionModel.prototype.detachSelectionChanged = function(fnFuncti
  * <li>'rowIndices' of type <code>int[]</code> Other selected indices (if available)</li>
  * </ul>
  *
- * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @param {object} mArguments the arguments to pass along with the event.
+ * @param {int} mArguments.leadIndex Lead selection index
+ * @param {int[]} [mArguments.rowIndices] Other selected indices (if available)
  * @return {sap.ui.model.SelectionModel} <code>this</code> to allow method chaining
  * @protected
  */
@@ -362,9 +365,10 @@ sap.ui.model.SelectionModel.prototype.fireSelectionChanged = function(mArguments
  * Updates the selection models selected indices and the lead selection. Finally
  * it notifies the listeners with an array of changed row indices which can
  * either be removed or added to the selection model.
- * @param {array} selected row indices
- * @param {int} lead selection index
- * @param {array} changed row indices
+
+ * @param {int[]} aSelectedIndices selected row indices
+ * @param {int} iLeadSelection lead selection index
+ * @param {int[]} aChangedRowIndices changed row indices
  * @private
  */
 sap.ui.model.SelectionModel.prototype._update = function(aSelectedIndices, iLeadSelection, aChangedRowIndices) {
@@ -377,10 +381,12 @@ sap.ui.model.SelectionModel.prototype._update = function(aSelectedIndices, iLead
 	// update the selected indices
 	this.aSelectedIndices = aSelectedIndices; // TODO: sorting here could avoid additional sorts in min/max and get
 
+	mParams.oldIndex = this.iLeadIndex;
+	
 	// update lead selection (in case of removing the lead selection it is -1)
 	if (this.iLeadIndex !== iLeadSelection) {
 		this.iLeadIndex = iLeadSelection;
-		mParams.leadIndex = iLeadSelection; // or use old selection?
+		mParams.leadIndex = this.iLeadIndex;
 	}
 
 	// fire change event

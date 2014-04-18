@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1521,7 +1521,10 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 				var oItem= aItems[i];
 				var oOption = document.createElement("option");
 				oOption.text = oItem.getText();
-				oOption.id = this.getId()+oItem.getId();
+				oOption.id = this.getId()+"-"+oItem.getId();
+				if (!oItem.getEnabled()) {
+					oOption.disabled = "disabled";
+				}
 				oSelect.add(oOption, null);
 			}
 			oSelect.selectedIndex = iIndex;

@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.base.BindingParser");
  * @class Base Class for managed objects.
  * @extends sap.ui.base.EventProvider
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @public
  * @name sap.ui.base.ManagedObject
  * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -2471,12 +2471,13 @@ sap.ui.base.ManagedObject.prototype.updateBindingContext = function(bSkipLocal, 
 			oModel = this.getModel(sModelName); 
 			oBoundObject = this.mBoundObjects[sModelName];
 			
-			if (oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
+			if (oModel && oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
 				if(!oBoundObject.binding) {
 					this._bindObject(sModelName, oBoundObject);
 				} else {
+					oParentContext = null;
 					if (this.oParent && oModel == this.oParent.getModel(sModelName)) {
-						oParentContext= this.oParent.getBindingContext(sModelName); 
+						oParentContext = this.oParent.getBindingContext(sModelName); 
 					}
 					if (oParentContext != oBoundObject.binding.getContext()) {
 						oBoundObject.binding.setContext(oParentContext);

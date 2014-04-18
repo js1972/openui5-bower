@@ -25,7 +25,7 @@ jQuery.sap.require("sap.ui.model.resource.ResourcePropertyBinding");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @param {object} oData parameters used to initialize the ResourceModel; at least either bundleUrl or bundleName must be set on this object; if both are set, bundleName wins
  * @param {string} [oData.bundleUrl] the URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")

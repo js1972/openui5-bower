@@ -74,7 +74,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1269,8 +1269,7 @@ sap.m.ResponsivePopover.prototype.getEndButton = function(){
 // forward all aggregation methods to the inner instance, either the popover or the dialog.
 ["bindAggregation", "validateAggregation", "setAggregation", "getAggregation", "indexOfAggregation", "insertAggregation", 
 	"addAggregation", "removeAggregation", "removeAllAggregation", "destroyAggregation", "setAssociation", "getAssociation", 
-	"addAssociation", "removeAssociation", "removeAllAssociation", "invalidate", "close", "isOpen", "addStyleClass", 
-	"removeStyleClass", "toggleStyleClass", "hasStyleClass"].forEach(function(sName){
+	"addAssociation", "removeAssociation", "removeAllAssociation"].forEach(function(sName){
 		sap.m.ResponsivePopover.prototype[sName] = function(){
 			var iLastUpperCase = this._lastIndexOfUpperCaseLetter(sName),
 				sMethodName, res;
@@ -1285,5 +1284,14 @@ sap.m.ResponsivePopover.prototype.getEndButton = function(){
 			}
 			res = this._oControl[sName].apply(this._oControl ,arguments);
 			return res === this._oControl ? this : res; 
+		};
+});
+
+// forward the other necessary methods to the inner instance, but do not check the existence of generated methods like (addItem)
+["invalidate", "close", "isOpen", "addStyleClass", "removeStyleClass", "toggleStyleClass", "hasStyleClass",
+	"setBindingContext", "getBindingContext", "getBinding", "getBindingInfo", "getBindingPath"].forEach(function(sName){
+		sap.m.ResponsivePopover.prototype[sName] = function(){
+			var res = this._oControl[sName].apply(this._oControl ,arguments);
+			return res === this._oControl ? this : res;
 		};
 });

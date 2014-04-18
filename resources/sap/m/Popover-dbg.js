@@ -77,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1963,7 +1963,7 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 		$header = $this.children(".sapMPopoverHeader"),
 		$subHeader = $this.children(".sapMPopoverSubHeader"),
 		$footer = $this.children(".sapMPopoverFooter"),
-		iMaxContentHeight, iMaxWidth, oArrowPos, oFooterPos,
+		iMaxContentHeight, iMaxWidth, oArrowPos, oFooterPos, oCSS = {},
 		iPosArrow, iHeaderHeight = 0, iSubHeaderHeight = 0, iFooterHeight = 0;
 	
 	if($header.length > 0){
@@ -2094,12 +2094,18 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 	iMaxContentHeight = $this.height() - iHeaderHeight - iSubHeaderHeight - iFooterHeight - parseInt($content.css("margin-top"), 10) - parseInt($content.css("margin-bottom"), 10);
 	//make sure iMaxContentHeight is NEVER less than 0
 	iMaxContentHeight = Math.max(iMaxContentHeight, 0);
-	
-	$content.css({
-		"max-width": iMaxWidth + "px",
-		"height": Math.min(iMaxContentHeight, $content.height()) + "px"
-	});
-	
+
+	oCSS["max-width"] = iMaxWidth + "px";
+	// When Popover can fit into the current screen size, don't set the height on the content div.
+	// This can fix the flashing scroll bar problem when content size gets bigger after it's opened.
+	// When position: absolute is used on the scroller div, the height has to be kept otherwise content div has 0 height.
+	if(this.getContentHeight() || bSAreaPosAbs || ($content.height() > iMaxContentHeight)){
+		oCSS["height"] = Math.min(iMaxContentHeight, $content.height()) + "px";
+	}else{
+		oCSS["height"] = "";
+	}
+	$content.css(oCSS);
+
 	//disable the horizontal scrolling when content inside can fit the container.
 	if($scrollArea.outerWidth(true) <= $content.width()){
 		$scrollArea.css("display", "block");

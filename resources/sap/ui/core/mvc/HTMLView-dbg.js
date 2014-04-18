@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.mvc.View
  *
  * @author Stefan Hipfel, Tino Butz 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

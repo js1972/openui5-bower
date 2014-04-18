@@ -31,19 +31,18 @@ jQuery.sap.declare("jquery.sap.act", false);
 		_deactivateSupported = !!window.addEventListener, //Just skip IE8
 		_aActivateListeners = [],
 		_aDeactivateListeners = [],
+		_activityDetected = false,
 		_domChangeObserver = null;
-	
-	function _reInitializeDeactivateTimer(){
-		if(_deactivatetimer){
-			clearTimeout(_deactivatetimer);
-			_deactivatetimer = null;
-		}
-		setTimeout(_onDeactivate, _I_MAX_IDLE_TIME);
-	};
-	
+
 	function _onDeactivate(){
-		_active = false;
 		_deactivatetimer = null;
+		
+		if(_activityDetected){
+			_onActivate();
+			return;
+		}
+		
+		_active = false;
 		//_triggerEvent(_aDeactivateListeners); //Maybe provide later
 		_domChangeObserver.observe(document.documentElement, {childList: true, attributes: true, subtree: true, characterData: true});
 	};
@@ -54,7 +53,12 @@ jQuery.sap.declare("jquery.sap.act", false);
 			_triggerEvent(_aActivateListeners);
 			_domChangeObserver.disconnect();
 		}
-		_reInitializeDeactivateTimer();
+		if(_deactivatetimer){
+			_activityDetected = true;
+		}else{
+			_deactivatetimer = setTimeout(_onDeactivate, _I_MAX_IDLE_TIME);
+			_activityDetected = false;
+		}
 	};
 	
 	function _triggerEvent(aListeners){

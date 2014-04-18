@@ -51,7 +51,7 @@ jQuery.sap.require("sap.ui.model.odata.ODataMetadata");
  * @extends sap.ui.model.Model
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public
@@ -121,7 +121,19 @@ sap.ui.model.Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.mod
 
 		// Remove trailing slash (if any)
 		this.sServiceUrl = this.sServiceUrl.replace(/\/$/, "");
+		
+		// Get/create service specific data container
+		this.oServiceData = sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl];
+		if (!this.oServiceData) {
+			sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl] = {};
+			this.oServiceData = sap.ui.model.odata.ODataModel.mServiceData[this.sServiceUrl];
+		}
 
+		// Get CSRF token, if already available
+		if (this.bTokenHandling && this.oServiceData.securityToken) {
+			this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
+		}
+		
 		// store user and password
 		this.sUser = sUser;
 		this.sPassword = sPassword;
@@ -192,6 +204,11 @@ sap.ui.model.odata.ODataModel.M_EVENTS = {
 		 */
 		MetadataLoaded: "metadataLoaded",
 		MetadataFailed: "metadataFailed"
+};
+
+// Keep a map of service specific data, which can be shared across different model instances
+// on the same OData service
+sap.ui.model.odata.ODataModel.mServiceData = {
 };
 
 sap.ui.model.odata.ODataModel.prototype.fireRejectChange = function(mArguments) {
@@ -445,31 +462,16 @@ sap.ui.model.odata.ODataModel.prototype._loadData = function(sPath, aParams, fnS
 		// execute the request and use the metadata if available
 
 		if (that.bUseBatch) {
+			that.clearBatch();
+			// batch requests only need the path without the service URL
+			// extract query of url and combine it with the path...
+			var sUriQuery = URI.parse(oRequest.requestUri).query;
+			var sRequestUrl = sPath.replace(/\/$/, ""); // remove trailing slash if any
+			sRequestUrl += sUriQuery ? "?" + sUriQuery : "";
 
-			var _submitReadBatch = function() {
-				that.clearBatch();
-				// batch requests only need the path without the service URL
-				// extract query of url and combine it with the path...
-				var sUriQuery = URI.parse(oRequest.requestUri).query;
-				var sRequestUrl = sPath.replace(/\/$/, ""); // remove trailing slash if any
-				sRequestUrl += sUriQuery ? "?" + sUriQuery : "";
-
-				var oReadOp = that.createBatchOperation(sRequestUrl, "GET");
-				that.addBatchReadOperations([oReadOp]);
-				oRequestHandle = that.submitBatch(_handleSuccess, _handleError, oRequest.async);
-			}
-			// because we use POST now the server might ask for a token
-			if (that.bTokenHandling && !that.bTokenRequested) {
-				var _fnRefreshTokenSuccess = function(oData, oResponse) {
-					if (oResponse) {
-						oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-					}
-					_submitReadBatch();
-				}
-				that.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
-			} else {
-				_submitReadBatch();
-			}
+			var oReadOp = that.createBatchOperation(sRequestUrl, "GET");
+			that.addBatchReadOperations([oReadOp]);
+			oRequestHandle = that.submitBatch(_handleSuccess, _handleError, oRequest.async);
 		} else {
 			oRequestHandle = OData.read(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, that.oMetadata.getServiceMetadata());
 		}
@@ -523,7 +525,9 @@ sap.ui.model.odata.ODataModel.prototype._importData = function(oData) {
 					oEntry[sName] = { __ref: oResult	};
 				}
 			} else {
-				oEntry[sName] = oProperty;
+				if (!oEntry[sName] || ( oEntry[sName] && !oProperty.__deferred )) {
+					oEntry[sName] = oProperty;
+				}
 			}
 		});
 		return sKey;
@@ -933,6 +937,29 @@ sap.ui.model.odata.ODataModel.prototype._getObject = function(sPath, oContext) {
 };
 
 /**
+ * Update the security token, if token handling is enabled and token is not available yet
+ */
+sap.ui.model.odata.ODataModel.prototype.updateSecurityToken = function() {
+	if (this.bTokenHandling) {
+		if (!this.oServiceData.securityToken) {
+			this.refreshSecurityToken();
+		}
+		// Update header every time, in case security token was changed by other model
+		if (this.bTokenHandling) {
+			this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
+		}
+	}
+};
+
+/**
+ * Clears the security token, as well from the service data as from the headers object
+ */
+sap.ui.model.odata.ODataModel.prototype.resetSecurityToken = function() {
+	delete this.oServiceData.securityToken;
+	delete this.oHeaders["x-csrf-token"];
+};
+
+/**
  * refresh XSRF token by performing a GET request against the service root URL.
  *
  * @param {function} [fnSuccess] a callback function which is called when the data has
@@ -947,20 +974,29 @@ sap.ui.model.odata.ODataModel.prototype._getObject = function(sPath, oContext) {
  * @public
  */
 sap.ui.model.odata.ODataModel.prototype.refreshSecurityToken = function(fnSuccess, fnError, bAsync) {
-	var that = this;
+	var that = this, sToken;
 
-	this.oHeaders["x-csrf-token"] = "Fetch";
-	if (bAsync == undefined) {
-		bAsync = false;
-	}
-	// trigger a read to the service url
+	// bAsync default is false ?!
+	bAsync = bAsync === true;
+	
+	// trigger a read to the service url to fetch the token
 	var oRequest = this._createRequest("/", null, bAsync);
-
+	oRequest.headers["x-csrf-token"] = "Fetch";
+	
 	function _handleSuccess(oData, oResponse) {
 		if (oResponse) {
-			that._convertHeaders("x-csrf-token", oResponse.headers);
-			that.oHeaders["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			that.bTokenRequested = true;
+			sToken = that._getHeader("x-csrf-token", oResponse.headers);
+			if (sToken) {
+				that.oServiceData.securityToken = sToken;
+				// For compatibility with applications, that are using getHeaders() to retrieve the current
+				// CSRF token additionally keep it in the oHeaders object
+				that.oHeaders["x-csrf-token"] = sToken;
+			}
+			else {
+				// Disable token handling, if service does not return tokens
+				that.resetSecurityToken();
+				that.bTokenHandling = false;
+			}
 		}
 
 		if (fnSuccess) {
@@ -969,8 +1005,10 @@ sap.ui.model.odata.ODataModel.prototype.refreshSecurityToken = function(fnSucces
 	}
 
 	function _handleError(oError) {
+		// Disable token handling, if token request returns an error
+		that.resetSecurityToken();
+		that.bTokenHandling = false;
 		that._handleError(oError);
-		that.bTokenRequested = false;
 
 		if (fnError) {
 			fnError(oError);
@@ -1026,6 +1064,9 @@ sap.ui.model.odata.ODataModel.prototype._submitChange = function(oRequest, fnSuc
 			// delete created entry via POST (CREATE) and DELETE
 			if ((oRequest.method === "POST" && !oRequest.headers["x-http-method"]) || oRequest.method === "DELETE") {
 				var sPath = sName.substr(sName.lastIndexOf('/') + 1);
+				if (sPath.indexOf('?') != -1) {
+					sPath = sPath.substr(0, sPath.indexOf('?'));
+				}
 				delete that.oData[sPath];
 				delete that.mContexts["/" + sPath]; // contexts are stored starting with /
 			}
@@ -1057,43 +1098,32 @@ sap.ui.model.odata.ODataModel.prototype._submitChange = function(oRequest, fnSuc
 			fnError(oError);
 		}
 	}
+	
+	if (this.bUseBatch) {
+		var oParameters = {};
+		this.clearBatch();
+		var sRequestUrl = this._getBatchUrl(oRequest.requestUri);
 
-	if (this.bTokenHandling && !this.bTokenRequested) {
-
-		var _fnRefreshTokenSuccess = function(oData, oResponse) {
-			if (oResponse) {
-				oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			}
-			return _submit();
+		// check MERGE which is converted to POST in _createChangeRequest function
+		if (oRequest.method === "POST" && oRequest.headers["x-http-method"] === "MERGE") {
+			oRequest.method = "MERGE";
 		}
-
-		this.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
+		if(oRequest.headers["If-Match"]){
+			//we have an etag
+			oParameters.sETag = oRequest.headers["If-Match"];
+		}
+		var oChangeOp = this.createBatchOperation(sRequestUrl, oRequest.method, oRequest.data, oParameters);
+		this.addBatchChangeOperations([oChangeOp]);
+		return this.submitBatch(_handleSuccess, _handleError, oRequest.async);
 	} else {
-		return _submit();
-	}
-
-	function _submit(){
-		if (that.bUseBatch) {
-			var oParameters = {};
-			that.clearBatch();
-			var sRequestUrl = that._getBatchUrl(oRequest.requestUri);
-
-			// check MERGE which is converted to POST in _createChangeRequest function
-			if (oRequest.method === "POST" && oRequest.headers["x-http-method"] === "MERGE") {
-				oRequest.method = "MERGE";
-			}
-			if(oRequest.headers["If-Match"]){
-				//we have an etag
-				oParameters.sETag = oRequest.headers["If-Match"];
-			}
-			var oChangeOp = that.createBatchOperation(sRequestUrl, oRequest.method, oRequest.data, oParameters);
-			that.addBatchChangeOperations([oChangeOp]);
-			return that.submitBatch(_handleSuccess, _handleError, oRequest.async);
-		} else {
-			return OData.request(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, that.getServiceMetadata());
+		// request token only if we have change operations 
+		// token needs to be set directly on request headers, as request is already created
+		this.updateSecurityToken();
+		if (this.bTokenHandling) {
+			oRequest.headers["x-csrf-token"] = this.oServiceData.securityToken;
 		}
+		return OData.request(oRequest, _handleSuccess, _handleError, that.oHandler, undefined, this.getServiceMetadata());
 	}
-
 };
 
 /**
@@ -1157,26 +1187,15 @@ sap.ui.model.odata.ODataModel.prototype._submitBatch = function(oRequest, fnSucc
 		}
 	}
 
-	if (this.bTokenHandling && !this.bTokenRequested) {
-
-		var _fnRefreshTokenSuccess = function(oData, oResponse) {
-			if (oResponse) {
-				oRequest.headers["x-csrf-token"]= oResponse.headers["x-csrf-token"];
-			}
-			return _submit();
-		}
-
-		this.refreshSecurityToken(_fnRefreshTokenSuccess, _handleError, false);
-	} else {
-		return _submit();
+	this.updateSecurityToken();
+	if (this.bTokenHandling) {
+		oRequest.headers["x-csrf-token"] = this.oServiceData.securityToken;
 	}
 
-	function _submit() {
-		var oRequestHandle = OData.request(oRequest, _handleSuccess, _handleError, OData.batchHandler, undefined, that.getServiceMetadata());
-		// clear batch stack
-		that.aBatchOperations = [];
-		return oRequestHandle;
-	}
+	var oRequestHandle = OData.request(oRequest, _handleSuccess, _handleError, OData.batchHandler, undefined, this.getServiceMetadata());
+	// clear batch stack
+	this.aBatchOperations = [];
+	return oRequestHandle;
 
 };
 
@@ -1218,22 +1237,17 @@ sap.ui.model.odata.ODataModel.prototype._getBatchErrors = function(oData) {
  * @private
  */
 sap.ui.model.odata.ODataModel.prototype._handleError = function(oError) {
-	var mParameters = {}, fnHandler, that = this;
+	var mParameters = {}, fnHandler, sToken;
 	var sErrorMsg = "The following problem occurred: " + oError.message;
 
 	mParameters.message = oError.message;
 	if (oError.response){
-		// if XSRFToken is not valid we get 403 with the x-csrf-token header : Required.
-		// a new token will be fetched in the refresh afterwards.
-		this._convertHeaders("x-csrf-token", oError.response.headers);
-		if (oError.response.statusCode == '403' && oError.response.headers["x-csrf-token"]) {
-			this.oHeaders["x-csrf-token"] = oError.response.headers["x-csrf-token"];
-			if (oError.response.headers["x-csrf-token"].toLowerCase() === "required" && !this.bRefreshing) {
-				this.bRefreshing = true;
-				fnHandler = function (){
-					that.bRefreshing = false;
-				}
-				this.refreshSecurityToken(fnHandler, fnHandler);
+		if (this.bTokenHandling) {
+			// if XSRFToken is not valid we get 403 with the x-csrf-token header : Required.
+			// a new token will be fetched in the refresh afterwards.
+			sToken = this._getHeader("x-csrf-token", oError.response.headers);
+			if (oError.response.statusCode == '403' && sToken && sToken.toLowerCase() == "required") {
+				this.resetSecurityToken();
 			}
 		}
 		sErrorMsg += oError.response.statusCode + "," +
@@ -2140,20 +2154,16 @@ sap.ui.model.odata.ODataModel.prototype.getHeaders = function() {
 };
 
 /**
- * Searches the specified headers map for the specified header name and converts the found header to the case form of the sConvertHeader
- * e.g. sConvertHeader = "myHeader". mHeader = {"MYHEAder" : "test"}
- * --> will be converted to mHeader = {"myHeader" : "test"}
+ * Searches the specified headers map for the specified header name and returns the found header value
  */
-sap.ui.model.odata.ODataModel.prototype._convertHeaders = function(sConvertHeader, mHeaders) {
-	var sHeaderName, oHeaderValue;
+sap.ui.model.odata.ODataModel.prototype._getHeader = function(sFindHeader, mHeaders) {
+	var sHeaderName;
 	for (sHeaderName in mHeaders) {
-		if (sHeaderName !== sConvertHeader && sHeaderName.toLowerCase() === sConvertHeader.toLowerCase()) {
-			oHeaderValue = mHeaders[sHeaderName];
-			delete mHeaders[sHeaderName];
-			mHeaders[sConvertHeader] = oHeaderValue;
-			break;
+		if (sHeaderName.toLowerCase() === sFindHeader.toLowerCase()) {
+			return mHeaders[sHeaderName];
 		}
 	}
+	return null;
 };
 
 /**
@@ -2402,5 +2412,5 @@ sap.ui.model.odata.ODataModel.prototype.setRefreshAfterChange = function(bRefres
 
 sap.ui.model.odata.ODataModel.prototype.isList = function(sPath, oContext) {
 	var sPath = this.resolve(sPath, oContext);
-	return sPath.substr(sPath.lastIndexOf("/")).indexOf("(") === -1;
+	return sPath && sPath.substr(sPath.lastIndexOf("/")).indexOf("(") === -1;
 };

@@ -189,9 +189,11 @@ sap.ui.commons.ToolbarRenderer.initOverflowPopup = function(oToolbar) {
  */
 sap.ui.commons.ToolbarRenderer.emptyOverflowPopup = function(oToolbar) {
 	var oPopupHolder = jQuery.sap.domById(oToolbar.getId() + "-pu");
-	if (oPopupHolder) {
+	var oDomRef = oToolbar.getDomRef();
+	
+	if (oPopupHolder && oDomRef) {
 		var oOverflowButton = jQuery.sap.domById(oToolbar.getId() + "-mn");
-		var oToolbarCont = oToolbar.getDomRef().firstChild.firstChild;
+		var oToolbarCont = oDomRef.firstChild.firstChild;
 		while (oPopupHolder.hasChildNodes()) {
 			oToolbarCont.insertBefore(oPopupHolder.firstChild, oOverflowButton);
 		}

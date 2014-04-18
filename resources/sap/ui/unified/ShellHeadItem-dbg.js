@@ -34,7 +34,8 @@ jQuery.sap.require("sap.ui.core.Element");
  * <li>{@link #getStartsSection startsSection} : boolean (default: false)</li>
  * <li>{@link #getSelected selected} : boolean (default: false)</li>
  * <li>{@link #getShowMarker showMarker} : boolean (default: false)</li>
- * <li>{@link #getIcon icon} : sap.ui.core.URI</li></ul>
+ * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -60,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -74,10 +75,11 @@ sap.ui.core.Element.extend("sap.ui.unified.ShellHeadItem", { metadata : {
 	// ---- control specific ----
 	library : "sap.ui.unified",
 	properties : {
-		"startsSection" : {type : "boolean", group : "Appearance", defaultValue : false},
+		"startsSection" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
 		"selected" : {type : "boolean", group : "Appearance", defaultValue : false},
-		"showMarker" : {type : "boolean", group : "Appearance", defaultValue : false},
-		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : null}
+		"showMarker" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
+		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : null},
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true}
 	},
 	events : {
 		"press" : {}
@@ -112,6 +114,8 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  *
  * @return {boolean} the value of property <code>startsSection</code>
  * @public
+ * @deprecated Since version 1.18. 
+ * Dividers are not supported anymore.
  * @name sap.ui.unified.ShellHeadItem#getStartsSection
  * @function
  */
@@ -124,6 +128,8 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  * @param {boolean} bStartsSection  new value for property <code>startsSection</code>
  * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.18. 
+ * Dividers are not supported anymore.
  * @name sap.ui.unified.ShellHeadItem#setStartsSection
  * @function
  */
@@ -162,6 +168,8 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  *
  * @return {boolean} the value of property <code>showMarker</code>
  * @public
+ * @deprecated Since version 1.18. 
+ * Markers should not be used anymore.
  * @name sap.ui.unified.ShellHeadItem#getShowMarker
  * @function
  */
@@ -174,6 +182,8 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  * @param {boolean} bShowMarker  new value for property <code>showMarker</code>
  * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.18. 
+ * Markers should not be used anymore.
  * @name sap.ui.unified.ShellHeadItem#setShowMarker
  * @function
  */
@@ -200,6 +210,33 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.ShellHeadItem#setIcon
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visible</code>.
+ * Invisible items are not shown on the UI.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visible</code>
+ * @public
+ * @since 1.18
+ * @name sap.ui.unified.ShellHeadItem#getVisible
+ * @function
+ */
+
+/**
+ * Setter for property <code>visible</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisible  new value for property <code>visible</code>
+ * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.18
+ * @name sap.ui.unified.ShellHeadItem#setVisible
  * @function
  */
 
@@ -282,6 +319,12 @@ sap.ui.unified.ShellHeadItem.prototype.setSelected = function(bSelected){
 	bSelected = !!bSelected;
 	this.setProperty("selected", bSelected, true);
 	this.$().toggleClass("sapUiUfdShellHeadItmSel", bSelected);
+	return this;
+};
+
+
+sap.ui.unified.ShellHeadItem.prototype.setVisible = function(bVisible){
+	this.setProperty("visible", !!bVisible); // Suppress Rerendering handled by Shell
 	return this;
 };
 

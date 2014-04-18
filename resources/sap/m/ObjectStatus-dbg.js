@@ -34,7 +34,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getText text} : string</li>
  * <li>{@link #getState state} : sap.ui.core.ValueState (default: sap.ui.core.ValueState.None)</li>
  * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
- * <li>{@link #getIconDensityAware iconDensityAware} : boolean (default: true)</li></ul>
+ * <li>{@link #getIconDensityAware iconDensityAware} : boolean (default: true)</li>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -56,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -72,7 +73,8 @@ sap.ui.core.Control.extend("sap.m.ObjectStatus", { metadata : {
 		"text" : {type : "string", group : "Misc", defaultValue : null},
 		"state" : {type : "sap.ui.core.ValueState", group : "Misc", defaultValue : sap.ui.core.ValueState.None},
 		"icon" : {type : "sap.ui.core.URI", group : "Misc", defaultValue : null},
-		"iconDensityAware" : {type : "boolean", group : "Appearance", defaultValue : true}
+		"iconDensityAware" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true}
 	}
 }});
 
@@ -192,6 +194,31 @@ sap.ui.core.Control.extend("sap.m.ObjectStatus", { metadata : {
  * @return {sap.m.ObjectStatus} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ObjectStatus#setIconDensityAware
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visible</code>.
+ * Shows or hides the ObjectStatus instance
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visible</code>
+ * @public
+ * @name sap.m.ObjectStatus#getVisible
+ * @function
+ */
+
+/**
+ * Setter for property <code>visible</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisible  new value for property <code>visible</code>
+ * @return {sap.m.ObjectStatus} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectStatus#setVisible
  * @function
  */
 

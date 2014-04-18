@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.ViewSettingsItem");
  * @extends sap.m.ViewSettingsItem
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public

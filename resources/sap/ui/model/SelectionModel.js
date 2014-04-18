@@ -19,4 +19,4 @@ sap.ui.model.SelectionModel.prototype.clearSelection=function(){if(this.aSelecte
 sap.ui.model.SelectionModel.prototype.attachSelectionChanged=function(d,f,l){this.attachEvent("selectionChanged",d,f,l);return this};
 sap.ui.model.SelectionModel.prototype.detachSelectionChanged=function(f,l){this.detachEvent("selectionChanged",f,l);return this};
 sap.ui.model.SelectionModel.prototype.fireSelectionChanged=function(a){this.fireEvent("selectionChanged",a);return this};
-sap.ui.model.SelectionModel.prototype._update=function(s,l,c){var p={rowIndices:c&&c.sort(this.fnSort)};this.aSelectedIndices=s;if(this.iLeadIndex!==l){this.iLeadIndex=l;p.leadIndex=l}if(c.length>0||typeof p.leadIndex!=="undefined"){this.fireSelectionChanged(p)}};
+sap.ui.model.SelectionModel.prototype._update=function(s,l,c){var p={rowIndices:c&&c.sort(this.fnSort)};this.aSelectedIndices=s;p.oldIndex=this.iLeadIndex;if(this.iLeadIndex!==l){this.iLeadIndex=l;p.leadIndex=this.iLeadIndex}if(c.length>0||typeof p.leadIndex!=="undefined"){this.fireSelectionChanged(p)}};

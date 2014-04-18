@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.base.ManagedObjectMetadata");
  * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.13.2
  */
 sap.ui.app.ApplicationMetadata = function(sClassName, oClassInfo) {

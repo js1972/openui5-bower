@@ -86,7 +86,7 @@ jQuery.sap.require("sap.ui.base.EventProvider");
  * @param {Element[]} aItemDomRefs Array of DOM elements representing the items for the navigation
  * @param {boolean} [bNotInTabChain=false] Whether the selected element should be in the tab chain or not
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @constructor
  * @name sap.ui.core.delegate.ItemNavigation
  * @public

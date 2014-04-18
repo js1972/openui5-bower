@@ -91,7 +91,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -2070,16 +2070,17 @@ sap.ui.table.Table.prototype._updateTableContent = function() {
 	// hook for update table cell after rendering is complete 
 	if (this._bOnAfterRendering && (this._bCallUpdateTableCell || typeof this._updateTableCell === "function")) {
 		var that = this;
+		var oBindingInfo = this.mBindingInfos["rows"];
 		jQuery.each(this.getRows(), function(iIndex, oRow) {
 			jQuery.each(oRow.getCells(), function(iIndex, oCell) {
 				if (oCell._updateTableCell) {
 					oCell._updateTableCell(oCell /* cell control */, 
-					                       oCell.getBindingContext() /* cell context */, 
+					                       oCell.getBindingContext(oBindingInfo && oBindingInfo.model) /* cell context */, 
 					                       oCell.$().closest("td") /* jQuery object for td */);
 				}
 				if (that._updateTableCell) {
 					that._updateTableCell(oCell /* cell control */, 
-					                       oCell.getBindingContext() /* cell context */, 
+					                       oCell.getBindingContext(oBindingInfo && oBindingInfo.model) /* cell context */, 
 					                       oCell.$().closest("td") /* jQuery object for td */);
 				}
 			});
@@ -2103,7 +2104,7 @@ sap.ui.table.Table.prototype._initItemNavigation = function() {
 
 	var $this = this.$();
 	var iColumnCount = this._getVisibleColumnCount();
-	var bHasRowHeader = false; 
+	var iTotalColumnCount = iColumnCount;
 
 	// initialization of item navigation for the Column Headers
 	if (!this._oColHdrItemNav) {
@@ -2133,15 +2134,23 @@ sap.ui.table.Table.prototype._initItemNavigation = function() {
 		}
 	}
 	
+	// to later determine the position of the first TD in the aItemDomRefs we keep the
+	// count of TDs => aCount - TDs = first TD (add the row headers to the TD count / except the first one!)
+	var iTDCount = aItemDomRefs.length;
+	
 	// add the row header items (if visible)
 	if (this.getSelectionMode() !== sap.ui.table.SelectionMode.None &&
 			this.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowOnly) {
 		var aRowHdrDomRefs = $this.find(".sapUiTableRowHdr").get();
 		for (var i = aRowHdrDomRefs.length - 1; i >= 0; i--) {
 			aItemDomRefs.splice(i * iColumnCount, 0, aRowHdrDomRefs[i]);
+			// we ignore the row headers
+			iTDCount++;
 		}
-		iColumnCount++;
-		bHasRowHeader = true;
+		// except the first row header
+		iTDCount--; 
+		// add the row header to the column count
+		iTotalColumnCount++;
 	}
 	
 	// add the column items
@@ -2153,7 +2162,10 @@ sap.ui.table.Table.prototype._initItemNavigation = function() {
 	if (this.getSelectionMode() !== sap.ui.table.SelectionMode.None &&
 			this.getSelectionBehavior() !== sap.ui.table.SelectionBehavior.RowOnly &&
 			this.getColumnHeaderVisible()) {
-		aItemDomRefs = $this.find(".sapUiTableColRowHdr").get().concat(aItemDomRefs);
+		var aRowHdr = $this.find(".sapUiTableColRowHdr").get();
+		for (var i = this._getHeaderRowCount() - 1; i >= 0; i--) {
+			aItemDomRefs.splice(i * iColumnCount, 0, aRowHdr[0]);
+		}
 	}
 	
 	// initialization of item navigation for the Table control
@@ -2167,10 +2179,10 @@ sap.ui.table.Table.prototype._initItemNavigation = function() {
 	}
 
 	// configure the item navigation
-	this._oItemNavigation.setColumns(iColumnCount);
+	this._oItemNavigation.setColumns(iTotalColumnCount);
 	this._oItemNavigation.setRootDomRef($this.find(".sapUiTableCnt").get(0));
 	this._oItemNavigation.setItemDomRefs(aItemDomRefs);
-	this._oItemNavigation.setFocusedIndex((this.getColumnHeaderVisible() ? iColumnCount : 0) + (bHasRowHeader ? 1 : 0));
+	this._oItemNavigation.setFocusedIndex(aItemDomRefs.length - iTDCount);
 
 };
 
@@ -2436,7 +2448,7 @@ sap.ui.table.Table.prototype.updateRows = function(sReason) {
 		// update the bindings by using a delayed mechanism to avoid to many update
 		// requests: by using the mechanism below it will trigger an update each 50ms
 		this._sBindingTimer = this._sBindingTimer || jQuery.sap.delayedCall(50, this, function() {
-			// update only if control not marked as destroyed (could happen because updateRows is called during destorying the table) 
+			// update only if control not marked as destroyed (could happen because updateRows is called during destroying the table) 
 			if(!this.bIsDestroyed) {
 				this._determineVisibleCols();
 				this._updateVSb(); // due to boundary check this needs to be done before the binding contexts are applied
@@ -2874,7 +2886,7 @@ sap.ui.table.Table.prototype._updateRowBindingContext = function(oRow, oContext,
 	var aCells = oRow.getCells();
 	var $row = oRow.$();
 	var $fixedRow = jQuery.sap.byId(oRow.getId() + "-fixed");
-	var $rowHdr = this.$().find("div[data-sap-ui-rowindex=" + $row.attr("data-sap-ui-rowindex") + "]");
+	var $rowHdr = this.$().find("div[data-sap-ui-rowindex='" + $row.attr("data-sap-ui-rowindex") + "']");
 	// check for a context object (in case of grouping there could be custom context objects)
 	if (oContext && oContext instanceof sap.ui.model.Context) {
 		for (var i = 0, l = this._aVisibleColumns.length; i < l; i++) {
@@ -4576,7 +4588,7 @@ sap.ui.table.Table.prototype._enterActionMode = function(oDomRef) {
 	if (oDomRef && !this._bActionMode) {
 
 		//If cell has no tabbable element, we don't do anything
-		if(jQuery(oDomRef).filter(":tabbable").length == 0) {
+		if(jQuery(oDomRef).filter(":sapTabbable").length == 0) {
 			return;
 		}
 
@@ -4617,9 +4629,9 @@ sap.ui.table.Table.prototype._leaveActionMode = function(oEvent) {
 		// when we have an event which is responsible to leave the action mode
 		// we search for the closest
 		if (oEvent) {
-			if (jQuery(oEvent.target).closest("td[tabindex=-1]").length > 0) {
+			if (jQuery(oEvent.target).closest("td[tabindex='-1']").length > 0) {
 				// triggered when clicking into a cell, then we focus the cell
-				var iIndex = jQuery(this._oItemNavigation.aItemDomRefs).index(jQuery(oEvent.target).closest("td[tabindex=-1]").get(0));
+				var iIndex = jQuery(this._oItemNavigation.aItemDomRefs).index(jQuery(oEvent.target).closest("td[tabindex='-1']").get(0));
 				this._oItemNavigation.focusItem(iIndex, null);
 			} else {
 				// somewhere else means whe check if the click happend inside
@@ -4701,8 +4713,8 @@ sap.ui.table.Table.prototype.onkeydown = function(oEvent) {
 						iRowIndex = 0;
 					}
 				}
-				var $otherRow = $otherTable.find("tr[data-sap-ui-rowindex=" + iRowIndex + "]");
-				var $nextFocus = $otherRow.find("td :sapFocusable[tabindex=0]").first();
+				var $otherRow = $otherTable.find("tr[data-sap-ui-rowindex='" + iRowIndex + "']");
+				var $nextFocus = $otherRow.find("td :sapFocusable[tabindex='0']").first();
 				if ($nextFocus.length > 0) {
 					$nextFocus.focus();
 					oEvent.preventDefault();
@@ -4967,7 +4979,7 @@ sap.ui.table.Table.prototype.getBinding = function(sName) {
 				this.$().find(".sapUiTableRowHdrScr").css("display", "block");
 
 				// modify the rows
-				var $rowHdr = this.$().find("div[data-sap-ui-rowindex=" + $row.attr("data-sap-ui-rowindex") + "]");
+				var $rowHdr = this.$().find("div[data-sap-ui-rowindex='" + $row.attr("data-sap-ui-rowindex") + "']");
 				if (oBinding.isGroupHeader(iRowIndex)) {
 					$row.addClass("sapUiTableGroupHeader sapUiTableRowHidden");
 					var sClass = oBinding.isExpanded(iRowIndex) ? "sapUiTableGroupIconOpen" : "sapUiTableGroupIconClosed";
@@ -5187,7 +5199,7 @@ sap.ui.table.Table.prototype._calculateRowsToDisplay = function(iHeight) {
 	var iContentHeight = $this.find('.sapUiTableCCnt').outerHeight();
 	var iMinRowCount = this.getMinAutoRowCount()||5; 
 
-	var iRowHeight = $this.find(".sapUiTableCtrl tr[data-sap-ui-rowindex=0]").outerHeight();
+	var iRowHeight = $this.find(".sapUiTableCtrl tr[data-sap-ui-rowindex='0']").outerHeight();
 	//No rows displayed when visible row count == 0, now row height can be determined, therefore we set standard row height
 	if (iRowHeight == null) {
 		var sRowHeightParamName = "sap.ui.table.Table:sapUiTableRowHeight";

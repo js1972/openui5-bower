@@ -167,9 +167,8 @@ jQuery.sap.declare("sap.m._Ios7");
 	/**
 	 * @private handles the orientation change
 	 */
-	sap.m._Ios7.prototype._onOrientationChange = function () {
-		//TODO: use oEvent.landscape but currently it is bugged for ios 7
-		var bIsLandscape = window.orientation === 90 || window.orientation === -90;
+	sap.m._Ios7.prototype._onOrientationChange = function (oEvent) {
+		var bIsLandscape = oEvent.landscape;
 
 		window.scrollTo(0,0);
 

@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.base.Object");
  * @extends sap.ui.base.Object
  * @implements sap.ui.base.Poolable
  * @author Malte Wedel, Daniel Brinkmann
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.base.Event
  * @public
  */

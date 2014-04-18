@@ -8,7 +8,7 @@
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -788,7 +788,7 @@ if(typeof window.sap.ui !== "object"){
 			var info = null;
 			for(var i=0, len = aQueries.length; i < len; i++){
 				var q = aQueries[i];
-				if((q != _querysets[name].currentquery || infoOnly) && window.sap.ui.Device.media.matches(q.from, q.to, _querysets[name].unit)){
+				if((q != _querysets[name].currentquery || infoOnly) && device.media.matches(q.from, q.to, _querysets[name].unit)){
 					if(!infoOnly){
 						_querysets[name].currentquery = q;
 					}
@@ -1062,239 +1062,6 @@ if(typeof window.sap.ui !== "object"){
 		delete _querysets[sName];
 	};
 
-	
-//******** Orientation Detection ********
-	
-	/** 
-	 * Orientation Change Event API.
-	 * 
-	 * @namespace
-	 * @name sap.ui.Device.orientation
-	 * @public
-	 */
-
-	device.orientation = {};
-
-	/** 
-	 * Resize Event API.
-	 * 
-	 * @namespace
-	 * @name sap.ui.Device.resize
-	 * @public
-	 */
-	device.resize = {};
-	
-	/**
-	 * Registers the given handler to the orientation change event.
-	 * 
-	 * The handler has one map parameter <code>mParams</code>:
-	 * <ul>
-	 * <li>mParams.landscape: whether the orientation is currently landscape</li>
-	 * </ul>
-	 * 
-	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.orientation#attachHandler
-	 * @function
-	 * @public
-	 */
-	device.orientation.attachHandler = function(fnFunction, oListener){
-		attachEvent("orientation", fnFunction, oListener);
-	};
-
-	/**
-	 * Registers the given handler to the resize event.
-	 * 
-	 * The handler has one map parameter <code>mParams</code>:
-	 * <ul>
-	 * <li>mParams.height: new height of the window</li>
-	 * <li>mParams.width: new width of the window</li>
-	 * </ul>
-	 * 
-	 * @param {Function} fnFunction The function to call, when the resize event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.resize#attachHandler
-	 * @function
-	 * @public
-	 */
-	device.resize.attachHandler = function(fnFunction, oListener){
-		attachEvent("resize", fnFunction, oListener);
-	};
-	
-	/**
-	 * Deregisters a previously registered handler from the orientation change event.
-	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.orientation#detachHandler
-	 * @function
-	 * @public
-	 */
-	device.orientation.detachHandler = function(fnFunction, oListener){
-		detachEvent("orientation", fnFunction, oListener);
-	};
-
-	/**
-	 * Deregisters a previously registered handler from the resize event.
-	 * @param {Function} fnFunction The function to call, when the resize event occurs.
-	 * @param {Object} [oListener] The 'this' context of the handler function.
-	 * @name sap.ui.Device.resize#detachHandler
-	 * @function
-	 * @public
-	 */
-	device.resize.detachHandler = function(fnFunction, oListener){
-		detachEvent("resize", fnFunction, oListener);
-	};
-
-	function setOrientationInfo(oInfo){
-		oInfo.landscape = isLandscape(true);
-		oInfo.portrait = !oInfo.landscape;
-	};
-	
-	function handleOrientationChange(){
-		setOrientationInfo(device.orientation);
-		fireEvent("orientation", {landscape: device.orientation.landscape});
-	};
-	
-	function handleResizeChange(){
-		setResizeInfo(device.resize);
-		fireEvent("resize", {height: device.resize.height, width: device.resize.width});
-	};
-
-	function setResizeInfo(oInfo){
-		oInfo.width = windowSize()[0];
-		oInfo.height = windowSize()[1];
-	};
-	
-	function handleOrientationResizeChange(){
-		var wasL = window.sap.ui.Device.orientation.landscape;
-		var isL = isLandscape();
-		if(wasL != isL){
-			handleOrientationChange();
-		}
-		//throttle resize events because most browsers throw one or more resize events per pixel
-		//for every resize event inside the period from 150ms (starting from the first resize event),
-		//we only fire one resize event after this period
-		if (!iResizeTimeout) {
-			iResizeTimeout = window.setTimeout(handleResizeTimeout, 150);
-		}
-	};
-	
-	function handleResizeTimeout() {
-		handleResizeChange();
-		iResizeTimeout = null;
-	};
-
-	if (device.support.touch && device.support.orientation) {
-		//logic for mobile devices which support orientationchange (like ios, android, blackberry)
-		window.addEventListener("resize", handleMobileOrientationResizeChange, false);
-		window.addEventListener("orientationchange", handleMobileOrientationResizeChange, false);
-	} else {
-		if (window.addEventListener) {
-			//most desktop browsers and windows phone/tablet which not support orientationchange
-			window.addEventListener("resize", handleOrientationResizeChange, false);
-		} else {
-			//IE8
-			window.attachEvent("onresize", handleOrientationResizeChange);
-		}
-	}
-
-	var bOrientationchange = false;
-	var bResize = false;
-	var iOrientationTimeout;
-	var iResizeTimeout;
-	var iClearFlagTimeout;
-	var iWindowHeightOld = windowSize()[1];
-	var iWindowWidthOld = windowSize()[0];
-	var bKeyboardOpen = false;
-	var iLastResizeTime;
-	
-	function isLandscape(bFromOrientationChange){
-		if (device.support.touch && device.support.orientation) {
-			//if on screen keyboard is open and the call of this method is from orientation change listener, reverse the last value.
-			//this is because when keyboard opens on android device, the height can be less than the width even in portrait mode.
-			if(bKeyboardOpen && bFromOrientationChange){
-				return !device.orientation.landscape;
-			}
-			//when keyboard opens, the last orientation change value will be retured.
-			if(bKeyboardOpen){
-				return device.orientation.landscape;
-			}
-			//otherwise compare the width and height of window
-		} else {
-			//most desktop browsers and windows phone/tablet which not support orientationchange
-			if(device.support.matchmedia && device.support.orientation){
-				return !!window.matchMedia("(orientation: landscape)").matches;
-			}
-		}
-		var size = windowSize();
-		return size[0] > size[1];
-	};
-
-	function handleMobileOrientationResizeChange(evt) {
-		if (evt.type == "resize") {
-			var iWindowHeightNew = windowSize()[1];
-			var iWindowWidthNew = windowSize()[0];
-			var iTime = new Date().getTime();
-			//skip multiple resize events by only one orientationchange
-			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
-				return;
-			}
-			bResize = true;
-			//on mobile devices opening the keyboard on some devices leads to a resize event
-			//in this case only the height changes, not the width
-			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
-				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
-				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
-				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
-				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
-					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
-				}
-				handleResizeChange();
-			} else {
-				iWindowWidthOld = iWindowWidthNew;
-			}
-			iLastResizeTime = iTime;
-			iWindowHeightOld = iWindowHeightNew;
-			
-			if(iClearFlagTimeout){
-				window.clearTimeout(iClearFlagTimeout);
-				iClearFlagTimeout = null;
-			}
-			//Some Android build-in browser fires a resize event after the viewport is applied.
-			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
-			//a UI5 resize event will be fired with the wrong window size.
-			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
-		} else if (evt.type == "orientationchange") {
-			bOrientationchange = true;
-		}
-
-		if (iOrientationTimeout) {
-			clearTimeout(iOrientationTimeout);
-			iOrientationTimeout = null;
-		}
-		iOrientationTimeout = window.setTimeout(handleMobileTimeout, 50);
-	};
-	
-	function handleMobileTimeout() {
-		if (bOrientationchange && bResize) {
-			handleOrientationChange();
-			handleResizeChange();
-			bOrientationchange = false;
-			bResize = false;
-			if(iClearFlagTimeout){
-				window.clearTimeout(iClearFlagTimeout);
-				iClearFlagTimeout = null;
-			}
-		}
-		iOrientationTimeout = null;
-	};
-	
-	function clearFlags(){
-		bOrientationchange = false;
-		bResize = false;
-		iClearFlagTimeout = null;
-	};
-	
 //******** System Detection ********
 
 	/** 
@@ -1409,6 +1176,231 @@ if(typeof window.sap.ui !== "object"){
 	}
 	setSystem();
 
+//******** Orientation Detection ********
+	/** 
+	 * Orientation Change Event API.
+	 * 
+	 * @namespace
+	 * @name sap.ui.Device.orientation
+	 * @public
+	 */
+
+	device.orientation = {};
+
+	/** 
+	 * Resize Event API.
+	 * 
+	 * @namespace
+	 * @name sap.ui.Device.resize
+	 * @public
+	 */
+	device.resize = {};
+	
+	/**
+	 * Registers the given handler to the orientation change event.
+	 * 
+	 * The handler has one map parameter <code>mParams</code>:
+	 * <ul>
+	 * <li>mParams.landscape: whether the orientation is currently landscape</li>
+	 * </ul>
+	 * 
+	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.orientation#attachHandler
+	 * @function
+	 * @public
+	 */
+	device.orientation.attachHandler = function(fnFunction, oListener){
+		attachEvent("orientation", fnFunction, oListener);
+	};
+
+	/**
+	 * Registers the given handler to the resize event.
+	 * 
+	 * The handler has one map parameter <code>mParams</code>:
+	 * <ul>
+	 * <li>mParams.height: new height of the window</li>
+	 * <li>mParams.width: new width of the window</li>
+	 * </ul>
+	 * 
+	 * @param {Function} fnFunction The function to call, when the resize event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.resize#attachHandler
+	 * @function
+	 * @public
+	 */
+	device.resize.attachHandler = function(fnFunction, oListener){
+		attachEvent("resize", fnFunction, oListener);
+	};
+	
+	/**
+	 * Deregisters a previously registered handler from the orientation change event.
+	 * @param {Function} fnFunction The function to call, when the orientation change event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.orientation#detachHandler
+	 * @function
+	 * @public
+	 */
+	device.orientation.detachHandler = function(fnFunction, oListener){
+		detachEvent("orientation", fnFunction, oListener);
+	};
+
+	/**
+	 * Deregisters a previously registered handler from the resize event.
+	 * @param {Function} fnFunction The function to call, when the resize event occurs.
+	 * @param {Object} [oListener] The 'this' context of the handler function.
+	 * @name sap.ui.Device.resize#detachHandler
+	 * @function
+	 * @public
+	 */
+	device.resize.detachHandler = function(fnFunction, oListener){
+		detachEvent("resize", fnFunction, oListener);
+	};
+
+	function setOrientationInfo(oInfo){
+		oInfo.landscape = isLandscape(true);
+		oInfo.portrait = !oInfo.landscape;
+	};
+	
+	function handleOrientationChange(){
+		setOrientationInfo(device.orientation);
+		fireEvent("orientation", {landscape: device.orientation.landscape});
+	};
+	
+	function handleResizeChange(){
+		setResizeInfo(device.resize);
+		fireEvent("resize", {height: device.resize.height, width: device.resize.width});
+	};
+
+	function setResizeInfo(oInfo){
+		oInfo.width = windowSize()[0];
+		oInfo.height = windowSize()[1];
+	};
+
+	function handleOrientationResizeChange(){
+		var wasL = device.orientation.landscape;
+		var isL = isLandscape();
+		if(wasL != isL){
+			handleOrientationChange();
+		}
+		//throttle resize events because most browsers throw one or more resize events per pixel
+		//for every resize event inside the period from 150ms (starting from the first resize event),
+		//we only fire one resize event after this period
+		if (!iResizeTimeout) {
+			iResizeTimeout = window.setTimeout(handleResizeTimeout, 150);
+		}
+	};
+
+	function handleResizeTimeout() {
+		handleResizeChange();
+		iResizeTimeout = null;
+	};
+
+	var bOrientationchange = false;
+	var bResize = false;
+	var iOrientationTimeout;
+	var iResizeTimeout;
+	var iClearFlagTimeout;
+	var iWindowHeightOld = windowSize()[1];
+	var iWindowWidthOld = windowSize()[0];
+	var bKeyboardOpen = false;
+	var iLastResizeTime;
+	var rInputTagRegex = /INPUT|TEXTAREA|SELECT/;
+	var bIPhone7_0_XSafari = device.system.phone && device.os.ios && device.os.version >= 7 && device.os.version < 7.1 && device.browser.name === "sf";
+	
+	function isLandscape(bFromOrientationChange){
+		if (device.support.touch && device.support.orientation) {
+			//if on screen keyboard is open and the call of this method is from orientation change listener, reverse the last value.
+			//this is because when keyboard opens on android device, the height can be less than the width even in portrait mode.
+			if(bKeyboardOpen && bFromOrientationChange){
+				return !device.orientation.landscape;
+			}
+			//when keyboard opens, the last orientation change value will be retured.
+			if(bKeyboardOpen){
+				return device.orientation.landscape;
+			}
+			//otherwise compare the width and height of window
+		} else {
+			//most desktop browsers and windows phone/tablet which not support orientationchange
+			if(device.support.matchmedia && device.support.orientation){
+				return !!window.matchMedia("(orientation: landscape)").matches;
+			}
+		}
+		var size = windowSize();
+		return size[0] > size[1];
+	};
+
+	function handleMobileOrientationResizeChange(evt) {
+		if (evt.type == "resize") {
+			// supress the first invalid resize event fired before orientationchange event while keyboard is open on iPhone 7.0.x
+			// because this event has wrong size infos
+			if (bIPhone7_0_XSafari && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
+				return;
+			}
+
+			var iWindowHeightNew = windowSize()[1];
+			var iWindowWidthNew = windowSize()[0];
+			var iTime = new Date().getTime();
+			//skip multiple resize events by only one orientationchange
+			if(iWindowHeightNew === iWindowHeightOld && iWindowWidthNew === iWindowWidthOld){
+				return;
+			}
+			bResize = true;
+			//on mobile devices opening the keyboard on some devices leads to a resize event
+			//in this case only the height changes, not the width
+			if ((iWindowHeightOld != iWindowHeightNew) && (iWindowWidthOld == iWindowWidthNew)) {
+				//Asus Transformer tablet fires two resize events when orientation changes while keyboard is open.
+				//Between these two events, only the height changes. The check of if keyboard is open has to be skipped because
+				//it may be judged as keyboard closed but the keyboard is still open which will affect the orientation detection
+				if(!iLastResizeTime || (iTime - iLastResizeTime > 300)){
+					bKeyboardOpen = (iWindowHeightNew < iWindowHeightOld);
+				}
+				handleResizeChange();
+			} else {
+				iWindowWidthOld = iWindowWidthNew;
+			}
+			iLastResizeTime = iTime;
+			iWindowHeightOld = iWindowHeightNew;
+			
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+			//Some Android build-in browser fires a resize event after the viewport is applied.
+			//This resize event has to be dismissed otherwise when the next orientationchange event happens,
+			//a UI5 resize event will be fired with the wrong window size.
+			iClearFlagTimeout = window.setTimeout(clearFlags, 1200);
+		} else if (evt.type == "orientationchange") {
+			bOrientationchange = true;
+		}
+
+		if (iOrientationTimeout) {
+			clearTimeout(iOrientationTimeout);
+			iOrientationTimeout = null;
+		}
+		iOrientationTimeout = window.setTimeout(handleMobileTimeout, 50);
+	};
+	
+	function handleMobileTimeout() {
+		if (bOrientationchange && bResize) {
+			handleOrientationChange();
+			handleResizeChange();
+			bOrientationchange = false;
+			bResize = false;
+			if(iClearFlagTimeout){
+				window.clearTimeout(iClearFlagTimeout);
+				iClearFlagTimeout = null;
+			}
+		}
+		iOrientationTimeout = null;
+	};
+	
+	function clearFlags(){
+		bOrientationchange = false;
+		bResize = false;
+		iClearFlagTimeout = null;
+	};
+
 //******** Update browser settings for test purposes ********
 
 	device._update = function(_simMobileOnDesktop) {
@@ -1423,10 +1415,25 @@ if(typeof window.sap.ui !== "object"){
 	
 	setResizeInfo(device.resize);
 	setOrientationInfo(device.orientation);
-	
+
 	//Add API to global namespace
 	window.sap.ui.Device = device;
-	
+
+	// Add handler for orientationchange and resize after initialization of Device API (IE8 fires onresize synchronously)
+	if (device.support.touch && device.support.orientation) {
+		//logic for mobile devices which support orientationchange (like ios, android, blackberry)
+		window.addEventListener("resize", handleMobileOrientationResizeChange, false);
+		window.addEventListener("orientationchange", handleMobileOrientationResizeChange, false);
+	} else {
+		if (window.addEventListener) {
+			//most desktop browsers and windows phone/tablet which not support orientationchange
+			window.addEventListener("resize", handleOrientationResizeChange, false);
+		} else {
+			//IE8
+			window.attachEvent("onresize", handleOrientationResizeChange);
+		}
+	}
+
 	//Always initialize the default media range set
 	device.media.initRangeSet();
 
@@ -3469,7 +3476,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -3855,7 +3862,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @namespace
 	 * @public
 	 * @static
@@ -6840,7 +6847,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 				}
 
 			} else { // SETTER code
-				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos);
+				oDomRef.scrollLeft = jQuery.sap.denormalizeScrollLeftRTL(iPos, oDomRef);
 				return this;
 			}
 		}
@@ -6901,7 +6908,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 	 * @author SAP AG
 	 * @since 0.20.0
 	 */
-	jQuery.sap.denormalizeScrollLeftRTL = function byId(iNormalizedScrollLeft, oDomRef) {
+	jQuery.sap.denormalizeScrollLeftRTL = function(iNormalizedScrollLeft, oDomRef) {
 
 		if (oDomRef) {
 			if (!!sap.ui.Device.browser.internet_explorer) {
@@ -6999,7 +7006,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 		});
 	}
 
-	if (!jQuery.expr[":"].tabbable) {
+	if (!jQuery.expr[":"].sapTabbable) {
 		/*!
 		 * The following function is taken from jQuery UI 1.8.23
 		 *
@@ -7016,7 +7023,7 @@ jQuery.sap.declare("jquery.sap.dom", false);
 			 * If jQuery UI is loaded later on, this implementation here will be overwritten by that one, which is fine,
 			 * as it is semantically the same thing and intended to do exactly the same.
 			 */
-			tabbable: function( element ) {
+			sapTabbable: function( element ) {
 				var tabIndex = jQuery.attr( element, "tabindex" ),
 					isTabIndexNaN = isNaN( tabIndex );
 				return ( isTabIndexNaN || tabIndex >= 0 ) && focusable( element, !isTabIndexNaN );
@@ -7817,8 +7824,8 @@ jQuery.sap.KeyCodes = {
 
 				bHandleEvent = (oTouches.length == 1 && !isInputField(oEvent));
 
+				bIsMoved = false;
 				if (bHandleEvent) {
-					bIsMoved = false;
 					oTouch = oTouches[0];
 
 					// As we are only interested in the first touch target, we remember it
@@ -8440,19 +8447,21 @@ jQuery.sap.KeyCodes = {
 	//Add mobile touch events if touch is supported or we run in special dev test mode
 	(function initTouchEventSupport() {
 
-		function simulateMobileTouchEventSupport(){
-			var sConfigKey = "xx-test-mobile"; //see sap.ui.core.Configuration -> M_SETTINGS
-			var oCfgData = window["sap-ui-config"];
-			var bSimulate = document.location.search.indexOf("sap-ui-"+sConfigKey) > -1 || (oCfgData && oCfgData[sConfigKey]);
-			
-			// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
-			bSimulate = bSimulate || (document.location.search.indexOf("sap-ui-xx-fakeOS") > -1 || !!jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-xx-fakeOS")); // only allowed as URL parameter or in the bootstrap tag
-			
-			// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
-			var sLibs = jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-libs");
-			bSimulate = bSimulate || (sLibs && sLibs.match(/sap.m\b/));
+		function simulateMobileTouchEventSupport() {
+			var oCfgData = window["sap-ui-config"] || {},
+				sLibs = oCfgData.libs || "";
 
-			return bSimulate;
+			// TODO: should be replaced by some function in jQuery.sap.global (e.g. jQuery.sap.config(sKey))
+			function hasConfig(sKey) {
+				return document.location.search.indexOf("sap-ui-"+sKey) > -1 || // URL 
+					!!oCfgData[sKey.toLowerCase()]; // currently, properties of oCfgData are converted to lower case (DOM attributes)
+			}
+
+			return hasConfig("xx-test-mobile") || //see sap.ui.core.Configuration -> M_SETTINGS
+				// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
+				hasConfig("xx-fakeOS") || 
+				// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
+				sLibs.match(/sap.m\b/);
 		}
 
 		jQuery.sap.touchEventMode = "OFF";
@@ -8893,6 +8902,7 @@ jQuery.sap.KeyCodes = {
 	};
 
 }());
+
 }; // end of jquery.sap.events.js
 if ( !jQuery.sap.isDeclared('jquery.sap.mobile') ) {
 /*!
@@ -9718,7 +9728,7 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -10316,7 +10326,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -10520,18 +10530,16 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	/*
 	 * Implements jQuery.sap.util.ResourceBundle.prototype.getText
 	 */
-	Bundle.prototype.getText = function(sKey, aArgs){
+	Bundle.prototype.getText = function(sKey, aArgs, bCustomBundle){
 		var sValue = null;
 		
 		// loop over the custom bundles before resolving this one
 		// lookup the custom resource bundles (last one first!)
 		for (var i = this.aCustomBundles.length - 1; i >= 0; i--) {
-			sValue = this.aCustomBundles[i].getText(sKey, aArgs);
-			// make sure that not the key is returned!
-			if (sValue && sValue.toString() !== sKey) {
+			sValue = this.aCustomBundles[i].getText(sKey, aArgs, true /* bCustomBundle */);
+			// value found - so return it!
+			if (sValue != null) {
 				return sValue; // found!
-			} else {
-				sValue = null;
 			}
 		}
 		
@@ -10577,23 +10585,26 @@ jQuery.sap.declare("jquery.sap.strings", false);
 			}
 		}
 
-		if(typeof(sValue)!=="string"){
+		if(!bCustomBundle && typeof(sValue)!=="string"){
+			jQuery.sap.assert(false, "could not find any translatable text for key '" + sKey + "' in bundle '" + this.oUrlInfo.url + "'");
 			sValue = sKey;
 		}
 
-		if(aArgs){
-			sValue = jQuery.sap.formatMessage(sValue, aArgs);
-		}
+		if(typeof(sValue)==="string") {
+			if(aArgs){
+				sValue = jQuery.sap.formatMessage(sValue, aArgs);
+			}
 
-		if (this.bIncludeInfo) {
-			sValue = new String(sValue);
-			sValue.originInfo = {
-				source: "Resource Bundle",
-				url: this.oUrlInfo.url,
-				locale: this.sLocale,
-				key: sKey
-			};
-		}
+			if (this.bIncludeInfo) {
+				sValue = new String(sValue);
+				sValue.originInfo = {
+					source: "Resource Bundle",
+					url: this.oUrlInfo.url,
+					locale: this.sLocale,
+					key: sKey
+				};
+			}
+		} 
 
 		return sValue;
 	};
@@ -10780,7 +10791,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public

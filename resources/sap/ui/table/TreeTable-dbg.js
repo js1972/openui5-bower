@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.Table");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -300,6 +300,27 @@ sap.ui.table.TreeTable.prototype.init = function() {
 	this._iLastFixedColIndex = 0;
 };
 
+
+/**
+ * Setter for property <code>fixedRowCount</code>.
+ *
+ * <b>This property is not supportd for the TreeTable and will be ignored!</b>
+ *
+ * Default value is <code>0</code> 
+ *
+ * @param {int} iFixedRowCount  new value for property <code>fixedRowCount</code>
+ * @return {sap.ui.table.TreeTable} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.table.TreeTable#setFixedRowCount
+ * @function
+ */
+sap.ui.table.TreeTable.prototype.setFixedRowCount = function(iRowCount) {
+	// this property makes no sense for the TreeTable
+	jQuery.sap.log.warning("TreeTable: the property \"fixedRowCount\" is not supported and will be ignored!");
+	return this;
+};
+
+
 /**
  * Rerendering handling
  * @private
@@ -307,7 +328,7 @@ sap.ui.table.TreeTable.prototype.init = function() {
 sap.ui.table.TreeTable.prototype.onAfterRendering = function() {
 	sap.ui.table.Table.prototype.onAfterRendering.apply(this, arguments);
 	this.$().find("[role=grid]").attr("role", "treegrid");
-}
+};
 
 sap.ui.table.TreeTable.prototype.isTreeBinding = function(sName) {
 	sName = sName || "rows";
@@ -493,7 +514,7 @@ sap.ui.table.TreeTable.prototype._updateTableContent = function() {
 	for (var iRow = 0; iRow < iCount; iRow++) {
 		var oContext = this.getContextByIndex(iFirstRow + iRow),
 			$row = this.getRows()[iRow].$(),
-			$rowHdr = this.$().find("div[data-sap-ui-rowindex=" + $row.attr("data-sap-ui-rowindex") + "]");
+			$rowHdr = this.$().find("div[data-sap-ui-rowindex='" + $row.attr("data-sap-ui-rowindex") + "']");
 
 		if (oBinding.hasChildren && oBinding.hasChildren(oContext)) {
 			// modify the rows
@@ -518,7 +539,14 @@ sap.ui.table.TreeTable.prototype._updateTableCell = function(oCell, oContext, oT
 	
 	if (oBinding) {
 		var iLevel = oBinding.getLevel ? oBinding.getLevel(oContext) : 0;
-		var $row = oCell.getParent().$();
+		var $row;
+		// in case of fixed columns we need to lookup the fixed table 
+		// otherwise the expand/collapse/margin will not be set!
+		if (this.getFixedColumnCount() > 0) {
+			$row = jQuery.sap.byId(oCell.getParent().getId() + "-fixed");
+		} else {
+			$row = oCell.getParent().$();
+		}
 		var $TreeIcon = $row.find(".sapUiTableTreeIcon");
 		var sTreeIconClass = "sapUiTableTreeIconLeaf";
 		if (!this.getUseGroupMode()) {
@@ -534,6 +562,7 @@ sap.ui.table.TreeTable.prototype._updateTableCell = function(oCell, oContext, oT
 		$row.attr("data-sap-ui-level", iLevel);
 		$row.attr('aria-level', iLevel + 1);
 	}
+	
 };
 
 sap.ui.table.TreeTable.prototype.onclick = function(oEvent) {

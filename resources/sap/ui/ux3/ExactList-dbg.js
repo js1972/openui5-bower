@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -1078,6 +1078,13 @@ sap.ui.ux3.ExactList.prototype._selectionChanged = function(oAttribute) {
 		return;
 	}
 
+	// In case of TwoWay databinding the attribute might have already changed by now. Make sure
+	// We use the correct one.
+	// This happened for example when the selected property was bound in the same model as
+	// the data for the lists
+	oAttribute = sap.ui.getCore().byId(oAttribute.getId());
+	
+	
 	//Computes recursivly all selected attributes and adds them to the given result list
 	var _computeSelectedAttributes = function(oAtt, aResult){
 		if(!oAtt.getSelected()) {
@@ -1096,6 +1103,7 @@ sap.ui.ux3.ExactList.prototype._selectionChanged = function(oAttribute) {
 		_computeSelectedAttributes(aTopValues[idx], aSelectedAttributes);
 	}
 
+	
 	this.fireAttributeSelected({attribute: oAttribute, allAttributes: aSelectedAttributes});
 };
 

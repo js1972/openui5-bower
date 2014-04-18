@@ -24,8 +24,8 @@ sap.ui.commons.Panel._isSizeSet=function(c){return(c&&!(c=="auto")&&!(c=="inheri
 sap.ui.commons.Panel.prototype.setTitle=function(t){var o=this.getTitle();this.setAggregation("title",t);if(o&&o!==t&&o.getId()===this.getId()+"-tit"){o.destroy()}return this};
 sap.ui.commons.Panel.prototype.setText=function(t){if(!this.getTitle()){this.setTitle(new sap.ui.core.Title(this.getId()+"-tit",{text:t}))}else{this.getTitle().setText(t)}return this};
 sap.ui.commons.Panel.prototype.getText=function(){if(!this.getTitle()){return""}else{return this.getTitle().getText()}};
-sap.ui.commons.Panel.prototype.getScrollLeft=function(){var s=0;if(this._oScrollDomRef){s=this._oScrollDomRef.scrollLeft;this.setProperty("scrollLeft",s,true)}return s};
-sap.ui.commons.Panel.prototype.setScrollLeft=function(p){this.setProperty("scrollLeft",p,true);if(this._oScrollDomRef){this._oScrollDomRef.scrollLeft=p}return this};
+sap.ui.commons.Panel.prototype.getScrollLeft=function(){var s=0;if(this._oScrollDomRef){if(sap.ui.getCore().getConfiguration().getRTL()){s=jQuery(this._oScrollDomRef).scrollLeftRTL()}else{s=jQuery(this._oScrollDomRef).scrollLeft()}this.setProperty("scrollLeft",s,true)}return s};
+sap.ui.commons.Panel.prototype.setScrollLeft=function(p){this.setProperty("scrollLeft",p,true);if(this._oScrollDomRef){if(sap.ui.getCore().getConfiguration().getRTL()){jQuery(this._oScrollDomRef).scrollLeftRTL(p)}else{jQuery(this._oScrollDomRef).scrollLeft(p)}}return this};
 sap.ui.commons.Panel.prototype.getScrollTop=function(){var s=0;if(this._oScrollDomRef){s=this._oScrollDomRef.scrollTop;this.setProperty("scrollTop",s,true)}return s};
 sap.ui.commons.Panel.prototype.setScrollTop=function(p){this.setProperty("scrollTop",p,true);if(this._oScrollDomRef){this._oScrollDomRef.scrollTop=p}return this};
 sap.ui.commons.Panel.prototype.setDimensions=function(w,h){this.setWidth(w);this.setHeight(h);return this};

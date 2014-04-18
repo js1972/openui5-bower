@@ -25,11 +25,17 @@ sap.ui.commons.PaginatorRenderer.render = function(oRm, oPaginator){
 
 	oRm.write("<div");
 	oRm.writeControlData(oPaginator);
-	oRm.write(" class='sapUiPag' role='toolbar' aria-labelledby='" + oPaginator.getId() + "-accDesc'>");
+	oRm.writeAccessibilityState(oPaginator, {
+		role: "toolbar",
+		labelledby: oPaginator.getId() + "-accDesc"
+	});
+	oRm.addClass("sapUiPag");
+	oRm.writeClasses();
+	oRm.write(">");
+
 	oRm.write("<span class='sapUiPagAccDesc' id='" + oPaginator.getId() + "-accDesc'>");
 	oRm.writeEscaped(rb.getText("PAGINATOR"));	
 	oRm.write("</span>");
-	
 
 	this.renderPaginator(oRm, oPaginator);
 

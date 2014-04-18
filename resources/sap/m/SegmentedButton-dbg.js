@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor   
  * @public
@@ -375,7 +375,7 @@ sap.m.SegmentedButton.prototype.init = function() {
 		jQuery(span).addClass("sapMBtnContent");
 		this._oGhostButton.appendChild(span);
 		this._oGhostButton.setAttribute("id", "segMtBtn_calc");
-		jQuery(this._oGhostButton).addClass("sapMBtn sapMBtnDefault sapMBtnPaddingLeft");
+		jQuery(this._oGhostButton).addClass("sapMBtn sapMBtnDefault sapMBtnPaddingLeft sapMSegBBtn");
 		this._oGhostButton = jQuery(this._oGhostButton);
 	}else {
 		this._oGhostButton = jQuery("#segMtBtn_calc");
@@ -443,6 +443,9 @@ sap.m.SegmentedButton.prototype.onAfterRendering = function() {
 	}
 	//Flag if control is inside the bar. If inside bar the buttons always use the width they need.
 	this._bInsideBar = (this.$().closest('.sapMBar').length > 0) ? true : false;
+	//Flag if control is inside a popup
+	this._bInsidePopup = (this.$().closest(".sapMPopup-CTX").length > 0);
+
 	var aButtons = this.getButtons();
 	var bAllIcons = true;
 	var self = this;
@@ -489,8 +492,10 @@ sap.m.SegmentedButton.prototype._fCalcBtnWidth = function() {
 		iParentWidth = 0,
 		iCntOutWidth = $this.outerWidth(true) - $this.width(),
 		iInnerWidth = $this.children('#' + this.getButtons()[0].getId()).outerWidth(true)-$this.children('#' + this.getButtons()[0].getId()).width();
-		//if parent width is bigger than actual screen width set parent width to screen width => android 2.3
-		iParentWidth = (jQuery(window).width() < $this.parent().outerWidth()) ? jQuery(window).width() : $this.parent().width();
+		// If parent width is bigger than actual screen width set parent width to screen width => android 2.3
+		iParentWidth = (jQuery(window).width() < $this.parent().outerWidth())
+							? jQuery(window).width() :
+								(this._bInsideBar ? $this.closest('.sapMBar').width() : $this.parent().width());
 	if(this.getWidth() && this.getWidth().indexOf("%") === -1) {
 		iMaxWidth = parseInt(this.getWidth());
 		var iCustomBtnWidths = iItm; 
@@ -505,9 +510,12 @@ sap.m.SegmentedButton.prototype._fCalcBtnWidth = function() {
 		iMaxWidth = iMaxWidth - iInnerWidth;
 	} else {
 		iMaxWidth = Math.max.apply(null, this._aButtonWidth);
-		if (((iParentWidth -iCntOutWidth) > iMaxWidth * iItm || this._bInsideBar) && this.getWidth().indexOf("%") === -1) {
-			iMaxWidth = iMaxWidth
+		// If buttons' total width is still less than the available space and
+		// buttons shouldn't occupy the whole space (not set with 100%)
+		if (((iParentWidth -iCntOutWidth) > iMaxWidth * iItm) && this.getWidth().indexOf("%") === -1) {
+			iMaxWidth = iMaxWidth;
 		} else {
+			// otherwise each button gets the same size available
 			iMaxWidth = (iParentWidth-iCntOutWidth) / iItm;
 			iMaxWidth = iMaxWidth - iInnerWidth;
 		}
@@ -515,9 +523,10 @@ sap.m.SegmentedButton.prototype._fCalcBtnWidth = function() {
 
 	for(var i = 0; i < iItm; i++) {
 		if (!isNaN(iMaxWidth) && iMaxWidth > 0) {
-			//Bug: +2px for IE9(10)
-			iMaxWidth = this._isMie ? iMaxWidth+2 : iMaxWidth;
-			//use the given width of the button (when present)
+			// Bug: +2px for IE9(10)
+			// When segmentedButton is in popup, its size can't be increased because otherwise it triggers resize of the dialog again.
+			iMaxWidth = this._isMie && !this._bInsidePopup ? iMaxWidth + 2 : iMaxWidth;
+			// Use the given width of the button (when present)
 			if(this.getButtons()[i].getWidth().length > 0) {
 				var sBtnWidth = this.getButtons()[i].getWidth();
 				var iWidth = sBtnWidth.indexOf("%") == -1 ? ( parseInt(sBtnWidth) - iInnerWidth ) : sBtnWidth
@@ -625,9 +634,24 @@ sap.m.SegmentedButton.prototype.insertButton = function(oButton) {
 	return this;
 };
 
-sap.m.SegmentedButton.prototype.setSelectedButton = function(oButton) {
-	this.setAssociation("selectedButton", oButton, true);
-	this._focusSelectedButton();
+sap.m.SegmentedButton.prototype.setSelectedButton = function(vButton) {
+	var sOldSelectedButton = this.getSelectedButton();
+
+	this.setAssociation("selectedButton", vButton, true);
+
+	// CSN# 1143859/2014: update selection state in DOM when calling API method to change the selection
+	if (sOldSelectedButton !== this.getSelectedButton()) {
+		if (typeof vButton === "string") {
+			vButton = sap.ui.getCore().byId(vButton);
+		}
+		this.getButtons().forEach(function (oButton) {
+			oButton.$().removeClass("sapMSegBBtnSel");
+		});
+		if (vButton) {
+			vButton.$().addClass("sapMSegBBtnSel");
+		}
+		this._focusSelectedButton();
+	}
 };
 
 sap.m.SegmentedButton.prototype._focusSelectedButton = function() {

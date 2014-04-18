@@ -20,7 +20,7 @@ jQuery.sap.require("sap.ui.core.RenderManager");
 	 *
 	 * @abstract
 	 * @extends sap.ui.base.Object
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @private
 	 * @name sap.ui.core.support.plugins.MessageTest

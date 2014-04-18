@@ -23,6 +23,8 @@ sap.ui.core.support.trace.E2eTraceLib =
     	  defaultTraceLevel = "medium";
       }
 
+      var sDefaultUploadUrl = "/sap/bc/sdf/E2E_Trace_upl";
+
       var busTrx;
       var busTrxRecording = false;
       
@@ -55,18 +57,18 @@ sap.ui.core.support.trace.E2eTraceLib =
         };
 
         this.getRequestHeader = function() {
-          var reqHeader = this.getRequestLine() + "&#13;\n";
+          var reqHeader = this.getRequestLine() + "\r\n";
           for ( var i = 0, len = this.reqHeader.length; i < len; i += 1) {
-            reqHeader += this.reqHeader[i][0] + ": " + this.reqHeader[i][1] + "&#13;\n";
+            reqHeader += this.reqHeader[i][0] + ": " + this.reqHeader[i][1] + "\r\n";
           }
-          reqHeader += "&#13;\n";
+          reqHeader += "\r\n";
           return reqHeader;
         };
 
         this.getResponseHeader = function() {
-          var respHeader = "HTTP?/? " + this.statusCode + " " + this.status + "&#13;\n";
+          var respHeader = "HTTP?/? " + this.statusCode + " " + this.status + "\r\n";
           respHeader += this.respHeader;
-          respHeader += "&#13;\n";
+          respHeader += "\r\n";
           return respHeader;
         };
 
@@ -93,7 +95,9 @@ sap.ui.core.support.trace.E2eTraceLib =
 
         //E2ETrace events handler
         this.onMessageFinished = function(xmlHttpReq, timestamp) {
-          //console.log(timestamp + ", " + xmlHttpReq.xidx + ": load");
+          if (xmlHttpReq.xurl === sDefaultUploadUrl) {
+            return; // ignore requests to upload-url
+          }
           xmlHttpReq.xlastByteReceived = timestamp;
           this.messages.push(new Message(xmlHttpReq));
           this.pendingMessages -= 1;
@@ -137,7 +141,7 @@ sap.ui.core.support.trace.E2eTraceLib =
                 function() {
                   var xml =
                       "<?xml version=\"1.0\" encoding=\"UTF-8\"?><BusinessTransaction id=\"" + this.id + "\" time=\"" + convertToUTCString(this.date)
-                          + "\" name=\"SAPUI5 Business Transaction\">";
+                          + "\" name=\"" + (window.document.title || "SAPUI5 Business Transaction") + "\">";
                   //transaction steps
                   for ( var trxStepIdx = 0, noOfSteps = this.trxSteps.length; trxStepIdx < noOfSteps; trxStepIdx += 1) {
                     var trxStep = this.trxSteps[trxStepIdx];
@@ -190,32 +194,46 @@ sap.ui.core.support.trace.E2eTraceLib =
             		  busTrx.fnCallback(busTrxXml);
                   }
 
-                  var xmlWindow = window.open('', '', 'width=800,height=150');
-
                   var boundary = "----------ieoau._._+2_8_GoodLuck8.3-ds0d0J0S0Kl234324jfLdsjfdAuaoei-----";
                   var postBody = boundary + "\r\nContent-Disposition: form-data\r\nContent-Type: application/xml\r\n" + busTrxXml + "\r\n" + boundary;
 
-                  xmlWindow.document.write("<script>");
-                  xmlWindow.document.write("function postXml() {");
-                  xmlWindow.document.write("var smdUrl = document.getElementsByName('smdUrl')[0].value;");
-                  xmlWindow.document.write("var postbody = document.getElementById('myPostDataTextarea').value;");
-                  xmlWindow.document.write("var xmlHttpPost = new XMLHttpRequest();");
-                  xmlWindow.document.write("xmlHttpPost.open('POST', smdUrl+'/E2EClientTraceUploadW/UploadForm.jsp', false);");
-                  xmlWindow.document.write("xmlHttpPost.setRequestHeader('Content-type', 'multipart/form-data; boundary=" + boundary + "');");
-                  xmlWindow.document.write("xmlHttpPost.send(postbody);");
-                  //xmlWindow.document.write("document.write('<p>xmlHttpPost.responseText</p>');");
-                  //xmlWindow.document.write("alert(xmlHttpPost.responseText);");
-                  xmlWindow.document.write("document.getElementById('myUploadResult').innerHTML=xmlHttpPost.responseText;");
-                  xmlWindow.document.write("}</script>");
+                  // check if Intermediary ICF Service is available
+                  var xmlHttpHeadCheck = new window.XMLHttpRequest();
+                  xmlHttpHeadCheck.open("HEAD", sDefaultUploadUrl, false);
+                  xmlHttpHeadCheck.send();
+                  if (xmlHttpHeadCheck.status == 200) {
+                      // local upload to Intermediary ICF Service
+                      var xmlHttpPost = new window.XMLHttpRequest();
+                      xmlHttpPost.open("POST", sDefaultUploadUrl, false);
+                      xmlHttpPost.setRequestHeader('Content-type', 'multipart/form-data; boundary="' + boundary + '"');
+                      xmlHttpPost.send(postBody);
+                      alert(xmlHttpPost.responseText);
+                  } else {
+                      // alternatively allow upload via form
+                      var xmlWindow = window.open('', '', 'width=800,height=150');
+                      xmlWindow.document.write("<script>");
+                      xmlWindow.document.write("function postXml() {");
+                      xmlWindow.document.write("var smdUrl = document.getElementsByName('smdUrl')[0].value;");
+                      xmlWindow.document.write("var postbody = document.getElementById('myPostDataTextarea').value;");
+                      xmlWindow.document.write("var xmlHttpPost = new window.XMLHttpRequest();");
+                      xmlWindow.document.write("xmlHttpPost.open('POST', smdUrl+'/E2EClientTraceUploadW/UploadForm.jsp', false);");
+                      xmlWindow.document.write("xmlHttpPost.setRequestHeader('Content-type', 'multipart/form-data; boundary=" + boundary + "');");
+                      xmlWindow.document.write("xmlHttpPost.send(postbody);");
+                      //xmlWindow.document.write("document.write('<p>xmlHttpPost.responseText</p>');");
+                      //xmlWindow.document.write("alert(xmlHttpPost.responseText);");
+                      xmlWindow.document.write("document.getElementById('myUploadResult').innerHTML=xmlHttpPost.responseText;");
+                      xmlWindow.document.write("}</script>");
 
-                  xmlWindow.document.write("<div id='myUploadResult'></div>");
-                  xmlWindow.document.write("<div>");
-                  xmlWindow.document.write("SMD url: <input name='smdUrl' ltype='text' value='http://<host>:<port>' />");
-                  xmlWindow.document.write("<button onclick='postXml()'>Submit</button>");
-                  xmlWindow.document.write("<textarea id='myPostDataTextarea' style='width:100%;height:100px;'>" + postBody + "</textarea>");
-                  xmlWindow.document.write("</div>");
+                      xmlWindow.document.write("<div id='myUploadResult'></div>");
+                      xmlWindow.document.write("<div>");
+                      xmlWindow.document.write("SMD url: <input name='smdUrl' ltype='text' value='http://<host>:<port>' />");
+                      xmlWindow.document.write("<button onclick='postXml()'>Submit</button>");
+                      xmlWindow.document.write("<textarea id='myPostDataTextarea' style='width:100%;height:100px;'>" + postBody.replace(/\r\n/g,"&#13;\n") + "</textarea>");
+                      xmlWindow.document.write("</div>");
 
-                  //xmlWindow.document.write("<textarea cols=150 rows=55>" + busTrxXml + "</textarea>");
+                      //xmlWindow.document.write("<textarea cols=150 rows=55>" + busTrxXml + "</textarea>");
+                  }
+
                 })();
                 //allow clean-up of resources by initializing a new BusinessTransaction
                 //busTrx = new BusinessTransaction(EppLib.createGUID(), new Date());

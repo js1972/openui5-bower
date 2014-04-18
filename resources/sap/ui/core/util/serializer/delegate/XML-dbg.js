@@ -20,7 +20,7 @@ jQuery.sap.require("sap.ui.core.util.serializer.delegate.Delegate");
  * @class XML serializer delegate class.
  * @extends sap.ui.core.util.serializer.delegate.Delegate
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @name sap.ui.core.util.serializer.delegate.XML
  * @experimental Since 1.15.1. The XML serializer delegate is still under construction, so some implementation details can be changed in future.
  */

@@ -18,7 +18,7 @@ jQuery.sap.require("sap.ui.base.ManagedObjectMetadata");
  * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
  * @class
  * @author SAP
- * @version 1.18.8
+ * @version 1.18.12
  * @since 1.9.2
  */
 sap.ui.core.ComponentMetadata = function(sClassName, oClassInfo) {

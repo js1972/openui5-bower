@@ -97,8 +97,8 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 				bHandleEvent = (oTouches.length == 1 && !isInputField(oEvent));
 
+				bIsMoved = false;
 				if (bHandleEvent) {
-					bIsMoved = false;
 					oTouch = oTouches[0];
 
 					// As we are only interested in the first touch target, we remember it
@@ -720,19 +720,21 @@ jQuery.sap.require("jquery.sap.keycodes");
 	//Add mobile touch events if touch is supported or we run in special dev test mode
 	(function initTouchEventSupport() {
 
-		function simulateMobileTouchEventSupport(){
-			var sConfigKey = "xx-test-mobile"; //see sap.ui.core.Configuration -> M_SETTINGS
-			var oCfgData = window["sap-ui-config"];
-			var bSimulate = document.location.search.indexOf("sap-ui-"+sConfigKey) > -1 || (oCfgData && oCfgData[sConfigKey]);
-			
-			// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
-			bSimulate = bSimulate || (document.location.search.indexOf("sap-ui-xx-fakeOS") > -1 || !!jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-xx-fakeOS")); // only allowed as URL parameter or in the bootstrap tag
-			
-			// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
-			var sLibs = jQuery.sap.byId("sap-ui-bootstrap").attr("data-sap-ui-libs");
-			bSimulate = bSimulate || (sLibs && sLibs.match(/sap.m\b/));
+		function simulateMobileTouchEventSupport() {
+			var oCfgData = window["sap-ui-config"] || {},
+				sLibs = oCfgData.libs || "";
 
-			return bSimulate;
+			// TODO: should be replaced by some function in jQuery.sap.global (e.g. jQuery.sap.config(sKey))
+			function hasConfig(sKey) {
+				return document.location.search.indexOf("sap-ui-"+sKey) > -1 || // URL 
+					!!oCfgData[sKey.toLowerCase()]; // currently, properties of oCfgData are converted to lower case (DOM attributes)
+			}
+
+			return hasConfig("xx-test-mobile") || //see sap.ui.core.Configuration -> M_SETTINGS
+				// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
+				hasConfig("xx-fakeOS") || 
+				// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
+				sLibs.match(/sap.m\b/);
 		}
 
 		jQuery.sap.touchEventMode = "OFF";

@@ -50,7 +50,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -266,7 +266,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -303,7 +303,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {

@@ -43,7 +43,7 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * gets removed again.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @constructor
 	 * @private
 	 * @since 1.15.1

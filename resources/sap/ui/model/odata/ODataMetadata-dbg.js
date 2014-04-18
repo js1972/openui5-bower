@@ -20,7 +20,7 @@ jQuery.sap.declare("sap.ui.model.odata.ODataMetadata");
  * Implementation to access oData metadata
  *
  * @author SAP AG
- * @version 1.18.8
+ * @version 1.18.12
  *
  * @constructor
  * @public

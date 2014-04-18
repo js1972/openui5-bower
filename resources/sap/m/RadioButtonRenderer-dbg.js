@@ -70,19 +70,24 @@ sap.m.RadioButtonRenderer.render = function(oRm, oRadioButton){
 	oRm.write(">");		// DIV element
 
 	oRm.write("<div class='sapMRbB'");
+	//set an id on this this to be able to focus it, on ApplyFocusInfo (rerenderAllUiAreas)
+	oRm.writeAttribute("id", oRadioButton.getId() + "-Button");
 	oRm.writeAttribute("tabindex", oRadioButton.hasOwnProperty("_iTabIndex") ? oRadioButton._iTabIndex : iTabIndex);
 	oRm.write(">");
 
-//	if(jQuery.os.android || jQuery.os.blackberry) {
-		oRm.write("<div");
-		oRm.addClass("sapMRbBOut");
-		oRm.writeClasses();
-		oRm.write(">");		// DIV element
-		oRm.write("<div");
-		oRm.addClass("sapMRbBInn");
-		oRm.writeClasses();
-		oRm.write(">");		// DIV element
-//	}
+	oRm.write("<div");
+	oRm.addClass("sapMRbBOut");
+
+	if(bEnabled && sap.ui.Device.system.desktop) {
+		oRm.addClass("sapMRbHoverable");
+	}
+
+	oRm.writeClasses();
+	oRm.write(">");		// DIV element
+	oRm.write("<div");
+	oRm.addClass("sapMRbBInn");
+	oRm.writeClasses();
+	oRm.write(">");		// DIV element
 
 	// Write the real - potentially hidden - HTML RadioButton element
 	oRm.write("<input type='radio' tabindex='-1'");

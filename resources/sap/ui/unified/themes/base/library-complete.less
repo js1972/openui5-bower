@@ -86,7 +86,7 @@
 @sapGroup_FooterBackground: @sapGroup_TitleBackground;
 
 @sapToolbar_Background: @sapGroup_TitleBackground;
-@sapToolbar_Separator: #fff;
+@sapToolbar_SeparatorColor: #fff;
 
 @sapList_HeaderBackground: lighten(desaturate(@sapBaseColor, 39), 1);
 @sapList_HeaderBorderColor: @sapList_BorderColor;
@@ -785,7 +785,7 @@
 
 .sapUiUfdShellHeadBegin {
 	left: 0;
-	max-width: 150px;
+	max-width: 250px;
 	white-space: nowrap;
 }
 
@@ -801,21 +801,29 @@
 	white-space: nowrap;
 }
 
-.sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco,
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco {
 	height: 100%;
-	max-width: 100px;
-	display: inline;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
 	text-align: right;
-	padding-right: 5px;
+	padding-right: 16px;
 }
 
-.sapUiUfdShellHeadEnd > .sapUiUfdShellIco > img {
-	margin-top: @sapUiUfdShellHeaderBarHeight * 2 / 10;
-	height: @sapUiUfdShellHeaderBarHeight * 6 / 10;
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco {
+	padding-left: 16px;
 }
 
-.sapUiMedia-Std-Tablet .sapUiUfdShellHeadEnd > .sapUiUfdShellIco,
-.sapUiMedia-Std-Phone .sapUiUfdShellHeadEnd > .sapUiUfdShellIco {
+.sapUiUfdShellHeadEnd > .sapUiUfdShellIco > img,
+.sapUiUfdShellHeadBegin > .sapUiUfdShellIco > img {
+	max-height: @sapUiUfdShellHeaderBarHeight - @sapUiUfdShellBrandHeight * 2;
+	max-width: 96px;
+}
+
+.sapUiUfdShellIco.sapUiUfdShellHidden {
 	display: none;
 }
 
@@ -823,8 +831,9 @@
 	float: right;
 }
 
-.sapUiUfdShellHeadEndContainer {
+.sapUiUfdShellHeadContainer {
 	overflow: hidden;
+	display: inline-block;
 }
 
 .sapUiUfdShellHeadItm {
@@ -835,6 +844,10 @@
 	vertical-align: bottom;
 	overflow: hidden;
 	position: relative;
+}
+
+.sapUiUfdShellHeadItm.sapUiUfdShellHidden {
+	display: none;
 }
 
 .sapUiUfdShellHeadItm > span {
@@ -853,8 +866,12 @@
 	height: @sapUiUfdShellHeaderBarHeight / 2;
 }
 
-.sapUiUfdShellHeadItm.sapUiUfdShellHeadItmDelim {
-	border-left: 1px solid black;
+.sapUiUfdShellHeadEnd .sapUiUfdShellHeadItm {
+	border-left: 1px solid @sapUiBaseBorder;
+}
+
+.sapUiUfdShellHeadBegin .sapUiUfdShellHeadItm {
+	border-right: 1px solid @sapUiBaseBorder;
 }
 
 .sapUiUfdShellSearch {
@@ -867,6 +884,10 @@
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	text-align: left;
+}
+
+.sapUiUfdShellSearch.sapUiUfdShellHidden {
+	display: none;
 }
 
 .sapUiUfdShellHeadItmMarker {

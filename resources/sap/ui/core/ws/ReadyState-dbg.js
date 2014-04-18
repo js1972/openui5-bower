@@ -10,7 +10,7 @@ jQuery.sap.declare("sap.ui.core.ws.ReadyState");
 /**
  * @class Defines the different ready states for a WebSocket connection.
  *
- * @version 1.18.8
+ * @version 1.18.12
  * @static
  * @public
  */

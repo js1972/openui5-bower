@@ -45,7 +45,7 @@ jQuery.sap.require("sap.ui.core.DeclarativeSupport");
 	 * @class Fragment
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.18.8
+	 * @version 1.18.12
 	 * @public
 	 * @name sap.ui.core.Fragment
 	 * @experimental Since 1.15.0. The entire Fragment concept is experimental. API and behavior may change without notice. 

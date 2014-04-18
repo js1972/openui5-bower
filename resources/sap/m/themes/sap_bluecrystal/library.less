@@ -86,7 +86,7 @@
 @sapGroup_FooterBackground: @sapGroup_TitleBackground;
 
 @sapToolbar_Background: @sapGroup_TitleBackground;
-@sapToolbar_Separator: #fff;
+@sapToolbar_SeparatorColor: #fff;
 
 @sapList_HeaderBackground: lighten(desaturate(@sapBaseColor, 39), 1);
 @sapList_HeaderBorderColor: @sapList_BorderColor;
@@ -812,7 +812,7 @@
 // [Label "Toolbar Separator Color"]
 // [Description "The color of a toolbar's separators. This parameter is protected and is not yet released for being changed."]
 // [Tags "Base", "Toolbar", "Color", "Protected"]
-@sapToolbar_Separator: #c2c2c2;
+@sapToolbar_SeparatorColor: #c2c2c2;
 
 // [Label "List Header Background Color"]
 // [Description "The background color of the header area of lists. This parameter is protected and is not yet released for being changed."]
@@ -942,7 +942,7 @@
 @sapUiGroupFooterBackground: @sapGroup_FooterBackground;
 
 @sapUiToolbarBackground: @sapToolbar_Background;
-@sapUiToolbarSeparator: @sapToolbar_Separator;
+@sapUiToolbarSeparatorColor: @sapToolbar_SeparatorColor;
 
 @sapUiListHeaderBackground: @sapList_HeaderBackground;
 @sapUiListHeaderBorderColor: @sapList_HeaderBorderColor;
@@ -1885,7 +1885,7 @@
 .sapMALIText {
 	color: @sapUiALITextColor;
 	font-weight: normal;
-	line-height: 1.14286rem;
+	line-height: 1.25rem;
 	font-size: 1.125rem;
 	margin: 0 0 0 0.5rem;
 }
@@ -3010,6 +3010,9 @@ button.sapMBtn{
 .sapMCrslItemTableCell {
 	height: 100%;
 	display: table-cell;
+}
+
+.sapMCrslImg {
 	text-align: center;
 	vertical-align: middle;
 }
@@ -3019,6 +3022,10 @@ button.sapMBtn{
 	-moz-transition-duration: 0.01s;
 	-ms-transition-duration: 0.01s;
 	transition-duration: 0.01s;
+}
+
+.sapMCrslInner.sapMCrslHideNonActive>:not(.sapMCrslActive) .sapMCrslItemTableCell {
+	visibility: hidden;
 }
 
 .sapMCrslInner>* {
@@ -3078,7 +3085,7 @@ button.sapMBtn{
 }
 
 /* Carousel controls: Bulleted */
-.sapMCrslBulleted a {
+.sapMCrslBulleted > span {
 	line-height: 0;
 	text-decoration: none;
 	overflow: hidden;
@@ -3100,12 +3107,12 @@ button.sapMBtn{
 	border-radius: 50%;
 }
 
-.sapMCrslBulleted a:hover,.sapMCrslBulleted a:focus {
+.sapMCrslBulleted > span:hover,.sapMCrslBulleted > span:focus {
 	cursor: default;
 	outline: none;
 }
 
-.sapMCrslBulleted a.sapMCrslActive {
+.sapMCrslBulleted > span.sapMCrslActive {
 	color: @sapUiHighlight;
 	background-color: @sapUiHighlight;
 }
@@ -3338,7 +3345,7 @@ html[dir='rtl'] .sapMCrslNext > .sapMCrslHudInner > .sapUiIcon,
 	background-color: @sapUiLIActive;
 }
 
-.sap-desktop .sapMCbBg:hover{
+.sapMCbHoverable:hover{
 	border-color: @sapUiCheckBoxCheckedColor;
 }
 
@@ -3867,6 +3874,11 @@ html[data-sap-ui-browser^="ie"] .sapMCustomSlt.dw-bubble .dw {
 	overflow: hidden;
 }
 
+.sap-tablet .sapMDialog,
+.sap-desktop .sapMDialog {
+	min-width: 25rem;
+}
+
 .sapMDialog > .sapMBar{
 	position: relative;
 	width: auto;
@@ -3894,6 +3906,9 @@ html[data-sap-ui-browser^="ie"] .sapMCustomSlt.dw-bubble .dw {
 /* disable scrolling automatically for sap.m.Page sap.m.NavContainer sap.m.ScrollingContainer inside Dialog */
 .sapMDialogHorScrollDisabled .sapMDialogScroll {
 	display: block;
+	/* This div has position set to absolute when runs in android native browser with version less than 4.1. */
+	/* Width needs to be set to 100% due to position absolute */
+	width: 100%;
 }
 
 .sapMDialogHidden {
@@ -4872,6 +4887,10 @@ li.sapMLIB.sapMFeedListItemTitleDiv.sapMLIBNoFlex>.sapMLIBContent>.sapMLIBConten
 .sapMITBTextOnly .sapMITBText{
 	cursor: pointer;
 }
+
+.sapMITBAll {
+	cursor: pointer;
+}
 /* ============================================ */
 /* CSS for control sap.m/IconTabBar.control			*/
 /* ============================================ */
@@ -4998,7 +5017,7 @@ html[dir='rtl'] .sapMITBContentArrow {
 }
 
 .sapMITBDisabled {
-	opacity: 0.3;
+	opacity: 0.5;
 }
 
 /* Tab Item Description */
@@ -5406,18 +5425,24 @@ html[dir='rtl'] .sapMITBContentArrow {
 	visibility: hidden;
 }
 
+.sapMITBFilter:focus,
+.sapMITBArrowScroll:focus,
+.sapMITBSep:focus,
+.sapMITBSepIcon:focus,
+.sapMITBHead:focus,
+.sapMITBText:focus,
+.sapMITBTextOnly .sapMITBText:focus,
+.sapMITBFilterIcon:focus,
+.sapMITBAll:focus {
+	outline: none;
+}
+
 /* Custom focus outline */
-.sap-desktop .sapMITBFilter:focus,
+.sap-desktop .sapMITBFilterIcon:focus,
+.sap-desktop .sapMITBTextOnly .sapMITBText:focus,
 .sap-desktop .sapMITBAll:focus {
 	outline: 1px dotted @sapUiFocus;
 	outline-offset: -1px;
-}
-
-.sapMITBFilterIcon:focus,
-.sapMITBArrowScroll:focus,
-.sapMITBSep:focus,
-.sapMITBSepIcon:focus {
-	outline:none;
 }
 .sapMImg{
 	border: none;
@@ -7167,7 +7192,14 @@ html[data-sap-ui-browser*='ie9'] .sapMListNoData {
 }
 
 .sapMObjectAttributeActive{
+	color: @sapUiLink;
 	cursor: pointer;
+}
+
+.sapMObjectAttributeActive:active,
+.sapMObjectAttributeActive:focus,
+.sapMObjectAttributeActive:hover {
+	text-decoration: underline;
 }
 
 /* ============================================= */
@@ -7228,6 +7260,15 @@ html[data-sap-ui-browser*='ie9'] .sapMListNoData {
 
 .sapMOHIntroActive,.sapMOHTitleActive {
 	color: @sapUiLink;
+}
+
+.sapMOHIntroActive:active,
+.sapMOHIntroActive:focus,
+.sapMOHIntroActive:hover,
+.sapMOHTitleActive .sapMText:active,
+.sapMOHTitleActive .sapMText:focus,
+.sapMOHTitleActive .sapMText:hover {
+	text-decoration: underline;
 }
 
 .sapMOHTopRow {
@@ -8156,6 +8197,9 @@ html[data-sap-ui-os^="iOS7"][data-sap-ui-browser^="msf"]:not(.sap-tablet) .sapMP
 /* disable scrolling automatically for sap.m.Page sap.m.NavContainer sap.m.ScrollingContainer inside Popover */
 .sapMPopoverHorScrollDisabled .sapMPopoverScroll {
 	display: block;
+	/* This div has position set to absolute when runs in android native browser with version less than 4.1. */
+	/* Width needs to be set to 100% due to position absolute */
+	width: 100%;
 }
 
 .sapMPopoverCont:focus{
@@ -8800,7 +8844,7 @@ html[data-sap-ui-os^="Android2"] .sapMPullDownInfo {
 	outline-offset: -1px;
 }
 
-.sap-desktop .sapMRbB:hover .sapMRbBOut{
+.sapMRbHoverable:hover {
 	border-color: @sapUiHighlight;
 }
 
@@ -9774,16 +9818,13 @@ input.sapMSFI[type="search"]:focus {
 /* Select in a Bar                                        */
 /* ====================================================== */
 
-.sapMBar-CTX .sapMSlt {
+.sapMBar-CTX .sapMSlt + .sapMSlt,
+.sapMBar-CTX .sapMSlt + .sapMBtn,
+.sapMBar-CTX > .sapMBarLeft > .sapMSlt:first-child {
 	border-left-width: 0;
 }
 
-.sapMBar-CTX .sapMBarMiddle .sapMSlt:first-child,
-.sapMBar-CTX .sapMBarRight .sapMSlt:first-child {
-	border-left-width: 0.0625rem;
-}
-
-.sapMBar-CTX .sapMBarRight .sapMSlt:last-child {
+.sapMBar-CTX > .sapMBarRight > .sapMSlt:last-child {
 	border-right-width: 0;
 }
 
@@ -9941,12 +9982,6 @@ input.sapMSFI[type="search"]:focus {
 .sapMSltPopup.sapMPopover,
 .sapMSltPopup.sapMDialog-CTX {
 	border: none;
-}
-
-/* override popover CSS, when not using CSS3 transitions */
-
-.sap-android .sapMSltPopup > .sapMPopoverCont {
-	width: 100% !important;
 }
 
 /* ====================================================== */
@@ -11937,6 +11972,28 @@ html[dir=rtl] .sapMSwtTrans .sapMSwtInner {
 .sap-desktop .sapMListTblSubRow:focus {
 	outline: 1px dotted @sapUiFocus;
 	outline-offset: -1px;
+}
+/* ================================================================= */
+/* CSS for control sap.m/TablePersoDialog.control BlueCrystal theme */
+/* ================================================================= */
+
+/* prevent that dialog is too wide when text is too long, but not on phone */
+.sapMPersoDialog:not(.sapMDialogPhone) .sapMDialogScroll {
+	max-width: 25rem;
+}
+
+.sapMPersoDialogLI .sapMILILabel {
+	max-width: none;
+}
+
+.sapMPersoDialogLI .sapMILIDiv {
+	min-width: 5.875rem;
+}
+
+html[data-sap-ui-browser='ie10'] .sapMPersoDialogLI .sapMILILabel {
+	-ms-flex-preferred-size: 15rem;
+	-ms-flex-negative: 0;
+	-ms-flex-positive: 1;
 }
 /* ============================================= */
 /* CSS for control sap.m/SelectDialog.control    */
