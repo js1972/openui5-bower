@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.commons.MenuItemBase[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.MenuItemBase[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -162,6 +162,7 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
  * Getter for aggregation <code>items</code>.<br/>
  * Aggregation of menu items
  * 
+ * <strong>Note</strong>: this is the default aggregation for Menu.
  * @return {sap.ui.commons.MenuItemBase[]}
  * @public
  * @name sap.ui.commons.Menu#getItems
@@ -270,7 +271,7 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Menu</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Menu</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
  * @public

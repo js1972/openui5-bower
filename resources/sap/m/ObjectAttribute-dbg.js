@@ -52,11 +52,11 @@ jQuery.sap.require("sap.ui.core.Control");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * This object holds value and fire action event if the text is active and clicked
+ * ObjectAttribute displays a text field that can be normal or active. Object attribute fires a press event when the user selects active text.
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -101,7 +101,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>visible</code>.
- * Invisible object attribute is not rendered.
+ * Indicates if the object attribute is visible. Invisible object attribute is not rendered.
  *
  * Default value is <code>true</code>
  *
@@ -126,7 +126,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>text</code>.
- * The text of the attribute
+ * The object attribute text
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -151,7 +151,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>active</code>.
- * Indicates that the text is clickable
+ * Indicates if the object attribute text is selectable by the user
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -175,7 +175,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 
 /**
- * Event is fired when the text is active and the user taps or clicks on it 
+ * Event is fired when the user clicks active text 
  *
  * @name sap.m.ObjectAttribute#press
  * @event
@@ -192,14 +192,14 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ObjectAttribute</code>.<br/> itself. 
  *  
- * Event is fired when the text is active and the user taps or clicks on it 
+ * Event is fired when the user clicks active text 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ObjectAttribute</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ObjectAttribute</code>.<br/> itself.
  *
  * @return {sap.m.ObjectAttribute} <code>this</code> to allow method chaining
  * @public
@@ -248,7 +248,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
  */
 sap.m.ObjectAttribute.prototype.ontap = function(oEvent) {
 	if(!!this.getActive()) {
-		this.firePress({domRef: jQuery.sap.domById(this.getId())});
+		this.firePress({domRef: this.getDomRef()});
 	}
 };
 
@@ -256,7 +256,7 @@ sap.m.ObjectAttribute.prototype.ontap = function(oEvent) {
  * See 'return'.
  * 
  * @private
- * @returns {Boolean} true if attribute's text is empty or only consists of whitespaces.
+ * @returns {boolean} true if attribute's text is empty or only consists of whitespaces.
  */
 sap.m.ObjectAttribute.prototype._isEmpty = function() {
 	return !this.getText().trim();

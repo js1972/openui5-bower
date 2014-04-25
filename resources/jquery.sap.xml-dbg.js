@@ -5,10 +5,9 @@
  */
 
 // Provides xml parsing and error checking functionality.
-jQuery.sap.declare("jquery.sap.xml", false);
-jQuery.sap.require("sap.ui.Device");
-
-(function() {
+sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
+	function(jQuery, Device) {
+	"use strict";
 
 	/**
 	 * Parses the specified XML formatted string text using native parsing
@@ -123,13 +122,13 @@ jQuery.sap.require("sap.ui.Device");
 		};
 
 		// IE
-		if (!!sap.ui.Device.browser.internet_explorer && oDocument && oDocument.parseError
+		if (!!Device.browser.internet_explorer && oDocument && oDocument.parseError
 				&& oDocument.parseError.errorCode != 0) {
 			return oDocument.parseError;
 		}
 
 		// Firefox
-		if (!!sap.ui.Device.browser.firefox && oDocument && oDocument.documentElement
+		if (!!Device.browser.firefox && oDocument && oDocument.documentElement
 				&& oDocument.documentElement.tagName == "parsererror") {
 
 			var sErrorText = oDocument.documentElement.firstChild.nodeValue, rParserError = /XML Parsing Error: (.*)\nLocation: (.*)\nLine Number (\d+), Column (\d+):(.*)/;
@@ -146,7 +145,7 @@ jQuery.sap.require("sap.ui.Device");
 		}
 
 		// Safari
-		if (!!sap.ui.Device.browser.webkit && oDocument && oDocument.documentElement
+		if (!!Device.browser.webkit && oDocument && oDocument.documentElement
 				&& oDocument.documentElement.tagName == "html"
 				&& oDocument.getElementsByTagName("parsererror").length > 0) {
 
@@ -172,4 +171,6 @@ jQuery.sap.require("sap.ui.Device");
 			};
 	};
 
-}());
+	return jQuery;
+
+}, /* bExport= */ false);

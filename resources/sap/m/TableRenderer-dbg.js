@@ -197,7 +197,7 @@ sap.m.TableRenderer.renderListEndAttributes = function(rm, oControl) {
 sap.m.TableRenderer.renderNoData = function(rm, oControl) {
 	rm.write("<tr");
 	rm.writeAttribute("id", oControl.getId("nodata"));
-	rm.addClass("sapMLIB sapMListTblRow");
+	rm.addClass("sapMLIB sapMListTblRow sapMLIBTypeInactive");
 	if (!oControl._headerHidden || (!oControl.getHeaderText() && !oControl.getHeaderToolbar()) ) {
 		rm.addClass("sapMLIBShowSeparator");
 	}

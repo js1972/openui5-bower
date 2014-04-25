@@ -5,11 +5,9 @@
  */
 
 // Provides access to Java-like resource bundles in properties file format
-jQuery.sap.declare("jquery.sap.resources", false);
-jQuery.sap.require("jquery.sap.properties");
-jQuery.sap.require("jquery.sap.strings");
-
-(function() {
+sap.ui.define(['jquery.sap.global', 'jquery.sap.properties', 'jquery.sap.strings'],
+	function(jQuery/* , jQuerySap1, jQuerySap2 */) {
+	"use strict";
 
 	// Javadoc for private inner class "Bundle" - this list of comments is intentional!
 	/**
@@ -44,7 +42,7 @@ jQuery.sap.require("jquery.sap.strings");
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -392,8 +390,8 @@ jQuery.sap.require("jquery.sap.strings");
 	 *
 	 * @public
 	 * @param {object} [mParams] Parameters used to initialize the resource bundle
-	 * @param {string} [mParams.url=""] The URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")
-	 * @param {string} [mParams.locale="en"] Optional string of the language and an optional country code separated by underscore (e.g. "en_GB" or "fr")
+	 * @param {string} [mParams.url=''] The URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")
+	 * @param {string} [mParams.locale='en'] Optional string of the language and an optional country code separated by underscore (e.g. "en_GB" or "fr")
 	 * @param {boolean} [mParams.includeInfo=false] Optional boolean whether to include origin information into the returned property values
 	 * @return {jQuery.sap.util.ResourceBundle} A new resource bundle instance
 	 * @SecSink {0|PATH} Parameter is used for future HTTP requests
@@ -404,4 +402,40 @@ jQuery.sap.require("jquery.sap.strings");
 		return oBundle;
 	};
 
-}());
+	jQuery.sap.resources._getFallbackLocales = function(sLocale, aSupportedLocales) {
+		var sTempLocale = normalize(sLocale),
+			aLocales=[];
+
+		function supported(sLocale) {
+			return !aSupportedLocales || aSupportedLocales.length === 0 || jQuery.inArray(sLocale, aSupportedLocales) >= 0;
+		}
+		
+		while (sTempLocale) {
+			if ( supported(sTempLocale) ) {
+				aLocales.push(sTempLocale);
+			}
+			// TODO: validate why, maybe remove? Introduced by Martin S.
+			// keep in sync with fallback mechanism in Java, ABAP (MIME & BSP)
+			// resource handler (Java: Peter M., MIME: Sebastian A., BSP: Silke A.)
+			if ( sTempLocale === "zh_HK" ) {
+				sTempLocale = "zh_TW";
+			} else {
+				var p = sTempLocale.lastIndexOf('_');
+				if (p > 0 ) {
+					sTempLocale = sTempLocale.slice(0, p);
+				} else if ( sTempLocale !== "en" ) {
+					sTempLocale = "en";
+				} else {
+				  sTempLocale = "";
+				}
+			}
+		}
+		if ( supported("") ) {
+			aLocales.push("");
+		}
+		return aLocales;
+	};
+
+	return jQuery;
+
+}, /* bExport= */ false);

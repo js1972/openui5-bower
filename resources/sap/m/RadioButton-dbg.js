@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -340,7 +340,7 @@ sap.m.RadioButton.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.RadioButton</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.RadioButton</code>.<br/> itself.
  *
  * @return {sap.m.RadioButton} <code>this</code> to allow method chaining
  * @public
@@ -400,6 +400,10 @@ sap.m.RadioButton.M_EVENTS = {'select':'select'};
 
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.RadioButton.prototype);
+
+sap.m.RadioButton.prototype.getFocusDomRef = function() {
+	return this.getDomRef("out");
+};
 
 /**
  * Function is called when radiobutton is tapped.
@@ -490,13 +494,13 @@ sap.m.RadioButton.prototype.setSelected = function(bSelected) {
 	}
 	if ((bSelectedOld !== bSelected) && this.getDomRef()){
 
-			jQuery.sap.byId(this.getId()).toggleClass('sapMRbSel', bSelected).attr('aria-checked', bSelected);
+			this.$().toggleClass('sapMRbSel', bSelected).attr('aria-checked', bSelected);
 	if(bSelected){
-		jQuery.sap.domById(this.getId()+'-RB').checked = true;
-		jQuery.sap.domById(this.getId()+'-RB').setAttribute('checked', 'checked');
+		this.getDomRef("RB").checked = true;
+		this.getDomRef("RB").setAttribute('checked', 'checked');
 	}else{
-		jQuery.sap.domById(this.getId()+'-RB').checked = false;
-		jQuery.sap.domById(this.getId()+'-RB').removeAttribute('checked');
+		this.getDomRef("RB").checked = false;
+		this.getDomRef("RB").removeAttribute('checked');
 	}
 	}
 
@@ -549,7 +553,7 @@ sap.m.RadioButton.prototype._createLabel = function(prop, value){
 /*
  * Sets the tab index of the control
  *
- * @param {Int} iTabIndex  greater than or equal -1
+ * @param {int} iTabIndex  greater than or equal -1
  * @return {sap.m.RadioButton}
  * @since 1.16
  * @protected

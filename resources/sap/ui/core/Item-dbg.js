@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.Item.
-jQuery.sap.declare("sap.ui.core.Item");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['./library','./Element'], function() {
+	"use strict";
 
 
 /**
@@ -60,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -198,4 +197,8 @@ sap.ui.core.Element.extend("sap.ui.core.Item", { metadata : {
  */
 
 
-// Start of sap\ui\core\Item.js
+// Start of sap/ui/core/Item.js
+
+	return sap.ui.core.Item;
+
+}, /* bExport = */ true);

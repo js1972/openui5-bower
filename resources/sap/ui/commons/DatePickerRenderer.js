@@ -9,4 +9,4 @@ sap.ui.commons.DatePickerRenderer.renderOuterContentBefore=function(r,c){r.write
 sap.ui.commons.DatePickerRenderer.renderInnerAttributes=function(r,d){if(d.mobile){r.writeAttribute('type','date');r.addStyle('position','absolute')}};
 sap.ui.commons.DatePickerRenderer.renderDatePickerARIAInfo=function(r,c){};
 sap.ui.commons.DatePickerRenderer.renderARIAInfo=function(r,d){var p={role:d.getAccessibleRole().toLowerCase(),multiline:false,autocomplete:"none",haspopup:true,describedby:{value:d.getId()+"-Descr",append:true}};if(d.getValueState()==sap.ui.core.ValueState.Error){p["invalid"]=true}r.writeAccessibilityState(d,p)};
-sap.ui.commons.DatePickerRenderer.convertPlaceholder=function(d){var p=d.getPlaceholder();if(p.length==8){var D=d._oFormatYyyymmdd.parse(p);if(D){p=d._oFormat.format(D)}}return p};
+sap.ui.commons.DatePickerRenderer.convertPlaceholder=function(d){var p=d.getPlaceholder();if(p.length==8&&!isNaN(p)){var D=d._oFormatYyyymmdd.parse(p);if(D){if(!d._oFormat){d.getRenderedLocale()}p=d._oFormat.format(D)}}return p};

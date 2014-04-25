@@ -5,18 +5,17 @@
  */
 
 // Provides functionality related to DOM analysis and manipulation which is not provided by jQuery itself.
-jQuery.sap.declare("jquery.sap.dom", false);
-jQuery.sap.require("sap.ui.Device");
-
-(function() {
+sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
+	function(jQuery, Device) {
+	"use strict";
 
 	/**
 	 * Shortcut for document.getElementById() with additionally an IE6/7 bug fixed.
 	 * Used to replace the jQuery.sap.domById when running in IE < v8.
 	 *
-	 * @param {String} sId the id of the DOM element to return
-	 * @param {window} oWindow the window (optional)
-	 * @return {DOMNode} the DOMNode identified by the given sId
+	 * @param {string} sId the id of the DOM element to return
+	 * @param {Window} oWindow the window (optional)
+	 * @return {Element} the DOMNode identified by the given sId
 	 * @private
 	 */
 	var domByIdInternal = function(sId, oWindow) {
@@ -52,14 +51,14 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Shortcut for document.getElementById(), including a bug fix for older IE versions.
 	 *
-	 * @param {String} sId The id of the DOM element to return
-	 * @param {window} [oWindow=window] The window (optional)
-	 * @return {DOMNode} The DOMNode identified by the given sId
+	 * @param {string} sId The id of the DOM element to return
+	 * @param {Window} [oWindow=window] The window (optional)
+	 * @return {Element} The DOMNode identified by the given sId
 	 * @public
 	 * @function
 	 * @since 0.9.0
 	 */
-	jQuery.sap.domById = !!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 8 ? domByIdInternal : function domById(sId, oWindow) {
+	jQuery.sap.domById = !!Device.browser.internet_explorer && Device.browser.version < 8 ? domByIdInternal : function domById(sId, oWindow) {
 		return sId ? (oWindow || window).document.getElementById(sId) : null;
 	};
 
@@ -72,8 +71,8 @@ jQuery.sap.require("sap.ui.Device");
 	 * the id is not known in advance because it is in a variable (as opposed to a string
 	 * constant with known content).
 	 *
-	 * @param {String} sId The id to search for and construct the jQuery object
-	 * @param {DomNode} oContext The context DomNode
+	 * @param {string} sId The id to search for and construct the jQuery object
+	 * @param {Element} oContext the context DOM Element
 	 * @return {Object} The jQuery object for the DOM element identified by the given sId
 	 * @public
 	 * @since 0.9.1
@@ -91,7 +90,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * Calls focus() on the given DOM element, but catches and ignores any errors that occur when doing so.
 	 * (i.e. IE8 throws an error when the DOM element is invisible or disabled)
 	 *
-	 * @param {DomNode} oDomRef The DOM element to focus (or null - in this case the method does nothing)
+	 * @param {Element} oDomRef The DOM element to focus (or null - in this case the method does nothing)
 	 * @return {boolean} Whether the focus() command was executed without an error
 	 * @public
 	 * @since 1.1.2
@@ -121,6 +120,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name cursorPos
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.cursorPos = function cursorPos(iPos) {
 		var len = arguments.length,
@@ -227,6 +227,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name selectText
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.selectText = function selectText(iStart, iEnd) {
 		var oDomRef = this.get(0);
@@ -262,12 +263,13 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Returns the outer HTML of the given HTML element
 	 *
-	 * @return {String} outer HTML
+	 * @return {string} outer HTML
 	 * @public
 	 * @methodOf jQuery.prototype
 	 * @name outerHTML
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.outerHTML = function outerHTML() {
 		var oDomRef = this.get(0);
@@ -293,8 +295,8 @@ jQuery.sap.require("sap.ui.Device");
 	 * This method intentionally does not operate on the jQuery object, as the original jQuery.contains()
 	 * method also does not do so.
 	 *
-	 * @param {DOMNode} oDomRefContainer The container element
-	 * @param {DOMNode} oDomRefChild The child element (must not be a text node, must be an element)
+	 * @param {Element} oDomRefContainer The container element
+	 * @param {Element} oDomRefChild The child element (must not be a text node, must be an element)
 	 * @return {boolean} 'true' if oDomRefChild is contained in oDomRefContainer or oDomRefChild is oDomRefContainer
 	 * @public
 	 * @author SAP AG
@@ -318,6 +320,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name rect
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.rect = function rect() {
 		var oDomRef = this.get(0);
@@ -356,6 +359,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name rectContains
 	 * @author SAP AG
 	 * @since 0.18.0
+	 * @function
 	 */
 	jQuery.fn.rectContains = function rectContains(iPosX, iPosY) {
 		jQuery.sap.assert(!isNaN(iPosX), "iPosX must be a number");
@@ -384,6 +388,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name hasTabIndex
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.hasTabIndex = function hasTabIndex() {
 		var iTabIndex = this.prop("tabIndex");
@@ -394,12 +399,13 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Returns the first focusable domRef in a given container (the first element of the collection)
 	 *
-	 * @return {DOMNode} The domRef
+	 * @return {Element} The domRef
 	 * @public
 	 * @methodOf jQuery.prototype
 	 * @name firstFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.firstFocusableDomRef = function firstFocusableDomRef() {
 		var oContainerDomRef = this.get(0);
@@ -435,12 +441,13 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Returns the last focusable domRef in a given container
 	 *
-	 * @return {DOMNode} The last domRef
+	 * @return {Element} The last domRef
 	 * @public
 	 * @methodOf jQuery.prototype
 	 * @name lastFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.lastFocusableDomRef = function lastFocusableDomRef() {
 		var oContainerDomRef = this.get(0);
@@ -489,19 +496,20 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name scrollLeftRTL
 	 * @author SAP AG
 	 * @since 0.20.0
+	 * @function
 	 */
 	jQuery.fn.scrollLeftRTL = function scrollLeftRTL(iPos) {
 		var oDomRef = this.get(0);
 		if (oDomRef) {
 
 			if (iPos === undefined) { // GETTER code
-				if (!!sap.ui.Device.browser.internet_explorer) {
+				if (!!Device.browser.internet_explorer) {
 					return oDomRef.scrollWidth - oDomRef.scrollLeft - oDomRef.clientWidth;
 
-				} else if (!!sap.ui.Device.browser.webkit) {
+				} else if (!!Device.browser.webkit) {
 					return oDomRef.scrollLeft;
 
-				} else if (!!sap.ui.Device.browser.firefox) {
+				} else if (!!Device.browser.firefox) {
 					return oDomRef.scrollWidth + oDomRef.scrollLeft - oDomRef.clientWidth;
 
 				} else {
@@ -532,18 +540,19 @@ jQuery.sap.require("sap.ui.Device");
 	 * @name scrollRightRTL
 	 * @author SAP AG
 	 * @since 0.20.0
+	 * @function
 	 */
 	jQuery.fn.scrollRightRTL = function scrollRightRTL() {
 		var oDomRef = this.get(0);
 		if (oDomRef) {
 
-			if (!!sap.ui.Device.browser.internet_explorer) {
+			if (!!Device.browser.internet_explorer) {
 				return oDomRef.scrollLeft;
 
-			} else if (!!sap.ui.Device.browser.webkit) {
+			} else if (!!Device.browser.webkit) {
 				return oDomRef.scrollWidth - oDomRef.scrollLeft - oDomRef.clientWidth;
 
-			} else if (!!sap.ui.Device.browser.firefox) {
+			} else if (!!Device.browser.firefox) {
 				return (-oDomRef.scrollLeft);
 
 			} else {
@@ -565,7 +574,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * This method does no scrolling on its own, it only calculates the value to set (so it can also be used for animations).
 	 *
 	 * @param {int} iNormalizedScrollLeft The distance from the leftmost position to which the element should be scrolled
-	 * @param {DOMNode} oDomRef The DOM element to which scrollLeft will be applied
+	 * @param {Element} oDomRef The DOM Element to which scrollLeft will be applied
 	 * @return {int} The scroll position that must be set for the DOM element
 	 * @public
 	 * @author SAP AG
@@ -574,13 +583,13 @@ jQuery.sap.require("sap.ui.Device");
 	jQuery.sap.denormalizeScrollLeftRTL = function(iNormalizedScrollLeft, oDomRef) {
 
 		if (oDomRef) {
-			if (!!sap.ui.Device.browser.internet_explorer) {
+			if (!!Device.browser.internet_explorer) {
 				return oDomRef.scrollWidth - oDomRef.clientWidth - iNormalizedScrollLeft;
 
-			} else if (!!sap.ui.Device.browser.webkit) {
+			} else if (!!Device.browser.webkit) {
 				return iNormalizedScrollLeft;
 
-			} else if (!!sap.ui.Device.browser.firefox) {
+			} else if (!!Device.browser.firefox) {
 				return oDomRef.clientWidth + iNormalizedScrollLeft - oDomRef.scrollWidth;
 
 			} else {
@@ -671,13 +680,15 @@ jQuery.sap.require("sap.ui.Device");
 
 	if (!jQuery.expr[":"].sapTabbable) {
 		/*!
-		 * The following function is taken from jQuery UI 1.8.23
+		 * The following function is taken from
+		 * jQuery UI Core 1.10.4
+		 * http://jqueryui.com
 		 *
-		 * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
-		 * Dual licensed under the MIT or GPL Version 2 licenses.
+		 * Copyright 2014 jQuery Foundation and other contributors
+		 * Released under the MIT license.
 		 * http://jquery.org/license
 		 *
-		 * http://docs.jquery.com/UI
+		 * http://api.jqueryui.com/category/ui-core/
 		 */
 		jQuery.extend( jQuery.expr[ ":" ], {
 			/**
@@ -709,16 +720,18 @@ jQuery.sap.require("sap.ui.Device");
 			}
 		});
 	}
-	
+
 	if (!jQuery.fn.zIndex) {
 		/*!
-		 * The following function is taken from jQuery UI 1.8.23
+		 * The following function is taken from
+		 * jQuery UI Core 1.10.4
+		 * http://jqueryui.com
 		 *
-		 * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
-		 * Dual licensed under the MIT or GPL Version 2 licenses.
+		 * Copyright 2014 jQuery Foundation and other contributors
+		 * Released under the MIT license.
 		 * http://jquery.org/license
 		 *
-		 * http://docs.jquery.com/UI
+		 * http://api.jqueryui.com/category/ui-core/
 		 */
 		jQuery.fn.zIndex = function( zIndex ) {
 			if ( zIndex !== undefined ) {
@@ -753,14 +766,15 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Gets the next parent DOM element with a given attribute and attribute value starting above the first given element
 	 *
-	 * @param {String} sAttibute Name of the attribute
-	 * @param {String} sValue Value of the attribute (optional)
-	 * @return {DOMNode} null or the DOM reference
+	 * @param {string} sAttibute Name of the attribute
+	 * @param {string} sValue Value of the attribute (optional)
+	 * @return {Element} null or the DOM reference
 	 * @public
 	 * @methodOf jQuery.prototype
 	 * @name parentByAttribute
 	 * @author SAP AG
 	 * @since 0.9.0
+	 * @function
 	 */
 	jQuery.fn.parentByAttribute = function parentByAttribute(sAttribute, sValue) {
 		if (this.length>0) {
@@ -776,8 +790,8 @@ jQuery.sap.require("sap.ui.Device");
 	/**
 	 * Returns the window reference for a DomRef
 	 *
-	 * @param {DOMNode} oDomRef The DOM reference
-	 * @return {window} Window reference
+	 * @param {Element} oDomRef The DOM reference
+	 * @return {Window} Window reference
 	 * @public
 	 * @since 0.9.0
 	 */
@@ -796,7 +810,7 @@ jQuery.sap.require("sap.ui.Device");
 	 * 
 	 * This function must only be used when the DOM is ready.
 	 *
-	 * @param {String} [sClasses=null] the CSS class that should be added to the test element.
+	 * @param {string} [sClasses=null] the CSS class that should be added to the test element.
 	 * @param {boolean} [bForce=false] force recalculation of size (e.g. when CSS was changed). When no classes are passed all calculated sizes are reset.
 	 * @return {object} JSON object with properties <code>width</code> and <code>height</code> (the values are of type number and are pixels).
 	 * @public
@@ -852,4 +866,6 @@ jQuery.sap.require("sap.ui.Device");
 		return _oScrollbarSize[sKey];
 	};
 
-}());
+	return jQuery;
+
+}, /* bExport= */ false);

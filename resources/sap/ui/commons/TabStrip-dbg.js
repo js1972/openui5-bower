@@ -37,7 +37,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getTabs tabs} : sap.ui.commons.Tab[]</li></ul>
+ * <li>{@link #getTabs tabs} <strong>(default aggregation)</strong> : sap.ui.commons.Tab[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -190,6 +190,7 @@ sap.ui.commons.TabStrip.M_EVENTS = {'select':'select','close':'close'};
  * Getter for aggregation <code>tabs</code>.<br/>
  * Aggregating tabs contained in the tab strip.
  * 
+ * <strong>Note</strong>: this is the default aggregation for TabStrip.
  * @return {sap.ui.commons.Tab[]}
  * @public
  * @name sap.ui.commons.TabStrip#getTabs
@@ -292,7 +293,7 @@ sap.ui.commons.TabStrip.M_EVENTS = {'select':'select','close':'close'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TabStrip</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TabStrip</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TabStrip} <code>this</code> to allow method chaining
  * @public
@@ -356,7 +357,7 @@ sap.ui.commons.TabStrip.M_EVENTS = {'select':'select','close':'close'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TabStrip</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TabStrip</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TabStrip} <code>this</code> to allow method chaining
  * @public
@@ -716,16 +717,16 @@ sap.ui.commons.TabStrip.prototype.hideTab = function(iIndex) {
 
 	// get focused index and visible index of tab
 	var iFocusedIndex = this.oItemNavigation.getFocusedIndex();
-	var iVisibleIndex = parseInt(jQuery.sap.byId(oTab.getId()).attr("aria-posinset"), 10) - 1;
+	var iVisibleIndex = parseInt(oTab.$().attr("aria-posinset"), 10) - 1;
 	var sFocusedControlId = sap.ui.getCore().getCurrentFocusedControlId();
 
 	// delete only tab from DOM ->no rerendering of other tabs necessary
-	jQuery.sap.byId(oTab.getId()).remove();
+	oTab.$().remove();
 
 	if(this.iVisibleTabs == 1){
 		// last visible tab is closed -> no new selected tab and no content
 		this.setProperty( 'selectedIndex', -1, true ); // no complete rerendering required
-		jQuery.sap.byId(oTab.getId()+"-panel").remove();
+		oTab.$("panel").remove();
 	}else if(iIndex == this.getSelectedIndex()){
 		// selected tab should be closed -> select other one
 
@@ -774,11 +775,11 @@ sap.ui.commons.TabStrip.prototype.hideTab = function(iIndex) {
 			iSelectedDomIndex = iVisibleIndex;
 		}
 		iVisibleIndex++;
-		jQuery.sap.byId(oTab.getId()).attr("aria-posinset", iVisibleIndex).attr("aria-setsize", this.iVisibleTabs);
+		oTab.$().attr("aria-posinset", iVisibleIndex).attr("aria-setsize", this.iVisibleTabs);
 		if (iVisibleIndex == this.iVisibleTabs) {
-			jQuery.sap.byId(oTab.getId()).addClass("sapUiTabLast"); // needed for IE8
+			oTab.$().addClass("sapUiTabLast"); // needed for IE8
 		}
-		aTabDomRefs.push(jQuery.sap.domById(oTab.getId()));
+		aTabDomRefs.push(oTab.getDomRef());
 	}
 
 	// focused item should be the same
@@ -809,7 +810,7 @@ sap.ui.commons.TabStrip.prototype.hideTab = function(iIndex) {
 sap.ui.commons.TabStrip.prototype.rerenderPanel = function(iOldIndex) {
 
 	var iNewIndex = this.getSelectedIndex();
-	var $panel = jQuery.sap.byId(this.getTabs()[iOldIndex].getId() + "-panel");
+	var $panel = this.getTabs()[iOldIndex].$("panel");
 	if ($panel.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		this.getRenderer().renderTabContents(rm, this.getTabs()[iNewIndex]);
@@ -835,13 +836,13 @@ sap.ui.commons.TabStrip.prototype.rerenderPanel = function(iOldIndex) {
 sap.ui.commons.TabStrip.prototype.toggleTabClasses = function(iOldIndex, iNewIndex) {
 
 	// change visualization of selected tab and old tab
-	jQuery.sap.byId(this.getTabs()[iOldIndex].getId()).toggleClass("sapUiTabSel sapUiTab").attr("aria-selected",false);
+	this.getTabs()[iOldIndex].$().toggleClass("sapUiTabSel sapUiTab").attr("aria-selected",false);
 	var iBeforeIndex = iOldIndex-1;
 	while (iBeforeIndex >= 0 && !this.getTabs()[iBeforeIndex].getVisible()) {
 		iBeforeIndex--;
 	}
 	if(iBeforeIndex >= 0){
-		jQuery.sap.byId(this.getTabs()[iBeforeIndex].getId()).removeClass("sapUiTabBeforeSel");
+		this.getTabs()[iBeforeIndex].$().removeClass("sapUiTabBeforeSel");
 	}
 
 	var iAfterIndex = iOldIndex+1;
@@ -849,16 +850,16 @@ sap.ui.commons.TabStrip.prototype.toggleTabClasses = function(iOldIndex, iNewInd
 		iAfterIndex++;
 	}
 	if(iAfterIndex < this.getTabs().length){
-		jQuery.sap.byId(this.getTabs()[iAfterIndex].getId()).removeClass("sapUiTabAfterSel");
+		this.getTabs()[iAfterIndex].$().removeClass("sapUiTabAfterSel");
 	}
 
-	jQuery.sap.byId(this.getTabs()[iNewIndex].getId()).toggleClass("sapUiTabSel sapUiTab").attr("aria-selected",true);
+	this.getTabs()[iNewIndex].$().toggleClass("sapUiTabSel sapUiTab").attr("aria-selected",true);
 	iBeforeIndex = iNewIndex-1;
 	while (iBeforeIndex >= 0 && !this.getTabs()[iBeforeIndex].getVisible()) {
 		iBeforeIndex--;
 	}
 	if(iBeforeIndex >= 0){
-		jQuery.sap.byId(this.getTabs()[iBeforeIndex].getId()).addClass("sapUiTabBeforeSel");
+		this.getTabs()[iBeforeIndex].$().addClass("sapUiTabBeforeSel");
 	}
 
 	iAfterIndex = iNewIndex+1;
@@ -866,7 +867,7 @@ sap.ui.commons.TabStrip.prototype.toggleTabClasses = function(iOldIndex, iNewInd
 		iAfterIndex++;
 	}
 	if(iAfterIndex < this.getTabs().length){
-		jQuery.sap.byId(this.getTabs()[iAfterIndex].getId()).addClass("sapUiTabAfterSel");
+		this.getTabs()[iAfterIndex].$().addClass("sapUiTabAfterSel");
 	}
 
 };

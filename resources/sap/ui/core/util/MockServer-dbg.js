@@ -5,20 +5,16 @@
  */
 
 // Provides class sap.ui.core.util.MockServer for mocking a server
-jQuery.sap.declare("sap.ui.core.util.MockServer");
-jQuery.sap.require("sap.ui.base.ManagedObject");
+sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/base/ManagedObject', 'sap/ui/thirdparty/sinon'],
+	function(jQuery, Device, ManagedObject, sinon) {
+	"use strict";
 
-jQuery.sap.require("sap.ui.thirdparty.sinon");
-
-if (!!sap.ui.Device.browser.internet_explorer) {
-	jQuery.sap.require("sap.ui.thirdparty.sinon-ie");
-}
-
-/*global URI *///declare unusual global vars for JSLint/SAPUI5 validation
-
-(function(jQuery, Device, ManagedObject, sinon) {
+	if (!!Device.browser.internet_explorer) {
+		jQuery.sap.require("sap.ui.thirdparty.sinon-ie");
+	}
 	
-
+	/*global URI *///declare unusual global vars for JSLint/SAPUI5 validation
+	
 	/**
 	 * Creates a mocked server. This helps to mock all or some backend calls, e.g. for OData/JSON Models or simple XHR calls, without
 	 * changing the application code. This class can also be used for qunit tests.
@@ -32,7 +28,7 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @public
 	 * @name sap.ui.core.util.MockServer
 	 * @experimental Since 1.15.1. The mock server is still under construction, so some implementation details can be changed in future.
@@ -1267,9 +1263,6 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 				};
 				var fnBuildResponseString = function(oResponse) {
 					var sResponseData = JSON.stringify(oResponse.data) || "";
-					if (sResponseData == 'null') {
-						sResponseData = "";
-					}
 					return "HTTP/1.1 " + fnResovleStatus(oResponse.statusCode) + "\r\nContent-Type: application/json\r\nContent-Length: "
 					+ sResponseData.length + "\r\ndataserviceversion: 2.0\r\n\r\n" + sResponseData + "\r\n";
 				};
@@ -2062,7 +2055,6 @@ if (!!sap.ui.Device.browser.internet_explorer) {
 		this.respond(iStatus, mHeaders, sXmlData);
 	};
 
-	// assign the MockServer to the global namespace
-	sap.ui.core.util.MockServer = MockServer;
+	return MockServer;
 
-})(jQuery, sap.ui.Device, sap.ui.base.ManagedObject, window.sinon);
+}, /* bExport= */ true);

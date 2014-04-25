@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -159,7 +159,7 @@ sap.ui.commons.ColorPicker.M_EVENTS = {'change':'change','liveChange':'liveChang
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ColorPicker</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ColorPicker</code>.<br/> itself.
  *
  * @return {sap.ui.commons.ColorPicker} <code>this</code> to allow method chaining
  * @public
@@ -237,7 +237,7 @@ sap.ui.commons.ColorPicker.M_EVENTS = {'change':'change','liveChange':'liveChang
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ColorPicker</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ColorPicker</code>.<br/> itself.
  *
  * @return {sap.ui.commons.ColorPicker} <code>this</code> to allow method chaining
  * @public
@@ -1256,7 +1256,7 @@ sap.ui.commons.ColorPicker.prototype._updateGradientBoxBackground = function(hue
 sap.ui.commons.ColorPicker.prototype._updateSelColorBackground = function(){
 
 	//	set the new color
-	jQuery.sap.byId(this.getId()+'-ncBox').css('background-color',this._getRGBString());
+	this.$("ncBox").css('background-color',this._getRGBString());
 
 }
 
@@ -1485,7 +1485,7 @@ sap.ui.commons.ColorPicker.prototype._parseColorString = function(iColorString){
 		iColorString = iColorString.replace("(",'');
 		iColorString = iColorString.replace(")",'');
 		iColorString = iColorString.split(' ').join('');
-		var re=/^(((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5])),){2}(((\d{1,2})|(1\d{2})|(2[0-4] \d)|(25[0-5]))){1}$/;
+		var re=/^(((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5])),){2}(((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))){1}$/;
 		if (re.test(iColorString) == true){
 			//it's a rgb string, get the values and convert to Hex
 			var RGBColor = iColorString.split(",");
@@ -1536,15 +1536,15 @@ sap.ui.commons.ColorPicker.prototype._parseColorString = function(iColorString){
 sap.ui.commons.ColorPicker.prototype.onAfterRendering = function (){
 
 	// get the jQuery-Object for cpBox and cpCur
-	this.$cpBox = jQuery.sap.byId(this.getId()+'-cpBox');
-	this.$cpCur = jQuery.sap.byId(this.getId()+'-cpCur');
+	this.$cpBox = this.$("cpBox");
+	this.$cpCur = this.$("cpCur");
 
 	//	add Mousehandler for ColorPickerBox
 	this.$cpBox.bind("mousedown", jQuery.proxy(this.handleMouseDown, this));
 
 	//	set the background color of the Color Boxes
-	jQuery.sap.byId(this.getId()+'-ncBox').css('background-color',this._getRGBString());
-	jQuery.sap.byId(this.getId()+'-ocBox').css('background-color',this._getRGBString());
+	this.$("ncBox").css('background-color',this._getRGBString());
+	this.$("ocBox").css('background-color',this._getRGBString());
 
 	//	update the background color of the 'new color box'
 	this._updateGradientBoxBackground(this.Color.h);
@@ -1561,7 +1561,7 @@ sap.ui.commons.ColorPicker.prototype.onAfterRendering = function (){
 sap.ui.commons.ColorPicker.prototype.onBeforeRendering = function (){
 
 	//	unbind Mousehandler for ColorPickerBox
-	jQuery.sap.byId(this.getId()+'-cpBox').unbind("mousedown", this.handleMouseDown);
+	this.$("cpBox").unbind("mousedown", this.handleMouseDown);
 
 }
 

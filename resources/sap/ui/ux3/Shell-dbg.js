@@ -53,7 +53,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getWorksetItems worksetItems} : sap.ui.ux3.NavigationItem[]</li>
  * <li>{@link #getPaneBarItems paneBarItems} : sap.ui.core.Item[]</li>
  * <li>{@link #getPaneContent paneContent} : sap.ui.core.Control[]</li>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getToolPopups toolPopups} : sap.ui.ux3.ToolPopup[]</li>
  * <li>{@link #getHeaderItems headerItems} : sap.ui.core.Control[]</li>
  * <li>{@link #getNotificationBar notificationBar} : sap.ui.ux3.NotificationBar</li></ul>
@@ -83,7 +83,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -826,6 +826,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the main canvas. Each modification of this aggregation leads to a re-rendering of the content area - but not to a re-rendering of the complete Shell.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Shell.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.ux3.Shell#getContent
@@ -1080,7 +1081,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Setter for the aggregated <code>notificationBar</code>.
- * @param oNotificationBar {sap.ui.ux3.NotificationBar}
+ * @param {sap.ui.ux3.NotificationBar} oNotificationBar
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
  * @since 1.7.0
@@ -1154,7 +1155,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1224,7 +1225,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1289,7 +1290,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1347,7 +1348,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1405,7 +1406,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1465,7 +1466,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Shell</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @public
@@ -1704,20 +1705,19 @@ sap.ui.ux3.Shell.prototype.exit = function() {
 
 
 sap.ui.ux3.Shell.prototype.onBeforeRendering = function() {
-	var sId = this.getId();
 
 	// unbind the tool palette mouse (hover effect) handlers
 	this._beforeRenderingToolPalette();
 
-	jQuery.sap.byId(this.getId() + "-focusDummyPane").unbind("focusin");
+	this.$("focusDummyPane").unbind("focusin");
 
 	// drag&drop for images with local file API
 	if (window.FileReader) {
-		var $hdr = jQuery.sap.byId(sId + "-hdr");
+		var $hdr = this.$("hdr");
 		$hdr.unbind('dragover', this._handleDragover)
 		.unbind('dragend', this._handleDragend)
 		.unbind('drop', this._handleDrop);
-		var $bg = jQuery.sap.byId(sId + "-bgImg");
+		var $bg = this.$("bgImg");
 		$bg.unbind('dragover', jQuery.proxy(this._handleDragover))
 		.unbind('dragend', this._handleDragend)
 		.unbind('drop', this._handleDrop);
@@ -1727,22 +1727,21 @@ sap.ui.ux3.Shell.prototype.onBeforeRendering = function() {
 
 
 sap.ui.ux3.Shell.prototype.onAfterRendering = function() {
-	var sId = this.getId();
 
 	// register hover effect handlers for application-provided tool icons
 	this._afterRenderingToolPalette();
 
 	if (this._topSyncRefId && this._mSyncRefs[this._topSyncRefId].focusLast) {
-		jQuery.sap.byId(this.getId() + "-focusDummyPane").focusin(this._mSyncRefs[this._topSyncRefId].focusLast);
+		this.$("focusDummyPane").focusin(this._mSyncRefs[this._topSyncRefId].focusLast);
 	}
 
 	// drag&drop for images with local file API
 	if (window.FileReader) {
-		var $hdr = jQuery.sap.byId(sId + "-hdr");
+		var $hdr = this.$("hdr");
 		$hdr.bind('dragover', jQuery.proxy(this._handleDragover, this))
 		.bind('dragend',jQuery.proxy(this._handleDragend, this))
 		.bind('drop', jQuery.proxy(this._handleDrop, this));
-		var $bg = jQuery.sap.byId(sId + "-bgImg");
+		var $bg = this.$("bgImg");
 		$bg.bind('dragover', jQuery.proxy(this._handleDragover, this))
 		.bind('dragend',jQuery.proxy(this._handleDragend, this))
 		.bind('drop', jQuery.proxy(this._handleDrop, this));
@@ -1750,7 +1749,7 @@ sap.ui.ux3.Shell.prototype.onAfterRendering = function() {
 
 	// hide or show the facet bar depending on whether the current workset item has sub-items
 	var bShowFacetBar = (this._oFacetBar.getAssociatedItems().length > 0);
-	var $FacetBar = jQuery.sap.byId(this.getId() + "-facetBar");
+	var $FacetBar = this.$("facetBar");
 	$FacetBar.css("display", (bShowFacetBar ? "block" : "none"));
 	this._adaptContentHeight();
 
@@ -1766,7 +1765,7 @@ sap.ui.ux3.Shell.prototype.onAfterRendering = function() {
 		this._oPaneItemNavigation = new sap.ui.core.delegate.ItemNavigation().setCycling(false);
 		this.addDelegate(this._oPaneItemNavigation);
 	}
-	var $PaneListRef = jQuery.sap.byId(this.getId() + "-paneBarEntries");
+	var $PaneListRef = this.$("paneBarEntries");
 	this._updatePaneBarItemNavigation($PaneListRef);
 
 	this._setNotifyVisibility();
@@ -1842,9 +1841,8 @@ sap.ui.ux3.Shell.prototype._checkToolPaletteSize = function(bHideBar) {
 		bHideBar = !this.getShowTools();
 	}
 	
-	var sId = this.getId();
 	// Check whether the last item is still visible on the screen
-	var oToolPalette = jQuery.sap.byId(sId + "-tp");
+	var oToolPalette = this.$("tp");
 
 	var iColumns = 1;
 	var iLastTop = 9999999; // Just some very large number...
@@ -1864,15 +1862,15 @@ sap.ui.ux3.Shell.prototype._checkToolPaletteSize = function(bHideBar) {
 		var sSide1 = this._bRtl ? "right" : "left";
 
 		// Move left side of canvas
-		jQuery.sap.byId(sId + "-canvas").css(sSide1, iBarWidth + "px");
-		jQuery.sap.byId(sId + "-canvasBackground").css(sSide1, iBarWidth + "px");
+		this.$("canvas").css(sSide1, iBarWidth + "px");
+		this.$("canvasBackground").css(sSide1, iBarWidth + "px");
 		// Move left side of WorksetItems (Navigation)
-		jQuery.sap.byId(sId + "-wBar").css("margin-" + sSide1, iBarWidth + "px");
+		this.$("wBar").css("margin-" + sSide1, iBarWidth + "px");
 
 		// Resize the Notification Area
 		var mProps = {};
 		mProps[sSide1] = iBarWidth + "px";
-		jQuery.sap.byId(sId + "-notify").css(mProps);
+		this.$("notify").css(mProps);
 
 		// Resize ToolPalette
 		oToolPalette.css("width", iBarWidth + "px");
@@ -1880,7 +1878,7 @@ sap.ui.ux3.Shell.prototype._checkToolPaletteSize = function(bHideBar) {
 		var mProps = {};
 		mProps["width"] = iSepWidth + "px";
 		mProps["margin-" + sSide1] = iSepMargin + "px";
-		jQuery.sap.byId(sId + "-tp-separator").css(mProps);
+		this.$("tp-separator").css(mProps);
 
 		if (!bKeepGrowing) {
 			// Break if we have to stop growing...
@@ -1962,10 +1960,9 @@ sap.ui.ux3.Shell.prototype._checkPaneBarOverflow = function($PaneListRef) {
 };
 
 sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef) {
-	var sId = this.getId();
 
 	if (!$PaneListRef) {
-		$PaneListRef = jQuery.sap.byId(sId + "-paneBarEntries");
+		$PaneListRef = this.$("paneBarEntries");
 	}
 	if ($PaneListRef.length == 0) {
 		// If it is still not there, try again later...
@@ -2020,7 +2017,7 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
 		}
 	}
 
-	var $OverflowButton = jQuery.sap.byId(sId + "-paneBarOverflowButton");
+	var $OverflowButton = this.$("paneBarOverflowButton");
 	if (bItemsInMenu) {
 		// Overflow is happening. Show button.
 		$OverflowButton.css("display", "block");
@@ -2058,12 +2055,10 @@ sap.ui.ux3.Shell.prototype._delayedCheckPaneBarOverflow = function($PaneListRef)
  * @returns {bool} Returns whether a change to the button height has been made.
  */
 sap.ui.ux3.Shell.prototype._adaptOverflowButtonHeight = function() {
-	var sId = this.getId();
-	
-	var $Button = jQuery.sap.byId(sId + "-paneBarOverflowButton");
-	var $ButtonWrapper = jQuery.sap.byId(sId + "-paneBarOverflowWrapper");
-	var $ButtonText = jQuery.sap.byId(sId + "-paneBarOverflowText");
-	var $PaneBar = jQuery.sap.byId(sId + "-paneBarRight");
+	var $Button = this.$("paneBarOverflowButton");
+	var $ButtonWrapper = this.$("paneBarOverflowWrapper");
+	var $ButtonText = this.$("paneBarOverflowText");
+	var $PaneBar = this.$("paneBarRight");
 
 	// Make the span small so it does not increase the button size without having content
 	$ButtonText.css("width", "");
@@ -2119,7 +2114,7 @@ sap.ui.ux3.Shell.prototype._changeOverflowButton = function() {
 	
 	sText = sText.toUpperCase(); // TODO: This should be done in CSS, see also renderer
 	
-	var oButtonText = jQuery.sap.byId(this.getId() + "-paneBarOverflowText");
+	var oButtonText = this.$("paneBarOverflowText");
 
 	oButtonText.text(sText);
 	oButtonText.attr("title", sText);
@@ -2207,7 +2202,7 @@ sap.ui.ux3.Shell.prototype.onUserActivation = function(oEvent) {
 
 	} else if (sTargetId === sId + "-paneBarOverflowText") {
 		// Show/Hide overflow menu
-		var oTarget = jQuery.sap.byId(sId + "-paneBarOverflowButton")[0];
+		var oTarget = this.$("paneBarOverflowButton")[0];
 		this._getPaneOverflowMenu().open(
 			true, 
 			oTarget,
@@ -2277,7 +2272,7 @@ sap.ui.ux3.Shell.prototype._handleWorksetItemClick = function(oElement) {
 				var aSubItems = oElement.getSubItems();
 				this._oFacetBar.setAssociatedItems(aSubItems, true); // exchange the items in the second-level navigation; force an "arrow flies in" animation
 
-				var $FacetBar = jQuery.sap.byId(this.getId() + "-facetBar");
+				var $FacetBar = this.$("facetBar");
 				var iFacetBarHeight = this._calcFacetBarHeight($FacetBar);
 
 				// hide/show the second-level navigation
@@ -2648,7 +2643,7 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 	 * 
 	 * This feature is not public. The usage is only granted to special groups on request.
 	 * 
-	 * @param {integer} px how many pixels of free space should be next to the Shell (between 0 and 600)
+	 * @param {int} px how many pixels of free space should be next to the Shell (between 0 and 600)
 	 * @param {function} [complete] optional callback function to call after the animation
 	 * @param {string} [outerId] optional id of the content representing the outside sidebar. If specified the width of the content is animated.
 	 * @since 1.7.0
@@ -2722,7 +2717,7 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 			sVisibleStatus = oNotificationBar.getVisibleStatus();
 		}
 
-		var $notify = jQuery.sap.byId(this.getId() + "-notify");
+		var $notify = this.$("notify");
 		var $syncRef = this._topSyncRefId ? jQuery.sap.byId(this._topSyncRefId) : jQuery(null);
 		var bIsThingInspector = $syncRef.hasClass("sapUiUx3TI");
 
@@ -2793,12 +2788,12 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 		}
 		
 		//Cleanup Shell 
-		jQuery.sap.byId(this.getId() + "-canvas").removeAttr("aria-hidden");
-		jQuery.sap.byId(this.getId() + "-focusDummyTPStart").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-focusDummyTPEnd").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-focusDummyHdrStart").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-focusDummyHdrEnd").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-focusDummyPane").removeAttr("tabindex").unbind("focusin");
+		this.$("canvas").removeAttr("aria-hidden");
+		this.$("focusDummyTPStart").removeAttr("tabindex").unbind("focusin");
+		this.$("focusDummyTPEnd").removeAttr("tabindex").unbind("focusin");
+		this.$("focusDummyHdrStart").removeAttr("tabindex").unbind("focusin");
+		this.$("focusDummyHdrEnd").removeAttr("tabindex").unbind("focusin");
+		this.$("focusDummyPane").removeAttr("tabindex").unbind("focusin");
 		this.$().toggleClass("sapUiUx3ShellBlockHeaderAccess", false);
 		delete this._topSyncRefId;
 
@@ -2806,7 +2801,7 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 		if(this._aSyncRefStack.length > 0){
 			var oRef = this._mSyncRefs[this._aSyncRefStack[this._aSyncRefStack.length-1]];
 			var $DomRefs = this._getSyncRefs();
-			var oCanvas = jQuery.sap.domById(this.getId() + "-canvas");
+			var oCanvas = this.getDomRef("canvas");
 			$DomRefs.css(this._bRtl ? "right" : "left", (this.getShowTools() ? this.currentToolPaletteWidth : 0) + "px");
 			var iRight = sap.ui.ux3.Shell._SHELL_OFFSET_RIGHT;
 			if(this.getShowPane()){
@@ -2819,11 +2814,11 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 			$DomRefs.css("top", jQuery.sap.domById(this.getId() + (this.getAllowOverlayHeaderAccess() ? "-hdr" : "-hdrLine")).offsetHeight + "px");
 			$DomRefs.css("bottom", "0");
 			jQuery(oCanvas).attr("aria-hidden", "true");
-			jQuery.sap.byId(this.getId() + "-focusDummyTPEnd").attr("tabindex", "0").focusin(oRef.focusFirst);
-			jQuery.sap.byId(this.getId() + "-focusDummyHdrStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusPaneEnd, this));
-			jQuery.sap.byId(this.getId() + "-focusDummyHdrEnd").attr("tabindex", "0").focusin(jQuery.proxy(this.focusFirstTool, this));
-			jQuery.sap.byId(this.getId() + "-focusDummyTPStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusLastHdr, this));
-			jQuery.sap.byId(this.getId() + "-focusDummyPane").attr("tabindex", "0").focusin(oRef.focusLast);
+			this.$("focusDummyTPEnd").attr("tabindex", "0").focusin(oRef.focusFirst);
+			this.$("focusDummyHdrStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusPaneEnd, this));
+			this.$("focusDummyHdrEnd").attr("tabindex", "0").focusin(jQuery.proxy(this.focusFirstTool, this));
+			this.$("focusDummyTPStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusLastHdr, this));
+			this.$("focusDummyPane").attr("tabindex", "0").focusin(oRef.focusLast);
 			this.$().toggleClass("sapUiUx3ShellBlockHeaderAccess", !this.getAllowOverlayHeaderAccess());
 			this._topSyncRefId = oRef.id;
 		}
@@ -2876,7 +2871,7 @@ sap.ui.ux3.Shell.prototype._getSyncRefs = function(){
  */
 sap.ui.ux3.Shell.prototype.focusFirstHdr = function() {
 	// tabbing forward into the page from the browser UI
-	var oToFocus = jQuery.sap.byId(this.getId() + "-hdr-items").firstFocusableDomRef();
+	var oToFocus = this.$("hdr-items").firstFocusableDomRef();
 	if (oToFocus && this.getAllowOverlayHeaderAccess() && this.getHeaderType() != sap.ui.ux3.ShellHeaderType.BrandOnly) {
 		jQuery.sap.focus(oToFocus);
 	} else {
@@ -2894,7 +2889,7 @@ sap.ui.ux3.Shell.prototype.focusFirstHdr = function() {
  */
 sap.ui.ux3.Shell.prototype.focusLastHdr = function() {
 	// tabbing forward into the page from the browser UI
-	var oToFocus = jQuery.sap.byId(this.getId() + "-hdr-items").lastFocusableDomRef();
+	var oToFocus = this.$("hdr-items").lastFocusableDomRef();
 	if (oToFocus && this.getAllowOverlayHeaderAccess() && this.getHeaderType() != sap.ui.ux3.ShellHeaderType.BrandOnly) {
 		jQuery.sap.focus(oToFocus);
 	} else {
@@ -2912,7 +2907,7 @@ sap.ui.ux3.Shell.prototype.focusLastHdr = function() {
  */
 sap.ui.ux3.Shell.prototype.focusFirstTool = function() {
 	// tabbing forward into the page from the browser UI
-	var $firstTool = jQuery.sap.byId(this.getId() + "-tp").find(".sapUiUx3ShellTool").first();
+	var $firstTool = this.$("tp").find(".sapUiUx3ShellTool").first();
 	if ($firstTool.length && this.getShowTools()) {
 		jQuery.sap.focus($firstTool[0]);
 	} else {
@@ -2929,7 +2924,7 @@ sap.ui.ux3.Shell.prototype.focusFirstTool = function() {
  */
 sap.ui.ux3.Shell.prototype.focusLastTool = function() {
 	// tabbing backward out of the ThingInspector
-	var $lastTool = jQuery.sap.byId(this.getId() + "-tp").find(".sapUiUx3ShellTool").last();
+	var $lastTool = this.$("tp").find(".sapUiUx3ShellTool").last();
 	if ($lastTool.length && this.getShowTools()) {
 		jQuery.sap.focus($lastTool[0]);
 	} else {
@@ -2946,7 +2941,7 @@ sap.ui.ux3.Shell.prototype.focusLastTool = function() {
  */
 sap.ui.ux3.Shell.prototype.focusPaneStart = function() {
 	// tabbing forward, ThingInspector is being left
-	var oToFocus = jQuery.sap.byId(this.getId() + "-paneBar").firstFocusableDomRef();
+	var oToFocus = this.$("paneBar").firstFocusableDomRef();
 	if (oToFocus) {
 		jQuery.sap.focus(oToFocus);
 	} else {
@@ -2962,7 +2957,7 @@ sap.ui.ux3.Shell.prototype.focusPaneStart = function() {
  */
 sap.ui.ux3.Shell.prototype.focusPaneEnd = function() {
 	// The ThingInspector tried to focus the last tool, but there was no tool. Or tools were being focused and we are tabbing backwards.
-	var oToFocus = jQuery.sap.byId(this.getId() + "-paneBar").lastFocusableDomRef();
+	var oToFocus = this.$("paneBar").lastFocusableDomRef();
 	if (oToFocus) {
 		jQuery.sap.focus(oToFocus);
 	} else {
@@ -3108,8 +3103,6 @@ sap.ui.ux3.Shell.prototype.setDesignType = function(sDesignType) {
 };
 
 sap.ui.ux3.Shell.prototype.setShowTools = function(bShowTools) {
-	var sId = this.getId();
-
 	this.setProperty("showTools", bShowTools, true);
 	if(bShowTools){
 		this.$().removeClass("sapUiUx3ShellNoTools");
@@ -3118,7 +3111,7 @@ sap.ui.ux3.Shell.prototype.setShowTools = function(bShowTools) {
 		this.$().addClass("sapUiUx3ShellNoTools");
 		this._closeCurrentToolPopup();
 		// Remove custom styles for ToolPalette size
-		jQuery.sap.byId(sId + "-tp").attr("style", "");
+		this.$("tp").attr("style", "");
 	}
 
 	this._checkToolPaletteSize(true); // Also updates SyncRefs
@@ -3326,7 +3319,7 @@ sap.ui.ux3.Shell.prototype.destroyWorksetItems = function() {
 }());
 
 sap.ui.ux3.Shell.prototype._rerenderNotificationArea = function() {
-	var $notify = jQuery.sap.byId(this.getId() + "-notify");
+	var $notify = this.$("notify");
 	if ($notify.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		sap.ui.ux3.ShellRenderer.renderNotificationArea(rm, this);
@@ -3336,7 +3329,7 @@ sap.ui.ux3.Shell.prototype._rerenderNotificationArea = function() {
 };
 
 sap.ui.ux3.Shell.prototype._rerenderHeader = function() {
-	var $hdr = jQuery.sap.byId(this.getId() + "-hdr");
+	var $hdr = this.$("hdr");
 	if ($hdr.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		sap.ui.ux3.ShellRenderer.renderHeader(rm, this);
@@ -3346,7 +3339,7 @@ sap.ui.ux3.Shell.prototype._rerenderHeader = function() {
 };
 
 sap.ui.ux3.Shell.prototype._rerenderToolPalette = function() {
-	var $tp = jQuery.sap.byId(this.getId() + "-tp");
+	var $tp = this.$("tp");
 	if ($tp.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		this._beforeRenderingToolPalette();
@@ -3361,10 +3354,10 @@ sap.ui.ux3.Shell.prototype._rerenderToolPalette = function() {
 
 sap.ui.ux3.Shell.prototype._beforeRenderingToolPalette = function() {
 	// unbind the tool palette mouse (hover effect) handlers
-	jQuery.sap.byId(this.getId() + "-tp").find(".sapUiUx3ShellTool").unbind("mouseenter mouseleave");
+	this.$("tp").find(".sapUiUx3ShellTool").unbind("mouseenter mouseleave");
 
-	jQuery.sap.byId(this.getId() + "-focusDummyTPEnd").unbind("focusin");
-	jQuery.sap.byId(this.getId() + "-focusDummyTPStart").unbind("focusin");
+	this.$("focusDummyTPEnd").unbind("focusin");
+	this.$("focusDummyTPStart").unbind("focusin");
 };
 
 sap.ui.ux3.Shell.prototype._afterRenderingToolPalette = function() {
@@ -3398,15 +3391,15 @@ sap.ui.ux3.Shell.prototype._afterRenderingToolPalette = function() {
 	}
 
 	if (this._topSyncRefId && this._mSyncRefs[this._topSyncRefId].focusFirst) {
-		jQuery.sap.byId(this.getId() + "-focusDummyTPEnd").attr("tabindex", "0").focusin(this._mSyncRefs[this._topSyncRefId].focusFirst);
+		this.$("focusDummyTPEnd").attr("tabindex", "0").focusin(this._mSyncRefs[this._topSyncRefId].focusFirst);
 	}
 	if (this._aSyncRefStack.length > 0) {
-		jQuery.sap.byId(this.getId() + "-focusDummyTPStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusLastHdr, this));
+		this.$("focusDummyTPStart").attr("tabindex", "0").focusin(jQuery.proxy(this.focusLastHdr, this));
 	}
 };
 
 sap.ui.ux3.Shell.prototype._rerenderContent = function(bPreventPreserve) {
-	var $content = jQuery.sap.byId(this.getId() + "-content");
+	var $content = this.$("content");
 	if ($content.length > 0) {
 		var aContent = this.getContent(),
 		rm = sap.ui.getCore().createRenderManager();
@@ -3419,7 +3412,7 @@ sap.ui.ux3.Shell.prototype._rerenderContent = function(bPreventPreserve) {
 };
 
 sap.ui.ux3.Shell.prototype._rerenderPane = function(bPreventPreserve) {
-	var $paneContent = jQuery.sap.byId(this.getId() + "-paneContent");
+	var $paneContent = this.$("paneContent");
 	if ($paneContent.length > 0) {
 		var aPaneContent = this.getPaneContent(),
 		rm = sap.ui.getCore().createRenderManager();
@@ -3432,7 +3425,7 @@ sap.ui.ux3.Shell.prototype._rerenderPane = function(bPreventPreserve) {
 };
 
 sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
-	var $PaneListRef = jQuery.sap.byId(this.getId() + "-paneBar").find(".sapUiUx3ShellPaneEntries");
+	var $PaneListRef = this.$("paneBar").find(".sapUiUx3ShellPaneEntries");
 
 	if ($PaneListRef.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
@@ -3483,7 +3476,7 @@ sap.ui.ux3.Shell.prototype._rerenderPaneBarItems = function() {
 };
 
 sap.ui.ux3.Shell.prototype._rerenderWorksetItems = function() {
-	if (jQuery.sap.byId(this.getId() + "-wBar").length > 0) {
+	if (this.$("wBar").length > 0) {
 		sap.ui.ux3.ShellRenderer.renderWorksetItems(null, this);
 		sap.ui.ux3.ShellRenderer.renderFacetBar(null, this);
 		var items = this._oFacetBar.getAssociatedItems();
@@ -3577,7 +3570,7 @@ sap.ui.ux3.Shell.prototype.setContent = function(vContent, bDestruct) {
 	jQuery.sap.assert((bDestruct === undefined || bDestruct === true || bDestruct === false), "bDestruct must be true, false, or undefined");
 
 	var oldContent = [];
-	var $content = jQuery.sap.byId(this.getId() + "-content");
+	var $content = this.$("content");
 	var bPreventPreserve = false;
 
 	if (!bDestruct) {
@@ -3615,7 +3608,7 @@ sap.ui.ux3.Shell.prototype.setPaneContent = function(vContent, bDestruct) {
 	jQuery.sap.assert((bDestruct === undefined || bDestruct === true || bDestruct === false), "bDestruct must be true, false, or undefined");
 
 	var oldContent = [];
-	var $paneContent = jQuery.sap.byId(this.getId() + "-paneContent");
+	var $paneContent = this.$("paneContent");
 	var bPreventPreserve = false;
 
 	if (!bDestruct) {
@@ -3684,7 +3677,7 @@ sap.ui.ux3.Shell.prototype.setSelectedWorksetItem = function(selectedWorksetItem
 				this._oFacetBar.setSelectedItem(newSelectedItem);
 
 				if (this.getDomRef()) {
-					var $FacetBar = jQuery.sap.byId(this.getId() + "-facetBar");
+					var $FacetBar = this.$("facetBar");
 					var iFacetBarHeight = this._calcFacetBarHeight($FacetBar);
 					$FacetBar.slideDown();
 					this._adaptContentHeight(null, true, iFacetBarHeight);
@@ -3696,7 +3689,7 @@ sap.ui.ux3.Shell.prototype.setSelectedWorksetItem = function(selectedWorksetItem
 				this._oFacetBar.setSelectedItem(null);
 
 				if (this.getDomRef()) {
-					var $FacetBar = jQuery.sap.byId(this.getId() + "-facetBar");
+					var $FacetBar = this.$("facetBar");
 					var iFacetBarHeight = this._calcFacetBarHeight($FacetBar);
 					$FacetBar.slideUp();
 					this._adaptContentHeight(null, true, iFacetBarHeight);
@@ -3735,10 +3728,10 @@ sap.ui.ux3.Shell.prototype._calcFacetBarHeight = function($FacetBar){
 	}
 
 	if(!$FacetBar){
-		$FacetBar = jQuery.sap.byId(this.getId() + "-facetBar");
+		$FacetBar = this.$("facetBar");
 	}
 	if($FacetBar.length > 0){
-		var h = jQuery.sap.byId(this.getId() + "-facetBar").outerHeight(true);
+		var h = this.$("facetBar").outerHeight(true);
 		this._iFacetBarHeight = Math.max(this._iFacetBarHeight, h);
 	}
 	
@@ -3750,8 +3743,8 @@ sap.ui.ux3.Shell.prototype._adaptContentHeight = function(sNotificationBarVisibl
 		return;
 	}
 
-	var $content = jQuery.sap.byId(this.getId()+"-content");
-	var $canvas = jQuery.sap.byId(this.getId()+"-canvas");
+	var $content = this.$("content");
+	var $canvas = this.$("canvas");
 
 	if(this.getFullHeightContent()){
 		var bPad = this.getApplyContentPadding();
@@ -3878,29 +3871,29 @@ sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 		sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellApplicationImageURL');
 		sImage = this._convertImageParameter(sImage);
 		if (sImage) {
-			jQuery.sap.byId(this.getId()+'-logoImg').attr('src', sImage);
+			this.$("logoImg").attr('src', sImage);
 		}else{
-			jQuery.sap.byId(this.getId()+'-logoImg').attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
+			this.$("logoImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
 		}
 	}
 
 	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellHeaderImageURL');
 	sImage = this._convertImageParameter(sImage);
 	if (sImage) {
-		jQuery.sap.byId(this.getId()+'-hdrImg').attr('src', sImage);
+		this.$("hdrImg").attr('src', sImage);
 	}else{
-		jQuery.sap.byId(this.getId()+'-hdrImg').attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
+		this.$("hdrImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
 	}
 
 	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellBackgroundImageURL');
 	sImage = this._convertImageParameter(sImage);
 	if (sImage) {
-		jQuery.sap.byId(this.getId()+'-bgImg').attr('src', sImage);
+		this.$("bgImg").attr('src', sImage);
 	}else{
-		jQuery.sap.byId(this.getId()+'-bgImg').attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
+		this.$("bgImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
 	}
 
-	jQuery.sap.byId(this.getId() + "-facetBar").stop(true, true); //Stop potentially running animations
+	this.$("facetBar").stop(true, true); //Stop potentially running animations
 	this._adaptContentHeight();
 
 	this._updateThemeVariables();

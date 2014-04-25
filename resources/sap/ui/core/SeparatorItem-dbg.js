@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.SeparatorItem.
-jQuery.sap.declare("sap.ui.core.SeparatorItem");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Item");
+sap.ui.define(['./library','./Item'], function() {
+	"use strict";
 
 
 /**
@@ -56,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -88,10 +87,14 @@ sap.ui.core.Item.extend("sap.ui.core.SeparatorItem", { metadata : {
  */
 
 
-// Start of sap\ui\core\SeparatorItem.js
+// Start of sap/ui/core/SeparatorItem.js
 ///**
 // * This file defines behavior for the control,
 // */
 //sap.ui.core.SeparatorItem.prototype.init = function(){
 //   // do something for initialization...
 //};
+
+	return sap.ui.core.SeparatorItem;
+
+}, /* bExport = */ true);

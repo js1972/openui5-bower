@@ -45,7 +45,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getHeader header} : sap.ui.core.Control</li>
+ * <li>{@link #getHeader header} <strong>(default aggregation)</strong> : sap.ui.core.Control</li>
  * <li>{@link #getFooter footer} : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -148,7 +148,7 @@ sap.ui.core.Element.extend("sap.m.Column", { metadata : {
  * Getter for property <code>hAlign</code>.
  * Horizontal alignment of the column content. Available alignment settings are "Begin", "Center", "End", "Left", and "Right".
  * 
- * NOTE: Controls with a text align do not inherit the horizontal alignment. You have to set the text align directly on the control.
+ * NOTE: Control with a "textAlign" property inherits the horizontal alignment.
  *
  * Default value is <code>Begin</code>
  *
@@ -429,6 +429,7 @@ sap.ui.core.Element.extend("sap.m.Column", { metadata : {
  * Getter for aggregation <code>header</code>.<br/>
  * Control to be displayed in the column header.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Column.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.m.Column#getHeader
@@ -438,7 +439,7 @@ sap.ui.core.Element.extend("sap.m.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>header</code>.
- * @param oHeader {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oHeader
  * @return {sap.m.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Column#setHeader
@@ -469,7 +470,7 @@ sap.ui.core.Element.extend("sap.m.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>footer</code>.
- * @param oFooter {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oFooter
  * @return {sap.m.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Column#setFooter
@@ -581,36 +582,25 @@ sap.m.Column.prototype._isWidthPredefined = function(sWidth) {
 };
 
 /**
- * Apply alignment of the Column to Text or Label
- * Also set width to 100% to support wrapping
+ * Apply text alignment of the Column to Text/Label/Link...
  *
- * TODO: This is so ugly to check content type
+ * TODO: This is so ugly to check content functions
  * instead we should document how to use our controls
- * to make it truncated or inherit text-alignment
+ * to inherit text-alignment and we should add a new
+ * sap.ui.core.TextAlign type called "Inherit"
  *
- * @protected
- *
+ * @protected *
  * @param {sap.ui.core.Control} oControl List control
  * @param {String} [sAlign] TextAlign enumeration
  * @return {sap.ui.core.Control} oControl
  */
 sap.m.Column.prototype.applyAlignTo = function(oControl, sAlign) {
-	if ((sap.m.Label && oControl instanceof sap.m.Label) ||
-		(sap.m.Text && oControl instanceof sap.m.Text) ||
-		(sap.m.Link && oControl instanceof sap.m.Link)) {
-
-		var width = oControl.getWidth(),
-			domref = oControl.getDomRef();
-
-		if (!width || width == "auto" || width == "inherit") {
-			oControl.setProperty("width", "100%", true);
-			domref && (domref.style.width = "100%");
-		}
-
-		if (oControl.setTextAlign) {
-			sAlign = sAlign || this.getHAlign();
+	if (oControl.getMetadata().getProperties().textAlign) {
+		sAlign = sAlign || this.getHAlign();
+		if (oControl.getTextAlign() != sAlign) {
+			var oDomRef = oControl.getDomRef();
 			oControl.setProperty("textAlign", sAlign, true);
-			domref && (domref.style.textAlign = this.getCssAlign(sAlign));
+			oDomRef && (oDomRef.style.textAlign = this.getCssAlign(sAlign));
 		}
 	}
 
@@ -654,8 +644,8 @@ sap.m.Column.prototype.getStyleClass = function(bResponsive) {
 /**
  * Returns visible probability of the column
  *
- * @param {Boolean} [bReturnCache] Whether return cache or new result
- * @return {Boolean}
+ * @param {boolean} [bReturnCache] Whether return cache or new result
+ * @return {boolean}
  * @protected
  */
 sap.m.Column.prototype.isNeverVisible = function(bReturnCache) {
@@ -683,7 +673,7 @@ sap.m.Column.prototype.isNeverVisible = function(bReturnCache) {
  * Sets the visible column index
  * Negative index values can be used to clear
  *
- * @param {Int} nIndex index of the visible column
+ * @param {int} nIndex index of the visible column
  * @protected
  */
 sap.m.Column.prototype.setIndex = function(nIndex) {
@@ -696,7 +686,7 @@ sap.m.Column.prototype.setIndex = function(nIndex) {
  * Does not do the visual effect
  * Table should be invalidate to re-render
  *
- * @param {Int} nOrder order of the column
+ * @param {int} nOrder order of the column
  * @protected
  */
 sap.m.Column.prototype.setOrder = function(nOrder) {
@@ -706,7 +696,7 @@ sap.m.Column.prototype.setOrder = function(nOrder) {
 /**
  * Gets the order of the column
  *
- * @returns {Int} nOrder order of the column
+ * @returns {int} nOrder order of the column
  * @protected
  */
 sap.m.Column.prototype.getOrder = function() {
@@ -716,7 +706,7 @@ sap.m.Column.prototype.getOrder = function() {
 /**
  * Sets the initial order of the column
  *
- * @param {Int} nOrder initial order of the column
+ * @param {int} nOrder initial order of the column
  * @protected
  */
 sap.m.Column.prototype.setInitialOrder = function(nOrder) {
@@ -726,11 +716,20 @@ sap.m.Column.prototype.setInitialOrder = function(nOrder) {
 /**
  * Gets the initial order of the column
  *
- * @returns {Int} initial order of the column
+ * @returns {int} initial order of the column
  * @protected
  */
 sap.m.Column.prototype.getInitialOrder = function() {
-	return this.hasOwnProperty("_initialOrder") ? this._initialOrder : -1;
+	if (this.hasOwnProperty("_initialOrder")) {
+		return this._initialOrder;
+	}
+
+	var oParent = this.getParent();
+	if (oParent && oParent.indexOfColumn) {
+		return oParent.indexOfColumn(this);
+	}
+
+	return -1;
 };
 
 /**
@@ -738,7 +737,7 @@ sap.m.Column.prototype.getInitialOrder = function() {
  * This does not set the visibility property of the column
  *
  * @param {Object} oTableDomRef Table DOM reference
- * @param {Boolean} [bDisplay] whether visible or not
+ * @param {boolean} [bDisplay] whether visible or not
  * @protected
  */
 sap.m.Column.prototype.setDisplay = function(oTableDomRef, bDisplay) {
@@ -818,10 +817,9 @@ sap.m.Column.prototype.setMinScreenWidth = function(sWidth) {
 	this._validateMinWidth(sWidth);
 
 	// initialize
-
-	this._screen = "";
-	this._minWidth = 0;
 	this._clearMedia();
+	this._minWidth = 0;
+	this._screen = "";
 
 	if (sWidth) {
 		// check given width is known screen-size
@@ -961,8 +959,18 @@ sap.m.Column.prototype.setLastValue = function(value) {
 };
 
 /**
+ * Clears the last value of the column if mergeDuplicates property is true
+ *
+ * @returns {sap.m.Column}
+ * @since 1.20.4
+ * @protected
+ */
+sap.m.Column.prototype.clearLastValue = function() {
+	return this.setLastValue(NaN);
+};
+
+/**
  * Gets the last value of the column
- * NaN can be assigned to clear last value
  *
  * @since 1.16
  * @protected
@@ -979,5 +987,5 @@ sap.m.Column.prototype.getLastValue = function() {
  * @protected
  */
 sap.m.Column.prototype.onItemsRemoved = function() {
-	this.setLastValue(NaN);
+	this.clearLastValue();
 };

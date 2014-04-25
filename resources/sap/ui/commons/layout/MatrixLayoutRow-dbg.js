@@ -35,7 +35,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getCells cells} : sap.ui.commons.layout.MatrixLayoutCell[]</li></ul>
+ * <li>{@link #getCells cells} <strong>(default aggregation)</strong> : sap.ui.commons.layout.MatrixLayoutCell[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author d029921 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -134,6 +134,7 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.MatrixLayoutRow", { metadata :
  * The matrix layout row's individual cells.
  * 
  * 
+ * <strong>Note</strong>: this is the default aggregation for layout/MatrixLayoutRow.
  * @return {sap.ui.commons.layout.MatrixLayoutCell[]}
  * @public
  * @name sap.ui.commons.layout.MatrixLayoutRow#getCells

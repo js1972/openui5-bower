@@ -194,7 +194,7 @@
     "sapUiTextSelection": "#ffffff",
     "sapUiTextfieldBackground": "#ffffff",
     "sapUiLineHeight": "21px",
-    "sapUiFontFamily": "Arial,Helvetica,sans-serif",
+    "sapUiFontFamily": "Arial, Helvetica, sans-serif",
     "sapUiFontMonospaceFamily": "Lucida Console",
     "sapUiFontSize": "medium",
     "sapUiFontLargeSize": "large",
@@ -271,11 +271,11 @@
     "sapMShellMinHeightForHeader": "1568px",
     "sapMShellContentBG": "rgba(255, 255, 255, 0.3)",
     "sapMShellAppWidthLimitPlusPadding": "1040px",
+    "sap.m.Shell:sapMShellAppHeight": "1500px",
     "sap.m.Shell:sapMShellAppWidthLimit": "1024px",
     "sap.m.Shell:sapMShellAppWidthLimitBy2": "512px",
-    "sap.m.Shell:sapMShellAppHeight": "1500px",
-    "sap.m.Shell:sapMShellHeaderHeight": "68px",
-    "sap.m.Shell:sapMShellMinHeightForHeader": "1568px",
+    "sap.m.Shell:sapMShellAppWidthLimitPlusPadding": "1040px",
     "sap.m.Shell:sapMShellContentBG": "rgba(255, 255, 255, 0.3)",
-    "sap.m.Shell:sapMShellAppWidthLimitPlusPadding": "1040px"
+    "sap.m.Shell:sapMShellHeaderHeight": "68px",
+    "sap.m.Shell:sapMShellMinHeightForHeader": "1568px"
 }

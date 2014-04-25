@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSubItems subItems} : sap.ui.ux3.NavigationItem[]</li></ul>
+ * <li>{@link #getSubItems subItems} <strong>(default aggregation)</strong> : sap.ui.ux3.NavigationItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -155,6 +155,7 @@ sap.ui.core.Item.extend("sap.ui.ux3.NavigationItem", { metadata : {
  * Getter for aggregation <code>subItems</code>.<br/>
  * Any NavigationItems on the next hierarchy level connected to this NavigationItem
  * 
+ * <strong>Note</strong>: this is the default aggregation for NavigationItem.
  * @return {sap.ui.ux3.NavigationItem[]}
  * @public
  * @name sap.ui.ux3.NavigationItem#getSubItems

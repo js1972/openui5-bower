@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.ViewSettingsItem");
  * @extends sap.m.ViewSettingsItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -134,7 +134,7 @@ sap.m.ViewSettingsItem.extend("sap.m.ViewSettingsCustomItem", { metadata : {
 
 /**
  * Setter for the aggregated <code>customControl</code>.
- * @param oCustomControl {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oCustomControl
  * @return {sap.m.ViewSettingsCustomItem} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ViewSettingsCustomItem#setCustomControl
@@ -170,8 +170,8 @@ sap.m.ViewSettingsCustomItem.prototype.exit = function () {
  * because this control is sometimes aggregated in other controls like a popover or a dialog
  * @overwrite
  * @public
- * @param {sap.ui.core/Control} oControl a control used for filtering purposes
- * @return {sap.m/ViewSettingsCustomItem} this pointer for chaining 
+ * @param {sap.ui.core.Control} oControl a control used for filtering purposes
+ * @return {sap.m.ViewSettingsCustomItem} this pointer for chaining 
  */
 sap.m.ViewSettingsCustomItem.prototype.setCustomControl = function (oControl) {
 	this._control = oControl;
@@ -183,7 +183,7 @@ sap.m.ViewSettingsCustomItem.prototype.setCustomControl = function (oControl) {
  * because this control is sometimes aggregated in other controls like a popover or a dialog
  * @overwrite
  * @public
- * @return {sap.ui.core/Control} oControl a control used for filtering purposes
+ * @return {sap.ui.core.Control} oControl a control used for filtering purposes
  */
 sap.m.ViewSettingsCustomItem.prototype.getCustomControl = function () {
 	return this._control;

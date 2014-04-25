@@ -43,7 +43,7 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	}
 
 	// background
-	if (oControl.setBackgroundDesign) {
+	if (oControl.getBackgroundDesign) {
 		rm.addClass("sapMListBG" + oControl.getBackgroundDesign());
 	}
 
@@ -63,7 +63,6 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	var sHeaderText = oControl.getHeaderText();
 	var oHeaderTBar = oControl.getHeaderToolbar();
 	if (oHeaderTBar) {
-		oControl.addNavSection(oHeaderTBar.getId());
 		oHeaderTBar.setDesign(sap.m.ToolbarDesign.Transparent, true);
 		rm.renderControl(oHeaderTBar);
 	} else if (sHeaderText) {
@@ -75,7 +74,6 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	// render info bar
 	var oInfoTBar = oControl.getInfoToolbar();
 	if (oInfoTBar) {
-		oControl.addNavSection(oInfoTBar.getId());
 		oInfoTBar.setDesign(sap.m.ToolbarDesign.Info, true);
 		rm.renderControl(oInfoTBar);
 	}
@@ -97,7 +95,9 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	// inset
 	oControl.getInset() && rm.addClass("sapMListInset");
 
+	// write inserted styles and classes
 	rm.writeClasses();
+	rm.writeStyles();
 	rm.write(">");
 
 	// run hook method to render list head attributes
@@ -123,7 +123,7 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	this.renderListEndAttributes(rm, oControl);
 
 	// render growing delegate if available
-	if (bRenderItems && oControl.getGrowing() && oControl._oGrowingDelegate) {
+	if (bRenderItems && oControl._oGrowingDelegate) {
 		oControl._oGrowingDelegate.render(rm);
 	}
 
@@ -169,6 +169,7 @@ sap.m.ListBaseRenderer.renderListHeadAttributes = function(rm, oControl) {
  */
 sap.m.ListBaseRenderer.renderListStartAttributes = function(rm, oControl) {
 	rm.write("<ul");
+	oControl.addNavSection(oControl.getId("listUl"));
 };
 
 /**
@@ -188,7 +189,7 @@ sap.m.ListBaseRenderer.renderListEndAttributes = function(rm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.ListBaseRenderer.renderNoData = function(rm, oControl) {
-	rm.write("<li id='"+ oControl.getId("nodata") + "' class='sapMLIB sapMListNoData'>");
+	rm.write("<li id='"+ oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
 	rm.write("<span id='"+ oControl.getId("nodata-text") + "'>");
 	rm.writeEscaped(oControl.getNoDataText());
 	rm.write("</span></li>");

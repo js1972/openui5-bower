@@ -14,9 +14,8 @@ jQuery.sap.require("sap.ui.core.Renderer");
 sap.m.ToolbarRenderer = {};
 
 sap.m.ToolbarRenderer.render = function(rm, oToolbar) {
-	var aContents = oToolbar.getContent();
-	if (!oToolbar.getVisible() || !aContents.length) {
-		return;
+	if (oToolbar._isInvisible()) {
+		return this.renderInvisible(rm, oToolbar);
 	}
 
 	rm.write("<div");
@@ -36,10 +35,9 @@ sap.m.ToolbarRenderer.render = function(rm, oToolbar) {
 		rm.writeAttribute("tabindex", "0");
 	} else {
 		rm.addClass("sapMTBInactive");
-		rm.writeAttribute("tabindex", "-1");
 	}
 
-	rm.addClass(oToolbar._getContextClass());
+	rm.addClass("sapMTB-" + oToolbar.getActiveDesign() + "-CTX");
 
 	var sWidth = oToolbar.getWidth();
 	var sHeight = oToolbar.getHeight();
@@ -50,9 +48,19 @@ sap.m.ToolbarRenderer.render = function(rm, oToolbar) {
 	rm.writeStyles();
 	rm.write(">");
 
-	aContents.forEach(function(oContent) {
+	oToolbar.getContent().forEach(function(oContent) {
 		rm.renderControl(oContent);
 	});
 
 	rm.write("</div>");
+};
+
+
+// TODO: Add this functionality to more central place that every control can use
+sap.m.ToolbarRenderer.renderInvisible = function(rm, oToolbar) {
+	rm.write("<div");
+	rm.writeControlData(oToolbar);
+	rm.addStyle("display", "none");
+	rm.writeStyles();
+	rm.write("></div>");
 };

@@ -40,7 +40,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -264,6 +264,7 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.BorderLayoutArea", { metadata 
  * Getter for aggregation <code>content</code>.<br/>
  * Controls within the area
  * 
+ * <strong>Note</strong>: this is the default aggregation for layout/BorderLayoutArea.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.layout.BorderLayoutArea#getContent

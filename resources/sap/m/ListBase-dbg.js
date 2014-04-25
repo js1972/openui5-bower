@@ -42,6 +42,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getShowUnread showUnread} : boolean (default: false)</li>
  * <li>{@link #getNoDataText noDataText} : string</li>
  * <li>{@link #getShowNoData showNoData} : boolean (default: true)</li>
+ * <li>{@link #getEnableBusyIndicator enableBusyIndicator} : boolean (default: true)</li>
  * <li>{@link #getModeAnimationOn modeAnimationOn} : boolean (default: true)</li>
  * <li>{@link #getShowSeparators showSeparators} : sap.m.ListSeparators (default: sap.m.ListSeparators.All)</li>
  * <li>{@link #getSwipeDirection swipeDirection} : sap.m.SwipeDirection (default: sap.m.SwipeDirection.Both)</li>
@@ -53,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.m.ListItemBase[]</li>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.m.ListItemBase[]</li>
  * <li>{@link #getSwipeContent swipeContent} : sap.ui.core.Control</li>
  * <li>{@link #getHeaderToolbar headerToolbar} : sap.m.Toolbar</li>
  * <li>{@link #getInfoToolbar infoToolbar} : sap.m.Toolbar</li></ul>
@@ -70,7 +71,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link sap.m.ListBase#event:growingStarted growingStarted} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.m.ListBase#event:growingFinished growingFinished} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.m.ListBase#event:updateStarted updateStarted} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.m.ListBase#event:updateFinished updateFinished} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.m.ListBase#event:updateFinished updateFinished} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
+ * <li>{@link sap.m.ListBase#event:itemPress itemPress} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -85,7 +87,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -114,6 +116,7 @@ sap.ui.core.Control.extend("sap.m.ListBase", { metadata : {
 		"showUnread" : {type : "boolean", group : "Misc", defaultValue : false},
 		"noDataText" : {type : "string", group : "Misc", defaultValue : null},
 		"showNoData" : {type : "boolean", group : "Misc", defaultValue : true},
+		"enableBusyIndicator" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"modeAnimationOn" : {type : "boolean", group : "Misc", defaultValue : true},
 		"showSeparators" : {type : "sap.m.ListSeparators", group : "Appearance", defaultValue : sap.m.ListSeparators.All},
 		"swipeDirection" : {type : "sap.m.SwipeDirection", group : "Misc", defaultValue : sap.m.SwipeDirection.Both},
@@ -138,7 +141,8 @@ sap.ui.core.Control.extend("sap.m.ListBase", { metadata : {
 		"growingStarted" : {deprecated: true}, 
 		"growingFinished" : {deprecated: true}, 
 		"updateStarted" : {}, 
-		"updateFinished" : {}
+		"updateFinished" : {}, 
+		"itemPress" : {}
 	}
 }});
 
@@ -159,7 +163,7 @@ sap.ui.core.Control.extend("sap.m.ListBase", { metadata : {
  * @function
  */
 
-sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange','delete':'delete','swipe':'swipe','growingStarted':'growingStarted','growingFinished':'growingFinished','updateStarted':'updateStarted','updateFinished':'updateFinished'};
+sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange','delete':'delete','swipe':'swipe','growingStarted':'growingStarted','growingFinished':'growingFinished','updateStarted':'updateStarted','updateFinished':'updateFinished','itemPress':'itemPress'};
 
 
 /**
@@ -445,6 +449,35 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 
 /**
+ * Getter for property <code>enableBusyIndicator</code>.
+ * When this property is set to "true", the List/Table will automatically display a BusyIndicator when it detects that data is being loaded or filtered. This BusyIndicator blocks the interaction with the items until data loading is finished.
+ * For the List/Table controls BusyIndicator will be shown after one second. This behavior can be customized by setting the "busyIndicatorDelay" property.
+ * When this property is set to "false", items will stay on the List/Table until data loading is finished.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>enableBusyIndicator</code>
+ * @public
+ * @since 1.20.2
+ * @name sap.m.ListBase#getEnableBusyIndicator
+ * @function
+ */
+
+/**
+ * Setter for property <code>enableBusyIndicator</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bEnableBusyIndicator  new value for property <code>enableBusyIndicator</code>
+ * @return {sap.m.ListBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20.2
+ * @name sap.m.ListBase#setEnableBusyIndicator
+ * @function
+ */
+
+
+/**
  * Getter for property <code>modeAnimationOn</code>.
  * Defines if animations will be shown when activating or deactivating selection modes.
  *
@@ -661,6 +694,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * Getter for aggregation <code>items</code>.<br/>
  * The items of this list or rows of the table.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ListBase.
  * @return {sap.m.ListItemBase[]}
  * @public
  * @name sap.m.ListBase#getItems
@@ -775,7 +809,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 /**
  * Setter for the aggregated <code>swipeContent</code>.
- * @param oSwipeContent {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSwipeContent
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ListBase#setSwipeContent
@@ -808,7 +842,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 /**
  * Setter for the aggregated <code>headerToolbar</code>.
- * @param oHeaderToolbar {sap.m.Toolbar}
+ * @param {sap.m.Toolbar} oHeaderToolbar
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
  * @since 1.16
@@ -842,7 +876,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 /**
  * Setter for the aggregated <code>infoToolbar</code>.
- * @param oInfoToolbar {sap.m.Toolbar}
+ * @param {sap.m.Toolbar} oInfoToolbar
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
  * @since 1.16
@@ -889,7 +923,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -962,7 +996,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1031,7 +1065,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1097,7 +1131,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1169,7 +1203,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1247,7 +1281,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1324,7 +1358,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1396,7 +1430,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
  *
  * @return {sap.m.ListBase} <code>this</code> to allow method chaining
  * @public
@@ -1436,6 +1470,82 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @protected
  * @since 1.16.3
  * @name sap.m.ListBase#fireUpdateFinished
+ * @function
+ */
+
+
+/**
+ * This event is called when an item is pressed regardless of the selection mode.
+ * NOTE: This event is fired for all kind of list items unless the item's type is "Inactive". 
+ *
+ * @name sap.m.ListBase#itemPress
+ * @event
+ * @since 1.20
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @param {sap.m.ListItemBase} oControlEvent.getParameters.listItem The list item which fired the pressed event.
+NOTE: This event is fired also for "GroupHeaderListItem" which does not have binding context.
+					
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.srcControl The control which caused the press event within the container.
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'itemPress' event of this <code>sap.m.ListBase</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.m.ListBase</code>.<br/> itself. 
+ *  
+ * This event is called when an item is pressed regardless of the selection mode.
+ * NOTE: This event is fired for all kind of list items unless the item's type is "Inactive". 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ListBase</code>.<br/> itself.
+ *
+ * @return {sap.m.ListBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20
+ * @name sap.m.ListBase#attachItemPress
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'itemPress' event of this <code>sap.m.ListBase</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.m.ListBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20
+ * @name sap.m.ListBase#detachItemPress
+ * @function
+ */
+
+/**
+ * Fire event itemPress to attached listeners.
+ * 
+ * Expects following event parameters:
+ * <ul>
+ * <li>'listItem' of type <code>sap.m.ListItemBase</code> The list item which fired the pressed event.
+NOTE: This event is fired also for "GroupHeaderListItem" which does not have binding context.
+					</li>
+ * <li>'srcControl' of type <code>sap.ui.core.Control</code> The control which caused the press event within the container.</li>
+ * </ul>
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.m.ListBase} <code>this</code> to allow method chaining
+ * @protected
+ * @since 1.20
+ * @name sap.m.ListBase#fireItemPress
  * @function
  */
 
@@ -1582,8 +1692,10 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 // Start of sap\m\ListBase.js
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
+jQuery.sap.require("sap.m.GroupHeaderListItem");
 
 sap.m.ListBase.prototype.init = function() {
+	this._oItemsContainerDomRef = null;
 	this._oGrowingDelegate = null;
 	this._bSelectionMode = false;
 	this._bReceivingData = false;
@@ -1594,6 +1706,7 @@ sap.m.ListBase.prototype.init = function() {
 };
 
 sap.m.ListBase.prototype.onBeforeRendering = function() {
+	this.clearDomRefs();
 	this._aNavSections.length = 0;
 	if (this.hasOwnProperty("_$touchBlocker")) {
 		this._removeSwipeContent();	// remove the swipe content from screen immediately
@@ -1602,62 +1715,104 @@ sap.m.ListBase.prototype.onBeforeRendering = function() {
 };
 
 sap.m.ListBase.prototype.onAfterRendering = function() {
+	this.cacheDomRefs();
 	this._startItemNavigation();
-	if (!this._oGrowingDelegate) {
+	if (!this._oGrowingDelegate && this.isBound("items")) {
 		this._updateFinished();
 	}
 };
 
 sap.m.ListBase.prototype.exit = function () {
-	this._detachDataEvents();
 	this._oSelectedItem = null;
 	this._bReceivingData = false;
 	this._aNavSections.length = 0;
 	this._aSelectedPaths.length = 0;
 	this._destroyGrowingDelegate();
 	this._destroyItemNavigation();
+	this.clearDomRefs();
 };
 
+// this gets called only with oData Model when first load or filter/sort
+sap.m.ListBase.prototype.refreshItems = function(sReason) {
+	// show loading mask first
+	this._showBusyIndicator();
+
+	if (this._oGrowingDelegate) {
+		// inform growing delegate to handle
+		this._oGrowingDelegate.refreshItems(sReason);
+	} else {
+		// if data multiple time requested during the ongoing request
+		// UI5 cancels the previous requests then we should fire updateStarted once
+		if (!this._bReceivingData) {
+			// handle update started event
+			this._updateStarted(sReason);
+			this._bReceivingData = true;
+		}
+
+		// for flat list get all data
+		this.getBinding("items").getContexts();
+	}
+};
+
+// this gets called via JSON and oData model when binding is updated
+// if there is no data this should get called anyway
+// TODO: if there is a network error this will not get called
+// but we need to turn back to initial state
 sap.m.ListBase.prototype.updateItems = function(sReason) {
 	if (this._oGrowingDelegate) {
+		// inform growing delegate to handle
 		this._oGrowingDelegate.updateItems(sReason);
 	} else {
-		this._updateStarted(sReason);
+		if (this._bReceivingData) {
+			// if we are receiving the data this should be oDataModel
+			// updateStarted is already handled before on refreshItems
+			// here items binding is updated because data is came from server
+			// so we can convert the flag for the next request
+			this._bReceivingData = false;
+		} else {
+			// if data is not requested this should be JSON Model
+			// data is already in memory and will not be requested
+			// so we do not need to change the flag
+			// this._bReceivingData should be always false
+			this._updateStarted(sReason);
+		}
+
+		// for flat list update items aggregation
 		this.updateAggregation("items");
 	}
 };
 
 sap.m.ListBase.prototype.bindAggregation = function(sName) {
-	if (sName == "items" && this.isBound("items")) {
-		this._bUpdating = false;
-		this._detachDataEvents();
-		this.removeSelections(true);
-		this._oGrowingDelegate && this._oGrowingDelegate.reset();
-	}
-	return sap.ui.base.ManagedObject.prototype.bindAggregation.apply(this, arguments);
+	sName == "items" && this._resetItemsBinding();
+	return this._applyAggregation("bind", arguments);
+};
+
+sap.m.ListBase.prototype._bindAggregation = function(sName) {
+	sName == "items" && this._resetItemsBinding();
+	return this._applyAggregation("_bind", arguments);
 };
 
 sap.m.ListBase.prototype.addAggregation = function (sAggregationName, oObject) {
 	sAggregationName == "items" && this._applySettingsToItem(oObject);
-	sap.ui.base.ManagedObject.prototype.addAggregation.apply(this, arguments);
+	this._applyAggregation("add", arguments);
 	sAggregationName == "items" && this._applySelectionToItem(oObject);
 	return this;
 };
 
 sap.m.ListBase.prototype.insertAggregation = function(sAggregationName, oObject) {
 	sAggregationName == "items" && this._applySettingsToItem(oObject);
-	sap.ui.base.ManagedObject.prototype.insertAggregation.apply(this, arguments);
+	this._applyAggregation("insert", arguments);
 	sAggregationName == "items" && this._applySelectionToItem(oObject);
 	return this;
 };
 
 sap.m.ListBase.prototype.destroyAggregation = function(sAggregationName) {
 	sAggregationName == "items" && (this._oSelectedItem = null);
-	return sap.ui.base.ManagedObject.prototype.destroyAggregation.apply(this, arguments);
+	return this._applyAggregation("destroy", arguments);
 };
 
 sap.m.ListBase.prototype.removeAggregation = function(sAggregationName) {
-	var oObject = sap.ui.base.ManagedObject.prototype.removeAggregation.apply(this, arguments);
+	var oObject = this._applyAggregation("remove", arguments);
 	if (sAggregationName == "items" && oObject && oObject === this._oSelectedItem) {
 		this._oSelectedItem = null;
 	}
@@ -1666,7 +1821,7 @@ sap.m.ListBase.prototype.removeAggregation = function(sAggregationName) {
 
 sap.m.ListBase.prototype.removeAllAggregation = function(sAggregationName) {
 	sAggregationName == "items" && (this._oSelectedItem = null);
-	return sap.ui.base.ManagedObject.prototype.removeAllAggregation.apply(this, arguments);
+	return this._applyAggregation("removeAll", arguments);
 };
 
 sap.m.ListBase.prototype.getId = function(sSuffix) {
@@ -1680,7 +1835,7 @@ sap.m.ListBase.prototype.setGrowing = function(bGrowing) {
 		this.setProperty("growing", bGrowing, !bGrowing);
 		if (bGrowing) {
 			jQuery.sap.require("sap.m.GrowingEnablement");
-			this._oGrowingDelegate = new sap.m.GrowingEnablement(this, this.getItems().length);
+			this._oGrowingDelegate = new sap.m.GrowingEnablement(this);
 		} else if (this._oGrowingDelegate) {
 			this._oGrowingDelegate.destroy();
 			this._oGrowingDelegate = null;
@@ -1701,6 +1856,10 @@ sap.m.ListBase.prototype.setGrowingTriggerText = function(sText) {
 		this._oGrowingDelegate.setTriggerText(this.getGrowingTriggerText());
 	}
 	return this;
+};
+
+sap.m.ListBase.prototype.setEnableBusyIndicator = function(bEnable) {
+	return this.setProperty("enableBusyIndicator", bEnable, true);
 };
 
 sap.m.ListBase.prototype.setBackgroundDesign = function(sBgDesign) {
@@ -1733,7 +1892,7 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 	bInset = this.validateProperty("inset", bInset);
 	if (bInset != this.getInset()) {
 		this.setProperty("inset", bInset, true);
-		if (this.getDomRef()) {
+		if (this._oItemsContainerDomRef) {
 			this.$().toggleClass("sapMListInsetBG", bInset);
 			this.$("listUl").toggleClass("sapMListInset", bInset);
 			this._setSwipePosition();
@@ -1744,10 +1903,7 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 
 sap.m.ListBase.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth, true);
-	var oDomRef = this.getDomRef();
-	if (oDomRef) {
-		oDomRef.style.width = this.getWidth();
-	}
+	this.$().css("width", this.getWidth());
 	return this;
 };
 
@@ -1910,30 +2066,53 @@ sap.m.ListBase.prototype.onItemSetSelected = function(oItem, bSelect) {
 };
 
 /*
+ * Cache frequently used DOM references
+ * @protected
+ */
+sap.m.ListBase.prototype.cacheDomRefs = function() {
+	this._oItemsContainerDomRef = this.getDomRef("listUl");
+};
+
+/*
+ * Clear the cached DOM references
+ * @protected
+ */
+sap.m.ListBase.prototype.clearDomRefs = function() {
+	this._oItemsContainerDomRef = null;
+};
+
+/*
  * Returns items container DOM reference
  * @protected
  */
 sap.m.ListBase.prototype.getItemsContainerDomRef = function() {
-	return this.getDomRef("listUl");
+	return this._oItemsContainerDomRef;
 };
 
 /*
- * This hook method is called if growing feature is enabled and before new page loaded
+ * This hook method gets called if growing feature is enabled and before new page loaded
  * @protected
  */
 sap.m.ListBase.prototype.onBeforePageLoaded = function(oGrowingInfo, sChangeReason) {
-	this._updateStarted(sChangeReason, oGrowingInfo);
+	this._fireUpdateStarted(sChangeReason, oGrowingInfo);
 	this.fireGrowingStarted(oGrowingInfo);
 };
 
 /*
- * This hook method is called if growing feature is enabled and after new page loaded
+ * This hook method get called if growing feature is enabled and after new page loaded
  * @protected
  */
 sap.m.ListBase.prototype.onAfterPageLoaded = function(oGrowingInfo, sChangeReason) {
+	// remove nodata text if we get new data
+	if (this.getShowNoData() && oGrowingInfo.total) {
+		this.$("nodata").remove();
+	}
+
+	// refresh item navigation
 	this._startItemNavigation();
-	this.getShowNoData() && this.getMaxItemsCount() && this.$("nodata").remove();
-	this._updateFinished(sChangeReason, oGrowingInfo);
+
+	// fire events
+	this._fireUpdateFinished(oGrowingInfo);
 	this.fireGrowingFinished(oGrowingInfo);
 };
 
@@ -1960,50 +2139,34 @@ sap.m.ListBase.prototype.getMaxItemsCount = function() {
 	return this.getItems().length;
 };
 
-// attach to data events
-sap.m.ListBase.prototype._attachDataEvents = function() {
-	var oBinding = this.getBinding("items");
-	if (oBinding) {
-		oBinding.attachDataReceived(this._onDataReceived, this);
-		oBinding.attachDataRequested(this._onDataRequested, this);
-	}
+// call the base aggregation functions according to given parameters
+sap.m.ListBase.prototype._applyAggregation = function(sFunction, oParams) {
+	return sap.ui.core.Control.prototype[sFunction + "Aggregation"].apply(this, oParams);
 };
 
-// detach data events
-sap.m.ListBase.prototype._detachDataEvents = function() {
-	var oBinding = this.getBinding("items");
-	if (oBinding) {
+// when new items binding we should turn back to initial state
+sap.m.ListBase.prototype._resetItemsBinding = function() {
+	if (this.isBound("items")) {
+		this._bUpdating = false;
 		this._bReceivingData = false;
-		oBinding.detachDataReceived(this._onDataReceived, this);
-		oBinding.detachDataRequested(this._onDataRequested, this);
+		this.removeSelections(true);
+		this._hideBusyIndicator();
+		this._oGrowingDelegate && this._oGrowingDelegate.reset();
 	}
-};
-
-// called from binding when data requested
-sap.m.ListBase.prototype._onDataRequested = function() {
-	this._bReceivingData = true;
-};
-
-// called from binding when data received
-sap.m.ListBase.prototype._onDataReceived = function() {
-	this._bReceivingData = false;
 };
 
 // called before update started via sorting/filtering/growing etc.
-sap.m.ListBase.prototype._updateStarted = function(sReason, oInfo) {
-	// check if update is already started and items are bound
-	if (this._bUpdating || this._bReceivingData || !this.isBound("items")) {
-		return;
+sap.m.ListBase.prototype._updateStarted = function(sReason) {
+	// if data receiving/update is not started or ongoing
+	if (!this._bReceivingData && !this._bUpdating) {
+		this._bUpdating = true;
+		this._fireUpdateStarted(sReason);
 	}
+};
 
-	// remember update status
-	this._bUpdating = true;
-
-	// attach data events
-	!this.getGrowing() && this._attachDataEvents();
-
-	// fire update started event
-	this._sUpdateReason = jQuery.sap.charToUpperCase(sReason || "Binding");
+// fire updateStarted event with update reason and actual/total info
+sap.m.ListBase.prototype._fireUpdateStarted = function(sReason, oInfo) {
+	this._sUpdateReason = jQuery.sap.charToUpperCase(sReason || "Refresh");
 	this.fireUpdateStarted({
 		reason : this._sUpdateReason,
 		actual : oInfo ? oInfo.actual : this.getItems().length,
@@ -2011,25 +2174,37 @@ sap.m.ListBase.prototype._updateStarted = function(sReason, oInfo) {
 	});
 };
 
-// called after update finished via sorting/filtering/growing etc.
-sap.m.ListBase.prototype._updateFinished = function(sReason, oInfo) {
-	// check if update already started and items are bound
-	if (!this._bUpdating || this._bReceivingData || !this.isBound("items")) {
-		return;
-	}
-
-	// detach data events
-	!this.getGrowing() && this._detachDataEvents();
-
-	// fire event should run delayed to make sure rendering phase is done
-	jQuery.sap.delayedCall(0, this, function() {
+// called on after rendering to finalize item update finished
+sap.m.ListBase.prototype._updateFinished = function() {
+	// check if data receiving/update is finished
+	if (!this._bReceivingData && this._bUpdating) {
+		this._fireUpdateFinished();
 		this._bUpdating = false;
+	}
+};
+
+// fire updateFinished event delayed to make sure rendering phase is done
+sap.m.ListBase.prototype._fireUpdateFinished = function(oInfo) {
+	jQuery.sap.delayedCall(0, this, function() {
+		this._hideBusyIndicator();
 		this.fireUpdateFinished({
-			reason : this._sUpdateReason || sReason,
+			reason : this._sUpdateReason,
 			actual : oInfo ? oInfo.actual : this.getItems().length,
 			total : oInfo ? oInfo.total : this.getMaxItemsCount()
 		});
 	});
+};
+
+sap.m.ListBase.prototype._showBusyIndicator = function() {
+	if (this.getEnableBusyIndicator() && !this.getBusy()) {
+		this.setBusy(true, "listUl");
+	}
+};
+
+sap.m.ListBase.prototype._hideBusyIndicator = function() {
+	if (this.getEnableBusyIndicator() && this.getBusy()) {
+		this.setBusy(false);
+	}
 };
 
 /*
@@ -2037,13 +2212,17 @@ sap.m.ListBase.prototype._updateFinished = function(sReason, oInfo) {
  * TODO: There should be a better way to set these private variables
  */
 sap.m.ListBase.prototype._applySettingsToItem = function(oItem, bOnlyProperties) {
-	if (!oItem || !oItem.isSelectable()) {
+	if (!oItem) {
+		return oItem;
+	}
+
+	oItem._listId = this.getId();
+	oItem._showUnread = this.getShowUnread();
+	if (!oItem.isSelectable()) {
 		return oItem;
 	}
 
 	oItem._mode = this.getMode();
-	oItem._listId = this.getId();
-	oItem._showUnread = this.getShowUnread();
 	oItem._modeAnimationOn = this.getModeAnimationOn();
 	oItem._includeItemInSelection = this.getIncludeItemInSelection();
 	if (bOnlyProperties) {
@@ -2121,6 +2300,17 @@ sap.m.ListBase.prototype._delete = function(oEvent) {
 	});
 };
 
+// this will be called from item when it is pressed to fire event
+// FIXME: why item does not fire its own events
+sap.m.ListBase.prototype._onItemPressed = function(oItem, oEvent) {
+	jQuery.sap.delayedCall(0, this, function(){
+		this.fireItemPress({
+			listItem : oItem,
+			srcControl : oEvent.srcControl || oItem
+		});
+	});
+};
+
 // insert or remove given item's path from selection array
 sap.m.ListBase.prototype._updateSelectedPaths = function(oItem, bSelect) {
 	if (!this.getRememberSelections()) {
@@ -2172,7 +2362,7 @@ sap.m.ListBase.prototype._getSwipeContainer = function() {
 		jQuery.sap.require("sap.m.InstanceManager"),
 		this._$swipeContainer = jQuery("<div>", {
 			"id" : this.getId("swp"),
-			"class" : "sapMListSwp" + (sap.ui.core.theming.Parameters.get("sapMPlatformDependent") == "true" && jQuery.os.ios ? " sapMBar-CTX" : "")
+			"class" : "sapMListSwp"
 		})
 	);
 };
@@ -2226,7 +2416,7 @@ sap.m.ListBase.prototype._swipeIn = function() {
 	});
 
 	// block touch events
-	$blocker.css("pointer-events", "none").on("touchstart.swp", function(e){
+	$blocker.css("pointer-events", "none").on("touchstart.swp mousedown.swp", function(e){
 		if (!$container[0].firstChild.contains(e.target)) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -2240,7 +2430,7 @@ sap.m.ListBase.prototype._swipeIn = function() {
 		$container.css("opacity", 1).focus();
 
 		// check parents touchend for auto hide mode
-		$blocker.parent().on("touchend.swp", function(e) {
+		$blocker.parent().on("touchend.swp touchcancel.swp mouseup.swp", function(e) {
 			// checks if event source is coming from swipe container's first child
 			if (!$container[0].firstChild.contains(e.target)) {
 				that.swipeOut();
@@ -2257,7 +2447,7 @@ sap.m.ListBase.prototype._onSwipeOut = function(callback) {
 	jQuery(window).off("resize.swp");
 
 	// enable touch events again
-	this._getTouchBlocker().css("pointer-events", "auto").off("touchstart.swp");
+	this._getTouchBlocker().css("pointer-events", "auto").off("touchstart.swp mousedown.swp");
 
 	if (typeof callback == "function") {
 		callback.call(this, this._swipedItem, this.getSwipeContent());
@@ -2278,7 +2468,7 @@ sap.m.ListBase.prototype.swipeOut = function(callback) {
 		$container = this._getSwipeContainer();
 
 	// stop listening parents touchend event
-	this._getTouchBlocker().parent().off("touchend.swp");
+	this._getTouchBlocker().parent().off("touchend.swp touchend.swp touchcancel.swp mouseup.swp");
 
 	// add swipeout animation and listen this
 	$container.bind("webkitAnimationEnd animationend", function() {
@@ -2310,7 +2500,9 @@ sap.m.ListBase.prototype._onSwipe = function(oEvent) {
 	var oContent = this.getSwipeContent(),
 		oSrcControl = oEvent.srcControl;
 
-	if (oContent && oSrcControl && jQuery.support.touch && !this._isSwipeActive && this !== oSrcControl && !this._eventHandledByControl) {
+	if (oContent && oSrcControl && !this._isSwipeActive && this !== oSrcControl && !this._eventHandledByControl
+			// also enable the swipe feature when runs on Windows 8 device
+			&& (sap.ui.Device.support.touch || (sap.ui.Device.os.windows && sap.ui.Device.os.version >= 8))) {
 		// source can be anything so, check parents and find the list item
 		for (var li = oSrcControl; li && !(li instanceof sap.m.ListItemBase); li = li.oParent);
 		if (li instanceof sap.m.ListItemBase) {
@@ -2328,7 +2520,7 @@ sap.m.ListBase.prototype._onSwipe = function(oEvent) {
 };
 
 sap.m.ListBase.prototype.ontouchstart = function(oEvent) {
-	this._eventHandledByControl = oEvent.originalEvent._sapui_handledByControl;
+	this._eventHandledByControl = oEvent.isMarked();
 };
 
 sap.m.ListBase.prototype.onswipeleft = function(oEvent) {
@@ -2358,6 +2550,8 @@ sap.m.ListBase.prototype.getSwipedItem = function() {
 sap.m.ListBase.prototype.setSwipeContent = function(oControl) {
 	this._bRerenderSwipeContent = true;
 
+	this.addStyleClass("sapMListSwipable");
+
 	// prevent list from re-rendering on setSwipeContent
 	return this.setAggregation("swipeContent", oControl, true);
 };
@@ -2378,6 +2572,14 @@ sap.m.ListBase.prototype.addItemGroup = function(oGroup, oHeader, bSuppressInval
 
 	this.addAggregation("items", oHeader, bSuppressInvalidate);
 	return oHeader;
+};
+
+sap.m.ListBase.prototype.removeGroupHeaders = function(bSuppressInvalidate) {
+	this.getItems().forEach(function(oItem) {
+		if (oItem instanceof sap.m.GroupHeaderListItem) {
+			oItem.destroy(bSuppressInvalidate);
+		}
+	});
 };
 
 /* Keyboard Handling */
@@ -2426,6 +2628,7 @@ sap.m.ListBase.prototype.getItemNavigation = function() {
 
 // navigate to previous or next section according to current focus position
 sap.m.ListBase.prototype._navToSection = function(bForward) {
+	var $Section;
 	var iIndex = 0;
 	var iStep = bForward ? 1 : -1;
 	var iLength = this._aNavSections.length;
@@ -2442,12 +2645,15 @@ sap.m.ListBase.prototype._navToSection = function(bForward) {
 	// find the next focusable section
 	this._aNavSections.some(function() {
 		iIndex = (iIndex + iStep + iLength) % iLength;	// circle
-		var $Section = jQuery.sap.byId(this._aNavSections[iIndex]);
+		$Section = jQuery.sap.byId(this._aNavSections[iIndex]);
 		if ($Section.is(":focusable")) {
 			$Section.focus();
 			return true;
 		}
 	}, this);
+
+	// return the found section
+	return $Section;
 };
 
 // move focus to the next/prev tabbable element after or before the list
@@ -2470,10 +2676,13 @@ sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
 		}
 	}
 
-	// focus to next/prev tabbable item and reset tabindex
+	// find next/prev tabbable item and reset tabindex
 	$Tabbables = $Tabbables || this.$().parent().find(":tabbable");
-	$Tabbables.eq($Tabbables.index($Element) + iStep).focus();
+	iIndex = $Tabbables.index($Element) + iStep;
 	$Element.attr("tabindex", "-1");
+
+	// focus and return the found tabbable if possible
+	return $Tabbables[iIndex] && $Tabbables.eq(iIndex).focus();
 };
 
 // Handle F6
@@ -2484,9 +2693,10 @@ sap.m.ListBase.prototype.onsapskipforward = function(oEvent) {
 	}
 
 	// focus to the next tabbable element after the control
-	this._navToTabChain(true);
-	oEvent.preventDefault();
-	oEvent.setMarked();
+	if (this._navToTabChain(true)) {
+		oEvent.preventDefault();
+		oEvent.setMarked();
+	}
 };
 
 // Handle Shift + F6
@@ -2497,22 +2707,24 @@ sap.m.ListBase.prototype.onsapskipback = function(oEvent) {
 	}
 
 	// focus to the previous tabbable element before the control
-	this._navToTabChain(false);
-	oEvent.preventDefault();
-	oEvent.setMarked();
+	if (this._navToTabChain(false)) {
+		oEvent.preventDefault();
+		oEvent.setMarked();
+	}
 };
 
 // Handle Alt + Down
 sap.m.ListBase.prototype.onsapshow = function(oEvent) {
 	// do not handle marked events and ignore F4
-	if (oEvent.isMarked() || oEvent.keyCode == jQuery.sap.KeyCodes.F4) {
+	if (oEvent.isMarked() || oEvent.which == jQuery.sap.KeyCodes.F4) {
 		return;
 	}
 
 	// move focus to the next section
-	this._navToSection(true);
-	oEvent.preventDefault();
-	oEvent.setMarked();
+	if (this._navToSection(true)) {
+		oEvent.preventDefault();
+		oEvent.setMarked();
+	}
 };
 
 // Handle Alt + Up
@@ -2523,8 +2735,8 @@ sap.m.ListBase.prototype.onsaphide = function(oEvent) {
 	}
 
 	// move focus to the previous section
-	this._navToSection(false);
-	oEvent.preventDefault();
-	oEvent.setMarked();
+	if (this._navToSection(false)) {
+		oEvent.preventDefault();
+		oEvent.setMarked();
+	}
 };
-

@@ -39,7 +39,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSteps steps} : sap.ui.commons.RoadMapStep[]</li></ul>
+ * <li>{@link #getSteps steps} <strong>(default aggregation)</strong> : sap.ui.commons.RoadMapStep[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -238,6 +238,7 @@ sap.ui.commons.RoadMap.M_EVENTS = {'stepSelected':'stepSelected','stepExpanded':
  * Getter for aggregation <code>steps</code>.<br/>
  * Steps that are composing the RoadMap
  * 
+ * <strong>Note</strong>: this is the default aggregation for RoadMap.
  * @return {sap.ui.commons.RoadMapStep[]}
  * @public
  * @name sap.ui.commons.RoadMap#getSteps
@@ -340,7 +341,7 @@ sap.ui.commons.RoadMap.M_EVENTS = {'stepSelected':'stepSelected','stepExpanded':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RoadMap</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RoadMap</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RoadMap} <code>this</code> to allow method chaining
  * @public
@@ -404,7 +405,7 @@ sap.ui.commons.RoadMap.M_EVENTS = {'stepSelected':'stepSelected','stepExpanded':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RoadMap</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RoadMap</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RoadMap} <code>this</code> to allow method chaining
  * @public
@@ -617,7 +618,7 @@ sap.ui.commons.RoadMap.prototype.onAfterRendering = function(){
 
 	//Compute the step width
 	if(this.iStepWidth == -1 && aSteps.length > 0){
-		var jRef = jQuery.sap.byId(aSteps[0].getId());
+		var jRef = aSteps[0].$();
 		this.iStepWidth = jRef.outerWidth();
 	}
 
@@ -703,7 +704,7 @@ sap.ui.commons.RoadMap.prototype.onfocusin = function(oEvent){
 		refreshFocus(this);
 	}
 	//Remove the control from tab chain to make tab out working (see onfocusout)
-	jQuery.sap.byId(this.getId()).attr("tabindex", "-1");
+	this.$().attr("tabindex", "-1");
 };
 
 
@@ -715,7 +716,7 @@ sap.ui.commons.RoadMap.prototype.onfocusin = function(oEvent){
  */
 sap.ui.commons.RoadMap.prototype.onfocusout = function(oEvent){
 	//Add the control to tab chain again to make tab in working (see onfocusin)
-	jQuery.sap.byId(this.getId()).attr("tabindex", "0");
+	this.$().attr("tabindex", "0");
 };
 
 

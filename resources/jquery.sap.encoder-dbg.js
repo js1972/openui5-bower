@@ -5,9 +5,9 @@
  */
 
 // Provides encoding functions for JavaScript.
-jQuery.sap.declare("jquery.sap.encoder", false);
-
-(function(){
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
 	/*
 	 * Encoding according to the Secure Programming Guide
@@ -468,5 +468,7 @@ jQuery.sap.declare("jquery.sap.encoder", false);
 	 * @private
 	 */
 	var fnSanitizer = defaultSanitizer;
-	
-}());
+
+	return jQuery;
+
+}, /* bExport= */ false);

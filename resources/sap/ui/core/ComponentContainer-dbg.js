@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.ComponentContainer.
-jQuery.sap.declare("sap.ui.core.ComponentContainer");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control'], function() {
+	"use strict";
 
 
 /**
@@ -59,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -277,7 +276,7 @@ sap.ui.core.Control.extend("sap.ui.core.ComponentContainer", { metadata : {
 
 
 	
-// Start of sap\ui\core\ComponentContainer.js
+// Start of sap/ui/core/ComponentContainer.js
 /**
  * Returns the real component instance which is associated with the container.
  * @return {sap.ui.core.UIComponent} the component instance
@@ -369,7 +368,7 @@ sap.ui.core.ComponentContainer.prototype.exit = function(){
 
 
 /*
- * overriden to support property propagation to the associated component
+ * overridden to support property propagation to the associated component
  */
 sap.ui.core.ComponentContainer.prototype.propagateProperties = function (vName) {
 	var oComponent = this.getComponentInstance();
@@ -378,3 +377,7 @@ sap.ui.core.ComponentContainer.prototype.propagateProperties = function (vName) 
 		sap.ui.core.Control.prototype.propagateProperties.apply(this, arguments);
 	}
 };
+
+	return sap.ui.core.ComponentContainer;
+
+}, /* bExport = */ true);

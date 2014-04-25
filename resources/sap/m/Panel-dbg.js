@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getHeaderToolbar headerToolbar} : sap.m.Toolbar</li>
  * <li>{@link #getInfoToolbar infoToolbar} : sap.m.Toolbar</li></ul>
  * </li>
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -208,6 +208,7 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Content for the Panel
  * 
+ * <strong>Note</strong>: this is the default aggregation for Panel.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.Panel#getContent
@@ -300,7 +301,7 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
 
 /**
  * Setter for the aggregated <code>headerToolbar</code>.
- * @param oHeaderToolbar {sap.m.Toolbar}
+ * @param {sap.m.Toolbar} oHeaderToolbar
  * @return {sap.m.Panel} <code>this</code> to allow method chaining
  * @public
  * @since 1.16
@@ -334,7 +335,7 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
 
 /**
  * Setter for the aggregated <code>infoToolbar</code>.
- * @param oInfoToolbar {sap.m.Toolbar}
+ * @param {sap.m.Toolbar} oInfoToolbar
  * @return {sap.m.Panel} <code>this</code> to allow method chaining
  * @public
  * @since 1.16

@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.base.ManagedObject");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.18.12
+ * @version 1.20.4
  * @name sap.m.TablePersoProvider
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoProvider", /** @lends sap.m.TablePersoProvider */
@@ -87,3 +87,25 @@ sap.m.TablePersoProvider.prototype.delPersData = function() {
 
 };
 
+/**
+ * Callback function which can be used to determine the title of a given column
+ * within the TablePersoDialog. As a default, the column header controls are
+ * asked for their 'text' or 'title' property. This works in most cases, for example
+ * if the header control is a sap.m.Label (has 'text' property) or a sap.m.ObjectListItem
+ * (has 'title' property). 
+ * 
+ * If the header control used in a column has neither 'text' nor 'title' property, or if you would like to 
+ * display a modified column name for a certain column, this callback function can be used.
+ * 
+ * If the callback delivers null for a column (which is the default implementation), the default
+ * texts described above are displayed for that column in the TablePersoDialog. 
+ * 
+ * In case neither the callback delovers null and neither 'text' nor ' title' property are at hand,
+ * the TablePersoDialog will display the column id and a warning message is logged.
+ * 
+ * @param oColumn column control instance whose caption shall be determined
+ * @public
+ */
+sap.m.TablePersoProvider.prototype.getCaption = function(oColumn) {
+	return null;
+};

@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -333,7 +333,7 @@ sap.m.CheckBox.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.CheckBox</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.CheckBox</code>.<br/> itself.
  *
  * @return {sap.m.CheckBox} <code>this</code> to allow method chaining
  * @public
@@ -399,8 +399,8 @@ sap.m.CheckBox.prototype.setSelected = function(bSelected) {
 		return this;
 	}
 	
-	jQuery.sap.byId(this.getId()+'-CbBg').toggleClass("sapMCbMarkChecked", bSelected);
-	var oCheckBox = jQuery.sap.domById(this.getId()+'-CB');
+	this.$("CbBg").toggleClass("sapMCbMarkChecked", bSelected);
+	var oCheckBox = this.getDomRef("CB");
 	if (oCheckBox){
 		bSelected ? oCheckBox.setAttribute('checked', 'checked') : oCheckBox.removeAttribute('checked');
 	}
@@ -427,7 +427,7 @@ sap.m.CheckBox.prototype.ontap = function(oEvent) {
  */
 
 sap.m.CheckBox.prototype.addActiveState = function(oControl) {
-	if (jQuery.os.blackberry || (jQuery.os.android && (jQuery.os.version.match(/[23]\./)))){
+	if (sap.ui.Device.os.blackberry || (sap.ui.Device.os.android && (sap.ui.Device.os.versionStr.match(/[23]\./)))){
 		oControl.addDelegate({
 			ontouchstart: function(oEvent){
 				jQuery(oControl.getDomRef()).addClass("sapMActive");
@@ -500,13 +500,13 @@ sap.m.CheckBox.prototype.onsapspace = function(oEvent) {
 /*
  * Sets the tab index of the control
  *
- * @param {Int} iTabIndex  greater than or equal -1
+ * @param {int} iTabIndex  greater than or equal -1
  * @return {sap.m.CheckBox}
  * @since 1.16
  * @protected
  */
 sap.m.CheckBox.prototype.setTabIndex = function(iTabIndex) {
 	this._iTabIndex = iTabIndex;
-	jQuery.sap.byId(this.getId() + "-CbBg").attr("tabindex", iTabIndex);
+	this.$("CbBg").attr("tabindex", iTabIndex);
 	return this;
 };

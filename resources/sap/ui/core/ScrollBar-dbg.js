@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.ScrollBar.
-jQuery.sap.declare("sap.ui.core.ScrollBar");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control'], function() {
+	"use strict";
 
 
 /**
@@ -59,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -260,7 +259,7 @@ sap.ui.core.ScrollBar.M_EVENTS = {'scroll':'scroll'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.core.ScrollBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.core.ScrollBar</code>.<br/> itself.
  *
  * @return {sap.ui.core.ScrollBar} <code>this</code> to allow method chaining
  * @public
@@ -352,19 +351,19 @@ sap.ui.core.ScrollBar.M_EVENTS = {'scroll':'scroll'};
  */
 
 
-// Start of sap\ui\core\ScrollBar.js
+// Start of sap/ui/core/ScrollBar.js
 /**
- * This file defines behavior for the control,
- */
+* This file defines behavior for the control,
+*/
 
 // =============================================================================
 // BASIC CONTROL API
 // =============================================================================
 
 /**
- * Initialization of the Scrollbar control
- * @private
- */
+* Initialization of the Scrollbar control
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.init = function(){
 
 	// JQuery Object - Dom reference of the scroll bar
@@ -408,18 +407,18 @@ sap.ui.core.ScrollBar.prototype.init = function(){
 
 
 /**
- * Rerendering handling
- * @private
- */
+* Rerendering handling
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.onBeforeRendering = function() {
-	jQuery.sap.byId(this.getId() + "-sb").unbind("scroll", this.onscroll);
+	this.$("sb").unbind("scroll", this.onscroll);
 };
 
 
 /**
- * Rerendering handling
- * @private
- */
+* Rerendering handling
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.onAfterRendering = function () {
 	 // count of steps (comes per API)
 	this._iSteps = this.getSteps();
@@ -439,7 +438,7 @@ sap.ui.core.ScrollBar.prototype.onAfterRendering = function () {
 
 	var stepSize = null;
 
-	var $ffsize = jQuery.sap.byId(this.getId() + "-ffsize");
+	var $ffsize = this.$("ffsize");
 	if (!!sap.ui.Device.browser.firefox) {
 		stepSize = $ffsize.outerHeight();
 	}
@@ -463,7 +462,7 @@ sap.ui.core.ScrollBar.prototype.onAfterRendering = function () {
 		this._iFactorPage = !!sap.ui.Device.browser.firefox ? Math.floor(iScrollBarSize * 0.8) : !!sap.ui.Device.browser.webkit ? Math.floor(iScrollBarSize  * 0.875) : iScrollBarSize-14;
 	}
 
-	this._$ScrollDomRef = jQuery.sap.byId(this.getId() + "-sb");
+	this._$ScrollDomRef = this.$("sb");
 
 	if (this._bStepMode) {
 		
@@ -513,10 +512,10 @@ sap.ui.core.ScrollBar.prototype.onAfterRendering = function () {
 //=============================================================================
 
 /**
- * Event object contains detail (for Firefox and Opera), and wheelData (for Internet Explorer, Safari, and Opera).
- * Scrolling down is a positive number for detail, but a negative number for wheelDelta.
- * @param {jQuery.Event} oEvent Event object contains detail (for Firefox and Opera), and wheelData (for Internet Explorer, Safari, and Opera).
- * @private
+* Event object contains detail (for Firefox and Opera), and wheelData (for Internet Explorer, Safari, and Opera).
+* Scrolling down is a positive number for detail, but a negative number for wheelDelta.
+* @param {jQuery.Event} oEvent Event object contains detail (for Firefox and Opera), and wheelData (for Internet Explorer, Safari, and Opera).
+* @private
 */
 sap.ui.core.ScrollBar.prototype.onmousewheel = function(oEvent)  {
 
@@ -556,8 +555,8 @@ sap.ui.core.ScrollBar.prototype.onmousewheel = function(oEvent)  {
 
 
 /**
- * Touch start handler. Called when the "touch start" event occurs on this control.
- * @param {jQuery.Event} oEvent Touch Event object 
+* Touch start handler. Called when the "touch start" event occurs on this control.
+* @param {jQuery.Event} oEvent Touch Event object 
  * @private
 */
 sap.ui.core.ScrollBar.prototype.ontouchstart = function(oEvent) {
@@ -577,8 +576,8 @@ sap.ui.core.ScrollBar.prototype.ontouchstart = function(oEvent) {
 
 
 /**
- * Touch move handler. Called when the "touch move" event occurs on this control.
- * @param {jQuery.Event} oEvent Touch Event object 
+* Touch move handler. Called when the "touch move" event occurs on this control.
+* @param {jQuery.Event} oEvent Touch Event object 
  * @private
 */
 sap.ui.core.ScrollBar.prototype.ontouchmove = function(oEvent) {
@@ -589,8 +588,8 @@ sap.ui.core.ScrollBar.prototype.ontouchmove = function(oEvent) {
 
 
 /**
- * Touch end handler. Called when the "touch end" event occurs on this control.
- * @param {jQuery.Event} oEvent Touch Event object 
+* Touch end handler. Called when the "touch end" event occurs on this control.
+* @param {jQuery.Event} oEvent Touch Event object 
  * @private
 */
 sap.ui.core.ScrollBar.prototype.ontouchend = function(oEvent) {
@@ -600,8 +599,8 @@ sap.ui.core.ScrollBar.prototype.ontouchend = function(oEvent) {
 };
 
 /**
- * Touch cancel handler. Called when the "touch cancel" event occurs on this control.
- * @param {jQuery.Event} oEvent Touch Event object 
+* Touch cancel handler. Called when the "touch cancel" event occurs on this control.
+* @param {jQuery.Event} oEvent Touch Event object 
  * @private
 */
 sap.ui.core.ScrollBar.prototype.ontouchcancel = function(oEvent) {
@@ -611,11 +610,11 @@ sap.ui.core.ScrollBar.prototype.ontouchcancel = function(oEvent) {
 };
 
 /**
- * Handles the Scroll event.
- *
- * @param {jQuery.Event}  oEvent Event object
- * @private
- */
+* Handles the Scroll event.
+*
+* @param {jQuery.Event}  oEvent Event object
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.onscroll = function(oEvent) {
 	//jQuery.sap.log.debug("*****************************onScroll************************ SUPRESS SCROLL:  " + this._bSuppressScroll );
 	if (this._bSuppressScroll) {
@@ -667,13 +666,13 @@ sap.ui.core.ScrollBar.prototype.onscroll = function(oEvent) {
 
 
 /**
- * Handler for the touch scroller instance. Called only when touch mode is enabled.
- *   
+* Handler for the touch scroller instance. Called only when touch mode is enabled.
+*   
  * @param {number} left Horizontal scroll position
- * @param {number} top Vertical scroll position 
+* @param {number} top Vertical scroll position 
  * @param {number} zoom The zoom level
- * @private
- */
+* @private
+*/
 sap.ui.core.ScrollBar.prototype._handleTouchScroll = function(iLeft, iTop, iZoom) {
 	if (this._bSkipTouchHandling) {
 		return;
@@ -698,8 +697,8 @@ sap.ui.core.ScrollBar.prototype._handleTouchScroll = function(iLeft, iTop, iZoom
 //=============================================================================
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.unbind = function (oOwnerDomRef) {
 	if (oOwnerDomRef) {
 		this._$OwnerDomRef = jQuery(oOwnerDomRef);
@@ -717,8 +716,8 @@ sap.ui.core.ScrollBar.prototype.unbind = function (oOwnerDomRef) {
 };
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.bind = function (oOwnerDomRef) {
 	if (oOwnerDomRef) {
 		this._$OwnerDomRef = jQuery(oOwnerDomRef);
@@ -736,27 +735,27 @@ sap.ui.core.ScrollBar.prototype.bind = function (oOwnerDomRef) {
 };
 
 /**
- * Returns the event type for a given touch event type base on the current touch event mode (jQuery.sap.touchEventMod).
- *   
+* Returns the event type for a given touch event type base on the current touch event mode (jQuery.sap.touchEventMod).
+*   
  * @param {string} sType The touch event to convert
- * @return {string} The converted event type.
- * @private
- */
+* @return {string} The converted event type.
+* @private
+*/
 sap.ui.core.ScrollBar.prototype._getTouchEventType = function (sType) {
 	return jQuery.sap.touchEventMode === "SIM" ? ("sap" + sType) : sType;
 };
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.pageUp = function() {
 	// call on scroll
 	this._doScroll(sap.ui.core.ScrollBarAction.Page, false);
 };
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.pageDown = function() {
     // call on scroll
     this._doScroll(sap.ui.core.ScrollBarAction.Page, true);
@@ -767,8 +766,8 @@ sap.ui.core.ScrollBar.prototype.pageDown = function() {
 //=============================================================================
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.setScrollPosition = function (scrollPosition) {
 	if (this._$ScrollDomRef) {
 		this.setCheckedScrollPosition(scrollPosition, true);
@@ -779,9 +778,9 @@ sap.ui.core.ScrollBar.prototype.setScrollPosition = function (scrollPosition) {
 };
 
 /*
- * After the Scrollbar is rendered, we check the validity of the scroll position and set Scroll Left and ScrollTop.
- * @private
- */
+* After the Scrollbar is rendered, we check the validity of the scroll position and set Scroll Left and ScrollTop.
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.setCheckedScrollPosition = function (scrollPosition, callScrollEvent) {
 
 	var iCheckedSP = Math.max(scrollPosition, 0);
@@ -817,7 +816,7 @@ sap.ui.core.ScrollBar.prototype.setCheckedScrollPosition = function (scrollPosit
 		}
 	}
 
- 	if (jQuery.sap.touchEventMode === "ON") {
+	if (jQuery.sap.touchEventMode === "ON") {
 		var value = iCheckedSP;
 		if (this._bStepMode) {
 			value = Math.round(iCheckedSP * this._iTouchStepTreshold);
@@ -829,21 +828,21 @@ sap.ui.core.ScrollBar.prototype.setCheckedScrollPosition = function (scrollPosit
 };
 
 /*
- * @see JSDoc generated by SAPUI5 control API generator
- */
+* @see JSDoc generated by SAPUI5 control API generator
+*/
 sap.ui.core.ScrollBar.prototype.setContentSize = function (sContentSize) {
 
 	// Trigger the rerendering when switching the from step mode.
 	this.setProperty("contentSize", sContentSize);
 	this._bStepMode = false;
-		var $SbCnt = jQuery.sap.byId(this.getId() + "-sbcnt");
-		if ($SbCnt) {
-			if (this.getVertical()) {
-				$SbCnt.height(sContentSize);
-			} else {
-				$SbCnt.width(sContentSize);
-			}
+	var $SbCnt = this.$("sbcnt");
+	if ($SbCnt) {
+		if (this.getVertical()) {
+			$SbCnt.height(sContentSize);
+		} else {
+			$SbCnt.width(sContentSize);
 		}
+	}
 	return this;
 };
 
@@ -910,13 +909,13 @@ sap.ui.core.ScrollBar.prototype.onThemeChanged = function() {
 }
 
 /**
- * return the native scroll position without any browser specific correction of 
+* return the native scroll position without any browser specific correction of 
  * the scroll position value (firefox & RTL => negative value / webkit & RTL =>
- * positive value not beginning with 0 because 0 is left and not as expected 
+* positive value not beginning with 0 because 0 is left and not as expected 
  * right for webkit RTL mode).
- * @return {int} native scroll position
- * @private
- */
+* @return {int} native scroll position
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.getNativeScrollPosition = function() {
 	if (this._$ScrollDomRef) {
 		if (this.getVertical()) {
@@ -929,11 +928,10 @@ sap.ui.core.ScrollBar.prototype.getNativeScrollPosition = function() {
 }
 
 /**
- * sets the scroll position directly
-
- * @param {int} iNativeScrollPos new native scroll position
- * @private
- */
+* sets the scroll position directly
+* @param {int} iNativeScrollPos new native scroll position
+* @private
+*/
 sap.ui.core.ScrollBar.prototype.setNativeScrollPosition = function(iNativeScrollPos) {
 	if (this._$ScrollDomRef) {
 		if (this.getVertical()) {
@@ -943,3 +941,7 @@ sap.ui.core.ScrollBar.prototype.setNativeScrollPosition = function(iNativeScroll
 		}
 	}
 }
+
+	return sap.ui.core.ScrollBar;
+
+}, /* bExport = */ true);

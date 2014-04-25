@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getShowLogout showLogout} : boolean (default: true)</li>
  * <li>{@link #getHeaderRightText headerRightText} : string</li>
  * <li>{@link #getAppWidthLimited appWidthLimited} : boolean (default: true)</li>
- * <li>{@link #getBackgroundColor backgroundColor} : string</li>
+ * <li>{@link #getBackgroundColor backgroundColor} : sap.ui.core.CSSColor</li>
  * <li>{@link #getBackgroundImage backgroundImage} : sap.ui.core.URI</li>
  * <li>{@link #getBackgroundRepeat backgroundRepeat} : boolean (default: false)</li>
  * <li>{@link #getBackgroundOpacity backgroundOpacity} : float (default: 1)</li>
@@ -44,7 +44,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getApp app} : sap.ui.core.Control</li></ul>
+ * <li>{@link #getApp app} <strong>(default aggregation)</strong> : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -84,7 +84,7 @@ sap.ui.core.Control.extend("sap.m.Shell", { metadata : {
 		"showLogout" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"headerRightText" : {type : "string", group : "Data", defaultValue : null},
 		"appWidthLimited" : {type : "boolean", group : "Appearance", defaultValue : true},
-		"backgroundColor" : {type : "string", group : "Appearance", defaultValue : null},
+		"backgroundColor" : {type : "sap.ui.core.CSSColor", group : "Appearance", defaultValue : null},
 		"backgroundImage" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : null},
 		"backgroundRepeat" : {type : "boolean", group : "Appearance", defaultValue : false},
 		"backgroundOpacity" : {type : "float", group : "Appearance", defaultValue : 1},
@@ -252,7 +252,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
  *
  * Default value is empty/<code>undefined</code>
  *
- * @return {string} the value of property <code>backgroundColor</code>
+ * @return {sap.ui.core.CSSColor} the value of property <code>backgroundColor</code>
  * @public
  * @since 1.11.2
  * @name sap.m.Shell#getBackgroundColor
@@ -264,7 +264,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
  *
  * Default value is empty/<code>undefined</code> 
  *
- * @param {string} sBackgroundColor  new value for property <code>backgroundColor</code>
+ * @param {sap.ui.core.CSSColor} sBackgroundColor  new value for property <code>backgroundColor</code>
  * @return {sap.m.Shell} <code>this</code> to allow method chaining
  * @public
  * @since 1.11.2
@@ -403,6 +403,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
  * Getter for aggregation <code>app</code>.<br/>
  * A Shell contains an App or a SplitApp (they may be wrapped in a View). Other control types are not allowed.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Shell.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.m.Shell#getApp
@@ -412,7 +413,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
 
 /**
  * Setter for the aggregated <code>app</code>.
- * @param oApp {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oApp
  * @return {sap.m.Shell} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Shell#setApp
@@ -454,7 +455,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Shell</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Shell</code>.<br/> itself.
  *
  * @return {sap.m.Shell} <code>this</code> to allow method chaining
  * @public
@@ -493,7 +494,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
 sap.m.Shell.prototype.init = function() {
 	// theme change might change the logo
 	sap.ui.getCore().attachThemeChanged(jQuery.proxy(function(){
-		var $hdr = jQuery.sap.byId(this.getId() + "-hdr");
+		var $hdr = this.$("hdr");
 		if ($hdr.length) {
 			$hdr.find(".sapMShellLogo").remove(); // remove old logo, if present
 			var html = sap.m.ShellRenderer.getLogoImageHtml(this);
@@ -525,7 +526,7 @@ sap.m.Shell.prototype.onAfterRendering = function () {
 			ref = ref.parentNode;
 		}
 	}
-	jQuery.sap.byId(this.getId() + "-content").css("height", "");
+	this.$("content").css("height", "");
 };
 
 sap.m.Shell.prototype.ontap = function(oEvent) {
@@ -540,7 +541,7 @@ sap.m.Shell.prototype.ontap = function(oEvent) {
 // API methods
 
 sap.m.Shell.prototype.setTitle = function(sTitle) {
-	jQuery.sap.byId(this.getId() + "-hdrTxt").text(sTitle);
+	this.$("hdrTxt").text(sTitle);
 	this.setProperty("title", sTitle, true); // no rerendering
 	return this; 
 };
@@ -550,7 +551,7 @@ sap.m.Shell.prototype.setHeaderRightText = function(sText) {
 	if (!sText) {
 		sText = "";
 	}
-	jQuery.sap.byId(this.getId() + "-hdrRightTxt").text(sText).css("display", (!!sText ? "inline" : "none"));
+	this.$("hdrRightTxt").text(sText).css("display", (!!sText ? "inline" : "none"));
 	return this; 
 };
 
@@ -565,7 +566,7 @@ sap.m.Shell.prototype.setBackgroundOpacity = function(fOpacity) {
 		jQuery.sap.log.warning("Invalid value " + fOpacity + " for Shell.setBackgroundOpacity() ignored. Valid values are: floats between 0 and 1.");
 		return this;
 	}
-	jQuery.sap.byId(this.getId() + "-BG").css("opacity", fOpacity);
+	this.$("BG").css("opacity", fOpacity);
 	return this.setProperty("backgroundOpacity", fOpacity, true); // no rerendering - live opacity change looks cooler
 };
 

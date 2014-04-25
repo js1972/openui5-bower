@@ -7,9 +7,9 @@
 /*
  * Provides convenience functions for synchronous communication, based on the jQuery.ajax() function.
  */
-jQuery.sap.declare("jquery.sap.sjax", false);
-
-(function() {
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
 	jQuery.sap.sjaxSettings = {
 		/**
@@ -41,7 +41,7 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 *
 	 * Note that async=false is always enforced by this method.
 	 *
-	 * @param {String} oOrigSettings the ajax() settings
+	 * @param {string} oOrigSettings the ajax() settings
 	 * @return result, see above
 	 *
 	 * @public
@@ -88,9 +88,9 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 * Convenience wrapper for {@link jQuery.sap.sjax} that enforeces the Http method GET and defaults the
 	 * data type of the result to 'text'.
 	 *
-	 * @param {String} sUrl the URL
-	 * @param {String|object} data request parameters in the format accepted by jQuery.ajax()
-	 * @param {String} [sDataType='text'] the type of data expected from the server, default is "text"
+	 * @param {string} sUrl the URL
+	 * @param {string|object} data request parameters in the format accepted by jQuery.ajax()
+	 * @param {string} [sDataType='text'] the type of data expected from the server, default is "text"
 	 * @return result @see jQuery.sap.sjax
 	 *
 	 * @public
@@ -111,9 +111,9 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 * Convenience wrapper for {@link jQuery.sap.sjax} that enforces the Http method POST and defaults the
 	 * data type of the result to 'text'.
 	 *
-	 * @param {String} sUrl the URL
-	 * @param {String|object} data request parameters in the format accepted by jQuery.ajax()
-	 * @param {String} [sDataType='text'] the type of data expected from the server, default is "text"
+	 * @param {string} sUrl the URL
+	 * @param {string|object} data request parameters in the format accepted by jQuery.ajax()
+	 * @param {string} [sDataType='text'] the type of data expected from the server, default is "text"
 	 * @return result @see jQuery.sap.sjax
 	 *
 	 * @public
@@ -139,9 +139,9 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 * or they can omit the fallback value (providing only two parameters to syncGetText()).
 	 * They then receive the same complex result object as for the sjax() call.
 	 *
-	 * @param {String} sUrl the URL
-	 * @param {String|object} data request parameters in the format accepted by jQuery.ajax()
-	 * @param {String} [fallback] if set, only data is returned (and this fallback instead in case of errors); if unset, a result structure is returned
+	 * @param {string} sUrl the URL
+	 * @param {string|object} data request parameters in the format accepted by jQuery.ajax()
+	 * @param {string} [fallback] if set, only data is returned (and this fallback instead in case of errors); if unset, a result structure is returned
 	 * @return  result @see jQuery.sap.sjax
 	 *
 	 * @public
@@ -170,8 +170,8 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 	 *
 	 * Note that providing "undefined" or "null" as a fallback is different from omitting the fallback (complex result).
 	 *
-	 * @param {String} sUrl the URL
-	 * @param {String|object} data request parameters in the format accepted by jQuery.ajax()
+	 * @param {string} sUrl the URL
+	 * @param {string|object} data request parameters in the format accepted by jQuery.ajax()
 	 * @param {object} [fallback] if set, only data is returned (and this fallback instead in case of errors); if unset, a result structure is returned
 	 * @return result @see jQuery.sap.sjax
 	 *
@@ -190,4 +190,6 @@ jQuery.sap.declare("jquery.sap.sjax", false);
 		});
 	};
 
-}());
+	return jQuery;
+
+}, /* bExport= */ false);

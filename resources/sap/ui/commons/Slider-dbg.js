@@ -69,8 +69,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * Users can move the pointer along the line to change values with graphical support.
  * @extends sap.ui.core.Control
  *
- * @author Sebastian Allmann 
- * @version 1.18.12
+ * @author SAP AG 
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -555,7 +555,7 @@ sap.ui.commons.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Slider</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Slider</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Slider} <code>this</code> to allow method chaining
  * @public
@@ -619,7 +619,7 @@ sap.ui.commons.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Slider</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Slider</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Slider} <code>this</code> to allow method chaining
  * @public
@@ -687,9 +687,9 @@ sap.ui.commons.Slider.prototype.onAfterRendering = function () {
 		jQuery.sap.log.warning('Property wrong: Min:' + this.getMin() + ' > Max:' + this.getMax() );
 	}
 
-	this.oGrip = jQuery.sap.domById(this.getId() + '-grip');
-	this.oBar  = jQuery.sap.domById(this.getId() + '-bar');
-	this.oHiLi = jQuery.sap.domById(this.getId() + '-hili');
+	this.oGrip = this.getDomRef("grip");
+	this.oBar  = this.getDomRef("bar");
+	this.oHiLi = this.getDomRef("hili");
 	this.bRtl  = sap.ui.getCore().getConfiguration().getRTL();
 	this.bAcc  = sap.ui.getCore().getConfiguration().getAccessibility();
 	this.bTextLabels = (this.getLabels() && this.getLabels().length > 0);
@@ -1579,7 +1579,7 @@ sap.ui.commons.Slider.prototype.updateValueProperty = function(fNewValue,oGrip) 
 /**
  * Function to set width and position of highlight bar
  *
- * @param int iNewPos
+ * @param {int} iNewPos
  * @private
  */
 sap.ui.commons.Slider.prototype.adjustHighlightBar = function(iNewPos,oGrip) {
@@ -1646,7 +1646,7 @@ sap.ui.commons.Slider.prototype.calcDecimalFactor = function(Value) {
 /* Overwrite of generated function - no new JS-doc.
  * Property setter for the editable state
  *
- * @param bEditable Whether the Slider should be editable, or not (read-only then)
+ * @param {boolean} bEditable Whether the Slider should be editable, or not (read-only then)
  * @return {sap.ui.commons.Slider} <code>this</code> to allow method chaining
  * @public
  */
@@ -1830,7 +1830,7 @@ sap.ui.commons.Slider.prototype.setAriaState = function() {
  *
  * @private
  * @param {jQuery} oGrip
- * @return float Value for the grip, which was passed to this function
+ * @return {float} Value for the grip, which was passed to this function
  */
 sap.ui.commons.Slider.prototype.getValueForGrip = function(oGrip) {
 	return this.getValue();
@@ -1840,11 +1840,11 @@ sap.ui.commons.Slider.prototype.getValueForGrip = function(oGrip) {
  * Check if new position and new value are valid within the slider
  *
  * @private
- * @param float fNewValue
- * @param int iNewPos
+ * @param {float} fNewValue
+ * @param {int} iNewPos
  * @param {jQuery} oGrip
- * @param boolean bMin If true, checks if validation should be done with minimum values, else it uses maximum values
- * @return oCorrectedData Object with modified data, if validation was not successful
+ * @param {boolean} bMin If true, checks if validation should be done with minimum values, else it uses maximum values
+ * @return {object} oCorrectedData Object with modified data, if validation was not successful
  */
 sap.ui.commons.Slider.prototype.validateNewPosition = function(fNewValue, iNewPos, oGrip, bMin) {
 	if (!this.bRtl || this.getVertical()) {
@@ -1888,8 +1888,8 @@ sap.ui.commons.Slider.prototype.validateNewPosition = function(fNewValue, iNewPo
  * Gets the nearest label (realative to the specified value).
  *
  * @private
- * @param float fNewValue
- * @return string Text for label
+ * @param {float} fNewValue
+ * @return {string} Text for label
  */
 sap.ui.commons.Slider.prototype.getNearestLabel = function(fValue) {
 	var iPos = Math.round((this.getLabels().length-1)/(this.getMax() - this.getMin())*(fValue-this.getMin()));
@@ -1904,7 +1904,7 @@ sap.ui.commons.Slider.prototype.getNearestLabel = function(fValue) {
  * Function returns nearest grip (if there is more than one grip). There is only one grip for the basic slider
  *
  * @private
- * @param int iOffset Offset relative to Bar
+ * @param {int} iOffset Offset relative to Bar
  * 
  */
 sap.ui.commons.Slider.prototype.getNearestGrip = function(iOffset) {
@@ -1933,9 +1933,9 @@ sap.ui.commons.Slider.prototype.getRightGrip = function() {
  * Set left/top for an object. Translates the value for vertical sldiers and RTL
  *
  * @private
- * @param int iNewPos New left attribute for specified object
+ * @param {int} iNewPos New left attribute for specified object
  * @param {jQuery} oObject
- * @param oObject
+ * @param {object} oObject
  */
 sap.ui.commons.Slider.prototype.setLeft = function(iNewPos, oObject) {
 	if (oObject == undefined) return;
@@ -2010,8 +2010,8 @@ sap.ui.commons.Slider.prototype.getOffsetX = function(oEvent) {
 /**
  * convert fNewValue for RTL-Mode
  *
- * @param float fNewValue input value
- * @returns float output value
+ * @param {float} fNewValue input value
+ * @returns {float} output value
  * @private
  */
 sap.ui.commons.Slider.prototype.convertRtlValue = function(fNewValue) {
@@ -2025,7 +2025,7 @@ sap.ui.commons.Slider.prototype.convertRtlValue = function(fNewValue) {
 /**
  * Check if a specified target is a valid grip
  *
- * @param string sMyTargetId
+ * @param {string} sMyTargetId
  * @private
  */
 sap.ui.commons.Slider.prototype.targetIsGrip = function(sMyTargetId) {

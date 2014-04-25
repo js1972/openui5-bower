@@ -1729,8 +1729,10 @@ function getSpecialEventObject( eventType ) {
 						// we need to watch both scroll and touchmove events to figure out whether
 						// or not a scroll happenens before the touchend event is fired.
 
-						.bind( "touchmove", handleTouchMove )
-						.bind( "scroll", handleScroll );
+						.bind( "touchmove", handleTouchMove );
+					//TODO: investigate and find out why tapping on listitem triggers a scroll event
+					// which prevents the tap event from being fired.
+//						.bind( "scroll", handleScroll );
 				}
 			}
 		},
@@ -1845,6 +1847,17 @@ if ( eventCaptureSupported ) {
 						//      instead of waiting for the reset timer to fire.
 
 						// SAP MODIFICATION
+						// The simulated mouse events from mobile browser which are fired with 300ms delay are marked here.
+						//
+						// Those marked events can be suppressed in event handler to avoid handling the semantic identical
+						// events twice (like touchstart and mousedown).
+						//
+						// One exception is made for event marked with isSynthetic which is fired from the event simulation
+						if ( !e.isSynthetic ) {
+							e._sapui_delayedMouseEvent = true;
+						}
+
+						// SAP MODIFICATION
 						// The event is suppressed only when its target is different than the touchend event's target.
 						// This ensures that only the unnecessary events are suppressed.
 						if ( target === o.target ) {
@@ -1902,7 +1915,10 @@ if ( eventCaptureSupported ) {
 	var supportTouch = $.mobile.support.touch,
 		scrollEvent = "touchmove scroll",
 		touchStartEvent = supportTouch ? "touchstart" : "mousedown",
-		touchStopEvent = supportTouch ? "touchend" : "mouseup",
+		// SAP MODIFICATION
+		// touchcancel has to be used because touchcancel is fired under some condition instead of
+		// touchend when runs on Windows 8 device.
+		touchStopEvent = supportTouch ? "touchend touchcancel" : "mouseup",
 		touchMoveEvent = supportTouch ? "touchmove" : "mousemove";
 
 	function triggerCustomEvent( obj, eventType, event ) {
@@ -2068,15 +2084,21 @@ if ( eventCaptureSupported ) {
 					}
 				}
 
-				$this.bind( touchMoveEvent, moveHandler )
-					.one( touchStopEvent, function() {
-						$this.unbind( touchMoveEvent, moveHandler );
+				// SAP MODIFICATION
+				// Because touchcancel is used together with touchend, jQuery.fn.bind is used to replace
+				// jQuery.fn.one due to the fact that jQuery.fn.one doesn't work for multiple events.
+				function stopHandler( event ) {
+					$this.unbind( touchMoveEvent, moveHandler )
+						.unbind( touchStopEvent, stopHandler );
 
-						if ( start && stop ) {
-							$.event.special.swipe.handleSwipe( start, stop );
-						}
-						start = stop = undefined;
-					});
+					if ( start && stop ) {
+						$.event.special.swipe.handleSwipe( start, stop );
+					}
+					start = stop = undefined;
+				}
+
+				$this.bind( touchMoveEvent, moveHandler )
+					.bind( touchStopEvent, stopHandler );
 			});
 		}
 	};

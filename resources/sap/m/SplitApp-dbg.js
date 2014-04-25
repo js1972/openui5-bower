@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.SplitContainer");
  * @extends sap.m.SplitContainer
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -168,7 +168,7 @@ sap.m.SplitApp.M_EVENTS = {'orientationChange':'orientationChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.SplitApp</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.SplitApp</code>.<br/> itself.
  *
  * @return {sap.m.SplitApp} <code>this</code> to allow method chaining
  * @public
@@ -262,7 +262,7 @@ sap.m.SplitApp.prototype.exit = function() {
 **************************************************************/
 
 sap.m.SplitApp.prototype._fireOrientationChange = function() {
-	var isLandscape = jQuery.device.is.landscape;
+	var isLandscape = sap.ui.Device.orientation.landscape;
 	if (this._oldIsLandscape !== isLandscape) {
 		this.fireOrientationChange({landscape: isLandscape});
 	}

@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -203,7 +203,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ValueHelpField</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ValueHelpField</code>.<br/> itself.
  *
  * @return {sap.ui.commons.ValueHelpField} <code>this</code> to allow method chaining
  * @public
@@ -286,7 +286,7 @@ sap.ui.commons.ValueHelpField.prototype.setEnabled = function(bEnabled) {
 	sap.ui.commons.TextField.prototype.setEnabled.apply(this, arguments);
 
 	if (this.getDomRef() && bOldEnabled != bEnabled && !this.bIsIconURI) {
-		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
+		var oIcon = this.$("icon");
 		if (bEnabled) {
 			oIcon.attr( 'src', this.sIconRegularUrl );
 			oIcon.removeClass('sapUiTfValueHelpDsblIcon');
@@ -304,7 +304,7 @@ sap.ui.commons.ValueHelpField.prototype.setEditable = function(bEditable) {
 	sap.ui.commons.TextField.prototype.setEditable.apply(this, arguments);
 
 	if (this.getDomRef() && bOldEditable != bEditable && !this.bIsIconURI) {
-		var oIcon = jQuery.sap.byId(this.getId() + '-icon');
+		var oIcon = this.$("icon");
 		if (bEditable) {
 			oIcon.removeClass('sapUiTfValueHelpDsblIcon');
 			oIcon.addClass('sapUiTfValueHelpRegularIcon');

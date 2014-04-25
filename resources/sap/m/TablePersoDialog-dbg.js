@@ -17,7 +17,11 @@ jQuery.sap.require("sap.m.Button");
 
 
 /**
- * The TablePersoDialog can be used to display and allow modification of personalization settings relating to a Table
+ * The TablePersoDialog can be used to display and allow modification of personalization settings relating to a Table. It displays the columns of the table that it refers to by using
+ * <ul><li>The result of calling sap.m.TablePersoProvider's 'getCaption' callback if it is implemented and delivers a non-null value for a column</li>
+ * <li>the column header control's 'text' property if no caption property is available</li>
+ * <li>the column header control's 'title' property if neither 'text' nor 'caption' property are available</li>
+ * <li>the column id is displayed as last fallback, if none of the above is at hand. In that case, a warning is logged. </li></ul>
  *
  * @param {string}
  *			[sId] optional id for the new control; generated automatically if
@@ -31,7 +35,7 @@ jQuery.sap.require("sap.m.Button");
  * @class Table Personalization Dialog
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.18.12
+ * @version 1.20.4
  * @name sap.m.TablePersoDialog
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.TablePersoDialog */
@@ -45,8 +49,15 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
 
 	metadata : {
 		properties: {
-			"contentWidth": {type: "sap.ui.core/CSSSize"},
-			"persoMap": {type: "object"}
+			"contentWidth": {type: "sap.ui.core.CSSSize"},
+			"persoMap": {type: "object"},
+			"columnInfo": {type: "object"}
+		},
+		aggregations: {
+			"persoService": {
+				type: "Object",
+				multiple: false
+			}
 		},
 		associations: {
 			"persoDialogFor": sap.m.Table
@@ -87,29 +98,61 @@ sap.m.TablePersoDialog.prototype.init = function() {
 		})
 	}).addStyleClass("sapMPersoDialogLI");
 
+	//Button definition for sorting of the table content(up/down)
+	this._oButtonUp = new sap.m.Button({
+					icon: "sap-icon://arrow-top",
+					enabled: false,
+					press: function(oEvent) {
+						that._moveItem(-1);
+						},
+	});
+	
+	this._oButtonDown = new sap.m.Button({
+					  icon: "sap-icon://arrow-bottom",
+					  enabled: false,
+					  press: function(oEvent) {
+						  that._moveItem(1);
+					  	}
+	});
+	
+	this._fnUpdateArrowButtons = function() {
+		var oList = that._oDialog.getContent()[0],
+			length = oList.getItems().length;
+		//Initialisation of the enabled property 
+		var bButtonDownEnabled = true,
+		    bButtonUpEnabled = true;
+		if (length == 0) {
+			//No data -> both buttons(arrow-up/-down have to be disabled!)
+			bButtonUpEnabled = false;
+			bButtonDownEnabled = false;
+			
+		} else {
+			//data available (1 or more items)
+			if (oList.getItems()[0].getSelected()) {
+				//first item selected: disable button "arrow top"
+				bButtonUpEnabled = false;
+			};
+			if (oList.getItems()[length-1].getSelected()){
+				//last item selected: disable button "arrow bottom"
+				bButtonDownEnabled = false;
+			};
+		};
+		that._oButtonUp.setEnabled(bButtonUpEnabled);
+		that._oButtonDown.setEnabled(bButtonDownEnabled);
+	};
+	
+	
 	this._oDialog = new sap.m.Dialog({
 		title : this._oRb.getText("PERSODIALOG_COLUMNS_TITLE"),
 		stretch: sap.ui.Device.system.phone,
 		horizontalScrolling: false,
 		content : new sap.m.List({
 			includeItemInSelection: true,
-			mode: sap.m.ListMode.SingleSelectMaster
+			mode: sap.m.ListMode.SingleSelectMaster,
+			select: this._fnUpdateArrowButtons,
 		}),
 		subHeader : new sap.m.Bar({
-			contentLeft: [
-				new sap.m.Button({
-					icon: "sap-icon://arrow-top",
-					press: function(oEvent) {
-						that._moveItem(-1);
-				}
-				}),
-				new sap.m.Button({
-					icon: "sap-icon://arrow-bottom",
-					press: function(oEvent) {
-						that._moveItem(1);
-					}
-				})
-			],
+			contentLeft: [ this._oButtonUp, this._oButtonDown],
 			contentRight: new sap.m.Button({
 				icon: "sap-icon://refresh",
 				press : function () {
@@ -121,6 +164,8 @@ sap.m.TablePersoDialog.prototype.init = function() {
 			text : this._oRb.getText("PERSODIALOG_OK"),
 			press : function () {
 				this.getParent().close();
+				that._oButtonUp.setEnabled(false);
+				that._oButtonDown.setEnabled(false);				
 				that.fireConfirm();
 			}
 		}),
@@ -129,11 +174,13 @@ sap.m.TablePersoDialog.prototype.init = function() {
 			press: function () {
 				that._readCurrentSettingsFromTable();
 				this.getParent().close();
+				that._oButtonUp.setEnabled(false);
+				that._oButtonDown.setEnabled(false);				
 				that.fireCancel();
 			}
 		})
 	}).addStyleClass("sapMPersoDialog");
-	
+
 };
 
 /**
@@ -187,6 +234,35 @@ sap.m.TablePersoDialog.prototype.setContentWidth = function(sWidth) {
 	return this;
 };
 
+/**
+ * Destroys the control
+ * @private
+ */
+sap.m.TablePersoDialog.prototype.exit = function () {
+	this._oRb = null;
+	this._oP13nModel = null;
+	this._oInitialState = null;
+
+	if (this._columnItemTemplate) {
+		this._columnItemTemplate.destroy();
+		this._columnItemTemplate = null;
+	}
+
+	if (this._oDialog) {
+		this._oDialog.destroy();
+		this._oDialog = null;
+	}
+	
+	if(this._oButtonDown){
+		this._oButtonDown.destroy();
+		this._oButtonDown = null;
+	}
+	if(this._oButtonUp){
+		this._oButtonUp.destroy();
+		this._oButtonUp = null;
+	}
+};
+
 /* =========================================================== */
 /*           begin: internal methods                           */
 /* =========================================================== */
@@ -214,19 +290,40 @@ sap.m.TablePersoDialog.prototype._tableColumnInfo = function (oTable) {
 	//Check if persoMap has been passed into the dialog.
 	//Otherwise, personalization is not possible.
 	if(!!this.getPersoMap()) {
-		var aColumns = oTable.getColumns();
-		var aColumnInfo = [];
-		
-		for (var c = 0, cl = aColumns.length; c < cl; c++) {
-			var oColumn = aColumns[c];
+		var aColumns = oTable.getColumns(),
+			that = this,
+			aColumnInfo = [];
+		aColumns.forEach(function(oColumn){
+			var sCaption = null;
+			if(that.getPersoService().getCaption) {
+				sCaption = that.getPersoService().getCaption(oColumn);
+			}
 			
+			if (!sCaption) {
+				var oColHeader = oColumn.getHeader();
+				//Check if header control has either text or 'title' property
+				if(oColHeader.getText && oColHeader.getText()) {
+					sCaption = oColHeader.getText();
+				} else if(oColHeader.getTitle && oColHeader.getTitle()) {
+					sCaption = oColHeader.getTitle();
+				}
+			}
+				
+			if (!sCaption){
+				//Fallback: use column id and issue warning to let app developer know to add captions to columns
+				sCaption = oColumn.getId();
+				jQuery.sap.log.warning("Please 'getCaption' callback implentation in your TablePersoProvider for column " + oColumn + ". Table personalization uses column id as fallback value.");
+			}
+			
+			//In this case, oColumn is one of our controls. Therefore, sap.ui.core.Element.toString() 
+			//is called which delivers something like 'Element sap.m.Column#<sId>' where sId is the column's sId property
 			aColumnInfo.push({
-				text : oColumn.getHeader().getText(),
+				text : sCaption,
 				order : oColumn.getOrder(),
 				visible : oColumn.getVisible(),
-				id: this.getPersoMap()[oColumn]
+				id: that.getPersoMap()[oColumn]
 			});
-		}
+		});
 
 		// Sort to make sure they're presented in the right order
 		aColumnInfo.sort(function(a, b) { return a.order - b.order; });
@@ -281,6 +378,7 @@ sap.m.TablePersoDialog.prototype._moveItem = function (iDirection) {
 	// Switch the selected item
 	oList.setSelectedItem(oList.getItems()[swap], true);
 
+	this._fnUpdateArrowButtons.call(this);
 };
 
 /**
@@ -308,7 +406,7 @@ sap.m.TablePersoDialog.prototype._swapListItemContent = function(oList, iItem, i
 	jQuery(sSwitchSwapId).html(jQuery(sSwitchItemId).html());
 	jQuery(sSwitchItemId).html(sSwitchTemp);
 
-}
+};
 
 /**
  * Reads current column settings from the table and stores in the model

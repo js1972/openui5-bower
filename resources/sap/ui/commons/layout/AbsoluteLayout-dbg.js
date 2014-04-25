@@ -39,7 +39,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getPositions positions} : sap.ui.commons.layout.PositionContainer[]</li></ul>
+ * <li>{@link #getPositions positions} <strong>(default aggregation)</strong> : sap.ui.commons.layout.PositionContainer[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -236,6 +236,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * Getter for aggregation <code>positions</code>.<br/>
  * Positioned child controls within the layout
  * 
+ * <strong>Note</strong>: this is the default aggregation for layout/AbsoluteLayout.
  * @return {sap.ui.commons.layout.PositionContainer[]}
  * @public
  * @name sap.ui.commons.layout.AbsoluteLayout#getPositions

@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -262,7 +262,7 @@ sap.m.PullToRefresh.M_EVENTS = {'refresh':'refresh'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.PullToRefresh</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.PullToRefresh</code>.<br/> itself.
  *
  * @return {sap.m.PullToRefresh} <code>this</code> to allow method chaining
  * @public
@@ -311,7 +311,7 @@ sap.m.PullToRefresh.M_EVENTS = {'refresh':'refresh'};
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 
 sap.m.PullToRefresh.prototype.init = function(){
-	this._bTouchMode = jQuery.support.touch || jQuery.sap.simulateMobileOnDesktop; // FIXME: plus fakeOS mode
+	this._bTouchMode = sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop; // FIXME: plus fakeOS mode
 	this._bPltfDpndnt = sap.ui.core.theming.Parameters.get("sapMPlatformDependent") == "true"; 
 	
 	this._iState = 0; // 0 - normal; 1 - release to refresh; 2 - loading
@@ -392,24 +392,12 @@ sap.m.PullToRefresh.prototype.exit = function(){
 };
 
 // ScrollEnablement callback functions
-sap.m.PullToRefresh.prototype.doScrollMove = function(scrollY, bScrolling, bNative){
+sap.m.PullToRefresh.prototype.doScrollMove = function(){
+	//callback for iScroll
 	if(!this._oScroller){ return; }
 	
 	var domRef = this._oDomRef;
 
-	if(bNative){ // native scrolling
-		if(this._bTouchMode && domRef){
-			if(bScrolling && this._iState < 2){
-				// switch pull down state: rotate its arrow
-				this.setState(domRef.offsetTop >= scrollY - 1 ? 1: 0);
-			} else if(!bScrolling && scrollY < domRef.offsetTop + domRef.offsetHeight){
-				this._oScroller.refresh(); // hide the pull down after momentum scrolling to the top
-			}
-		}
-		return;
-	}
-
-	//iScroll
 	var _scroller = this._oScroller._scroller;
 	if(_scroller.y > -this._iTopTrigger && this._iState < 1 ){
 		this.setState(1);
@@ -417,6 +405,14 @@ sap.m.PullToRefresh.prototype.doScrollMove = function(scrollY, bScrolling, bNati
 	} else if (_scroller.y < -this._iTopTrigger && this._iState == 1){
 		this.setState(0);
 		_scroller.minScrollY = -domRef.offsetHeight;
+	}
+};
+
+sap.m.PullToRefresh.prototype.doPull = function(posY){
+	// callback native scrolling, pull
+	if(this._bTouchMode && this._iState < 2){
+		// switch pull down state: rotate its arrow
+		this.setState(posY >= - 1 ? 1: 0);
 	}
 };
 

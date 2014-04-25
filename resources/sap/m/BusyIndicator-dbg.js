@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -375,9 +375,9 @@ sap.m.BusyIndicator.prototype.init = function(){
 		// Blue crystal design: rotating arc
 		// bugs.webkit.org: id=82647, id=74801 dynamically created SVG does not animate
 		// do not use SVG in ios and android < 4.2 
-		if(jQuery.browser.chrome 
-				|| jQuery.os.blackberry
-				|| jQuery.os.android && jQuery.os.fVersion > 4.1){
+		if(sap.ui.Device.browser.chrome 
+				|| sap.ui.Device.os.blackberry
+				|| sap.ui.Device.os.android && sap.ui.Device.os.version > 4.1){
 			// Browsers with correct SMIL animation show SVG (crisp rendering)
 			this._bUseSvg = true;
 		} else {
@@ -385,7 +385,7 @@ sap.m.BusyIndicator.prototype.init = function(){
 			this._bUseCanvas = true;
 		}
 	}
-	this._bIosStyle = jQuery.os.ios;
+	this._bIosStyle = sap.ui.Device.os.ios;
 	this._sBColor = sap.ui.core.theming.Parameters.get("sapUiPageBG") || "rgba(0, 0, 0, 0)";
 };
 
@@ -471,7 +471,7 @@ sap.m.BusyIndicator.prototype._animateCanvas = function(){
 	
 	// clearRect does not clear canvas in Android browser 4.1, 
 	// workaround: draw a white circle underneath
-	if(jQuery.os.android && jQuery.os.fVersion == 4.1 && !jQuery.browser.chrome){
+	if(sap.ui.Device.os.android && sap.ui.Device.os.version == 4.1 && !sap.ui.Device.browser.chrome){
 		context.strokeStyle = this._sBColor; 
 		context.lineWidth = lineWidth + 2;
 		context.beginPath();
@@ -491,7 +491,7 @@ sap.m.BusyIndicator.prototype._animateCanvas = function(){
 // Start the canvas based animation
 // @private 
 sap.m.BusyIndicator.prototype._doCanvas = function(){
-	this.oCanvas = jQuery.sap.domById(this.getId()+"-canvas");
+	this.oCanvas = this.getDomRef("canvas");
 	this._fAnimateCallback = jQuery.proxy(this._animateCanvas, this);
 	this._animationId = this._requestAnimation(this._fAnimateCallback, this.oCanvas);
 };
@@ -553,8 +553,8 @@ sap.m.BusyIndicator.prototype._doPlatformDependent = function(){
 	}
 };
 
-//Set the rotation speed of the image
-//@private 
+// Set the rotation speed of the image
+// @private 
 sap.m.BusyIndicator.prototype._setRotationSpeed = function(){
 
 	if(!this._iconImage) return;

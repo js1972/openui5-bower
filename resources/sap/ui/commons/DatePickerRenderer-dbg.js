@@ -148,16 +148,19 @@ sap.ui.commons.DatePickerRenderer.renderARIAInfo = function(rm, oDatePicker) {
 };
 
 sap.ui.commons.DatePickerRenderer.convertPlaceholder = function(oDatePicker) {
-	
+
 	var sPlaceholder = oDatePicker.getPlaceholder();
-	
-	if (sPlaceholder.length == 8) {
-		var	oDate = oDatePicker._oFormatYyyymmdd.parse(sPlaceholder);
+
+	if (sPlaceholder.length == 8 && !isNaN(sPlaceholder)) {
+		var oDate = oDatePicker._oFormatYyyymmdd.parse(sPlaceholder);
 		if (oDate) {
+			if (!oDatePicker._oFormat) {
+				oDatePicker.getRenderedLocale();
+			}
 			sPlaceholder = oDatePicker._oFormat.format(oDate);
 		}
 	}
-	
+
 	return sPlaceholder;
-	
+
 };

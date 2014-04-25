@@ -10,10 +10,10 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.core (1.18.12)
+ * Initialization Code and shared classes of library sap.ui.core (1.20.4)
  */
-jQuery.sap.declare("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Core");
+sap.ui.define(['./Core'], function() {
+
 /**
  * The SAPUI5 Core Runtime. 
  *   
@@ -65,7 +65,8 @@ sap.ui.getCore().initLibrary({
     "void"
   ],
   interfaces: [
-    "sap.ui.core.Label"
+    "sap.ui.core.Label",
+    "sap.ui.core.PopupInterface"
   ],
   controls: [
     "sap.ui.core.ComponentContainer",
@@ -100,7 +101,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.search.SearchProvider",
     "sap.ui.core.tmpl.DOMAttribute"
   ],
-  version: "1.18.12"});
+  version: "1.20.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -114,15 +115,15 @@ sap.ui.getCore().initLibrary({
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.AccessibleRole.
-jQuery.sap.declare("sap.ui.core.AccessibleRole");
-
+sap.ui.define("sap/ui/core/AccessibleRole", function() {
+	"use strict";
 
 /**
  * @class Defines the accessible roles for ARIA support. This enumeration is used with the AccessibleRole control property.
  * For more information, goto "Roles for Accessible Rich Internet Applications (WAI-ARIA Roles)" at the www.w3.org homepage.
  * 
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -514,6 +515,10 @@ sap.ui.core.AccessibleRole = {
     TreeItem : "TreeItem"
 
   };
+
+
+	return sap.ui.core.AccessibleRole;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -526,13 +531,13 @@ sap.ui.core.AccessibleRole = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.BarColor.
-jQuery.sap.declare("sap.ui.core.BarColor");
-
+sap.ui.define("sap/ui/core/BarColor", function() {
+	"use strict";
 
 /**
  * @class Configuration options for the colors of a progress bar
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -563,6 +568,10 @@ sap.ui.core.BarColor = {
     NEGATIVE : "NEGATIVE"
 
   };
+
+
+	return sap.ui.core.BarColor;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -575,27 +584,28 @@ sap.ui.core.BarColor = {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.CSSColor
-jQuery.sap.declare('sap.ui.core.CSSColor');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/CSSColor',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class A string type that represents CSS color values. Allowed values are CSS hex colors like "#666666" or
  * 	"#fff", RGB/HSL values like "rgb(0,0,0)" or "hsla(50%,10%,30%,0.5)" as well as css color
  * 	names like "green" and "darkblue" and values like "inherit" and "transparent".
  * 	The empty string is also allowed and has the same effect as setting no color.
- *
- * @static
- * @public
- */
-sap.ui.core.CSSColor = sap.ui.base.DataType.createType('sap.ui.core.CSSColor', {
-    isValid : function(vValue) {
-      return /^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgb\(\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*(,\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*){2}\)|rgba\((\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*,){3}\s*(0(\.[0-9]+)?|1(\.0+)?)\s*\)|hsl\(\s*([0-2]?[0-9]?[0-9]|3([0-5][0-9]|60))\s*(,\s*(([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*){2}\)|hsla\(\s*([0-2]?[0-9]?[0-9]|3([0-5][0-9]|60))\s*,(\s*(([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*,){2}\s*(0(\.[0-9]+)?|1(\.0+)?)\s*\)|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coralcornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silverskyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|transparent|inherit|)$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.CSSColor = DataType.createType('sap.ui.core.CSSColor', {
+	    isValid : function(vValue) {
+	      return /^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgb\(\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*(,\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*){2}\)|rgba\((\s*((1?[0-9]?[0-9]|2([0-4][0-9]|5[0-5]))|([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*,){3}\s*(0(\.[0-9]+)?|1(\.0+)?)\s*\)|hsl\(\s*([0-2]?[0-9]?[0-9]|3([0-5][0-9]|60))\s*(,\s*(([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*){2}\)|hsla\(\s*([0-2]?[0-9]?[0-9]|3([0-5][0-9]|60))\s*,(\s*(([0-9]?[0-9](\.[0-9]+)?|100(\.0+)?)%)\s*,){2}\s*(0(\.[0-9]+)?|1(\.0+)?)\s*\)|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coralcornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silverskyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|transparent|inherit|)$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.CSSColor;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -608,25 +618,26 @@ sap.ui.core.CSSColor = sap.ui.base.DataType.createType('sap.ui.core.CSSColor', {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.CSSSize
-jQuery.sap.declare('sap.ui.core.CSSSize');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/CSSSize',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class A string type that represents CSS size values. Allowed values are CSS sizes like "1px" or "2em" or "50%", but also the special values "auto" and "inherit". 
  * Note that CSS does not allow all of these values for every CSS property representing a size. E.g. "auto" is not an allowed value for a padding size.
- *
- * @static
- * @public
- */
-sap.ui.core.CSSSize = sap.ui.base.DataType.createType('sap.ui.core.CSSSize', {
-    isValid : function(vValue) {
-      return /^(auto|inherit|[-+]?(0*|([0-9]+|[0-9]*\.[0-9]+)([rR][eE][mM]|[eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%)))$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.CSSSize = DataType.createType('sap.ui.core.CSSSize', {
+	    isValid : function(vValue) {
+	      return /^(auto|inherit|[-+]?(0*|([0-9]+|[0-9]*\.[0-9]+)([rR][eE][mM]|[eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%)))$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.CSSSize;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -639,26 +650,27 @@ sap.ui.core.CSSSize = sap.ui.base.DataType.createType('sap.ui.core.CSSSize', {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.CSSSizeShortHand
-jQuery.sap.declare('sap.ui.core.CSSSizeShortHand');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/CSSSizeShortHand',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class This type checks the short hand form of a margin or
  * 		padding definition. E.g. "1px 1px" or up to four values are allowed.
  * 	
- *
- * @static
- * @public
- */
-sap.ui.core.CSSSizeShortHand = sap.ui.base.DataType.createType('sap.ui.core.CSSSizeShortHand', {
-    isValid : function(vValue) {
-      return /^(inherit|(auto|[-+]?(0*|(\d+|\d*\.\d+)([eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%))){1}(\s(auto|[-+]?(0*|(\d+|\d*\.\d+)([eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%)))){0,3})$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.CSSSizeShortHand = DataType.createType('sap.ui.core.CSSSizeShortHand', {
+	    isValid : function(vValue) {
+	      return /^(inherit|(auto|[-+]?(0*|(\d+|\d*\.\d+)([eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%))){1}(\s(auto|[-+]?(0*|(\d+|\d*\.\d+)([eE][mM]|[eE][xX]|[pP][xX]|[cC][mM]|[mM][mM]|[iI][nN]|[pP][tT]|[pP][cC]|%)))){0,3})$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.CSSSizeShortHand;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -671,27 +683,28 @@ sap.ui.core.CSSSizeShortHand = sap.ui.base.DataType.createType('sap.ui.core.CSSS
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.Collision
-jQuery.sap.declare('sap.ui.core.Collision');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/Collision',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class Collision behavior: horizontal/vertical.
  * Defines how the position of an element should be adjusted in case it overflows the window in some direction. For both
  * directions this can be "flip", "fit" or "none". If only one behavior is provided it is applied to both directions.
  * Examples: "flip", "fit none".
- *
- * @static
- * @public
- */
-sap.ui.core.Collision = sap.ui.base.DataType.createType('sap.ui.core.Collision', {
-    isValid : function(vValue) {
-      return /^((flip|fit|none)( (flip|fit|none))?)$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.Collision = DataType.createType('sap.ui.core.Collision', {
+	    isValid : function(vValue) {
+	      return /^((flip|fit|none)( (flip|fit|none))?)$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.Collision;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -704,13 +717,13 @@ sap.ui.core.Collision = sap.ui.base.DataType.createType('sap.ui.core.Collision',
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.Design.
-jQuery.sap.declare("sap.ui.core.Design");
-
+sap.ui.define("sap/ui/core/Design", function() {
+	"use strict";
 
 /**
  * @class Font design for texts
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -729,6 +742,10 @@ sap.ui.core.Design = {
     Monospace : "Monospace"
 
   };
+
+
+	return sap.ui.core.Design;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -741,29 +758,30 @@ sap.ui.core.Design = {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.Dock
-jQuery.sap.declare('sap.ui.core.Dock');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/Dock',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class Docking position: horizontal/vertical.
  * Defines a position on the element which is used for aligned positioning of another element (e.g. the left top 
  * corner of a popup is positioned at the left bottom corner of the input field). For the horizontal position possible values 
  * are "begin", "left", "center", "right" and "end", where left/right always are left and right, or begin/end which are 
  * dependent on the text direction. For the vertical position possible values are "top", "center" and "bottom".
  * Examples: "left top", "end bottom", "center center".
- *
- * @static
- * @public
- */
-sap.ui.core.Dock = sap.ui.base.DataType.createType('sap.ui.core.Dock', {
-    isValid : function(vValue) {
-      return /^((begin|left|center|right|end) (top|center|bottom))$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.Dock = DataType.createType('sap.ui.core.Dock', {
+	    isValid : function(vValue) {
+	      return /^((begin|left|center|right|end) (top|center|bottom))$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.Dock;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -776,13 +794,13 @@ sap.ui.core.Dock = sap.ui.base.DataType.createType('sap.ui.core.Dock', {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.HorizontalAlign.
-jQuery.sap.declare("sap.ui.core.HorizontalAlign");
-
+sap.ui.define("sap/ui/core/HorizontalAlign", function() {
+	"use strict";
 
 /**
  * @class Configuration options for horizontal alignments of controls
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -819,6 +837,10 @@ sap.ui.core.HorizontalAlign = {
     Center : "Center"
 
   };
+
+
+	return sap.ui.core.HorizontalAlign;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -831,24 +853,25 @@ sap.ui.core.HorizontalAlign = {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.ID
-jQuery.sap.declare('sap.ui.core.ID');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/ID',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class A string type representing an Id or a name.
- *
- * @static
- * @public
- */
-sap.ui.core.ID = sap.ui.base.DataType.createType('sap.ui.core.ID', {
-    isValid : function(vValue) {
-      return /^([A-Za-z_][-A-Za-z0-9_.:]*)$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.ID = DataType.createType('sap.ui.core.ID', {
+	    isValid : function(vValue) {
+	      return /^([A-Za-z_][-A-Za-z0-9_.:]*)$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.ID;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -861,13 +884,13 @@ sap.ui.core.ID = sap.ui.base.DataType.createType('sap.ui.core.ID', {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.IconColor.
-jQuery.sap.declare("sap.ui.core.IconColor");
-
+sap.ui.define("sap/ui/core/IconColor", function() {
+	"use strict";
 
 /**
  * @class Semantic Colors of an icon.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -904,6 +927,10 @@ sap.ui.core.IconColor = {
     Neutral : "Neutral"
 
   };
+
+
+	return sap.ui.core.IconColor;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -916,13 +943,13 @@ sap.ui.core.IconColor = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.ImeMode.
-jQuery.sap.declare("sap.ui.core.ImeMode");
-
+sap.ui.define("sap/ui/core/ImeMode", function() {
+	"use strict";
 
 /**
  * @class State of the Input Method Editor (IME) for the control. Depending on its value, it allows users to enter and edit for example Chinese characters.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -953,6 +980,10 @@ sap.ui.core.ImeMode = {
     Disabled : "Disabled"
 
   };
+
+
+	return sap.ui.core.ImeMode;
+}, /* bExport = */ true);
 /**
  * 
  *   Marker interface for controls which are suitable for use as label.
@@ -975,13 +1006,13 @@ sap.ui.core.ImeMode = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.MessageType.
-jQuery.sap.declare("sap.ui.core.MessageType");
-
+sap.ui.define("sap/ui/core/MessageType", function() {
+	"use strict";
 
 /**
  * @class Defines the different message types of a message
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1018,6 +1049,10 @@ sap.ui.core.MessageType = {
     Success : "Success"
 
   };
+
+
+	return sap.ui.core.MessageType;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1030,13 +1065,13 @@ sap.ui.core.MessageType = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.OpenState.
-jQuery.sap.declare("sap.ui.core.OpenState");
-
+sap.ui.define("sap/ui/core/OpenState", function() {
+	"use strict";
 
 /**
  * @class Defines the different possible states of an element that can be open or closed and does not only toggle between these states, but also spends some time in between (e.g. because of an animation).
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1067,6 +1102,10 @@ sap.ui.core.OpenState = {
     CLOSING : "CLOSING"
 
   };
+
+
+	return sap.ui.core.OpenState;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1079,23 +1118,35 @@ sap.ui.core.OpenState = {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.Percentage
-jQuery.sap.declare('sap.ui.core.Percentage');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/Percentage',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class A string type that represents a percentage value.
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.Percentage = DataType.createType('sap.ui.core.Percentage', {
+	    isValid : function(vValue) {
+	      return /^([0-9][0-9]*(\.[0-9]+)?%)$/.test(vValue);
+	    }
+
+	  },
+	  DataType.getType('string')
+	);
+
+	return sap.ui.core.Percentage;
+}, /* bExport = */ true);
+/**
+ * 
+ * Marker interface for controls that are not rendered "embedded" into other controls but need to be opened/closed. 
+ * 
+ * Such controls are handled differently during rendering.
  *
- * @static
+ * @name sap.ui.core.PopupInterface
+ * @interface
  * @public
  */
-sap.ui.core.Percentage = sap.ui.base.DataType.createType('sap.ui.core.Percentage', {
-    isValid : function(vValue) {
-      return /^([0-9][0-9]*(\.[0-9]+)?%)$/.test(vValue);
-    }
-
-  },
-  sap.ui.base.DataType.getType('string')
-);
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1109,13 +1160,13 @@ sap.ui.core.Percentage = sap.ui.base.DataType.createType('sap.ui.core.Percentage
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.ScrollBarAction.
-jQuery.sap.declare("sap.ui.core.ScrollBarAction");
-
+sap.ui.define("sap/ui/core/ScrollBarAction", function() {
+	"use strict";
 
 /**
  * @class Actions are: Click on track, button, drag of thumb, or mouse wheel click
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1146,6 +1197,10 @@ sap.ui.core.ScrollBarAction = {
     Drag : "Drag"
 
   };
+
+
+	return sap.ui.core.ScrollBarAction;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1158,13 +1213,13 @@ sap.ui.core.ScrollBarAction = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.Scrolling.
-jQuery.sap.declare("sap.ui.core.Scrolling");
-
+sap.ui.define("sap/ui/core/Scrolling", function() {
+	"use strict";
 
 /**
  * @class Defines the possible values for horizontal and vertical scrolling behavior.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1195,6 +1250,10 @@ sap.ui.core.Scrolling = {
     Hidden : "Hidden"
 
   };
+
+
+	return sap.ui.core.Scrolling;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1207,13 +1266,13 @@ sap.ui.core.Scrolling = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.TextAlign.
-jQuery.sap.declare("sap.ui.core.TextAlign");
-
+sap.ui.define("sap/ui/core/TextAlign", function() {
+	"use strict";
 
 /**
  * @class Configuration options for text alignments.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1250,6 +1309,10 @@ sap.ui.core.TextAlign = {
     Center : "Center"
 
   };
+
+
+	return sap.ui.core.TextAlign;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1262,13 +1325,13 @@ sap.ui.core.TextAlign = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.TextDirection.
-jQuery.sap.declare("sap.ui.core.TextDirection");
-
+sap.ui.define("sap/ui/core/TextDirection", function() {
+	"use strict";
 
 /**
  * @class Configuration options for the direction of texts.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1293,6 +1356,10 @@ sap.ui.core.TextDirection = {
     Inherit : "Inherit"
 
   };
+
+
+	return sap.ui.core.TextDirection;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1305,13 +1372,13 @@ sap.ui.core.TextDirection = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.TitleLevel.
-jQuery.sap.declare("sap.ui.core.TitleLevel");
-
+sap.ui.define("sap/ui/core/TitleLevel", function() {
+	"use strict";
 
 /**
  * @class Level of a title.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  * @since 1.9.1
@@ -1361,6 +1428,10 @@ sap.ui.core.TitleLevel = {
     H6 : "H6"
 
   };
+
+
+	return sap.ui.core.TitleLevel;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1373,24 +1444,25 @@ sap.ui.core.TitleLevel = {
  * ----------------------------------------------------------------------------------- */
 
 // Provides data type sap.ui.core.URI
-jQuery.sap.declare('sap.ui.core.URI');
-jQuery.sap.require('sap.ui.base.DataType');
+sap.ui.define('sap/ui/core/URI',['sap/ui/base/DataType'], function(DataType) {
 
-/**
+	/**
  * @class A string type that represents an RFC 3986 conformant URI.
- *
- * @static
- * @public
- */
-sap.ui.core.URI = sap.ui.base.DataType.createType('sap.ui.core.URI', {
-    isValid : function(vValue) {
-      return /^((([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?)$/.test(vValue);
-    }
+	 *
+	 * @static
+	 * @public
+	 */
+	sap.ui.core.URI = DataType.createType('sap.ui.core.URI', {
+	    isValid : function(vValue) {
+	      return /^((([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?)$/.test(vValue);
+	    }
 
-  },
-  sap.ui.base.DataType.getType('string')
-);
+	  },
+	  DataType.getType('string')
+	);
 
+	return sap.ui.core.URI;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1403,13 +1475,13 @@ sap.ui.core.URI = sap.ui.base.DataType.createType('sap.ui.core.URI', {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.ValueState.
-jQuery.sap.declare("sap.ui.core.ValueState");
-
+sap.ui.define("sap/ui/core/ValueState", function() {
+	"use strict";
 
 /**
  * @class Marker for the correctness of the current value.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1440,6 +1512,10 @@ sap.ui.core.ValueState = {
     None : "None"
 
   };
+
+
+	return sap.ui.core.ValueState;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1452,15 +1528,15 @@ sap.ui.core.ValueState = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.VerticalAlign.
-jQuery.sap.declare("sap.ui.core.VerticalAlign");
-
+sap.ui.define("sap/ui/core/VerticalAlign", function() {
+	"use strict";
 
 /**
  * @class
  * Configuration options for vertical alignments, for example of a layout cell content within the borders.
  * 
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1499,6 +1575,10 @@ sap.ui.core.VerticalAlign = {
     Inherit : "Inherit"
 
   };
+
+
+	return sap.ui.core.VerticalAlign;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1511,13 +1591,13 @@ sap.ui.core.VerticalAlign = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.Wrapping.
-jQuery.sap.declare("sap.ui.core.Wrapping");
-
+sap.ui.define("sap/ui/core/Wrapping", function() {
+	"use strict";
 
 /**
  * @class Configuration options for text wrapping.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1548,6 +1628,10 @@ sap.ui.core.Wrapping = {
     Off : "Off"
 
   };
+
+
+	return sap.ui.core.Wrapping;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1560,13 +1644,13 @@ sap.ui.core.Wrapping = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.mvc.ViewType.
-jQuery.sap.declare("sap.ui.core.mvc.ViewType");
-
+sap.ui.define("sap/ui/core/mvc/ViewType", function() {
+	"use strict";
 
 /**
  * @class Specifies possible view types
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1603,6 +1687,10 @@ sap.ui.core.mvc.ViewType = {
     Template : "Template"
 
   };
+
+
+	return sap.ui.core.mvc.ViewType;
+}, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1615,13 +1703,13 @@ sap.ui.core.mvc.ViewType = {
  * ---------------------------------------------------------------------------------- */
 
 // Provides enumeration sap.ui.core.routing.HistoryDirection.
-jQuery.sap.declare("sap.ui.core.routing.HistoryDirection");
-
+sap.ui.define("sap/ui/core/routing/HistoryDirection", function() {
+	"use strict";
 
 /**
  * @class Enumaration for different HistoryDirections
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1652,6 +1740,10 @@ sap.ui.core.routing.HistoryDirection = {
     Unknown : "Unknown"
 
   };
+
+
+	return sap.ui.core.routing.HistoryDirection;
+}, /* bExport = */ true);
 
 // -----------------------------------------------------------------------------
 // Begin of Library Initialization coding, copied from shared.js
@@ -1688,3 +1780,5 @@ sap.ui.core.routing.HistoryDirection = {
 	each("sap.ui.core.tmpl.", ["Template"], "sap.ui");
 
 }());
+
+}, /* bExport = */ false);

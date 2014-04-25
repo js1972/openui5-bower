@@ -3,12 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.base.Event");jQuery.sap.require("sap.ui.base.Object");sap.ui.base.Object.extend("sap.ui.base.Event",{constructor:function(i,s,p){sap.ui.base.Object.apply(this);if(arguments.length>0){this.init(i,s,p)}}});
-sap.ui.base.Event.prototype.init=function(i,s,p){this.sId=i;this.oSource=s;this.mParameters=p||{};this.bCancelBubble=false;this.bPreventDefault=false};
-sap.ui.base.Event.prototype.reset=function(){this.sId="";this.oSource=null;this.mParameters=null;this.bCancelBubble=false;this.bPreventDefault=false};
-sap.ui.base.Event.prototype.getId=function(){return this.sId};
-sap.ui.base.Event.prototype.getSource=function(){return this.oSource};
-sap.ui.base.Event.prototype.getParameters=function(){return this.mParameters};
-sap.ui.base.Event.prototype.getParameter=function(n){return this.mParameters[n]};
-sap.ui.base.Event.prototype.cancelBubble=function(){this.bCancelBubble=true};
-sap.ui.base.Event.prototype.preventDefault=function(){this.bPreventDefault=true};
+sap.ui.define(['jquery.sap.global','./Object'],function(q,B){"use strict";var E=B.extend("sap.ui.base.Event",{constructor:function(i,s,p){B.apply(this);if(arguments.length>0){this.init(i,s,p)}}});E.prototype.init=function(i,s,p){this.sId=i;this.oSource=s;this.mParameters=p||{};this.bCancelBubble=false;this.bPreventDefault=false};E.prototype.reset=function(){this.sId="";this.oSource=null;this.mParameters=null;this.bCancelBubble=false;this.bPreventDefault=false};E.prototype.getId=function(){return this.sId};E.prototype.getSource=function(){return this.oSource};E.prototype.getParameters=function(){return this.mParameters};E.prototype.getParameter=function(n){return this.mParameters[n]};E.prototype.cancelBubble=function(){this.bCancelBubble=true};E.prototype.preventDefault=function(){this.bPreventDefault=true};return E},true);

@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -261,7 +261,7 @@ sap.ui.commons.DropdownBox.M_EVENTS = {'searchHelp':'searchHelp'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.DropdownBox</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.DropdownBox</code>.<br/> itself.
  *
  * @return {sap.ui.commons.DropdownBox} <code>this</code> to allow method chaining
  * @public
@@ -1117,7 +1117,7 @@ sap.ui.commons.DropdownBox.prototype._doSelect = function(iStart, iEnd){
 
 /**
  * Adapt the selection to the cursor position and move the curser beforehand (if parameter iMoveBy is given)
- * @param {integer} iMoveBy the number of places the cursor should move (can be positive (move right) or negative (move left))
+ * @param {int} iMoveBy the number of places the cursor should move (can be positive (move right) or negative (move left))
  * @private
  */
 sap.ui.commons.DropdownBox.prototype._updateSelection = function(iMoveBy) {
@@ -1406,7 +1406,7 @@ sap.ui.commons.DropdownBox.prototype._addHistoryItems = function(aItems, rFilter
  * If sSepId is given, this id will be used to either find or create the Separator.
  * If sSepId is omitted, only previously found separator will be returned but no new Separator would be created.
  *
- * @param {sap.ui.core/string} [sSepId] id of the separator to find or create. If omitted, only previously found separator will be returned.
+ * @param {string} [sSepId] id of the separator to find or create. If omitted, only previously found separator will be returned.
  * @returns {sap.ui.core.SeparatorItem} separator item if found or created or null.
  */
 sap.ui.commons.DropdownBox.prototype._getSeparator = function(sSepId){
@@ -1508,7 +1508,7 @@ sap.ui.commons.DropdownBox.prototype.applyFocusInfo = function(oFocusInfo){
  * @protected
  */
 sap.ui.commons.DropdownBox.prototype.onsapfocusleave = function(oEvent) {
-	this._resetCheck();
+
 	var oLB = this._getListBox();
 	if(oEvent.relatedControlId && jQuery.sap.containsOrEquals(oLB.getFocusDomRef(), sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())){
 		this.focus();
@@ -1525,8 +1525,9 @@ sap.ui.commons.DropdownBox.prototype.onsapfocusleave = function(oEvent) {
 			}
 		}
 
-		this._checkChange(oEvent, true);
+		sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
 	}
+
 };
 
 /**

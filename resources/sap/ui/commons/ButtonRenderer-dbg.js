@@ -10,7 +10,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonRenderer");
 /**
  * @class
  * @author SAP AG
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  */
 sap.ui.commons.ButtonRenderer = {
@@ -146,16 +146,16 @@ sap.ui.commons.ButtonRenderer.render = function(rm, oButton) {
  * Function called by button control on mouse down event.
  */
 sap.ui.commons.ButtonRenderer.onactive = function(oButton) {
-	jQuery.sap.byId(oButton.getId()).addClass("sapUiBtnAct").removeClass("sapUiBtnStd");
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "active"));
+	oButton.$().addClass("sapUiBtnAct").removeClass("sapUiBtnStd");
+	oButton.$("img").attr("src", this._getIconForState(oButton, "active"));
 };
 
 /**
  * Function called by button control on mouse up event.
  */
 sap.ui.commons.ButtonRenderer.ondeactive = function(oButton) {
-	jQuery.sap.byId(oButton.getId()).addClass("sapUiBtnStd").removeClass("sapUiBtnAct");
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "deactive"));
+	oButton.$().addClass("sapUiBtnStd").removeClass("sapUiBtnAct");
+	oButton.$("img").attr("src", this._getIconForState(oButton, "deactive"));
 };
 
 /**
@@ -163,7 +163,7 @@ sap.ui.commons.ButtonRenderer.ondeactive = function(oButton) {
  */
 sap.ui.commons.ButtonRenderer.onblur = function(oButton) {
 	oButton.$().removeClass("sapUiBtnFoc");
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "blur"));
+	oButton.$("img").attr("src", this._getIconForState(oButton, "blur"));
 	if (!!sap.ui.Device.browser.internet_explorer) {
 		sap.ui.commons.ButtonRenderer.onmouseout(oButton);
 	}
@@ -174,16 +174,16 @@ sap.ui.commons.ButtonRenderer.onblur = function(oButton) {
  */
 sap.ui.commons.ButtonRenderer.onfocus = function(oButton) {
 	oButton.$().addClass("sapUiBtnFoc");
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "focus"));
+	oButton.$("img").attr("src", this._getIconForState(oButton, "focus"));
 };
 
 /**
  * Function called when mouse leaves button
  */
 sap.ui.commons.ButtonRenderer.onmouseout = function(oButton) {
-	jQuery.sap.byId(oButton.getId()).removeClass("sapUiBtnAct");
-	jQuery.sap.byId(oButton.getId()).addClass("sapUiBtnStd");
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "mouseout"));
+	oButton.$().removeClass("sapUiBtnAct");
+	oButton.$().addClass("sapUiBtnStd");
+	oButton.$("img").attr("src", this._getIconForState(oButton, "mouseout"));
 };
 
 /**
@@ -191,7 +191,7 @@ sap.ui.commons.ButtonRenderer.onmouseout = function(oButton) {
  * @private
  */
 sap.ui.commons.ButtonRenderer.onmouseover = function(oButton) {
-	jQuery.sap.byId(oButton.getId() + "-img").attr("src", this._getIconForState(oButton, "mouseover"));
+	oButton.$("img").attr("src", this._getIconForState(oButton, "mouseover"));
 };
 
 /**

@@ -554,6 +554,9 @@
 @sapUiUx3ExactLstRootExpandOffset: 0 3;
 @sapUiUx3ExactLstContentTop: 26px;
 
+/* Crystal Blue value set by UX: */
+@sapUiHeaderBGCrystal: #007cc0;
+
 /* NotificationBar */
 @sapUiNotificationBarBG: fade(@sapUiMediumText, 92%);
 @sapUiNotificationBarBG_IE: @sapUiMediumText;
@@ -1251,6 +1254,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 /* ==================================================== */
 /* CSS for control sap.ui.ux3/DataSetSimpleView.control */
 /* ==================================================== */
+
 .sapUiUx3DSSV {
 	position: relative;
 	color: @sapUiBaseText;
@@ -1276,9 +1280,9 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3DSSVSA {
 	overflow-y: auto;
 }
-/* ============================================= */
+/* ======================================== */
 /* CSS for control sap.ui.ux3/Exact.control */
-/* ============================================= */
+/* ======================================== */
 
 .sapUiUx3Exact {
 	position: relative;
@@ -1388,16 +1392,9 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 	height: 22px;
 	line-height: 22px;
 }
-
 /* ================================================== */
 /* Base CSS for control sap.ui.ux3/ExactList.control  */
 /* ================================================== */
-
-@sapUiUx3ExactLstExpandOffset: 0 0;
-@sapUiUx3ExactLstRootExpandOffset: 0 3;
-@sapUiUx3ExactLstCollapseWidth: 24px;
-@sapUiUx3ExactLstHeaderHeight: 25px;
-@sapUiUx3ExactLstContentTop: @sapUiUx3ExactLstHeaderHeight;
 
 .sapUiUx3ExactLst {
 	display: inline-block;
@@ -1447,7 +1444,6 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 }
 
 /* List */
-			
 .sapUiUx3ExactLstLb {
 	overflow-y: hidden;
 	position: absolute;
@@ -1461,7 +1457,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3ExactLstLstExp > .sapUiUx3ExactLstLb {
 	bottom: 22px;
 }
-			
+
 .sapUiUx3ExactLstLb:hover {
 	overflow-y: auto;
 }
@@ -1469,7 +1465,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3ExactLstLb > ul {
 	display: block;
 }
-			
+
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI {
 	height: 21px;
 	margin-bottom: 1px;
@@ -1489,7 +1485,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI {
 }
 
 /* List - Sub-Attribute Indicator */
-
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiLbxIIco {
 	display: inline-block;
 	position: absolute;
@@ -1525,7 +1520,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 }
 
 /* List - Item Texts */
-
 .sapUiUx3ExactLstLb.sapUiLbx > ul > .sapUiLbxI > .sapUiLbxITxt {
 	display: block;
 	margin-right: 37px; /*Just a placeholder for: 20+ScrollbarWidth*/
@@ -1538,9 +1532,7 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 	margin-right: 20px !important;
 }
 
-
 /* Expander */
-
 .sapUiUx3ExactLstExp {
     height: 21px;
     cursor: pointer;
@@ -1560,7 +1552,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 }
 
 /* Header */
-
 .sapUiUx3ExactLstHead {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -1730,9 +1721,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
 
-
 /* Content */
-
 .sapUiUx3ExactLstCntnt {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -1767,9 +1756,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	margin-left: @sapUiUx3ExactLstCollapseWidth;
 }
 
-
 /* Resize */
-
 .sapUiUx3ExactLstRSz {
 	position: absolute;
 	top: @sapUiUx3ExactLstHeaderHeight;
@@ -1796,7 +1783,6 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 
 
 /*Top Menu*/
-
 .sapUiUx3ExactLstHeadTopIco {
 	position: absolute;
 	right: 2px;
@@ -1828,9 +1814,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	background-image: url("img/exact/tophead_hover.png");
 }
 
-
 /* Hidden Top-List*/
-
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstLst,
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstHead,
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstRSz {
@@ -1840,30 +1824,21 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstCntnt {
 	left: 0;
 }
-
-/* ================================================== */
-/* GR CSS for control sap.ui.ux3/ExactList.control    */
-/* ================================================== */
-
-@sapUiUx3ExactLstExpandOffset: -1 -2;
-@sapUiUx3ExactLstRootExpandOffset: 0 3;
-@sapUiUx3ExactLstContentTop: 26px;
-
+/* =============================================== */
+/* GR CSS for control sap.ui.ux3/ExactList.control */
+/* =============================================== */
 
 .sapUiUx3ExactLstLst {
 	background-color: @sapUiMediumBorder;
 	top: 24px;
 }
 
-
 /* List - Item Texts */
-
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI > span.sapUiLbxITxt {
 	border-color: transparent;
 }
 
 /* List - Sub-Attribute Indicator */
-
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI > span.sapUiLbxIIco {
 	background-image: url("img/exact/expand_item_regular.png");
 	background-repeat: no-repeat;
@@ -1879,18 +1854,14 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	content: "";
 }
 
-
 /* List - Focus, Hover, Select */
-
 html[data-sap-ui-browser="ie8"] .sapUiUx3ExactLstLb > ul > .sapUiLbxISel,
 html[data-sap-ui-browser="ie9"] .sapUiUx3ExactLstLb > ul > .sapUiLbxISel,
 html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxISel {
 	border: 1px solid @sapUiHighlight;
 }
 
-
 /* Expander */
-
 .sapUiUx3ExactLstExp {
 	background-color: @sapUiMediumBG;
 	background-image: url("img/exact/expand_list_regular.png");
@@ -1918,7 +1889,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxISel {
 }
 
 /* Header */
-
 .sapUiUx3ExactLstHead {
 	background-color: @sapUiMediumBG;
     border-top: 1px solid @sapUiExtraLightBorder;
@@ -2001,9 +1971,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	left: -4px; /*should be right -> swapped with right by RTL transformation*/
 }
 
-
 /* Content */
-
 .sapUiUx3ExactLstTop > .sapUiUx3ExactLstCntnt {
 	border: 0px solid transparent;
 	background-color: @sapUiMediumBorder;
@@ -2011,9 +1979,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	border-right: 1px solid @sapUiMediumBorder;
 }
 
-
 /* Resize */
-
 .sapUiUx3ExactLstRSz.sapUiUx3ExactLstRSzDrag, 
 .sapUiUx3ExactLstRSz:hover {
 	background-image: url("img/exact/resize.gif");
@@ -2081,7 +2047,6 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	height: ~"calc(100% - 29px)";
 	height: ~"-webkit-calc(100% - 29px)";
 }
-
 /* ======================================= */
 /* CSS for control sap.ui.ux3/Feed.control */
 /* ======================================= */
@@ -2738,7 +2703,6 @@ html[data-sap-ui-browser^="ie"] .sapUiFeederInput > p {
 	overflow: hidden;
 	text-transform: uppercase;
 }
-
 
 .sapUiUx3NavBar.sapUiUx3NavBarToplevel {
 	height: 50px;
@@ -3705,9 +3669,9 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 	padding-top: 3px;
 	height: 25px;
 }
-/* ============================================== */
-/* CSS for sap.ui.ux3.Shell.control  (base theme) */
-/* ============================================== */
+/* ============================================= */
+/* CSS for sap.ui.ux3.Shell.control (base theme) */
+/* ============================================= */
 
 .sapUiUx3Shell {
 	margin: 0;
@@ -4370,15 +4334,9 @@ html[data-sap-ui-browser="ie8"] .sapUiUx3ShellCanvas {
 /* CSS for sap.ui.ux3.Shell.control    (GR theme) */
 /* ============================================== */
 
-@sapUiUx3ShellBackgroundColor: @sapUiExtraLightBG;
-@sapUiUx3ShellHoverColor:      @sapUiDarkBG;
-@sapUiUx3ShellGradientBottom:  lighten(@sapUiUx3ShellHeaderColor, 17.3);			// #2c2c2c
-@sapUiUx3ShellGradientTop:     spin(mix(@sapUiHighlight, lighten(@sapUiUx3ShellGradientBottom, 22), 3%), 9);			// #606366
-
 .sapUiUx3ShellHeader {
 	text-shadow: 1px 1px 2px @sapUiDarkText;
 	color: @sapUiExtraLightBG;
-
 	background-image: -moz-linear-gradient(top, @sapUiUx3ShellGradientTop 0, @sapUiUx3ShellGradientBottom 108px, @sapUiUx3ShellGradientBottom);
 	background-image: -webkit-linear-gradient(top, @sapUiUx3ShellGradientTop 0, @sapUiUx3ShellGradientBottom 108px, @sapUiUx3ShellGradientBottom);
 	background-image: -ms-linear-gradient(top, @sapUiUx3ShellGradientTop 0, @sapUiUx3ShellGradientBottom 108px, @sapUiUx3ShellGradientBottom); /* starting with IE10 this works in IE */
@@ -4530,7 +4488,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellHeader {
 */
 
 /* Workset area and items */
-
 .sapUiUx3ShellBg {
 	background-color: @sapUiDeepBG;
 }
@@ -4556,9 +4513,8 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3Shell.sapUiUx3ShellHeadSlimNavigation > .sapUiUx3ShellWorksetBar > .sapUiUx3NavBar.sapUiUx3NavBarToplevel > .sapUiUx3NavBarForward {
 	top: 1px;
 }
-	
-/* tool palette area */
 
+/* tool palette area */
 .sapUiUx3ShellToolPaletteArea, .sapUiUx3ShellPaneBar {
 	background-repeat: no-repeat;
 	-moz-background-origin: border;
@@ -4588,6 +4544,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3ShellTool-search {
 	background-position: 4px -64px;
 }
+
 .sapUiUx3ShellTool-search:hover,
 .sapUiUx3ShellTool-search:active, 
 .sapUiUx3ShellTool-search.sapUiUx3ShellToolSelected {
@@ -4597,6 +4554,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3ShellTool-inspector {
 	background-position: 4px -32px;
 }
+
 .sapUiUx3ShellTool-inspector:hover {
 	background-position: -28px -32px;
 }
@@ -4608,6 +4566,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3ShellTool-feeder {
 	background-position: 4px 0;
 }
+
 .sapUiUx3ShellTool-feeder:hover,
 .sapUiUx3ShellTool-feeder:active, 
 .sapUiUx3ShellTool-feeder.sapUiUx3ShellToolSelected {
@@ -4620,9 +4579,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 	outline-offset: -2px;
 }
 
-
 /* pane bar */
-
 .sapUiUx3ShellPaneBar {
 	background-color: @sapUiExtraLightBG;
 }
@@ -4644,7 +4601,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 .sapUiUx3ShellPaneEntrySelected:hover {
 	background-position: center 34px;
 }
-
 
 .sapUiUx3ShellPaneBarRight:hover .sapUiUx3ShellPaneEntry:hover {
 	color: @sapUiHighlight;
@@ -4683,19 +4639,19 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 	border-left: 2px solid @sapUiMediumBorder;
 }
 
-
 /* content */
-
 .sapUiUx3ShellCanvasBackgroundRight {
 	position: absolute;
 	height: 100%;
 	right: -4px;
 	width: 4px;
 }
+
 .sapUiUx3ShellCanvasBackgroundClosed > .sapUiUx3ShellCanvasBackgroundRight { /* do not hardcode pane width here */
 	background-image: url(img/shell/Canvas_shadow_right.png);
 	background-repeat: no-repeat;
 }
+
 .sapUiUx3ShellCanvasBackgroundOpen > .sapUiUx3ShellCanvasBackgroundRight { /* do not hardcode pane width here */
 	background-image: url(img/shell/Canvas_shadow_panel.png);
 	background-repeat: repeat-y;
@@ -4706,7 +4662,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 }
 
 /******** NotificationArea *********/
-
 .sapUiUx3ShellNotify.sapUiUx3ShellNotifyTI > .sapUiUx3ShellNotifyBG,
 .sapUiUx3ShellNotify.sapUiUx3ShellNotifyOverlay > .sapUiUx3ShellNotifyBG {
 	background-color: @sapUiDeepBG;
@@ -4717,14 +4672,7 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellBgImg {
 	background-color: @sapUiMediumBG;
 }
 
-
 /******** Light Designs *********/
-
-/* Crystal Blue value set by UX: */
-@sapUiHeaderBGCrystal:              #007cc0; 
-
-
-
 html[data-sap-ui-browser="ie8"] .sapUiUx3ShellDesignLight > .sapUiUx3ShellHeader,
 html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignLight > .sapUiUx3ShellHeader,
 .sapUiUx3ShellDesignLight > .sapUiUx3ShellHeader {
@@ -4818,8 +4766,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignLight > .sapUiUx3ShellBgImg,
 	color:              @sapUiTextInverted;
 }
 
-
-
 .sapUiUx3ShellDesignLight > .sapUiUx3ShellWorksetBar .sapUiUx3NavBarArrow {
     border-color:       @sapUiText transparent @sapUiDarkBorder; /*Instead of @sapUiDarkBorder: @sapUiMediumText ?*/
 }
@@ -4888,7 +4834,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignLight > .sapUiUx3ShellBgImg,
 .sapUiUx3ShellDesignLight > .sapUiUx3ShellWorksetBar > .sapUiUx3NavBarToplevel .sapUiUx3NavBarItem:focus {
     outline:            1px dashed @sapUiDarkBorder;
 }
-
 
 .sapUiUx3ShellDesignLight > .sapUiUx3ShellCanvas {
     overflow-x:         visible;
@@ -4965,9 +4910,7 @@ html[data-sap-ui-browser="ie8"] .sapUiUx3ShellDesignLight .sapUiUx3NavBarTopleve
     top:                auto;
 }
 
-
 /******** Crystal design - based on Light ********/
-
 html[data-sap-ui-browser="ie8"] .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader,
 html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader,
 .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader {
@@ -4975,7 +4918,6 @@ html[data-sap-ui-browser="ie9"] .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHead
     background-image:   none;
     box-shadow:         0px 1px 4px rgba(00, 00, 00, 0.3);
 }
-
 
 .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader > img,
 .sapUiUx3ShellDesignCrystal > .sapUiUx3ShellHeader > h1 {

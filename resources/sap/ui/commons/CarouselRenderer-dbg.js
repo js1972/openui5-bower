@@ -24,6 +24,7 @@ sap.ui.commons.CarouselRenderer = {
 sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 
 	var rm = oRenderManager;
+	var bRTL = sap.ui.getCore().getConfiguration().getRTL();
 
 	rm.write("<div");
 	rm.addClass("sapUiCrsl");
@@ -37,7 +38,7 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	rm.writeClasses();
 	rm.writeControlData(oControl);
 	rm.write(">");
-	
+
 	var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
 
 	// Start Prev button
@@ -58,7 +59,12 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	if (oControl.getOrientation() == "vertical") {
 		rm.write("&#9650");//Symbol for Base and HCB Theme (Must be hidden in other themes)
 	} else {
-		rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		if (bRTL) {
+			rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
+		else{
+			rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
 	}
 	rm.write("</div>");
 	// End Prev button
@@ -81,18 +87,23 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	if (oControl.getOrientation() == "vertical") {
 		rm.write("&#9660");//Symbol for Base and HCB Theme (Must be hidden in other themes)
 	} else {
-		rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		if (bRTL) {
+				rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+			}
+			else{
+				rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+			}
 	}
 	rm.write("</div>");
 	// End Next button
 
-	
+
 	rm.write("<div");
 	rm.writeAttribute("tabindex", "0");
 	rm.addClass("sapUiCrslBefore");
 	rm.writeClasses();
 	rm.write("></div>");
-	
+
 	// Start content area
 	rm.write("<div");
 	rm.writeAttribute("id", oControl.getId() + "-contentarea");
@@ -125,7 +136,7 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	}
 
 	rm.write("</ul>");
-	
+
 	rm.write("</div>");
 	// End content area
 
@@ -134,7 +145,7 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	rm.addClass("sapUiCrslAfter");
 	rm.writeClasses();
 	rm.write("></div>");
-	
+
 	// aria description for toggling the action mode
 	rm.write("<span");
 	rm.writeAttribute("id", oControl.getId() + "-toggleaction");
@@ -144,7 +155,7 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	rm.write(">");
 	rm.write(rb.getText("CAROUSEL_ACTION_MODE"));
 	rm.write("</span>");
-	
+
 	// aria description for navigation
 	rm.write("<span");
 	rm.writeAttribute("id", oControl.getId() + "-navigate");
@@ -154,6 +165,6 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 	rm.write(">");
 	rm.write(rb.getText("CAROUSEL_NAV"));
 	rm.write("</span>");
-	
+
 	rm.write("</div>");
 };

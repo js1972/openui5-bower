@@ -42,7 +42,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getAttributes attributes} : sap.ui.ux3.ExactAttribute[]</li></ul>
+ * <li>{@link #getAttributes attributes} <strong>(default aggregation)</strong> : sap.ui.ux3.ExactAttribute[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -337,6 +337,7 @@ sap.ui.ux3.ExactAttribute.M_EVENTS = {'supplyAttributes':'supplyAttributes'};
  * Getter for aggregation <code>attributes</code>.<br/>
  * Values (sub attributes) of this attribute
  * 
+ * <strong>Note</strong>: this is the default aggregation for ExactAttribute.
  * @return {sap.ui.ux3.ExactAttribute[]}
  * @public
  * @name sap.ui.ux3.ExactAttribute#getAttributes
@@ -439,7 +440,7 @@ sap.ui.ux3.ExactAttribute.M_EVENTS = {'supplyAttributes':'supplyAttributes'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactAttribute</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactAttribute</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ExactAttribute} <code>this</code> to allow method chaining
  * @public

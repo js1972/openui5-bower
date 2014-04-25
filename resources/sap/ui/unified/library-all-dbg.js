@@ -362,7 +362,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.18.12)
+ * Initialization Code and shared classes of library sap.ui.unified (1.20.4)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -397,7 +397,7 @@ sap.ui.getCore().initLibrary({
   elements: [
     "sap.ui.unified.ShellHeadItem"
   ],
-  version: "1.18.12"});
+  version: "1.20.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -417,7 +417,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  * @since 1.16.0
@@ -591,7 +591,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -873,10 +873,9 @@ sap.ui.unified.ContentSwitcher.prototype.switchContent = function() {
 ////////////////////////////////////////// onEvent Methods /////////////////////////////////////////
 
 sap.ui.unified.ContentSwitcher.prototype.onAfterRendering = function() {
-	var sId = this.getId();
 	this._$Contents = [
-		jQuery.sap.byId(sId + "-content1"),
-		jQuery.sap.byId(sId + "-content2")
+		this.$("content1"),
+		this.$("content2")
 	];
 };
 
@@ -965,7 +964,6 @@ sap.ui.unified.ContentSwitcher.prototype.setAnimation = function(sAnimation, bSu
     ///////////////////////////////////// Association "xxx" ////////////////////////////////////
 
 })(window);
-
 }; // end of sap/ui/unified/ContentSwitcher.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellHeadItem') ) {
 /*!
@@ -1032,7 +1030,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -1236,7 +1234,7 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellHeadItem</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellHeadItem</code>.<br/> itself.
  *
  * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
  * @public
@@ -1372,7 +1370,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getSecondaryContent secondaryContent} : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
@@ -1392,7 +1390,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -1490,6 +1488,7 @@ sap.ui.core.Control.extend("sap.ui.unified.SplitContainer", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the main area.
  * 
+ * <strong>Note</strong>: this is the default aggregation for SplitContainer.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.SplitContainer#getContent
@@ -1687,8 +1686,8 @@ sap.ui.unified.SplitContainer.prototype.exit = function(){
 
 sap.ui.unified.SplitContainer.prototype.onAfterRendering = function() {
 	// Shortcuts to the main DOM containers
-	this._contentContainer 			= jQuery.sap.byId(this.getId() + "-canvas");
-	this._secondaryContentContainer = jQuery.sap.byId(this.getId() + "-pane");
+	this._contentContainer 			= this.$("canvas");
+	this._secondaryContentContainer = this.$("pane");
 
 // Design decided that content does not need to be handled differently depending on device - remove 
 // comments if needed again...
@@ -1783,9 +1782,9 @@ sap.ui.unified.SplitContainer.prototype._applySecondaryContentSize = function(){
  * Optimization method that prevents the normal render from rerendering the whole control.
  * See _ContentRenderer in file shared.js for details.
  * 
- * @param fMod Method that is called to perform the requested change
- * @param oDoIfRendered Renderer Instance
- * @returns the return value from the first parameter
+ * @param {function} fMod Method that is called to perform the requested change
+ * @param {sap.ui.core.Renderer} oDoIfRendered Renderer Instance
+ * @returns {any} the return value from the first parameter
  * 
  * @private
  */
@@ -1926,7 +1925,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getPaneContent paneContent} : sap.ui.core.Control[]</li>
  * <li>{@link #getCurtainContent curtainContent} : sap.ui.core.Control[]</li>
  * <li>{@link #getCurtainPaneContent curtainPaneContent} : sap.ui.core.Control[]</li>
@@ -1951,7 +1950,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -2063,7 +2062,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @return {boolean} the value of property <code>showCurtain</code>
  * @public
  * @deprecated Since version 1.16.3. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#getShowCurtain
  * @function
  */
@@ -2077,7 +2076,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
  * @deprecated Since version 1.16.3. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#setShowCurtain
  * @function
  */
@@ -2091,8 +2090,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  *
  * @return {boolean} the value of property <code>showCurtainPane</code>
  * @public
- * @deprecated Since version 7.20.0. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * @deprecated Since version 1.16.3. 
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#getShowCurtainPane
  * @function
  */
@@ -2105,8 +2104,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @param {boolean} bShowCurtainPane  new value for property <code>showCurtainPane</code>
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 7.20.0. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * @deprecated Since version 1.16.3. 
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#setShowCurtainPane
  * @function
  */
@@ -2168,6 +2167,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the main canvas.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Shell.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.Shell#getContent
@@ -2663,7 +2663,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Setter for the aggregated <code>search</code>.
- * @param oSearch {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSearch
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.Shell#setSearch
@@ -2776,13 +2776,7 @@ sap.ui.unified.Shell.prototype.exit = function(){
 
 
 sap.ui.unified.Shell.prototype.onAfterRendering = function(){
-	var that = this,
-		oIco = this.$("icon").get(0);
-	if(oIco && oIco.addEventListener){
-		oIco.addEventListener("load", function(){
-			that._refreshHeader();
-		});
-	}
+	var that = this;
 	
 	if(window.addEventListener && !sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE){
 		function headerFocus(oBrowserEvent){
@@ -3207,9 +3201,6 @@ sap.ui.unified.Shell.prototype._refreshHeader = function(){
 		"left": this._rtl ? end : begin,
 		"right": this._rtl ? begin : end
 	});
-	
-	var pad = Math.max(4, Math.floor((this.$("hdrcntnt").height() - $logo.outerHeight())/2));
-	$logo.css("margin-top", pad + "px");
 };
 
 
@@ -3320,7 +3311,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getSearch search} : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
@@ -3342,7 +3333,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -3392,6 +3383,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the overlay.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ShellOverlay.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.ShellOverlay#getContent
@@ -3482,7 +3474,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
 
 /**
  * Setter for the aggregated <code>search</code>.
- * @param oSearch {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSearch
  * @return {sap.ui.unified.ShellOverlay} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.ShellOverlay#setSearch
@@ -3547,7 +3539,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellOverlay</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellOverlay</code>.<br/> itself.
  *
  * @return {sap.ui.unified.ShellOverlay} <code>this</code> to allow method chaining
  * @public
@@ -3741,7 +3733,7 @@ sap.ui.unified.ShellOverlay.prototype.onAfterRendering = function(){
 	
 	jQuery.sap.delayedCall(10, this, function(){
 		this.$().toggleClass("sapUiUfdShellOvrlyCntntHidden", false);
-		jQuery.sap.byId(this.getId()+"-search").css("width", "");
+		this.$("search").css("width", "");
 	});
 };
 
@@ -3849,7 +3841,7 @@ sap.ui.unified.ShellOverlay.prototype._setSearchWidth = function(){
 	
 	if(sap.ui.Device.browser.safari){
 		//Safari doesn't support width transition based on different units -> so px must be replaced by %
-		var iTotalWidth = jQuery.sap.byId(this.getId()+"-hdr-center").width();
+		var iTotalWidth = this.$("hdr-center").width();
 		if(iTotalWidth > iWidth){
 			sWidth = Math.round((iWidth*100)/iTotalWidth) + "%";
 		}else{
@@ -3857,7 +3849,7 @@ sap.ui.unified.ShellOverlay.prototype._setSearchWidth = function(){
 		}
 	}
 	
-	jQuery.sap.byId(this.getId()+"-search").css("width", sWidth);
+	this.$("search").css("width", sWidth);
 };
 
 

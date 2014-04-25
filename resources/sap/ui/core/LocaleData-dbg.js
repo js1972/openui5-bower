@@ -5,14 +5,11 @@
  */
 
 //Provides the locale object sap.ui.core.LocaleData
-jQuery.sap.declare("sap.ui.core.LocaleData");
-jQuery.sap.require("sap.ui.base.Object");
-jQuery.sap.require("sap.ui.core.Locale");
-jQuery.sap.require("sap.ui.core.Configuration");
+sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './Locale'],
+	function(jQuery, BaseObject, Configuration, Locale) {
+	"use strict";
 
-(function() {
-
-	/**
+	/** 
 	 * Creates an instance of the Data.
 	 *
 	 * @class Data provides access to locale-specific data, like date formats, number formats, currencies, etc.
@@ -21,15 +18,15 @@ jQuery.sap.require("sap.ui.core.Configuration");
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData
 	 */
-	sap.ui.base.Object.extend("sap.ui.core.LocaleData", /** @lends sap.ui.core.LocaleData.prototype */ {
+	var LocaleData = BaseObject.extend("sap.ui.core.LocaleData", /** @lends sap.ui.core.LocaleData.prototype */ {
 
 		constructor : function(oLocale) {
-			sap.ui.base.Object.apply(this);
+			BaseObject.apply(this);
 			this.mData = getData(oLocale);
 		},
 
@@ -284,10 +281,10 @@ jQuery.sap.require("sap.ui.core.Configuration");
 			"timeFormat-long":"h:mm:ss a z",
 			"timeFormat-medium":"h:mm:ss a",
 			"timeFormat-short":"h:mm a",
-			"dateTimeFormat-full":"{1} {0}",
-			"dateTimeFormat-long":"{1} {0}",
-			"dateTimeFormat-medium":"{1} {0}",
-			"dateTimeFormat-short":"{1} {0}",
+			"dateTimeFormat-full":"{1} 'at' {0}",
+			"dateTimeFormat-long":"{1} 'at' {0}",
+			"dateTimeFormat-medium":"{1}, {0}",
+			"dateTimeFormat-short":"{1}, {0}",
 			"months-format-abbreviated":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
 			"months-format-wide":["January","February","March","April","May","June","July","August","September","October","November","December"],
 			"months-format-narrow":["1","2","3","4","5","6","7","8","9","10","11","12"],
@@ -336,7 +333,7 @@ jQuery.sap.require("sap.ui.core.Configuration");
 	 * @private
 	 */
 	var M_SUPPORTED_LOCALES = (function() {
-		var LOCALES = "ar,ar_AE,ar_EG,ar_SA,bg,bg_BG,br,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_BE,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_HK,en_IE,en_IN,en_NZ,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_ES,es_MX,es_PE,es_UY,es_VE,et,et_EE,fa,fa_IR,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,he,he_IL,hi,hi_IN,hr,hr_HR,hu,hu_HU,id,id_ID,it,it_CH,it_IT,ja,ja_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,nb,nb_NO,nl,nl_BE,nl_NL,nn,nn_NO,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_RU,ru_UA,sk_SK,sl,sl_SI,sr,sv,sv_SE,th,th_TH,tr,tr_TR,uk,uk_UA,vi,vi_VN,zh_CN,zh_HK,zh_SG,zh_TW".split(","), 
+		var LOCALES = "ar,ar_AE,ar_EG,ar_SA,bg,bg_BG,br,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_BE,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_HK,en_IE,en_IN,en_NZ,en_PG,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_ES,es_MX,es_PE,es_UY,es_VE,et,et_EE,fa,fa_IR,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,he,he_IL,hi,hi_IN,hr,hr_HR,hu,hu_HU,id,id_ID,it,it_CH,it_IT,ja,ja_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,nb,nb_NO,nl,nl_BE,nl_NL,nn,nn_NO,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_KZ,ru_RU,ru_UA,sk_SK,sl,sl_SI,sr,sv,sv_SE,th,th_TH,tr,tr_CY,tr_TR,uk,uk_UA,vi,vi_VN,zh_CN,zh_HK,zh_SG,zh_TW".split(","), 
 			i,result;
 		
 		if ( LOCALES.length != 1 || LOCALES[0].indexOf("@") < 0) { // check that list has been substituted 
@@ -362,22 +359,24 @@ jQuery.sap.require("sap.ui.core.Configuration");
 	function getData(oLocale) {
 
 		var sLanguage = oLocale.getLanguage() || "",
-		sScript = oLocale.getScript() || "",
-		sRegion = oLocale.getRegion() || "",
-		mData;
+			sScript = oLocale.getScript() || "",
+			sRegion = oLocale.getRegion() || "",
+			mData;
 
 		function getOrLoad(sId) {
-			var sUrl, oResponse;
+			var oData;
 			if ( !mLocaleDatas[sId] && (!M_SUPPORTED_LOCALES || M_SUPPORTED_LOCALES[sId] === true) ) {
-				sUrl = sap.ui.resource("sap.ui.core.cldr", sId + ".json");
-				oResponse = jQuery.sap.sjax({url: sUrl, dataType:"json"});
-				if (oResponse.success) {
-					mLocaleDatas[sId] = oResponse.data;
-				} // else: fallback chain is processed, in the end a result is identified and stored in mDatas under the originally requested ID
+				mLocaleDatas[sId] = jQuery.sap.loadResource("sap/ui/core/cldr/" + sId + ".json", {
+					dataType: "json",
+					failOnError : false
+				});
+				// if load fails, null is returned 
+				// -> caller will process the fallback chain, in the end a result is identified and stored in mDatas under the originally requested ID
 			}
 			return mLocaleDatas[sId];
 		}
 
+		// normalize language and handle special cases
 		sLanguage = (sLanguage && M_ISO639_OLD_TO_NEW[sLanguage]) || sLanguage;
 		if ( sLanguage === "zh" && !sRegion ) {
 			if ( sScript === "Hans" ) {
@@ -388,14 +387,17 @@ jQuery.sap.require("sap.ui.core.Configuration");
 		}
 
 		var sId = sLanguage + "_" + sRegion; // the originally requested locale; this is the key under which the result (even a fallback one) will be stored in the end 
+		// first try: load CLDR data for specific language / region combination 
 		if ( sLanguage && sRegion ) {
 			mData = getOrLoad(sId);
 		}
+		// second try: load data for language only
 		if ( !mData && sLanguage ) {
 			mData = getOrLoad(sLanguage);
 		}
-
+		// last try: use fallback data
 		mLocaleDatas[sId] = mData || M_DEFAULT_DATA;
+		
 		return mLocaleDatas[sId];
 	};
 
@@ -404,9 +406,9 @@ jQuery.sap.require("sap.ui.core.Configuration");
 	 * A specialized subclass of LocaleData that merges custom settings.
 	 * @private
 	 */
-	sap.ui.core.LocaleData.extend("sap.ui.core.CustomLocaleData", {
+	LocaleData.extend("sap.ui.core.CustomLocaleData", {
 		constructor : function(oLocale) {
-			sap.ui.core.LocaleData.apply(this, arguments);
+			LocaleData.apply(this, arguments);
 			this.mCustomData = sap.ui.getCore().getConfiguration().getFormatSettings().getCustomLocaleData();
 		},
 		_get : function(sId) {
@@ -416,9 +418,13 @@ jQuery.sap.require("sap.ui.core.Configuration");
 
 	/**
 	 * 
+	 * @name sap.ui.core.LocaleData.getInstance
+	 * @function
 	 */
-	sap.ui.core.LocaleData.getInstance = function(oLocale) {
-		return oLocale.hasPrivateUseSubtag("sapufmt") ? new sap.ui.core.CustomLocaleData(oLocale) : new sap.ui.core.LocaleData(oLocale);
+	LocaleData.getInstance = function(oLocale) {
+		return oLocale.hasPrivateUseSubtag("sapufmt") ? new sap.ui.core.CustomLocaleData(oLocale) : new LocaleData(oLocale);
 	};
 
-}());
+	return LocaleData;
+
+}, /* bExport= */ true);

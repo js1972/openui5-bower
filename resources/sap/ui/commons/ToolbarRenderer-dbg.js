@@ -139,7 +139,7 @@ sap.ui.commons.ToolbarRenderer.renderSeparator = function(oRm, oToolbarItem) {
  * @private
  */
 sap.ui.commons.ToolbarRenderer.fillOverflowPopup = function(oToolbar) {
-	var oPopupHolder = jQuery.sap.domById(oToolbar.getId() + "-pu");
+	var oPopupHolder = oToolbar.getDomRef("pu");
 	if (!oPopupHolder) {
 		oPopupHolder = sap.ui.commons.ToolbarRenderer.initOverflowPopup(oToolbar).firstChild;
 	}
@@ -188,11 +188,11 @@ sap.ui.commons.ToolbarRenderer.initOverflowPopup = function(oToolbar) {
  * @private
  */
 sap.ui.commons.ToolbarRenderer.emptyOverflowPopup = function(oToolbar) {
-	var oPopupHolder = jQuery.sap.domById(oToolbar.getId() + "-pu");
+	var oPopupHolder = oToolbar.getDomRef("pu");
 	var oDomRef = oToolbar.getDomRef();
 	
 	if (oPopupHolder && oDomRef) {
-		var oOverflowButton = jQuery.sap.domById(oToolbar.getId() + "-mn");
+		var oOverflowButton = oToolbar.getDomRef("mn");
 		var oToolbarCont = oDomRef.firstChild.firstChild;
 		while (oPopupHolder.hasChildNodes()) {
 			oToolbarCont.insertBefore(oPopupHolder.firstChild, oOverflowButton);
@@ -209,7 +209,7 @@ sap.ui.commons.ToolbarRenderer.emptyOverflowPopup = function(oToolbar) {
  * @private
  */
 sap.ui.commons.ToolbarRenderer.getPopupArea = function(oToolbar) {
-	return jQuery.sap.domById(oToolbar.getId() + "-pu");
+	return oToolbar.getDomRef("pu");
 };
 
 /**
@@ -217,7 +217,7 @@ sap.ui.commons.ToolbarRenderer.getPopupArea = function(oToolbar) {
  * @private
  */
 sap.ui.commons.ToolbarRenderer.setActive = function(oToolbar) {
-	jQuery.sap.byId(oToolbar.getId() + "-mn").addClass("sapUiTbOBAct");
+	oToolbar.$("mn").addClass("sapUiTbOBAct");
 };
 
 /**
@@ -225,5 +225,5 @@ sap.ui.commons.ToolbarRenderer.setActive = function(oToolbar) {
  * @private
  */
 sap.ui.commons.ToolbarRenderer.unsetActive = function(oToolbar) {
-	jQuery.sap.byId(oToolbar.getId() + "-mn").removeClass("sapUiTbOBAct");
+	oToolbar.$("mn").removeClass("sapUiTbOBAct");
 };

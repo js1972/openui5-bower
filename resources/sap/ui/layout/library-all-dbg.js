@@ -12,7 +12,7 @@ jQuery.sap.declare("sap.ui.layout.GridRenderer");
  * @class
  * @author SAP AG
  * @version
- * 1.18.12
+ * 1.20.4
  * @static
  */
 sap.ui.layout.GridRenderer = {};
@@ -697,6 +697,11 @@ sap.ui.layout.form.FormRenderer.render = function(oRenderManager, oForm){
 		rm.addClass(sClass);
 	}
 
+	if (oForm.getEditable()) {
+		rm.addClass("sapUiFormEdit");
+		rm.addClass("sapUiFormEdit-CTX");
+	}
+
 	if (oForm.getWidth()) {
 		rm.addStyle("width", oForm.getWidth());
 	}
@@ -1377,7 +1382,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.layout.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.layout (1.18.12)
+ * Initialization Code and shared classes of library sap.ui.layout (1.20.4)
  */
 jQuery.sap.declare("sap.ui.layout.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1427,7 +1432,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.layout.form.GridContainerData",
     "sap.ui.layout.form.GridElementData"
   ],
-  version: "1.18.12"});
+  version: "1.20.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1478,7 +1483,7 @@ jQuery.sap.declare("sap.ui.layout.GridPosition");
 /**
  * @class Position of the Grid. Can be "Left", "Center" or "Right". "Left" is default.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  */
@@ -1583,7 +1588,7 @@ jQuery.sap.declare("sap.ui.layout.form.SimpleFormLayout");
 /**
  * @class Available FormLayouts used for the SimpleForm.
  *
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  * @public
  * @since 1.16.0
@@ -1673,7 +1678,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -1692,7 +1697,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -1917,6 +1922,7 @@ sap.ui.core.Control.extend("sap.ui.layout.Grid", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Controls that are placed into Grid layout.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Grid.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.Grid#getContent
@@ -2224,7 +2230,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -2987,10 +2993,9 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	
 	/*
 	 * Get span information for the large screens
-     * @return {integer} the value of the span 
-     * @private
-     */   	
-
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanLarge = function() {
 
 		var iSpan = this.getSpanL();
@@ -3015,9 +3020,10 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	};
 	
 	/*
-	 * Get span information for the medium screens @return {integer} the value
-	 * of the span @private
-	 */   	
+	 * Get span information for the medium screens 
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanMedium = function() {
 		var iSpan = this.getSpanM();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
@@ -3042,9 +3048,9 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	
 	/*
 	 * Get span information for the small screens
-     * @return {integer} the value of the span 
-     * @private
-     */   	
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanSmall = function() {
 		var iSpan = this.getSpanS();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
@@ -3206,7 +3212,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -3225,7 +3231,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -3320,6 +3326,7 @@ sap.ui.core.Control.extend("sap.ui.layout.HorizontalLayout", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The controls inside this layout
  * 
+ * <strong>Note</strong>: this is the default aggregation for HorizontalLayout.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.HorizontalLayout#getContent
@@ -3464,7 +3471,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -3712,7 +3719,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -3731,7 +3738,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -3855,6 +3862,7 @@ sap.ui.core.Control.extend("sap.ui.layout.VerticalLayout", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Child Controls within the layout.
  * 
+ * <strong>Note</strong>: this is the default aggregation for VerticalLayout.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.VerticalLayout#getContent
@@ -3974,11 +3982,12 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <li>Properties
  * <ul>
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li>
+ * <li>{@link #getEditable editable} : boolean</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getFormContainers formContainers} : sap.ui.layout.form.FormContainer[]</li>
+ * <li>{@link #getFormContainers formContainers} <strong>(default aggregation)</strong> : sap.ui.layout.form.FormContainer[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li>
  * <li>{@link #getLayout layout} : sap.ui.layout.form.FormLayout</li></ul>
  * </li>
@@ -4001,7 +4010,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -4016,7 +4025,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 	library : "sap.ui.layout",
 	properties : {
 		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : null},
-		"visible" : {type : "boolean", group : "Misc", defaultValue : true}
+		"visible" : {type : "boolean", group : "Misc", defaultValue : true},
+		"editable" : {type : "boolean", group : "Misc", defaultValue : null}
 	},
 	defaultAggregation : "formContainers",
 	aggregations : {
@@ -4095,9 +4105,38 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 
 /**
+ * Getter for property <code>editable</code>.
+ * Applies a device and theme specific line-height to the form elements if the form has editable content.
+ * In this case all (not only the editable) rows of the form will get the line height.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {boolean} the value of property <code>editable</code>
+ * @public
+ * @since 1.20.0
+ * @name sap.ui.layout.form.Form#getEditable
+ * @function
+ */
+
+/**
+ * Setter for property <code>editable</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {boolean} bEditable  new value for property <code>editable</code>
+ * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20.0
+ * @name sap.ui.layout.form.Form#setEditable
+ * @function
+ */
+
+
+/**
  * Getter for aggregation <code>formContainers</code>.<br/>
  * FormContainers with the content of the form.
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/Form.
  * @return {sap.ui.layout.form.FormContainer[]}
  * @public
  * @name sap.ui.layout.form.Form#getFormContainers
@@ -4188,7 +4227,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.Form#setTitle
@@ -4219,7 +4258,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 /**
  * Setter for the aggregated <code>layout</code>.
- * @param oLayout {sap.ui.layout.form.FormLayout}
+ * @param {sap.ui.layout.form.FormLayout} oLayout
  * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.Form#setLayout
@@ -4283,6 +4322,21 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 	};
 
+	sap.ui.layout.form.Form.prototype.setEditable = function(bEditable) {
+
+		var bOldEditable = this.getEditable();
+		this.setProperty("editable", bEditable, true);
+
+		if (bEditable != bOldEditable && this.getDomRef()) {
+			if (bEditable) {
+				this.$().addClass("sapUiFormEdit").addClass("sapUiFormEdit-CTX");
+			}else{
+				this.$().removeClass("sapUiFormEdit").removeClass("sapUiFormEdit-CTX");
+			}
+		}
+
+	};
+
 }());
 }; // end of sap/ui/layout/form/Form.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.FormContainer') ) {
@@ -4326,7 +4380,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getFormElements formElements} : sap.ui.layout.form.FormElement[]</li>
+ * <li>{@link #getFormElements formElements} <strong>(default aggregation)</strong> : sap.ui.layout.form.FormElement[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li></ul>
  * </li>
  * <li>Associations
@@ -4350,7 +4404,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -4473,6 +4527,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormContainer", { metadata : {
  * Getter for aggregation <code>formElements</code>.<br/>
  * Elements of the FormContainer.
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/FormContainer.
  * @return {sap.ui.layout.form.FormElement[]}
  * @public
  * @name sap.ui.layout.form.FormContainer#getFormElements
@@ -4563,7 +4618,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormContainer", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.FormContainer} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.FormContainer#setTitle
@@ -4745,7 +4800,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * <li>Aggregations
  * <ul>
  * <li>{@link #getLabel label} : sap.ui.core.Label|string</li>
- * <li>{@link #getFields fields} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getFields fields} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -4767,7 +4822,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -4850,7 +4905,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormElement", { metadata : {
 
 /**
  * Setter for the aggregated <code>label</code>.
- * @param oLabel {sap.ui.core.Label|string}
+ * @param {sap.ui.core.Label|string} oLabel
  * @return {sap.ui.layout.form.FormElement} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.FormElement#setLabel
@@ -4872,6 +4927,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormElement", { metadata : {
  * Getter for aggregation <code>fields</code>.<br/>
  * Formular controls.
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/FormElement.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.form.FormElement#getFields
@@ -5298,7 +5354,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -5352,10 +5408,10 @@ sap.ui.core.Control.extend("sap.ui.layout.form.FormLayout", { metadata : {
 		if(this.getDomRef()){
 			if (bExpanded) {
 				//show content
-				jQuery.sap.byId(oContainer.getId()+"-content").css("display", "");
+				oContainer.$("content").css("display", "");
 			} else {
 				//hide content
-				jQuery.sap.byId(oContainer.getId()+"-content").css("display", "none");
+				oContainer.$("content").css("display", "none");
 			}
 		}
 
@@ -6202,7 +6258,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -6335,7 +6391,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -6495,7 +6551,7 @@ jQuery.sap.declare("sap.ui.layout.form.GridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -6645,7 +6701,7 @@ sap.ui.layout.form.FormLayout.extend("sap.ui.layout.form.GridLayout", { metadata
 		for ( var i = iStartIndex; i >= 0; i--) {
 			// find the next enabled control thats rendered
 			var oField = aFields[i];
-			var iLeftnew = jQuery.sap.byId(oField.getId()).offset().left;
+			var iLeftnew = oField.$().offset().left;
 			if (iLeft < iLeftnew && i != 0) {
 				continue;
 			}
@@ -6670,7 +6726,7 @@ sap.ui.layout.form.FormLayout.extend("sap.ui.layout.form.GridLayout", { metadata
 			var aElements = oContainer.getFormElements();
 			var iMax = aElements.length;
 			var i = iCurrentIndex+1;
-			var iLeft = jQuery.sap.byId(oControl.getId()).offset().left;
+			var iLeft = oControl.$().offset().left;
 
 			while (!oNewDomRef && i < iMax) {
 				var oElement = aElements[i];
@@ -6699,7 +6755,7 @@ sap.ui.layout.form.FormLayout.extend("sap.ui.layout.form.GridLayout", { metadata
 		if(oContainer.getVisible()) {
 			var aElements = oContainer.getFormElements();
 			var i = iCurrentIndex-1;
-			var iLeft = jQuery.sap.byId(oControl.getId()).offset().left;
+			var iLeft = oControl.$().offset().left;
 
 			while (!oNewDomRef && i >= 0) {
 				var oElement = aElements[i];
@@ -6791,7 +6847,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveGridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -7145,7 +7201,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 		},
 		associations: {
 			"container" : {type: "sap.ui.layout.form.FormContainer", multiple: false},
-			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false},
+			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false}
 		}
 	},
 
@@ -7180,9 +7236,9 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 		var oContainer = sap.ui.getCore().byId(this.getContainer());
 		if (oContainer) {
 			if (oContainer.getExpanded()) {
-				jQuery.sap.byId(this.getId()).removeClass("sapUiRGLContainerColl");
+				this.$().removeClass("sapUiRGLContainerColl");
 			}else {
-				jQuery.sap.byId(this.getId()).addClass("sapUiRGLContainerColl");
+				this.$().addClass("sapUiRGLContainerColl");
 			}
 		}
 	},
@@ -7950,7 +8006,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Element[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Element[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li></ul>
  * </li>
  * <li>Associations
@@ -7970,7 +8026,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -8455,6 +8511,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
  * new sap.ui.commons.TextView({text:"Weight 1",
  * layoutData: new sap.ui.layout.ResponsiveFlowLayoutData({weight:1})}),
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/SimpleForm.
  * @return {sap.ui.core.Element[]}
  * @public
  * @name sap.ui.layout.form.SimpleForm#getContent
@@ -8546,7 +8603,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.SimpleForm} <code>this</code> to allow method chaining
  * @public
  * @since 1.16.3
@@ -8653,17 +8710,10 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 
 	sap.ui.layout.form.SimpleForm.prototype.setEditable = function(bEditable) {
 
-		var bOldEditable = this.getEditable();
 		this.setProperty("editable", bEditable, true);
 
-		if (bEditable != bOldEditable) {
-			var oForm = this.getAggregation("form");
-			if (this.getEditable()) {
-				oForm.addStyleClass("sapUiFormEdit sapUiFormEdit-CTX");
-			}else{
-				oForm.addStyleClass("");
-			}
-		}
+		var oForm = this.getAggregation("form");
+		oForm.setEditable(bEditable);
 
 	};
 
@@ -9673,7 +9723,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -9692,7 +9742,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -9761,6 +9811,7 @@ sap.ui.core.Control.extend("sap.ui.layout.ResponsiveFlowLayout", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Added content that should be positioned. Every content item should have a ResponsiveFlowLayoutData attached otherwise the default values are used.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ResponsiveFlowLayout.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.ResponsiveFlowLayout#getContent
@@ -10424,7 +10475,7 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 	 * 
 	 * @param {Object}
 	 *            [oContent] the content that should be inserted to the layout
-	 * @param {integer}
+	 * @param {int}
 	 *            [iIndex] the index where the content should be inserted into
 	 * @public
 	 */
@@ -10452,7 +10503,6 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 		this.removeAggregation("content", oContent);
 	};
 }());
-
 }; // end of sap/ui/layout/ResponsiveFlowLayout.js
 if ( !jQuery.sap.isDeclared('sap.ui.layout.form.ResponsiveLayout') ) {
 /*!
@@ -10512,7 +10562,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -10598,7 +10648,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 		},
 		associations: {
 			"container" : {type: "sap.ui.layout.form.FormContainer", multiple: false},
-			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false},
+			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false}
 		}
 	},
 
@@ -10629,9 +10679,9 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 		var oContainer = sap.ui.getCore().byId(this.getContainer());
 		if (oContainer) {
 			if (oContainer.getExpanded()) {
-				jQuery.sap.byId(this.getId()).removeClass("sapUiRLContainerColl");
+				this.$().removeClass("sapUiRLContainerColl");
 			}else {
-				jQuery.sap.byId(this.getId()).addClass("sapUiRLContainerColl");
+				this.$().addClass("sapUiRLContainerColl");
 			}
 		}
 	},

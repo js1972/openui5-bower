@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -313,7 +313,7 @@ sap.ui.ux3.ExactList.M_EVENTS = {'attributeSelected':'attributeSelected'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactList</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactList</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ExactList} <code>this</code> to allow method chaining
  * @public
@@ -418,7 +418,7 @@ sap.ui.commons.ListBox.extend("sap.ui.ux3.ExactList.LB", {
 		for(var i=0; i<items.length; i++){
 			var oItem = items[i];
 			var oExactAttr = sap.ui.getCore().byId(oItem.getKey());
-			var jItem = jQuery.sap.byId(oItem.getId());
+			var jItem = oItem.$();
 			bHasChildren = false;
 			if(bIsTop || (!oExactAttr || !oExactAttr.getShowSubAttributesIndicator_Computed())){
 				jItem.addClass("sapUiUx3ExactLstNoIco");
@@ -548,9 +548,9 @@ sap.ui.ux3.ExactList.prototype.exit = function() {
  */
 sap.ui.ux3.ExactList.prototype.getFocusDomRef = function() {
 	if(this._isTop() && this.$().hasClass("sapUiUx3ExactLstTopHidden")){
-		return jQuery.sap.domById(this.getId()+"-foc");
+		return this.getDomRef("foc");
 	}
-	return this._bCollapsed ? jQuery.sap.domById(this.getId()+"-head") : this._lb.getFocusDomRef();
+	return this._bCollapsed ? this.getDomRef("head") : this._lb.getFocusDomRef();
 };
 
 
@@ -572,7 +572,7 @@ sap.ui.ux3.ExactList.prototype.onBeforeRendering = function() {
 		
 		//see also function collapseHorizontally
 		this._oCollapseStyles = {
-			"cntnt": "margin-"+(this._bRTL ? "right" : "left")+":"+sap.ui.core.theming.Parameters.get("sap.ui.ux3.ExactList:sapUiUx3ExactLstCollapseWidth")+";border-top-width:0px;",
+			"cntnt": "margin-"+(this._bRTL ? "right" : "left")+":"+sap.ui.core.theming.Parameters.get("sapUiUx3ExactLstCollapseWidth")+";border-top-width:0px;",
 			"lst": "width:0px;"
 		};
 	}else{
@@ -597,9 +597,9 @@ sap.ui.ux3.ExactList.prototype.onAfterRendering = function() {
 		//Register listener on content overflow for scrollbar
 		this._iScrollWidthDiff = -1;
 		this.onCheckScrollbar();
-		jQuery.sap.byId(this.getId()+"-lst").css("bottom", jQuery.sap.scrollbarSize().height+"px");
+		this.$("lst").css("bottom", jQuery.sap.scrollbarSize().height+"px");
 		
-		jQuery.sap.byId(this.getId()+"-cntnt").bind("scroll", function(oEvent){
+		this.$("cntnt").bind("scroll", function(oEvent){
 			if(oEvent.target.id === that.getId()+"-cntnt" && oEvent.target.scrollTop != 0){
 				oEvent.target.scrollTop = 0;
 			}
@@ -647,15 +647,15 @@ sap.ui.ux3.ExactList.prototype.onfocusin = function(oEvent) {
 	if(oEvent.target === this.getDomRef()){
 		this.getFocusDomRef().focus();
 	}
-	var $head = jQuery.sap.byId(this.getId()+"-head");
+	var $head = this.$("head");
 	if(this._isTop()){
 		$head.attr("tabindex", "-1");
-		jQuery.sap.byId(this.getId()+"-foc").attr("tabindex", "-1");
+		this.$("foc").attr("tabindex", "-1");
 		if(!isTopHeaderFocusable(this) && oEvent.target === $head[0]){
 			this.getFocusDomRef().focus();
 		}
 		
-		if(this.$().hasClass("sapUiUx3ExactLstTopHidden") && oEvent.target === jQuery.sap.domById(this.getId()+"-foc")){
+		if(this.$().hasClass("sapUiUx3ExactLstTopHidden") && oEvent.target === this.getDomRef("foc")){
 			var aLists = this.getSubLists();
 			if(aLists.length > 0){
 				aLists[0].getFocusDomRef().focus();
@@ -674,10 +674,10 @@ sap.ui.ux3.ExactList.prototype.onfocusin = function(oEvent) {
  * @private
  */
 sap.ui.ux3.ExactList.prototype.onfocusout = function(oEvent) {
-	var $head = jQuery.sap.byId(this.getId()+"-head");
+	var $head = this.$("head");
 	if(this._isTop()){
 		$head.attr("tabindex", "0");
-		jQuery.sap.byId(this.getId()+"-foc").attr("tabindex", "0");
+		this.$("foc").attr("tabindex", "0");
 	}
 	$head.removeClass("sapUiUx3ExactLstHeadFocus");
 };
@@ -702,10 +702,10 @@ sap.ui.ux3.ExactList.prototype.onclick = function(oEvent) {
 	}else if(jQuery(oEvent.target).attr("id") == this.getId() + "-hide"){
 		//Toggle the horizontally Collapse state
 		collapseHorizontally(this, !this._bCollapsed, oEvent);
-	}else if(this._isTop() && isTopHeaderFocusable(this) && jQuery.sap.containsOrEquals(jQuery.sap.byId(this.getId()+"-head")[0], oEvent.target)){
+	}else if(this._isTop() && isTopHeaderFocusable(this) && jQuery.sap.containsOrEquals(this.$("head")[0], oEvent.target)){
 		fireHeaderPress(this, oEvent, false);
 		return;
-	}else if(!jQuery.sap.containsOrEquals(jQuery.sap.byId(this.getId()+"-cntnt")[0], oEvent.target)){
+	}else if(!jQuery.sap.containsOrEquals(this.$("cntnt")[0], oEvent.target)){
 		this.focus();
 	}
 	this._lb.setScrollTop(s);
@@ -732,7 +732,7 @@ sap.ui.ux3.ExactList.prototype.onkeydown = function(oEvent) {
 	switch(oEvent.keyCode){
 		case jQuery.sap.KeyCodes.ENTER:
 		case jQuery.sap.KeyCodes.SPACE:
-			if(this._isTop() && isTopHeaderFocusable(this) && jQuery.sap.containsOrEquals(jQuery.sap.byId(this.getId()+"-head")[0], oEvent.target)){
+			if(this._isTop() && isTopHeaderFocusable(this) && jQuery.sap.containsOrEquals(this.$("head")[0], oEvent.target)){
 				fireHeaderPress(this, oEvent, true);
 			}
 			break;
@@ -787,11 +787,11 @@ sap.ui.ux3.ExactList.prototype.onkeydown = function(oEvent) {
 			//Handle Tabbing
 			if(this._iLevel == 0){
 				var bHeaderFocusable = isTopHeaderFocusable(this);
-				if(!oEvent.shiftKey && bHeaderFocusable && jQuery.sap.containsOrEquals(jQuery.sap.byId(this.getId()+"-head")[0], oEvent.target)){
+				if(!oEvent.shiftKey && bHeaderFocusable && jQuery.sap.containsOrEquals(this.$("head")[0], oEvent.target)){
 					_handleKeyEvent(oEvent, this.getFocusDomRef());
 				} else if(jQuery.sap.containsOrEquals(this.getFocusDomRef(), oEvent.target)){
 					if(oEvent.shiftKey && bHeaderFocusable) {
-						_handleKeyEvent(oEvent, jQuery.sap.byId(this.getId()+"-head")[0]);
+						_handleKeyEvent(oEvent, this.$("head")[0]);
 					}else if(!oEvent.shiftKey){
 						var oSubList = getSuccessorList(this);
 						if(oSubList){
@@ -805,7 +805,7 @@ sap.ui.ux3.ExactList.prototype.onkeydown = function(oEvent) {
 			if(this._iLevel == 1){
 				var oSubList = null;
 				if(oEvent.shiftKey){
-					if(jQuery.sap.containsOrEquals(jQuery.sap.byId(this.getId()+"-cntnt")[0], oEvent.target)){
+					if(jQuery.sap.containsOrEquals(this.$("cntnt")[0], oEvent.target)){
 						oSubList = this;
 					}else{
 						oSubList = getPredecessorList(this);
@@ -852,13 +852,13 @@ sap.ui.ux3.ExactList.prototype.onmousedown = function(oEvent) {
 		// Fix for IE text selection while dragging
 		jQuery(document.body).bind("selectstart."+this.getId(), onStartSelect);
 
-		var jHandle = !!sap.ui.Device.browser.internet_explorer ? jQuery(document.body) : jQuery.sap.byId(this.getId() + "-ghost");
+		var jHandle = !!sap.ui.Device.browser.internet_explorer ? jQuery(document.body) : this.$("ghost");
 		jHandle.bind("mouseup."+this.getId(), jQuery.proxy(onRelease, this)).bind("mousemove."+this.getId(), jQuery.proxy(onMove, this));
 			
 		this._iStartDragX = oEvent.pageX;
-		this._iStartWidth  = jQuery.sap.byId(this.getId()+"-lst").width();
+		this._iStartWidth  = this.$("lst").width();
 
-		jQuery.sap.byId(this.getId()+"-rsz").addClass("sapUiUx3ExactLstRSzDrag");
+		this.$("rsz").addClass("sapUiUx3ExactLstRSzDrag");
 	}
 };
 
@@ -878,7 +878,7 @@ sap.ui.ux3.ExactList.prototype.onForceVerticalClose = function(oEvent) {
 			oEvent.type == "keyup" ||
 			oEvent.type == "mousedown" ||
 			oEvent.type == "mouseup") {
-		var jRef = jQuery.sap.byId(this.getId() + "-lst");
+		var jRef = this.$("lst");
 		if(!jQuery.sap.containsOrEquals(jRef[0], oEvent.target) || oEvent.target.tagName=="BODY"){
 			if(jRef.hasClass("sapUiUx3ExactLstExpanded")){
 				this._oPopup.close(true);
@@ -895,7 +895,7 @@ sap.ui.ux3.ExactList.prototype.onForceVerticalClose = function(oEvent) {
 sap.ui.ux3.ExactList.prototype.onCheckScrollbar = function(oEvent) {
 	this._scrollCheckTimer = null;
 
-	var jContentArea = jQuery.sap.byId(this.getId()+"-cntnt");
+	var jContentArea = this.$("cntnt");
 	var oContentArea = jContentArea[0];
 	if(oContentArea){
 		var iNewDiff = oContentArea.scrollWidth - oContentArea.clientWidth;
@@ -1235,7 +1235,7 @@ var getSuccessorList = function(oList, bArrow){
 var fireHeaderPress = function(oList, oEvent, bKeyboard){
 	oList.fireEvent("_headerPress", {
 		kexboard: bKeyboard,
-		domRef: jQuery.sap.byId(oList.getId() + "-head")
+		domRef: oList.$("head")
 	});
 	oEvent.stopPropagation();
 };
@@ -1269,7 +1269,7 @@ var getIndexForNewSubList = function(oList, oAttr){
 
 var refreshScrollBehaviour = function(oList){
 	if(adaptScollBehavior(oList)){
-		jQuery.sap.byId(oList.getId() + "-lst").addClass("sapUiUx3ExactLstLstExp");
+		oList.$("lst").addClass("sapUiUx3ExactLstLstExp");
 
 		if(!oList._oPopup){
 			var fPopupEventHandle = function(oEvent){
@@ -1294,23 +1294,23 @@ var refreshScrollBehaviour = function(oList){
 			}
 
 			oList._oPopup.open = function(){
-				var jListContRef = jQuery.sap.byId(oList.getId() + "-lst");
+				var jListContRef = oList.$("lst");
 				animate(jListContRef, false, -1, function(jRef){
 					//Switch the expand icon
 					jListContRef.addClass("sapUiUx3ExactLstExpanded");
-					jQuery.sap.byId(oList.getId()+"-exp").html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(true, false));
+					oList.$("exp").html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(true, false));
 					//Remember the current height for closing later and set the height explicitly
 					oList.__sOldHeight = jListContRef.css("height");
 					jListContRef.css("height", oList.__sOldHeight);
-					var jListHeader = jQuery.sap.byId(oList.getId()+"-head");
+					var jListHeader = oList.$("head");
 					//Calculate the target height
 					var jListRef = jQuery(oList._lb.getDomRef());
-					var iListHeight = jListRef[0].scrollHeight + jQuery.sap.byId(oList.getId() + "-exp").height() + jListRef.outerHeight() - jListRef.height() + 1;
+					var iListHeight = jListRef[0].scrollHeight + oList.$("exp").height() + jListRef.outerHeight() - jListRef.height() + 1;
 					var iMaxListHeight = jQuery(window).height() - parseInt(jListRef.offset().top, 10) + jQuery(window).scrollTop() - jListHeader.outerHeight();
 					var iTargetHeight = Math.min(iListHeight, iMaxListHeight);
 					//Set the list as popup content and open the popup
 					oList._oPopup.setContent(jListContRef[0]);
-					var sOffset = sap.ui.core.theming.Parameters.get()["sap.ui.ux3.ExactList:sapUiUx3ExactLst" + (oList._isTop() ? "Root" : "") + "ExpandOffset"] || "0 0";
+					var sOffset = sap.ui.core.theming.Parameters.get()["sapUiUx3ExactLst" + (oList._isTop() ? "Root" : "") + "ExpandOffset"] || "0 0";
 					sap.ui.core.Popup.prototype.open.apply(oList._oPopup,
 							[0, sap.ui.core.Popup.Dock.BeginTop, sap.ui.core.Popup.Dock.BeginBottom, jListHeader[0], sOffset, "none none"]);
 					oList._bPopupOpened = true;
@@ -1328,7 +1328,7 @@ var refreshScrollBehaviour = function(oList){
 				});
 			};
 			oList._oPopup.close = function(bSkipFocus){
-				var jListContRef = jQuery.sap.byId(oList.getId() + "-lst");
+				var jListContRef = oList.$("lst");
 				jListContRef.removeClass("sapUiUx3ExactLstExpandedBL");
 				animate(jListContRef, false, oList.__sOldHeight, function(jRef){
 					//Unbind the event handlers for closing and control events
@@ -1336,7 +1336,7 @@ var refreshScrollBehaviour = function(oList){
 					jRef.unbind(jQuery.sap.ControlEvents.join(" "), fPopupEventHandle);
 					//Switch the expand icon
 					jListContRef.removeClass("sapUiUx3ExactLstExpanded");
-					jQuery.sap.byId(oList.getId()+"-exp").html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(false, false));
+					oList.$("exp").html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(false, false));
 				}, function(jRef){
 					//Move the list to its original position
 					jRef.detach();
@@ -1408,8 +1408,8 @@ var onMove = function(oEvent){
 //@see sap.ui.ux3.ExactList.prototype.onmousedown
 var onRelease = function(oEvent){
 	jQuery(document.body).unbind("selectstart."+this.getId()).unbind("mouseup."+this.getId()).unbind("mousemove."+this.getId());
-	jQuery.sap.byId(this.getId() + "-ghost").remove();
-	jQuery.sap.byId(this.getId()+"-rsz").removeClass("sapUiUx3ExactLstRSzDrag");
+	this.$("ghost").remove();
+	this.$("rsz").removeClass("sapUiUx3ExactLstRSzDrag");
 	this._iStartWidth = undefined;
 	this._iStartDragX = undefined;
 	this.focus();
@@ -1420,20 +1420,19 @@ var onRelease = function(oEvent){
 var setWidth = function(oList, iWidth){
 	iWidth = sap.ui.ux3.ExactAttribute._checkWidth(iWidth);
 	var sPos = oList._bRTL ? "right" : "left";
-	var sId = oList.getId();
 	oList._iCurrentWidth = iWidth;
 	oList._getAtt()._setWidth(oList._iCurrentWidth);
-	jQuery.sap.byId(sId+"-lst").css("width", iWidth+"px");
-	jQuery.sap.byId(sId+"-rsz").css(sPos, (iWidth-4)+"px");
+	oList.$("lst").css("width", iWidth+"px");
+	oList.$("rsz").css(sPos, (iWidth-4)+"px");
 	if(oList._isTop()){
 		if(!isTopHidden(oList)){
-			jQuery.sap.byId(sId+"-head").css("width", iWidth+"px");
-			jQuery.sap.byId(sId+"-cntnt").css(sPos, (iWidth+8)+"px");
-			jQuery.sap.byId(sId+"-scroll").css(sPos, (iWidth+8)+"px");
+			oList.$("head").css("width", iWidth+"px");
+			oList.$("cntnt").css(sPos, (iWidth+8)+"px");
+			oList.$("scroll").css(sPos, (iWidth+8)+"px");
 		}
 	}else{
 		if(!oList.$().hasClass("sapUiUx3ExactLstCollapsed")){
-			jQuery.sap.byId(sId+"-cntnt").css("margin-"+sPos, iWidth+"px");
+			oList.$("cntnt").css("margin-"+sPos, iWidth+"px");
 		}
 	}
 };
@@ -1443,7 +1442,7 @@ var setWidth = function(oList, iWidth){
 var setHeaderText = function(oList){
 	var oAtt = oList._getAtt();
 	if(oAtt && !oList._isTop()){
-		jQuery.sap.byId(oList.getId() + "-head-txt").html(jQuery.sap.encodeHTML(oAtt.getText())
+		oList.$("head-txt").html(jQuery.sap.encodeHTML(oAtt.getText())
 				+"<span class=\"sapUiUx3ExactLstHeadInfo\">&nbsp;("+oList._lb.getSelectedIndices().length+"/"+oList._lb.getItems().length+")</span>");
 	}
 };
@@ -1463,9 +1462,9 @@ var setLevel = function(oList, iLevel){
 var adaptScollBehavior = function(oList){
 	if(oList._lb){
 		var jListRef = jQuery(oList._lb.getDomRef());
-		jQuery.sap.byId(oList.getId() + "-lst").removeClass("sapUiUx3ExactLstScroll");
+		oList.$("lst").removeClass("sapUiUx3ExactLstScroll");
 		if(jListRef.length > 0 && jListRef.outerHeight() < jListRef[0].scrollHeight){
-			jQuery.sap.byId(oList.getId() + "-lst").addClass("sapUiUx3ExactLstScroll");
+			oList.$("lst").addClass("sapUiUx3ExactLstScroll");
 			return true;
 		}
 	}
@@ -1487,11 +1486,11 @@ var collapseHorizontally = function(oList, bCollapse, oEvent, bSkipParentTravers
 		var bFocus = !!oEvent;
 		var cntntAnimParam = {};
 		cntntAnimParam["margin-" + (oList._bRTL ? "right" : "left")] = (oList._bCollapsed ?
-				(oList._iCurrentWidth + "px") : sap.ui.core.theming.Parameters.get("sap.ui.ux3.ExactList:sapUiUx3ExactLstCollapseWidth"));
+				(oList._iCurrentWidth + "px") : sap.ui.core.theming.Parameters.get("sapUiUx3ExactLstCollapseWidth"));
 		cntntAnimParam["border-top-width"] = (oList._bCollapsed ? 
-				sap.ui.core.theming.Parameters.get("sap.ui.ux3.ExactList:sapUiUx3ExactLstContentTop") : "0px");
+				sap.ui.core.theming.Parameters.get("sapUiUx3ExactLstContentTop") : "0px");
 		
-		var $Ctnt = jQuery.sap.byId(oList.getId()+"-cntnt");
+		var $Ctnt = oList.$("cntnt");
 		if(jQuery.fx.off){
 			for(var css in cntntAnimParam){
 				$Ctnt.css(css, cntntAnimParam[css]);
@@ -1502,18 +1501,18 @@ var collapseHorizontally = function(oList, bCollapse, oEvent, bSkipParentTravers
 		
 		if(oList._bCollapsed){
 			//expand
-			animate(jQuery.sap.byId(oList.getId()+"-lst"), true, oList._iCurrentWidth+"px", function() {
+			animate(oList.$("lst"), true, oList._iCurrentWidth+"px", function() {
 				jQuery(oList.getDomRef()).removeClass("sapUiUx3ExactLstCollapsed");
-				jQuery.sap.byId(oList.getId()+"-head").css("overflow", "hidden");
+				oList.$("head").css("overflow", "hidden");
 			}, function($Ref) {
-				jQuery.sap.byId(oList.getId()+"-hide")
+				oList.$("hide")
 					.html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(true, true))
 					.attr("title", oList._rb.getText("EXACT_LST_LIST_COLLAPSE"));
 				if(bFocus){
 					oList.focus();
 				}
-				var $head = jQuery.sap.byId(oList.getId()+"-head");
-				jQuery.sap.byId(oList.getId()+"-head-txt").removeAttr("style");
+				var $head = oList.$("head");
+				oList.$("head-txt").removeAttr("style");
 				$head.removeAttr("style");
 				$Ref.removeAttr("style");
 				refreshScrollBehaviour(oList);
@@ -1536,9 +1535,9 @@ var collapseHorizontally = function(oList, bCollapse, oEvent, bSkipParentTravers
 			oList._oCollapseStyles = {};
 			
 			//collapse
-			animate(jQuery.sap.byId(oList.getId()+"-lst"), true, 0, null, function() {
+			animate(oList.$("lst"), true, 0, null, function() {
 				jQuery(oList.getDomRef()).addClass("sapUiUx3ExactLstCollapsed");
-				jQuery.sap.byId(oList.getId()+"-hide")
+				oList.$("hide")
 					.html(sap.ui.ux3.ExactListRenderer.getExpanderSymbol(false, true))
 					.attr("title", oList._rb.getText("EXACT_LST_LIST_EXPAND"));
 				if(bFocus){
@@ -1546,7 +1545,7 @@ var collapseHorizontally = function(oList, bCollapse, oEvent, bSkipParentTravers
 				}
 				refreshCollapseHeaderTextWidth(oList);
 				
-				var $head = jQuery.sap.byId(oList.getId()+"-head");
+				var $head = oList.$("head");
 				$head.attr("role", "region");
 				$head.attr("aria-label", oList._rb.getText("EXACT_LST_LIST_COLL_ARIA_LABEL", [oList._iLevel, oList._getAtt().getText()]));
 				$head.attr("aria-expanded", "false");
@@ -1577,8 +1576,8 @@ var collapseHorizontally = function(oList, bCollapse, oEvent, bSkipParentTravers
 //Refreshs the header text width of all collapsed lists
 var refreshCollapseHeaderTextWidth = function(oList) {
 	if(oList._bCollapsed){
-		var iWidth = jQuery.sap.byId(oList.getId()+"-cntnt").height()-50/*Space for Header Action Buttons - Maybe provide theme parameter in future*/;
-		var $txt = jQuery.sap.byId(oList.getId()+"-head-txt");
+		var iWidth = oList.$("cntnt").height()-50/*Space for Header Action Buttons - Maybe provide theme parameter in future*/;
+		var $txt = oList.$("head-txt");
 		$txt.css("width", iWidth+"px");
 		if(jQuery("html").attr("data-sap-ui-browser") == "ie8") {
 			//A text with 90px width is correct aligned when bottom:75px is set
@@ -1595,7 +1594,7 @@ var refreshCollapseHeaderTextWidth = function(oList) {
 
 //Toggles the vertical Collapse State
 var toggleVerticalCollapseState = function(oList){
-	var jListContRef = jQuery.sap.byId(oList.getId() + "-lst");
+	var jListContRef = oList.$("lst");
 	if(jListContRef.hasClass("sapUiUx3ExactLstExpanded")){
 		//collapse
 		oList._oPopup.close();

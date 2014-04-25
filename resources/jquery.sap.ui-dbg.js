@@ -5,15 +5,17 @@
  */
 
 // A bridge between the jQuery.sap plugin and the SAPUI5 Core
-jQuery.sap.declare("jquery.sap.ui", false);
-jQuery.sap.require("sap.ui.Global");
+sap.ui.define(['jquery.sap.global', 'sap/ui/Global'],
+	function(jQuery, Global) {
+	"use strict";
+
 //jQuery.sap.require("sap.ui.core.Core"); // cyclic
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!     EXPERIMENTAL     !!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!
-(function() {
-
+	
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!     EXPERIMENTAL     !!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+	
 	// FIXME Too tough or just right?
 	if(!jQuery.sap) {
 		throw "Initialisation of jQuery.sap.ui failed. jQuery.sap plugin required!";
@@ -30,7 +32,7 @@ jQuery.sap.require("sap.ui.Global");
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.18.12
+//	 * @version 1.20.4
 //	 * @namespace
 //	 * @public
 //	 */
@@ -110,7 +112,7 @@ jQuery.sap.require("sap.ui.Global");
 	/**
 	 * Extension function to the jQuery.fn which identifies SAPUI5 controls in the given jQuery context.
 	 *
-	 * @param {integer} [idx] optional parameter to return the control instance at the given idx's position in the array.
+	 * @param {int} [idx] optional parameter to return the control instance at the given idx's position in the array.
 	 * @methodOf jQuery.prototype
 	 * @returns {sap.ui.core.Control[] | sap.ui.core.Control | null} depending on the given context and idx parameter an array of controls, an instance or null.
 	 * @public
@@ -169,4 +171,6 @@ jQuery.sap.require("sap.ui.Global");
 		});
 	};
 
-}());
+	return jQuery;
+
+}, /* bExport= */ false);

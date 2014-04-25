@@ -46,7 +46,5 @@ sap.m.DateTimeInputRenderer.addCursorClass = function(oRm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.DateTimeInputRenderer.addOuterStyles = function(oRm, oControl) {
-	if (!oControl.getWidth()) {
-		oRm.addStyle("width", "100%");
-	}
+	oRm.addStyle("width", oControl.getWidth());
 };

@@ -46,7 +46,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getCustomHeader customHeader} : sap.ui.core.Control</li>
  * <li>{@link #getSubHeader subHeader} : sap.ui.core.Control</li>
  * <li>{@link #getFooter footer} : sap.ui.core.Control</li>
@@ -75,9 +75,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * @class
  * Popover is to present information temporarily but in a way that does not take over the entire screen. The popover content is layered on top of your existing content and it remains visible until the user taps outside of the popover when modal is set to false or you explicitly dismiss it when modal is set to true. The switching between modal and non-modal can also be done when the popover is already opened.
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -86,6 +87,9 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.m.Popover", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.PopupInterface"
+	],
 	publicMethods : [
 		// methods
 		"close", "openBy", "isOpen"
@@ -470,6 +474,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
  * Getter for aggregation <code>content</code>.<br/>
  * The content inside the popover.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Popover.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.Popover#getContent
@@ -560,7 +565,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Setter for the aggregated <code>customHeader</code>.
- * @param oCustomHeader {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oCustomHeader
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Popover#setCustomHeader
@@ -592,7 +597,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Setter for the aggregated <code>subHeader</code>.
- * @param oSubHeader {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSubHeader
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
  * @since 1.15.1
@@ -625,7 +630,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Setter for the aggregated <code>footer</code>.
- * @param oFooter {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oFooter
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Popover#setFooter
@@ -645,7 +650,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Getter for aggregation <code>beginButton</code>.<br/>
- * BeginButton is shown at the left side (right side in RTL mode) inside the header in iOS with theme sap_mvi and every platform in theme sap_bluecrystal, while in other platform with theme sap_mvi the beginButton is shown at the right side (left side in RTL) before the endButton. When showHeader is set to false, the property is ignored.
+ * BeginButton is shown at the left side (right side in RTL mode) inside the header. When showHeader is set to false, the property is ignored.
  * 
  * @return {sap.ui.core.Control}
  * @public
@@ -657,7 +662,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Setter for the aggregated <code>beginButton</code>.
- * @param oBeginButton {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oBeginButton
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
  * @since 1.15.1
@@ -679,7 +684,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Getter for aggregation <code>endButton</code>.<br/>
- * EndButton is always shown at the right side (left side in RTL mode) inside the header independently from the platform and theme . When showHeader is set to false, the property is ignored.
+ * EndButton is always shown at the right side (left side in RTL mode) inside the header. When showHeader is set to false, the property is ignored.
  * 
  * @return {sap.ui.core.Control}
  * @public
@@ -691,7 +696,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
 
 /**
  * Setter for the aggregated <code>endButton</code>.
- * @param oEndButton {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oEndButton
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
  * @since 1.15.1
@@ -823,7 +828,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
  *
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
@@ -887,7 +892,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
  *
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
@@ -951,7 +956,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
  *
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
@@ -1015,7 +1020,7 @@ sap.m.Popover.M_EVENTS = {'afterOpen':'afterOpen','afterClose':'afterClose','bef
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Popover</code>.<br/> itself.
  *
  * @return {sap.m.Popover} <code>this</code> to allow method chaining
  * @public
@@ -1102,7 +1107,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 /*                   begin: lifecycle methods                  */
 /* =========================================================== */
 sap.m.Popover._bOneDesign = (sap.ui.core.theming.Parameters.get("sapMPlatformDependent") !== 'true');
-sap.m.Popover._bIE9 = (jQuery.browser.msie && jQuery.browser.fVersion < 10);
+sap.m.Popover._bIE9 = (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10);
 sap.m.Popover._bIOS7 = sap.ui.Device.os.ios && sap.ui.Device.os.version >= 7 && sap.ui.Device.os.version < 8 && sap.ui.Device.browser.name === "sf";
 /**
  * Initializes the popover control
@@ -1114,7 +1119,7 @@ sap.m.Popover.prototype.init = function(){
 	
 	this._marginTopInit = false;
 	// The following 4 values are the margins which are used to avoid making the popover very near to the border of the screen
-	this._marginTop = (!sap.m.Popover._bOneDesign && jQuery.os.ios) ? 44 : 48; //This is the default value, and dynamic calculation will be done in afterRendering
+	this._marginTop = (!sap.m.Popover._bOneDesign && sap.ui.Device.os.ios) ? 44 : 48; //This is the default value, and dynamic calculation will be done in afterRendering
 	
 	this._marginLeft = 10;
 	this._marginRight = 10;
@@ -1156,7 +1161,7 @@ sap.m.Popover.prototype.init = function(){
 	//There is no need to do this for non desktop environments because the popover is closed
 	//in those already, when scrolling in a container occurs. Using 'followOf' in that scenario
 	//would lead to an error (I have tried it with an IPad)
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		//the 'followOf' handler for our popup
 		this.setFollowOf(true);
 	}
@@ -1387,7 +1392,7 @@ sap.m.Popover.prototype.openBy = function(oControl, bSkipInstanceManager){
 	//CSN 2012 4216945
 	//binding should be registered here (very early) because when keyboard in android closes at the same time, resize event needs to be reacted in order to
 	//reposition the popover after the keyboard fully closes.
-	if(jQuery.support.touch){
+	if(sap.ui.Device.support.touch){
 		sap.ui.Device.resize.attachHandler(this._fnOrientationChange);
 	}
 	
@@ -1515,13 +1520,13 @@ sap.m.Popover.prototype.setFollowOf = function(bValue){
 /* =========================================================== */
 sap.m.Popover.prototype._clearCSSStyles = function() {
 	var oStyle = this.getDomRef().style,
-		$content = jQuery.sap.byId(this.getId() + "-cont"),
+		$content = this.$("cont"),
 		$scrollArea = $content.children(".sapMPopoverScroll"),
 		oContentStyle = $content[0].style,
 		bSAreaPosAbs = $scrollArea.css("position") === "absolute",
 		sContentWidth = this.getContentWidth(),
 		sContentHeight = this.getContentHeight(),
-		$arrow = jQuery.sap.byId(this.getId() + "-arrow"),
+		$arrow = this.$("arrow"),
 		iWindowWidth = this._$window.width(),
 		iWindowHeight = this._$window.height();
 	
@@ -1578,7 +1583,7 @@ sap.m.Popover.prototype._handleOpened = function(){
 	this.oPopup.detachEvent("opened", this._handleOpened, this);
 	
 //	recalculate the arrow position when the size of the popover changes.
-	if(!jQuery.support.touch){
+	if(!sap.ui.Device.support.touch){
 		setTimeout(function(){
 			sap.ui.Device.resize.attachHandler(that._fnOrientationChange);
 		}, 0);
@@ -1610,7 +1615,7 @@ sap.m.Popover.prototype.onfocusin = function(oEvent){
 		// Search for anything focusable from bottom to top
 		var oLastFocusableDomref = jQuery("#" + this.getId() + " .sapMPopoverFooter").lastFocusableDomRef();
 		if(!oLastFocusableDomref) {
-			oLastFocusableDomref = jQuery.sap.byId(this.getId() + "-cont").lastFocusableDomRef();
+			oLastFocusableDomref = this.$("cont").lastFocusableDomRef();
 			if(!oLastFocusableDomref) {
 				oLastFocusableDomref = jQuery("#" + this.getId() + " .sapMPopoverSubHeader").lastFocusableDomRef();
 				if(!oLastFocusableDomref) {
@@ -1625,7 +1630,7 @@ sap.m.Popover.prototype.onfocusin = function(oEvent){
 		if(!oFirstFocusableDomref) {
 			oFirstFocusableDomref = jQuery("#" + this.getId() + " .sapMPopoverSubHeader").firstFocusableDomRef();
 			if(!oFirstFocusableDomref) {
-				var oFirstFocusableDomref = jQuery.sap.byId(this.getId() + "-cont").firstFocusableDomRef();
+				var oFirstFocusableDomref = this.$("cont").firstFocusableDomRef();
 				if(!oFirstFocusableDomref) {
 					oFirstFocusableDomref = jQuery("#" + this.getId() + " .sapMPopoverFooter").firstFocusableDomRef();
 				}
@@ -1948,14 +1953,14 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 		iPosTop = window.parseInt($this.css("top"), 10),
 		iPosLeft = window.parseInt($this.css("left"), 10),
 		sPlacement = this._oCalcedPos || this.getPlacement(),
-		$arrow = jQuery.sap.byId(this.getId() + "-arrow"),
+		$arrow = this.$("arrow"),
 		iArrowHeight = $arrow.outerHeight(true),
 		$offset = $this.offset(),
 		iOffsetX = this.getOffsetX(),
 		iOffsetY = this.getOffsetY(),
 		iWidth = $this.outerWidth(),
 		iHeight = $this.outerHeight(),
-		$content = jQuery.sap.byId(this.getId() + "-cont"),
+		$content = this.$("cont"),
 		$scrollArea = $content.children(".sapMPopoverScroll"),
 		bSAreaPosAbs = $scrollArea.css("position") === "absolute",
 		iContentMarginLeft = window.parseInt($content.css("margin-left"), 10),
@@ -2209,7 +2214,7 @@ sap.m.Popover.prototype._createInternalHeader = function(){
 
 sap.m.Popover.prototype._openAnimation = function($Ref, iRealDuration, fnOpened){
 	var that = this;
-	if(sap.m.Popover._bIE9 || (jQuery.os.android && jQuery.os.fVersion < 2.4)){
+	if(sap.m.Popover._bIE9 || (sap.ui.Device.os.android && sap.ui.Device.os.version < 2.4)){
 		//no animation in ie9 transition not supported
 		//no animation in android 2.3.x, because it looks laggy.
 		fnOpened();
@@ -2242,7 +2247,7 @@ sap.m.Popover.prototype._openAnimation = function($Ref, iRealDuration, fnOpened)
 
 sap.m.Popover.prototype._closeAnimation = function($Ref, iRealDuration, fnClose){
 	var that = this;
-	if(sap.m.Popover._bIE9 || (jQuery.os.android && jQuery.os.fVersion < 2.4)){
+	if(sap.m.Popover._bIE9 || (sap.ui.Device.os.android && sap.ui.Device.os.version < 2.4)){
 		//no animation in android 2.3.x, because it looks laggy.
 		fnClose();
 	}else{
@@ -2299,7 +2304,7 @@ sap.m.Popover.prototype._oFollowOfDelegate = {
 
 sap.m.Popover.prototype._registerContentResizeHandler = function(){
 	if(!this._sResizeListenerId){
-		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(jQuery.sap.domById(this.getId() + "-scroll"),  this._fnOrientationChange);
+		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef("scroll"),  this._fnOrientationChange);
 	}
 };
 
@@ -2315,7 +2320,7 @@ sap.m.Popover.prototype._storeScrollPosition = function(){
 		return;
 	}
 	
-	var $content = jQuery.sap.byId(this.getId() + "-cont");
+	var $content = this.$("cont");
 	if($content.length > 0){
 		this._oScrollPosDesktop = {x: $content.scrollLeft(), y: $content.scrollTop()};
 	}
@@ -2326,7 +2331,7 @@ sap.m.Popover.prototype._restoreScrollPosition = function(){
 		return;
 	}
 	
-	var $content = jQuery.sap.byId(this.getId() + "-cont");
+	var $content = this.$("cont");
 	
 	if($content.length > 0){
 		$content.scrollLeft(this._oScrollPosDesktop.x).
@@ -2399,7 +2404,7 @@ sap.m.Popover.prototype.setTitle = function(sTitle){
 			
 			this._createInternalHeader();
 			
-			if(jQuery.os.ios || sap.m.Popover._bOneDesign){
+			if(sap.ui.Device.os.ios || sap.m.Popover._bOneDesign){
 				this._internalHeader.addContentMiddle(this._headerTitle);
 			}else{
 				this._internalHeader.addContentLeft(this._headerTitle);
@@ -2426,7 +2431,7 @@ sap.m.Popover.prototype.setBeginButton = function(oButton){
 		if(sap.m.Popover._bOneDesign){
 			oButton.setType(sap.m.ButtonType.Transparent);
 		}
-		if(jQuery.os.ios || sap.m.Popover._bOneDesign){
+		if(sap.ui.Device.os.ios || sap.m.Popover._bOneDesign){
 			if(oOldBeginButton){
 				this._internalHeader.removeAggregation("contentLeft", oOldBeginButton, true);
 			}
@@ -2439,7 +2444,7 @@ sap.m.Popover.prototype.setBeginButton = function(oButton){
 		}
 		this._internalHeader.invalidate();
 	}else{
-		if(jQuery.os.ios || sap.m.Popover._bOneDesign){
+		if(sap.ui.Device.os.ios || sap.m.Popover._bOneDesign){
 			this._internalHeader.removeContentLeft(oOldBeginButton);
 		}else{
 			this._internalHeader.removeContentRight(oOldBeginButton);

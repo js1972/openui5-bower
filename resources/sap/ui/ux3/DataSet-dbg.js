@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -535,7 +535,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSet</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.DataSet} <code>this</code> to allow method chaining
  * @public
@@ -600,7 +600,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSet</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.DataSet} <code>this</code> to allow method chaining
  * @public
@@ -1019,7 +1019,7 @@ sap.ui.ux3.DataSet.prototype.createViewSwitch = function(oView, iIndex) {
  * @protected
 */
 sap.ui.ux3.DataSet.prototype._rerenderToolbar = function() {
-	var $content = jQuery.sap.byId(this.getId() + "-toolbar");
+	var $content = this.$("toolbar");
 	this._prepareToolbar();
 	if ($content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
@@ -1034,7 +1034,7 @@ sap.ui.ux3.DataSet.prototype._rerenderToolbar = function() {
  * @protected
 */
 sap.ui.ux3.DataSet.prototype._rerenderFilter = function() {
-	var $content = jQuery.sap.byId(this.getId() + "-filter");
+	var $content = this.$("filter");
 	if ($content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		sap.ui.ux3.DataSetRenderer.renderFilterArea(rm, this);
@@ -1073,7 +1073,7 @@ sap.ui.ux3.DataSet.prototype.setMultiSelect = function(bMode) {
 };
 
 sap.ui.ux3.DataSet.prototype.removeItem = function(oItem) {
-	var result = this.removeAggregation("items", oItem);
+	var result = this.removeAggregation("items", oItem, true);
 	if (result) {
 		result.detachSelected(this.selectItem,this);
 		result.destroyAggregation("_template",true);
@@ -1100,14 +1100,14 @@ sap.ui.ux3.DataSet.prototype.destroyItems = function() {
 };
 
 sap.ui.ux3.DataSet.prototype.addItem = function(oItem) {
-	this.addAggregation("items", oItem);
+	this.addAggregation("items", oItem, true);
 	oItem.attachSelected(this.selectItem,this);
 	this._bDirty = true;
 	return this;
 };
 
 sap.ui.ux3.DataSet.prototype.insertItem = function(oItem, iIndex) {
-	this.insertAggregation("items", oItem, iIndex);
+	this.insertAggregation("items", oItem, iIndex, true);
 	oItem.attachSelected(this.selectItem,this);
 	this._bDirty = true;
 	return this;
@@ -1239,7 +1239,25 @@ sap.ui.ux3.DataSet.prototype._getToolbar = function() {
 	return this.getAggregation("_toolbar");
 };
 
-sap.ui.ux3.DataSet.prototype.updateItems = function(bForceUpdate) {
+sap.ui.ux3.DataSet.prototype.refreshItems = function() {
+	var	oBinding = this.getBinding("items"),
+		oSelectedView = sap.ui.getCore().byId(this.getSelectedView());
+	
+	oBinding.bUseExtendedChangeDetection = true;
+	
+	if (oSelectedView && oSelectedView.getItemCount && oSelectedView.getItemCount()) {
+		var iItemCount = Math.max(oSelectedView.getItemCount(),this.getItems().length);
+		if (iItemCount) {
+			oBinding.getContexts(0, iItemCount);
+		} else {
+			oBinding.getContexts();
+		}
+	} else {
+		oBinding.getContexts();
+	}
+}
+
+sap.ui.ux3.DataSet.prototype.updateItems = function(sChangeReason) {
 	var oBindingInfo = this.mBindingInfos["items"],
 		oAggregationInfo = this.getMetadata().getJSONKeys()["items"],
 		oSelectedView = sap.ui.getCore().byId(this.getSelectedView()),
@@ -1251,7 +1269,7 @@ sap.ui.ux3.DataSet.prototype.updateItems = function(bForceUpdate) {
 		iIndex,
 		that = this,
 		aContexts = [];
-
+	
 	oBinding.bUseExtendedChangeDetection = true;
 	
 	if (oSelectedView && oSelectedView.getItemCount && oSelectedView.getItemCount()) {
@@ -1264,8 +1282,8 @@ sap.ui.ux3.DataSet.prototype.updateItems = function(bForceUpdate) {
 	} else {
 		aContexts = oBinding.getContexts();
 	}
-	
-	if (aContexts.diff && bForceUpdate !== true) {
+
+	if (aContexts.diff && sChangeReason) {
 		var aDiff = aContexts.diff;
 		for (var i=0; i < aDiff.length; i++) {
 			oItems = this.getItems();

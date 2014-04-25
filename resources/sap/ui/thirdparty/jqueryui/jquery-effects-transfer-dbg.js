@@ -1,45 +1,13 @@
-/*!
- * jQuery UI Effects Transfer 1.8.23
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Transfer
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function( $, undefined ) {
+(function(jQuery){
+	
+	var MESSAGE = "The file sap/ui/thirdparty/jqueryui/jquery-effects-transfer.js has been renamed to sap/ui/thirdparty/jqueryui/jquery-ui-effect-transfer.js! Please update the dependencies accordingly.";
 
-$.effects.transfer = function(o) {
-	return this.queue(function() {
-		var elem = $(this),
-			target = $(o.options.to),
-			endPosition = target.offset(),
-			animation = {
-				top: endPosition.top,
-				left: endPosition.left,
-				height: target.innerHeight(),
-				width: target.innerWidth()
-			},
-			startPosition = elem.offset(),
-			transfer = $('<div class="ui-effects-transfer"></div>')
-				.appendTo(document.body)
-				.addClass(o.options.className)
-				.css({
-					top: startPosition.top,
-					left: startPosition.left,
-					height: elem.innerHeight(),
-					width: elem.innerWidth(),
-					position: 'absolute'
-				})
-				.animate(animation, o.duration, o.options.easing, function() {
-					transfer.remove();
-					(o.callback && o.callback.apply(elem[0], arguments));
-					elem.dequeue();
-				});
-	});
-};
+	if ( jQuery && jQuery.sap && jQuery.sap.require ) {
+		// if jQuery.sap is available, require the new module and log a warning
+		jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-effect-transfer");
+		jQuery.sap.log.warning(MESSAGE);
+	} else {
+		throw new Error(MESSAGE);
+	}
 
-})(jQuery);
+})(window.jQuery);

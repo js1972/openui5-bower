@@ -131,7 +131,7 @@ sap.ui.commons.RatingIndicatorRenderer.renderItem = function(rm, oRating, i, fVa
 /**
  * Helper function to render a rating symbol in hover state.
  *
- * @param {integer} iCount the number of the rating image which should be hovered.
+ * @param {int} iCount the number of the rating image which should be hovered.
  * @param {sap.ui.core.Control} oRating an object representation of the control that should be rendered
  * @param {boolean} bAfter specifies whether the rating image is behind the hovered one.
  * @private
@@ -147,7 +147,7 @@ sap.ui.commons.RatingIndicatorRenderer.hoverRatingSymbol = function(iCount, oRat
 /**
  * Helper function to render a rating symbol in normal (selected/deselected) state.
  *
- * @param {integer} iCount the number of the rating image which should be unhovered.
+ * @param {int} iCount the number of the rating image which should be unhovered.
  * @param {sap.ui.core.Control} oRating an object representation of the control that should be rendered
  * @private
  */

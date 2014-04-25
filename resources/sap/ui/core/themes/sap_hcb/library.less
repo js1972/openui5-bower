@@ -580,6 +580,49 @@
 [data-sap-ui-type] {
 	visibility:hidden;
 }
+
+/* CSS for windows 8 combi devices */
+.sapUiBody {
+	/* disable pinch zooming */
+	content-zooming: none;
+	-ms-content-zooming: none;
+}
+
+@media (max-width:599px) {
+	.sapUiHideOnPhone {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnTablet {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnDesktop {
+		display : none !important;
+	}
+}
+
+@media (min-width:600px) and (max-width:1023px) {
+	.sapUiHideOnTablet {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnDesktop {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnPhone {
+		display : none !important;
+	}
+}
+
+@media (min-width:1024px) {
+	.sapUiHideOnDesktop {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnTablet {
+		display : none !important;
+	}
+	.sapUiVisibleOnlyOnPhone {
+		display : none !important;
+	}
+}
 /* Shared CSS for 'sap_hcb' theme */
 
 :focus {
@@ -643,8 +686,9 @@ html[data-sap-ui-browser^="cr"] :focus {
 }
 
 /* ============================================= */
-/* CSS for control sap.ui.core/Icon.control */
+/* CSS for control sap.ui.core/Icon.control      */
 /* ============================================= */
+
 .sapUiIcon {
 	text-align: center;
 	display: inline-block;
@@ -652,21 +696,28 @@ html[data-sap-ui-browser^="cr"] :focus {
 	line-height: 100%;
 }
 
-.sapUiIconPointer{
+.sapUiIconPointer {
 	cursor: pointer;
 }
 
-html[dir=rtl] .sapUiIconMirrorInRTL {
+html[dir=rtl] .sapUiIconMirrorInRTL:not(.sapUiIconSuppressMirrorInRTL) {
 	transform: scale(-1,1);
 	-ms-transform: scale(-1,1); /* IE 9 */
 	-webkit-transform: scale(-1,1); /* Safari and Chrome */
 }
+
+/* IE 8 */
 html[dir=rtl][data-sap-ui-browser*='ie8'] .sapUiIconMirrorInRTL {
 	filter: FlipH;
 	-ms-filter: "FlipH";
 }
 
-.sapUiIcon:before{
+html[dir=rtl][data-sap-ui-browser*='ie8'] .sapUiIconMirrorInRTL.sapUiIconSuppressMirrorInRTL {
+	filter: none;
+	-ms-filter: "none";
+}
+
+.sapUiIcon:before {
 	content: attr(data-sap-ui-icon-content);
 	speak: none;
 	font-weight: normal;

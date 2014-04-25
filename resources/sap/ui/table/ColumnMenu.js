@@ -23,3 +23,4 @@ sap.ui.table.ColumnMenu.prototype._createMenuItem=function(i,t,I,h){return new s
 sap.ui.table.ColumnMenu.prototype._createMenuTextFieldItem=function(i,t,I,v,h){jQuery.sap.require("sap.ui.commons.MenuTextFieldItem");h=h||function(){};return new sap.ui.commons.MenuTextFieldItem(this.getId()+"-"+i,{label:this.oResBundle.getText(t),icon:I?this._getThemedIcon(I):null,value:v,select:h||function(){}})};
 sap.ui.table.ColumnMenu.prototype._getThemedIcon=function(i){var c=sap.ui.getCore().getConfiguration().getTheme();return sap.ui.resource("sap.ui.table","themes/"+c+"/img/"+i)};
 sap.ui.table.ColumnMenu.prototype._setFilterValue=function(v){var f=sap.ui.getCore().byId(this.getId()+"-filter");if(f){f.setValue(v)}return this};
+sap.ui.table.ColumnMenu.prototype._setFilterState=function(f){var F=sap.ui.getCore().byId(this.getId()+"-filter");if(F){F.setValueState(f)}return this};

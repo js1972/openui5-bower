@@ -42,7 +42,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getPages pages} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getPages pages} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -339,6 +339,7 @@ sap.m.Carousel.M_EVENTS = {'loadPage':'loadPage','unloadPage':'unloadPage','page
  * Getter for aggregation <code>pages</code>.<br/>
  * The content which the carousel displays.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Carousel.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.Carousel#getPages
@@ -468,7 +469,7 @@ sap.m.Carousel.M_EVENTS = {'loadPage':'loadPage','unloadPage':'unloadPage','page
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
  *
  * @return {sap.m.Carousel} <code>this</code> to allow method chaining
  * @public
@@ -540,7 +541,7 @@ sap.m.Carousel.M_EVENTS = {'loadPage':'loadPage','unloadPage':'unloadPage','page
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
  *
  * @return {sap.m.Carousel} <code>this</code> to allow method chaining
  * @public
@@ -611,7 +612,7 @@ sap.m.Carousel.M_EVENTS = {'loadPage':'loadPage','unloadPage':'unloadPage','page
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Carousel</code>.<br/> itself.
  *
  * @return {sap.m.Carousel} <code>this</code> to allow method chaining
  * @public
@@ -857,7 +858,7 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
  *
  */
 sap.m.Carousel.prototype._fnAdjustHUDVisibility = function(iNextSlide) {
-	if (jQuery.device.is.desktop && !this.getLoop() && this.getPages().length > 1) {
+	if (sap.ui.Device.system.desktop && !this.getLoop() && this.getPages().length > 1) {
 		//update HUD arrow visibility for left- and
 		//rightmost pages
 		var $HUDContainer = this.$().find(sap.m.Carousel._HUD_SELECTOR);
@@ -907,7 +908,7 @@ sap.m.Carousel.prototype.onsaptabnext = function(oEvent) {
  * @private
  */
 sap.m.Carousel.prototype.onfocusin = function(oEvent){
-	if (jQuery.device.is.desktop) {
+	if (sap.ui.Device.system.desktop) {
 		var oSourceDomRef = oEvent.target,
 			iPageIndex = oSourceDomRef.getAttribute('pageIndex'),
 			oNextFocusDomRef,

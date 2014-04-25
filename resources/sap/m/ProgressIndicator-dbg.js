@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -316,9 +316,9 @@ sap.ui.core.Control.extend("sap.m.ProgressIndicator", { metadata : {
 //};
 
 sap.m.ProgressIndicator.prototype.onAfterRendering = function() {
-	var lineHeightText = jQuery.sap.byId(this.getId()).height();
-	jQuery.sap.byId(this.getId() + "-textRight").css("line-height", lineHeightText + "px");
-	jQuery.sap.byId(this.getId() + "-textLeft").css("line-height", lineHeightText + "px");
+	var lineHeightText = this.$().height();
+	this.$("textRight").css("line-height", lineHeightText + "px");
+	this.$("textLeft").css("line-height", lineHeightText + "px");
 }
 
 sap.m.ProgressIndicator.prototype.setPercentValue = function(fPercentValue) {
@@ -338,7 +338,7 @@ sap.m.ProgressIndicator.prototype.setPercentValue = function(fPercentValue) {
 		this.$().addClass("sapMPIAnimate");
 		var time = Math.abs(that.getPercentValue() - fPercentValue) * 20;
 		this.setProperty("percentValue", fPercentValue, true);
-		var $Bar = jQuery.sap.byId(this.getId() + "-bar");
+		var $Bar = this.$("bar");
 		$Bar.animate({
 			width : fPercentValue + "%"
 		}, time, "linear", function() {
@@ -361,8 +361,8 @@ sap.m.ProgressIndicator.prototype.setDisplayValue = function(sDisplayValue) {
 
 	// change of value without rerendering
 	this.setProperty("displayValue", sDisplayValue, true);
-	var $textLeft = jQuery.sap.byId(this.getId() + "-textLeft");
-	var $textRight = jQuery.sap.byId(this.getId() + "-textRight");
+	var $textLeft = this.$("textLeft");
+	var $textRight = this.$("textRight");
 	$textLeft.text(sDisplayValue);
 	$textRight.text(sDisplayValue);
 

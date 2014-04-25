@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -338,10 +338,9 @@ sap.ui.unified.ContentSwitcher.prototype.switchContent = function() {
 ////////////////////////////////////////// onEvent Methods /////////////////////////////////////////
 
 sap.ui.unified.ContentSwitcher.prototype.onAfterRendering = function() {
-	var sId = this.getId();
 	this._$Contents = [
-		jQuery.sap.byId(sId + "-content1"),
-		jQuery.sap.byId(sId + "-content2")
+		this.$("content1"),
+		this.$("content2")
 	];
 };
 

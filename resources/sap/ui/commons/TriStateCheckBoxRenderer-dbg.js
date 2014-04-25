@@ -145,7 +145,7 @@ sap.ui.commons.TriStateCheckBoxRenderer.render = function(oRm, oControl) {
 		oRm.write(">");
 		oRm.writeEscaped(sText);
 	} else {
-		oRm.write(" dir=\"" + eTextDirection + "\">");
+		oRm.write(" style=\"direction:" + eTextDirection.toLowerCase() + ";\">");
 		oRm.writeEscaped(sText);
 	}
 	oRm.write("</span>");

@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.layout.VerticalLayout");
  * @extends sap.ui.layout.VerticalLayout
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public

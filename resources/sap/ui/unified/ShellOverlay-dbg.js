@@ -34,7 +34,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getSearch search} : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -106,6 +106,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the overlay.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ShellOverlay.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.ShellOverlay#getContent
@@ -196,7 +197,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
 
 /**
  * Setter for the aggregated <code>search</code>.
- * @param oSearch {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSearch
  * @return {sap.ui.unified.ShellOverlay} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.ShellOverlay#setSearch
@@ -261,7 +262,7 @@ sap.ui.unified.ShellOverlay.M_EVENTS = {'closed':'closed'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellOverlay</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.unified.ShellOverlay</code>.<br/> itself.
  *
  * @return {sap.ui.unified.ShellOverlay} <code>this</code> to allow method chaining
  * @public
@@ -452,7 +453,7 @@ sap.ui.unified.ShellOverlay.prototype.onAfterRendering = function(){
 	
 	jQuery.sap.delayedCall(10, this, function(){
 		this.$().toggleClass("sapUiUfdShellOvrlyCntntHidden", false);
-		jQuery.sap.byId(this.getId()+"-search").css("width", "");
+		this.$("search").css("width", "");
 	});
 };
 
@@ -560,7 +561,7 @@ sap.ui.unified.ShellOverlay.prototype._setSearchWidth = function(){
 	
 	if(sap.ui.Device.browser.safari){
 		//Safari doesn't support width transition based on different units -> so px must be replaced by %
-		var iTotalWidth = jQuery.sap.byId(this.getId()+"-hdr-center").width();
+		var iTotalWidth = this.$("hdr-center").width();
 		if(iTotalWidth > iWidth){
 			sWidth = Math.round((iWidth*100)/iTotalWidth) + "%";
 		}else{
@@ -568,7 +569,7 @@ sap.ui.unified.ShellOverlay.prototype._setSearchWidth = function(){
 		}
 	}
 	
-	jQuery.sap.byId(this.getId()+"-search").css("width", sWidth);
+	this.$("search").css("width", sWidth);
 };
 
 

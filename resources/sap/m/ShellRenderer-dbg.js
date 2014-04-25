@@ -111,7 +111,7 @@ sap.m.ShellRenderer.getLogoImageHtml = function(oControl) {
 	var result = "";
 	if (sImage) {
 		result = "<div class='sapMShellLogo'>";
-		if (jQuery.browser.msie) {
+		if (sap.ui.Device.browser.internet_explorer) {
 			result += "<span class='sapMShellLogoImgAligner'></span>";
 		}
 		result += "<img id='" + oControl.getId() + "-logo' class='sapMShellLogoImg' src='";

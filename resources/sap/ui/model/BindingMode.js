@@ -3,4 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.model.BindingMode");sap.ui.model.BindingMode={Default:"Default",OneTime:"OneTime",OneWay:"OneWay",TwoWay:"TwoWay"};
+sap.ui.define(['jquery.sap.global'],function(q){"use strict";var B={Default:"Default",OneTime:"OneTime",OneWay:"OneWay",TwoWay:"TwoWay"};return B},true);

@@ -36,8 +36,6 @@ sap.ui.commons.LabelRenderer.render = function(oRenderManager, oLabel) {
 		return;
 	}
 
-	var myStyles = "";
-
 	rm.write("<label");
 	rm.writeControlData(oLabel);
 
@@ -81,28 +79,28 @@ sap.ui.commons.LabelRenderer.render = function(oRenderManager, oLabel) {
 	}
 
 	// Text direction
-	var oTextDir = oLabel.getTextDirection();
-	if (oTextDir) {
-		rm.writeAttribute("dir", oTextDir);
+	var sTextDir = oLabel.getTextDirection();
+	if (sTextDir) {
+		rm.addStyle("direction", sTextDir.toLowerCase());
 	}
 
 	// Style for text alignment
 	var oTextAlign = oLabel.getTextAlign();
 	if(oTextAlign) {
-		myStyles += "text-align:" + r.getTextAlign(oTextAlign, oTextDir) + ";";
+		rm.addStyle("text-align", r.getTextAlign(oTextAlign, sTextDir));
 	}
 
 	// Style for width
 	var sWidth = oLabel.getWidth();
 	if(sWidth) {
-		myStyles += "width:" + sWidth + ";";
+		rm.addStyle("width", sWidth);
 	}
 
 	if(!oLabel.getWrapping()){
 		rm.addClass("sapUiLblNowrap");
 	}
 
-	rm.writeAttribute("style", myStyles);
+	rm.writeStyles();
 	rm.writeClasses();
 
 	// Close start tag

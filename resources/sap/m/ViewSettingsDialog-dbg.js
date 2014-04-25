@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -717,7 +717,7 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
  *
  * @return {sap.m.ViewSettingsDialog} <code>this</code> to allow method chaining
  * @public
@@ -787,7 +787,7 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
  *
  * @return {sap.m.ViewSettingsDialog} <code>this</code> to allow method chaining
  * @public
@@ -845,7 +845,7 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ViewSettingsDialog</code>.<br/> itself.
  *
  * @return {sap.m.ViewSettingsDialog} <code>this</code> to allow method chaining
  * @public
@@ -944,14 +944,16 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
 jQuery.sap.require("sap.ui.core.IconPool");
 
 /* =========================================================== */
-/*           begin: API methods                                */
+/* begin: API methods */
 /* =========================================================== */
 
-sap.m.ViewSettingsDialog.prototype.init = function () {
+sap.m.ViewSettingsDialog.prototype.init = function() {
 	this._rb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 	this._sDialogWidth = "350px";
 	this._sDialogHeight = "434px";
-	this._bAppendedToUIArea = false; // this control does not have a renderer, so we need to take care of adding it to the ui tree manually
+	this._bAppendedToUIArea = false; // this control does not have a
+										// renderer, so we need to take care of
+										// adding it to the ui tree manually
 	this._showSubHeader = false;
 	this._filterDetailList = undefined;
 	this._iContentPage = -1;
@@ -959,7 +961,7 @@ sap.m.ViewSettingsDialog.prototype.init = function () {
 	this._oPreviousState = {};
 };
 
-sap.m.ViewSettingsDialog.prototype.exit = function () {
+sap.m.ViewSettingsDialog.prototype.exit = function() {
 	// helper variables
 	this._rb = null;
 	this._sDialogWidth = null;
@@ -973,7 +975,8 @@ sap.m.ViewSettingsDialog.prototype.exit = function () {
 	this._groupContent = null;
 	this._filterContent = null;
 
-	// controls that are internally managed and may or may not be assigned to an aggregation (have to be destroyed manually to be sure) 
+	// controls that are internally managed and may or may not be assigned to an
+	// aggregation (have to be destroyed manually to be sure)
 
 	// dialog
 	if (this._dialog) {
@@ -1066,21 +1069,27 @@ sap.m.ViewSettingsDialog.prototype.exit = function () {
 
 /*
  * Invalidates the control (suppressed because we don't have a renderer)
- * @overwrite
- * @public
+ * @overwrite @public
  */
-sap.m.ViewSettingsDialog.prototype.invalidate = function () {
-	// suppress rerendering
+sap.m.ViewSettingsDialog.prototype.invalidate = function() {
+	// CSN #80686/2014: only invalidate inner dialog if call does not come from inside
+	if (this._dialog && (!arguments[0] || arguments[0] && arguments[0].getId() !== this.getId() + "-dialog")) {
+		this._dialog.invalidate(arguments);
+	} else {
+		sap.ui.core.Control.prototype.invalidate.apply(this, arguments);
+	}
 };
 
 /**
  * Set the title of the internal dialog
+ * 
  * @overwrite
  * @public
- * @param {string} sTitle the title text for the dialog
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {string}
+ *            sTitle the title text for the dialog
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.setTitle = function (sTitle) {
+sap.m.ViewSettingsDialog.prototype.setTitle = function(sTitle) {
 	this._getTitleLabel().setText(sTitle);
 	this.setProperty("title", sTitle, true);
 	return this;
@@ -1088,12 +1097,14 @@ sap.m.ViewSettingsDialog.prototype.setTitle = function (sTitle) {
 
 /**
  * Adds a sort item and sets the association to reflect the selected state
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the item to be added to the aggregation
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the item to be added to the aggregation
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.addSortItem = function (oItem) {
+sap.m.ViewSettingsDialog.prototype.addSortItem = function(oItem) {
 	if (oItem.getSelected()) {
 		this.setSelectedSortItem(oItem);
 	}
@@ -1103,12 +1114,14 @@ sap.m.ViewSettingsDialog.prototype.addSortItem = function (oItem) {
 
 /**
  * Adds a group item and sets the association to reflect the selected state
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the item to be added to the aggregation
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the item to be added to the aggregation
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.addGroupItem = function (oItem) {
+sap.m.ViewSettingsDialog.prototype.addGroupItem = function(oItem) {
 	if (oItem.getSelected()) {
 		this.setSelectedGroupItem(oItem);
 	}
@@ -1117,13 +1130,16 @@ sap.m.ViewSettingsDialog.prototype.addGroupItem = function (oItem) {
 };
 
 /**
- * Adds a preset filter item and sets the association to reflect the selected state
+ * Adds a preset filter item and sets the association to reflect the selected
+ * state
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the selected item or a string with the key
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the selected item or a string with the key
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.addPresetFilterItem = function (oItem) {
+sap.m.ViewSettingsDialog.prototype.addPresetFilterItem = function(oItem) {
 	if (oItem.getSelected()) {
 		this.setSelectedPresetFilterItem(oItem);
 	}
@@ -1133,15 +1149,16 @@ sap.m.ViewSettingsDialog.prototype.addPresetFilterItem = function (oItem) {
 
 /**
  * Set the selected sort item (either by key or by item)
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the selected item or a string with the key
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the selected item or a string with the key
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.setSelectedSortItem = function (oItem) {
-	var aItems = this.getSortItems(),
-		i = 0;
-	
+sap.m.ViewSettingsDialog.prototype.setSelectedSortItem = function(oItem) {
+	var aItems = this.getSortItems(), i = 0;
+
 	// convenience, also allow strings
 	if (typeof oItem === "string") {
 		// find item with this id
@@ -1153,7 +1170,7 @@ sap.m.ViewSettingsDialog.prototype.setSelectedSortItem = function (oItem) {
 		}
 	}
 
-	// set selected = true for this item & selected = false for all others items 
+	// set selected = true for this item & selected = false for all others items
 	for (i = 0; i < aItems.length; i++) {
 		aItems[i].setSelected(false);
 	}
@@ -1163,22 +1180,23 @@ sap.m.ViewSettingsDialog.prototype.setSelectedSortItem = function (oItem) {
 
 	// update the list selection
 	if (this._getDialog().isOpen()) {
-		this._updateListSelection(this._sortList, oItem);		
+		this._updateListSelection(this._sortList, oItem);
 	}
-	this.setAssociation("selectedSortItem", oItem, true);	
+	this.setAssociation("selectedSortItem", oItem, true);
 	return this;
 };
 
 /**
  * Set the selected group item (either by key or by item)
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the selected item or a string with the key
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the selected item or a string with the key
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.setSelectedGroupItem = function (oItem) {
-	var aItems = this.getGroupItems(),
-		i = 0;
+sap.m.ViewSettingsDialog.prototype.setSelectedGroupItem = function(oItem) {
+	var aItems = this.getGroupItems(), i = 0;
 
 	// convenience, also allow strings
 	if (typeof oItem === "string") {
@@ -1191,7 +1209,7 @@ sap.m.ViewSettingsDialog.prototype.setSelectedGroupItem = function (oItem) {
 		}
 	}
 
-	// set selected = true for this item & selected = false for all others items 
+	// set selected = true for this item & selected = false for all others items
 	for (i = 0; i < aItems.length; i++) {
 		aItems[i].setSelected(false);
 	}
@@ -1201,7 +1219,7 @@ sap.m.ViewSettingsDialog.prototype.setSelectedGroupItem = function (oItem) {
 
 	// update the list selection
 	if (this._getDialog().isOpen()) {
-		this._updateListSelection(this._groupList, oItem);		
+		this._updateListSelection(this._groupList, oItem);
 	}
 	this.setAssociation("selectedGroupItem", oItem, true);
 	return this;
@@ -1209,14 +1227,15 @@ sap.m.ViewSettingsDialog.prototype.setSelectedGroupItem = function (oItem) {
 
 /**
  * Set the selected preset filter item
+ * 
  * @overwrite
  * @public
- * @param {sap.m.ViewSettingsItem} oItem the selected item or a string with the key
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.m.ViewSettingsItem}
+ *            oItem the selected item or a string with the key
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.setSelectedPresetFilterItem = function (oItem) {
-	var aItems = this.getPresetFilterItems(),
-	i = 0;
+sap.m.ViewSettingsDialog.prototype.setSelectedPresetFilterItem = function(oItem) {
+	var aItems = this.getPresetFilterItems(), i = 0;
 
 	// convenience, also allow strings
 	if (typeof oItem === "string") {
@@ -1228,7 +1247,7 @@ sap.m.ViewSettingsDialog.prototype.setSelectedPresetFilterItem = function (oItem
 			}
 		}
 	}
-	// set selected = true for this item & selected = false for all others items 
+	// set selected = true for this item & selected = false for all others items
 	for (i = 0; i < aItems.length; i++) {
 		aItems[i].setSelected(false);
 	}
@@ -1243,13 +1262,15 @@ sap.m.ViewSettingsDialog.prototype.setSelectedPresetFilterItem = function (oItem
 
 /**
  * Opens the view settings dialog relative to the parent control
+ * 
  * @public
- * @param {sap.ui.core/Control} oParentControl the parent control
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {sap.ui.core.Control}
+ *            oParentControl the parent control
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.open = function (oParentControl) {
+sap.m.ViewSettingsDialog.prototype.open = function(oParentControl) {
 	// add to static UI area manually because we don't have a renderer
-	if (!this._bAppendedToUIArea) {
+	if (!this.getParent() && !this._bAppendedToUIArea) {
 		var oStatic = sap.ui.getCore().getStaticAreaRef();
 		oStatic = sap.ui.getCore().getUIArea(oStatic);
 		oStatic.addContent(this, true);
@@ -1259,17 +1280,18 @@ sap.m.ViewSettingsDialog.prototype.open = function (oParentControl) {
 	// init the dialog content based on the aggregations
 	this._initDialogContent();
 
-	// store the current dialog state to be able to reset it on cancel 
+	// store the current dialog state to be able to reset it on cancel
 	this._oPreviousState = {
-		sortItem: sap.ui.getCore().byId(this.getSelectedSortItem()),
-		sortDescending: this.getSortDescending(),
-		groupItem: sap.ui.getCore().byId(this.getSelectedGroupItem()),
-		groupDescending: this.getGroupDescending(),
-		presetFilterItem: sap.ui.getCore().byId(this.getSelectedPresetFilterItem()),
-		filterKeys: this.getSelectedFilterKeys(),
-		navPage: this._getNavContainer().getCurrentPage(),
-		contentPage: this._iContentPage,
-		contentItem: this._oContentItem
+		sortItem : sap.ui.getCore().byId(this.getSelectedSortItem()),
+		sortDescending : this.getSortDescending(),
+		groupItem : sap.ui.getCore().byId(this.getSelectedGroupItem()),
+		groupDescending : this.getGroupDescending(),
+		presetFilterItem : sap.ui.getCore().byId(
+				this.getSelectedPresetFilterItem()),
+		filterKeys : this.getSelectedFilterKeys(),
+		navPage : this._getNavContainer().getCurrentPage(),
+		contentPage : this._iContentPage,
+		contentItem : this._oContentItem
 	};
 
 	// open dialog
@@ -1279,17 +1301,13 @@ sap.m.ViewSettingsDialog.prototype.open = function (oParentControl) {
 
 /**
  * Returns the selected filters in an array of ViewSettingsItem.
+ * 
  * @overwrite
  * @public
  * @return {sap.m.ViewSettingsItem[]} an array of selected filter items
  */
-sap.m.ViewSettingsDialog.prototype.getSelectedFilterItems = function () {
-	var aSelectedFilterItems = [],
-		aFilterItems = this.getFilterItems(),
-		aSubFilterItems,
-		bMultiSelect = true,
-		i = 0,
-		j;
+sap.m.ViewSettingsDialog.prototype.getSelectedFilterItems = function() {
+	var aSelectedFilterItems = [], aFilterItems = this.getFilterItems(), aSubFilterItems, bMultiSelect = true, i = 0, j;
 
 	for (; i < aFilterItems.length; i++) {
 		if (aFilterItems[i] instanceof sap.m.ViewSettingsCustomItem) {
@@ -1303,36 +1321,34 @@ sap.m.ViewSettingsDialog.prototype.getSelectedFilterItems = function () {
 				if (aSubFilterItems[j].getSelected()) {
 					aSelectedFilterItems.push(aSubFilterItems[j]);
 					if (!bMultiSelect) {
-						break; // only first item is added to the selection on single select items
+						break; // only first item is added to the selection on
+								// single select items
 					}
 				}
 			}
 		}
 	}
 
-	return aSelectedFilterItems;	
+	return aSelectedFilterItems;
 };
 
-
 /**
- * Get the filter string in the format "filter name (subfilter1 name, subfilter2 name, ...), ..."
- * For custom filters and preset filters it will only add the filter name to the resulting string
+ * Get the filter string in the format "filter name (subfilter1 name, subfilter2
+ * name, ...), ..." For custom filters and preset filters it will only add the
+ * filter name to the resulting string
+ * 
  * @public
- * @return {sap.ui.core/string} the selected filter string
+ * @return {string} the selected filter string
  */
-sap.m.ViewSettingsDialog.prototype.getSelectedFilterString = function () {
-	var sFilterString = "",
-		sSubfilterString,
-		oPresetFilterItem = this.getSelectedPresetFilterItem(),
-		aFilterItems = this.getFilterItems(),
-		aSubFilterItems,
-		bMultiSelect = true,
-		i = 0,
-		j;
+sap.m.ViewSettingsDialog.prototype.getSelectedFilterString = function() {
+	var sFilterString = "", sSubfilterString, oPresetFilterItem = this
+			.getSelectedPresetFilterItem(), aFilterItems = this
+			.getFilterItems(), aSubFilterItems, bMultiSelect = true, i = 0, j;
 
 	if (oPresetFilterItem) {
 		// preset filter: add "filter name"
-		sFilterString = this._rb.getText("VIEWSETTINGS_FILTERTEXT").concat(" " + sap.ui.getCore().byId(oPresetFilterItem).getText());
+		sFilterString = this._rb.getText("VIEWSETTINGS_FILTERTEXT").concat(
+				" " + sap.ui.getCore().byId(oPresetFilterItem).getText());
 	} else { // standard & custom filters
 		for (; i < aFilterItems.length; i++) {
 			if (aFilterItems[i] instanceof sap.m.ViewSettingsCustomItem) {
@@ -1341,7 +1357,8 @@ sap.m.ViewSettingsDialog.prototype.getSelectedFilterString = function () {
 					sFilterString += aFilterItems[i].getText() + ", ";
 				}
 			} else if (aFilterItems[i] instanceof sap.m.ViewSettingsFilterItem) {
-				// standard filter: add "filter name (sub filter 1 name, sub filter 2 name, ...), "
+				// standard filter: add "filter name (sub filter 1 name, sub
+				// filter 2 name, ...), "
 				aSubFilterItems = aFilterItems[i].getItems();
 				bMultiSelect = aFilterItems[i].getMultiSelect();
 				sSubfilterString = "";
@@ -1349,27 +1366,31 @@ sap.m.ViewSettingsDialog.prototype.getSelectedFilterString = function () {
 					if (aSubFilterItems[j].getSelected()) {
 						sSubfilterString += aSubFilterItems[j].getText() + ", ";
 						if (!bMultiSelect) {
-							break; // only first item is added to the selection on single select items
+							break; // only first item is added to the selection
+									// on single select items
 						}
 					}
 				}
 				// remove last comma
-				sSubfilterString = sSubfilterString.substring(0, sSubfilterString.length - 2);
+				sSubfilterString = sSubfilterString.substring(0,
+						sSubfilterString.length - 2);
 
 				// add surrounding brackets and comma
 				if (sSubfilterString) {
 					sSubfilterString = " (" + sSubfilterString + ")";
-					sFilterString += aFilterItems[i].getText() + sSubfilterString + ", ";
+					sFilterString += aFilterItems[i].getText()
+							+ sSubfilterString + ", ";
 				}
 			}
 		}
 
 		// remove last comma
 		sFilterString = sFilterString.substring(0, sFilterString.length - 2);
-	
+
 		// add "Filtered by: " text
 		if (sFilterString) {
-			sFilterString = this._rb.getText("VIEWSETTINGS_FILTERTEXT").concat(" " + sFilterString);
+			sFilterString = this._rb.getText("VIEWSETTINGS_FILTERTEXT").concat(
+					" " + sFilterString);
 		}
 	}
 	return sFilterString;
@@ -1377,38 +1398,36 @@ sap.m.ViewSettingsDialog.prototype.getSelectedFilterString = function () {
 
 /**
  * Get the selected filter object in format {key: boolean}
+ * 
  * @public
- * @return {sap.ui.core/object} an object with item and subitem keys
+ * @return {object} an object with item and subitem keys
  */
-sap.m.ViewSettingsDialog.prototype.getSelectedFilterKeys = function () {
-	var oSelectedFilterKeys = {},
-		aSelectedFilterItems = this.getSelectedFilterItems(),
-		i = 0;
+sap.m.ViewSettingsDialog.prototype.getSelectedFilterKeys = function() {
+	var oSelectedFilterKeys = {}, aSelectedFilterItems = this
+			.getSelectedFilterItems(), i = 0;
 
 	for (; i < aSelectedFilterItems.length; i++) {
-		oSelectedFilterKeys[aSelectedFilterItems[i].getKey()] = aSelectedFilterItems[i].getSelected();
+		oSelectedFilterKeys[aSelectedFilterItems[i].getKey()] = aSelectedFilterItems[i]
+				.getSelected();
 	}
 
-	return oSelectedFilterKeys;	
+	return oSelectedFilterKeys;
 };
 
 /**
  * Set the selected filter object in format {key: boolean}
+ * 
  * @public
- * @param {sap.ui.core/object} oAny an object with filter item and sub keys
- * @return {sap.m/ViewSettingsDialog} this pointer for chaining
+ * @param {object}
+ *            oAny an object with filter item and sub keys
+ * @return {sap.m.ViewSettingsDialog} this pointer for chaining
  */
-sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function (oSelectedFilterKeys) {
-	var sKey = "",
-		aFilterItems = this.getFilterItems(),
-		aSubFilterItems = {},
-		oFilterItem,
-		bMultiSelect,
-		i,
-		j,
-		k;
+sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function(
+		oSelectedFilterKeys) {
+	var sKey = "", aFilterItems = this.getFilterItems(), aSubFilterItems = {}, oFilterItem, bMultiSelect, i, j, k;
 
-	// clear preset filters (only one mode is allowed, preset filters or filters)
+	// clear preset filters (only one mode is allowed, preset filters or
+	// filters)
 	if (Object.keys(oSelectedFilterKeys).length) {
 		this._clearPresetFilter();
 	}
@@ -1421,7 +1440,7 @@ sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function (oSelectedFi
 				if (aFilterItems[i] instanceof sap.m.ViewSettingsCustomItem) {
 					// just compare the key of this control
 					if (aFilterItems[i].getKey() === sKey) {
-						oFilterItem = aFilterItems[i]; 
+						oFilterItem = aFilterItems[i];
 						aFilterItems[i].setSelected(oSelectedFilterKeys[sKey]);
 					}
 				} else if (aFilterItems[i] instanceof sap.m.ViewSettingsFilterItem) {
@@ -1431,7 +1450,8 @@ sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function (oSelectedFi
 					for (j = 0; j < aSubFilterItems.length; j++) {
 						if (aSubFilterItems[j].getKey() === sKey) {
 							oFilterItem = aSubFilterItems[j];
-							// set all other entries to false for single select entries
+							// set all other entries to false for single select
+							// entries
 							if (!bMultiSelect) {
 								for (k = 0; k < aSubFilterItems.length; k++) {
 									aSubFilterItems[k].setSelected(false);
@@ -1448,7 +1468,8 @@ sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function (oSelectedFi
 
 			// skip if we don't have an item with this key
 			if (oFilterItem === null) {
-				jQuery.sap.log.warning('Cannot set state for key "' + sKey + '" because there is no filter with these keys');
+				jQuery.sap.log.warning('Cannot set state for key "' + sKey
+						+ '" because there is no filter with these keys');
 				continue;
 			}
 
@@ -1461,43 +1482,43 @@ sap.m.ViewSettingsDialog.prototype.setSelectedFilterKeys = function (oSelectedFi
 };
 
 /* =========================================================== */
-/*           end: API methods                                  */
+/* end: API methods */
 /* =========================================================== */
 
 /* =========================================================== */
-/*           begin: internal methods and properties            */
+/* begin: internal methods and properties */
 /* =========================================================== */
 
 /*
- * Lazy initialization of the internal dialog
- * @private
+ * Lazy initialization of the internal dialog @private
  */
-sap.m.ViewSettingsDialog.prototype._getDialog = function () {
+sap.m.ViewSettingsDialog.prototype._getDialog = function() {
 	var that = this;
 
 	// create an internal instance of a dialog
 	if (this._dialog === undefined) {
 		this._dialog = new sap.m.Dialog(this.getId() + "-dialog", {
-			showHeader: false,
-			stretch: jQuery.device.is.phone,
-			verticalScrolling: true,
-			horizontalScrolling: false,
-			contentWidth: this._sDialogWidth,
-			contentHeight: this._sDialogHeight,
-			content: this._getNavContainer(),
-			beginButton: new sap.m.Button({
-				text: this._rb.getText("VIEWSETTINGS_ACCEPT")
+			showHeader : false,
+			stretch : sap.ui.Device.system.phone,
+			verticalScrolling : true,
+			horizontalScrolling : false,
+			contentWidth : this._sDialogWidth,
+			contentHeight : this._sDialogHeight,
+			content : this._getNavContainer(),
+			beginButton : new sap.m.Button({
+				text : this._rb.getText("VIEWSETTINGS_ACCEPT")
 			}).attachPress(this._onConfirm, this),
-			endButton: new sap.m.Button({
-				text: this._rb.getText("VIEWSETTINGS_CANCEL")
+			endButton : new sap.m.Button({
+				text : this._rb.getText("VIEWSETTINGS_CANCEL")
 			}).attachPress(this._onCancel, this)
 		}).addStyleClass("sapMVSD");
 
-		//CSN# 3696452/2013: ESC key should also cancel dialog, not only close it
+		// CSN# 3696452/2013: ESC key should also cancel dialog, not only close
+		// it
 		var fnDialogEscape = this._dialog.onsapescape;
 		this._dialog.onsapescape = function(oEvent) {
 			// call original escape function of the dialog
-			if(fnDialogEscape) {
+			if (fnDialogEscape) {
 				fnDialogEscape.call(that._dialog, oEvent);
 			}
 			// execute cancel action
@@ -1509,100 +1530,95 @@ sap.m.ViewSettingsDialog.prototype._getDialog = function () {
 };
 
 /*
- * Lazy initialization of the internal nav container
- * @private
+ * Lazy initialization of the internal nav container @private
  */
-sap.m.ViewSettingsDialog.prototype._getNavContainer = function () {
+sap.m.ViewSettingsDialog.prototype._getNavContainer = function() {
 	// create an internal instance of a dialog
 	if (this._navContainer === undefined) {
-		this._navContainer = new sap.m.NavContainer(this.getId() + '-navcontainer', {
+		this._navContainer = new sap.m.NavContainer(this.getId()
+				+ '-navcontainer', {
 			pages : []
 		});
 	}
 	return this._navContainer;
 };
- 
+
 /*
-* Lazy initialization of the internal title label
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getTitleLabel = function () {
+ * Lazy initialization of the internal title label @private
+ */
+sap.m.ViewSettingsDialog.prototype._getTitleLabel = function() {
 	if (this._titleLabel === undefined) {
 		this._titleLabel = new sap.m.Label(this.getId() + "-title", {
-			text: this._rb.getText("VIEWSETTINGS_TITLE")
+			text : this._rb.getText("VIEWSETTINGS_TITLE")
 		}).addStyleClass("sapMVSDTitle");
 	}
 	return this._titleLabel;
 };
 
 /*
-* Lazy initialization of the internal reset button
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getResetButton = function () {
+ * Lazy initialization of the internal reset button @private
+ */
+sap.m.ViewSettingsDialog.prototype._getResetButton = function() {
 	var that = this;
 
 	if (this._resetButton === undefined) {
 		this._resetButton = new sap.m.Button(this.getId() + "-resetbutton", {
-			icon: sap.ui.core.IconPool.getIconURI("refresh"),
-			press: function () {
+			icon : sap.ui.core.IconPool.getIconURI("refresh"),
+			press : function() {
 				that._onClearFilters();
 			},
-			tooltip: this._rb.getText("VIEWSETTINGS_CLEAR_FILTER_TOOLTIP")
+			tooltip : this._rb.getText("VIEWSETTINGS_CLEAR_FILTER_TOOLTIP")
 		});
 	}
 	return this._resetButton;
 };
 
 /*
-* Lazy initialization of the internal detail title lable
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getDetailTitleLabel = function () {
+ * Lazy initialization of the internal detail title lable @private
+ */
+sap.m.ViewSettingsDialog.prototype._getDetailTitleLabel = function() {
 	if (this._detailTitleLabel === undefined) {
-		this._detailTitleLabel = new sap.m.Label(this.getId() + "-detailtitle", {
-			text: this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY")
-		}).addStyleClass("sapMVSDTitle");
+		this._detailTitleLabel = new sap.m.Label(this.getId() + "-detailtitle",
+				{
+					text : this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY")
+				}).addStyleClass("sapMVSDTitle");
 	}
 	return this._detailTitleLabel;
 };
 
 /*
-* Lazy initialization of the internal header
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getHeader = function () {
+ * Lazy initialization of the internal header @private
+ */
+sap.m.ViewSettingsDialog.prototype._getHeader = function() {
 	if (this._header === undefined) {
 		this._header = new sap.m.Bar({
-			contentMiddle: [this._getTitleLabel()],
+			contentMiddle : [ this._getTitleLabel() ],
 		}).addStyleClass("sapMVSDBar");
 	}
 	return this._header;
 };
 
 /*
-* Lazy initialization of the internal sub header
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getSubHeader = function () {
+ * Lazy initialization of the internal sub header @private
+ */
+sap.m.ViewSettingsDialog.prototype._getSubHeader = function() {
 	if (this._subHeader === undefined) {
 		this._subHeader = new sap.m.Bar({
-			contentLeft: [this._getSegmentedButton()]
+			contentLeft : [ this._getSegmentedButton() ]
 		}).addStyleClass("sapMVSDBar");
 	}
 	return this._subHeader;
 };
 
 /*
-* Lazy initialization of the internal segmented button
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getSegmentedButton = function () {
+ * Lazy initialization of the internal segmented button @private
+ */
+sap.m.ViewSettingsDialog.prototype._getSegmentedButton = function() {
 	var that = this;
 
 	if (this._segmentedButton === undefined) {
 		this._segmentedButton = new sap.m.SegmentedButton({
-			select: function (oEvent) {
+			select : function(oEvent) {
 				var selectedId = oEvent.getParameter('id');
 				if (selectedId === that.getId() + "-sortbutton") {
 					that._switchToPage(0);
@@ -1611,116 +1627,110 @@ sap.m.ViewSettingsDialog.prototype._getSegmentedButton = function () {
 				} else if (selectedId === that.getId() + "-filterbutton") {
 					that._switchToPage(2);
 				}
-				jQuery.sap.log.info('press event segmented: ' + oEvent.getParameter('id'));
+				jQuery.sap.log.info('press event segmented: '
+						+ oEvent.getParameter('id'));
 			}
 		}).addStyleClass("sapMVSDSeg");
 
-		// workaround to fix flickering caused by css measurement in SegmentedButton
-		this._segmentedButton._fCalcBtnWidth = function () {
+		// workaround to fix flickering caused by css measurement in
+		// SegmentedButton
+		this._segmentedButton._fCalcBtnWidth = function() {
 			// do nothing here
 		};
-	}	return this._segmentedButton;
+	}
+	return this._segmentedButton;
 };
 
 /*
-* Lazy initialization of the internal sort button
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getSortButton = function () {
+ * Lazy initialization of the internal sort button @private
+ */
+sap.m.ViewSettingsDialog.prototype._getSortButton = function() {
 	if (this._sortButton === undefined) {
 		this._sortButton = new sap.m.Button(this.getId() + "-sortbutton", {
-			visible: false, // controlled by update state method
-			icon: sap.ui.core.IconPool.getIconURI("sort"),
-			tooltip: this._rb.getText("VIEWSETTINGS_TITLE_SORT")
+			visible : false, // controlled by update state method
+			icon : sap.ui.core.IconPool.getIconURI("sort"),
+			tooltip : this._rb.getText("VIEWSETTINGS_TITLE_SORT")
 		});
 	}
 	return this._sortButton;
 };
 
 /*
-* Lazy initialization of the internal group button
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getGroupButton = function () {
+ * Lazy initialization of the internal group button @private
+ */
+sap.m.ViewSettingsDialog.prototype._getGroupButton = function() {
 	if (this._groupButton === undefined) {
 		this._groupButton = new sap.m.Button(this.getId() + "-groupbutton", {
-			visible: false, // controlled by update state method
-			icon: sap.ui.core.IconPool.getIconURI("group-2"),
-			tooltip: this._rb.getText("VIEWSETTINGS_TITLE_GROUP")
+			visible : false, // controlled by update state method
+			icon : sap.ui.core.IconPool.getIconURI("group-2"),
+			tooltip : this._rb.getText("VIEWSETTINGS_TITLE_GROUP")
 		});
 	}
 	return this._groupButton;
 };
 
 /*
-* Lazy initialization of the internal filter button
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getFilterButton = function () {
+ * Lazy initialization of the internal filter button @private
+ */
+sap.m.ViewSettingsDialog.prototype._getFilterButton = function() {
 	if (this._filterButton === undefined) {
 		this._filterButton = new sap.m.Button(this.getId() + "-filterbutton", {
-			visible: false, // controlled by update state method
-			icon: sap.ui.core.IconPool.getIconURI("filter"),
-			tooltip: this._rb.getText("VIEWSETTINGS_TITLE_FILTER")
+			visible : false, // controlled by update state method
+			icon : sap.ui.core.IconPool.getIconURI("filter"),
+			tooltip : this._rb.getText("VIEWSETTINGS_TITLE_FILTER")
 		});
 	}
 	return this._filterButton;
 };
 
 /*
-* Lazy initialization of the internal page1 (sort/group/filter)
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getPage1 = function () {
+ * Lazy initialization of the internal page1 (sort/group/filter) @private
+ */
+sap.m.ViewSettingsDialog.prototype._getPage1 = function() {
 	if (this._page1 === undefined) {
 		this._page1 = new sap.m.Page(this.getId() + '-page1', {
-			title:  this._rb.getText("VIEWSETTINGS_TITLE"),
-			customHeader: this._getHeader()
+			title : this._rb.getText("VIEWSETTINGS_TITLE"),
+			customHeader : this._getHeader()
 		});
 		this._getNavContainer().addPage(this._page1); // sort, group, filter
 	}
 	return this._page1;
 };
 
-
-
 /*
-* Lazy initialization of the internal page2 (detail filters)
-* @private
-*/
-sap.m.ViewSettingsDialog.prototype._getPage2 = function () {
-	var that = this,
-		oDetailHeader,
-		oBackButton,
-		oDetailResetButton;
+ * Lazy initialization of the internal page2 (detail filters) @private
+ */
+sap.m.ViewSettingsDialog.prototype._getPage2 = function() {
+	var that = this, oDetailHeader, oBackButton, oDetailResetButton;
 
 	if (this._page2 === undefined) {
 		// init internal page content
 		oBackButton = new sap.m.Button(this.getId() + "-backbutton", {
-			icon: sap.ui.core.IconPool.getIconURI("nav-back"),
-			press: function () {
+			icon : sap.ui.core.IconPool.getIconURI("nav-back"),
+			press : function() {
 				that._updateFilterCounters();
 				jQuery.sap.delayedCall(0, that._navContainer, "back");
 				that._switchToPage(2);
 				that._segmentedButton.setSelectedButton(that._filterButton);
 			}
 		});
-		oDetailResetButton = new sap.m.Button(this.getId() + "-detailresetbutton", {
-			icon: sap.ui.core.IconPool.getIconURI("refresh"),
-			press: function () {
+		oDetailResetButton = new sap.m.Button(this.getId()
+				+ "-detailresetbutton", {
+			icon : sap.ui.core.IconPool.getIconURI("refresh"),
+			press : function() {
 				that._onClearFilters();
 			},
-			tooltip: this._rb.getText("VIEWSETTINGS_CLEAR_FILTER_TOOLTIP")
+			tooltip : this._rb.getText("VIEWSETTINGS_CLEAR_FILTER_TOOLTIP")
 		});
 		oDetailHeader = new sap.m.Bar({
-			contentLeft: [oBackButton],
-			contentMiddle: [this._getDetailTitleLabel()],
-			contentRight: [oDetailResetButton]
+			contentLeft : [ oBackButton ],
+			contentMiddle : [ this._getDetailTitleLabel() ],
+			contentRight : [ oDetailResetButton ]
 		}).addStyleClass("sapMVSDBar");
 
 		this._page2 = new sap.m.Page(this.getId() + '-page2', {
-			title:  this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY"),
-			customHeader: oDetailHeader
+			title : this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY"),
+			customHeader : oDetailHeader
 		});
 		this._getNavContainer().addPage(this._page2); // filter details
 	}
@@ -1728,126 +1738,124 @@ sap.m.ViewSettingsDialog.prototype._getPage2 = function () {
 };
 
 /*
- * Create and initialize the sort content controls
- * @private
+ * Create and initialize the sort content controls @private
  */
-sap.m.ViewSettingsDialog.prototype._initSortContent = function () {
+sap.m.ViewSettingsDialog.prototype._initSortContent = function() {
 	var that = this;
 
 	if (this._sortContent) {
 		return;
 	}
 	this._sortOrderList = new sap.m.List(this.getId() + "-sortorderlist", {
-		mode: sap.m.ListMode.SingleSelectLeft,
-		includeItemInSelection: true,
-		selectionChange: function (oEvent) {
-			that.setSortDescending(oEvent.getParameter("listItem").data("item"));
+		mode : sap.m.ListMode.SingleSelectLeft,
+		includeItemInSelection : true,
+		selectionChange : function(oEvent) {
+			that
+					.setSortDescending(oEvent.getParameter("listItem").data(
+							"item"));
 		}
 	}).addStyleClass("sapMVSDUpperList");
 	this._sortOrderList.addItem(new sap.m.StandardListItem({
-		title: this._rb.getText("VIEWSETTINGS_ASCENDING_ITEM")
+		title : this._rb.getText("VIEWSETTINGS_ASCENDING_ITEM")
 	}).data("item", false).setSelected(true));
 	this._sortOrderList.addItem(new sap.m.StandardListItem({
-		title: this._rb.getText("VIEWSETTINGS_DESCENDING_ITEM")
+		title : this._rb.getText("VIEWSETTINGS_DESCENDING_ITEM")
 	}).data("item", true));
-	
-	this._sortList = new sap.m.List(this.getId() + "-sortlist", {
-		mode: sap.m.ListMode.SingleSelectLeft,
-		includeItemInSelection: true,
-		selectionChange: function (oEvent) {
-			var item = oEvent.getParameter("listItem").data("item");
-			if (item) {
-				item.setSelected(oEvent.getParameter("listItem").getSelected());
-			}
-			that.setAssociation("selectedSortItem", item, true);
-		}
-	});
-	
-	this._sortContent = [this._sortOrderList, this._sortList];
+
+	this._sortList = new sap.m.List(this.getId() + "-sortlist",
+			{
+				mode : sap.m.ListMode.SingleSelectLeft,
+				includeItemInSelection : true,
+				selectionChange : function(oEvent) {
+					var item = oEvent.getParameter("listItem").data("item");
+					if (item) {
+						item.setSelected(oEvent.getParameter("listItem")
+								.getSelected());
+					}
+					that.setAssociation("selectedSortItem", item, true);
+				}
+			});
+
+	this._sortContent = [ this._sortOrderList, this._sortList ];
 };
 
 /*
- * Create and initialize the group content controls
- * @private
+ * Create and initialize the group content controls @private
  */
-sap.m.ViewSettingsDialog.prototype._initGroupContent = function () {
+sap.m.ViewSettingsDialog.prototype._initGroupContent = function() {
 	var that = this;
 
 	if (this._groupContent) {
 		return;
 	}
 	this._groupOrderList = new sap.m.List(this.getId() + "-grouporderlist", {
-		mode: sap.m.ListMode.SingleSelectLeft,
-		includeItemInSelection: true,
-		selectionChange: function (oEvent) {
-			that.setGroupDescending(oEvent.getParameter("listItem").data("item"));
+		mode : sap.m.ListMode.SingleSelectLeft,
+		includeItemInSelection : true,
+		selectionChange : function(oEvent) {
+			that.setGroupDescending(oEvent.getParameter("listItem")
+					.data("item"));
 		}
 	}).addStyleClass("sapMVSDUpperList");
 	this._groupOrderList.addItem(new sap.m.StandardListItem({
-		title: this._rb.getText("VIEWSETTINGS_ASCENDING_ITEM")
+		title : this._rb.getText("VIEWSETTINGS_ASCENDING_ITEM")
 	}).data("item", false).setSelected(true));
 	this._groupOrderList.addItem(new sap.m.StandardListItem({
-		title: this._rb.getText("VIEWSETTINGS_DESCENDING_ITEM")
+		title : this._rb.getText("VIEWSETTINGS_DESCENDING_ITEM")
 	}).data("item", true));
-	
-	this._groupList = new sap.m.List(this.getId() + "-grouplist", {
-		mode: sap.m.ListMode.SingleSelectLeft,
-		includeItemInSelection: true,
-		selectionChange: function (oEvent) {
-			var item = oEvent.getParameter("listItem").data("item");
-			if (item) {
-				item.setSelected(oEvent.getParameter("listItem").getSelected());
-			}
-			that.setAssociation("selectedGroupItem", item, true);
-		}
-	});
-	
-	this._groupContent = [this._groupOrderList, this._groupList];
+
+	this._groupList = new sap.m.List(this.getId() + "-grouplist",
+			{
+				mode : sap.m.ListMode.SingleSelectLeft,
+				includeItemInSelection : true,
+				selectionChange : function(oEvent) {
+					var item = oEvent.getParameter("listItem").data("item");
+					if (item) {
+						item.setSelected(oEvent.getParameter("listItem")
+								.getSelected());
+					}
+					that.setAssociation("selectedGroupItem", item, true);
+				}
+			});
+
+	this._groupContent = [ this._groupOrderList, this._groupList ];
 };
 
 /*
- * Create and initialize the filter content controls
- * @private
+ * Create and initialize the filter content controls @private
  */
-sap.m.ViewSettingsDialog.prototype._initFilterContent = function () {
+sap.m.ViewSettingsDialog.prototype._initFilterContent = function() {
 	var that = this;
 
 	if (this._filterContent) {
 		return;
 	}
-	this._presetFilterList = new sap.m.List(this.getId() + "-predefinedfilterlist", {
-		mode: sap.m.ListMode.SingleSelectLeft,
-		includeItemInSelection: true,
-		selectionChange: function (oEvent) {
-			var item = oEvent.getParameter("listItem").data("item");
-			if (item) {
-				item.setSelected(oEvent.getParameter("listItem").getSelected());
-			}
-			that.setAssociation("selectedPresetFilterItem", item, true);
-			that._clearSelectedFilters();
-		}
-	}).addStyleClass("sapMVSDUpperList");
-	
+	this._presetFilterList = new sap.m.List(
+			this.getId() + "-predefinedfilterlist",
+			{
+				mode : sap.m.ListMode.SingleSelectLeft,
+				includeItemInSelection : true,
+				selectionChange : function(oEvent) {
+					var item = oEvent.getParameter("listItem").data("item");
+					if (item) {
+						item.setSelected(oEvent.getParameter("listItem")
+								.getSelected());
+					}
+					that.setAssociation("selectedPresetFilterItem", item, true);
+					that._clearSelectedFilters();
+				}
+			}).addStyleClass("sapMVSDUpperList");
+
 	this._filterList = new sap.m.List(this.getId() + "-filterlist", {});
-	
-	this._filterContent = [this._presetFilterList, this._filterList];
+
+	this._filterContent = [ this._presetFilterList, this._filterList ];
 };
 
 /*
- * Fill the dialog with the aggregation data
- * @private
+ * Fill the dialog with the aggregation data @private
  */
-sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
-	var bSort = !!this.getSortItems().length,
-		bGroup = !!this.getGroupItems().length,
-		bPredefinedFilter = !!this.getPresetFilterItems().length,
-		bFilter = !!this.getFilterItems().length,
-		that = this,
-		oListItem,
-		aSortItems = [],
-		aGroupItems = [],
-		aPresetFilterItems = [],
-		aFilterItems = [];
+sap.m.ViewSettingsDialog.prototype._initDialogContent = function() {
+	var bSort = !!this.getSortItems().length, bGroup = !!this.getGroupItems().length, bPredefinedFilter = !!this
+			.getPresetFilterItems().length, bFilter = !!this.getFilterItems().length, that = this, oListItem, aSortItems = [], aGroupItems = [], aPresetFilterItems = [], aFilterItems = [];
 
 	// sort
 	if (bSort) {
@@ -1855,11 +1863,11 @@ sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
 		this._sortList.removeAllItems();
 		aSortItems = this.getSortItems();
 		if (aSortItems.length) {
-			aSortItems.forEach(function (oItem) {
+			aSortItems.forEach(function(oItem) {
 				oListItem = new sap.m.StandardListItem({
-					title: oItem.getText(),
-					type: sap.m.ListType.Active,
-					selected: oItem.getSelected()
+					title : oItem.getText(),
+					type : sap.m.ListType.Active,
+					selected : oItem.getSelected()
 				}).data("item", oItem);
 				this._sortList.addItem(oListItem);
 			}, this);
@@ -1872,11 +1880,11 @@ sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
 		this._groupList.removeAllItems();
 		aGroupItems = this.getGroupItems();
 		if (aGroupItems.length) {
-			aGroupItems.forEach(function (oItem) {
+			aGroupItems.forEach(function(oItem) {
 				oListItem = new sap.m.StandardListItem({
-					title: oItem.getText(),
-					type: sap.m.ListType.Active,
-					selected: oItem.getSelected()
+					title : oItem.getText(),
+					type : sap.m.ListType.Active,
+					selected : oItem.getSelected()
 				}).data("item", oItem);
 				this._groupList.addItem(oListItem);
 			}, this);
@@ -1884,25 +1892,25 @@ sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
 		// add none item to group list
 		if (aGroupItems.length) {
 			oListItem = new sap.m.StandardListItem({
-				title: this._rb.getText("VIEWSETTINGS_NONE_ITEM"),
-				type: sap.m.ListType.Active,
-				selected: !!this.getSelectedGroupItem()
+				title : this._rb.getText("VIEWSETTINGS_NONE_ITEM"),
+				type : sap.m.ListType.Active,
+				selected : !!this.getSelectedGroupItem()
 			});
 			this._groupList.addItem(oListItem);
 		}
 	}
-	
+
 	// predefined filters
 	if (bPredefinedFilter || bFilter) {
 		this._initFilterContent();
 		this._presetFilterList.removeAllItems();
 		aPresetFilterItems = this.getPresetFilterItems();
 		if (aPresetFilterItems.length) {
-			aPresetFilterItems.forEach(function (oItem) {
+			aPresetFilterItems.forEach(function(oItem) {
 				oListItem = new sap.m.StandardListItem({
-					title: oItem.getText(),
-					type: sap.m.ListType.Active,
-					selected: oItem.getSelected()
+					title : oItem.getText(),
+					type : sap.m.ListType.Active,
+					selected : oItem.getSelected()
 				}).data("item", oItem);
 				this._presetFilterList.addItem(oListItem);
 			}, this);
@@ -1910,30 +1918,36 @@ sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
 		// add none item to preset filter list
 		if (aPresetFilterItems.length) {
 			oListItem = new sap.m.StandardListItem({
-				title: this._rb.getText("VIEWSETTINGS_NONE_ITEM"),
-				selected: !!this.getSelectedPresetFilterItem()
+				title : this._rb.getText("VIEWSETTINGS_NONE_ITEM"),
+				selected : !!this.getSelectedPresetFilterItem()
 			});
 			this._presetFilterList.addItem(oListItem);
 		}
-	
+
 		// filters
 		this._filterList.removeAllItems();
 		aFilterItems = this.getFilterItems();
 		if (aFilterItems.length) {
-			aFilterItems.forEach(function (oItem) {
-				oListItem = new sap.m.StandardListItem({
-					title: oItem.getText(),
-					type: sap.m.ListType.Active,
-					press: function (oItem) {
-						return function (oEvent) {
-							// navigate to details page
-							if (that._navContainer.getCurrentPage().getId() !== that.getId() + '-page2') {
-								that._switchToPage(3, oItem);
-								jQuery.sap.delayedCall(0, that._navContainer, "to", [that.getId() + '-page2', "slide"]);
-							}
-						};
-					}(oItem)
-				}).data("item", oItem);
+			aFilterItems.forEach(function(oItem) {
+				oListItem = new sap.m.StandardListItem(
+						{
+							title : oItem.getText(),
+							type : sap.m.ListType.Active,
+							press : function(oItem) {
+								return function(oEvent) {
+									// navigate to details page
+									if (that._navContainer.getCurrentPage()
+											.getId() !== that.getId()
+											+ '-page2') {
+										that._switchToPage(3, oItem);
+										jQuery.sap.delayedCall(0,
+												that._navContainer, "to",
+												[ that.getId() + '-page2',
+														"slide" ]);
+									}
+								};
+							}(oItem)
+						}).data("item", oItem);
 				this._filterList.addItem(oListItem);
 			}, this);
 		}
@@ -1947,20 +1961,16 @@ sap.m.ViewSettingsDialog.prototype._initDialogContent = function () {
 };
 
 /*
- * Sets the state of the dialog when it is opened
- * If only Sort or Group or Filter items are defined, then only one tab is displayed
- * If multiple items are defined, a segmented button is displayed and the first page is set
+ * Sets the state of the dialog when it is opened If only Sort or Group or
+ * Filter items are defined, then only one tab is displayed If multiple items
+ * are defined, a segmented button is displayed and the first page is set
  * @private
  */
-sap.m.ViewSettingsDialog.prototype._updateDialogState = function () {
-	var bSort = !!this.getSortItems().length,
-		bGroup = !!this.getGroupItems().length,
-		bPredefinedFilter = !!this.getPresetFilterItems().length,
-		bFilter = !!this.getFilterItems().length,
-		bNothing = !bSort && !bGroup && !bPredefinedFilter && !bFilter,
-		bInvalidState = false,
-		iActivePages = 0,
-		oSegmentedButton = this._getSegmentedButton();
+sap.m.ViewSettingsDialog.prototype._updateDialogState = function() {
+	var bSort = !!this.getSortItems().length, bGroup = !!this.getGroupItems().length, bPredefinedFilter = !!this
+			.getPresetFilterItems().length, bFilter = !!this.getFilterItems().length, bNothing = !bSort
+			&& !bGroup && !bPredefinedFilter && !bFilter, bInvalidState = false, iActivePages = 0, oSegmentedButton = this
+			._getSegmentedButton();
 
 	// reset state
 	oSegmentedButton.removeAllButtons();
@@ -1968,9 +1978,12 @@ sap.m.ViewSettingsDialog.prototype._updateDialogState = function () {
 		this._presetFilterList.setVisible(true);
 		this._filterList.setVisible(true);
 	}
-	
-	// set invalid state if the previous tab is not valid anymore or has never been selected
-	if (this._iContentPage === -1 || this._iContentPage === 0 && !bSort || this._iContentPage === 1 && !bGroup || this._iContentPage === 2 && !(bPredefinedFilter || bFilter)) {
+
+	// set invalid state if the previous tab is not valid anymore or has never
+	// been selected
+	if (this._iContentPage === -1 || this._iContentPage === 0 && !bSort
+			|| this._iContentPage === 1 && !bGroup || this._iContentPage === 2
+			&& !(bPredefinedFilter || bFilter)) {
 		bInvalidState = true;
 	}
 
@@ -2018,8 +2031,9 @@ sap.m.ViewSettingsDialog.prototype._updateDialogState = function () {
 		}
 	}
 
-	// CSN# 3802530/2013: if filters were modified by API we need to refresh the filter detail page
-	if(this._iContentPage === 3) {
+	// CSN# 3802530/2013: if filters were modified by API we need to refresh the
+	// filter detail page
+	if (this._iContentPage === 3) {
 		this._iContentPage = -1;
 		this._switchToPage(3, this._oContentItem);
 	}
@@ -2027,21 +2041,17 @@ sap.m.ViewSettingsDialog.prototype._updateDialogState = function () {
 
 /*
  * Switches to a dialog page (0 = sort, 1 = group, 2 = filter, 3 = subfilter)
- * @param {integer} iWhich the page to be navigated to
- * @param {sap.m/FilterItem} oItem The filter item for the detail page (optional, only used for page 3)
+ * @param {int} iWhich the page to be navigated to @param {sap.m.FilterItem}
+ * oItem The filter item for the detail page (optional, only used for page 3)
  * @private
  */
-sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
-	var i = 0,
-		that = this,
-		aSubFilters = [],
-		oTitleLabel = this._getTitleLabel(),
-		oResetButton = this._getResetButton(),
-		oHeader = this._getHeader(),
-		oSubHeader = this._getSubHeader(),
-		oListItem;
+sap.m.ViewSettingsDialog.prototype._switchToPage = function(iWhich, oItem) {
+	var i = 0, that = this, aSubFilters = [], oTitleLabel = this
+			._getTitleLabel(), oResetButton = this._getResetButton(), oHeader = this
+			._getHeader(), oSubHeader = this._getSubHeader(), oListItem;
 
-	// nothing to do if we are already on the requested page (except for filter detail page)
+	// nothing to do if we are already on the requested page (except for filter
+	// detail page)
 	if (this._iContentPage === iWhich && iWhich !== 3) {
 		return false;
 	}
@@ -2066,7 +2076,7 @@ sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
 			if (this._getPage1().getSubHeader()) {
 				this._getPage1().setSubHeader();
 			}
-			// show reset button  in header
+			// show reset button in header
 			oHeader.addContentRight(oResetButton);
 		}
 	} else if (iWhich === 3) {
@@ -2095,8 +2105,10 @@ sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
 		if (!this._showSubHeader && !this.getTitle()) {
 			oTitleLabel.setText(this._rb.getText("VIEWSETTINGS_TITLE_FILTER"));
 		}
-		// update status (something could have been changed on a detail filter page or by API
-		this._updateListSelection(this._presetFilterList, sap.ui.getCore().byId(this.getSelectedPresetFilterItem()));
+		// update status (something could have been changed on a detail filter
+		// page or by API
+		this._updateListSelection(this._presetFilterList, sap.ui.getCore()
+				.byId(this.getSelectedPresetFilterItem()));
 		this._updateFilterCounters();
 		for (; i < this._filterContent.length; i++) {
 			this._getPage1().addContent(this._filterContent[i]);
@@ -2104,40 +2116,47 @@ sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
 		break;
 	case 3: // filtering details
 		// display filter title
-		this._getDetailTitleLabel().setText(this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY") + " " + oItem.getText());
+		this._getDetailTitleLabel().setText(
+				this._rb.getText("VIEWSETTINGS_TITLE_FILTERBY") + " "
+						+ oItem.getText());
 		// fill detail page
-		if (oItem instanceof sap.m.ViewSettingsCustomItem && oItem.getCustomControl()) {
+		if (oItem instanceof sap.m.ViewSettingsCustomItem
+				&& oItem.getCustomControl()) {
 			this._clearPresetFilter();
 			this._getPage2().addContent(oItem.getCustomControl());
-		} else if (oItem instanceof sap.m.ViewSettingsFilterItem && oItem.getItems()) {
+		} else if (oItem instanceof sap.m.ViewSettingsFilterItem
+				&& oItem.getItems()) {
 			aSubFilters = oItem.getItems();
 			if (this._filterDetailList) { // destroy previous list
 				this._filterDetailList.destroy();
 			}
-			this._filterDetailList = new sap.m.List({
-				mode: (oItem.getMultiSelect() ? sap.m.ListMode.MultiSelect : sap.m.ListMode.SingleSelectLeft),
-				includeItemInSelection: true,
-				selectionChange: function (oEvent) {
-					var oSubItem = oEvent.getParameter("listItem").data("item"),
-						aSubItems,
-						i = 0;
-					that._clearPresetFilter();
-					// clear selection of all subitems if this is a single select item
-					if (!oItem.getMultiSelect()) {
-						aSubItems = oItem.getItems();
-						for (; i < aSubItems.length; i++) {
-							aSubItems[i].setSelected(false);
+			this._filterDetailList = new sap.m.List(
+					{
+						mode : (oItem.getMultiSelect() ? sap.m.ListMode.MultiSelect
+								: sap.m.ListMode.SingleSelectLeft),
+						includeItemInSelection : true,
+						selectionChange : function(oEvent) {
+							var oSubItem = oEvent.getParameter("listItem")
+									.data("item"), aSubItems, i = 0;
+							that._clearPresetFilter();
+							// clear selection of all subitems if this is a
+							// single select item
+							if (!oItem.getMultiSelect()) {
+								aSubItems = oItem.getItems();
+								for (; i < aSubItems.length; i++) {
+									aSubItems[i].setSelected(false);
+								}
+							}
+							oSubItem.setSelected(oEvent
+									.getParameter("listItem").getSelected());
 						}
-					}
-					oSubItem.setSelected(oEvent.getParameter("listItem").getSelected());
-				}
-			});
+					});
 			for (i = 0; i < aSubFilters.length; i++) {
 				// use name if there is no key defined
 				oListItem = new sap.m.StandardListItem({
-					title: aSubFilters[i].getText(),
-					type: sap.m.ListType.Active,
-					selected:  aSubFilters[i].getSelected()
+					title : aSubFilters[i].getText(),
+					type : sap.m.ListType.Active,
+					selected : aSubFilters[i].getSelected()
 				}).data("item", aSubFilters[i]);
 				this._filterDetailList.addItem(oListItem);
 			}
@@ -2160,15 +2179,17 @@ sap.m.ViewSettingsDialog.prototype._switchToPage = function (iWhich, oItem) {
 };
 
 /*
- * Updates the internal lists based on the dialogs state
- * @private
+ * Updates the internal lists based on the dialogs state @private
  */
-sap.m.ViewSettingsDialog.prototype._updateListSelections = function () {
-	this._updateListSelection(this._sortList, sap.ui.getCore().byId(this.getSelectedSortItem()));
+sap.m.ViewSettingsDialog.prototype._updateListSelections = function() {
+	this._updateListSelection(this._sortList, sap.ui.getCore().byId(
+			this.getSelectedSortItem()));
 	this._updateListSelection(this._sortOrderList, this.getSortDescending());
-	this._updateListSelection(this._groupList, sap.ui.getCore().byId(this.getSelectedGroupItem()));
+	this._updateListSelection(this._groupList, sap.ui.getCore().byId(
+			this.getSelectedGroupItem()));
 	this._updateListSelection(this._groupOrderList, this.getGroupDescending());
-	this._updateListSelection(this._presetFilterList, sap.ui.getCore().byId(this.getSelectedPresetFilterItem()));
+	this._updateListSelection(this._presetFilterList, sap.ui.getCore().byId(
+			this.getSelectedPresetFilterItem()));
 	this._updateFilterCounters();
 };
 
@@ -2176,20 +2197,24 @@ sap.m.ViewSettingsDialog.prototype._updateListSelections = function () {
  * Sets selected item on single selection lists based on the "item" data
  * @private
  */
-sap.m.ViewSettingsDialog.prototype._updateListSelection = function (oList, oItem) {
-	var items,
-		i = 0;
-	
+sap.m.ViewSettingsDialog.prototype._updateListSelection = function(oList, oItem) {
+	var items, i = 0;
+
 	if (!oList) {
 		return false;
 	}
-	
+
 	items = oList.getItems();
 
 	oList.removeSelections();
 	for (; i < items.length; i++) {
-		if (items[i].data("item") === oItem || items[i].data("item") === null) { // null is "None" item
-			oList.setSelectedItem(items[i], (oItem && oItem.getSelected ? oItem.getSelected() : true)); // true or the selected state if it is a ViewSettingsItem
+		if (items[i].data("item") === oItem || items[i].data("item") === null) { // null
+																					// is
+																					// "None"
+																					// item
+			oList.setSelectedItem(items[i], (oItem && oItem.getSelected ? oItem
+					.getSelected() : true)); // true or the selected state if
+												// it is a ViewSettingsItem
 			return true;
 		}
 	}
@@ -2197,17 +2222,11 @@ sap.m.ViewSettingsDialog.prototype._updateListSelection = function (oList, oItem
 };
 
 /*
- * Updates the amount of selected filters in the filter list
- * @private
+ * Updates the amount of selected filters in the filter list @private
  */
-sap.m.ViewSettingsDialog.prototype._updateFilterCounters = function () {
-	var aListItems = (this._filterList ? this._filterList.getItems() : []),
-		oItem,
-		aSubItems,
-		iFilterCount = 0,
-		i = 0,
-		j;
-	
+sap.m.ViewSettingsDialog.prototype._updateFilterCounters = function() {
+	var aListItems = (this._filterList ? this._filterList.getItems() : []), oItem, aSubItems, iFilterCount = 0, i = 0, j;
+
 	for (; i < aListItems.length; i++) {
 		oItem = aListItems[i].data("item");
 		iFilterCount = 0;
@@ -2216,7 +2235,8 @@ sap.m.ViewSettingsDialog.prototype._updateFilterCounters = function () {
 				// for custom filter oItems the oItem is directly selected
 				iFilterCount = oItem.getFilterCount();
 			} else if (oItem instanceof sap.m.ViewSettingsFilterItem) {
-				// for filter oItems the oItem counter has to be calculated from the sub oItems
+				// for filter oItems the oItem counter has to be calculated from
+				// the sub oItems
 				iFilterCount = 0;
 				aSubItems = oItem.getItems();
 
@@ -2231,11 +2251,8 @@ sap.m.ViewSettingsDialog.prototype._updateFilterCounters = function () {
 	}
 };
 
-sap.m.ViewSettingsDialog.prototype._clearSelectedFilters = function () {
-	var items = this.getFilterItems(),
-		subItems,
-		i = 0,
-		j;
+sap.m.ViewSettingsDialog.prototype._clearSelectedFilters = function() {
+	var items = this.getFilterItems(), subItems, i = 0, j;
 
 	// reset all items to selected = false
 	for (; i < items.length; i++) {
@@ -2255,96 +2272,93 @@ sap.m.ViewSettingsDialog.prototype._clearSelectedFilters = function () {
 };
 
 /*
- * Clears preset filter item
- * @private
+ * Clears preset filter item @private
  */
-sap.m.ViewSettingsDialog.prototype._clearPresetFilter = function () {
+sap.m.ViewSettingsDialog.prototype._clearPresetFilter = function() {
 	if (this.getSelectedPresetFilterItem()) {
 		this.setSelectedPresetFilterItem(null);
 	}
 };
 
 /* =========================================================== */
-/*           end: internal methods                             */
+/* end: internal methods */
 /* =========================================================== */
 
 /* =========================================================== */
-/*           begin: event handlers                             */
+/* begin: event handlers */
 /* =========================================================== */
 
 /*
- * Internal event handler for the confirm button
- * @private
+ * Internal event handler for the confirm button @private
  */
-sap.m.ViewSettingsDialog.prototype._onConfirm = function (oEvent) {
-	var that = this,
-		oDialog = this._getDialog(),
-		fnAfterClose = function () {
-			// detach this function
-			that._dialog.detachAfterClose(fnAfterClose);
+sap.m.ViewSettingsDialog.prototype._onConfirm = function(oEvent) {
+	var that = this, oDialog = this._getDialog(), fnAfterClose = function() {
+		// detach this function
+		that._dialog.detachAfterClose(fnAfterClose);
 
-			// fire confirm event
-			that.fireConfirm({
-				sortItem: sap.ui.getCore().byId(that.getSelectedSortItem()),
-				sortDescending: that.getSortDescending(),
-				groupItem: sap.ui.getCore().byId(that.getSelectedGroupItem()),
-				groupDescending: that.getGroupDescending(),
-				presetFilterItem: sap.ui.getCore().byId(that.getSelectedPresetFilterItem()),
-				filterItems: that.getSelectedFilterItems(),
-				filterKeys: that.getSelectedFilterKeys(),
-				filterString: that.getSelectedFilterString()
-			});
-		};
+		// fire confirm event
+		that.fireConfirm({
+			sortItem : sap.ui.getCore().byId(that.getSelectedSortItem()),
+			sortDescending : that.getSortDescending(),
+			groupItem : sap.ui.getCore().byId(that.getSelectedGroupItem()),
+			groupDescending : that.getGroupDescending(),
+			presetFilterItem : sap.ui.getCore().byId(
+					that.getSelectedPresetFilterItem()),
+			filterItems : that.getSelectedFilterItems(),
+			filterKeys : that.getSelectedFilterKeys(),
+			filterString : that.getSelectedFilterString()
+		});
+	};
 
-	// attach the reset function to afterClose to hide the dialog changes from the end user 
+	// attach the reset function to afterClose to hide the dialog changes from
+	// the end user
 	oDialog.attachAfterClose(fnAfterClose);
 	oDialog.close();
 };
 
 /*
- * Internal event handler for the cancel button
- * @private
+ * Internal event handler for the cancel button @private
  */
-sap.m.ViewSettingsDialog.prototype._onCancel = function (oEvent) {
-	var that = this,
-		oDialog = this._getDialog(),
-		fnAfterClose = function () {
-			// reset the dialog to the previous state 
-			that.setSelectedSortItem(that._oPreviousState.sortItem);
-			that.setSortDescending(that._oPreviousState.sortDescending);
-			that.setSelectedGroupItem(that._oPreviousState.groupItem);
-			that.setGroupDescending(that._oPreviousState.groupDescending);
-			that.setSelectedPresetFilterItem(that._oPreviousState.presetFilterItem);
+sap.m.ViewSettingsDialog.prototype._onCancel = function(oEvent) {
+	var that = this, oDialog = this._getDialog(), fnAfterClose = function() {
+		// reset the dialog to the previous state
+		that.setSelectedSortItem(that._oPreviousState.sortItem);
+		that.setSortDescending(that._oPreviousState.sortDescending);
+		that.setSelectedGroupItem(that._oPreviousState.groupItem);
+		that.setGroupDescending(that._oPreviousState.groupDescending);
+		that.setSelectedPresetFilterItem(that._oPreviousState.presetFilterItem);
 
-			// selected filters need to be cleared before
-			that._clearSelectedFilters();
-			that.setSelectedFilterKeys(that._oPreviousState.filterKeys);
+		// selected filters need to be cleared before
+		that._clearSelectedFilters();
+		that.setSelectedFilterKeys(that._oPreviousState.filterKeys);
 
-			// navigate to old page if necessary
-			if (that._navContainer.getCurrentPage() !== that._oPreviousState.navPage) {
-				jQuery.sap.delayedCall(0, that._navContainer, "to", [that._oPreviousState.navPage.getId(), "show"]);
-			}
+		// navigate to old page if necessary
+		if (that._navContainer.getCurrentPage() !== that._oPreviousState.navPage) {
+			jQuery.sap.delayedCall(0, that._navContainer, "to", [
+					that._oPreviousState.navPage.getId(), "show" ]);
+		}
 
-			// navigate to old tab if necessary
-			that._switchToPage(that._oPreviousState.contentPage, that._oPreviousState.contentItem);
+		// navigate to old tab if necessary
+		that._switchToPage(that._oPreviousState.contentPage,
+				that._oPreviousState.contentItem);
 
-			// detach this function
-			that._dialog.detachAfterClose(fnAfterClose);
-		
-			// fire cancel event
-			that.fireCancel();
-		};
+		// detach this function
+		that._dialog.detachAfterClose(fnAfterClose);
 
-	// attach the reset function to afterClose to hide the dialog changes from the end user 
+		// fire cancel event
+		that.fireCancel();
+	};
+
+	// attach the reset function to afterClose to hide the dialog changes from
+	// the end user
 	oDialog.attachAfterClose(fnAfterClose);
 	oDialog.close();
 };
 
 /*
- * Internal event handler for the reset filter button
- * @private
+ * Internal event handler for the reset filter button @private
  */
-sap.m.ViewSettingsDialog.prototype._onClearFilters = function () {
+sap.m.ViewSettingsDialog.prototype._onClearFilters = function() {
 	// clear data and update selections
 	this._clearSelectedFilters();
 	this._clearPresetFilter();
@@ -2362,9 +2376,10 @@ sap.m.ViewSettingsDialog.prototype._onClearFilters = function () {
 		this._getSegmentedButton().setSelectedButton(this._getFilterButton());
 	}
 	// update preset list selection
-	this._updateListSelection(this._presetFilterList, sap.ui.getCore().byId(this.getSelectedPresetFilterItem()));	
+	this._updateListSelection(this._presetFilterList, sap.ui.getCore().byId(
+			this.getSelectedPresetFilterItem()));
 };
 
 /* =========================================================== */
-/*           end: event handlers                               */
+/* end: event handlers */
 /* =========================================================== */

@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.VariantLayoutData.
-jQuery.sap.declare("sap.ui.core.VariantLayoutData");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.LayoutData");
+sap.ui.define(['./library','./LayoutData'], function() {
+	"use strict";
 
 
 /**
@@ -56,7 +55,7 @@ jQuery.sap.require("sap.ui.core.LayoutData");
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -173,4 +172,8 @@ sap.ui.core.LayoutData.extend("sap.ui.core.VariantLayoutData", { metadata : {
  */
 
 
-// Start of sap\ui\core\VariantLayoutData.js
+// Start of sap/ui/core/VariantLayoutData.js
+
+	return sap.ui.core.VariantLayoutData;
+
+}, /* bExport = */ true);

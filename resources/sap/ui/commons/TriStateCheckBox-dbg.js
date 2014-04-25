@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -346,7 +346,7 @@ sap.ui.commons.TriStateCheckBox.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TriStateCheckBox</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TriStateCheckBox</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TriStateCheckBox} <code>this</code> to allow method chaining
  * @public
@@ -416,7 +416,7 @@ sap.ui.commons.TriStateCheckBox.M_EVENTS = {'change':'change'};
 	if(!!sap.ui.Device.browser.internet_explorer && (!this.getEnabled())){
 		// in IE tabindex = -1 hides focus, so in disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused
-		jQuery.sap.byId(this.getId()).attr("tabindex", 0).addClass("sapUiTriCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
+		this.$().attr("tabindex", 0).addClass("sapUiTriCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
 	}
 	this.userToggle(oEvent);
 };
@@ -432,7 +432,7 @@ sap.ui.commons.TriStateCheckBox.prototype.onfocusout = function(oEvent) {
 	if(!!sap.ui.Device.browser.internet_explorer && (!this.getEnabled())){
 		// in IE tabindex = -1 hides focus, so in disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused - now unset this again
-		jQuery.sap.byId(this.getId()).attr("tabindex", -1).removeClass("sapUiTriCbFoc");
+		this.$().attr("tabindex", -1).removeClass("sapUiTriCbFoc");
 	}
 };
 

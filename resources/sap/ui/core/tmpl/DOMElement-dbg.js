@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.tmpl.DOMElement.
-jQuery.sap.declare("sap.ui.core.tmpl.DOMElement");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['sap/ui/core/library','sap/ui/core/Control'], function() {
+	"use strict";
 
 
 /**
@@ -56,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -345,7 +344,7 @@ sap.ui.core.Control.extend("sap.ui.core.tmpl.DOMElement", { metadata : {
  */
 
 
-// Start of sap\ui\core\tmpl\DOMElement.js
+// Start of sap/ui/core/tmpl/DOMElement.js
 // TODO: maybe this is something for the sap.ui.core itself - something more general for UI5!!
 
 /*
@@ -490,3 +489,7 @@ sap.ui.core.tmpl.DOMElement.prototype.setText = function(sText) {
 		}
 	}
 };
+
+	return sap.ui.core.tmpl.DOMElement;
+
+}, /* bExport = */ true);

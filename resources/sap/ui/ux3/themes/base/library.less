@@ -887,6 +887,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 /* ==================================================== */
 /* CSS for control sap.ui.ux3/DataSetSimpleView.control */
 /* ==================================================== */
+
 .sapUiUx3DSSV {
 	position: relative;
 	color: @sapUiBaseText;
@@ -912,9 +913,9 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3DSSVSA {
 	overflow-y: auto;
 }
-/* ============================================= */
+/* ======================================== */
 /* CSS for control sap.ui.ux3/Exact.control */
-/* ============================================= */
+/* ======================================== */
 
 .sapUiUx3Exact {
 	position: relative;
@@ -1002,16 +1003,9 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3ExactBrwsrSaveDlg > .sapUiLbl {
 	margin-right: 6px;
 }
-
 /* ================================================== */
 /* Base CSS for control sap.ui.ux3/ExactList.control  */
 /* ================================================== */
-
-@sapUiUx3ExactLstExpandOffset: 0 0;
-@sapUiUx3ExactLstRootExpandOffset: 0 3;
-@sapUiUx3ExactLstCollapseWidth: 24px;
-@sapUiUx3ExactLstHeaderHeight: 25px;
-@sapUiUx3ExactLstContentTop: @sapUiUx3ExactLstHeaderHeight;
 
 .sapUiUx3ExactLst {
 	display: inline-block;
@@ -1061,7 +1055,6 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 }
 
 /* List */
-			
 .sapUiUx3ExactLstLb {
 	overflow-y: hidden;
 	position: absolute;
@@ -1075,7 +1068,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3ExactLstLstExp > .sapUiUx3ExactLstLb {
 	bottom: 22px;
 }
-			
+
 .sapUiUx3ExactLstLb:hover {
 	overflow-y: auto;
 }
@@ -1083,7 +1076,7 @@ button.sapUiBtnS.sapUiBtnNorm.sapUiUx3EditCollectionButton.sapUiBtnStd:hover {
 .sapUiUx3ExactLstLb > ul {
 	display: block;
 }
-			
+
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI {
 	height: 21px;
 	margin-bottom: 1px;
@@ -1103,7 +1096,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI {
 }
 
 /* List - Sub-Attribute Indicator */
-
 .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiLbxIIco {
 	display: inline-block;
 	position: absolute;
@@ -1139,7 +1131,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 }
 
 /* List - Item Texts */
-
 .sapUiUx3ExactLstLb.sapUiLbx > ul > .sapUiLbxI > .sapUiLbxITxt {
 	display: block;
 	margin-right: 37px; /*Just a placeholder for: 20+ScrollbarWidth*/
@@ -1152,9 +1143,7 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 	margin-right: 20px !important;
 }
 
-
 /* Expander */
-
 .sapUiUx3ExactLstExp {
     height: 21px;
     cursor: pointer;
@@ -1174,7 +1163,6 @@ html[data-sap-ui-browser="ie10"] .sapUiUx3ExactLstLb > ul > .sapUiLbxI > .sapUiL
 }
 
 /* Header */
-
 .sapUiUx3ExactLstHead {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -1344,9 +1332,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
 
-
 /* Content */
-
 .sapUiUx3ExactLstCntnt {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -1381,9 +1367,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	margin-left: @sapUiUx3ExactLstCollapseWidth;
 }
 
-
 /* Resize */
-
 .sapUiUx3ExactLstRSz {
 	position: absolute;
 	top: @sapUiUx3ExactLstHeaderHeight;
@@ -1410,7 +1394,6 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 
 
 /*Top Menu*/
-
 .sapUiUx3ExactLstHeadTopIco {
 	position: absolute;
 	right: 2px;
@@ -1442,9 +1425,7 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	background-image: url("img/exact/tophead_hover.png");
 }
 
-
 /* Hidden Top-List*/
-
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstLst,
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstHead,
 .sapUiUx3ExactLstTop.sapUiUx3ExactLstTopHidden > .sapUiUx3ExactLstRSz {
@@ -1515,7 +1496,6 @@ html[dir=rtl][data-sap-ui-browser="ie8"] .sapUiUx3ExactLstCollapsed > .sapUiUx3E
 	height: ~"calc(100% - 29px)";
 	height: ~"-webkit-calc(100% - 29px)";
 }
-
 /* ======================================= */
 /* CSS for control sap.ui.ux3/Feed.control */
 /* ======================================= */
@@ -1749,7 +1729,6 @@ html[data-sap-ui-browser^="ie"] .sapUiFeederInput > p {
 	overflow: hidden;
 	text-transform: uppercase;
 }
-
 
 .sapUiUx3NavBar.sapUiUx3NavBarToplevel {
 	height: 50px;
@@ -2554,9 +2533,9 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 
 .sapUiUx3QVBody {
 }
-/* ============================================== */
-/* CSS for sap.ui.ux3.Shell.control  (base theme) */
-/* ============================================== */
+/* ============================================= */
+/* CSS for sap.ui.ux3.Shell.control (base theme) */
+/* ============================================= */
 
 .sapUiUx3Shell {
 	margin: 0;

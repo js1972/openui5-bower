@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -370,7 +370,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @public
@@ -428,7 +428,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @public
@@ -486,7 +486,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.CollectionInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @public
@@ -676,7 +676,7 @@ sap.ui.ux3.CollectionInspector.prototype.rerenderSidebar = function() {
 	} else {
 		this._oEditButton.setVisible(false);
 	}
-	var $Content = jQuery.sap.byId(this.getId() + "-sidebar");
+	var $Content = this.$("sidebar");
 	if ($Content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		this.getRenderer().renderSidebar(rm, this);
@@ -684,9 +684,9 @@ sap.ui.ux3.CollectionInspector.prototype.rerenderSidebar = function() {
 		rm.destroy();
 	}
 	if (oCurrentCollection && oCurrentCollection.getEditable()) {
-		jQuery.sap.byId(this.getId() + "-sidebar").addClass("sapUiUx3CIWithEditButton");
+		this.$("sidebar").addClass("sapUiUx3CIWithEditButton");
 	} else {
-		jQuery.sap.byId(this.getId() + "-sidebar").removeClass("sapUiUx3CIWithEditButton");
+		this.$("sidebar").removeClass("sapUiUx3CIWithEditButton");
 	}
 	this.updateItemNavigation();
 	this.refreshSelectionHighlighting();
@@ -699,12 +699,12 @@ sap.ui.ux3.CollectionInspector.prototype.rerenderSidebar = function() {
  */
 sap.ui.ux3.CollectionInspector.prototype.updateItemNavigation = function() {
 	var aItemDomRefs = [];
-	var $Items = jQuery.sap.byId(this.getId() + "-sidebar").find('li');
+	var $Items = this.$("sidebar").find('li');
 	jQuery.each($Items, function(iIndex, $DomRef) {
 		aItemDomRefs.push($DomRef);
 	});
 	this._oItemNavigation.setItemDomRefs(aItemDomRefs);
-	this._oItemNavigation.setRootDomRef(jQuery.sap.byId(this.getId() + "-sidebar ul")[0]);
+	this._oItemNavigation.setRootDomRef(this.$("sidebar ul")[0]);
 };
 
 /**
@@ -715,7 +715,7 @@ sap.ui.ux3.CollectionInspector.prototype.updateItemNavigation = function() {
  * @private
  */
 sap.ui.ux3.CollectionInspector.prototype.rerenderContent = function() {
-	var $Content = jQuery.sap.byId(this.getId() + "-content");
+	var $Content = this.$("content");
 	if ($Content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		this.getRenderer().renderContent(rm, this);
@@ -733,8 +733,8 @@ sap.ui.ux3.CollectionInspector.prototype.rerenderContent = function() {
 sap.ui.ux3.CollectionInspector.prototype.setElementsHeight = function() {
 	if (this.getFitParent()) return;
 
-	var oSidebar = jQuery.sap.byId(this.getId() + "-sidebar");
-	var oContent = jQuery.sap.byId(this.getId() + "-content");
+	var oSidebar = this.$("sidebar");
+	var oContent = this.$("content");
 
 	var iContentHeight = oContent.outerHeight(true);
 	var iContentMargin = oContent.outerHeight(true) - oContent.height();
@@ -750,9 +750,9 @@ sap.ui.ux3.CollectionInspector.prototype.setElementsHeight = function() {
  * @public
  */
 sap.ui.ux3.CollectionInspector.prototype.openSidebar = function() {
-	var $this = jQuery.sap.byId(this.getId());
-	var $Sidebar = jQuery.sap.byId(this.getId() + "-sidebar");
-	var $Content = jQuery.sap.byId(this.getId() + "-content");
+	var $this = this.$();
+	var $Sidebar = this.$("sidebar");
+	var $Content = this.$("content");
 	$Sidebar.stop(true, true).animate({ width : 150 }, 300, function() {
 		$Sidebar.css('width', '');
 	});
@@ -770,9 +770,9 @@ sap.ui.ux3.CollectionInspector.prototype.openSidebar = function() {
  * @public
  */
 sap.ui.ux3.CollectionInspector.prototype.closeSidebar = function() {
-	var $this = jQuery.sap.byId(this.getId());
-	var $Sidebar = jQuery.sap.byId(this.getId() + "-sidebar");
-	var $Content = jQuery.sap.byId(this.getId() + "-content");
+	var $this = this.$();
+	var $Sidebar = this.$("sidebar");
+	var $Content = this.$("content");
 	$Sidebar.stop(true, true).animate({ width : 0 }, 300, function() {
 		$Sidebar.css('width', '');
 	});
@@ -1051,7 +1051,7 @@ sap.ui.ux3.CollectionInspector.prototype.onsapspace = function(oEvent) {
  * @private
  */
 sap.ui.ux3.CollectionInspector.prototype.refreshSelectionHighlighting = function() {
-	var aItems = jQuery.sap.byId(this.getId() + "-sidebar").find('.sapUiUx3CICollectionListItem');
+	var aItems = this.$("sidebar").find('.sapUiUx3CICollectionListItem');
 	var aSelectedItems;
 	if (this.getSelectedCollection()) {
 		aSelectedItems = sap.ui.getCore().byId(this.getSelectedCollection()).getSelectedItems();

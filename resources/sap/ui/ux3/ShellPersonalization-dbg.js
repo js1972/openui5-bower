@@ -126,7 +126,7 @@ sap.ui.ux3.ShellPersonalization.getOriginalSettings = function() {
 /**
  * Returns whether there are any personalization changes
  *
- * @returns {Boolean}
+ * @returns {boolean}
  * @public
  */
 sap.ui.ux3.ShellPersonalization.prototype.hasChanges = function() {
@@ -161,7 +161,7 @@ sap.ui.ux3.ShellPersonalization.prototype.applySettings = function(oSettings) {
 	if (oActualSettings.sHeaderImageSrc) {
 		this.applyHeaderImage(oActualSettings.sHeaderImageSrc);
 	} else {
-		jQuery.sap.domById(this.shell.getId() + "-hdr").style.backgroundImage = "";
+		this.shell.getDomRef("hdr").style.backgroundImage = "";
 	}
 	this.applySidebarOpacity(oActualSettings.fSidebarOpacity);
 
@@ -264,7 +264,7 @@ sap.ui.ux3.ShellPersonalization.prototype._getDialog = function() {
 				var that = this;
 				if (index == 0) {
 					// apply the current settings to the plain HTML parts
-					window.setTimeout(function(){jQuery.sap.byId(that.shell.getId() + "-bgColor").css("background-color", that.getTransientSettingsWithDefaults().sBgColor);},1);
+					window.setTimeout(function(){that.shell.$("bgColor").css("background-color", that.getTransientSettingsWithDefaults().sBgColor);},1);
 
 					// bind the drop event handlers
 					window.setTimeout(jQuery.proxy(function(){
@@ -273,7 +273,7 @@ sap.ui.ux3.ShellPersonalization.prototype._getDialog = function() {
 
 				} else if (index == 1) {
 					// apply the current settings to the plain HTML parts
-					window.setTimeout(function(){jQuery.sap.byId(that.shell.getId() + "-lineColor").css("background-color", that.getTransientSettingsWithDefaults().sLineColor);},1);
+					window.setTimeout(function(){that.shell.$("lineColor").css("background-color", that.getTransientSettingsWithDefaults().sLineColor);},1);
 
 					// bind the drop event handlers
 					window.setTimeout(jQuery.proxy(function(){
@@ -315,7 +315,7 @@ sap.ui.ux3.ShellPersonalization.prototype._getDialog = function() {
 		var that = this;
 		oBgColorBtn.attachPress(function(){
 			if (!that.oBgColorPicker.isOpen()) {
-				that.oBgColorPicker.open(sap.ui.ux3.ShellColorPicker.parseCssRgbString(that.getTransientSettingsWithDefaults().sBgColor), sap.ui.core.Popup.Dock.BeginTop, sap.ui.core.Popup.Dock.BeginBottom, jQuery.sap.domById(that.shell.getId() + "-bgColor"));
+				that.oBgColorPicker.open(sap.ui.ux3.ShellColorPicker.parseCssRgbString(that.getTransientSettingsWithDefaults().sBgColor), sap.ui.core.Popup.Dock.BeginTop, sap.ui.core.Popup.Dock.BeginBottom, that.shell.getDomRef("bgColor"));
 			}
 		});
 		this.oBgPreviewHtml = new sap.ui.core.HTML({preferDom:true,content:"<div id='" + this.shell.getId() + "-bgColor' style='background-color:" + oSettingsWithDefaults.sBgColor + "' class='sapUiUx3ShellColorPickerPreview'></div>"});
@@ -347,7 +347,7 @@ sap.ui.ux3.ShellPersonalization.prototype._getDialog = function() {
 		var that = this;
 		oLineColorBtn.attachPress(function(){
 			if (!that.oLineColorPicker.isOpen()) {
-				that.oLineColorPicker.open(sap.ui.ux3.ShellColorPicker.parseCssRgbString(that.getTransientSettingsWithDefaults().sLineColor), sap.ui.core.Popup.Dock.BeginTop, sap.ui.core.Popup.Dock.BeginBottom, jQuery.sap.domById(that.shell.getId() + "-lineColor"));
+				that.oLineColorPicker.open(sap.ui.ux3.ShellColorPicker.parseCssRgbString(that.getTransientSettingsWithDefaults().sLineColor), sap.ui.core.Popup.Dock.BeginTop, sap.ui.core.Popup.Dock.BeginBottom, that.shell.getDomRef("lineColor"));
 			}
 		});
 		this.oLinePreviewHtml = new sap.ui.core.HTML({preferDom:true,content:"<div id='" + this.shell.getId() + "-lineColor' style='background-color:" + oSettingsWithDefaults.sLineColor + "' class='sapUiUx3ShellColorPickerPreview'></div>"});
@@ -452,8 +452,8 @@ sap.ui.ux3.ShellPersonalization.prototype._handleBgColorChange = function(oEvent
 	this.applyBgColor(cssColor);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applyBgColor = function(sCssColor) {
-	jQuery.sap.byId(this.shell.getId() + "-bg").css("background-color", sCssColor);
-	jQuery.sap.byId(this.shell.getId() + "-bgColor").css("background-color", sCssColor);
+	this.shell.$("bg").css("background-color", sCssColor);
+	this.shell.$("bgColor").css("background-color", sCssColor);
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleBackgroundImageChange = function(url, bPersistImmediately) {
@@ -485,8 +485,8 @@ sap.ui.ux3.ShellPersonalization.prototype.applyBgImage = function(sBgCssImg, sBg
 	sBgCssImg = sBgCssImg ? sBgCssImg : "";
 	sBgImgSrc = sBgImgSrc ? sBgImgSrc : sap.ui.ux3.ShellPersonalization.TRANSPARENT_1x1;
 
-	var oBgImgRef = jQuery.sap.domById(this.shell.getId() + "-bgImg");
-	var oBgImgPreviewRef = jQuery.sap.domById(this.shell.getId() + "-p13n_bgImageImg");
+	var oBgImgRef = this.shell.getDomRef("bgImg");
+	var oBgImgPreviewRef = this.shell.getDomRef("p13n_bgImageImg");
 
 	oBgImgRef.style.backgroundImage = sBgCssImg;
 	oBgImgRef.src = sBgImgSrc;
@@ -506,9 +506,9 @@ sap.ui.ux3.ShellPersonalization.prototype._handleHeaderImageChange = function(da
 	this.applyHeaderImage(dataUrl);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applyHeaderImage = function(dataUrl) {
-	jQuery.sap.byId(this.shell.getId() + "-hdr").css("background-image", "url(" + dataUrl + ")");
+	this.shell.$("hdr").css("background-image", "url(" + dataUrl + ")");
 	if (this.oDialog && this.oDialog.isOpen()) {
-		jQuery.sap.byId(this.shell.getId() + "-p13n_hdrImageImg").attr("src", dataUrl);
+		this.shell.$("p13n_hdrImageImg").attr("src", dataUrl);
 	}
 };
 
@@ -518,8 +518,8 @@ sap.ui.ux3.ShellPersonalization.prototype._handleLineColorChange = function(oEve
 	this.applyLineColor(cssColor);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applyLineColor = function(sCssColor) {
-	jQuery.sap.byId(this.shell.getId() + "-hdr").find("hr").css("background-color", sCssColor);
-	jQuery.sap.byId(this.shell.getId() + "-lineColor").css("background-color", sCssColor);
+	this.shell.$("hdr").find("hr").css("background-color", sCssColor);
+	this.shell.$("lineColor").css("background-color", sCssColor);
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleBgImageOpacitySliderChange = function(oEvent) {
@@ -528,7 +528,7 @@ sap.ui.ux3.ShellPersonalization.prototype._handleBgImageOpacitySliderChange = fu
 	this.applyBgImageOpacity(value);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applyBgImageOpacity = function(fValue) {
-	jQuery.sap.byId(this.shell.getId() + "-bgImg").css("opacity", fValue);
+	this.shell.$("bgImg").css("opacity", fValue);
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleSidebarOpacitySliderChange = function(oEvent) {
@@ -537,8 +537,8 @@ sap.ui.ux3.ShellPersonalization.prototype._handleSidebarOpacitySliderChange = fu
 	this.applySidebarOpacity(value);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applySidebarOpacity = function(fValue) {
-	jQuery.sap.byId(this.shell.getId() + "-tp").css("opacity", fValue);
-	jQuery.sap.byId(this.shell.getId() + "-paneBar").children(":nth-child(2)").css("opacity", fValue);
+	this.shell.$("tp").css("opacity", fValue);
+	this.shell.$("paneBar").children(":nth-child(2)").css("opacity", fValue);
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleLogoImageChange = function(url, bPersistImmediately) {
@@ -557,8 +557,8 @@ sap.ui.ux3.ShellPersonalization.prototype.applyLogoImage = function(url) {
 			url = sap.ui.ux3.ShellPersonalization.TRANSPARENT_1x1;
 		}
 	}
-	jQuery.sap.byId(this.shell.getId() + "-logoImg").attr("src", url);
-	jQuery.sap.byId(this.shell.getId() + "-p13n_logoImageImg").attr("src", url); // just in case the dialog is displaying it
+	this.shell.$("logoImg").attr("src", url);
+	this.shell.$("p13n_logoImageImg").attr("src", url); // just in case the dialog is displaying it
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleLogoAlignChange = function(oEvent) {
@@ -572,7 +572,7 @@ sap.ui.ux3.ShellPersonalization.prototype.applyLogoAlign = function(sLogoAlign) 
 	if (sap.ui.getCore().getConfiguration().getRTL() && (sRealAlign == "right")) {
 		sRealAlign = "left"; // need to use left/right, as "begin" is not supported by IE8
 	}
-	jQuery.sap.byId(this.shell.getId() + "-hdr").css("text-align", sRealAlign);
+	this.shell.$("hdr").css("text-align", sRealAlign);
 };
 
 sap.ui.ux3.ShellPersonalization.prototype._handleUseLogoSizeChange = function(oEvent) {
@@ -581,8 +581,8 @@ sap.ui.ux3.ShellPersonalization.prototype._handleUseLogoSizeChange = function(oE
 	this.applyUseLogoSize(bUse);
 };
 sap.ui.ux3.ShellPersonalization.prototype.applyUseLogoSize = function(bUseLogoSize) {
-	jQuery.sap.byId(this.shell.getId() + "-hdr").toggleClass("sapUiUx3ShellHeaderFlex", bUseLogoSize);
-	jQuery.sap.byId(this.shell.getId() + "-hdrImg").toggleClass("sapUiUx3ShellHeaderImgFlex", bUseLogoSize);
+	this.shell.$("hdr").toggleClass("sapUiUx3ShellHeaderFlex", bUseLogoSize);
+	this.shell.$("hdrImg").toggleClass("sapUiUx3ShellHeaderImgFlex", bUseLogoSize);
 };
 
 

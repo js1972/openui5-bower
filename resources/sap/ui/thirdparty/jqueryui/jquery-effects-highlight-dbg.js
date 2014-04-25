@@ -1,50 +1,13 @@
-/*!
- * jQuery UI Effects Highlight 1.8.23
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Highlight
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function( $, undefined ) {
+(function(jQuery){
+	
+	var MESSAGE = "The file sap/ui/thirdparty/jqueryui/jquery-effects-highlight.js has been renamed to sap/ui/thirdparty/jqueryui/jquery-ui-effect-highlight.js! Please update the dependencies accordingly.";
+	
+	if ( jQuery && jQuery.sap && jQuery.sap.require ) {
+		// if jQuery.sap is available, require the new module and log a warning
+		jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-effect-highlight");
+		jQuery.sap.log.warning(MESSAGE);
+	} else {
+		throw new Error(MESSAGE);
+	}
 
-$.effects.highlight = function(o) {
-	return this.queue(function() {
-		var elem = $(this),
-			props = ['backgroundImage', 'backgroundColor', 'opacity'],
-			mode = $.effects.setMode(elem, o.options.mode || 'show'),
-			animation = {
-				backgroundColor: elem.css('backgroundColor')
-			};
-
-		if (mode == 'hide') {
-			animation.opacity = 0;
-		}
-
-		$.effects.save(elem, props);
-		elem
-			.show()
-			.css({
-				backgroundImage: 'none',
-				backgroundColor: o.options.color || '#ffff99'
-			})
-			.animate(animation, {
-				queue: false,
-				duration: o.duration,
-				easing: o.options.easing,
-				complete: function() {
-					(mode == 'hide' && elem.hide());
-					$.effects.restore(elem, props);
-					(mode == 'show' && !$.support.opacity && this.style.removeAttribute('filter'));
-					(o.callback && o.callback.apply(this, arguments));
-					elem.dequeue();
-				}
-			});
-	});
-};
-
-})(jQuery);
+})(window.jQuery);

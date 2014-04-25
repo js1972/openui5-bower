@@ -1044,8 +1044,8 @@ html[data-sap-ui-browser="sf5"] .sapUiBtnS > .sapUiBtnTxt {
 }
 
 /* IE10/IE11 bug: it does not show the outline when clicking to focus */
-html[data-sap-ui-browser="ie10"] .sapUiCb:focus,
-html[data-sap-ui-browser="ie11"] .sapUiCb:focus {
+html[data-sap-ui-browser="ie10"] .sapUiCb:focus, 
+html[data-sap-ui-browser="ie11"] .sapUiCb:focus { 
 	outline: 1px dotted @sapUiText;
 }
 /* ============================================= */
@@ -2407,24 +2407,62 @@ html[data-sap-ui-browser="ie8"] .sapUiIpeLink > .sapUiIpeCont{
 	color: @sapUiBaseText;
 }
 
-/* special case Form: must defined here because in Layout library the LESS class is not known*/
+/* ============================ */
+/* Overwrites for Label in Form */
+/* ============================ */
+
+/* GridLayout */
+.sapUiGridLabel > .sapUiLbl{
+	max-width: 100%;
+	float: right;
+}
+
+/* required symbol is now left - if indicator is already at begin, don't change it */
+.sapUiGridLabel > .sapUiLbl.sapUiLblReqEnd:after {
+	padding-left: 0;
+	content : '';
+}
+
 .sapUiGridLabel > .sapUiLbl.sapUiLblReqEnd:before {
 	.sapUiLbLReqInd;
+}
+
+/* ResponsiveLayout */
+.sapUiRLElementWithLabel > .sapUiRFLRow:first-child > .sapUiRFLContainer:first-child:not(.sapUiRFLFullLength) > div > .sapUiLbl.sapUiLblReqEnd:after { /* required symbol is now left */
+	padding-left: 0;
+	content : '';
 }
 
 .sapUiRLElementWithLabel > .sapUiRFLRow:first-child > .sapUiRFLContainer:first-child:not(.sapUiRFLFullLength) > div > .sapUiLbl.sapUiLblReqEnd:before {
 	.sapUiLbLReqInd;
 }
 
-/* ============================ */
-/*  SMALL, MEDIUM and LARGE DEVICES   */
-/* ============================ */
+/* ResponsiveGridLayout */
+.sapUiFormResGridLbl > .sapUiLbl {
+	max-width: 100%; /* to have ellipsis if cell gets too small */
+}
+
+/* make labels right aligned if left from fields*/
+.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapUiLbl,
+.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapUiLbl,
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapUiLbl {
+	float: right;
+}
+
+.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapUiLbl.sapUiLblReqEnd:after,
+.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapUiLbl.sapUiLblReqEnd:after,
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapUiLbl.sapUiLblReqEnd:after{
+	padding-left: 0;
+	content : '';
+}
+
 .sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapUiLbl.sapUiLblReqEnd:before,
 .sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapUiLbl.sapUiLblReqEnd:before,
 .sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapUiLbl.sapUiLblReqEnd:before {
 	.sapUiLbLReqInd;
 }
 
+/*
 .sapUiLblInfo{
 	position: absolute;
 	line-height: @sapUiLineHeight;
@@ -2432,7 +2470,7 @@ html[data-sap-ui-browser="ie8"] .sapUiIpeLink > .sapUiIpeCont{
 	top: 0;
 	background-color: @sapBackgroundColor;
 }
-
+*/
 span.sapUiLblIco { /* icon font */
 	margin-top: 0;
 	line-height: @sapUiLineHeight;
@@ -2645,7 +2683,7 @@ span.sapUiLblIco { /* icon font */
 }
 
 .sapUiLbxI:focus {
-	outline: 1px dotted sapUiBlackBorder;
+	outline: 1px dotted @sapUiBlackBorder;
 }
 
 .sapUiLbxI > span,
@@ -3718,7 +3756,7 @@ html[data-sap-ui-browser*="ie"] .sapUiPanelTb {
 	color: @sapUiContentDisabledTextColor;
 }
 
-/* IE10/IE11 bug: it does not show the outline when clicking to focus */ 
+/* IE10/IE11 bug: it does not show the outline when clicking to focus */
 html[data-sap-ui-browser=ie10] .sapUiRb:focus,
 html[data-sap-ui-browser=ie11] .sapUiRb:focus {
 	outline: 1px dotted @sapUiText;
@@ -4497,7 +4535,7 @@ html[data-sap-ui-browser="ie8"] .sapUiSegmentedButton > span > button:first-chil
 
 .sapUiSegmentedButton > span > .sapUiBtnS.sapUiBtnStd:focus,
 .sapUiSegmentedButton > span > .sapUiBtnS.sapUiBtnStd.sapUiBtnStdFocus {
-	outline: 1px dashed @sapUiButtonHoverBackground;
+	outline: 1px dashed @sapUiHighlight;
 }
 /* ====================================================== */
 /* CSS for control sap.ui.commons/form/SimpleForm.control */
@@ -4904,6 +4942,20 @@ html[data-sap-ui-browser="ie8"] .sapUiTfInner.sapUiTf{ /* in IE8 above statement
 
 .sapUiTfBrd.sapUiTfDsbl{
 	border-color: @sapUiFieldDisabledBorderColor;
+}
+
+/* need to be separate statements for each browser, otherwise it will not work */
+.sapUiTfPlace{
+	color: @sapUiExtraLightText;
+}
+.sapUiTf::-webkit-input-placeholder{
+	color: @sapUiExtraLightText;
+}
+.sapUiTf::-moz-placeholder{
+	color: @sapUiExtraLightText;
+}
+.sapUiTf:-ms-input-placeholder{
+	color: @sapUiExtraLightText;
 }
 .sapUiTv {
 	font-family: @sapUiFontFamily;

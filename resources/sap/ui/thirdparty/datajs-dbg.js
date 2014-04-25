@@ -961,6 +961,21 @@
         return parent;
     };
 
+    // ##### BEGIN: MODIFIED BY SAP
+    // polyfill for document.createAttributeNS which was removed from Chrome 34
+    // but will be added back in, see:
+    // http://datajs.codeplex.com/workitem/1272
+    // https://code.google.com/p/chromium/issues/detail?id=347506
+    // https://codereview.chromium.org/243333003
+    var _createAttributeNS = function(namespaceURI, qualifiedName) {
+        var dummy = document.createElement('dummy');
+        dummy.setAttributeNS(namespaceURI, qualifiedName, '');
+        var attr = dummy.attributes[0];
+        dummy.removeAttributeNode(attr);
+        return attr;
+    };
+    // ##### END: MODIFIED BY SAP
+
     var xmlNewAttribute = function (dom, namespaceURI, qualifiedName, value) {
         /// <summary>Creates a new DOM attribute node.</summary>
         /// <param name="dom">DOM document used to create the attribute.</param>
@@ -968,9 +983,13 @@
         /// <param name="namespaceURI" type="String">Namespace URI.</param>
         /// <returns>DOM attribute node for the namespace declaration.</returns>
 
+        // ##### BEGIN: MODIFIED BY SAP
+        // added usage of _createAttributeNS as fallback (see function above)
         var attribute =
             dom.createAttributeNS && dom.createAttributeNS(namespaceURI, qualifiedName) ||
-            dom.createNode(2, qualifiedName, namespaceURI || undefined);
+            dom.createNode && dom.createNode(2, qualifiedName, namespaceURI || undefined) ||
+            _createAttributeNS(namespaceURI, qualifiedName);
+        // ##### END: MODIFIED BY SAP
 
         attribute.value = value || "";
         return attribute;

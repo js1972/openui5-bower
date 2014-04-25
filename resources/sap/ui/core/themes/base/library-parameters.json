@@ -194,7 +194,7 @@
     "sapUiTextSelection": "#ffffff",
     "sapUiTextfieldBackground": "#ffffff",
     "sapUiLineHeight": "21px",
-    "sapUiFontFamily": "Arial,Helvetica,sans-serif",
+    "sapUiFontFamily": "Arial, Helvetica, sans-serif",
     "sapUiFontMonospaceFamily": "Lucida Console",
     "sapUiFontSize": "medium",
     "sapUiFontLargeSize": "large",
@@ -273,8 +273,8 @@
     "sapUiLocalBusyIndicatorBoxTransitionDuration": "380ms",
     "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBG": "rgba(255, 255, 255, 0.72)",
     "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBG_IE": "#ffffff",
-    "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBoxSize": "8px",
     "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBoxColor": "#808080",
     "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBoxColorActive": "#000000",
+    "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBoxSize": "8px",
     "sap.ui.core.LocalBusyIndicator:sapUiLocalBusyIndicatorBoxTransitionDuration": "380ms"
 }

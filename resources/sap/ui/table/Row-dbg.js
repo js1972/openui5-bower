@@ -34,7 +34,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getCells cells} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getCells cells} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -100,6 +100,7 @@ sap.ui.core.Element.extend("sap.ui.table.Row", { metadata : {
  * Getter for aggregation <code>cells</code>.<br/>
  * The controls for the cells.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Row.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.table.Row#getCells

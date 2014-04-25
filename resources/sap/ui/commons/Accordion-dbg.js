@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSections sections} : sap.ui.commons.AccordionSection[]</li></ul>
+ * <li>{@link #getSections sections} <strong>(default aggregation)</strong> : sap.ui.commons.AccordionSection[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -163,6 +163,7 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
  * Getter for aggregation <code>sections</code>.<br/>
  * Empty container used to display any library controls.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Accordion.
  * @return {sap.ui.commons.AccordionSection[]}
  * @public
  * @name sap.ui.commons.Accordion#getSections
@@ -266,7 +267,7 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Accordion} <code>this</code> to allow method chaining
  * @public
@@ -331,7 +332,7 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Accordion} <code>this</code> to allow method chaining
  * @public
@@ -396,7 +397,7 @@ sap.ui.commons.Accordion.M_EVENTS = {'sectionOpen':'sectionOpen','sectionClose':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Accordion</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Accordion} <code>this</code> to allow method chaining
  * @public
@@ -761,7 +762,7 @@ sap.ui.commons.Accordion.prototype.onsaphome = function(oEvent){
 	oEvent.stopPropagation();
 
 	//Get the current first section id
-	var oFocusableSection = jQuery.sap.domById(this.getSections()[0].getId());
+	var oFocusableSection = this.getSections()[0].getDomRef();
 
 	//If the section is disabled, get the next section that is enabled, disregard disabled sections
 	if (jQuery(oFocusableSection).hasClass("sapUiAcdSectionDis")){
@@ -794,7 +795,7 @@ sap.ui.commons.Accordion.prototype.onsapend = function(oEvent){
 
 	//Get the last section
 	var iNbSections = this.getSections().length;
-	var oFocusableSection = jQuery.sap.domById(this.getSections()[iNbSections-1].getId());
+	var oFocusableSection = this.getSections()[iNbSections-1].getDomRef();
 
 	//If the section is disabled, get the previous section that is enabled, disregard disabled sections
 	if (jQuery(oFocusableSection).hasClass("sapUiAcdSectionDis")){
@@ -816,7 +817,7 @@ sap.ui.commons.Accordion.prototype.onsapend = function(oEvent){
 
 /**
  * Utility to get the current section
- * @param {DOMElement} oDomElement The current element from which an event is triggered
+ * @param {Element} oDomElement The current DOM element from which an event is triggered
  * @private
  */
 sap.ui.commons.Accordion.prototype.getCurrentSection = function(oDomElement){
@@ -838,8 +839,8 @@ sap.ui.commons.Accordion.prototype.getCurrentSection = function(oDomElement){
  ***********************************************************************************/
 /**
  * Drops a section to a new index
- * @param {DOMNode} oDomSection	Section to drop to a new index
- * @param {DOMNode} oDomTargetSection Section after which to drop the section
+ * @param {Element} oDomSection	Section to drop to a new index
+ * @param {Element} oDomTargetSection Section after which to drop the section
  * @param {boolean} bDropFirst If true, drop at first place
  * @private
  */
@@ -1286,7 +1287,7 @@ sap.ui.commons.Accordion.prototype.onAfterRendering = function() {
 	accordion.style.height = accordion.offsetHeight - borderTotal - 7 + "px";
 
 	this.$().sortable({
-		handle: "> div > div",
+		handle: "> div.sapUiAcdSectionHdr > div",
 		stop: jQuery.proxy(this._onSortChange, this)
 	});
 };

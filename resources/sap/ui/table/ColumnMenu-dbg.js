@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.commons.Menu");
  * @extends sap.ui.commons.Menu
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -419,3 +419,14 @@ sap.ui.table.ColumnMenu.prototype._setFilterValue = function(sValue) {
 	return this;
 };
 
+/**
+ * Sets the value state of the filter field
+ * @private
+ */
+sap.ui.table.ColumnMenu.prototype._setFilterState = function(sFilterState) {
+	var oFilterField = sap.ui.getCore().byId(this.getId() + "-filter");
+	if (oFilterField) {
+		oFilterField.setValueState(sFilterState);
+	}
+	return this;
+};

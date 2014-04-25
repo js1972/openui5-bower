@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.search.SearchProvider.
-jQuery.sap.declare("sap.ui.core.search.SearchProvider");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['sap/ui/core/library','sap/ui/core/Element'], function() {
+	"use strict";
 
 
 /**
@@ -56,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -137,7 +136,7 @@ sap.ui.core.Element.extend("sap.ui.core.search.SearchProvider", { metadata : {
  */
 
 
-// Start of sap\ui\core\search\SearchProvider.js
+// Start of sap/ui/core/search/SearchProvider.js
 /**
  * Call this function to get suggest values from the search provider.
  * The given callback function is called with the suggest value (type 'string', 1st parameter)
@@ -153,3 +152,7 @@ sap.ui.core.Element.extend("sap.ui.core.search.SearchProvider", { metadata : {
 sap.ui.core.search.SearchProvider.prototype.suggest = function(sValue, fCallback) {
 	jQuery.sap.log.warning("sap.ui.core.search.SearchProvider is the abstract base class for all SearchProviders. Do not create instances of this class, but use a concrete sub class instead.");
 };
+
+	return sap.ui.core.search.SearchProvider;
+
+}, /* bExport = */ true);

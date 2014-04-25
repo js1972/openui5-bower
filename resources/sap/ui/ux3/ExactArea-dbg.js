@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getToolbarItems toolbarItems} : sap.ui.commons.ToolbarItem[]</li></ul>
  * </li>
  * <li>Associations
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -154,6 +154,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.ExactArea", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Arbitrary child controls of the content area
  * 
+ * <strong>Note</strong>: this is the default aggregation for ExactArea.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.ux3.ExactArea#getContent

@@ -50,10 +50,11 @@ jQuery.sap.require("sap.ui.core.Control");
  *
  * @class
  * This control can be used to add horizontal space between toolbar items.
+ * Note: ToolbarLayoutData should not be used with this control.
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public

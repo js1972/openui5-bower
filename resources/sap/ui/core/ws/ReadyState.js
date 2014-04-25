@@ -3,4 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.core.ws.ReadyState");sap.ui.core.ws.ReadyState={CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3};
+sap.ui.define(['jquery.sap.global'],function(q){"use strict";var R={CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3};return R},true);

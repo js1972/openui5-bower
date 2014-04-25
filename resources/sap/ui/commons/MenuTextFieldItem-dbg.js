@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.MenuItemBase");
  * @extends sap.ui.commons.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -405,6 +405,11 @@ sap.ui.commons.MenuTextFieldItem.prototype.getLabel = function(){
 sap.ui.commons.MenuTextFieldItem.prototype.setValue = function(sValue, bSupR){
 	this.setProperty("value", sValue, bSupR);
 	this._tf.setValue(sValue);
+	return this;
+};
+
+sap.ui.commons.MenuTextFieldItem.prototype.setValueState = function(sValueState){
+	this._tf.setValueState(sValueState);
 	return this;
 };
 

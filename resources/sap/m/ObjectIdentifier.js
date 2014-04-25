@@ -8,4 +8,4 @@ sap.m.ObjectIdentifier.prototype.exit=function(){if(this._attachmentsIcon){this.
 sap.m.ObjectIdentifier.prototype._getAttachmentsIcon=function(){if(!this._attachmentsIcon){this._attachmentsIcon=this._getIcon(sap.ui.core.IconPool.getIconURI("attachment"),this.getId()+"-attachments")}return this._attachmentsIcon};
 sap.m.ObjectIdentifier.prototype._getPeopleIcon=function(){if(!this._peopleIcon){this._peopleIcon=this._getIcon(sap.ui.core.IconPool.getIconURI("group"),this.getId()+"-people")}return this._peopleIcon};
 sap.m.ObjectIdentifier.prototype._getNotesIcon=function(){if(!this._notesIcon){this._notesIcon=this._getIcon(sap.ui.core.IconPool.getIconURI("notes"),this.getId()+"-notes")}return this._notesIcon};
-sap.m.ObjectIdentifier.prototype._getIcon=function(u,i){var s=jQuery.device.is.phone?"1em":"1em";var I;I=this._icon||sap.ui.core.IconPool.createControlByURI({src:u,id:i+"-icon",size:s},sap.m.Image);I.setSrc(u);return I};
+sap.m.ObjectIdentifier.prototype._getIcon=function(u,i){var s=sap.ui.Device.system.phone?"1em":"1em";var I;I=this._icon||sap.ui.core.IconPool.createControlByURI({src:u,id:i+"-icon",size:s},sap.m.Image);I.setSrc(u);return I};

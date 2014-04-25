@@ -194,7 +194,7 @@
     "sapUiTextSelection": "#ffffff",
     "sapUiTextfieldBackground": "#ffffff",
     "sapUiLineHeight": "21px",
-    "sapUiFontFamily": "Arial,Helvetica,sans-serif",
+    "sapUiFontFamily": "Arial, Helvetica, sans-serif",
     "sapUiFontMonospaceFamily": "Lucida Console",
     "sapUiFontSize": "medium",
     "sapUiFontLargeSize": "large",
@@ -267,7 +267,7 @@
     "sapUiFormTitleSize": "H3",
     "sapUiFormSubTitleSize": "H4",
     "sapUiRFLPadding": "3px",
-    "sap.ui.layout.FormLayout:sapUiFormTitleSize": "H3",
     "sap.ui.layout.FormLayout:sapUiFormSubTitleSize": "H4",
+    "sap.ui.layout.FormLayout:sapUiFormTitleSize": "H3",
     "sap.ui.layout.ResponsiveFlowLayout:sapUiRFLPadding": "3px"
 }

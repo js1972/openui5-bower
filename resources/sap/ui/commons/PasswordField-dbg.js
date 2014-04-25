@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -88,3 +88,27 @@ sap.ui.commons.TextField.extend("sap.ui.commons.PasswordField", { metadata : {
 
 
 // Start of sap\ui\commons\PasswordField.js
+sap.ui.commons.PasswordField.prototype.onfocusin = function(oEvent) {
+
+	sap.ui.commons.TextField.prototype.onfocusin.apply(this, arguments);
+
+	if (!sap.ui.Device.support.input.placeholder && this.getPlaceholder()) {
+		// if browser not supports placeholder on input tag, set the password type if focused
+		jQuery(this.getInputDomRef()).attr("type", "password");
+	}
+
+};
+
+sap.ui.commons.PasswordField.prototype.onsapfocusleave = function(oEvent) {
+
+	if (!sap.ui.Device.support.input.placeholder && this.getPlaceholder()) {
+		// if browser not supports placeholder on input tag, remove the password type if placeholder is there and not focused
+		var $Input = jQuery(this.getInputDomRef());
+		if (!$Input.val()) {
+			$Input.removeAttr("type");
+		}
+	}
+
+	sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
+
+};

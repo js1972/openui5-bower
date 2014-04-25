@@ -34,7 +34,7 @@ jQuery.sap.require("sap.m.Tile");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.Tile");
  * @extends sap.m.Tile
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -98,6 +98,7 @@ sap.m.Tile.extend("sap.m.CustomTile", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Defines the Content of the CustomTile
  * 
+ * <strong>Note</strong>: this is the default aggregation for CustomTile.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.m.CustomTile#getContent
@@ -107,7 +108,7 @@ sap.m.Tile.extend("sap.m.CustomTile", { metadata : {
 
 /**
  * Setter for the aggregated <code>content</code>.
- * @param oContent {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oContent
  * @return {sap.m.CustomTile} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.CustomTile#setContent

@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -325,7 +325,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -383,7 +383,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -441,7 +441,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -499,7 +499,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -557,7 +557,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -615,7 +615,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ActionSheet</code>.<br/> itself.
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
@@ -755,11 +755,19 @@ sap.m.ActionSheet.prototype.sapfocusleave = function() {
 	this.close();
 };
 
-
 sap.m.ActionSheet.prototype.openBy = function(oControl){
 	var that = this;
 	if(!this._parent){
-		if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)){
+		var oOldParent = this.getParent();
+
+		// ActionSheet may already have a parent for dependent aggregation.
+		// This parent must be cleared before adding it to the popup instance, otherwise ActionSheet closes immediately after opening for the first time.
+		// TODO: after ManagedObject.prototype._removeChild function is fixed for removing control from dependents aggregation, remove this.
+		if(oOldParent){
+			this.setParent(null);
+		}
+
+		if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)){
 		//create a Popover instance for iPad
 			this._parent = new sap.m.Popover({
 				placement: this.getPlacement(),
@@ -784,7 +792,7 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 				}
 			}).addStyleClass("sapMActionSheetPopover");
 
-			if(jQuery.browser.msie){
+			if(sap.ui.Device.browser.internet_explorer){
 				this._parent._fnSetArrowPosition = jQuery.proxy(function(){
 					sap.m.Popover.prototype._setArrowPosition.apply(this);
 					
@@ -830,19 +838,19 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 				this._parent.addStyleClass("sapMActionSheetDialogWithTitle");
 			}
 			
-			if(!(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && jQuery.device.is.phone))){
+			if(!(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && sap.ui.Device.system.phone))){
 				this._parent.setBeginButton(this._getCancelButton());
 			}
 			
 			//need to modify some internal methods of Dialog for iPhone, because
 			//the actionsheet won't be sized full screen if the content is smaller than the whole screen.
 			//Then the transform animation need to be set at runtime with some height calculation. 
-			if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && jQuery.device.is.phone)){
+			if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && sap.ui.Device.system.phone)){
 				//remove the transparent property from blocklayer
 				this._parent.oPopup.setModal(true);
 				this._parent._setDimensions = function(){
 					var $this = this.$(),
-						$content = jQuery.sap.byId(this.getId() + "-cont");
+						$content = this.$("cont");
 					//CSS reset
 					$this.css({
 						"width": "100%",
@@ -916,7 +924,7 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 					var $this = this.$(),
 						iHeight = $this.height(),
 						iHeaderHeight = $this.children("header.sapMBar").outerHeight(true),
-						$content = jQuery.sap.byId(this.getId() + "-cont");
+						$content = this.$("cont");
 				
 					$content.css("max-height", iHeight - iHeaderHeight);
 					this._oScroller.refresh();
@@ -931,7 +939,7 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 						$this = this.$(),
 						iTop = iWindowHeight - $this.outerHeight(),
 						sTransform = genTransformCSS(iTop),
-						$content = jQuery.sap.byId(this.getId() + "-cont");
+						$content = this.$("cont");
 					
 					$this.css({
 						"-webkit-transform": sTransform,
@@ -943,10 +951,16 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 				}, this._parent);
 			}
 		}
+
+		// Check if this control has already a parent. If yes, add the _parent control into the dependents aggregation
+		// to enable model propagation and lifecycle management.
+		if(oOldParent){
+			oOldParent.addDependent(this._parent);
+		}
 	}
 	
 	//open the ActionSheet
-	if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)){
+	if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)){
 		this._parent.openBy(oControl);
 	}else{
 		this._parent.open();
@@ -970,12 +984,12 @@ sap.m.ActionSheet.prototype._createCancelButton = function(){
 	if(!this._oCancelButton){
 		var sCancelButtonText = (this.getCancelButtonText()) ? this.getCancelButtonText() : sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ACTIONSHEET_CANCELBUTTON_TEXT"),
 			that = this;
-//			var sButtonStyle = (jQuery.os.ios) ? sap.m.ButtonType.Unstyled : sap.m.ButtonType.Default;
+//			var sButtonStyle = (sap.ui.Device.os.ios) ? sap.m.ButtonType.Unstyled : sap.m.ButtonType.Default;
 		this._oCancelButton = new sap.m.Button(this.getId() + '-cancelBtn', {
 			text: sCancelButtonText,
 			type: sap.m.ButtonType.Emphasized,
 			press : function() {
-				if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)) && that._parent){
+				if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)) && that._parent){
 					that._parent._oCloseTrigger = this;
 				}
 				that.close();
@@ -984,7 +998,7 @@ sap.m.ActionSheet.prototype._createCancelButton = function(){
 			}
 		}).addStyleClass("sapMActionSheetButton sapMActionSheetCancelButton sapMBtnTransparent sapMBtnInverted");
 		
-		if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && jQuery.device.is.phone)){
+		if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && sap.ui.Device.system.phone)){
 			this.setAggregation("_cancelButton", this._oCancelButton, true);
 		}
 	}
@@ -992,7 +1006,7 @@ sap.m.ActionSheet.prototype._createCancelButton = function(){
 };
 
 sap.m.ActionSheet.prototype._getCancelButton = function(){
-	if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)) && this.getShowCancelButton()){
+	if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)) && this.getShowCancelButton()){
 		this._createCancelButton();
 		return this._oCancelButton;
 	}
@@ -1021,10 +1035,10 @@ sap.m.ActionSheet.prototype._preProcessActionButton = function(oButton){
 
 sap.m.ActionSheet.prototype.setShowCancelButton = function(bValue){
 	if(this._parent){
-		if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && jQuery.device.is.phone)){
+		if(jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && sap.ui.Device.system.phone)){
 			//if iPhone, we need to rerender to show or hide the cancel button
 			this.setProperty("showCancelButton", bValue, false);
-		}else if(!sap.m.Dialog._bOneDesign && !jQuery.os.ios){
+		}else if(!sap.m.Dialog._bOneDesign && !sap.ui.Device.os.ios){
 			this.setProperty("showCancelButton", bValue, true);
 			this._parent.setBeginButton(this._getCancelButton());
 		}
@@ -1036,7 +1050,7 @@ sap.m.ActionSheet.prototype.setShowCancelButton = function(bValue){
 
 sap.m.ActionSheet.prototype.setTitle = function(sTitle){
 	this.setProperty("title", sTitle, true);
-	if(this._parent && !(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone))){
+	if(this._parent && !(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone))){
 		this._parent.setTitle(sTitle);
 	}
 	
@@ -1053,7 +1067,7 @@ sap.m.ActionSheet.prototype.setTitle = function(sTitle){
 sap.m.ActionSheet.prototype.setPlacement = function(sPlacement){
 	this.setProperty("placement", sPlacement, true);
 	
-	if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)){
+	if(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)){
 		if(this._parent){
 			this._parent.setPlacement(sPlacement);
 		}
@@ -1062,7 +1076,7 @@ sap.m.ActionSheet.prototype.setPlacement = function(sPlacement){
 };
 
 sap.m.ActionSheet.prototype._buttonSelected = function(){
-	if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !jQuery.device.is.phone)) && this._parent){
+	if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)) && this._parent){
 		this._parent._oCloseTrigger = this;
 	}
 	this.close();

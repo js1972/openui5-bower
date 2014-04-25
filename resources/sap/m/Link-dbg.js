@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -306,7 +306,7 @@ sap.m.Link.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Link</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Link</code>.<br/> itself.
  *
  * @return {sap.m.Link} <code>this</code> to allow method chaining
  * @public
@@ -349,6 +349,14 @@ jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.Link.prototype);
 
 /**
+ * Also trigger link activation when space is pressed on the focused control
+ */
+sap.m.Link.prototype.onsapspace = function(oEvent) {
+	sap.m.Link.prototype._handlePress.apply(this, arguments);
+};
+
+
+/**
  * Function is called when Link is triggered.
  *
  * @param {jQuery.Event} oEvent
@@ -364,7 +372,7 @@ sap.m.Link.prototype._handlePress = function(oEvent) {
 	}
 };
 
-if (jQuery.support.touch) {
+if (sap.ui.Device.support.touch) {
 	sap.m.Link.prototype.ontap = sap.m.Link.prototype._handlePress;
 } else {
 	sap.m.Link.prototype.onclick = sap.m.Link.prototype._handlePress;

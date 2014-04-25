@@ -32,11 +32,12 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Properties
  * <ul>
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li>
+ * <li>{@link #getEditable editable} : boolean</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getFormContainers formContainers} : sap.ui.layout.form.FormContainer[]</li>
+ * <li>{@link #getFormContainers formContainers} <strong>(default aggregation)</strong> : sap.ui.layout.form.FormContainer[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li>
  * <li>{@link #getLayout layout} : sap.ui.layout.form.FormLayout</li></ul>
  * </li>
@@ -59,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -74,7 +75,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 	library : "sap.ui.layout",
 	properties : {
 		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : null},
-		"visible" : {type : "boolean", group : "Misc", defaultValue : true}
+		"visible" : {type : "boolean", group : "Misc", defaultValue : true},
+		"editable" : {type : "boolean", group : "Misc", defaultValue : null}
 	},
 	defaultAggregation : "formContainers",
 	aggregations : {
@@ -153,9 +155,38 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 
 /**
+ * Getter for property <code>editable</code>.
+ * Applies a device and theme specific line-height to the form elements if the form has editable content.
+ * In this case all (not only the editable) rows of the form will get the line height.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {boolean} the value of property <code>editable</code>
+ * @public
+ * @since 1.20.0
+ * @name sap.ui.layout.form.Form#getEditable
+ * @function
+ */
+
+/**
+ * Setter for property <code>editable</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {boolean} bEditable  new value for property <code>editable</code>
+ * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20.0
+ * @name sap.ui.layout.form.Form#setEditable
+ * @function
+ */
+
+
+/**
  * Getter for aggregation <code>formContainers</code>.<br/>
  * FormContainers with the content of the form.
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/Form.
  * @return {sap.ui.layout.form.FormContainer[]}
  * @public
  * @name sap.ui.layout.form.Form#getFormContainers
@@ -246,7 +277,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.Form#setTitle
@@ -277,7 +308,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 
 /**
  * Setter for the aggregated <code>layout</code>.
- * @param oLayout {sap.ui.layout.form.FormLayout}
+ * @param {sap.ui.layout.form.FormLayout} oLayout
  * @return {sap.ui.layout.form.Form} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.Form#setLayout
@@ -337,6 +368,21 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 		var oLayout = this.getLayout();
 		if (oLayout && oLayout.onLayoutDataChange) {
 			oLayout.onLayoutDataChange(oEvent);
+		}
+
+	};
+
+	sap.ui.layout.form.Form.prototype.setEditable = function(bEditable) {
+
+		var bOldEditable = this.getEditable();
+		this.setProperty("editable", bEditable, true);
+
+		if (bEditable != bOldEditable && this.getDomRef()) {
+			if (bEditable) {
+				this.$().addClass("sapUiFormEdit").addClass("sapUiFormEdit-CTX");
+			}else{
+				this.$().removeClass("sapUiFormEdit").removeClass("sapUiFormEdit-CTX");
+			}
 		}
 
 	};

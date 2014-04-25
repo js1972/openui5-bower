@@ -194,7 +194,7 @@
     "sapUiTextSelection": "#ffffff",
     "sapUiTextfieldBackground": "#000000",
     "sapUiLineHeight": "18px",
-    "sapUiFontFamily": "Arial,Helvetica,sans-serif",
+    "sapUiFontFamily": "Arial, Helvetica, sans-serif",
     "sapUiFontMonospaceFamily": "Lucida Console",
     "sapUiFontSize": "11px",
     "sapUiFontLargeSize": "16px",
@@ -269,10 +269,5 @@
     "sapUiMessageNotifierCountBG": "#0f5d94",
     "sapUiDatePickerTableBackground": "#0f5d94",
     "sapUiDatePickerTableBorderColor": "#0f5d94",
-    "sapUiFeedPersonPlaceholder": "/img/feed/person_placeholder_48.png",
-    "sap.ui.ux3.ExactList:sapUiUx3ExactLstExpandOffset": "0 0",
-    "sap.ui.ux3.ExactList:sapUiUx3ExactLstRootExpandOffset": "0 3",
-    "sap.ui.ux3.ExactList:sapUiUx3ExactLstCollapseWidth": "24px",
-    "sap.ui.ux3.ExactList:sapUiUx3ExactLstHeaderHeight": "25px",
-    "sap.ui.ux3.ExactList:sapUiUx3ExactLstContentTop": "25px"
+    "sapUiFeedPersonPlaceholder": "/img/feed/person_placeholder_48.png"
 }

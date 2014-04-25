@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.mvc.TemplateView.
-jQuery.sap.declare("sap.ui.core.mvc.TemplateView");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.mvc.View");
+sap.ui.define(['sap/ui/core/library','./View'], function() {
+	"use strict";
 
 
 /**
@@ -55,7 +54,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -88,7 +87,7 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.TemplateView", { metadata : {
  */
 
 
-// Start of sap\ui\core\mvc\TemplateView.js
+// Start of sap/ui/core/mvc/TemplateView.js
 (function(){
 	
 	/**
@@ -172,3 +171,7 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.TemplateView", { metadata : {
 	};
 
 }());
+
+	return sap.ui.core.mvc.TemplateView;
+
+}, /* bExport = */ true);

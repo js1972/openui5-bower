@@ -28,6 +28,10 @@ sap.m.ColumnListItemRenderer = sap.ui.core.Renderer.extend(sap.m.ListItemBaseRen
  */
 sap.m.ColumnListItemRenderer.renderLIAttributes = function(rm, oLI) {
 	rm.addClass("sapMListTblRow");
+	var vAlign = oLI.getVAlign();
+	if (vAlign != sap.ui.core.VerticalAlign.Inherit) {
+		rm.addClass("sapMListTblRow" + vAlign);
+	}
 };
 
 

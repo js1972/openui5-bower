@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -284,7 +284,7 @@ sap.ui.commons.ResponsiveContainer.M_EVENTS = {'rangeSwitch':'rangeSwitch'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ResponsiveContainer</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ResponsiveContainer</code>.<br/> itself.
  *
  * @return {sap.ui.commons.ResponsiveContainer} <code>this</code> to allow method chaining
  * @public

@@ -706,6 +706,11 @@ sap.ui.table.TableRenderer.renderTableControlCnt = function(rm, oTable, bFixedTa
 			rm.write("</th>");
 		}
 	}
+	
+	// dummy column to fill the table width
+	if (!bFixedTable && oTable._hasOnlyFixColumnWidths() && aCols.length > 0) {
+		rm.write("<th></th>");
+	}
 
 	rm.write("</tr>");
 	rm.write("</thead>");
@@ -803,6 +808,9 @@ sap.ui.table.TableRenderer.renderTableRow = function(rm, oTable, oRow, iRowIndex
 	}
 	for (var cell = 0, count = aCells.length; cell < count; cell++) {
 		this.renderTableCell(rm, oTable, oRow, aCells[cell], cell, bFixedTable, iStartColumn, iEndColumn);
+	}
+	if (!bFixedTable && oTable._hasOnlyFixColumnWidths() && aCells.length > 0) {
+		rm.write("<td></td>");
 	}
 	rm.write("</tr>");
 

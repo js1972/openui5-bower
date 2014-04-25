@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.Table");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -207,7 +207,7 @@ sap.ui.table.TreeTable.M_EVENTS = {'toggleOpenState':'toggleOpenState'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.table.TreeTable</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.table.TreeTable</code>.<br/> itself.
  *
  * @return {sap.ui.table.TreeTable} <code>this</code> to allow method chaining
  * @public
@@ -543,7 +543,7 @@ sap.ui.table.TreeTable.prototype._updateTableCell = function(oCell, oContext, oT
 		// in case of fixed columns we need to lookup the fixed table 
 		// otherwise the expand/collapse/margin will not be set!
 		if (this.getFixedColumnCount() > 0) {
-			$row = jQuery.sap.byId(oCell.getParent().getId() + "-fixed");
+			$row = oCell.getParent().$("fixed");
 		} else {
 			$row = oCell.getParent().$();
 		}
@@ -555,8 +555,11 @@ sap.ui.table.TreeTable.prototype._updateTableCell = function(oCell, oContext, oT
 		if (oBinding.hasChildren && oBinding.hasChildren(oContext)) {
 			sTreeIconClass = oBinding.isExpanded(oContext) ? "sapUiTableTreeIconNodeOpen" : "sapUiTableTreeIconNodeClosed";
 			$row.attr('aria-expanded', oBinding.isExpanded(oContext));
+			var sNodeText = oBinding.isExpanded(oContext) ? this._oResBundle.getText("TBL_COLLAPSE") : this._oResBundle.getText("TBL_EXPAND");
+			$TreeIcon.attr('title', sNodeText);
 		} else {
 			$row.attr('aria-expanded', false);
+			$TreeIcon.attr('title', this._oResBundle.getText("TBL_LEAF"));
 		}
 		$TreeIcon.removeClass("sapUiTableTreeIconLeaf sapUiTableTreeIconNodeOpen sapUiTableTreeIconNodeClosed").addClass(sTreeIconClass);
 		$row.attr("data-sap-ui-level", iLevel);

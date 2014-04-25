@@ -21,8 +21,7 @@ sap.ui.commons.PanelRenderer = function() {
  * @param {sap.ui.core.RenderManager} oRenderManager The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.ui.core.Control} oControl An object representation of the control that should be rendered
  */
-sap.ui.commons.PanelRenderer.render = function(oRenderManager, oControl) {
-	var rm = oRenderManager;
+sap.ui.commons.PanelRenderer.render = function(rm, oControl) {
 	var id = oControl.getId();
 
 	// do not render anything for invisible Panels

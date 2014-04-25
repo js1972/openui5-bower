@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -234,7 +234,7 @@ sap.ui.ux3.DataSetItem.M_EVENTS = {'selected':'selected'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSetItem</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.DataSetItem</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.DataSetItem} <code>this</code> to allow method chaining
  * @public
@@ -291,4 +291,7 @@ sap.ui.ux3.DataSetItem.prototype.onclick = function(oEvent) {
 		shift:  bShift,
 		ctrl:   bCtrl
 	});
+};
+sap.ui.ux3.DataSetItem.prototype.ondblclick = function(oEvent) {
+	this.onclick(oEvent);
 };

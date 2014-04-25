@@ -53,7 +53,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -107,10 +107,10 @@ jQuery.sap.require("sap.ui.layout.form.Form");
 		if(this.getDomRef()){
 			if (bExpanded) {
 				//show content
-				jQuery.sap.byId(oContainer.getId()+"-content").css("display", "");
+				oContainer.$("content").css("display", "");
 			} else {
 				//hide content
-				jQuery.sap.byId(oContainer.getId()+"-content").css("display", "none");
+				oContainer.$("content").css("display", "none");
 			}
 		}
 

@@ -41,7 +41,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getRows rows} : sap.ui.core.Control[]</li>
+ * <li>{@link #getRows rows} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title</li>
  * <li>{@link #getFilters filters} : sap.ui.commons.RowRepeaterFilter[]</li>
  * <li>{@link #getSorters sorters} : sap.ui.commons.RowRepeaterSorter[]</li>
@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -313,6 +313,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
  * Getter for aggregation <code>rows</code>.<br/>
  * Rows to be repeated.
  * 
+ * <strong>Note</strong>: this is the default aggregation for RowRepeater.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.RowRepeater#getRows
@@ -426,7 +427,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title}
+ * @param {sap.ui.core.Title} oTitle
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.RowRepeater#setTitle
@@ -619,7 +620,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
 
 /**
  * Setter for the aggregated <code>noData</code>.
- * @param oNoData {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oNoData
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.RowRepeater#setNoData
@@ -662,7 +663,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
@@ -726,7 +727,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
@@ -791,7 +792,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
@@ -857,7 +858,7 @@ sap.ui.commons.RowRepeater.M_EVENTS = {'filter':'filter','sort':'sort','page':'p
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RowRepeater</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RowRepeater} <code>this</code> to allow method chaining
  * @public
@@ -1811,8 +1812,8 @@ sap.ui.commons.RowRepeater.prototype.startPagingAnimation = function() {
 
 	// DOM elements
 	var oDomCurrentLI,
-	    oJQDomULFrom = jQuery(jQuery.sap.domById(sId+"-page_"+iPageFrom)),
-	    oDomBodyDIV = jQuery.sap.domById(sId+"-body"),
+	    oJQDomULFrom = this.$("page_"+iPageFrom),
+	    oDomBodyDIV = this.getDomRef("body"),
 	    oJQDomBodyDIV = jQuery(oDomBodyDIV);
 
 	// fix the height on the body DIV to allow an animated height change
@@ -1867,9 +1868,9 @@ sap.ui.commons.RowRepeater.prototype.endPagingAnimation = function() {
 	var sId = this.getId();
 
 	// get all needed DOM objects
-	var oDomDIV = jQuery.sap.domById(sId+"-body");
-	var oDomOldUL = jQuery.sap.domById(sId+"-page_"+this.iPreviousPage);
-	var oDomCurrentUL = jQuery.sap.domById(sId+"-page_"+this.getCurrentPage());
+	var oDomDIV = this.getDomRef("body");
+	var oDomOldUL = this.getDomRef("page_"+this.iPreviousPage);
+	var oDomCurrentUL = this.getDomRef("page_"+this.getCurrentPage());
 	var oJQDomCurrentUL = jQuery(oDomCurrentUL);
 
 	// un-fix the height on DIV
@@ -1910,9 +1911,9 @@ sap.ui.commons.RowRepeater.prototype.startResizeAnimation = function() {
 
 	// dom elements
 	var oDomCurrentLI,
-	    oDomBodyDIV = jQuery.sap.domById(sId+"-body"),
+	    oDomBodyDIV = this.getDomRef("body"),
 	    oJQDomBodyDIV = jQuery(oDomBodyDIV),
-	    oDomPageUL = jQuery.sap.domById(sId+"-page_"+this.getCurrentPage());
+	    oDomPageUL = this.getDomRef("page_"+this.getCurrentPage());
 
 	// fix the height
 	oJQDomBodyDIV.css("height",oJQDomBodyDIV.outerHeight());
@@ -1937,7 +1938,7 @@ sap.ui.commons.RowRepeater.prototype.startResizeAnimation = function() {
 
 		// measure controls to be removed and store them in array for later removal
 		for(var n = iNewNumberOfRows; n < iOldNumberOfRows; n++) {
-			oDomCurrentLI = jQuery.sap.domById(sId+"-row_"+n);
+			oDomCurrentLI = this.getDomRef("row_"+n);
 			iSizeDelta -= jQuery(oDomCurrentLI).outerHeight(true);
 			this.aRemoveBuffer.push(oDomCurrentLI);
 		}
@@ -1953,7 +1954,7 @@ sap.ui.commons.RowRepeater.prototype.startResizeAnimation = function() {
 sap.ui.commons.RowRepeater.prototype.endResizeAnimation = function() {
 
 	// get body DIV
-	var oDomBodyDIV = jQuery.sap.domById(this.getId()+"-body");
+	var oDomBodyDIV = this.getDomRef("body");
 
 	// remove LI element after shrinking
 	while( this.aRemoveBuffer.length>0 ) {

@@ -4,4 +4,4 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.m.TableSelectDialogRenderer");sap.m.TableSelectDialogRenderer={};
-sap.m.TableSelectDialog.render=function(r,c){};
+sap.m.TableSelectDialogRenderer.render=function(r,c){};

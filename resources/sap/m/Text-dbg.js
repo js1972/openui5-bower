@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -174,7 +174,7 @@ sap.ui.core.Control.extend("sap.m.Text", { metadata : {
 
 /**
  * Getter for property <code>visible</code>.
- * Set this property to false to make text invisible.
+ * Set this property to false to make the text invisible.
  *
  * Default value is <code>true</code>
  *
@@ -249,7 +249,7 @@ sap.ui.core.Control.extend("sap.m.Text", { metadata : {
 
 /**
  * Getter for property <code>width</code>.
- * By default the Text control uses the full width available. Set this property to restrict the width to a custom value.
+ * By default, the Text control uses the full width available. Set this property to restrict the width to a custom value.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -275,6 +275,8 @@ sap.ui.core.Control.extend("sap.m.Text", { metadata : {
 /**
  * Getter for property <code>maxLines</code>.
  * Limits the number of lines for wrapping texts.
+ * 
+ * Note: The multi-line overflow indicator depends on the browser line clamping support. For such browsers, this will be shown as ellipsis, for the other browsers the overflow will just be hidden.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -300,19 +302,11 @@ sap.ui.core.Control.extend("sap.m.Text", { metadata : {
 
 
 // Start of sap\m\Text.js
-jQuery.sap.require("sap.ui.core.ResizeHandler");
+// default value when line-height is normal
+sap.m.Text.prototype.normalLineHeight = 1.2;
 
-// when line-height is normal
-sap.m.Text.normalLineHeight = 1.2;
-
-sap.m.Text.prototype.setText = function(sText) {
-	this.setProperty("text", sText , true);
-	var oDomRef = this.getDomRef();
-	if (oDomRef) {
-		oDomRef.textContent = this.getText(true);
-	}
-	return this;
-};
+// decides if line height should be cached or not
+sap.m.Text.prototype.cacheLineHeight = true;
 
 sap.m.Text.prototype.getText = function(bNormalize) {
 	var sText = this.getProperty("text");
@@ -322,30 +316,18 @@ sap.m.Text.prototype.getText = function(bNormalize) {
 	return sText;
 };
 
-sap.m.Text.prototype.onBeforeRendering = function() {
-	this._cleanupResize();
-};
-
 sap.m.Text.prototype.onAfterRendering = function() {
-	if (!this.getWrapping() || this.getMaxLines() < 2) {
-		return;
-	}
+	// check visible, wrapping and max lines clamping support
+	if (this.getVisible() &&
+		this.getWrapping() &&
+		this.getMaxLines() > 1 &&
+		!this.canUseNativeLineClamp()) {
 
-	if (this._canUseNativeLineClamp()) {
-		// There is a bug with -webkit-line-clamp does not repaint sometimes
-		// Here we try to handle repaint with the cheapest and the same result
-		// https://code.google.com/p/chromium/issues/detail?id=265836
-		jQuery.sap.delayedCall(0, this, function() {
-			this.$().css("display", "-webkit-inline-box");
-		});
-	} else {
-		this._clampText();
-		this._registerResize();
+		// set the max height
+		var oDomRef = this.getDomRef("inner");
+		var iMaxHeight = this._getClampHeight(oDomRef);
+		oDomRef.style.maxHeight = iMaxHeight + "px";
 	}
-};
-
-sap.m.Text.prototype.exit = function() {
-	this._cleanupResize();
 };
 
 /**
@@ -369,9 +351,14 @@ sap.m.Text.hasNativeLineClamp = (function() {
  */
 sap.m.Text.prototype.ellipsis = '…';
 
-// decides whether control can use native line clamp feature
-// In RTL mode native line clamp feature is not supported
-sap.m.Text.prototype._canUseNativeLineClamp = function() {
+/**
+ * Decides whether the control can use native line clamp feature or not
+ * In RTL mode native line clamp feature is not supported
+ *
+ * @since 1.20
+ * @protected
+ */
+sap.m.Text.prototype.canUseNativeLineClamp = function() {
 	if (!sap.m.Text.hasNativeLineClamp) {
 		return false;
 	}
@@ -385,88 +372,103 @@ sap.m.Text.prototype._canUseNativeLineClamp = function() {
 	return true;
 };
 
-
-// clean up resize handler stuff
-sap.m.Text.prototype._cleanupResize = function() {
-	this._deregisterResize();
-	this._bClamping = false;
-};
-
-// generate proxy and register DOM resize handler
-sap.m.Text.prototype._registerResize = function() {
-	this._fnResizeProxy = this._fnResizeProxy || jQuery.proxy(this._clampText, this);
-	this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this, this._fnResizeProxy);
-};
-
-// remove DOM resize handler
-sap.m.Text.prototype._deregisterResize = function() {
-	if (this._sResizeListenerId) {
-		sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
-		delete this._sResizeListenerId;
-	}
-};
-
-// clamps the wrapping text if too long
-sap.m.Text.prototype._clampText = function(oEvent) {
-	if (this._bClamping) {
-		return;
-	}
-	// lock until done
-	this._bClamping = true;
-	this._deregisterResize();
-
-	var interval = (!oEvent || !sap.ui.Device.browser.internet_explorer) ? 0 : 50;
-	jQuery.sap.delayedCall(interval, this, this._clampElement);
-};
-
-// process the real DOM clamping
-sap.m.Text.prototype._clampElement = function() {
-	// check maybe already destroyed
-	var oText = this.getDomRef();
-	if (!oText) {
-		this._bClamping = false;
+/**
+ * Clamps the wrapping text according to max lines
+ * and returns the found ellipsis position.
+ *
+ * Parameters can be used for better performance
+ *
+ * @param {HTMLElement} [oDomRef] DOM reference of the control.
+ * @param {number} [iStartPos] Start point of the ellipsis search.
+ * @param {number} [iEndPos] End point of the ellipsis search.
+ *
+ * @returns {number|undefined} Returns found ellipsis position or undefined
+ *
+ * @since 1.20
+ * @protected
+ */
+sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
+	// get DOM reference
+	oDomRef = oDomRef || this.getDomRef("inner");
+	if (!oDomRef) {
 		return;
 	}
 
 	// init
-	var nMidPos,
-		nStartPos = 0,
-		sText = this.getText(true),
-		nEndPos = sText.length,
-		nEllipsisLen = this.ellipsis.length,
-		nClampHeight = this._clampHeight();
+	var iEllipsisPos;
+	var sText = this.getText(true);
+	var iMaxHeight = this._getClampHeight(oDomRef);
 
-	oText.textContent = sText;
-	if (oText.scrollHeight > nClampHeight) {
+	// init positions
+	iStartPos = iStartPos || 0;
+	iEndPos = iEndPos || sText.length;
+
+	// do not set content if not needed
+	oDomRef.textContent = sText.slice(0, iEndPos);
+
+	// if text overflow
+	if (oDomRef.scrollHeight > iMaxHeight) {
+
+		// cache values
+		var oStyle = oDomRef.style,
+			sHeight = oStyle.height,
+			sEllipsis = this.ellipsis,
+			iEllipsisLen = sEllipsis.length;
+
+		// set height during ellipsis search
+		oStyle.height = iMaxHeight + "px";
+
 		// implementing binary search to find the position of ellipsis
-		// complexity O(logn) so 65536 characters text can be found within 16 steps
-		while ((nEndPos - nStartPos) > nEllipsisLen) {
-			nMidPos = (nStartPos + nEndPos) >> 1;
-			oText.textContent = sText.slice(0, nMidPos - nEllipsisLen) + this.ellipsis;
-			if (oText.scrollHeight > nClampHeight) {
-				nEndPos = nMidPos;
+		// complexity O(logn) so 1024 characters text can be found within 10 steps!
+		while ((iEndPos - iStartPos) > iEllipsisLen) {
+
+			// check the middle position and update text
+			iEllipsisPos = (iStartPos + iEndPos) >> 1;
+			oDomRef.textContent = sText.slice(0, iEllipsisPos - iEllipsisLen) + sEllipsis;
+
+			// check overflow
+			if (oDomRef.scrollHeight > iMaxHeight) {
+				iEndPos = iEllipsisPos;
 			} else {
-				nStartPos = nMidPos;
+				iStartPos = iEllipsisPos;
 			}
 		}
 
 		// last check maybe we overflowed on last character
-		if (oText.scrollHeight > nClampHeight && nStartPos > 0) {
-			oText.textContent = sText.slice(0, nStartPos - nEllipsisLen) + this.ellipsis;
+		if (oDomRef.scrollHeight > iMaxHeight && iStartPos > 0) {
+			iEllipsisPos = iStartPos;
+			oDomRef.textContent = sText.slice(0, iEllipsisPos - iEllipsisLen) + sEllipsis;
 		}
+
+		// reset height
+		oStyle.height = sHeight;
 	}
 
-	this._registerResize();
-	this._bClamping = false;
+	return iEllipsisPos;
 };
 
-// set and return the max height according to max-line property
-sap.m.Text.prototype._clampHeight = function() {
-	var $text = this.$(),
-		lineHeight = parseFloat($text.css("line-height")),	// we should ignore "normal" line-height
-		lineHeight = lineHeight || parseFloat($text.css("font-size")) * sap.m.Text.normalLineHeight,
-		clampHeight = Math.floor(this.getMaxLines() * lineHeight);
+// cache and returns the line height
+sap.m.Text.prototype._getLineHeight = function(oDomRef) {
+	// return cached value if possible
+	if (this.cacheLineHeight && this._iLineHeight) {
+		return this._iLineHeight;
+	}
 
-	$text.css("max-height", clampHeight);
-	return clampHeight;
+	// check line-height
+	oDomRef = oDomRef || this.getDomRef("inner");
+	var oStyle = window.getComputedStyle(oDomRef);
+	var fLineHeight = parseFloat(oStyle.lineHeight);
+
+	// we should ignore "normal" line-height so calculate with font-size
+	if (!fLineHeight) {
+		fLineHeight = parseFloat(oStyle.fontSize) * this.normalLineHeight;
+	}
+
+	// cache and return as integer
+	return (this._iLineHeight = Math.floor(fLineHeight));
+};
+
+// returns max height according to max lines and line height
+sap.m.Text.prototype._getClampHeight = function(oDomRef) {
+	return this.getMaxLines() * this._getLineHeight(oDomRef);
 };

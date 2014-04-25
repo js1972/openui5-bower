@@ -64,7 +64,7 @@ jQuery.sap.require("sap.m.Tile");
  * @extends sap.m.Tile
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -373,7 +373,7 @@ sap.m.StandardTile.prototype.getIcon = function() {
 sap.m.StandardTile.prototype._getImage = function() {
 	
 	var sImgId = this.getId() + "-img";
-	var sSize = jQuery.device.is.phone ? "1.3rem": "2rem";
+	var sSize = sap.ui.Device.system.phone ? "1.3rem": "2rem";
 	
 	var mProperties = { 
 		src : this.getIcon(),

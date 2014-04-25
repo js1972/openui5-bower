@@ -49,7 +49,7 @@ sap.m.ActionSheetRenderer.render = function(oRm, oControl){
 		oRm.renderControl(aActionButtons[i].addStyleClass("sapMActionSheetButton"));
 	}
 	 
-	if((jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && jQuery.device.is.phone)) && oControl.getShowCancelButton()){
+	if((jQuery.device.is.iphone || (sap.m.Dialog._bOneDesign && sap.ui.Device.system.phone)) && oControl.getShowCancelButton()){
 		oRm.renderControl(oControl._getCancelButton());
 	}
 	

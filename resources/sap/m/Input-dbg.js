@@ -67,7 +67,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -421,7 +421,7 @@ sap.m.Input.M_EVENTS = {'liveChange':'liveChange','valueHelpRequest':'valueHelpR
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
  *
  * @return {sap.m.Input} <code>this</code> to allow method chaining
  * @public
@@ -485,7 +485,7 @@ sap.m.Input.M_EVENTS = {'liveChange':'liveChange','valueHelpRequest':'valueHelpR
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
  *
  * @return {sap.m.Input} <code>this</code> to allow method chaining
  * @public
@@ -548,7 +548,7 @@ sap.m.Input.M_EVENTS = {'liveChange':'liveChange','valueHelpRequest':'valueHelpR
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
  *
  * @return {sap.m.Input} <code>this</code> to allow method chaining
  * @public
@@ -616,7 +616,7 @@ sap.m.Input.M_EVENTS = {'liveChange':'liveChange','valueHelpRequest':'valueHelpR
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Input</code>.<br/> itself.
  *
  * @return {sap.m.Input} <code>this</code> to allow method chaining
  * @public
@@ -720,7 +720,7 @@ sap.m.Input.prototype.onAfterRendering = function() {
 
 	if(this._oList && !sap.ui.Device.system.phone){
 		this._oList.setWidth(this.$().outerWidth() + "px");
-		this._sPopupResizeHandler = sap.ui.core.ResizeHandler.register(jQuery.sap.domById(this.getId()),  function(){
+		this._sPopupResizeHandler = sap.ui.core.ResizeHandler.register(this.getDomRef(),  function(){
 			that._oList.setWidth(that.$().outerWidth() + "px");
 		});
 	}
@@ -761,13 +761,13 @@ sap.m.Input.prototype._getValueHelpIcon = function () {
  * Defines the width of the input. Default value is 100%
  *
  * @public
- * @param sWidth
+ * @param {string} sWidth
  */
 sap.m.Input.prototype.setWidth = function(sWidth) {
 	return sap.m.InputBase.prototype.setWidth.call(this, sWidth || "100%");
 };
 
-sap.m.Input.prototype.getWidth = function() {
+sap.m.Input.prototype.getWidth = function(sWidth) {
 	return this.getProperty("width") || "100%";
 };
 
@@ -878,14 +878,17 @@ sap.m.Input.prototype.onsapdown = function(oEvent) {
 };
 
 sap.m.Input.prototype.onsapescape = function(oEvent) {
-	if(sap.m.InputBase.prototype.onsapescape){
-		sap.m.InputBase.prototype.onsapescape.apply(this, arguments);
-	}
-
 	if(this._oSuggestionPopup && this._oSuggestionPopup.isOpen()){
 		// mark the event as already handled
 		oEvent.originalEvent._sapui_handledByControl = true;
 		this._oSuggestionPopup.close();
+
+		// if popup is open, simply returns from here to prevent from setting the input to the last known value.
+		return;
+	}
+
+	if(sap.m.InputBase.prototype.onsapescape){
+		sap.m.InputBase.prototype.onsapescape.apply(this, arguments);
 	}
 };
 
@@ -1308,7 +1311,7 @@ sap.m.Input.prototype._deregisterEvents = function(){
 	};
 
 	sap.m.Input.prototype.setValueStateText = function(sText) {
-		jQuery.sap.byId(this.getId()+"-message-text").text(sText);
+		this.$("message-text").text(sText);
 		return this.setProperty("valueStateText", sText, true);
 	};
 

@@ -507,7 +507,6 @@ footer.sapMBar {
 }
 
 .sapMBar-CTX .sapMLabel {
-	max-width: 100%;
 	display: inline;
 }
 
@@ -599,8 +598,9 @@ html[dir='rtl'] .sapMBsyIndIcon {
 	width: 100%;
 }
 /* ============================================= */
-/* CSS for control sap.m/Button.control */
+/* CSS for control sap.m/Button.control          */
 /* ============================================= */
+
 .sapMBtn {
 	-webkit-appearance: none;
 	-webkit-user-select: none;
@@ -628,11 +628,12 @@ html[dir='rtl'] .sapMBsyIndIcon {
 	vertical-align: top;
 }
 
-html[data-sap-ui-browser*='ie'] .sapMBtnContent {
+html[data-sap-ui-browser*='ie'] .sapMBtnContentWithIcon {
 	display: inline;
 }
 
 .sapMBtnDisabled {
+	pointer-events: none;
 	cursor: default;
 }
 /* ============================================= */
@@ -643,6 +644,11 @@ html[data-sap-ui-browser*='ie'] .sapMBtnContent {
 .sapMCrsl {
 	position: relative;
 	overflow: hidden;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
 
 .sapMCrsl.sapMCrslLeft {
@@ -751,10 +757,16 @@ html[data-sap-ui-browser*='ie'] .sapMBtnContent {
 .sapMCbBg.sapMCbMark > input{
 	font-size: inherit;
 }
+.sapMListTblRowTop > td {
+	vertical-align: top;
+}
 
-.sapMLIB-CTX .sapMCb {
-	height: 3rem;
-	width: 3rem;
+.sapMListTblRowMiddle > td {
+	vertical-align: middle;
+}
+
+.sapMListTblRowBottom > td {
+	vertical-align: bottom;
 }
 
 /* ============================================= */
@@ -844,6 +856,7 @@ html[dir=rtl] .sapMDTICustomDateTime .dwc:last-child {
 	max-width: 100%;
 	max-height: 100%;
 	overflow: hidden;
+	outline: none;
 }
 
 .sap-tablet .sapMDialog,
@@ -1107,11 +1120,40 @@ html[data-sap-ui-browser^="ie9"] .sapMDialog-CTX .sapMDialogActions > .sapMDialo
 /* ============================================= */
 
 /* ============================================= */
-/* CSS for control sap.m/FacetFilterList.control */
+/* CSS for control sap.m/FacetFilterItem.control */
 /* ============================================= */
 
-.sapMFFList{
+/*
+	Fix alignment of the list item counter and force a min height.
+*/
+.sapMFFLI {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	min-height: 3rem;
 }
+
+/*
+	Fix alignment of the list item counter.
+*/
+.sapMFFLI > .sapMLIBContent {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	-ms-flex: auto;
+	flex: auto;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+
+/* ============================================= */
+/* CSS for control sap.m/FacetFilterList.control */
+/* ============================================= */
 
 /* ============================================= */
 /* CSS for control sap.m/FeedListItem.control */
@@ -1588,9 +1630,30 @@ html[dir=rtl] .sapMILIDiv {
 	font-weight: bold;
 }
 
+.sapMLabelMaxWidth {
+	max-width: 100%;
+}
+
 .sapMLIBCursor .sapMLabel,
 .sapMLIBCursor + .sapMListTblSubRow .sapMLabel{
 	cursor: pointer;
+}
+
+/* ============================ */
+/* Overwrites for Label in Form */
+/* ============================ */
+
+/* GridLayout */
+.sapUiGridLabel > .sapMLabel{
+	float: right;
+}
+
+/* ResponsiveGridLayout */
+/* make labels right aligned if left from fields*/
+.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapMLabel,
+.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapMLabel,
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapMLabel {
+	float: right;
 }
 
 /* ============================================= */
@@ -1635,6 +1698,10 @@ html[dir=rtl] .sapMILIDiv {
 	white-space: normal;
 	word-wrap: break-word;
 }
+
+.sapMLnkMaxWidth {
+	max-width: 100%;
+}
 /* ============================================= */
 /* CSS for controlsap.m/List.control */
 /* ============================================= */
@@ -1650,6 +1717,13 @@ html[dir=rtl] .sapMILIDiv {
 
 .sapMListUl {
 	list-style-type: none;
+}
+
+.sapMListSwipable {
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
 
 .sapMList:focus,
@@ -2152,18 +2226,18 @@ html[dir=rtl] .sapMILIDiv {
 /* CSS for control sap.m/ObjectAttribute.control */
 /* ============================================= */
 
-.sapMObjectAttributeDiv {
+.sapMObjectAttributeDiv .sapMText{
 	font-size: .875rem;
 }
 
-.sapMObjectAttributeActive{
+.sapMObjectAttributeActive .sapMText{
 	color: @sapUiLink;
 	cursor: pointer;
 }
 
-.sapMObjectAttributeActive:active,
-.sapMObjectAttributeActive:focus,
-.sapMObjectAttributeActive:hover {
+.sapMObjectAttributeActive .sapMText:active,
+.sapMObjectAttributeActive .sapMText:focus,
+.sapMObjectAttributeActive .sapMText:hover {
 	text-decoration: underline;
 }
 /* ============================================= */
@@ -2370,6 +2444,7 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHNumberDiv {
 
 .sapMOHAttrRow {
 	margin-top: 0.625rem;
+	overflow: hidden;
 }
 
 .sapMOHAttrRow:first-child {
@@ -2389,6 +2464,7 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHNumberDiv {
 	text-align: start;
 	vertical-align: top;
 	overflow: hidden;
+	float: left;
 }
 
 html[data-sap-ui-browser^=ie] .sapMOHAttr {
@@ -2405,26 +2481,49 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHAttr {
 	white-space: inherit;
 }
 
-.sapMOHStatus {
+.sapMOHStatus,
+.sapMOHStatusFixedWidth {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: inline-block;
-	width: 35%;
 	text-align: end;
 	vertical-align: top;
 	overflow: hidden;
+	float: right;
+	white-space: nowrap;
 }
 
-.sapMOHStatus>.sapMPI {
+.sapMOHStatusFixedWidth {
+	width: 35%;
+}
+
+.sapMOHStatusFixedWidth>.sapMPI {
 	float: right;
 }
 
-html[data-sap-ui-browser^=ie] .sapMOHStatus {
+.sapMOHDivider,
+.sapMOHLastDivider {
+	clear: both;
+}
+
+/*
+ * Do NOT clear if ObjectHeader is placed in a responsive grid layout.
+ * The layout will clear after the ObjectHeader by itself. This caused problems
+ * on webkit browser on phones (CSN 0120031469 0000034838 2014)
+ */
+div[class*='sapUiRespGrid'] > .sapMOH > .sapMOHLastDivider {
+	clear: none;
+}
+
+
+html[data-sap-ui-browser^=ie] .sapMOHStatus, 
+html[data-sap-ui-browser^=ie] .sapMOHStatusFixedWidth {
 	text-align: right;
 }
 
-html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHStatus {
+html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHStatus, 
+html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHStatusFixedWidth {
 	text-align: left;
 }
 
@@ -2494,10 +2593,9 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHStatus {
 	text-overflow: ellipsis;
 }
 
-.sapMObjLTitle {
+.sapMText.sapMObjLTitle {
 	vertical-align: top;
-	max-height: 3rem;
-	overflow: hidden;
+	word-break: break-all;
 }
 
 .sapMObjLNumberDiv {
@@ -2705,13 +2803,6 @@ html[dir=rtl] .sapMObjectNumberUnit{
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	border-style: solid;
-	border-color: transparent;
-	border-width: 0;
-}
-
-.sap-desktop .sapMPageScroll {
-	border: none;
 }
 
 /* 
@@ -2900,7 +2991,6 @@ html[data-sap-ui-os^="iOS7"][data-sap-ui-browser^="msf"]:not(.sap-tablet) .sapMP
 	border: 1px solid @sapUiDarkBorder;
 	padding: 1px;
 	margin: 0.25rem 0;
-	background: white;
 }
 
 .sapMPIBar {
@@ -2909,7 +2999,7 @@ html[data-sap-ui-os^="iOS7"][data-sap-ui-browser^="msf"]:not(.sap-tablet) .sapMP
 }
 
 .sapMPIBarDisabled {
-	opacity: 0.25;
+	opacity: 0.5;
 }
 
 .sapMPIText {
@@ -2993,6 +3083,11 @@ html[data-sap-ui-os^="iOS7"][data-sap-ui-browser^="msf"]:not(.sap-tablet) .sapMP
 	overflow: hidden;
 	vertical-align:middle;
 	padding: 0.25rem;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
 
 .sapMRISelector {
@@ -3118,6 +3213,7 @@ input.sapMSFI[type="search"]:focus {
 .sapMSegB {
 	margin: 0; /*To override the native browser margin*/
 	padding: 0;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
 	border: none;
 	display: inline-block;
 	white-space: nowrap;
@@ -3131,6 +3227,14 @@ input.sapMSFI[type="search"]:focus {
 	display: inline-block;
 	text-align: center;
 	cursor: pointer;
+}
+
+.sapMSegBBtn:focus {
+	outline: none;
+}
+
+.sapMSegBBtn .sapUiIcon:focus {
+	outline: none;
 }
 
 .sapMSegB img{
@@ -3514,7 +3618,7 @@ input.sapMSFI[type="search"]:focus {
 /* ======================================= */
 
 /* ===================== */
-/* [ALL] Slider commons  */
+/* Slider commons        */
 /* ===================== */
 
 .sapMSlider {
@@ -3524,14 +3628,18 @@ input.sapMSFI[type="search"]:focus {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	position: relative;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
 
 .sapMSlider:not(.sapMSliderDisabled) {
 	cursor: pointer;
 }
 
-.sapMSliderDisabled,
-.sapMSliderHandleInner {
+.sapMSliderDisabled {
 	pointer-events: none;
 }
 
@@ -3542,8 +3650,7 @@ input.sapMSFI[type="search"]:focus {
 }
 
 .sapMSliderProgress,
-.sapMSliderHandle,
-.sapMSliderHandleInner {
+.sapMSliderHandle {
 	position: absolute;
 }
 
@@ -3552,7 +3659,7 @@ input.sapMSFI[type="search"]:focus {
 	outline: none;
 }
 
-.sapMSlider > .sapMSliderInput {
+.sapMSliderInput {
 	display: none;
 }
 /* ============================================= */
@@ -3587,7 +3694,7 @@ input.sapMSFI[type="search"]:focus {
 }
 
 .sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMaster > .sapMSplitContainerMasterBlindLayer,
-.sapMSplitContainerHideMode > .sapMSplitContainerMaster > .sapMSplitContainerMasterBlindLayer{
+.sapMSplitContainerHideMode > .sapMSplitContainerMaster > .sapMSplitContainerMasterBlindLayer {
 	display: block;
 }
 
@@ -3596,74 +3703,77 @@ input.sapMSFI[type="search"]:focus {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	height: 100%;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
-/****************************************
-Default Master Animation Behavior
-*****************************************/
-	.sapMSplitContainerStretchCompress > .sapMSplitContainerMaster,
-	.sapMSplitContainerShowHide:not(.sapMSplitContainerPortrait) > .sapMSplitContainerMaster,
-	.sapMSplitContainerPopover:not(.sapMSplitContainerPortrait) > .sapMSplitContainerMaster {
-		border-radius: 0.3125em;
-	}
-	
-	.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMaster,
-	.sapMSplitContainerHideMode > .sapMSplitContainerMaster {
-		display: inline-block;
-		position: absolute;
-		transform: translate3d(-330px,0,0);
-		transition: all 0ms;
-		-webkit-transform: translate3d(-330px,0,0);
-		-webkit-transition: all 0ms;
-		-moz-transform: translate3d(-330px,0,0);
-		-moz-transition: all 0ms;
-		z-index: 5;
-		top: 0;
-		height: 100%;
-		border-right: none;
-	}
-	
-	html[data-sap-ui-browser^="ie9"] .sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMaster,
-	html[data-sap-ui-browser^="ie9"] .sapMSplitContainerHideMode > .sapMSplitContainerMaster {
-		left: -320px;
-	}
-	
-	.sapMSplitContainerPopover > .sapMPopoverCont > .sapMPopoverScroll > .sapMSplitContainerMaster {
-		border-right: none;
-	}
-	
-	.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerDetail,
-	.sapMSplitContainerHideMode > .sapMSplitContainerDetail,
-	.sapMSplitContainerPopover .sapMSplitContainerDetail {
-		margin-left: 0;
-	}
-	
-	.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMasterVisible,
-	.sapMSplitContainerHideMode > .sapMSplitContainerMasterVisible {
-		transform: translate3d(0,0,0);
-		transition: all 300ms;
-		-webkit-transform: translate3d(0,0,0);
-		-webkit-transition: all 300ms;
-		-moz-transform: translate3d(0,0,0);
-		-moz-transition: all 300ms;
-	}
-	
-	.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMasterHidden,
-	.sapMSplitContainerHideMode > .sapMSplitContainerMasterHidden, {
-		transform: translate3d(-330px,0,0);
-		transition: all 300ms;
-		-webkit-transform: translate3d(-330px,0,0);
-		-webkit-transition: all 300ms;
-		-moz-transform: translate3d(-330px,0,0);
-		-moz-transition: all 300ms;
-	}
-	
-	.sapMSplitContainerPortrait.sapMSplitContainerStretchCompress > .sapMSplitContainerMaster {
-		width: 320px !important;
-		left: 0;
-	}
-/****************************************
-Keyframe Animations
-*****************************************/
+
+/* Default Master Animation Behavior */
+.sapMSplitContainerStretchCompress > .sapMSplitContainerMaster,
+.sapMSplitContainerShowHide:not(.sapMSplitContainerPortrait) > .sapMSplitContainerMaster,
+.sapMSplitContainerPopover:not(.sapMSplitContainerPortrait) > .sapMSplitContainerMaster {
+	border-radius: 0.3125em;
+}
+
+.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMaster,
+.sapMSplitContainerHideMode > .sapMSplitContainerMaster {
+	display: inline-block;
+	position: absolute;
+	transform: translate3d(-330px,0,0);
+	transition: all 0ms;
+	-webkit-transform: translate3d(-330px,0,0);
+	-webkit-transition: all 0ms;
+	-moz-transform: translate3d(-330px,0,0);
+	-moz-transition: all 0ms;
+	z-index: 5;
+	top: 0;
+	height: 100%;
+	border-right: none;
+}
+
+html[data-sap-ui-browser^="ie9"] .sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMaster,
+html[data-sap-ui-browser^="ie9"] .sapMSplitContainerHideMode > .sapMSplitContainerMaster {
+	left: -320px;
+}
+
+.sapMSplitContainerPopover > .sapMPopoverCont > .sapMPopoverScroll > .sapMSplitContainerMaster {
+	border-right: none;
+}
+
+.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerDetail,
+.sapMSplitContainerHideMode > .sapMSplitContainerDetail,
+.sapMSplitContainerPopover .sapMSplitContainerDetail {
+	margin-left: 0;
+}
+
+.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMasterVisible,
+.sapMSplitContainerHideMode > .sapMSplitContainerMasterVisible {
+	transform: translate3d(0,0,0);
+	transition: all 300ms;
+	-webkit-transform: translate3d(0,0,0);
+	-webkit-transition: all 300ms;
+	-moz-transform: translate3d(0,0,0);
+	-moz-transition: all 300ms;
+}
+
+.sapMSplitContainerPortrait.sapMSplitContainerShowHide > .sapMSplitContainerMasterHidden,
+.sapMSplitContainerHideMode > .sapMSplitContainerMasterHidden {
+	transform: translate3d(-330px,0,0);
+	transition: all 300ms;
+	-webkit-transform: translate3d(-330px,0,0);
+	-webkit-transition: all 300ms;
+	-moz-transform: translate3d(-330px,0,0);
+	-moz-transition: all 300ms;
+}
+
+.sapMSplitContainerPortrait.sapMSplitContainerStretchCompress > .sapMSplitContainerMaster {
+	width: 320px !important;
+	left: 0;
+}
+
+/* Keyframe Animations */
 @-webkit-keyframes sapMSplitContainerSlidein {
 	from {
 		width: 0px;
@@ -3692,8 +3802,7 @@ Keyframe Animations
 	to { opacity: 0.7; }
 }
 
-/*Firefox*/
-
+/* Firefox */
 @-moz-keyframes sapMSplitContainerSlidein {
 	from {
 		width: 0px;
@@ -3722,7 +3831,7 @@ Keyframe Animations
 	to { opacity: 0.7; }
 }
 
-/* MS */
+/* IE */
 @keyframes sapMSplitContainerSlideout {
 	from {
 		width: 320px;
@@ -4083,6 +4192,11 @@ html[dir=rtl] .sapMStdTileInfo{
 
 .sapMSwt {
 	position: relative;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
 
 /* ------------------------------ */
@@ -4136,11 +4250,11 @@ html[dir=rtl] .sapMStdTileInfo{
 /* ============================================= */
 
 .sapMListTbl {
-	width : 100%;
+	width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
 	table-layout: fixed;
-	overflow : hidden;
+	overflow: hidden;
 }
 
 .sapMListTbl th,
@@ -4207,7 +4321,6 @@ html[dir=rtl] .sapMStdTileInfo{
 
 .sapMListTblSubCnt {
 	display: block;
-	width : 100%;
 }
 
 .sapMListTblSubCntRow {
@@ -4302,6 +4415,9 @@ html[dir=rtl] .sapMStdTileInfo{
 }
 .sapMText {
 	display: inline-block;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	-webkit-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
@@ -4310,17 +4426,19 @@ html[dir=rtl] .sapMStdTileInfo{
 	cursor: text;
 }
 
-.sapMTextNoWrap {
+.sapMTextNoWrap,
+.sapMTextMaxLine{
 	overflow: hidden;
+}
+
+.sapMTextNoWrap {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	word-wrap: normal; /* overwrite */
 }
 
 .sapMTextLineClamp {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	display: -webkit-box;
+	display: -webkit-inline-box;
 	-webkit-box-orient: vertical;
 }
 
@@ -4334,8 +4452,8 @@ html[dir=rtl] .sapMStdTileInfo{
 	hyphens: auto;
 }
 
-.sapMTextMaxLine {
-	overflow: hidden;
+.sapMTextMaxWidth {
+	max-width: 100%;
 }
 
 .sapMLIBCursor .sapMText,
@@ -4379,6 +4497,7 @@ html[dir=rtl] .sapMStdTileInfo{
 
 .sapMTile * {   /* FIXME!!! (star rule with any-parent selector...) */
 	-webkit-user-select: none;
+	-webkit-user-drag: none;
 	-moz-user-select:  -moz-none;
 	-ms-user-select: none;
 }
@@ -4422,30 +4541,42 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 .sapMNavItemFlipping .sapMTile{
 	opacity:0.01;
 }
-.sapMTC{
-	top: 0; 
-	bottom: 0; 
-	left: 0; 
-	right:0; 
+/* ====================================================== */
+/* CSS for control sap.m/TileContainer.control            */
+/* ====================================================== */
+
+.sapMTC {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
 	position: relative;
 	overflow: hidden;
+
+	/* IE Windows 8 */
+	/* This elements receives events when not panning in vertial direction */
+	touch-action: pan-y;
+	-ms-touch-action: pan-y;
 }
+
 .sapMTC .sapMTCScrl {
-	padding: 0px 0px;
-	position:absolute;
+	padding: 0;
+	position: absolute;
 	left: 0;
 	top: 0;
 	overflow: visible;
 }
+
 .sapMTC:focus {
-	outline:none;
+	outline: none;
 }
+
 .sapMTC .sapMTCCnt {
-	visibility:hidden;
-	height:100%;
-	width:100%;
+	visibility: hidden;
+	height: 100%;
+	width: 100%;
 	overflow: visible;
-	position:absolute;
+	position: absolute;
 	left: 0;
 	top: 0;
 	-webkit-touch-callout: none;
@@ -4454,8 +4585,9 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	-moz-user-select: none;
 }
 
-.sap-tablet .sapMTC .sapMTCScrl, .sap-phone .sapMTC .sapMTCScrl {
-	padding: 0px;	
+.sap-tablet .sapMTC .sapMTCScrl,
+.sap-phone .sapMTC .sapMTCScrl {
+	padding: 0;
 }
 
 .sapMTC.sapMTCEditable .sapMTCCnt {
@@ -4463,9 +4595,9 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 }
 
 .sapMTC .sapMTCCnt.sapMTCAnim {
-	-webkit-transition-property: transform3d;
+	-webkit-transition-property: -webkit-transform3d;
 	-webkit-transition-duration: 0.4s;
-	-moz-transition-property: transform;
+	-moz-transition-property: -moz-transform;
 	-moz-transition-duration: 0.4s;
 	transition-property: transform3d;
 	transition-duration: 0.4s;
@@ -4493,6 +4625,7 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	cursor:default;
 	box-shadow: 0px 0px 1px 1px @sapUiWhite;
 }
+
 .sapMTC .sapMTCBlind {
 	background-color: @sapUiWhite;
 	opacity: 0.4;
@@ -4531,7 +4664,8 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	-moz-box-sizing: border-box;
 	box-sizing:border-box;
 }
-.sapMTC .sapMTCScroller .sapMTCInner { 
+
+.sapMTC .sapMTCScroller .sapMTCInner {
 	background-color: @sapUiHighlight;
 	height:100%;
 	width:100%;
@@ -4545,7 +4679,6 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	box-sizing:border-box;
 }
 
-
 .sapMTC:hover .sapMTCScroller {
 	opacity:0.1;
 }
@@ -4558,10 +4691,11 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	left: -100px;
 }
 
-.sapMTC .sapMTCScroller.sapMTCLeft .sapMTCInner:before {
+.sapMTC .sapMTCScroller.sapMTCLeft .sapMTCInner::before {
 	content:"\e067";
 	padding-left: 13px;
 }
+
 .sapMTC:hover .sapMTCScroller.sapMTCLeft {
 	left: 1rem;
 }
@@ -4574,7 +4708,7 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 	right: 1rem;
 }
 
-.sapMTC .sapMTCScroller.sapMTCRight .sapMTCInner:before {
+.sapMTC .sapMTCScroller.sapMTCRight .sapMTCInner::before {
 	content:"\e066";
 	padding-left: 16px;
 }
@@ -4644,11 +4778,11 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 	background-color: lighten(@sapUiHighlight,10%);
 }
 
-.sapMTC.sapMTCEditable .sapMTCRemove:active{
+.sapMTC.sapMTCEditable .sapMTCRemove:active {
 	background-color: lighten(@sapUiHighlight,20%);
 }
 
-.sapMTC.sapMTCEditable .sapMTCRemove:before {
+.sapMTC.sapMTCEditable .sapMTCRemove::before {
 	content:"\e1c7";
 }
 
@@ -4686,16 +4820,14 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
 }
 
-.sap-phone .sapMTC .sapMTCEdgeLeft,.sap-phone .sapMTC .sapMTCEdgeRight {
+.sap-phone .sapMTC .sapMTCEdgeLeft,
+.sap-phone .sapMTC .sapMTCEdgeRight {
 	width: 20px;
 }
 .sapMTB {
 	white-space: nowrap;
 	overflow: hidden;
-	display: -webkit-flex;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
+	-webkit-align-items: center;
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
@@ -4716,25 +4848,38 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 	cursor: pointer;
 }
 
-/* NewFlex */
-.sapMTBNewFlex > * {
-	flex-shrink: 0;
-	-ms-flex-negative: 0;
+.sapMTBShrinkItem {
+	min-width: 1rem; /* default min-width value for the shrinkable items */
 }
 
-.sapMTBNewFlex > .sapMTBShrinkItem{
-	flex-shrink: 1;
+/* NewFlex */
+.sapMTBNewFlex {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.sapMTBNewFlex > * {
+	-webkit-flex-shrink: 0;
+	-ms-flex-negative: 0;
+	flex-shrink: 0;
+}
+
+.sapMTBNewFlex > .sapMTBShrinkItem {
+	-webkit-flex-shrink: 1;
 	-ms-flex-negative: 1;
-	min-width: 1.2rem; /* TODO: get this value from layout data */
+	flex-shrink: 1;
 }
 
 /* OldFlex */
-.sapMTBOldFlex.sapMTBOverflow > .sapMTBShrinkItem{
-	/* truncation bug workaround and percent element support for old flex spec */
+.sapMTBOldFlex {
+	display: -webkit-box;
+}
+
+.sapMTBOldFlex.sapMTBOverflow > .sapMTBShrinkItem {
+	/* shrinking hack for the old flex spec */
 	display: block;
 	-webkit-box-flex: 1;
-	-ms-flex: auto;
-	min-width: 1.2rem; /* TODO: get this value from layout data */
 }
 
 .sapMTB.sapMTBOldFlex > * {
@@ -4745,20 +4890,17 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 }
 
 /* NonFlex */
-.sapMTBNoFlex {
-	display: block;
-}
-
 /* vertical centering trick */
 .sapMTBNoFlex:before {
 	content: '';
 	height: 100%;
 	display: inline-block;
-	vertical-align: middle;
+	vertical-align: middle; 
 }
 .sapMTB.sapMTBNoFlex > * {
+	/* align-items: center polyfill */
+	vertical-align: middle; 
 	display: inline-block;
-	vertical-align: middle;
 	margin-bottom: 0;
 	margin-top: 0;
 }
@@ -4767,9 +4909,13 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 	margin: 0 !important;
 	padding: 0 !important;
 	border: 0 !important;
+	
+	/* without height chrome ignores the element */
+	height: 1px;
 }
 
 .sapMTBSpacerFlex {
+	-webkit-flex-grow: 1;
 	-webkit-box-flex: 1;
 	-moz-box-flex: 1;
 	-ms-flex: auto;

@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSubSteps subSteps} : sap.ui.commons.RoadMapStep[]</li></ul>
+ * <li>{@link #getSubSteps subSteps} <strong>(default aggregation)</strong> : sap.ui.commons.RoadMapStep[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -161,7 +161,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  *
  * @return {boolean} the value of property <code>expanded</code>
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Note that sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#getExpanded
  * @function
@@ -175,7 +175,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  * @param {boolean} bExpanded  new value for property <code>expanded</code>
  * @return {sap.ui.commons.RoadMapStep} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Note that sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#setExpanded
  * @function
@@ -212,9 +212,10 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  * Sub steps for the current step. Will be displayed only in the case that the step is expanded. Otherwise, special arrows show the availability
  * of sub steps. One level of sub steps supported.
  * 
+ * <strong>Note</strong>: this is the default aggregation for RoadMapStep.
  * @return {sap.ui.commons.RoadMapStep[]}
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#getSubSteps
  * @function
@@ -233,7 +234,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  *             the last position        
  * @return {sap.ui.commons.RoadMapStep} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#insertSubStep
  * @function
@@ -247,7 +248,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  *            oSubStep the subStep to add; if empty, nothing is inserted
  * @return {sap.ui.commons.RoadMapStep} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#addSubStep
  * @function
@@ -259,7 +260,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  * @param {int | string | sap.ui.commons.RoadMapStep} vSubStep the subStep to remove or its index or id
  * @return {sap.ui.commons.RoadMapStep} the removed subStep or null
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#removeSubStep
  * @function
@@ -270,7 +271,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  * Additionally unregisters them from the hosting UIArea.
  * @return {sap.ui.commons.RoadMapStep[]} an array of the removed elements (might be empty)
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#removeAllSubSteps
  * @function
@@ -284,7 +285,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  *            oSubStep the subStep whose index is looked for.
  * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#indexOfSubStep
  * @function
@@ -296,7 +297,7 @@ sap.ui.core.Element.extend("sap.ui.commons.RoadMapStep", { metadata : {
  * named <code>subSteps</code>.
  * @return {sap.ui.commons.RoadMapStep} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 0.19.0. 
+ * @deprecated Since version 1.10.5. 
  * Sub steps will not be supported in future. This feature might be removed in one of the next releases.
  * @name sap.ui.commons.RoadMapStep#destroySubSteps
  * @function

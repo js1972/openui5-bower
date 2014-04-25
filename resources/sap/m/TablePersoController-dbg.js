@@ -27,7 +27,7 @@ jQuery.sap.require("sap.m.TablePersoDialog");
  * @class Table Personalization Controller
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.18.12
+ * @version 1.20.4
  * @name sap.m.TablePersoController
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.TablePersoController */
@@ -41,7 +41,8 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.
 
 	metadata: {
 		properties: {
-			"contentWidth": {type: "sap.ui.core/CSSSize"}
+			"contentWidth": {type: "sap.ui.core.CSSSize"},
+			"componentName": {type: "string", since: "1.20.2"}
 		},
 		aggregations: {
 			"_tablePersoDialog": {
@@ -136,6 +137,15 @@ sap.m.TablePersoController.prototype.activate = function() {
 	return this;
 };
 
+/**
+ * Returns a  _tablePersoDialog instance if available. It can be NULL if
+ * the controller has not been activated yet.
+ *
+ * @public
+ */
+sap.m.TablePersoController.prototype.getTablePersoDialog = function() {
+	return this.getAggregation("_tablePersoDialog");
+};
 
 
 /**
@@ -175,7 +185,9 @@ sap.m.TablePersoController.prototype._createAndAddDelegateForTable = function(oT
 				// Create a new TablePersoDialog control for the associated table
 				var oTablePersoDialog = new sap.m.TablePersoDialog({
 					persoDialogFor: oTable,
-					persoMap : this._getPersoColumnMap(oTable)
+					persoMap : this._getPersoColumnMap(oTable),
+					persoService: this._oPersService,
+					contentWidth : this.getContentWidth(),
 				});
 
 				// Link to this new TablePersoDialog via the aggregation
@@ -304,30 +316,62 @@ sap.m.TablePersoController.prototype.savePersonalizations = function() {
  */
 sap.m.TablePersoController.prototype.openDialog = function() {
 	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
-	oTablePersoDialog.open();
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.open();
+	} else {
+		jQuery.sap.log.warning("sap.m.TablePersoController: trying to open TablePersoDialog before TablePersoService has been activated.");
+	}
 };
 
 /**
- * Reflectors for the TablePersoDialog's Dialog's contentWidth property
+ * Reflector for the TablePersoDialog's Dialog's contentWidth property.
  * @public
  */
-sap.m.TablePersoController.prototype.getContentWidth = function() {
-	return this.getAggregation("_tablePersoDialog").getContentWidth();
+sap.m.TablePersoController.prototype.getContentWidth = function(sWidth) {
+	var sResult = this.getProperty("contentWidth");
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		sResult = oTablePersoDialog.getContentWidth();
+	}
+	return sResult;
 };
 
 sap.m.TablePersoController.prototype.setContentWidth = function(sWidth) {
-	this.getAggregation("_tablePersoDialog").setContentWidth(sWidth);
+	this.setProperty("contentWidth", sWidth, true);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.setContentWidth(sWidth);
+	}
 	return this;
 };
 
 /**
- * Delivers the given oControl's component name by recursive asking its
- * parents for their component name. If none of oControl'S ancestors has a component
+ * Using this method, the first part of tablePerso persistence ids can be
+ * provided, in case the table's app does not provide that part itself.
+ * 
+ * If a component name is set using this method, it will be used, regardless of
+ * whether the table's app has a different component name or not.
+ * 
+ * @public
+ */
+sap.m.TablePersoController.prototype.setComponentName = function(sCompName) {
+	this.setProperty("componentName", sCompName, true);
+	return this;
+};
+
+/**
+ * Returns the controller's component name set via 'setComponentName' if present, otherwise it
+ * delivers the given oControl's component name by recursive asking its
+ * parents for their component name. If none of oControl's ancestors has a component
  * name, the function returns 'empty_component'.
  * 
  * @private
  */
 sap.m.TablePersoController.prototype._getMyComponentName = function(oControl) {
+	if(this.getComponentName()) {
+		return this.getComponentName();
+	}
+	
 	if (null === oControl) return "empty_component";
 	var oMetadata = oControl.getMetadata();
 	if ("component" === oControl.getMetadata().getStereotype()) return oMetadata._sComponentName;

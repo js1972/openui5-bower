@@ -43,22 +43,26 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 	oRM.writeControlData(oControl);
 	oRM.writeClasses();
 	oRM.write(">");
-//	if (jQuery.device.is.desktop) {
-		oRM.renderControl(oControl._getScrollingArrow("left"));
-//	}
-	if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) {
+	oRM.renderControl(oControl._getScrollingArrow("left"));
+
+	if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) {
 		oRM.write("<div id='" + oControl.getId() + "-scrollContainer' class='sapMITBScrollContainer'>");
 	}
+
 	oRM.write("<div id='" + oControl.getId() + "-head'");
 	oRM.addClass("sapMITBHead");
+
 	if (bTextOnly) {
 		oRM.addClass("sapMITBTextOnly");
 	}
+
 	if (bNoText) {
 		oRM.addClass("sapMITBNoText");
 	}
+
 	oRM.writeClasses();
 	oRM.write(">");
+
 	jQuery.each(aItems, function(iIndex, oItem) {
 		if(!(oItem instanceof sap.m.IconTabSeparator) && !oItem.getVisible()) {
 			return; // only render visible items
@@ -66,18 +70,22 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 		oRM.write("<div ");
 		oRM.writeElementData(oItem);
 		oRM.addClass("sapMITBItem");
+
 		if (oItem instanceof sap.m.IconTabFilter) {
+
 			if(oItem.getDesign() === sap.m.IconTabFilterDesign.Vertical) {
 				oRM.addClass("sapMITBVertical");
 			} else if (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal) {
 				oRM.addClass("sapMITBHorizontal");
 			}
+
 			if (oItem.getShowAll()) {
 				oRM.addClass("sapMITBAll");
 			} else {
 				oRM.addClass("sapMITBFilter");
 				oRM.addClass("sapMITBFilter" + oItem.getIconColor());
 			}
+
 			if (!oItem.getEnabled()) {
 				oRM.addClass("sapMITBDisabled");
 			}
@@ -90,40 +98,51 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 			oRM.writeClasses();
 			oRM.write(">");
 			oRM.write("<div id='" + oItem.getId() + "-tab' class='sapMITBTab'>");
+
 			if (!oItem.getShowAll() || !oItem.getIcon()) {
 				oRM.renderControl(oItem._getImageControl(['sapMITBFilterIcon', 'sapMITBFilter' + oItem.getIconColor()], oControl, sap.m.IconTabBarRenderer._aAllIconColors));	
 			}
+
 			if (!oItem.getShowAll() && !oItem.getIcon() && !bTextOnly)  {
 				oRM.write("<span class='sapMITBFilterNoIcon'> </span>");
 			}
+
 			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal) {
 				oRM.write("</div>");
 				oRM.write("<div class='sapMITBHorizontalWrapper'>");
 			}
+
 			oRM.write("<span ");
 			oRM.addClass("sapMITBCount");
 			oRM.writeClasses();
 			oRM.write(">");
+
 			if ((oItem.getCount() === "") && (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal)) {
 				//this is needed for the correct placement of the text in the horizontal design
 				oRM.write("&nbsp;");
 			} else {
 				oRM.writeEscaped(oItem.getCount());
 			}
+
 			oRM.write("</span>");
+
 			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Vertical) {
 				oRM.write("</div>");
 			}
+
 			if (oItem.getText().length) {
 				oRM.write("<div id='" + oItem.getId() + "-text' class=\"sapMITBText\">");
 				oRM.writeEscaped(oItem.getText());
 				oRM.write("</div>");
 			}
+
 			if (oItem.getDesign() === sap.m.IconTabFilterDesign.Horizontal) {
 				oRM.write("</div>");
 			}
+
 		} else { // separator
 			oRM.addClass("sapMITBSep");
+
 			if (!oItem.getIcon()) {
 				oRM.addClass("sapMITBSepLine");
 			}
@@ -136,31 +155,35 @@ sap.m.IconTabBarRenderer.render = function(oRM, oControl){
 		}
 		oRM.write("</div>");
 	});
+
 	oRM.write("</div>");
-	if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) {
+
+	if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) {
 		oRM.write("</div>"); //scrollContainer
 	}
 
-//	if (jQuery.device.is.desktop) {
 		oRM.renderControl(oControl._getScrollingArrow("right"));
-//	}
 
 	var oContent = oControl.getContent();
 
 	oRM.write("<div id=\"" + oControl.getId() + "-containerContent\" ");
 	oRM.addClass("sapMITBContainerContent");
+
 	if(!oControl.getExpanded()) { // add special styles  when closed
 		oRM.addClass("sapMITBContentClosed");
 	}
+
 	oRM.writeClasses();
 	oRM.write(">");
 
 	// content arrow
 	oRM.write("<div id=\"" + oControl.getId() + "-contentArrow\" ");
 	oRM.addClass("sapMITBContentArrow");
+
 	if(!oControl.getExpanded()) { // hide arrow when closed
 		oRM.addClass("sapMITBNoContentArrow");
 	}
+
 	oRM.writeClasses();
 	oRM.write("></div>");
 

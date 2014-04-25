@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -287,7 +287,7 @@ sap.ui.commons.SegmentedButton.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SegmentedButton</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SegmentedButton</code>.<br/> itself.
  *
  * @return {sap.ui.commons.SegmentedButton} <code>this</code> to allow method chaining
  * @public
@@ -385,7 +385,7 @@ sap.ui.commons.SegmentedButton.prototype._setItemNavigation = function(bAddDeleg
 		aItemDomRefs = [];
 
 	if (this.getDomRef()) {
-		this._oItemNavigation.setRootDomRef(jQuery.sap.domById(this.getId()+"-radiogroup"));
+		this._oItemNavigation.setRootDomRef(this.getDomRef("radiogroup"));
 		aButtons = this.getButtons();
 		for ( var i = 0; i < aButtons.length; i++) {
 			oButton = aButtons[i];
@@ -436,7 +436,7 @@ sap.ui.commons.SegmentedButton.prototype._buttonOnAfterRendering = function() {
  * @protected
 */
 sap.ui.commons.SegmentedButton.prototype._rerenderButtons = function() {
-	var $content = jQuery.sap.byId(this.getId());
+	var $content = this.$();
 	if ($content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		sap.ui.commons.SegmentedButtonRenderer.renderButtons(rm, this);
@@ -480,6 +480,10 @@ sap.ui.commons.SegmentedButton.prototype.setSelectedButton = function(vButton) {
 	var oButton, oButtonOld = sap.ui.getCore().byId(this.getSelectedButton());
 	this.setAssociation("selectedButton", vButton, true); 
 	oButton = sap.ui.getCore().byId(this.getSelectedButton());
+	
+	// Make sure Aria info is correct after changing button state
+	this._setItemNavigation()
+	
 	var aButtons = this.getButtons();
 	for (var i = 0; i < aButtons.length; i++) {
 		if (aButtons[i] === oButton) {
@@ -540,6 +544,6 @@ sap.ui.commons.SegmentedButton.prototype.clone = function(sIdSuffix, aLocalIds) 
 
 sap.ui.commons.SegmentedButton.prototype.getFocusDomRef = function() {
 
-	return jQuery.sap.domById(this.getId()+'-radiogroup') || null;
+	return this.getDomRef("radiogroup") || null;
 
 };

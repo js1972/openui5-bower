@@ -3,6 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.model.json.JSONPropertyBinding");jQuery.sap.require("sap.ui.model.ClientPropertyBinding");sap.ui.model.ClientPropertyBinding.extend("sap.ui.model.json.JSONPropertyBinding");
-sap.ui.model.json.JSONPropertyBinding.prototype.setValue=function(v){if(!jQuery.sap.equal(this.oValue,v)){this.oModel.setProperty(this.sPath,v,this.oContext)}};
-sap.ui.model.json.JSONPropertyBinding.prototype.checkUpdate=function(f){var v=this._getValue();if(!jQuery.sap.equal(v,this.oValue)||f){this.oValue=v;this._fireChange({reason:sap.ui.model.ChangeReason.Change})}};
+sap.ui.define(['jquery.sap.global','sap/ui/model/ClientPropertyBinding'],function(q,C){"use strict";var J=C.extend("sap.ui.model.json.JSONPropertyBinding");J.prototype.setValue=function(v){if(!q.sap.equal(this.oValue,v)){this.oModel.setProperty(this.sPath,v,this.oContext)}};J.prototype.checkUpdate=function(f){var v=this._getValue();if(!q.sap.equal(v,this.oValue)||f){this.oValue=v;this._fireChange({reason:sap.ui.model.ChangeReason.Change})}};return J},true);

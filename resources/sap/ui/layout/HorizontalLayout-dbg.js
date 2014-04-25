@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -150,6 +150,7 @@ sap.ui.core.Control.extend("sap.ui.layout.HorizontalLayout", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The controls inside this layout
  * 
+ * <strong>Note</strong>: this is the default aggregation for HorizontalLayout.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.HorizontalLayout#getContent

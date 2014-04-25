@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getActions actions} : sap.ui.ux3.ThingGroup[]</li></ul>
  * </li>
  * <li>Associations
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -154,6 +154,7 @@ sap.ui.core.Element.extend("sap.ui.ux3.ThingGroup", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Content of Group
  * 
+ * <strong>Note</strong>: this is the default aggregation for ThingGroup.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.ux3.ThingGroup#getContent

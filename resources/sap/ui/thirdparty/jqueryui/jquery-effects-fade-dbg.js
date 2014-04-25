@@ -1,32 +1,13 @@
-/*!
- * jQuery UI Effects Fade 1.8.23
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Fade
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function( $, undefined ) {
+(function(jQuery){
+	
+	var MESSAGE = "The file sap/ui/thirdparty/jqueryui/jquery-effects-fade.js has been renamed to sap/ui/thirdparty/jqueryui/jquery-ui-effect-fade.js! Please update the dependencies accordingly.";
 
-$.effects.fade = function(o) {
-	return this.queue(function() {
-		var elem = $(this),
-			mode = $.effects.setMode(elem, o.options.mode || 'hide');
+	if ( jQuery && jQuery.sap && jQuery.sap.require ) {
+		// if jQuery.sap is available, require the new module and log a warning
+		jQuery.sap.require("sap.ui.thirdparty.jqueryui.jquery-ui-effect-fade");
+		jQuery.sap.log.warning(MESSAGE);
+	} else {
+		throw new Error(MESSAGE);
+	}
 
-		elem.animate({ opacity: mode }, {
-			queue: false,
-			duration: o.duration,
-			easing: o.options.easing,
-			complete: function() {
-				(o.callback && o.callback.apply(this, arguments));
-				elem.dequeue();
-			}
-		});
-	});
-};
-
-})(jQuery);
+})(window.jQuery);

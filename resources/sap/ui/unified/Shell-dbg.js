@@ -40,7 +40,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getPaneContent paneContent} : sap.ui.core.Control[]</li>
  * <li>{@link #getCurtainContent curtainContent} : sap.ui.core.Control[]</li>
  * <li>{@link #getCurtainPaneContent curtainPaneContent} : sap.ui.core.Control[]</li>
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -177,7 +177,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @return {boolean} the value of property <code>showCurtain</code>
  * @public
  * @deprecated Since version 1.16.3. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#getShowCurtain
  * @function
  */
@@ -191,7 +191,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
  * @deprecated Since version 1.16.3. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#setShowCurtain
  * @function
  */
@@ -205,8 +205,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  *
  * @return {boolean} the value of property <code>showCurtainPane</code>
  * @public
- * @deprecated Since version 7.20.0. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * @deprecated Since version 1.16.3. 
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#getShowCurtainPane
  * @function
  */
@@ -219,8 +219,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * @param {boolean} bShowCurtainPane  new value for property <code>showCurtainPane</code>
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
- * @deprecated Since version 7.20.0. 
- * Curtain is deprecated and replaced by ShellOverlay mechanismn.
+ * @deprecated Since version 1.16.3. 
+ * Curtain is deprecated and replaced by ShellOverlay mechanism.
  * @name sap.ui.unified.Shell#setShowCurtainPane
  * @function
  */
@@ -282,6 +282,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the main canvas.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Shell.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.Shell#getContent
@@ -777,7 +778,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Setter for the aggregated <code>search</code>.
- * @param oSearch {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oSearch
  * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.unified.Shell#setSearch
@@ -885,13 +886,7 @@ sap.ui.unified.Shell.prototype.exit = function(){
 
 
 sap.ui.unified.Shell.prototype.onAfterRendering = function(){
-	var that = this,
-		oIco = this.$("icon").get(0);
-	if(oIco && oIco.addEventListener){
-		oIco.addEventListener("load", function(){
-			that._refreshHeader();
-		});
-	}
+	var that = this;
 	
 	if(window.addEventListener && !sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE){
 		function headerFocus(oBrowserEvent){
@@ -1316,9 +1311,6 @@ sap.ui.unified.Shell.prototype._refreshHeader = function(){
 		"left": this._rtl ? end : begin,
 		"right": this._rtl ? begin : end
 	});
-	
-	var pad = Math.max(4, Math.floor((this.$("hdrcntnt").height() - $logo.outerHeight())/2));
-	$logo.css("margin-top", pad + "px");
 };
 
 

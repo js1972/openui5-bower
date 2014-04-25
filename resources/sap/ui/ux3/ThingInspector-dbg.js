@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -779,7 +779,7 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
 
 /**
  * Setter for the aggregated <code>actionBar</code>.
- * @param oActionBar {sap.ui.ux3.ActionBar}
+ * @param {sap.ui.ux3.ActionBar} oActionBar
  * @return {sap.ui.ux3.ThingInspector} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.ThingInspector#setActionBar
@@ -848,7 +848,7 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ThingInspector} <code>this</code> to allow method chaining
  * @public
@@ -915,7 +915,7 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ThingInspector} <code>this</code> to allow method chaining
  * @public
@@ -983,7 +983,7 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingInspector</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ThingInspector} <code>this</code> to allow method chaining
  * @public
@@ -1173,11 +1173,11 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 	 * @private
 	 */
 	sap.ui.ux3.ThingInspector.prototype._setFocusLast = function() {
-		var oFocus = jQuery.sap.byId(this.getId()+"-thingViewer-toolbar").lastFocusableDomRef();
-		if (!oFocus && this.getCloseButtonVisible() && jQuery.sap.byId(this.getId()+"-close").is(":sapFocusable")) {
-			oFocus = jQuery.sap.domById(this.getId()+"-close")
-		} else if (!oFocus && this.getOpenButtonVisible() && jQuery.sap.byId(this.getId()+"-openNew").is(":sapFocusable")) {
-			oFocus = jQuery.sap.domById(this.getId()+"-openNew")
+		var oFocus = this.$("thingViewer-toolbar").lastFocusableDomRef();
+		if (!oFocus && this.getCloseButtonVisible() && this.$("close").is(":sapFocusable")) {
+			oFocus = this.getDomRef("close")
+		} else if (!oFocus && this.getOpenButtonVisible() && this.$("openNew").is(":sapFocusable")) {
+			oFocus = this.getDomRef("openNew")
 		}
 		jQuery.sap.focus(oFocus);
 	};
@@ -1188,12 +1188,12 @@ jQuery.sap.require("sap.ui.ux3.ThingViewer");
 	 * @private
 	 */
 	sap.ui.ux3.ThingInspector.prototype._setFocusFirst = function() {
-		if (this.getOpenButtonVisible() && jQuery.sap.byId(this.getId()+"-openNew").is(":sapFocusable")) {
-			jQuery.sap.focus(jQuery.sap.domById(this.getId()+"-openNew"));
-		} else if (this.getCloseButtonVisible() && jQuery.sap.byId(this.getId()+"-close").is(":sapFocusable")) {
-			jQuery.sap.focus(jQuery.sap.domById(this.getId()+"-close"));
+		if (this.getOpenButtonVisible() && this.$("openNew").is(":sapFocusable")) {
+			jQuery.sap.focus(this.getDomRef("openNew"));
+		} else if (this.getCloseButtonVisible() && this.$("close").is(":sapFocusable")) {
+			jQuery.sap.focus(this.getDomRef("close"));
 		} else {
-			jQuery.sap.focus(jQuery.sap.byId(this.getId()+"-thingViewer-content").firstFocusableDomRef());
+			jQuery.sap.focus(this.$("thingViewer-content").firstFocusableDomRef());
 		}
 	};
 	

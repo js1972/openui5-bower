@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.TooltipBase.
-jQuery.sap.declare("sap.ui.core.TooltipBase");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control','./Popup'], function() {
+	"use strict";
 
 
 /**
@@ -61,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -331,8 +330,7 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
  */
 
 
-// Start of sap\ui\core\TooltipBase.js
-jQuery.sap.require("sap.ui.core.Popup");
+// Start of sap/ui/core/TooltipBase.js
 
 /**
  * Return the popup to use but do not expose it to the outside.
@@ -721,3 +719,7 @@ sap.ui.core.TooltipBase.prototype._closeOrPreventOpen = function() {
 		sap.ui.core.TooltipBase.sOpenTimeout = undefined;
 	}
 };
+
+	return sap.ui.core.TooltipBase;
+
+}, /* bExport = */ true);

@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -247,9 +247,9 @@ sap.ui.ux3.OverlayDialog.prototype.init = function(){
  * @private
  */
 sap.ui.ux3.OverlayDialog.prototype._setFocusLast = function() {
-	var oFocus = jQuery.sap.byId(this.getId()+"-content").lastFocusableDomRef();
+	var oFocus = this.$("content").lastFocusableDomRef();
 	if (!oFocus && this.getCloseButtonVisible()) {
-		oFocus = jQuery.sap.domById(this.getId()+"-close");
+		oFocus = this.getDomRef("close");
 	}
 	jQuery.sap.focus(oFocus);
 };
@@ -261,9 +261,9 @@ sap.ui.ux3.OverlayDialog.prototype._setFocusLast = function() {
  */
 sap.ui.ux3.OverlayDialog.prototype._setFocusFirst = function() {
 	if (this.getCloseButtonVisible()) {
-		jQuery.sap.focus(jQuery.sap.domById(this.getId()+"-close"));
+		jQuery.sap.focus(this.getDomRef("close"));
 	} else {
-		jQuery.sap.focus(jQuery.sap.byId(this.getId()+"-content").firstFocusableDomRef());
+		jQuery.sap.focus(this.$("content").firstFocusableDomRef());
 	}
 };
 
@@ -278,7 +278,7 @@ sap.ui.ux3.OverlayDialog.prototype.setOpenButtonVisible = function(bVisible) {
 
 /**
  * Sets the width for the OverlayDialog
- * @param {CSSSize} sWidth
+ * @param {sap.ui.core.CSSSize} sWidth
  * @public 
  *
  */
@@ -291,7 +291,7 @@ sap.ui.ux3.OverlayDialog.prototype.setWidth = function(sWidth) {
 
 /**
  * Sets the height for the OverlayDialog
- * @param {CSSSize} sHeight
+ * @param {sap.ui.core.CSSSize} sHeight
  * @public 
  *
  */
@@ -345,7 +345,7 @@ sap.ui.ux3.OverlayDialog.prototype._checkChange = function(){
 		return;
 	}
 
-	var $content = jQuery.sap.byId(this.getId()+"-content"),
+	var $content = this.$("content"),
 		$overlay = this.$(),
 		bAutoWidth = this.getWidth() === "auto",
 		bAutoHeight = this.getHeight() === "auto";
@@ -365,7 +365,7 @@ sap.ui.ux3.OverlayDialog.prototype._checkChange = function(){
 		this.overlayWidth = overlayWidth;
 		this.overlayHeight = overlayHeight;
 
-		var $close = jQuery.sap.byId(this.getId()+"-close");
+		var $close = this.$("close");
 
 		if(this.contentWidth < this.overlayWidth){
 			$content.css("left", "50%");

@@ -5,11 +5,10 @@
  */
 
 // Provides static class sap.ui.base.BindingParser
-jQuery.sap.declare("sap.ui.base.BindingParser");
-jQuery.sap.require("jquery.sap.script");
+sap.ui.define(['jquery.sap.global', 'jquery.sap.script'],
+	function(jQuery/* , jQuerySap */) {
+	"use strict";
 
-(function() {
-	
 	/**
 	 * Regular expression to check for a (new) object literal
 	 */
@@ -72,13 +71,14 @@ jQuery.sap.require("jquery.sap.script");
 	
 	/**
 	 * @static
-	 * @class
+	 * @namespace
+	 * @name sap.ui.base.BindingParser
 	 */
-	sap.ui.base.BindingParser = {};
+	var BindingParser = {};
 	
-	sap.ui.base.BindingParser._keepBindingStrings = false;
+	BindingParser._keepBindingStrings = false;
 	
-	sap.ui.base.BindingParser.simpleParser = function(sString, oContext) {
+	BindingParser.simpleParser = function(sString, oContext) {
 
 		if ( jQuery.sap.startsWith(sString, "{") && jQuery.sap.endsWith(sString, "}") ) {
 			return makeSimpleBindingInfo(sString.slice(1,-1));
@@ -86,12 +86,12 @@ jQuery.sap.require("jquery.sap.script");
 	
 	};
 	
-	sap.ui.base.BindingParser.simpleParser.escape = function(sValue) {
+	BindingParser.simpleParser.escape = function(sValue) {
 		// there was no escaping defined for the simple parser
 		return sValue;
 	};
 	
-	sap.ui.base.BindingParser.complexParser = function(sString, oContext, bUnescape) {
+	BindingParser.complexParser = function(sString, oContext, bUnescape) {
 		var parseObject=jQuery.sap.parseJS,
 			oBindingInfo = {parts:[]},
 			aFragments=[],
@@ -215,7 +215,7 @@ jQuery.sap.require("jquery.sap.script");
 				// create the formatter function from the fragments
 				oBindingInfo.formatter = makeFormatter(aFragments);
 			}
-			if (sap.ui.base.BindingParser._keepBindingStrings) {
+			if (BindingParser._keepBindingStrings) {
 				oBindingInfo.bindingString = sString;
 			}
 			return oBindingInfo;
@@ -225,8 +225,10 @@ jQuery.sap.require("jquery.sap.script");
 		
 	};
 
-	sap.ui.base.BindingParser.complexParser.escape = function(sValue) {
+	BindingParser.complexParser.escape = function(sValue) {
 		return sValue.replace(rBindingChars, "\\$1");
 	};
 	
-}());
+	return BindingParser;
+
+}, /* bExport= */ true);

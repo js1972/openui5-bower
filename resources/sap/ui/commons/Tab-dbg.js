@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.Panel");
  * @extends sap.ui.commons.Panel
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -227,7 +227,7 @@ sap.ui.commons.Tab.prototype.rerender = function() {
  * Called after rendering from the TabStrip control
  */
 sap.ui.commons.Tab.prototype.onAfterRendering = function () {
-	this.oScrollDomRef = jQuery.sap.domById(this.getId() + "-panel");
+	this.oScrollDomRef = this.getDomRef("panel");
 
 	// Restore scroll positions
 	if (this.oScrollDomRef) {

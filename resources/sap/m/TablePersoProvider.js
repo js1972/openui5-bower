@@ -8,3 +8,4 @@ sap.m.TablePersoProvider.prototype.init=function(){jQuery.sap.log.warning("This 
 sap.m.TablePersoProvider.prototype.getPersData=function(){jQuery.sap.log.debug("TablePersoProvider getPersData")};
 sap.m.TablePersoProvider.prototype.setPersData=function(b){jQuery.sap.log.debug("TablePersoProvider setPersData")};
 sap.m.TablePersoProvider.prototype.delPersData=function(){jQuery.sap.log.debug("TablePersoProvider delPersData")};
+sap.m.TablePersoProvider.prototype.getCaption=function(c){return null};

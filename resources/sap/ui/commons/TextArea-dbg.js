@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -359,27 +359,15 @@ sap.ui.commons.TextArea.prototype.onfocusin = function(oEvent){
 	oEvent.preventDefault();
 };
 
-/**
+/*
  * Event handler called when control is loosing the focus
  *
  * @param {jQuery.Event} oEvent
  * @private
  */
-sap.ui.commons.TextArea.prototype.onfocusout = function(oEvent){
+sap.ui.commons.TextArea.prototype.onsapfocusleave = function(oEvent){
 
-	sap.ui.commons.TextField.prototype.onfocusout.apply(this, arguments);
-
-	var newVal;
-
-	if(this.getDomRef()){
-		newVal = this.getDomRef().value;
-	}
-	var oldVal = this.getValue();
-
-	if(this.getEditable() && this.getEnabled() && oldVal != newVal) {
-		this.setProperty("value", newVal, true); // Suppress re-rendering
-		this.fireChange({value:newVal});
-	}
+	sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
 
 	var oFocusDomRef = this.getFocusDomRef();
 	if (oFocusDomRef && !!sap.ui.Device.browser.firefox) { // Only for FF -> deselect text

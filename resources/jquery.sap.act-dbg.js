@@ -5,10 +5,10 @@
  */
 
 // Provides functionality for activity detection
-jQuery.sap.declare("jquery.sap.act", false);
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
-(function() {
-	
 	if(typeof window.jQuery.sap.act === "object" || typeof window.jQuery.sap.act === "function" ){
 		return;
 	}
@@ -164,5 +164,7 @@ jQuery.sap.declare("jquery.sap.act", false);
 	}
 	
 	jQuery.sap.act = _act;
+
+	return jQuery;
 	
-}());
+}, /* bExport= */ false);

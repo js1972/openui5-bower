@@ -43,7 +43,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -345,6 +345,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Carousel", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Controls which are displayed inside the carousel
  * 
+ * <strong>Note</strong>: this is the default aggregation for Carousel.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.Carousel#getContent
@@ -571,7 +572,7 @@ sap.ui.commons.Carousel.prototype.onAfterRendering = function() {
  */
 sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 	var $this = this.$();
-	var $scrollList = jQuery.sap.byId(this.getId() + "-scrolllist");
+	var $scrollList = this.$("scrolllist");
 
 	if (!this._oItemNavigation) {
 		this._oItemNavigation = new sap.ui.core.delegate.ItemNavigation();
@@ -580,8 +581,8 @@ sap.ui.commons.Carousel.prototype._initItemNavigation = function() {
 		//Setting focus on next to an invisible element changes the scollPosition and messes up correct display
 		//So after setting the focus, we need to reset the left scrollpos
 		this._oItemNavigation.attachEvent(sap.ui.core.delegate.ItemNavigation.Events.AfterFocus, function(oEvent) {
-			var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea'),
-				$ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+			var $ContentArea = this.$("contentarea"),
+				$ScrollList = this.$("scrolllist");
 
 			// ItemNavigation should only handle keyboard, do not set the focus on a carousel item if clicked on control inside
 			var oOrgEvent = oEvent.getParameter("event");
@@ -717,7 +718,7 @@ sap.ui.commons.Carousel.prototype.onsapescape = function(oEvent) {
  */
 sap.ui.commons.Carousel.prototype.onsapnext = function(oEvent) {
 	var $target = jQuery(oEvent.target);
-	var $ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+	var $ScrollList = this.$("scrolllist");
 	$ScrollList.stop(true, true);
 	if ($target.hasClass('sapUiCrslItm') && $target.nextAll(':visible').length < 2) {
 		this.showNext();
@@ -732,7 +733,7 @@ sap.ui.commons.Carousel.prototype.onsapnext = function(oEvent) {
  */
 sap.ui.commons.Carousel.prototype.onsapprevious = function(oEvent) {
 	var $target = jQuery(oEvent.target);
-	var $ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+	var $ScrollList = this.$("scrolllist");
 	$ScrollList.stop(true, true);
 	if ($target.hasClass('sapUiCrslItm') && $target.prevAll(':visible').length < 2) {
 		this.showPrevious();
@@ -803,7 +804,7 @@ sap.ui.commons.Carousel.prototype._enterActionMode = function(oDomRef) {
 		jQuery(this._oItemNavigation.getFocusedDomRef()).attr("tabindex", "-1");
 		
 		//set aria active descendent
-		jQuery.sap.byId(this.getId() + '-scrolllist').attr("aria-activedescendant", jQuery(this._oItemNavigation.getFocusedDomRef()).attr("id"));
+		this.$("scrolllist").attr("aria-activedescendant", jQuery(this._oItemNavigation.getFocusedDomRef()).attr("id"));
 
 		// set the focus to the active control
 		jQuery(oDomRef).focus();
@@ -826,7 +827,7 @@ sap.ui.commons.Carousel.prototype._leaveActionMode = function(oEvent) {
 		jQuery(this._oItemNavigation.getFocusedDomRef()).attr("tabindex", "0");
 
 		//remove aria active descendent
-		jQuery.sap.byId(this.getId() + '-scrolllist').removeAttr("aria-activedescendant");
+		this.$("scrolllist").removeAttr("aria-activedescendant");
 
 		// when we have an event which is responsible to leave the action mode
 		// we search for the closest
@@ -879,8 +880,8 @@ sap.ui.commons.Carousel.prototype.onresize = function(oEvent) {
 sap.ui.commons.Carousel.prototype.showPrevious = function() {
 	var mAnimationArguments = {};
 	mAnimationArguments[this._sAnimationAttribute] = 0;
-	var $ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
-	var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea');
+	var $ScrollList = this.$("scrolllist");
+	var $ContentArea = this.$("contentarea");
 	if ($ScrollList.children('li').length < 2) {
 		return;
 	}
@@ -907,8 +908,8 @@ sap.ui.commons.Carousel.prototype.showPrevious = function() {
 sap.ui.commons.Carousel.prototype.showNext = function() {
 	var mAnimationArguments = {};
 	mAnimationArguments[this._sAnimationAttribute] = -this._iMaxWidth;
-	var $ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
-	var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea');
+	var $ScrollList = this.$("scrolllist");
+	var $ContentArea = this.$("contentarea");
 	if ($ScrollList.children('li').length < 2) {
 		return;
 	}
@@ -935,7 +936,7 @@ sap.ui.commons.Carousel.prototype.showNext = function() {
  */
 sap.ui.commons.Carousel.prototype.showElementWithId = function(sElementId) {
 	this._showAllItems();
-	var $ScrollList = jQuery.sap.byId(this.getId() + '-scrolllist');
+	var $ScrollList = this.$("scrolllist");
 	sElementId = this.getId() + "-item-" + sElementId;
 	var index = $ScrollList.children('li').index(jQuery.sap.byId(sElementId));
 	$ScrollList.children('li:lt(' + index + ')').appendTo($ScrollList);
@@ -995,7 +996,7 @@ sap.ui.commons.Carousel.prototype.calculateAndSetSize = function() {
 			maxHeight = $Me.height();
 		}
 
-		jQuery.sap.byId(this.getId()).addClass('sapUiCrsl' + jQuery.sap.charToUpperCase(this.getOrientation(), 0));
+		this.$().addClass('sapUiCrsl' + jQuery.sap.charToUpperCase(this.getOrientation(), 0));
 
 		if (this.getOrientation() == "horizontal") {
 			contentBarSize = $Me.width() - this.getHandleSize() * 2 - 1;
@@ -1046,7 +1047,7 @@ sap.ui.commons.Carousel.prototype.getFocusDomRef = function() {
  * @private
  */
 sap.ui.commons.Carousel.prototype._showAllItems = function() {
-	var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea');
+	var $ContentArea = this.$("contentarea");
 	$ContentArea.find('.sapUiCrslItm').show();
 };
 
@@ -1056,7 +1057,7 @@ sap.ui.commons.Carousel.prototype._showAllItems = function() {
  * @private
  */
 sap.ui.commons.Carousel.prototype._hideInvisibleItems = function() {
-	var $ContentArea = jQuery.sap.byId(this.getId() + '-contentarea');
+	var $ContentArea = this.$("contentarea");
 	$ContentArea.find('.sapUiCrslItm:gt(' + (this._visibleItems - 1)  + ')').hide();
 };
 

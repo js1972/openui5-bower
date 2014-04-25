@@ -5,9 +5,9 @@
  */
 
 // Provides miscellaneous utility functions that might be useful for any script
-jQuery.sap.declare("jquery.sap.script", false);
-
-(function() {
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
 	/**
 	 * Some private variable used for creation of (pseudo-)unique ids.
@@ -99,7 +99,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -226,19 +226,29 @@ jQuery.sap.declare("jquery.sap.script", false);
 	 * @param {any} a A value of any type
 	 * @param {any} b A value of any type
 	 * @param {int} [maxDepth=10] Maximum recursion depth
+	 * @param {boolean} [contains] Whether all existing properties in a are equal as in b
 	 * 
 	 * @return {boolean} Whether a and b are equal
 	 * @public
 	 */
-	jQuery.sap.equal = function(a, b, maxDepth, depth) {
+	jQuery.sap.equal = function(a, b, maxDepth, contains, depth) {
+		// Optional parameter normalization
+		if (typeof maxDepth == "boolean") {
+			contains = maxDepth;
+			maxDepth = undefined;
+		}
 		if (!depth) depth = 0;
 		if (!maxDepth) maxDepth = 10;
 		if (depth > maxDepth) return false;
 		if (a === b) return true;
 		if (jQuery.isArray(a) && jQuery.isArray(b)) {
-			if (a.length != b.length) { return false; }
+			if (!contains) {
+				if (a.length != b.length) { return false; }
+			} else {
+				if (a.length > b.length) { return false; }
+			}
 			for (var i = 0; i < a.length; i++) {
-				if (!jQuery.sap.equal(a[i], b[i], maxDepth, depth + 1)) { 
+				if (!jQuery.sap.equal(a[i], b[i], maxDepth, contains, depth + 1)) { 
 						return false;
 				}
 			}
@@ -258,13 +268,15 @@ jQuery.sap.declare("jquery.sap.script", false);
 				return a.valueOf() == b.valueOf();
 			}
 			for (var i in a) {
-				if (!jQuery.sap.equal(a[i], b[i], maxDepth, depth + 1)) { 
+				if (!jQuery.sap.equal(a[i], b[i], maxDepth, contains, depth + 1)) { 
 					return false;
 				}
 			}
-			for (var i in b) {
-				if (a[i] === undefined) { 
-					return false;
+			if (!contains) {
+				for (var i in b) {
+					if (a[i] === undefined) { 
+						return false;
+					}
 				}
 			}
 			return true;
@@ -540,18 +552,18 @@ jQuery.sap.declare("jquery.sap.script", false);
 	jQuery.sap.parseJS = (function() {
 
 		var at, // The index of the current character
-		ch, // The current character
-		escapee = {
-			'"': '"',
-			'\'': '\'',
-			'\\': '\\',
-			'/': '/',
-			b: '\b',
-			f: '\f',
-			n: '\n',
-			r: '\r',
-			t: '\t'
-		},
+			ch, // The current character
+			escapee = {
+				'"': '"',
+				'\'': '\'',
+				'\\': '\\',
+				'/': '/',
+				b: '\b',
+				f: '\f',
+				n: '\n',
+				r: '\r',
+				t: '\t'
+			},
 			text,
 
 			error = function(m) {
@@ -834,5 +846,7 @@ jQuery.sap.declare("jquery.sap.script", false);
 
 		};
 	}())
-	
-}());
+
+	return jQuery;
+
+}, /* bExport= */ false);

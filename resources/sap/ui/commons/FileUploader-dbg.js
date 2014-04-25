@@ -36,11 +36,15 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getVisible visible} : boolean (default: true)</li>
  * <li>{@link #getUploadUrl uploadUrl} : sap.ui.core.URI (default: '')</li>
  * <li>{@link #getName name} : string</li>
- * <li>{@link #getWidth width} : string (default: '')</li>
+ * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '')</li>
  * <li>{@link #getUploadOnChange uploadOnChange} : boolean (default: false)</li>
  * <li>{@link #getAdditionalData additionalData} : string</li>
  * <li>{@link #getSameFilenameAllowed sameFilenameAllowed} : boolean (default: false)</li>
- * <li>{@link #getButtonText buttonText} : string</li></ul>
+ * <li>{@link #getButtonText buttonText} : string</li>
+ * <li>{@link #getFileType fileType} : string[]</li>
+ * <li>{@link #getMultiple multiple} : boolean (default: false)</li>
+ * <li>{@link #getMaximumFileSize maximumFileSize} : float</li>
+ * <li>{@link #getMimeType mimeType} : string[]</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -52,7 +56,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Events
  * <ul>
  * <li>{@link sap.ui.commons.FileUploader#event:change change} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.FileUploader#event:uploadComplete uploadComplete} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.ui.commons.FileUploader#event:uploadComplete uploadComplete} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
+ * <li>{@link sap.ui.commons.FileUploader#event:typeMissmatch typeMissmatch} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
+ * <li>{@link sap.ui.commons.FileUploader#event:fileSizeExceed fileSizeExceed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -65,7 +71,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -87,18 +93,24 @@ sap.ui.core.Control.extend("sap.ui.commons.FileUploader", { metadata : {
 		"visible" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"uploadUrl" : {type : "sap.ui.core.URI", group : "Data", defaultValue : ''},
 		"name" : {type : "string", group : "Data", defaultValue : null},
-		"width" : {type : "string", group : "Misc", defaultValue : ''},
+		"width" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : ''},
 		"uploadOnChange" : {type : "boolean", group : "Behavior", defaultValue : false},
 		"additionalData" : {type : "string", group : "Data", defaultValue : null},
 		"sameFilenameAllowed" : {type : "boolean", group : "Behavior", defaultValue : false},
-		"buttonText" : {type : "string", group : "Misc", defaultValue : null}
+		"buttonText" : {type : "string", group : "Misc", defaultValue : null},
+		"fileType" : {type : "string[]", group : "Data", defaultValue : null},
+		"multiple" : {type : "boolean", group : "Behavior", defaultValue : false},
+		"maximumFileSize" : {type : "float", group : "Data", defaultValue : null},
+		"mimeType" : {type : "string[]", group : "Data", defaultValue : null}
 	},
 	aggregations : {
     	"parameters" : {type : "sap.ui.commons.FileUploaderParameter", multiple : true, singularName : "parameter"}
 	},
 	events : {
 		"change" : {}, 
-		"uploadComplete" : {}
+		"uploadComplete" : {}, 
+		"typeMissmatch" : {}, 
+		"fileSizeExceed" : {}
 	}
 }});
 
@@ -119,7 +131,7 @@ sap.ui.core.Control.extend("sap.ui.commons.FileUploader", { metadata : {
  * @function
  */
 
-sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uploadComplete'};
+sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uploadComplete','typeMissmatch':'typeMissmatch','fileSizeExceed':'fileSizeExceed'};
 
 
 /**
@@ -253,7 +265,7 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  *
  * Default value is <code>''</code>
  *
- * @return {string} the value of property <code>width</code>
+ * @return {sap.ui.core.CSSSize} the value of property <code>width</code>
  * @public
  * @name sap.ui.commons.FileUploader#getWidth
  * @function
@@ -264,7 +276,7 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  *
  * Default value is <code>''</code> 
  *
- * @param {string} sWidth  new value for property <code>width</code>
+ * @param {sap.ui.core.CSSSize} sWidth  new value for property <code>width</code>
  * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.FileUploader#setWidth
@@ -368,6 +380,106 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.FileUploader#setButtonText
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>fileType</code>.
+ * The chosen files will be checked against an array of file types. This property can be defined as a array of file endings to be checked against. If at least one file does not fit the file type restriction the upload is prevented. Example: fileType: "jpg,png,txt".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string[]} the value of property <code>fileType</code>
+ * @public
+ * @name sap.ui.commons.FileUploader#getFileType
+ * @function
+ */
+
+/**
+ * Setter for property <code>fileType</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string[]} aFileType  new value for property <code>fileType</code>
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#setFileType
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>multiple</code>.
+ * Allows multiple files to be chosen and uploaded from the same folder. This property is not supported by Internet Explorer.
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>multiple</code>
+ * @public
+ * @name sap.ui.commons.FileUploader#getMultiple
+ * @function
+ */
+
+/**
+ * Setter for property <code>multiple</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bMultiple  new value for property <code>multiple</code>
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#setMultiple
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>maximumFileSize</code>.
+ * A file size limit in megabytes which prevents the upload if at least one file exceeds it. This property is not supported by Internet Explorer.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {float} the value of property <code>maximumFileSize</code>
+ * @public
+ * @name sap.ui.commons.FileUploader#getMaximumFileSize
+ * @function
+ */
+
+/**
+ * Setter for property <code>maximumFileSize</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {float} fMaximumFileSize  new value for property <code>maximumFileSize</code>
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#setMaximumFileSize
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>mimeType</code>.
+ * The chosen files will be checked against an array of mime types. This property can be defined as a array of mime types to be checked against. If at least one file does not fit the mime type restriction the upload is prevented. This property is not supported by Internet Explorer. Example: fileType: "image,text". It is also possible to be more specific and set "image/png".
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string[]} the value of property <code>mimeType</code>
+ * @public
+ * @name sap.ui.commons.FileUploader#getMimeType
+ * @function
+ */
+
+/**
+ * Setter for property <code>mimeType</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string[]} aMimeType  new value for property <code>mimeType</code>
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#setMimeType
  * @function
  */
 
@@ -485,7 +597,7 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
  *
  * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
  * @public
@@ -549,7 +661,7 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
  *
  * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
  * @public
@@ -584,6 +696,140 @@ sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
  * @protected
  * @name sap.ui.commons.FileUploader#fireUploadComplete
+ * @function
+ */
+
+
+/**
+ * Event is fired when the type of a file does not match the mimeType or fileType property. 
+ *
+ * @name sap.ui.commons.FileUploader#typeMissmatch
+ * @event
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @param {string} oControlEvent.getParameters.fileName The name of a file to be uploaded.
+ * @param {string} oControlEvent.getParameters.fileType The file ending of a file to be uploaded.
+ * @param {string} oControlEvent.getParameters.mimeType The MIME type of a file to be uploaded.
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'typeMissmatch' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
+ *  
+ * Event is fired when the type of a file does not match the mimeType or fileType property. 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
+ *
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#attachTypeMissmatch
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'typeMissmatch' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#detachTypeMissmatch
+ * @function
+ */
+
+/**
+ * Fire event typeMissmatch to attached listeners.
+ * 
+ * Expects following event parameters:
+ * <ul>
+ * <li>'fileName' of type <code>string</code> The name of a file to be uploaded.</li>
+ * <li>'fileType' of type <code>string</code> The file ending of a file to be uploaded.</li>
+ * <li>'mimeType' of type <code>string</code> The MIME type of a file to be uploaded.</li>
+ * </ul>
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @protected
+ * @name sap.ui.commons.FileUploader#fireTypeMissmatch
+ * @function
+ */
+
+
+/**
+ * Event is fired when the size of a file is above the maximumFileSize property. 
+ *
+ * @name sap.ui.commons.FileUploader#fileSizeExceed
+ * @event
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @param {string} oControlEvent.getParameters.fileName The name of a file to be uploaded.
+ * @param {string} oControlEvent.getParameters.fileSize The size in MB of a file to be uploaded.
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'fileSizeExceed' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
+ *  
+ * Event is fired when the size of a file is above the maximumFileSize property. 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
+ *
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#attachFileSizeExceed
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'fileSizeExceed' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.FileUploader#detachFileSizeExceed
+ * @function
+ */
+
+/**
+ * Fire event fileSizeExceed to attached listeners.
+ * 
+ * Expects following event parameters:
+ * <ul>
+ * <li>'fileName' of type <code>string</code> The name of a file to be uploaded.</li>
+ * <li>'fileSize' of type <code>string</code> The size in MB of a file to be uploaded.</li>
+ * </ul>
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
+ * @protected
+ * @name sap.ui.commons.FileUploader#fireFileSizeExceed
  * @function
  */
 
@@ -745,7 +991,7 @@ sap.ui.commons.FileUploader.prototype.onAfterRendering = function() {
  * Returns the DOM element that should be focused when focus is set onto the control.
  */
 sap.ui.commons.FileUploader.prototype.getFocusDomRef = function() {
-	return jQuery.sap.byId(this.getId() + "-fu").get(0);
+	return this.$("fu").get(0);
 };
 
 sap.ui.commons.FileUploader.prototype._resizeDomElements = function() {
@@ -797,9 +1043,9 @@ sap.ui.commons.FileUploader.prototype.setEnabled = function(bEnabled){
 	this.oFilePath.setEnabled(bEnabled);
 	this.oBrowse.setEnabled(bEnabled);
 	if (bEnabled) {
-		jQuery.sap.byId(this.getId() + "-fu").removeAttr('disabled');
+		this.$("fu").removeAttr('disabled');
 	} else {
-		jQuery.sap.byId(this.getId() + "-fu").attr('disabled', 'disabled');
+		this.$("fu").attr('disabled', 'disabled');
 	}
 	return this;
 };
@@ -807,7 +1053,7 @@ sap.ui.commons.FileUploader.prototype.setEnabled = function(bEnabled){
 
 sap.ui.commons.FileUploader.prototype.setUploadUrl = function(sValue, bFireEvent) {
 	this.setProperty("uploadUrl", sValue, true);
-	var $uploadForm = jQuery.sap.byId(this.getId() + "-fu_form");
+	var $uploadForm = this.$("fu_form");
 	$uploadForm.attr("action", this.getUploadUrl());
 	return this;
 };
@@ -831,8 +1077,8 @@ sap.ui.commons.FileUploader.prototype.setValue = function(sValue, bFireEvent) {
 			// some browsers do not allow to clear the value of the fileuploader control
 			// therefore we utilize the form and reset the values inside this form and
 			// apply the additionalData again afterwards
-			jQuery.sap.domById(this.getId() + "-fu_form").reset();
-			jQuery.sap.byId(this.getId() + "-fu_data").val(this.getAdditionalData());
+			this.getDomRef("fu_form").reset();
+			this.$("fu_data").val(this.getAdditionalData());
 		}
 		// only fire event when triggered by user interaction
 		if (bFireEvent) {
@@ -864,7 +1110,7 @@ sap.ui.commons.FileUploader.prototype.onfocusout = function () {
 sap.ui.commons.FileUploader.prototype.setAdditionalData = function(sAdditionalData) {
 	// set the additional data in the hidden input
 	this.setProperty("additionalData", sAdditionalData, true);
-	var oAdditionalData = jQuery.sap.domById(this.getId() + "-fu_data");
+	var oAdditionalData = this.getDomRef("fu_data");
 	if (oAdditionalData) {
 		var sAdditionalData = this.getAdditionalData() || "";
 		oAdditionalData.value = sAdditionalData;
@@ -874,7 +1120,7 @@ sap.ui.commons.FileUploader.prototype.setAdditionalData = function(sAdditionalDa
 
 
 sap.ui.commons.FileUploader.prototype.upload = function() {
-	var uploadForm = jQuery.sap.domById(this.getId() + "-fu_form");
+	var uploadForm = this.getDomRef("fu_form");
 
 	try {
 		if (uploadForm) {
@@ -924,14 +1170,102 @@ sap.ui.commons.FileUploader.prototype.onkeydown = function(oEvent) {
 
 sap.ui.commons.FileUploader.prototype.handlechange = function(oEvent) {
 	if (this.oFileUpload && this.getEnabled()) {
+
+		var fMaxSize = this.getMaximumFileSize();
+		var sFileType = this.getFileType();
+		var sMimeType = this.getMimeType();
+		var sFileString = '';
+
+		if (!sap.ui.Device.browser.internet_explorer) {
+			var oFiles = oEvent.target.files;
+
+			for (var i = 0; i < oFiles.length; i++) {
+				var iCount = i + 1;
+				var sName = oFiles[i].name;
+				var sType = oFiles[i].type;
+				if (!sType) {
+					sType = "unknown";
+				}
+				var fSize = ((oFiles[i].size/1024)/1024);
+				if (fMaxSize && (fSize > fMaxSize)) {
+					jQuery.sap.log.info("File: " + sName + " is of size " + fSize + " MB which exceeds the file size limit of " + fMaxSize + " MB.");
+					this.fireFileSizeExceed({
+						fileName:sName,
+						fileSize:fSize
+					});
+					return;
+				}
+				if (sMimeType) {
+					var bWrongMime = true;
+					var aMimeCheck = sMimeType.split(",");
+					for (var j = 0; j < aMimeCheck.length; j++) {
+						if (sType.match(aMimeCheck[j])) {
+							bWrongMime = false;
+						}
+					}
+					if (bWrongMime) {
+						jQuery.sap.log.info("File: " + sName + " is of type " + sType + " .Allowed types are: "  + sMimeType + ".");
+						this.fireTypeMissmatch({
+							fileName:sName,
+							fileType:sType
+						});
+						return;
+					}
+				}
+				if (sFileType) {
+					var bWrongType = true;
+					var aTypeCheck = sFileType.split(",");
+					var iIdx = sName.lastIndexOf(".");
+					var sFileEnding = sName.substring(iIdx + 1);
+					for (var k = 0; k < aTypeCheck.length; k++) {
+						if (sFileEnding == aTypeCheck[k]) {
+							bWrongType = false;
+						}
+					}
+					if (bWrongType) {
+						jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
+						this.fireTypeMissmatch({
+							fileName:sName,
+							fileType:sFileEnding
+						});
+						return;
+					}
+				}
+				sFileString = sFileString + '"' + oFiles[i].name + '" ';
+			}
+		} else if (sFileType) {
+			var bWrongType = true;
+			var aTypeCheck = sFileType.split(",");
+			var sName = this.oFileUpload.value || "";
+			var iIdx = sName.lastIndexOf(".");
+			var sFileEnding = sName.substring(iIdx + 1);
+			for (var k = 0; k < aTypeCheck.length; k++) {
+				if (sFileEnding == aTypeCheck[k]) {
+					bWrongType = false;
+				}
+			}
+			if (bWrongType) {
+				jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
+				this.fireTypeMissmatch({
+					fileName:sName,
+					fileType:sFileEnding
+				});
+				return;
+			}
+		}
+
 		// due to new security mechanism modern browsers simply
 		// append a fakepath in front of the filename instead of
-		// returning the filename only - we strip path this now
+		// returning the filename only - we strip this path now
 		var sValue = this.oFileUpload.value || "";
 		var iIndex = sValue.lastIndexOf("\\");
 		if (iIndex >= 0) {
 			sValue = sValue.substring(iIndex + 1);
 		}
+		if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
+			sValue = sFileString;
+		}
+
 		//sValue has to be filled to avoid clearing the FilePath by pressing cancel
 		if (sValue || sap.ui.Device.browser.chrome) { // in Chrome the file path has to be cleared as the upload will be avoided
 			this.setValue(sValue, true);
@@ -980,9 +1314,17 @@ sap.ui.commons.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
 		aFileUpload.push('<input ');
 		aFileUpload.push('type="file" ');
 		if (this.getName()) {
-			aFileUpload.push('name="' + this.getName() + '" ');
+			if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
+				aFileUpload.push('name="' + this.getName() + '[]" ');
+			} else {
+				aFileUpload.push('name="' + this.getName() + '" ');
+			}
 		} else {
-			aFileUpload.push('name="' + this.getId() + '" ');
+			if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
+				aFileUpload.push('name="' + this.getId() + '[]" ');
+			} else {
+				aFileUpload.push('name="' + this.getId() + '" ');
+			}
 		}
 		aFileUpload.push('id="' + this.getId() + '-fu" ');
 		if (!(!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8)) {
@@ -1005,6 +1347,9 @@ sap.ui.commons.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
 		if (!this.getEnabled()) {
 			aFileUpload.push('disabled="disabled" ');
 		}
+		if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
+			aFileUpload.push('multiple ');
+		}
 		aFileUpload.push('>');
 
 		// add it into the control markup
@@ -1020,7 +1365,7 @@ sap.ui.commons.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
 	if (!this.oIFrameRef) {
 
 		// create the upload iframe
-		var uploadForm = jQuery.sap.domById(this.getId() + "-fu_form");
+		var uploadForm = this.getDomRef("fu_form");
 		var oIFrameRef = document.createElement("iframe");
 		oIFrameRef.style.display = "none";
 		oIFrameRef.src = "javascript:''";

@@ -46,7 +46,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Aggregations
  * <ul>
  * <li>{@link #getButtons buttons} : sap.ui.core.Control[]</li>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -75,9 +75,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * example form-like.
  * 
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -86,9 +87,12 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.ui.ux3.ToolPopup", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.PopupInterface"
+	],
 	publicMethods : [
 		// methods
-		"isOpen", "open", "close", "setPosition", "getEnabled"
+		"isOpen", "open", "close", "setPosition", "getEnabled", "addFocusableArea", "removeFocusableArea"
 	],
 
 	// ---- control specific ----
@@ -523,6 +527,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * Getter for aggregation <code>content</code>.<br/>
  * The content of the pop up
  * 
+ * <strong>Note</strong>: this is the default aggregation for ToolPopup.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.ux3.ToolPopup#getContent
@@ -672,7 +677,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -730,7 +735,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -792,7 +797,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -858,7 +863,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -916,7 +921,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -975,7 +980,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ToolPopup</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @public
@@ -1077,6 +1082,36 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
  * @type boolean
  * @public
  * @since 1.13.1
+ */
+
+
+/**
+ * Add an identified area to the parent Popup as additional focusable area that can be used for an "autoclose" ToolPopup. This added area can be focused and prevent the ToolPopup from closing if the added area is outside of the ToolPopup.
+ *
+ * @name sap.ui.ux3.ToolPopup.prototype.addFocusableArea
+ * @function
+ * @param {string} 
+ *         sId
+ *         ID of a control or DOM-node
+
+ * @type void
+ * @public
+ * @since 1.19.0
+ */
+
+
+/**
+ * Removes the control's or DOM-node's id from focusable areas.
+ *
+ * @name sap.ui.ux3.ToolPopup.prototype.removeFocusableArea
+ * @function
+ * @param {string} 
+ *         sId
+ *         ID of a control or DOM-node
+
+ * @type void
+ * @public
+ * @since 1.19.0
  */
 
 
@@ -1207,7 +1242,6 @@ sap.ui.ux3.ToolPopup.prototype.onfocusin = function(oEvent){
  */
 var fnFixSize = function(){
 	var $This = this.$();
-	var sId = this.getId();
 	var iValue = 0;
 	
 	var sMaxHeight = this.getMaxHeight();
@@ -1247,20 +1281,18 @@ var fnFixSize = function(){
 		var iOpenerBottom = oOpenerRect.top - iScrollTop + $Opener.outerHeight(true);
 		
 		// if bottom of the ToolPopup is below the opener and there is a possible offset
-		if (iBottomEnd > iOpenerBottom && this.oPopup._oPosition.offset) {
+		var aOffset = this.oPopup._getPositionOffset();
+		if (iBottomEnd > iOpenerBottom && aOffset.length > 0) {
 			// check if the offset is responsible for pushing the ToolPopup below the opener
 			// and therefore out of the window
-			var aOffset = this.oPopup._oPosition.offset.split(" ");
-			if (aOffset.length > 0) {
-				var iYOffset = Math.abs(parseInt(aOffset[1], 10));
-				
-				// this check inverts the variable to prevent any resize of the ToolPopup since it
-				// is pushed out of the window because of the offset
-				if (iBottomEnd - iYOffset > iWinHeight) {
-					bTooHigh = false;
-					var sMessage = "Offset of " +  +" pushes ToolPopup out of the window";
-					jQuery.sap.log.warning(sMessage, "", "sap.ui.ux3.ToolPopup");
-				}
+			var iYOffset = Math.abs(parseInt(aOffset[1], 10));
+
+			// this check inverts the variable to prevent any resize of the ToolPopup since it
+			// is pushed out of the window because of the offset
+			if (iBottomEnd - iYOffset > iWinHeight) {
+				bTooHigh = false;
+				var sMessage = "Offset of " + iYOffset +" pushes ToolPopup out of the window";
+				jQuery.sap.log.warning(sMessage, "", "sap.ui.ux3.ToolPopup");
 			}
 		}
 	}
@@ -1277,11 +1309,11 @@ var fnFixSize = function(){
 	if (iMaxHeight > 0) {
 		$This.css("max-height", iMaxHeight + "px");
 	
-		var $Title = jQuery.sap.byId(sId + "-title");
-		var $TitleSep = jQuery.sap.byId(sId + "-title-separator");
+		var $Title = this.$("title");
+		var $TitleSep = this.$("title-separator");
 		
-		var $Buttons = jQuery.sap.byId(sId + "-buttons");
-		var $ButtonsSep = jQuery.sap.byId(sId + "-buttons-separator");
+		var $Buttons = this.$("buttons");
+		var $ButtonsSep = this.$("buttons-separator");
 		
 		// subtract all paddings and border-widths
 		iMaxHeight -= iPaddings;
@@ -1302,7 +1334,7 @@ var fnFixSize = function(){
 		// if the height has to be corrected
 		iValue = parseInt(iValue, 10);
 		
-		var $Content = jQuery.sap.byId(sId + "-content");
+		var $Content = this.$("content");
 		$Content.css("max-height", iValue + "px");
 		
 		$Content.toggleClass("sapUiUx3TPLargeContent", true);
@@ -1415,7 +1447,7 @@ sap.ui.ux3.ToolPopup.prototype.open = function(my, at) {
 					iOffsetX = this.iArrowWidth;
 					break;
 			}
-			
+
 			iOffsetX = parseInt( iOffsetX, 10 );
 			iOffsetY = parseInt( iOffsetY, 10 );
 			this.sOffset = "" + iOffsetX + " " + iOffsetY;
@@ -1508,9 +1540,14 @@ var fnSetArrowDimensions = function(oThis){
  * @private
  */
 var fnGetArrowDirection = function(oThis) {
+
+	// do not mirror the arrow direction here in RTL mode, because otherwise the offset is calculated wrong
+	// (Because the offset mirroring happens inside popup)
+	// the arrow is later mirrored at the output...
+
 	// this is the default case if no match was found
-	var sDirection = oThis._bRTL ? "Right" : "Left";
-	
+	var sDirection = "Left";
+
 	// if 'my' is not set check if it was previously set via 'setPosition'
 	var my = oThis._my;
 	var at = oThis._at;
@@ -1575,12 +1612,6 @@ var fnGetArrowDirection = function(oThis) {
 			}
 		}
 	}
-	
-	if (sDirection === "Left" && oThis._bRTL) {
-		sDirection = "Right";
-	} else if (sDirection === "Right" && oThis._bRTL) {
-		sDirection = "Left";
-	}
 
 	return sDirection;
 };
@@ -1596,59 +1627,69 @@ var fnSetArrow = function(oThis){
 	if (!oThis.getDomRef()){
 		return;
 	}
-	
+
 	var sKey = "";
 	var iVal = 0;
 	var iZero = 0; // this is the 0 of the  relative position between ToolPopup and Opener
 	var iHalfArrow = oThis.iArrowHeight / 2;
-	
+
 	oThis._sArrowDir = fnGetArrowDirection(oThis);
+	var sArrowDir = oThis._sArrowDir;
+	if(oThis._bRTL){
+		// in RTL mode arrow must be mirrowed here
+		if (oThis._sArrowDir === "Right") {
+			sArrowDir = "Left";
+		} else if (oThis._sArrowDir === "Left") {
+			sArrowDir = "Right";
+		}
+	}
+
 	var oPopRect = oThis.$().rect();
 	var oOpenerRect = jQuery.sap.byId(oThis.getOpener()).rect();
 	if (!oOpenerRect) {
 		// if a proper opener isn't available
 		jQuery.sap.log.warning("Opener wasn't set properly. Therefore arrow will be at a default position", "", "sap.ui.ux3.ToolPopup");
-	} 
-	var $Arrow = jQuery.sap.byId(oThis.getId() + "-arrow");
-	
+	}
+	var $Arrow = oThis.$("arrow");
+
 	// get the corresponding my-property
 	if (!oThis._my && oThis.oPopup){
 		oThis._my = oThis.oPopup._oPosition.my;
 	}
-	
+
 	// calculate the horizontal/vertical value of the arrow
 	if (oThis._bHorizontalArrow) {
 		// left or right arrow
 		sKey = "top";
-		
+
 		if (oOpenerRect) {
 			iZero = oOpenerRect.top - oPopRect.top;
-			
+
 			iVal = Math.round(iZero + oOpenerRect.height / 2);
-			
+
 			// if the position would exceed the ToolPopup's height
 			iVal = iVal + iHalfArrow > oPopRect.height ? iVal - oThis.iArrowHeight : iVal;
 		}
 	} else {		
 		// up/down arrow
 		sKey = "left";
-		
+
 		if (oOpenerRect) {
 			iZero = oOpenerRect.left - oPopRect.left;
-			
+
 			iVal = Math.round(iZero + oOpenerRect.width / 2);
 			// if the position would exceed the ToolPopup's width
 			iVal = iVal + iHalfArrow > oPopRect.width ? iVal - oThis.iArrowHeight : iVal;
 		}
 	}
-	
+
 	if (oOpenerRect) {
 		iVal -= iHalfArrow;
 	} else {
 		iVal =  oThis.iArrowHeight;
 	}
-	
-	
+
+
 	// set the corresponding classes
 	var sClassAttr = "";
 	if ($Arrow.hasClass("sapUiUx3TPNewArrow")){
@@ -1656,9 +1697,9 @@ var fnSetArrow = function(oThis){
 	} else {
 		sClassAttr = oThis.isInverted() ? "sapUiUx3TPArrow sapUiTPInverted sapUiUx3TPArrow" : "sapUiUx3TPArrow sapUiUx3TPArrow";
 	}
-	$Arrow.attr("class", sClassAttr + oThis._sArrowDir);
+	$Arrow.attr("class", sClassAttr + sArrowDir);
 
-	if (oThis._sArrowDir === "Right" ){
+	if (sArrowDir === "Right" ){
 		var iWidth = oPopRect.width;
 		// if the ToolPopup is invertable and it is being inverted use another
 		// value since in such a case the padding is different for the arrow
@@ -1680,7 +1721,7 @@ var fnSetArrow = function(oThis){
 			"right" : ""
 		});
 	}
-	
+
 	iVal = parseInt(iVal, 10);
 	iVal = iVal < 0 ? 0 : iVal;
 	if (iVal > 0) {
@@ -1823,7 +1864,7 @@ sap.ui.ux3.ToolPopup.prototype.setPosition = function() {
 };
 
 var fnRenderContent = function(oThis) {
-	var oContentDomRef = jQuery.sap.domById(oThis.getId() + "-content");
+	var oContentDomRef = oThis.getDomRef("content");
 	oContentDomRef.innerHTML = "";
 	
 	var aContent = oThis.getContent();
@@ -1840,8 +1881,8 @@ var fnRenderContent = function(oThis) {
 	oThis._proxyFixSize();
 };
 var fnRenderButtons = function(oThis) {
-	var oButtons = jQuery.sap.domById(oThis.getId() + "-buttons");
-	var oSeparator = jQuery.sap.domById(oThis.getId() + "-buttons-separator");
+	var oButtons = oThis.getDomRef("buttons");
+	var oSeparator = oThis.getDomRef("buttons-separator");
 	var aButtons = oThis.getButtons();
 	
 	if (aButtons.length === 0) {
@@ -1956,6 +1997,63 @@ sap.ui.ux3.ToolPopup.prototype.onThemeChanged = function() {
 sap.ui.ux3.ToolPopup.prototype.isInverted = function() {
 	fnUpdateThemeInverted(this);
 	return this.getInverted() && this._bThemeInverted;
+};
+
+/**
+ * This is just a forward to the Popup's function (sap.ui.core.Popup.setAutoCloseAreas)
+ * with the same functionality.
+ * 
+ * @public
+ * @since: 1.19.0
+ */
+sap.ui.ux3.ToolPopup.prototype.setAutoCloseAreas = function(aAutoCloseAreas) {
+	this._ensurePopup();
+	return this.oPopup.setAutoCloseAreas(aAutoCloseAreas);
+};
+
+/**
+ * Adds an ID to the Popup that should be focusable as well when using 'autoclose'.
+ * Chaining is only possible if a valid type (string) is given.
+ * 
+ * @param {sap.ui.core.string} [sID] of the corresponding element that should be focusable as well
+ * @since: 1.19.0
+ * @public
+ */
+sap.ui.ux3.ToolPopup.prototype.addFocusableArea = function(sID) {
+	this._ensurePopup();
+	
+	if (typeof(sID) === "string") {
+		// channelId & eventId are mandatory dummy values
+		this.oPopup._addFocusableArea("channelId", "eventId", {
+			id : sID
+		}); 
+		return this;
+	} else {
+		jQuery.sap.log.error("Wrong type of focusable area ID - string expected", "", "sap.ui.ux3.ToolPopup");
+	}
+};
+
+/**
+ * Removes an ID to the Popup that should be focusable as well when using 'autoclose'.
+ * Chaining is only possible if a valid type (string) is given.
+ * 
+ * @param {sap.ui.core.string} [sID] of the corresponding element
+ * @since: 1.19.0
+ * @public
+ */
+
+sap.ui.ux3.ToolPopup.prototype.removeFocusableArea = function(sID) {
+	this._ensurePopup();
+	
+	if (typeof(sID) === "string") {
+		// channelId & eventId are mandatory dummy values
+		this.oPopup._removeFocusableArea("channelId", "eventId", {
+			id : sID
+		}); 
+		return this;
+	} else {
+		jQuery.sap.log.error("Wrong type of focusable area ID - string expected", "", "sap.ui.ux3.ToolPopup");
+	}
 };
 }());
 

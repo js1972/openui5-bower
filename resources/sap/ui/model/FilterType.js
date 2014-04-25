@@ -3,4 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.model.FilterType");sap.ui.model.FilterType={Application:"Application",Control:"Control"};
+sap.ui.define(['jquery.sap.global'],function(q){"use strict";var F={Application:"Application",Control:"Control"};return F},true);

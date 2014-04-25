@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Aggregations
  * <ul>
  * <li>{@link #getSettingsMenu settingsMenu} : sap.ui.commons.Menu</li>
- * <li>{@link #getAttributes attributes} : sap.ui.ux3.ExactAttribute[]</li></ul>
+ * <li>{@link #getAttributes attributes} <strong>(default aggregation)</strong> : sap.ui.ux3.ExactAttribute[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -149,7 +149,7 @@ sap.ui.ux3.Exact.M_EVENTS = {'search':'search','refineSearch':'refineSearch'};
 
 /**
  * Setter for the aggregated <code>settingsMenu</code>.
- * @param oSettingsMenu {sap.ui.commons.Menu}
+ * @param {sap.ui.commons.Menu} oSettingsMenu
  * @return {sap.ui.ux3.Exact} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.Exact#setSettingsMenu
@@ -171,6 +171,7 @@ sap.ui.ux3.Exact.M_EVENTS = {'search':'search','refineSearch':'refineSearch'};
  * Getter for aggregation <code>attributes</code>.<br/>
  * The attributes which shall be available to refine the search
  * 
+ * <strong>Note</strong>: this is the default aggregation for Exact.
  * @return {sap.ui.ux3.ExactAttribute[]}
  * @public
  * @name sap.ui.ux3.Exact#getAttributes
@@ -273,7 +274,7 @@ sap.ui.ux3.Exact.M_EVENTS = {'search':'search','refineSearch':'refineSearch'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Exact</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Exact</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Exact} <code>this</code> to allow method chaining
  * @public
@@ -339,7 +340,7 @@ sap.ui.ux3.Exact.M_EVENTS = {'search':'search','refineSearch':'refineSearch'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Exact</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Exact</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Exact} <code>this</code> to allow method chaining
  * @public

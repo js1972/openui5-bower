@@ -15,14 +15,14 @@ jQuery.sap.require("sap.m.ListItemBaseRenderer");
 sap.m.GroupHeaderListItemRenderer = sap.ui.core.Renderer.extend(sap.m.ListItemBaseRenderer);
 
 /**
- * Renders the HTML for the given control, using the provided
+ * Renders the attributes for the given list item, using the provided
  * {@link sap.ui.core.RenderManager}.
  *
  * @param {sap.ui.core.RenderManager}
- *          oRenderManager the RenderManager that can be used for writing to the
+ *          rm the RenderManager that can be used for writing to the
  *          Render-Output-Buffer
  * @param {sap.ui.core.Control}
- *          oControl an object representation of the control that should be
+ *          oLI an object representation of the list item that should be
  *          rendered
  */
 sap.m.GroupHeaderListItemRenderer.renderLIAttributes = function(rm, oLI) {
@@ -37,13 +37,13 @@ sap.m.GroupHeaderListItemRenderer.renderLIAttributes = function(rm, oLI) {
  * Renders the List item content
  *
  * @param {sap.ui.core.RenderManager}
- *          oRenderManager the RenderManager that can be used for writing to the
+ *          rm the RenderManager that can be used for writing to the
  *          Render-Output-Buffer
  * @param {sap.ui.core.Control}
- *          oControl an object representation of the control that should be
+ *          oLI an object representation of the list item that should be
  *          rendered
- * @param [{Int}] nColColunt
- *          If this control is inside the table then this param can be used for row spanning
+ * @param {sap.m.Table} [oTable]
+ *          If this control is inside the table then this param can be used for col spanning
  */
 sap.m.GroupHeaderListItemRenderer.renderLIContent = function(rm, oLI, oTable) {
 	var sTitle = oLI.getTitle();

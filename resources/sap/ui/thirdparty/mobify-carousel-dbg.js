@@ -24,9 +24,13 @@ Mobify.UI.Utils = (function($) {
     /**
         Events (either touch or mouse)
     */
-    exports.events = (has.touch)
-        ? {down: 'touchstart', move: 'touchmove', up: 'touchend'}
-        : {down: 'mousedown', move: 'mousemove', up: 'mouseup'};
+    // SAP MODIFICATION
+    exports.events = {
+        down: 'touchstart mousedown',
+        move: 'touchmove mousemove',
+        up: 'touchend touchcancel mouseup'
+    };
+    // SAP MODIFICATION END
 
     /**
         Returns the position of a mouse or touch event in (x, y)
@@ -34,10 +38,17 @@ Mobify.UI.Utils = (function($) {
         @param {Event} touch or mouse event
         @returns {Object} X and Y coordinates
     */
-    exports.getCursorPosition = (has.touch)
-        ? function(e) {e = e.originalEvent || e; return {x: e.touches[0].clientX, y: e.touches[0].clientY}}
-        : function(e) {return {x: e.clientX, y: e.clientY}};
+    // SAP MODIFICATION
+    exports.getCursorPosition = function(e) {
+        e = e.originalEvent || e;
+        var oTouches = e.touches && e.touches[0];
 
+        return {
+            x: oTouches ? oTouches.clientX : e.clientX,
+            y: oTouches ? oTouches.clientY : e.clientY
+        }
+    }
+    // SAP MODIFICATION END
 
     /**
         Returns prefix property for current browser.
@@ -313,7 +324,12 @@ Mobify.UI.Carousel = (function($, Utils) {
             , lockRight = false;
 
         function start(e) {
-        	//SAP MODIFICATION BEGIN
+
+            // SAP MODIFICATION BEGIN
+            if (e.isMarked("delayedMouseEvent")) {
+                return;
+            }
+
             //add event handler flags
     		var oElement = jQuery(e.target).control(0);
     		if(oElement instanceof sap.m.Slider || 
@@ -342,7 +358,12 @@ Mobify.UI.Carousel = (function($, Utils) {
         }
 
         function drag(e) {
-            if (!dragging || canceled) return;
+
+            // SAP MODIFICATION BEGIN
+            if (!dragging || canceled || e.isMarked("delayedMouseEvent")) {
+            	return;
+            }
+            // SAP MODIFICATION END
 
             var newXY = Utils.getCursorPosition(e);
             dx = xy.x - newXY.x;
@@ -365,9 +386,12 @@ Mobify.UI.Carousel = (function($, Utils) {
         }
 
         function end(e) {
-            if (!dragging) {
+
+            // SAP MODIFICATION BEGIN
+            if (!dragging || e.isMarked("delayedMouseEvent")) {
                 return;
             }
+            // SAP MODIFICATION END
 
             dragging = false;
             
@@ -399,12 +423,14 @@ Mobify.UI.Carousel = (function($, Utils) {
             }
         }
 
+        // SAP MODIFICATION BEGIN
         $inner
-            .on(Utils.events.down + '.carousel', start)
-            .on(Utils.events.move + '.carousel', drag)
-            .on(Utils.events.up + '.carousel', end)
+            .on(Utils.events.down, start)
+            .on(Utils.events.move, drag)
+            .on(Utils.events.up, end)
             .on('click.carousel', click)
             .on('mouseout.carousel', end);
+        // SAP MODIFICATION END
 
         $element.on('click', '[data-slide]', function(e){
             e.preventDefault();

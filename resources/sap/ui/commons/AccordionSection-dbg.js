@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -215,6 +215,7 @@ sap.ui.commons.AccordionSection.M_EVENTS = {'scroll':'scroll'};
  * When the panel dimensions are set, the child control may have width and height of 100%;
  * when the panel dimensions are not set, the child defines the panel size.
  * 
+ * <strong>Note</strong>: this is the default aggregation for AccordionSection.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.AccordionSection#getContent
@@ -318,7 +319,7 @@ sap.ui.commons.AccordionSection.M_EVENTS = {'scroll':'scroll'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.AccordionSection</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.AccordionSection</code>.<br/> itself.
  *
  * @return {sap.ui.commons.AccordionSection} <code>this</code> to allow method chaining
  * @public
@@ -392,7 +393,7 @@ sap.ui.commons.AccordionSection.prototype.focusFirstControl = function () {
  */
 sap.ui.commons.AccordionSection.prototype.focus = function () {
 
-	var header = jQuery.sap.domById(this.getId() + "-hdr");
+	var header = this.getDomRef("hdr");
 	header.focus();
 };
 
@@ -401,7 +402,7 @@ sap.ui.commons.AccordionSection.prototype.focus = function () {
  * @private
  */
 sap.ui.commons.AccordionSection.prototype.onThemeChanged = function () {
-	var hdrLeft = jQuery.sap.domById(this.getId() + "-hdrL");
+	var hdrLeft = this.getDomRef("hdrL");
 
 	if (hdrLeft) {
 		hdrLeft.style.width = "auto";
@@ -417,10 +418,10 @@ sap.ui.commons.AccordionSection.prototype.onThemeChanged = function () {
  */;
 sap.ui.commons.AccordionSection.prototype.onAfterRendering = function () {
 
-	this.oScrollDomRef = jQuery.sap.domById(this.getId() + "-cont");
+	this.oScrollDomRef = this.getDomRef("cont");
 	var cont	  = this.oScrollDomRef;
 	var root	  = this.getDomRef();
-	var accordion = jQuery.sap.domById(this.getParent().getId());
+	var accordion = this.getParent().getDomRef();
 	// if only height is set, the content area's height needs to be adapted  (should be a rare use-case)
 	if (!sap.ui.commons.AccordionSection._isSizeSet(this.getParent().getWidth()) && sap.ui.commons.AccordionSection._isSizeSet(this.getMaxHeight())) {
 		if (cont) {
@@ -441,7 +442,7 @@ sap.ui.commons.AccordionSection.prototype.onAfterRendering = function () {
 
 
 	var borderTotal = parseFloat(leftBorder.substring(0, leftBorder.indexOf("px") )) + parseFloat(rightBorder.substring(0, rightBorder.indexOf("px") ));
-	var oDomLabel = jQuery.sap.domById(this.getId() + "-lbl");
+	var oDomLabel = this.getDomRef("lbl");
 	root.style.width = accordion.offsetWidth - borderTotal + "px";
 	oDomLabel.style.width = accordion.offsetWidth - 30 + "px";
 
@@ -450,14 +451,14 @@ sap.ui.commons.AccordionSection.prototype.onAfterRendering = function () {
 	if (!fnScrollProxy) {
 		fnScrollProxy = this.__scrollproxy__ = jQuery.proxy(this.onscroll, this);
 	}
-	jQuery.sap.byId(this.getId()+"-cont").bind("scroll", fnScrollProxy);
+	this.$("cont").bind("scroll", fnScrollProxy);
 
 };
 
 sap.ui.commons.AccordionSection.prototype.onBeforeRendering = function() {
 	var fnScrollProxy = this.__scrollproxy__;
 	if (fnScrollProxy) {
-		jQuery.sap.byId(this.getId()+"-cont").unbind("scroll", fnScrollProxy);
+		this.$("cont").unbind("scroll", fnScrollProxy);
 	}
 };
 
@@ -536,12 +537,12 @@ sap.ui.commons.AccordionSection.prototype._setCollapsedState = function(bCollaps
 				this.getDomRef().style.width = this.getDomRef().offsetWidth + "px"; // maintain the current width
 			}
 			jQuery(this.getDomRef()).addClass("sapUiAcdSectionColl");
-			var tb = jQuery.sap.domById(this.getId() + "-tb");
+			var tb = this.getDomRef("tb");
 			if (tb) {
 				tb.style.display = "none";
 			}
 
-			var cont = jQuery.sap.domById(this.getId() + "-cont");
+			var cont = this.getDomRef("cont");
 			cont.style.display = "none";
 			if (accessibility) {
 				cont.setAttribute("aria-expanded", "false");
@@ -552,18 +553,18 @@ sap.ui.commons.AccordionSection.prototype._setCollapsedState = function(bCollaps
 
 		} else {
 			// expanding
-			if (!jQuery.sap.domById(this.getId() + "-cont")) {
+			if (!this.getDomRef("cont")) {
 				// content has not been rendered yet, so render it now
 				this.rerender(); // TODO: potentially restore focus to collapse icon/button
 			} else {
 				// content exists already, just make it visible again
 				jQuery(this.getDomRef()).removeClass("sapUiAcdSectionColl");
-				var tb = jQuery.sap.domById(this.getId() + "-tb");
+				var tb = this.getDomRef("tb");
 				if (tb) {
 					tb.style.display = "block";
 				}
 
-				var cont = jQuery.sap.domById(this.getId() + "-cont");
+				var cont = this.getDomRef("cont");
 				cont.style.display = "block";
 				if (accessibility) {
 					cont.setAttribute("aria-expanded", "true");

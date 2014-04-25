@@ -40,7 +40,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getControl control} : sap.ui.core.Control</li></ul>
+ * <li>{@link #getControl control} <strong>(default aggregation)</strong> : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -266,6 +266,7 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.PositionContainer", { metadata
  * Getter for aggregation <code>control</code>.<br/>
  * Child control of the position container
  * 
+ * <strong>Note</strong>: this is the default aggregation for layout/PositionContainer.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.ui.commons.layout.PositionContainer#getControl
@@ -275,7 +276,7 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.PositionContainer", { metadata
 
 /**
  * Setter for the aggregated <code>control</code>.
- * @param oControl {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oControl
  * @return {sap.ui.commons.layout.PositionContainer} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.PositionContainer#setControl

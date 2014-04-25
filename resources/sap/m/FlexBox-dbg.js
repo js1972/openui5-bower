@@ -43,7 +43,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -345,6 +345,7 @@ sap.ui.core.Control.extend("sap.m.FlexBox", { metadata : {
  * Getter for aggregation <code>items</code>.<br/>
  * Flex items within the FlexBox layout
  * 
+ * <strong>Note</strong>: this is the default aggregation for FlexBox.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.FlexBox#getItems
@@ -457,7 +458,7 @@ sap.m.FlexBox.prototype.setDirection = function(sValue) {
 sap.m.FlexBox.prototype.setFitContainer = function(sValue) {
 	if(sValue && !(this.getParent() instanceof sap.m.FlexBox)) {
 		jQuery.sap.log.info("FlexBox fitContainer set to true. Remember, if the FlexBox is inserted into a Page, the property 'enableScrolling' of the Page needs to be set to 'false' for the FlexBox to fit the entire viewport.");
-		var $flexContainer = jQuery.sap.byId(this.getId());
+		var $flexContainer = this.$();
 		$flexContainer.css("width", "auto");
 		$flexContainer.css("height", "100%");
 	}
@@ -524,11 +525,11 @@ sap.m.FlexBox.prototype.sanitizeChildren = function(oControl) {
 		if(aChildren[i].getVisible === undefined || aChildren[i].getVisible()) {
 			var $child = "";
 			if(aChildren[i] instanceof sap.m.FlexBox) {
-				$child = jQuery.sap.byId(aChildren[i].getId());
+				$child = aChildren[i].$();
 			} else {
-				$child = jQuery.sap.byId(aChildren[i].getId()).parent();	// Get wrapper <div>
+				$child = aChildren[i].$().parent();	// Get wrapper <div>
 			}
-			var domchild =  jQuery.sap.domById(aChildren[i].getId());
+			var domchild =  aChildren[i].getDomRef();
 			$child.width("auto");
 			//$child.height("100%");
 			if(aChildren[i] instanceof sap.m.FlexBox) {

@@ -135,7 +135,7 @@ sap.ui.commons.RoadMapRenderer.selectStep = function(oRoadMap, oStep, bIsSubStep
 		//Expandable step -> Toggle the expand state
 
 		var aSteps = oStep.getSubSteps();
-		var jDomRef = jQuery.sap.byId(oStep.getId());
+		var jDomRef = oStep.$();
 		var bIsExpanded = jDomRef.hasClass("sapUiRoadMapExpanded"); //Get the current expand state
 
 		var iCounter = 1; //Must be in the end 0 when all animations are done (see fDoOnAnimComplete)
@@ -186,8 +186,8 @@ sap.ui.commons.RoadMapRenderer.selectStep = function(oRoadMap, oStep, bIsSubStep
 
 		if(sap.ui.getCore().getConfiguration().getAccessibility()){
 			var bExp = jDomRef.hasClass("sapUiRoadMapExpanded");
-			jQuery.sap.byId(oStep.getId()+"-box").attr("aria-expanded", bExp);
-			jQuery.sap.byId(oStep.getId()+"-expandend-box").attr("aria-expanded", bExp);
+			oStep.$("box").attr("aria-expanded", bExp);
+			oStep.$("expandend-box").attr("aria-expanded", bExp);
 		}
 
 		//Hide / Show the sub steps
@@ -216,10 +216,10 @@ sap.ui.commons.RoadMapRenderer.selectStep = function(oRoadMap, oStep, bIsSubStep
  */
 sap.ui.commons.RoadMapRenderer.updateStepArea = function(oRoadMap){
 	if(oRoadMap.iStepWidth != -1){
-		var jStepAreaRef = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
-		var jStartDelimRef = jQuery.sap.byId(oRoadMap.getId() + "-Start");
-		var jEndDelimRef = jQuery.sap.byId(oRoadMap.getId() + "-End");
-		var jRoadMapRef = jQuery.sap.byId(oRoadMap.getId());
+		var jStepAreaRef = oRoadMap.$("steparea");
+		var jStartDelimRef = oRoadMap.$("Start");
+		var jEndDelimRef = oRoadMap.$("End");
+		var jRoadMapRef = oRoadMap.$();
 
 		var iScrollLeft = jStepAreaRef.scrollLeft();
 
@@ -256,7 +256,7 @@ sap.ui.commons.RoadMapRenderer.updateStepArea = function(oRoadMap){
 sap.ui.commons.RoadMapRenderer.updateScrollArea = function(oRoadMap, bSkipScrollState){
 	sap.ui.commons.RoadMapRenderer.updateStepArea(oRoadMap);
 	if(!bSkipScrollState){
-		var jStepArea = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
+		var jStepArea = oRoadMap.$("steparea");
 		var oPos = getStepEndPosition(oRoadMap, false);
 		if(oRoadMap.getFirstVisibleStep()){
 			var jStep = jQuery.sap.byId(oRoadMap.getFirstVisibleStep());
@@ -276,7 +276,7 @@ sap.ui.commons.RoadMapRenderer.updateScrollArea = function(oRoadMap, bSkipScroll
  * @private
  */
 sap.ui.commons.RoadMapRenderer.isVisibleRef = function(oRoadMap, sId){
-	var jStepArea = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
+	var jStepArea = oRoadMap.$("steparea");
 	var jStepAreaChildren = jStepArea.children(":visible");
 	for(var i=0; i<jStepAreaChildren.length; i++){
 		var jChild = jQuery(jStepAreaChildren.get(i));
@@ -297,7 +297,7 @@ sap.ui.commons.RoadMapRenderer.isVisibleRef = function(oRoadMap, sId){
  * @private
  */
 sap.ui.commons.RoadMapRenderer.getFirstVisibleRef = function(oRoadMap){
-	var jStepArea = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
+	var jStepArea = oRoadMap.$("steparea");
 	var jStepAreaChildren = jStepArea.children(":visible");
 	for(var i=0; i<jStepAreaChildren.length; i++){
 		var jChild = jQuery(jStepAreaChildren.get(i));
@@ -319,15 +319,15 @@ sap.ui.commons.RoadMapRenderer.getFirstVisibleRef = function(oRoadMap){
  */
 sap.ui.commons.RoadMapRenderer.setStepLabel = function(oStep, sLabel){
 	var l = sLabel ? jQuery.sap.escapeHTML(sLabel) : "";
-	jQuery.sap.byId(oStep.getId()+"-label").html(l);
-	jQuery.sap.byId(oStep.getId()+"-expandend-label").html(l);
+	oStep.$("label").html(l);
+	oStep.$("expandend-label").html(l);
 	
 	if(!sap.ui.getCore().getConfiguration().getAccessibility()) {
 		return;
 	}
 	
-	jQuery.sap.byId(oStep.getId()+"-box").attr("aria-label", getAriaLabel(oStep, sLabel));
-	jQuery.sap.byId(oStep.getId()+"-expandend-box").attr("aria-label", getAriaLabel(oStep, sLabel));
+	oStep.$("box").attr("aria-label", getAriaLabel(oStep, sLabel));
+	oStep.$("expandend-box").attr("aria-label", getAriaLabel(oStep, sLabel));
 };
 
 
@@ -341,14 +341,14 @@ sap.ui.commons.RoadMapRenderer.setStepLabel = function(oStep, sLabel){
  * @private
  */
 sap.ui.commons.RoadMapRenderer.setStepEnabled = function(oRoadMap, oStep, bEnabled){
-	var jRef = jQuery.sap.byId(oStep.getId());
-	var jRef2 = jQuery.sap.byId(oStep.getId()+"-expandend");
+	var jRef = oStep.$();
+	var jRef2 = oStep.$("expandend");
 	if(bEnabled){
 		jRef.removeClass("sapUiRoadMapDisabled");
 		jRef2.removeClass("sapUiRoadMapDisabled");
 		if(sap.ui.getCore().getConfiguration().getAccessibility()){
-			jQuery.sap.byId(oStep.getId()+"-box").removeAttr("aria-disabled");
-			jQuery.sap.byId(oStep.getId()+"-expandend-box").removeAttr("aria-disabled");
+			oStep.$("box").removeAttr("aria-disabled");
+			oStep.$("expandend-box").removeAttr("aria-disabled");
 		}
 		return false;
 	}else{
@@ -359,12 +359,12 @@ sap.ui.commons.RoadMapRenderer.setStepEnabled = function(oRoadMap, oStep, bEnabl
 		jRef.addClass("sapUiRoadMapDisabled");
 		jRef2.addClass("sapUiRoadMapDisabled");
 		if(sap.ui.getCore().getConfiguration().getAccessibility()){
-			var jRefBox = jQuery.sap.byId(oStep.getId()+"-box");
+			var jRefBox = oStep.$("box");
 			jRefBox.attr("aria-disabled", true);
 			if(bSelected) {
 				jRefBox.removeAttr("aria-checked");
 			}
-			jQuery.sap.byId(oStep.getId()+"-expandend-box").attr("aria-disabled", true);
+			oStep.$("expandend-box").attr("aria-disabled", true);
 		}
 		return bSelected;
 	}
@@ -382,8 +382,8 @@ sap.ui.commons.RoadMapRenderer.setStepEnabled = function(oRoadMap, oStep, bEnabl
  * @private
  */
 sap.ui.commons.RoadMapRenderer.setStepVisible = function(oRoadMap, oStep, bIsSubStep, bVisible){
-	var jRef = jQuery.sap.byId(oStep.getId());
-	var jRef2 = jQuery.sap.byId(oStep.getId()+"-expandend");
+	var jRef = oStep.$();
+	var jRef2 = oStep.$("expandend");
 	var bSelected = oRoadMap.getSelectedStep() == oStep.getId();
 
 	var oParent = oStep.getParent();
@@ -412,11 +412,11 @@ sap.ui.commons.RoadMapRenderer.setStepVisible = function(oRoadMap, oStep, bIsSub
 
 			for(var i=0; i<aSteps.length; i++){
 				if(aSteps[i].getVisible()){
-					var jRef3 = jQuery.sap.byId(aSteps[i].getId());
+					var jRef3 = aSteps[i].$();
 					if(oRoadMap.getSelectedStep() == aSteps[i].getId()){
 						bSelected = true;
 						jRef3.removeClass("sapUiRoadMapSelected");
-						jQuery.sap.byId(aSteps[i].getId()+"-box").removeAttr("aria-checked");
+						aSteps[i].$("box").removeAttr("aria-checked");
 					}
 					if(bVisible){
 						jRef3.removeClass("sapUiRoadMapHidden");
@@ -441,7 +441,7 @@ sap.ui.commons.RoadMapRenderer.setStepVisible = function(oRoadMap, oStep, bIsSub
  * @private
  */
 sap.ui.commons.RoadMapRenderer.setRoadMapWidth = function(oRoadMap, sWidth){
-	var jRef = jQuery.sap.byId(oRoadMap.getId());
+	var jRef = oRoadMap.$();
 	jRef.attr("style", "width:"+(sWidth ? sWidth : "100%")+";");
 };
 
@@ -478,7 +478,7 @@ sap.ui.commons.RoadMapRenderer.addEllipses = function(oStep){
 		return;
 	}
 
-	var jStepLabel = jQuery.sap.byId(oStep.getId()+"-label");
+	var jStepLabel = oStep.$("label");
 	var sOriginalText = jQuery.sap.escapeHTML(oStep.getLabel());
 	var sText = sOriginalText + "";
 
@@ -525,11 +525,11 @@ sap.ui.commons.RoadMapRenderer.updateStepAria = function(oStep){
 	for(var i=0; i<aSteps.length; i++){
 		var sPosInSet = getAriaPosInSet(aSteps[i]);
 		var sSetSize = getAriaSetSize(aSteps[i]);
-		var jStepBox = jQuery.sap.byId(aSteps[i].getId()+"-box");
+		var jStepBox = aSteps[i].$("box");
 		jStepBox.attr("aria-posinset", sPosInSet);
 		jStepBox.attr("aria-setsize", sSetSize);
 		if(bIsTopLevel && aSteps[i].getSubSteps().length > 0){
-			jStepBox = jQuery.sap.byId(aSteps[i].getId()+"-expandend-box");
+			jStepBox = aSteps[i].$("expandend-box");
 			jStepBox.attr("aria-posinset", sPosInSet);
 			jStepBox.attr("aria-setsize", sSetSize);
 		}
@@ -787,15 +787,15 @@ var getStepName = function(oRoadMap, oStep){
 var updateDelimiters = function(oRoadMap){
 	var iRTLFactor = getRTLFactor();
 
-	var jStepArea = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
+	var jStepArea = oRoadMap.$("steparea");
 
 	var iScrollLeft = getScrollLeft(jStepArea);
 
-	var jStartDelim = jQuery.sap.byId(oRoadMap.getId() + "-Start");
+	var jStartDelim = oRoadMap.$("Start");
 	jStartDelim.removeClass("sapUiRoadMapStartScroll").removeClass("sapUiRoadMapStartFixed");
 	jStartDelim.addClass(iRTLFactor*iScrollLeft >= oRoadMap.iStepWidth ? "sapUiRoadMapStartScroll" : "sapUiRoadMapStartFixed");
 
-	var jEndDelim = jQuery.sap.byId(oRoadMap.getId() + "-End");
+	var jEndDelim = oRoadMap.$("End");
 	jEndDelim.removeClass("sapUiRoadMapEndScroll").removeClass("sapUiRoadMapEndFixed");
 	var bEndReached = jStepArea.get(0).scrollWidth - iRTLFactor*iScrollLeft - jStepArea.width() < oRoadMap.iStepWidth;
 	jEndDelim.addClass(bEndReached ? "sapUiRoadMapEndFixed" : "sapUiRoadMapEndScroll");
@@ -868,7 +868,7 @@ var getScrollLeft = function(jStepArea){
 //Calculates the position of the fisrt/last step (with fix for Safari in RTL mode) to make the position and scroll calculations running
 //(see comment on getRTLFactor for RTL behavior)
 var getStepEndPosition = function(oRoadMap, bLast){
-	var iScrollWidth = jQuery.sap.byId(oRoadMap.getId() + "-steparea").get(0).scrollWidth;
+	var iScrollWidth = oRoadMap.$("steparea").get(0).scrollWidth;
 	if(sap.ui.getCore().getConfiguration().getRTL() && !!sap.ui.Device.browser.webkit){
 		return bLast ? 0 : (-1)*iScrollWidth;
 	}
@@ -878,7 +878,7 @@ var getStepEndPosition = function(oRoadMap, bLast){
 
 //Scrolls to the given position
 var updateScrollState = function(oRoadMap, iNewPos, bSkipAnim, fEndCallBack){
-	var jStepArea = jQuery.sap.byId(oRoadMap.getId() + "-steparea");
+	var jStepArea = oRoadMap.$("steparea");
 	jStepArea.stop(false, true);
 
 	if(iNewPos == "next"){
