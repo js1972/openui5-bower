@@ -46,7 +46,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title</li>
  * <li>{@link #getButtons buttons} : sap.ui.commons.Button[]</li></ul>
  * </li>
@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -429,6 +429,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Panel", { metadata : {
  * When the Panel dimensions are set, the child control may have width and height of 100%. When the dimensions are not set, the child defines
  * the Panel size.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Panel.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.Panel#getContent
@@ -519,7 +520,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Panel", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title}
+ * @param {sap.ui.core.Title} oTitle
  * @return {sap.ui.commons.Panel} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.Panel#setTitle
@@ -634,7 +635,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Panel", { metadata : {
  * Panel height as CSS size
  * 
 
- * @type void
+ * @type sap.ui.commons.Panel
  * @public
  */
 
@@ -706,7 +707,7 @@ sap.ui.commons.Panel.prototype.onAfterRendering = function () {
 	this._oScrollDomRef = jQuery.sap.domById(id + "-cont");
 	if (!this._oScrollDomRef) {
 		return;
-	} // BugFix for TwoGo where the DomRefs where not there after rendering
+	} // BugFix for TwoGo where the DomRefs were not there after rendering
 	this._oHeaderDomRef = jQuery.sap.domById(id + "-hdr");
 	this._oTitleDomRef = jQuery.sap.domById(id + "-title");
 	this._oToolbarDomRef = jQuery.sap.domById(id + "-tb");
@@ -1012,9 +1013,9 @@ sap.ui.commons.Panel.prototype.setCollapsed = function(bCollapsed) {
  */
 sap.ui.commons.Panel.prototype._setCollapsedState = function(bCollapsed) {
 	var oDomRef = this.getDomRef();
-	var accessibility = sap.ui.getCore().getConfiguration().getAccessibility();
 	if (oDomRef) {
 		// after Panel has been rendered
+		var accessibility = sap.ui.getCore().getConfiguration().getAccessibility();
 		if (bCollapsed) {
 			// collapsing
 			if (!this.getWidth()) {
@@ -1030,12 +1031,12 @@ sap.ui.commons.Panel.prototype._setCollapsedState = function(bCollapsed) {
 			}
 			// update tooltips
 			var sExpandTooltip = this._rb.getText("PANEL_EXPAND");
-			jQuery.sap.byId(this.getId() + "-collArrow").attr("title", sExpandTooltip);
-			jQuery.sap.byId(this.getId() + "-collIco").attr("title", sExpandTooltip);
+			this.$("collArrow").attr("title", sExpandTooltip);
+			this.$("collIco").attr("title", sExpandTooltip);
 
 		} else {
 			// expanding
-			if (!jQuery.sap.domById(this.getId() + "-cont")) {
+			if (!this.getDomRef("cont")) {
 				// content has not been rendered yet, so render it now
 				this._bFocusCollapseIcon = true; // restore focus to collapse icon/button after rendering
 				this.rerender();
@@ -1053,8 +1054,8 @@ sap.ui.commons.Panel.prototype._setCollapsedState = function(bCollapsed) {
 				}
 				// update tooltips
 				var sCollapseTooltip = this._rb.getText("PANEL_COLLAPSE");
-				jQuery.sap.byId(this.getId() + "-collArrow").attr("title", sCollapseTooltip);
-				jQuery.sap.byId(this.getId() + "-collIco").attr("title", sCollapseTooltip);
+				this.$("collArrow").attr("title", sCollapseTooltip);
+				this.$("collIco").attr("title", sCollapseTooltip);
 			}
 		}
 	}

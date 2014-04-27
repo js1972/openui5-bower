@@ -5,18 +5,25 @@
  */
 
 // Provides a filter for list bindings
-jQuery.sap.declare("sap.ui.model.FormatException");
-jQuery.sap.require("sap.ui.base.Exception");
+sap.ui.define(['jquery.sap.global', 'sap/ui/base/Exception'],
+	function(jQuery, Exception) {
+	"use strict";
 
-/**
- * FormatException class
- *
- * This exception is thrown, when an error occurs while trying to convert a value of the model to
- * a specific property value in the UI.
- *
- */
-sap.ui.model.FormatException = function(message) {
-	this.name = "FormatException";
-	this.message = message;
-};
-sap.ui.model.FormatException.prototype = jQuery.sap.newObject(sap.ui.base.Exception.prototype);
+
+	/**
+	 * FormatException class
+	 *
+	 * This exception is thrown, when an error occurs while trying to convert a value of the model to
+	 * a specific property value in the UI.
+	 *
+	 * @name sap.ui.model.FormatException
+	 */
+	var FormatException = function(message) {
+		this.name = "FormatException";
+		this.message = message;
+	};
+	FormatException.prototype = jQuery.sap.newObject(Exception.prototype);
+
+	return FormatException;
+
+}, /* bExport= */ true);

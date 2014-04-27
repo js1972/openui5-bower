@@ -3,5 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.model.resource.ResourcePropertyBinding");jQuery.sap.require("sap.ui.model.PropertyBinding");sap.ui.model.PropertyBinding.extend("sap.ui.model.resource.ResourcePropertyBinding",{constructor:function(m,p){sap.ui.model.PropertyBinding.apply(this,arguments);this.oValue=this.oModel.getProperty(p)}});
-sap.ui.model.resource.ResourcePropertyBinding.prototype.getValue=function(){return this.oModel.getProperty(this.sPath)};
+sap.ui.define(['jquery.sap.global','sap/ui/model/PropertyBinding'],function(q,P){"use strict";var R=P.extend("sap.ui.model.resource.ResourcePropertyBinding",{constructor:function(m,p){P.apply(this,arguments);this.oValue=this.oModel.getProperty(p)}});R.prototype.getValue=function(){return this.oModel.getProperty(this.sPath)};return R},true);

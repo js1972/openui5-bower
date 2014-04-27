@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.Message.
-jQuery.sap.declare("sap.ui.core.Message");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['./library','./Element','./theming/Parameters'], function() {
+	"use strict";
 
 
 /**
@@ -62,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -246,8 +245,7 @@ sap.ui.core.Element.extend("sap.ui.core.Message", { metadata : {
  */
 
 
-// Start of sap\ui\core\Message.js
-jQuery.sap.require("sap.ui.core.theming.Parameters");
+// Start of sap/ui/core/Message.js
 /**
  * This file defines behavior for the control,
  */
@@ -352,3 +350,7 @@ sap.ui.core.Message.compareByType = function(oMessage1, oMessage2) {
 		return 0;
 	}
 };
+
+	return sap.ui.core.Message;
+
+}, /* bExport = */ true);

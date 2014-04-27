@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -400,7 +400,7 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>styled</code>.
- * Indicatied if the button is styled. If not it is rendered as native HTML-button. In this case a custom styling can be added usig addStyleClass.
+ * Indicates if the button is styled. If not it is rendered as native HTML-button. In this case a custom styling can be added usig addStyleClass.
  *
  * Default value is <code>true</code>
  *
@@ -576,7 +576,7 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Button</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Button</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Button} <code>this</code> to allow method chaining
  * @public
@@ -667,7 +667,7 @@ sap.ui.commons.Button.prototype.onmousedown = function(oEvent) {
  * Function to handle the mouse down event.
  *
  * @param {jQuery.Event} oEvent The causing event.
- * @param {Boolean} [bFocus=false] Whether to set the focus on the selected element in a delayed call.
+ * @param {boolean} [bFocus=false] Whether to set the focus on the selected element in a delayed call.
  * @private
  */
 sap.ui.commons.Button.prototype.handleMouseDown = function(oEvent, bFocus) {
@@ -679,8 +679,8 @@ sap.ui.commons.Button.prototype.handleMouseDown = function(oEvent, bFocus) {
 		if(sap.ui.Device.browser.mobile && !!sap.ui.Device.browser.webkit){
 			//In mobile Webkit Browsers (IPad) the focus must be set immediately to ensure that a focusout happens whereever the
 			//focus currently is. The deleayedCall below is still needed due to the reason described above. (CSN 2536817 2012)
-            this.focus();   
-        }
+			this.focus();
+		}
 		jQuery.sap.delayedCall(0, this, function(){
 			this.focus();
 		}); 

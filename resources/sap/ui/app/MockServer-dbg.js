@@ -5,11 +5,10 @@
  */
 
 // Provides class sap.ui.app.MockServer for mocking a server
-jQuery.sap.declare("sap.ui.app.MockServer");
-jQuery.sap.require("sap.ui.core.util.MockServer");
+sap.ui.define(['jquery.sap.global', 'sap/ui/core/util/MockServer'],
+	function(jQuery, MockServer1) {
+	"use strict";
 
-(function() {
-	
 
 	/**
 	 * Creates a mocked server. This helps to mock all or some backend calls, e.g. for OData/JSON Models or simple XHR calls, without
@@ -24,13 +23,15 @@ jQuery.sap.require("sap.ui.core.util.MockServer");
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @public
 	 * @name sap.ui.app.MockServer
 	 * @experimental Since 1.13.0. The mock server is still under construction, so some implementation details can be changed in future.
 	 * @deprecated Since 1.15.1. The mock server code has been moved to sap.ui.core.util - see {@link sap.ui.core.util.MockServer}
 	 */
-	sap.ui.app.MockServer = sap.ui.core.util.MockServer;
+	var MockServer = MockServer1;
+	
 
+	return MockServer;
 
-})();
+}, /* bExport= */ true);

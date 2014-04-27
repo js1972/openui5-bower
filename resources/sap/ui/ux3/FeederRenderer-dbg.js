@@ -78,7 +78,5 @@ sap.ui.ux3.FeederRenderer.render = function(oRenderManager, oControl){
 };
 
 sap.ui.ux3.FeederRenderer.getEmptyTextInfo = function( oFeeder ){
-
-	return "<span class='sapUiFeederEmptyText'>" + oFeeder.rb.getText("FEED_EMPTY_FEEDER")+ "</span>";
-
+	return "<span class='sapUiFeederEmptyText'>" + jQuery.sap.encodeHTML(oFeeder.getPlaceholderText() || oFeeder.rb.getText("FEED_EMPTY_FEEDER")) + "</span>";
 };

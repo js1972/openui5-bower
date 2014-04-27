@@ -5,17 +5,24 @@
  */
 
 // Provides default renderer for View
-jQuery.sap.declare("sap.ui.core.mvc.ViewRenderer");
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
-/**
- * @class View renderer.
- * @static
- */
-sap.ui.core.mvc.ViewRenderer = {
-};
 
-sap.ui.core.mvc.ViewRenderer.addDisplayClass = function(rm, oControl) {
-	if (oControl.getDisplayBlock() || (oControl.getWidth() === "100%" && oControl.getHeight() === "100%")) {
-		rm.addClass("sapUiViewDisplayBlock");
-	}
-};
+	/**
+	 * @namespace View renderer.
+	 * @name sap.ui.core.mvc.ViewRenderer
+	 */
+	var ViewRenderer = {
+	};
+	
+	ViewRenderer.addDisplayClass = function(rm, oControl) {
+		if (oControl.getDisplayBlock() || (oControl.getWidth() === "100%" && oControl.getHeight() === "100%")) {
+			rm.addClass("sapUiViewDisplayBlock");
+		}
+	};
+
+	return ViewRenderer;
+
+}, /* bExport= */ true);

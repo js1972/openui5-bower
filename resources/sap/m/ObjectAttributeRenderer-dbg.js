@@ -36,7 +36,9 @@ sap.m.ObjectAttributeRenderer.render = function(oRm, oOA) {
 		
 		oRm.write(">");
 		oRm.write("<span>");
-		oRm.writeEscaped(oOA.getText());
+		var oText = new sap.m.Text({text: oOA.getText()});
+		oText.setMaxLines(2);
+		oRm.renderControl(oText);
 		oRm.write("</span>");
 		oRm.write("</div>");
 	}

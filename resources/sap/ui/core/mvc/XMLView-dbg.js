@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.mvc.XMLView.
-jQuery.sap.declare("sap.ui.core.mvc.XMLView");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.mvc.View");
+sap.ui.define(['sap/ui/core/library','./View','jquery.sap.xml','sap/ui/base/DataType','sap/ui/model/resource/ResourceModel','sap/ui/core/XMLTemplateProcessor'], function() {
+	"use strict";
 
 
 /**
@@ -55,7 +54,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -87,13 +86,9 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.XMLView", { metadata : {
  */
 
 
-// Start of sap\ui\core\mvc\XMLView.js
-jQuery.sap.require("jquery.sap.xml");
-jQuery.sap.require("sap.ui.base.DataType");
-jQuery.sap.require("sap.ui.model.resource.ResourceModel");
-jQuery.sap.require("sap.ui.core.XMLTemplateProcessor");
+// Start of sap/ui/core/mvc/XMLView.js
 
-(function(){
+
 
 	/**
 	 * Instantiates an XMLView of the given name and with the given id.
@@ -245,4 +240,8 @@ jQuery.sap.require("sap.ui.core.XMLTemplateProcessor");
 		}
 	});
 
-}());
+
+
+	return sap.ui.core.mvc.XMLView;
+
+}, /* bExport = */ true);

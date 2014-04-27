@@ -7,9 +7,9 @@
 /*
  * Provides methods to store and retrieve data based on Web Storage API.
  */
-jQuery.sap.declare("jquery.sap.storage", false);
-
-(function() {
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
 	/**
 	 * Check whether the current environment supports JSON.parse and JSON stringify.
@@ -50,7 +50,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -266,7 +266,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -277,6 +277,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @borrows jQuery.sap.storage.Storage.clear as clear
 	 * @borrows jQuery.sap.storage.Storage.getType as getType
 	 * @borrows jQuery.sap.storage.Storage.removeAll as removeAll
+	 * @function
 	 */
 	jQuery.sap.storage = function(oStorage, sIdPrefix){
 		// if nothing or the default was passed in, simply return ourself
@@ -303,7 +304,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {
@@ -327,6 +328,7 @@ jQuery.sap.declare("jquery.sap.storage", false);
 	// ensure the storage constructor applied to our storage object
 	fnStorage.apply(jQuery.sap.storage);
 	mStorages[jQuery.sap.storage.Type.session] = jQuery.sap.storage;
-
-// end of anonymous function creating the storage instance and its methods
-}());
+	
+	return jQuery;
+	
+}, /* bExport= */ false);

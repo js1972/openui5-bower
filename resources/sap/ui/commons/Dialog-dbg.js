@@ -52,7 +52,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Aggregations
  * <ul>
  * <li>{@link #getButtons buttons} : sap.ui.core.Control[]</li>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -72,9 +72,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * @class
  * An interactive window appearing on request displaying information to the user. The API supports features such as popups with fixed sizes, popups with unlimited width, scrolling bars for large windows, and control nesting (for example, a drop-down list can be included in the window).
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -83,6 +84,9 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.ui.commons.Dialog", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.PopupInterface"
+	],
 	publicMethods : [
 		// methods
 		"open", "close", "isOpen", "getOpenState"
@@ -685,6 +689,7 @@ sap.ui.commons.Dialog.M_EVENTS = {'closed':'closed'};
  * 
  * Caveat: when content is added with width given as a percentage, the Dialog itself should have a width set.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Dialog.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.Dialog#getContent
@@ -844,7 +849,7 @@ sap.ui.commons.Dialog.M_EVENTS = {'closed':'closed'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Dialog</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Dialog</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Dialog} <code>this</code> to allow method chaining
  * @public
@@ -965,7 +970,7 @@ sap.ui.commons.Dialog.prototype.setInitialFocus = function(sId) {
  * @private
  */
 sap.ui.commons.Dialog.prototype.onAfterRendering = function() {
-	var $content = jQuery.sap.byId(this.getId() + "-cont");
+	var $content = this.$("cont");
 
 	// if content has 100% width, but Dialog has no width, set content width to auto
 	if (!sap.ui.commons.Dialog._isSizeSet(this.getWidth()) && !sap.ui.commons.Dialog._isSizeSet(this.getMaxWidth())) {
@@ -1003,7 +1008,7 @@ sap.ui.commons.Dialog.prototype.onAfterRendering = function() {
 		
 		// however, when there is a minHeight set which is larger than the natural height, the footer would be not at the bottom, so let's check whether the Dialog
 		// is now smaller than the min-height:
-		var footer = jQuery.sap.domById(this.getId() + "-footer");
+		var footer = this.getDomRef("footer");
 		var footerBottom = footer.offsetTop + footer.offsetHeight;
 		var dialogBottom = this.getDomRef().offsetHeight;
 		if (footerBottom < dialogBottom) {
@@ -1148,7 +1153,7 @@ sap.ui.commons.Dialog.prototype.restorePreviousFocus = function() {
 
 sap.ui.commons.Dialog.prototype.setTitle = function (sText) {
 	this.setProperty("title", sText, true); // last parameter avoids invalidation
-	jQuery.sap.byId(this.getId() + "-lbl").text(sText);
+	this.$("lbl").text(sText);
 	return this;
 };
 
@@ -1237,8 +1242,8 @@ sap.ui.commons.Dialog.prototype.onfocusin = function(oEvent){
 	
 	var oSourceDomRef = oEvent.target;
 	var oFocusDomRef = undefined;
-	var $FocusablesCont = jQuery(":sapFocusable", jQuery.sap.byId(this.getId() + "-cont"));
-	var $FocusablesFoot = jQuery(":sapFocusable", jQuery.sap.byId(this.getId() + "-footer"));
+	var $FocusablesCont = jQuery(":sapFocusable", this.$("cont"));
+	var $FocusablesFoot = jQuery(":sapFocusable", this.$("footer"));
 
 	/*
 	 * It's not needed to check if buttons are set since jQuery(":focusable", jQuery.sap.byId(this.getId() + "-fhfe")) 
@@ -1287,7 +1292,7 @@ sap.ui.commons.Dialog.prototype.restoreFocus = function() {
  * @private
  */
 sap.ui.commons.Dialog.prototype.onselectstart = function(oEvent) {
-	if (!jQuery.sap.containsOrEquals(jQuery.sap.domById(this.getId() + "-cont"), oEvent.target)) {
+	if (!jQuery.sap.containsOrEquals(this.getDomRef("cont"), oEvent.target)) {
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
 	}
@@ -1406,7 +1411,7 @@ sap.ui.commons.Dialog.prototype.onmousedown = function (oEvent) {
 
 	this._bRtlMode = sap.ui.getCore().getConfiguration().getRTL(); // remember the RTL mode for the starting resize operation
 
-	if(jQuery.sap.containsOrEquals(jQuery.sap.domById(sId + "-hdr"), oSource)) {
+	if(jQuery.sap.containsOrEquals(this.getDomRef("hdr"), oSource)) {
 		if (oSource.id != (sId + "-close")) {
 			this.sDragMode = "move";
 			this._RootWidth = this.getDomRef().offsetWidth;
@@ -1555,7 +1560,7 @@ sap.ui.commons.Dialog.prototype.handleMove = function (event) {
  * This function checks if the "keepInWindow" property is set or if the Dialog is modal.
  * Modal Dialogs mustn't not leave the window also.
  * 
- * @returns {Boolean} if the Dialog must leave the window area
+ * @returns {boolean} if the Dialog must leave the window area
  * @private
  */
 sap.ui.commons.Dialog.prototype._keepInWindow = function () {

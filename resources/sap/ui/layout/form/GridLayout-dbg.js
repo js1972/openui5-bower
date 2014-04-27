@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -208,7 +208,7 @@ jQuery.sap.require("sap.ui.layout.form.GridElementData");
 		for ( var i = iStartIndex; i >= 0; i--) {
 			// find the next enabled control thats rendered
 			var oField = aFields[i];
-			var iLeftnew = jQuery.sap.byId(oField.getId()).offset().left;
+			var iLeftnew = oField.$().offset().left;
 			if (iLeft < iLeftnew && i != 0) {
 				continue;
 			}
@@ -233,7 +233,7 @@ jQuery.sap.require("sap.ui.layout.form.GridElementData");
 			var aElements = oContainer.getFormElements();
 			var iMax = aElements.length;
 			var i = iCurrentIndex+1;
-			var iLeft = jQuery.sap.byId(oControl.getId()).offset().left;
+			var iLeft = oControl.$().offset().left;
 
 			while (!oNewDomRef && i < iMax) {
 				var oElement = aElements[i];
@@ -262,7 +262,7 @@ jQuery.sap.require("sap.ui.layout.form.GridElementData");
 		if(oContainer.getVisible()) {
 			var aElements = oContainer.getFormElements();
 			var i = iCurrentIndex-1;
-			var iLeft = jQuery.sap.byId(oControl.getId()).offset().left;
+			var iLeft = oControl.$().offset().left;
 
 			while (!oNewDomRef && i >= 0) {
 				var oElement = aElements[i];

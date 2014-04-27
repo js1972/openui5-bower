@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -473,7 +473,7 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CheckBox</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CheckBox</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CheckBox} <code>this</code> to allow method chaining
  * @public
@@ -522,7 +522,7 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @name sap.ui.commons.CheckBox.prototype.toggle
  * @function
 
- * @type void
+ * @type sap.ui.commons.CheckBox
  * @public
  */
 
@@ -544,7 +544,7 @@ sap.ui.commons.CheckBox.prototype.onclick = function(oEvent) {
 	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused
-		jQuery.sap.byId(this.getId()).attr("tabindex", 0).addClass("sapUiCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
+		this.$().attr("tabindex", 0).addClass("sapUiCbFoc"); // the CSS class itself is not used, but IE only draws the standard focus outline when it is added
 	}
 
 	this.userToggle(oEvent);
@@ -564,7 +564,7 @@ sap.ui.commons.CheckBox.prototype.onfocusout = function(oEvent) {
 	if(!!sap.ui.Device.browser.internet_explorer && !this.getEnabled()){
 		// in IE tabindex = -1 hides focus, so in readOnly/disabled case tabindex must be temporarily set to 0
 		// as long as CheckBox is focused - now unset this again
-		jQuery.sap.byId(this.getId()).attr("tabindex", -1).removeClass("sapUiCbFoc");
+		this.$().attr("tabindex", -1).removeClass("sapUiCbFoc");
 	}
 };
 
@@ -599,4 +599,5 @@ sap.ui.commons.CheckBox.prototype.userToggle = function(oEvent) {
 // implement public method toggle()
 sap.ui.commons.CheckBox.prototype.toggle = function() {
 	this.setChecked(!this.getChecked());
+	return this;
 };

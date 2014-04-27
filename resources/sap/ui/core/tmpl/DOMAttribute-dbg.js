@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.tmpl.DOMAttribute.
-jQuery.sap.declare("sap.ui.core.tmpl.DOMAttribute");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['sap/ui/core/library','sap/ui/core/Element'], function() {
+	"use strict";
 
 
 /**
@@ -57,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -145,7 +144,7 @@ sap.ui.core.Element.extend("sap.ui.core.tmpl.DOMAttribute", { metadata : {
  */
 
 
-// Start of sap\ui\core\tmpl\DOMAttribute.js
+// Start of sap/ui/core/tmpl/DOMAttribute.js
 sap.ui.core.tmpl.DOMAttribute.prototype.setValue = function(sValue) {
 	this.setProperty("value", sValue, true); // no re-rendering!
 	// do DOM modification to avoid re-rendering
@@ -156,3 +155,7 @@ sap.ui.core.tmpl.DOMAttribute.prototype.setValue = function(sValue) {
 	}
 	return this;
 };
+
+	return sap.ui.core.tmpl.DOMAttribute;
+
+}, /* bExport = */ true);

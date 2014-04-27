@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.ux3.NavigationItem[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.ux3.NavigationItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -170,6 +170,7 @@ sap.ui.ux3.NavigationBar.M_EVENTS = {'select':'select'};
  * If the navigation items need to have a different parent than the NavigationBar, alternatively the associatedItems association can be used.
  * The NavigationBar follows the approach to use the items aggregation. If this aggregation is empty, associatedItems is used.
  * 
+ * <strong>Note</strong>: this is the default aggregation for NavigationBar.
  * @return {sap.ui.ux3.NavigationItem[]}
  * @public
  * @name sap.ui.ux3.NavigationBar#getItems
@@ -334,7 +335,7 @@ sap.ui.ux3.NavigationBar.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NavigationBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NavigationBar</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.NavigationBar} <code>this</code> to allow method chaining
  * @public
@@ -434,7 +435,7 @@ sap.ui.ux3.NavigationBar.prototype.init = function() {
 				window.clearInterval(that._iInertiaIntervalId);
 			}
 
-			that.startScrollX = jQuery.sap.domById(that.getId() + "-list").scrollLeft;
+			that.startScrollX = that.getDomRef("list").scrollLeft;
 			that.startTouchX = evt.touches[0].pageX;
 			that._bTouchNotMoved = true;
 			that._lastMoveTime = new Date().getTime();
@@ -443,7 +444,7 @@ sap.ui.ux3.NavigationBar.prototype.init = function() {
 		var fnTouchMove = function(evt) {
 			var dx = evt.touches[0].pageX - that.startTouchX;
 
-			var oListRef = jQuery.sap.domById(that.getId() + "-list");
+			var oListRef = that.getDomRef("list");
 			var oldScrollLeft = oListRef.scrollLeft;
 			var newScrollLeft = that.startScrollX - dx;
 			oListRef.scrollLeft = newScrollLeft;
@@ -464,7 +465,7 @@ sap.ui.ux3.NavigationBar.prototype.init = function() {
 				evt.preventDefault();
 
 				// add some inertia... continue scrolling with decreasing velocity
-				var oListRef = jQuery.sap.domById(that.getId() + "-list");
+				var oListRef = that.getDomRef("list");
 				var dt = 50;
 				var endVelocity = Math.abs(that._velocity / 10); // continue scrolling until the speed has decreased to a fraction (v/10 means 11 iterations with slowing-down factor 0.8)
 				that._iInertiaIntervalId = window.setInterval(function(){
@@ -519,7 +520,7 @@ sap.ui.ux3.NavigationBar.prototype.onBeforeRendering = function() {
 		this.$().unbind("mousewheel", this._handleScroll);
 	}
 
-	var arrow = jQuery.sap.domById(this.getId() + "-arrow");
+	var arrow = this.getDomRef("arrow");
 	this._iLastArrowPos = arrow ? parseInt(this._bRtl ? arrow.style.right : arrow.style.left, 10) : -100;
 };
 
@@ -529,23 +530,22 @@ sap.ui.ux3.NavigationBar.prototype.onBeforeRendering = function() {
  * @private
  */
 sap.ui.ux3.NavigationBar.prototype._calculatePositions = function() {
-	var sId = this.getId();
-	var oDomRef = jQuery.sap.domById(sId);
+	var oDomRef = this.getDomRef();
 
 	var oListDomRef = oDomRef.firstChild;
-	var of_back = jQuery.sap.domById(sId + "-ofb");
-	var of_fw = jQuery.sap.domById(sId + "-off");
+	var of_back = this.getDomRef("ofb");
+	var of_fw = this.getDomRef("off");
 
 	// re-initialize display of scroll arrows
 	this._bPreviousScrollForward = false;
 	this._bPreviousScrollBack = false;
-	this._checkOverflow(this.getDomRef().firstChild, jQuery.sap.domById(sId + "-ofb"), jQuery.sap.domById(sId + "-off"));
+	this._checkOverflow(this.getDomRef().firstChild, this.getDomRef("ofb"), this.getDomRef("off"));
 
 	// paint selection arrow in the right place
 	var selItem = sap.ui.getCore().byId(this.getSelectedItem());
 	if (selItem) {
 		this._checkOverflow(oListDomRef, of_back, of_fw);
-		var $Arrow = jQuery.sap.byId(this.getId() + "-arrow");
+		var $Arrow = this.$("arrow");
 		var arrowWidth = $Arrow.outerWidth();
 		var targetPos = sap.ui.ux3.NavigationBar._getArrowTargetPos(selItem.getId(), arrowWidth, this._bRtl);
 		if (!this._bRtl) {
@@ -567,13 +567,12 @@ sap.ui.ux3.NavigationBar.prototype.onThemeChanged = function() {
 
 
 sap.ui.ux3.NavigationBar.prototype.onAfterRendering = function() {
-	var sId = this.getId();
-	var oDomRef = jQuery.sap.domById(sId);
+	var oDomRef = this.getDomRef();
 
 	// start the periodic checking for overflow of the item area
 	var oListDomRef = oDomRef.firstChild;
-	var of_back = jQuery.sap.domById(sId + "-ofb");
-	var of_fw = jQuery.sap.domById(sId + "-off");
+	var of_back = this.getDomRef("ofb");
+	var of_fw = this.getDomRef("off");
 	this._checkOverflowIntervalId = jQuery.sap.intervalCall(350, this, "_checkOverflow", [oListDomRef,of_back,of_fw]);
 
 	// bind a scroll handler to the workset item area
@@ -740,7 +739,7 @@ sap.ui.ux3.NavigationBar.prototype._getCurrentItems = function() {
  */
 sap.ui.ux3.NavigationBar.prototype._showOverflowMenu = function() {
 	var oMenu = this._getOverflowMenu();
-	var oTarget = jQuery.sap.byId(this.getId() + "-ofl").get(0);
+	var oTarget = this.$("ofl").get(0);
 
 	oMenu.open(
 		true, // First item highlighted. Check whether this is the correct behavior
@@ -782,7 +781,7 @@ sap.ui.ux3.NavigationBar.prototype._updateSelection = function(sItemId) {
 	this._oItemNavigation.setSelectedIndex(iSelectedDomIndex);
 
 	// make the arrow slide to the selected item
-	var $Arrow = jQuery.sap.byId(this.getId() + "-arrow");
+	var $Arrow = this.$("arrow");
 	var arrowWidth = $Arrow.outerWidth();
 	var targetPos = sap.ui.ux3.NavigationBar._getArrowTargetPos(sItemId, arrowWidth, this._bRtl);
 	$Arrow.stop(); // stop any ongoing animation
@@ -1022,7 +1021,7 @@ sap.ui.ux3.NavigationBar.prototype.removeAllAssociatedItems = function() {
 sap.ui.ux3.NavigationBar.prototype.setAssociatedItems = function(aItems /* bResetArrowPosition */) { // second parameter is currently not in the public API
 	jQuery.sap.assert(jQuery.isArray(aItems), "aItems must be an array");
 
-	var oListDomRef = jQuery.sap.domById(this.getId() + "-list");
+	var oListDomRef = this.getDomRef("list");
 
 	// remove old items
 	this.removeAllAssociation("associatedItems", true);
@@ -1040,7 +1039,7 @@ sap.ui.ux3.NavigationBar.prototype.setAssociatedItems = function(aItems /* bRese
 		if (arguments.length > 1 && typeof arguments[1] === "boolean") { // checking for the second, hidden parameter "bResetArrowPosition"
 			this._iLastArrowPos = -100;
 		} else {
-			var arrow = jQuery.sap.domById(this.getId() + "-arrow");
+			var arrow = this.getDomRef("arrow");
 			this._iLastArrowPos = parseInt(this._bRtl ? arrow.style.right : arrow.style.left, 10);
 		}
 		

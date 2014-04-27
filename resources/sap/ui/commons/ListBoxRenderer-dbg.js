@@ -13,7 +13,7 @@ jQuery.sap.require("jquery.sap.strings");
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.18.12
+ * @version 1.20.4
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -25,15 +25,14 @@ sap.ui.commons.ListBoxRenderer = {
  * @param {sap.ui.core.RenderManager} oRenderManager The RenderManager that can be used for writing to the render-output-buffer.
  * @param {sap.ui.commons.ListBox} oListBox The ListBox control that should be rendered.
  */
-sap.ui.commons.ListBoxRenderer.render = function(oRenderManager, oListBox) {
-	var rm = oRenderManager,
-		r = sap.ui.commons.ListBoxRenderer;
+sap.ui.commons.ListBoxRenderer.render = function(rm, oListBox) {
+	var r = sap.ui.commons.ListBoxRenderer;
 
 	// TODO: this is a prototype experimenting with an alternative to onAfterRendering for size calculations and corrections
 	// Do not copy this approach for now!
 	// Main problem: renderers are supposed to create a string, not DOM elements, e.g. so they could also run on the server. At least that was the idea in former times.
 	if (r.borderWidths === undefined) {
-		if (!!sap.ui.Device.browser.internet_explorer) { // all known IE versions have this issue
+		if (!!sap.ui.Device.browser.internet_explorer) { // all known IE versions have this issue (min-width does not include borders)  TODO: update
 			var oFakeLbx = document.createElement("div");
 			var oStaticArea = sap.ui.getCore().getStaticAreaRef();
 			oStaticArea.appendChild(oFakeLbx);
@@ -158,7 +157,7 @@ sap.ui.commons.ListBoxRenderer.renderItemList = function (oListBox, rm) {
 		}
 	}
 
-	var bMarkLastChild = (!!sap.ui.Device.browser.internet_explorer && (sap.ui.Device.browser.version == 8 || sap.ui.Device.browser.version == 7)); // IE8 workaround for "last-cild"
+	var bMarkLastChild = (!!sap.ui.Device.browser.internet_explorer && (sap.ui.Device.browser.version == 8)); // IE8 workaround for "last-child"
 	var bDisplaySecondaryValues = oListBox.getDisplaySecondaryValues();
 
 	// Write the rows with the items
@@ -219,11 +218,10 @@ sap.ui.commons.ListBoxRenderer.renderItemList = function (oListBox, rm) {
 			// write icon column if required
 			if (oListBox.getDisplayIcons()) {
 				var sIcon;
-				if (item.getIcon) {
+				if (item.getIcon) { // allow usage of sap.ui.core.Item
 					sIcon = item.getIcon();
 				}
 				rm.write("<span");
-				// if the item has an icon, use it; otherwise use something empty
 				if (sap.ui.core.IconPool.isIconURI(sIcon)) {
 					rm.addClass("sapUiLbxIIco");
 					rm.addClass("sapUiLbxIIcoFont");
@@ -238,7 +236,8 @@ sap.ui.commons.ListBoxRenderer.renderItemList = function (oListBox, rm) {
 					rm.write(oIconInfo.content);
 				}else{
 					rm.write(" class='sapUiLbxIIco'><img src='");
-					if (sIcon) { // allow usage of sap.ui.core.Item
+					// if the item has an icon, use it; otherwise use something empty
+					if (sIcon) {
 						rm.writeEscaped(sIcon);
 					} else {
 						rm.write(sap.ui.resource('sap.ui.commons', 'img/1x1.gif'));
@@ -331,9 +330,9 @@ sap.ui.commons.ListBoxRenderer.handleSelectionChanged = function(oListBox) { // 
 		var items = oListBox.getItems();
 		for (var i = 0, l = items.length; i < l; i++) { // TODO: could take very long for long lists
 			if (oListBox.isIndexSelected(i)) {
-				jQuery.sap.byId(items[i].getId()).addClass("sapUiLbxISel").attr("aria-selected", "true");
+				items[i].$().addClass("sapUiLbxISel").attr("aria-selected", "true");
 			} else {
-				jQuery.sap.byId(items[i].getId()).removeClass("sapUiLbxISel").attr("aria-selected", "false");
+				items[i].$().removeClass("sapUiLbxISel").attr("aria-selected", "false");
 			}
 		}
 	}
@@ -344,7 +343,7 @@ sap.ui.commons.ListBoxRenderer.handleSelectionChanged = function(oListBox) { // 
  * @private
  */
 sap.ui.commons.ListBoxRenderer.handleARIAActivedescendant = function(oListBox, iIndex) {
-	var $list = jQuery.sap.byId(oListBox.getId() + "-list");
+	var $list = oListBox.$("list");
 	if ($list.length > 0) {
 		var $selectedChild = $list.children("li[data-sap-ui-lbx-index=" + iIndex + "]");
 		$list.attr("aria-activedescendant", $selectedChild.attr("id"));

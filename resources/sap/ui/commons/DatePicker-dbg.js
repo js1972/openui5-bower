@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -444,14 +444,14 @@ sap.ui.commons.DatePicker.prototype._hide = function(){
 		var oSelector = jQuery.sap.byId(this._getInputId());
 		oSelector.datepicker( "hide" );
 
-		// By default (ENTER, ESC, Picker-CLICK, ...) focusing back onto the INPUT field.
-		// However, clicking anywhere else will override this default behavior.
 		var oInput = this.getInputDomRef();
-		if (oInput) {
-			oInput.focus();
-		}
 		if (oInput.value != this.getValue()) {
 			this._checkChange();
+		}
+		// By default (ENTER, ESC, Picker-CLICK, ...) focusing back onto the INPUT field.
+		// However, clicking anywhere else will override this default behavior.
+		if (oInput) {
+			oInput.focus();
 		}
 	}
 
@@ -474,7 +474,7 @@ sap.ui.commons.DatePicker.prototype.onclick = function(oEvent){
 	if ( !this.getEnabled() || !this.getEditable()) {
 		if (target.nodeName != "INPUT") {
 			// button clicked -> focus complete field.
-			jQuery.sap.byId(this.getId()).focus();
+			this.$().focus();
 		}
 		return;
 	}
@@ -510,6 +510,10 @@ sap.ui.commons.DatePicker.prototype.onclick = function(oEvent){
 			} else {
 				if (this.oPrivate.bVerboseMode) {
 					jQuery.sap.log.debug("DATEPICKER: BUTTON-CLICK SHOW");
+				}
+				if (!sap.ui.Device.support.input.placeholder) {
+					// simulate focus on input field to remove placeholder
+					this.onfocusin(oEvent);
 				}
 				this._show();
 			}
@@ -625,7 +629,7 @@ sap.ui.commons.DatePicker.prototype.onsapfocusleave = function(oEvent){
 		jQuery.sap.log.debug("DATEPICKER: .onsapfocusleave()");
 	}
 
-	this._checkChange(oEvent);
+	sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
 };
 
 /**

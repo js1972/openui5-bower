@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -530,7 +530,7 @@ sap.ui.commons.Splitter.prototype._recalculateInternals = function() {
 
 	var rtl = sap.ui.getCore().getConfiguration().getRTL();
 
-	this.splitterDIV = jQuery.sap.domById(this.getId());
+	this.splitterDIV = this.getDomRef();
 	this.splitterBar = jQuery.sap.domById(this.getId() + '_SB');
 	this.firstPane = jQuery.sap.domById(this.getId() + '_firstPane');
 	this.secondPane = jQuery.sap.domById(this.getId() + '_secondPane');

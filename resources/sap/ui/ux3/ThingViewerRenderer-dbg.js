@@ -145,7 +145,7 @@ sap.ui.ux3.ThingViewerRenderer.renderHeader = function(oRenderManager, oControl)
 	var rm = oRenderManager;
 
 	rm.write("<div class='sapUiUx3TVIconBar'>");
-	rm.writeIcon(oControl.getIcon(),["sapUiUx3TVIcon"],{role:'presentation', id:oControl.getId() + '-swatch'});
+	rm.writeIcon(oControl.getIcon(),["sapUiUx3TVIcon"],{role:'presentation', id: oControl.getId() + '-swatch'});
 	rm.write("<div class='sapUiUx3TVTitle'>");
 	rm.write("<span role='heading' aria-level='2' class='sapUiUx3TVTitleFirst'");
 	rm.writeAttributeEscaped("title", oControl.getTitle());
@@ -253,7 +253,7 @@ sap.ui.ux3.ThingViewerRenderer.renderFacetContent = function(rm, oControl) {
 		if (bTitle) {
 			rm.write("<div class='sapUiUx3TVFacetThingGroupContentTitle'");
 			rm.writeAttributeEscaped("title", group.getTooltip_AsString() ? group.getTooltip_AsString() : group.getTitle());
-			rm.write("><span>");
+			rm.write("><span role='heading'>");
 			rm.writeEscaped(group.getTitle());
 			rm.write("</span></div>");
 		}

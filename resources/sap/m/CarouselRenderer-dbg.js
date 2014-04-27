@@ -92,7 +92,7 @@ sap.m.CarouselRenderer.render = function(rm, oCarousel){
 	//inner div ends
 	
 	
-	if (jQuery.device.is.desktop && iPageCount > 1) {
+	if (sap.ui.Device.system.desktop && iPageCount > 1) {
 		//heads up controls for desktop browsers
 		rm.write("<div class='sapMCrslControls sapMCrslHud'>");
 			rm.write("<a class='sapMCrslPrev' href='#' data-slide='prev' tabIndex=1><div class='sapMCrslHudInner'>");

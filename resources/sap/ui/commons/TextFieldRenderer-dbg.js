@@ -13,8 +13,8 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
  * TextField Renderer
  * @class
  * @static
- * @author Daniel Brinkmann / Sebastian Allmann
- * @version 1.18.12
+ * @author SAP
+ * @version 1.20.4
  * @since 0.9.0
  */
 sap.ui.commons.TextFieldRenderer = {};
@@ -122,14 +122,14 @@ sap.ui.commons.TextFieldRenderer.render = function(oRenderManager, oTextField) {
 	}
 
 	// Appearance
-	var oTextDir = oTextField.getTextDirection();
-	if(oTextDir) {
-		rm.writeAttribute("dir", oTextDir);
+	var sTextDir = oTextField.getTextDirection();
+	if (sTextDir) {
+		rm.addStyle("direction", sTextDir.toLowerCase());
 	}
 
 	var oTextAlign = oTextField.getTextAlign();
 	if(oTextAlign) {
-		rm.addStyle("text-align", r.getTextAlign(oTextAlign, oTextDir));
+		rm.addStyle("text-align", r.getTextAlign(oTextAlign, sTextDir));
 	}
 
 	switch (oTextField.getImeMode()) {
@@ -162,14 +162,16 @@ sap.ui.commons.TextFieldRenderer.render = function(oRenderManager, oTextField) {
 		this.renderARIAInfo(rm, oTextField);
 	}
 
-	if (oTextField.getPlaceholder()) {
-		var sPlaceholder = oTextField.getPlaceholder();
+	var sPlaceholder = oTextField.getPlaceholder();
+	if (sPlaceholder) {
 		if (this.convertPlaceholder) {
 			sPlaceholder = this.convertPlaceholder(oTextField);
 		}
-		rm.writeAttributeEscaped('placeholder', sPlaceholder);
+		if (sap.ui.Device.support.input.placeholder) {
+			rm.writeAttributeEscaped('placeholder', sPlaceholder);
+		}
 	}
-	
+
 	rm.writeStyles();
 	rm.writeClasses();
 
@@ -177,7 +179,11 @@ sap.ui.commons.TextFieldRenderer.render = function(oRenderManager, oTextField) {
 		rm.write(">");
 	}else{
 		rm.write(" value=\"");
-		rm.writeEscaped(oTextField.getValue());
+		if (!sap.ui.Device.support.input.placeholder && sPlaceholder && !oTextField.getValue()) {
+			rm.writeEscaped(sPlaceholder);
+		} else {
+			rm.writeEscaped(oTextField.getValue());
+		}
 		rm.write("\"");
 		rm.write("/>");
 	}
@@ -232,25 +238,57 @@ sap.ui.commons.TextFieldRenderer.renderStyles = function(rm, oTextField) {
 		rm.addClass('sapUiTfReq');
 	}
 
+	if (oTextField.getPlaceholder() && !sap.ui.Device.support.input.placeholder) {
+		rm.addClass('sapUiTfPlace');
+	}
+
 };
 
 sap.ui.commons.TextFieldRenderer.onfocus = function(oTextField) {
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 	oTfRef.addClass("sapUiTfFoc");
+
+	if (!sap.ui.Device.support.input.placeholder && !oTextField.getValue() && oTextField.getPlaceholder()) {
+		if(oTextField._getRenderOuter()){
+			var oTfRefInput = oTextField.$("input");
+		}else{
+			var oTfRefInput = oTfRef;
+		}
+
+		oTfRef.removeClass("sapUiTfPlace");
+		oTfRefInput.val("");
+	}
 };
 
 sap.ui.commons.TextFieldRenderer.onblur = function(oTextField) {
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 	oTfRef.removeClass("sapUiTfFoc");
+
+	var sPlaceholder = oTextField.getPlaceholder();
+	if (!sap.ui.Device.support.input.placeholder) {
+		if(oTextField._getRenderOuter()){
+			var oTfRefInput = oTextField.$("input");
+		}else{
+			var oTfRefInput = oTfRef;
+		}
+
+		if (!oTfRefInput.val() && sPlaceholder) {
+			oTfRef.addClass("sapUiTfPlace");
+			if (this.convertPlaceholder) {
+				sPlaceholder = this.convertPlaceholder(oTextField);
+			}
+			oTfRefInput.val(sPlaceholder);
+		}
+	}
 };
 
 sap.ui.commons.TextFieldRenderer.setValueState = function(oTextField, oldValueState, newValueState) {
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 	var bRenderOuter = oTextField._getRenderOuter();
 
 	if(bRenderOuter){
 	// aria attribute must be on inner tag
-		var oTfRefInput = jQuery.sap.byId(oTextField.getId()+'-input');
+		var oTfRefInput = oTextField.$("input");
 	}else{
 		var oTfRefInput = oTfRef;
 	}
@@ -287,12 +325,12 @@ sap.ui.commons.TextFieldRenderer.setValueState = function(oTextField, oldValueSt
 	if (tooltip) {
 		oTfRef.attr('title', tooltip);
 		if (bRenderOuter) {
-			jQuery.sap.byId(oTextField.getId()+'-input').attr('title', tooltip);
+			oTextField.$("input").attr('title', tooltip);
 		}
 	}else{
 		oTfRef.removeAttr('title');
 		if (bRenderOuter) {
-			jQuery.sap.byId(oTextField.getId()+'-input').removeAttr('title');
+			oTextField.$("input").removeAttr('title');
 		}
 	}
 
@@ -305,11 +343,11 @@ sap.ui.commons.TextFieldRenderer.setEditable = function(oTextField, bEditable) {
 		return;
 	}
 
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 
 	if(oTextField._getRenderOuter()){
 	// Readonly attribute must be on inner tag
-		var oTfRefInput = jQuery.sap.byId(oTextField.getId()+'-input');
+		var oTfRefInput = oTextField.$("input");
 	}else{
 		var oTfRefInput = oTfRef;
 	}
@@ -327,11 +365,11 @@ sap.ui.commons.TextFieldRenderer.setEditable = function(oTextField, bEditable) {
 };
 
 sap.ui.commons.TextFieldRenderer.setEnabled = function(oTextField, bEnabled) {
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 
 	if(oTextField._getRenderOuter()){
 	// Disabled attribute must be on inner tag
-		var oTfRefInput = jQuery.sap.byId(oTextField.getId()+'-input');
+		var oTfRefInput = oTextField.$("input");
 	}else{
 		var oTfRefInput = oTfRef;
 	}
@@ -357,7 +395,7 @@ sap.ui.commons.TextFieldRenderer.setEnabled = function(oTextField, bEnabled) {
 };
 
 sap.ui.commons.TextFieldRenderer.removeValidVisualization = function(oTextField) {
-	var oTfRef = jQuery.sap.byId(oTextField.getId());
+	var oTfRef = oTextField.$();
 	if(oTfRef) {
 		oTfRef.removeClass("sapUiTfSucc");
 	}
@@ -368,19 +406,19 @@ sap.ui.commons.TextFieldRenderer.removeValidVisualization = function(oTextField)
 
 sap.ui.commons.TextFieldRenderer.setDesign = function(oTextField, sDesign) {
 
-	jQuery.sap.byId(oTextField.getId()).toggleClass('sapUiTfMono', (sDesign == sap.ui.core.Design.Monospace));
+	oTextField.$().toggleClass('sapUiTfMono', (sDesign == sap.ui.core.Design.Monospace));
 };
 
 sap.ui.commons.TextFieldRenderer.setRequired = function(oTextField, bRequired) {
 
 	if(oTextField._getRenderOuter()){
 	// aria attribute must be on inner tag
-		var oTfRefInput = jQuery.sap.byId(oTextField.getId()+'-input');
+		var oTfRefInput = oTextField.$("input");
 	}else{
-		var oTfRefInput = jQuery.sap.byId(oTextField.getId());
+		var oTfRefInput = oTextField.$();
 	}
 
-	jQuery.sap.byId(oTextField.getId()).toggleClass('sapUiTfReq', bRequired);
+	oTextField.$().toggleClass('sapUiTfReq', bRequired);
 	if (bRequired) {
 		oTfRefInput.attr("aria-required", true);
 	} else {

@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -421,7 +421,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 		},
 		associations: {
 			"container" : {type: "sap.ui.layout.form.FormContainer", multiple: false},
-			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false},
+			"layout"    : {type: "sap.ui.layout.form.ResponsiveLayout", multiple: false}
 		}
 	},
 
@@ -456,9 +456,9 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 		var oContainer = sap.ui.getCore().byId(this.getContainer());
 		if (oContainer) {
 			if (oContainer.getExpanded()) {
-				jQuery.sap.byId(this.getId()).removeClass("sapUiRGLContainerColl");
+				this.$().removeClass("sapUiRGLContainerColl");
 			}else {
-				jQuery.sap.byId(this.getId()).addClass("sapUiRGLContainerColl");
+				this.$().addClass("sapUiRGLContainerColl");
 			}
 		}
 	},

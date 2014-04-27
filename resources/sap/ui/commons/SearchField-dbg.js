@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -594,7 +594,7 @@ sap.ui.commons.SearchField.M_EVENTS = {'search':'search','suggest':'suggest'};
 
 /**
  * Setter for the aggregated <code>searchProvider</code>.
- * @param oSearchProvider {sap.ui.core.search.SearchProvider}
+ * @param {sap.ui.core.search.SearchProvider} oSearchProvider
  * @return {sap.ui.commons.SearchField} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.SearchField#setSearchProvider
@@ -711,7 +711,7 @@ sap.ui.commons.SearchField.M_EVENTS = {'search':'search','suggest':'suggest'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SearchField</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SearchField</code>.<br/> itself.
  *
  * @return {sap.ui.commons.SearchField} <code>this</code> to allow method chaining
  * @public
@@ -775,7 +775,7 @@ sap.ui.commons.SearchField.M_EVENTS = {'search':'search','suggest':'suggest'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SearchField</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.SearchField</code>.<br/> itself.
  *
  * @return {sap.ui.commons.SearchField} <code>this</code> to allow method chaining
  * @public
@@ -908,8 +908,8 @@ sap.ui.commons.SearchField.prototype.onThemeChanged = function(oEvent){
  */
 sap.ui.commons.SearchField.prototype.onAfterRendering = function(){
 	if(this.getShowExternalButton()){
-		var iButtonWidth = jQuery.sap.byId(this._btn.getId()).outerWidth(true);
-		jQuery.sap.byId(this._ctrl.getId()).css(sap.ui.getCore().getConfiguration().getRTL() ? "left" : "right", iButtonWidth+"px");
+		var iButtonWidth = this._btn.$().outerWidth(true);
+		this._ctrl.$().css(sap.ui.getCore().getConfiguration().getRTL() ? "left" : "right", iButtonWidth+"px");
     }
 };
 
@@ -1219,7 +1219,7 @@ sap.ui.commons.TextField.extend("sap.ui.commons.SearchField.TF", {
   },
 
   getInputDomRef : function() {
-  	return jQuery.sap.domById(this.getId() + "-input");
+  	return this.getDomRef("input");
   },
   
   onkeyup : function(oEvent) {
@@ -1237,15 +1237,15 @@ sap.ui.commons.TextField.extend("sap.ui.commons.SearchField.TF", {
   	this.getParent().fireSearch({noFocus:bDoNotFireSearch});
   },
   
-  onfocusout : function(oEvent) {
-  	if(this.getEditable() && this.getEnabled() && this.getRenderer().onblur) {
+  onsapfocusleave : function(oEvent) {
+  	if(this.getEditable() && this.getEnabled() && this.getRenderer().onblur && oEvent.relatedControlId != this.getId()) {
   		this.getRenderer().onblur(this);
   	}
   	this._checkChange(oEvent, true);
   },
   
   onclick : function(oEvent){
-  	if(oEvent.target === jQuery.sap.domById(this.getId() + "-searchico")) {
+  	if(oEvent.target === this.getDomRef("searchico")) {
   		if(this.getEditable() && this.getEnabled()){
   			this.focus();
   		}
@@ -1351,7 +1351,7 @@ sap.ui.commons.ComboBox.extend("sap.ui.commons.SearchField.CB", {
   
   onclick : function(oEvent) {
   	sap.ui.commons.ComboBox.prototype.onclick.apply(this, arguments);
-  	if(oEvent.target === jQuery.sap.domById(this.getId() + "-searchico")) {
+  	if(oEvent.target === this.getDomRef("searchico")) {
   		if(!this.getParent().getEnableClear()){
   			this.getParent().fireSearch();
   		}else if(jQuery(this.getInputDomRef()).val() && this.getEditable() && this.getEnabled()){
@@ -1367,7 +1367,7 @@ sap.ui.commons.ComboBox.extend("sap.ui.commons.SearchField.CB", {
   		if(this.getEditable() && this.getEnabled()){
   			this.focus();
   		}
-  	}else if(jQuery.sap.containsOrEquals(jQuery.sap.domById(this.getId() + "-providerico"), oEvent.target)) {
+  	}else if(jQuery.sap.containsOrEquals(this.getDomRef("providerico"), oEvent.target)) {
   		if(this.getEditable() && this.getEnabled()){
   			this.focus();
   		}

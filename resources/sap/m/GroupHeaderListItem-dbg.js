@@ -63,7 +63,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -190,23 +190,16 @@ sap.m.GroupHeaderListItem.prototype.shouldClearLastValue = function() {
 	return true;
 };
 
-// no tap functionality needed
-sap.m.GroupHeaderListItem.prototype.ontap = function(oEvent) {
-};
-
 sap.m.GroupHeaderListItem.prototype.ontouchstart = function(oEvent) {
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 };
 
 sap.m.GroupHeaderListItem.prototype.onBeforeRendering = function() {
 	var oParent = this.getParent();
-	if (oParent && oParent.constructor === sap.m.Table) {
+	if (oParent && sap.m.Table && oParent instanceof sap.m.Table) {
 		// clear column last value to reset cell merging
 		oParent.getColumns().forEach(function(oColumn) {
-			oColumn.setLastValue(NaN);
+			oColumn.clearLastValue();
 		});
-	}
-	if (sap.m.ListItemBase.prototype.onBeforeRendering) {
-		sap.m.ListItemBase.prototype.onBeforeRendering.call(this);
 	}
 };

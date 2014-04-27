@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -556,7 +556,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 
 /**
  * Setter for the aggregated <code>actionBar</code>.
- * @param oActionBar {sap.ui.ux3.ActionBar}
+ * @param {sap.ui.ux3.ActionBar} oActionBar
  * @return {sap.ui.ux3.ThingViewer} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.ThingViewer#setActionBar
@@ -624,7 +624,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingViewer</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ThingViewer</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ThingViewer} <code>this</code> to allow method chaining
  * @public
@@ -834,7 +834,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 	 * @private
 	 */
 	sap.ui.ux3.ThingViewer.prototype._rerenderHeader = function() {
-		var $content = jQuery.sap.byId(this.getId() + "-header");
+		var $content = this.$("header");
 		if ($content.length > 0) {
 			var rm = sap.ui.getCore().createRenderManager();
 			sap.ui.ux3.ThingViewerRenderer.renderHeader(rm, this);
@@ -849,7 +849,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 	 * @private
 	 */
 	sap.ui.ux3.ThingViewer.prototype._rerenderHeaderContent = function() {
-		var $content = jQuery.sap.byId(this.getId() + "-headerContent");
+		var $content = this.$("headerContent");
 		if ($content.length > 0) {
 			var rm = sap.ui.getCore().createRenderManager();
 			sap.ui.ux3.ThingViewerRenderer.renderHeaderContent(rm, this);
@@ -864,7 +864,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 	 * @private
 	 */
 	sap.ui.ux3.ThingViewer.prototype._rerenderToolbar = function() {
-		var $content = jQuery.sap.byId(this.getId() + "-toolbar");
+		var $content = this.$("toolbar");
 		if ($content.length > 0) {
 			var rm = sap.ui.getCore().createRenderManager();
 			sap.ui.ux3.ThingViewerRenderer.renderToolbar(rm, this);
@@ -879,7 +879,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 	 * @private
 	 */
 	sap.ui.ux3.ThingViewer.prototype._rerenderFacetContent = function() {
-		var $content = jQuery.sap.byId(this.getId() + "-facetContent");
+		var $content = this.$("facetContent");
 		if ($content.length > 0) {
 			var rm = sap.ui.getCore().createRenderManager();
 			sap.ui.ux3.ThingViewerRenderer.renderFacetContent(rm, this);
@@ -898,7 +898,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
 	 */
 	sap.ui.ux3.ThingViewer.prototype._setTriggerValue = function() {
 		var facetGroups, minWidth,
-			$content = jQuery.sap.byId(this.getId() + "-facetContent");
+			$content = this.$("facetContent");
 		
 		// get triggerValue for facet content resize handler
 		if ($content.length > 0) {

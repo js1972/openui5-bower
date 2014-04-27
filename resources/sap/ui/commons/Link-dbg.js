@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem,sap.ui.commons.FormattedTextViewControl
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -411,7 +411,7 @@ sap.ui.commons.Link.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Link</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Link</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Link} <code>this</code> to allow method chaining
  * @public
@@ -462,6 +462,13 @@ sap.ui.commons.Link.M_EVENTS = {'press':'press'};
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 
 sap.ui.core.EnabledPropagator.call(sap.ui.commons.Link.prototype);
+
+/**
+ * Also trigger link activation when space is pressed on the focused control
+ */
+sap.ui.commons.Link.prototype.onsapspace = function(oEvent) {
+	sap.ui.commons.Link.prototype.onclick.apply(this, arguments);
+};
 
 /**
  * Function is called when Link is clicked.

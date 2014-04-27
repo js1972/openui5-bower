@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.Title.
-jQuery.sap.declare("sap.ui.core.Title");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['./library','./Element'], function() {
+	"use strict";
 
 
 /**
@@ -59,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -201,4 +200,8 @@ sap.ui.core.Element.extend("sap.ui.core.Title", { metadata : {
  */
 
 
-// Start of sap\ui\core\Title.js
+// Start of sap/ui/core/Title.js
+
+	return sap.ui.core.Title;
+
+}, /* bExport = */ true);

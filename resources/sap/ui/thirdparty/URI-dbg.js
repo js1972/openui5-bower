@@ -16,8 +16,8 @@
     if (typeof exports === 'object') {
         // Node
         module.exports = factory(require('./punycode'), require('./IPv6'), require('./SecondLevelDomains'));
-    } else if (typeof define === 'function' && define.amd ) {
-      // AMD. Register as an anonymous module.
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
       // ##### BEGIN: MODIFIED BY SAP
       // define(['./punycode', './IPv6', './SecondLevelDomains'], factory);
       // we can't support loading URI.js via AMD define. URI.js is packaged with SAPUI5 code 

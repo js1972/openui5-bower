@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -417,7 +417,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.DataSetSimpleView", { metadata : {
 
 /**
  * Setter for the aggregated <code>template</code>.
- * @param oTemplate {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oTemplate
  * @return {sap.ui.ux3.DataSetSimpleView} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.DataSetSimpleView#setTemplate
@@ -483,10 +483,10 @@ sap.ui.ux3.DataSetSimpleView.prototype.handleSelection = function(oEvent) {
 		}
 		jQuery.each(aItems, function(index, item){
 			if (oDataSet.isSelectedIndex(index)){
-				jQuery.sap.byId(item.getId()).addClass("sapUiUx3DSSVSelected");
+				item.$().addClass("sapUiUx3DSSVSelected");
 			}
 			else{
-				jQuery.sap.byId(item.getId()).removeClass("sapUiUx3DSSVSelected");
+				item.$().removeClass("sapUiUx3DSSVSelected");
 			}
 		});
 };
@@ -515,7 +515,7 @@ sap.ui.ux3.DataSetSimpleView.prototype._clearTextSelection = function () {
 /**
  * Check if Item <code>oItem</code> is selected
  *
- * @param {DataSetItem} oItem DataSetItem instance
+ * @param {sap.ui.ux3.DataSetItem} oItem DataSetItem instance
  * @protected
  */
 sap.ui.ux3.DataSetSimpleView.prototype.isItemSelected = function(oItem) {
@@ -565,7 +565,7 @@ sap.ui.ux3.DataSetSimpleView.prototype.updateView = function(aDiff) {
 				var oDelegate = {
 					onAfterRendering: function() {
 						this.calculateItemCounts();
-						this.getParent().updateItems();
+						this.getParent().updateItems(sap.ui.model.ChangeReason.Change);
 						template.removeDelegate(oDelegate);
 					}
 				};
@@ -608,7 +608,7 @@ sap.ui.ux3.DataSetSimpleView.prototype.initScrollArea = function() {
 		that = this;
 	
 	var fnScroll = function(oEvent) {
-		that.getParent().updateItems();
+		that.getParent().updateItems(sap.ui.model.ChangeReason.Change);
 	};
 	if (typeof $scrollArea === 'string') {
 		$scrollArea = jQuery.sap.byId($scrollArea);
@@ -733,7 +733,7 @@ sap.ui.ux3.DataSetSimpleView.prototype.onAfterRendering = function(){
 sap.ui.ux3.DataSetSimpleView.prototype.onThemeChanged = function(){
 	if (this._bRendered) {
 		this.calculateItemCounts();
-		this.getParent().updateItems();
+		this.getParent().updateItems(sap.ui.model.ChangeReason.Change);
 	}
 };
 
@@ -760,7 +760,7 @@ sap.ui.ux3.DataSetSimpleView.prototype.onresize = function() {
 	}
 	if (this._bUsePagination && this.items.length > 0) {
 		this.calculateItemCounts();
-		this.getParent().updateItems();
+		this.getParent().updateItems(sap.ui.model.ChangeReason.Change);
 	}
 };
 
@@ -768,7 +768,7 @@ sap.ui.ux3.DataSetSimpleView.prototype.setTemplate = function(oTemplate) {
 	this.setAggregation("template", oTemplate, true);
 	//Here we need to rerender all items because of a new layout
 	if (this.getParent()) {
-		this.getParent().updateItems(true);
+		this.getParent().updateItems();
 	}
 };
 
@@ -814,7 +814,7 @@ sap.ui.ux3.DataSetSimpleView.prototype._computeWidths = function(bInitial){
 				w++;
 				diff--;
 			}
-			jQuery.sap.byId(aItems[j].getId()).css("width", w+"%");
+			aItems[j].$().css("width", w+"%");
 			count++;
 		}
 		

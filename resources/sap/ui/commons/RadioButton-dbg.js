@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -476,7 +476,7 @@ sap.ui.commons.RadioButton.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RadioButton</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RadioButton</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RadioButton} <code>this</code> to allow method chaining
  * @public
@@ -526,7 +526,7 @@ sap.ui.commons.RadioButton.prototype.onclick = function(oEvent) {
 	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
 		// in IE tabindex = -1 hides focus, so in readOnly case tabindex must be set to 0
 		// as long as RadioButton is clicked on
-		jQuery.sap.byId(this.getId()).attr("tabindex", 0).toggleClass("sapUiRbFoc");
+		this.$().attr("tabindex", 0).toggleClass("sapUiRbFoc");
 	}
 
 	this.userSelect(oEvent);
@@ -604,7 +604,7 @@ sap.ui.commons.RadioButton.prototype.onfocusout = function(oEvent) {
 	if(!!sap.ui.Device.browser.internet_explorer && (/*!this.getEditable() ||*/ !this.getEnabled())){ //According to CSN2581852 2012 a readonly CB should be in the tabchain 
 		// in IE tabindex = -1 hides focus, so in readOnly case tabindex must be set to 0
 		// as long as RadioButton is clicked on
-		jQuery.sap.byId(this.getId()).attr("tabindex", -1).toggleClass("sapUiRbFoc");
+		this.$().attr("tabindex", -1).toggleClass("sapUiRbFoc");
 	}
 
 };

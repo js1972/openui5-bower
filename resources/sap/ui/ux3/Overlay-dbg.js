@@ -55,9 +55,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * @class
  * Overlay Control
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -66,6 +67,9 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.ui.ux3.Overlay", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.PopupInterface"
+	],
 	publicMethods : [
 		// methods
 		"open", "close", "isOpen"
@@ -179,7 +183,7 @@ sap.ui.ux3.Overlay.M_EVENTS = {'close':'close','openNew':'openNew','open':'open'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Overlay} <code>this</code> to allow method chaining
  * @public
@@ -245,7 +249,7 @@ sap.ui.ux3.Overlay.M_EVENTS = {'close':'close','openNew':'openNew','open':'open'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Overlay} <code>this</code> to allow method chaining
  * @public
@@ -309,7 +313,7 @@ sap.ui.ux3.Overlay.M_EVENTS = {'close':'close','openNew':'openNew','open':'open'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Overlay</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Overlay} <code>this</code> to allow method chaining
  * @public
@@ -400,10 +404,10 @@ sap.ui.ux3.Overlay.prototype.init = function() {
 		} else if (!domRef && that._getShell() && that.getCloseButtonVisible()) {
 			domRef = jQuery.sap.domById(that._getCloseButtonId());
 		} else if (!domRef) {
-			domRef = jQuery.sap.byId(that.getId()+"-content").firstFocusableDomRef();
+			domRef = that.$("content").firstFocusableDomRef();
 		} 
 		if (!domRef) {
-			domRef = jQuery.sap.byId(that.getId()).firstFocusableDomRef();
+			domRef = that.$().firstFocusableDomRef();
 		}
  		if(domRef) {
 			jQuery.sap.focus(domRef);
@@ -423,7 +427,7 @@ sap.ui.ux3.Overlay.prototype._getShell = function() {
 /**
  * Returns the ID of the close button element.
  * 
- * @return {String} The close button ID.
+ * @return {string} The close button ID.
  * @private
  */
 sap.ui.ux3.Overlay.prototype._getCloseButtonId = function() {
@@ -434,7 +438,7 @@ sap.ui.ux3.Overlay.prototype._getCloseButtonId = function() {
 /**
  * Returns the ID of the open button element.
  * 
- * @return {String} The open button ID.
+ * @return {string} The open button ID.
  * @private
  */
 sap.ui.ux3.Overlay.prototype._getOpenButtonId = function() {
@@ -447,15 +451,15 @@ sap.ui.ux3.Overlay.prototype._initDom = function(fFocusFirst, fFocusLast, fApply
 	var oShell = jQuery(".sapUiUx3Shell").control();
 	this._oShell = oShell.length ? oShell[0] : null;
 	oShell = this._oShell;
-	jQuery.sap.byId(this.getId()).css("position", "fixed");
+	this.$().css("position", "fixed");
 	if (oShell) {
 		this._bFocusEventsRegistered = true;
 		oShell.syncWithCanvasSize(this.getId(), true, fFocusFirst, fFocusLast, fApplyChanges);
-		jQuery.sap.byId(this.getId() + "-firstFocusDummyPaneFw").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusFirstHdr,oShell));
-		jQuery.sap.byId(this.getId() + "-firstFocusDummyPaneBw").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusLastTool,oShell));
-		jQuery.sap.byId(this.getId() + "-LastFocusDummyPane").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusPaneStart,oShell));
+		this.$("firstFocusDummyPaneFw").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusFirstHdr,oShell));
+		this.$("firstFocusDummyPaneBw").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusLastTool,oShell));
+		this.$("LastFocusDummyPane").attr("tabindex", "0").focusin(jQuery.proxy(oShell.focusPaneStart,oShell));
 	} else {
-		jQuery.sap.byId(this.getId()).css("bottom", "0px").css("top", "0px").css("left", "0px").css("right", "0px");
+		this.$().css("bottom", "0px").css("top", "0px").css("left", "0px").css("right", "0px");
 	}
 };
 
@@ -465,11 +469,11 @@ sap.ui.ux3.Overlay.prototype._cleanupDom = function() {
 	}
 	if (this._bFocusEventsRegistered) {
 		this._bFocusEventsRegistered = false;
-		jQuery.sap.byId(this.getId() + "-firstFocusDummyPaneFw").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-firstFocusDummyPaneBw").removeAttr("tabindex").unbind("focusin");
-		jQuery.sap.byId(this.getId() + "-LastFocusDummyPane").removeAttr("tabindex").unbind("focusin");
+		this.$("firstFocusDummyPaneFw").removeAttr("tabindex").unbind("focusin");
+		this.$("firstFocusDummyPaneBw").removeAttr("tabindex").unbind("focusin");
+		this.$("LastFocusDummyPane").removeAttr("tabindex").unbind("focusin");
 	}
-}
+};
 
 /**
  * Set size of TI after rendering: If running in Shell we sync with shell

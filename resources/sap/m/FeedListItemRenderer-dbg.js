@@ -49,7 +49,7 @@ sap.m.FeedListItemRenderer.renderLIAttributes = function (rm, oFeedListItem) {
 sap.m.FeedListItemRenderer.renderLIContent = function (rm, oFeedListItem) {
 	// convenience variable
 	var sMyId = oFeedListItem.getId(),
-		bIsPhone = jQuery.device.is.phone;
+		bIsPhone = sap.ui.Device.system.phone;
 
 	rm.write('<article');
 	rm.writeControlData(oFeedListItem);

@@ -48,7 +48,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.core.Item[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.core.Item[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -72,7 +72,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -240,7 +240,6 @@ sap.ui.commons.ListBox.M_EVENTS = {'select':'select'};
 /**
  * Getter for property <code>width</code>.
  * Control width as common CSS-size (px or % as unit, for example).
- * The setting overrides any definitions made for the setVisibleItems() method.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -501,6 +500,7 @@ sap.ui.commons.ListBox.M_EVENTS = {'select':'select'};
  * Getter for aggregation <code>items</code>.<br/>
  * Aggregation of items to be displayed. Must be either of type sap.ui.core.ListItem or sap.ui.core.SeparatorItem.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ListBox.
  * @return {sap.ui.core.Item[]}
  * @public
  * @name sap.ui.commons.ListBox#getItems
@@ -680,7 +680,7 @@ sap.ui.commons.ListBox.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ListBox</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.ListBox</code>.<br/> itself.
  *
  * @return {sap.ui.commons.ListBox} <code>this</code> to allow method chaining
  * @public
@@ -986,7 +986,7 @@ sap.ui.commons.ListBox.prototype.onThemeChanged = function () {
 
 
 /**
- * Called before rendering. Required storing the scroll position.
+ * Called before rendering. Required for storing the scroll position.
  * @private
  */
 sap.ui.commons.ListBox.prototype.onBeforeRendering = function () {
@@ -1008,7 +1008,7 @@ sap.ui.commons.ListBox.prototype.onAfterRendering = function () {
 	var oDomRef = this.getDomRef();
 
 	// calculate item height
-	if (sap.ui.commons.ListBox._fItemHeight <= 0) {
+	if (sap.ui.commons.ListBox._fItemHeight <= 0) { // TODO: merge with width measurement which is currently in renderer
 		
 		// create dummy ListBox with dummy item
 		var oStaticArea = sap.ui.getCore().getStaticAreaRef();
@@ -1160,7 +1160,7 @@ sap.ui.commons.ListBox.prototype._updatePageSize = function() {
 sap.ui.commons.ListBox.prototype.scrollToIndex = function(iIndex, bLazy) {
 	var oDomRef = this.getDomRef();
 	if (oDomRef) { // only if already rendered
-		var oItem = jQuery.sap.byId(this.getId() + "-list").children("li[data-sap-ui-lbx-index=" + iIndex + "]");
+		var oItem = this.$("list").children("li[data-sap-ui-lbx-index=" + iIndex + "]");
 		oItem = oItem.get(0);
 		if (oItem) {
 			var iScrollTop = oItem.offsetTop;
@@ -1958,7 +1958,7 @@ sap.ui.commons.ListBox.prototype.exit = function (){
  * @public
  */
 sap.ui.commons.ListBox.prototype.getFocusDomRef = function() {
-	return jQuery.sap.domById(this.getId() + '-list');
+	return this.getDomRef("list");
 };
 
 /*

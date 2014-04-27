@@ -31,17 +31,17 @@ jQuery.sap.require("sap.ui.core.Control");
  * <ul>
  * <li>Properties
  * <ul>
- * <li>{@link #getType type} : sap.m.FacetFilterType (default: sap.m.FacetFilterType.Simple)</li>
  * <li>{@link #getVisible visible} : boolean (default: true)</li>
  * <li>{@link #getShowPersonalization showPersonalization} : boolean (default: false)</li>
+ * <li>{@link #getType type} : sap.m.FacetFilterType (default: sap.m.FacetFilterType.Simple)</li>
+ * <li>{@link #getLiveSearch liveSearch} : boolean (default: true)</li>
  * <li>{@link #getShowSummaryBar showSummaryBar} : boolean (default: false)</li>
  * <li>{@link #getShowReset showReset} : boolean (default: true)</li>
- * <li>{@link #getLiveSearch liveSearch} : boolean (default: true)</li>
  * <li>{@link #getShowPopoverOKButton showPopoverOKButton} : boolean (default: false)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getLists lists} : sap.m.FacetFilterList[]</li></ul>
+ * <li>{@link #getLists lists} <strong>(default aggregation)</strong> : sap.m.FacetFilterList[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,11 +61,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
- * @since 1.16.0
  * @name sap.m.FacetFilter
  */
 sap.ui.core.Control.extend("sap.m.FacetFilter", { metadata : {
@@ -79,17 +78,26 @@ sap.ui.core.Control.extend("sap.m.FacetFilter", { metadata : {
 	// ---- control specific ----
 	library : "sap.m",
 	properties : {
-		"type" : {type : "sap.m.FacetFilterType", group : "Appearance", defaultValue : sap.m.FacetFilterType.Simple},
 		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
-		"showPersonalization" : {type : "boolean", group : "Behavior", defaultValue : false},
+		"showPersonalization" : {type : "boolean", group : "Appearance", defaultValue : false},
+		"type" : {type : "sap.m.FacetFilterType", group : "Appearance", defaultValue : sap.m.FacetFilterType.Simple},
+		"liveSearch" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"showSummaryBar" : {type : "boolean", group : "Behavior", defaultValue : false},
 		"showReset" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"liveSearch" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"showPopoverOKButton" : {type : "boolean", group : "Appearance", defaultValue : false}
 	},
 	defaultAggregation : "lists",
 	aggregations : {
-    	"lists" : {type : "sap.m.FacetFilterList", multiple : true, singularName : "list"}
+    	"lists" : {type : "sap.m.FacetFilterList", multiple : true, singularName : "list"}, 
+    	"buttons" : {type : "sap.m.Button", multiple : true, singularName : "button", visibility : "hidden"}, 
+    	"removeFacetIcons" : {type : "sap.ui.core.Icon", multiple : true, singularName : "removeFacetIcon", visibility : "hidden"}, 
+    	"popover" : {type : "sap.m.Popover", multiple : false, visibility : "hidden"}, 
+    	"addFacetButton" : {type : "sap.m.Button", multiple : false, visibility : "hidden"}, 
+    	"dialog" : {type : "sap.m.Dialog", multiple : false, visibility : "hidden"}, 
+    	"summaryBar" : {type : "sap.m.Toolbar", multiple : false, visibility : "hidden"}, 
+    	"resetButton" : {type : "sap.m.Button", multiple : false, visibility : "hidden"}, 
+    	"arrowLeft" : {type : "sap.ui.core.Icon", multiple : false, visibility : "hidden"}, 
+    	"arrowRight" : {type : "sap.ui.core.Icon", multiple : false, visibility : "hidden"}
 	},
 	events : {
 		"reset" : {}
@@ -117,34 +125,8 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 
 /**
- * Getter for property <code>type</code>.
- * This property defines the default appearance of the FacetFilter on the device.
- * 
- *
- * Default value is <code>Simple</code>
- *
- * @return {sap.m.FacetFilterType} the value of property <code>type</code>
- * @public
- * @name sap.m.FacetFilter#getType
- * @function
- */
-
-/**
- * Setter for property <code>type</code>.
- *
- * Default value is <code>Simple</code> 
- *
- * @param {sap.m.FacetFilterType} oType  new value for property <code>type</code>
- * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
- * @public
- * @name sap.m.FacetFilter#setType
- * @function
- */
-
-
-/**
  * Getter for property <code>visible</code>.
- * Invisible facet filters are not rendered.
+ * If true the FacetFilter will not be displayed.
  *
  * Default value is <code>true</code>
  *
@@ -169,7 +151,7 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 /**
  * Getter for property <code>showPersonalization</code>.
- * Shows buttons to add/remove facets from the filter
+ * If true and the FacetFilter type is Simple, then the add facet icon will be displayed and each facet button will also have a facet remove icon displayed beside it allowing the user to deactivate the facet.
  *
  * Default value is <code>false</code>
  *
@@ -188,6 +170,56 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
  * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.FacetFilter#setShowPersonalization
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>type</code>.
+ * This property defines the default appearance of the FacetFilter on the device.
+ *
+ * Default value is <code>Simple</code>
+ *
+ * @return {sap.m.FacetFilterType} the value of property <code>type</code>
+ * @public
+ * @name sap.m.FacetFilter#getType
+ * @function
+ */
+
+/**
+ * Setter for property <code>type</code>.
+ *
+ * Default value is <code>Simple</code> 
+ *
+ * @param {sap.m.FacetFilterType} oType  new value for property <code>type</code>
+ * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.FacetFilter#setType
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>liveSearch</code>.
+ * Enable/disable live search on all search fields except for the facet list search.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>liveSearch</code>
+ * @public
+ * @name sap.m.FacetFilter#getLiveSearch
+ * @function
+ */
+
+/**
+ * Setter for property <code>liveSearch</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bLiveSearch  new value for property <code>liveSearch</code>
+ * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.FacetFilter#setLiveSearch
  * @function
  */
 
@@ -243,33 +275,8 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 
 /**
- * Getter for property <code>liveSearch</code>.
- * Enable/disable live search on all search fields except for the facet list search.
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>liveSearch</code>
- * @public
- * @name sap.m.FacetFilter#getLiveSearch
- * @function
- */
-
-/**
- * Setter for property <code>liveSearch</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bLiveSearch  new value for property <code>liveSearch</code>
- * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
- * @public
- * @name sap.m.FacetFilter#setLiveSearch
- * @function
- */
-
-
-/**
  * Getter for property <code>showPopoverOKButton</code>.
- * "OK" button is shown for every FacetFilterList popover. Button allows the users to close popover in addition to clicking outside of the popover area.
+ * If true an "OK" button is shown for every FacetFilterList popover. This button allows the user to close the popover from within the popover instead of having to click outside the popover.
  *
  * Default value is <code>false</code>
  *
@@ -294,8 +301,9 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 /**
  * Getter for aggregation <code>lists</code>.<br/>
- * Each FacetFilterList contains a collection of FacetFilterItem controls
+ * Collection of FacetFilterList controls.
  * 
+ * <strong>Note</strong>: this is the default aggregation for FacetFilter.
  * @return {sap.m.FacetFilterList[]}
  * @public
  * @name sap.m.FacetFilter#getLists
@@ -374,7 +382,7 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 
 /**
- * Event is fired when reset button is pressed to inform that filters need to be reset. 
+ * Fired when the reset button is pressed to inform that all facet filter lists need to be reset. 
  *
  * @name sap.m.FacetFilter#reset
  * @event
@@ -390,14 +398,14 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.FacetFilter</code>.<br/> itself. 
  *  
- * Event is fired when reset button is pressed to inform that filters need to be reset. 
+ * Fired when the reset button is pressed to inform that all facet filter lists need to be reset. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.FacetFilter</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.FacetFilter</code>.<br/> itself.
  *
  * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
  * @public
@@ -443,216 +451,222 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 
 // Start of sap\m\FacetFilter.js
-/**
- * This file defines behavior for the control,
- */
-
 jQuery.sap.require("sap.ui.core.IconPool");
-jQuery.sap.require("sap.ui.core.Icon");
+jQuery.sap.require("sap.m.NavContainer");
 
-sap.m.FacetFilter.SCROLL_STEP = 264; // how many pixels to scroll with every overflow arrow click
 
-sap.m.FacetFilter.prototype.init = function() {
+// How many pixels to scroll with every overflow arrow click
+sap.m.FacetFilter.SCROLL_STEP = 264;
 
-	var that = this;
+sap.m.FacetFilter.prototype.setType = function(oType) {
 
-	this._lastScrolling = false; // last state of scrolling - using during rendering
-	this._bPreviousScrollForward = false; // remember the item overflow state
-	this._bPreviousScrollBack = false;
-	this._bNavigationInProgress = false;
-	this._bOkPressedDuringNavigate = false; // when true, prevents closing of the dialog during navigation between pages
+	var oSummaryBar = this.getAggregation("summaryBar");
 
-	this._bRtl = sap.ui.getCore().getConfiguration().getRTL();
-
-	if (jQuery.sap.touchEventMode === "ON" && !jQuery.device.is.phone) {
-		this._enableTouchSupport();
+	// Force light type if running on a phone
+	if (sap.ui.Device.system.phone) {
+		this.setProperty("type", sap.m.FacetFilterType.Light);
+		oSummaryBar.setActive(true);
+	} else {
+		this.setProperty("type", oType);
+		oSummaryBar.setActive(oType === sap.m.FacetFilterType.Light);
 	}
-
-	this._bundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
-
-	// Declare as an object field since it is needed in the renderer
-	this._resetIcon = new sap.ui.core.Icon(this.getId() + "-rb", {
-		src : sap.ui.core.IconPool.getIconURI("undo"),
-		press : function(oEvent) {
-
-			that.fireReset();
-			var aFFLists = that.getLists();
+	
+	if(oType === sap.m.FacetFilterType.Light) {
+		
+		if(this.getShowReset()) {
 			
-			for ( var i = 0; i < aFFLists.length; i++) {
-				aFFLists[i]._getFacetButton().setText(aFFLists[i]._getSelectionText());
-			}			
+			this._addResetToSummary(oSummaryBar);			
+		} else {
+
+			this._removeResetFromSummary(oSummaryBar);
 		}
-	});
+	}
+};
 
-	this._facetAddIcon = new sap.ui.core.Icon(this.getId() + "-add", {
+sap.m.FacetFilter.prototype.setShowReset = function(bVal) {
+	
+	this.setProperty("showReset", bVal);
+	var oSummaryBar = this.getAggregation("summaryBar");
+	
+	if(bVal) {
 
-		src : sap.ui.core.IconPool.getIconURI("add-filter"),
-		press : function(oEvent) {
-
-			that.openFilterDialog();
+		if(this.getShowSummaryBar() || this.getType() === sap.m.FacetFilterType.Light) {
+			
+			this._addResetToSummary(oSummaryBar);
 		}
-	});
-	this._facetAddIcon.addStyleClass("sapMFFAddIcon");
-
-	var bSummaryBarActive = this._getType() === sap.m.FacetFilterType.Light ? true : false;
-	this._summaryBarText = new sap.m.Text(this.getId() + "-summaryBarTxt", {
-		maxLines : 1
-	});
-
-	this._summaryBar = new sap.m.Toolbar(this.getId() + "-summaryBar", {
-		content : [ this._summaryBarText],
-		active : bSummaryBarActive,
-		design : sap.m.ToolbarDesign.Info,
-		press : function(oEvent) {
-		 
-			that.openFilterDialog();
+	} else {
+		
+		if(this.getShowSummaryBar() || this.getType() === sap.m.FacetFilterType.Light) {
+			
+			this._removeResetFromSummary(oSummaryBar);
 		}
-	});
+	}
+};
 
-	// Template for list items in the facets list. The customData field is used to track the list item
-	// index when item indexes change, such as when the user searches. So we need to be able to retrieve
-	// the list item by its original index when the user selects the facet so that we navigate to the correct
-	// filter items list.
-	var oStandardListItemTemplate = new sap.m.StandardListItem({
-		title : "{text}",
-		selected : "{selected}",
-		counter : "{count}",
-		customData : [ new sap.ui.core.CustomData({
-			key : "index",
-			value : "{index}"
-		}) ]
-	});
 
-	this._facetList = new sap.m.List(this.getId() + "-facetlist", {
-		mode : sap.m.ListMode.SingleSelectMaster,
-		items : {
-			path : "/items",
-			template : oStandardListItemTemplate
-		},
-		selectionChange : function(oEvent) {
+sap.m.FacetFilter.prototype.setShowSummaryBar = function(bVal) {
+	
+	this.setProperty("showSummaryBar", bVal);
+	
+	if(bVal) {
+		
+		var oSummaryBar = this.getAggregation("summaryBar");	
+		
+		if(this.getShowReset()) {
+			
+			this._addResetToSummary(oSummaryBar);
+		} else {
+			
+			this._removeResetFromSummary(oSummaryBar);
+		}		
+		oSummaryBar.setActive(this.getType() === sap.m.FacetFilterType.Light);
+	}	
+};
 
-			// Track the index of the selected facet list item. This index is cached in the
-			// StandardListItem's custom data when the list is initially rendered so that it
-			// can be used to find the associated FacetFilterList in the "lists" aggregation
-			// (see _getSelectedFacetFilterList()).
-			var customData = oEvent.getParameter("listItem").getCustomData();
-			for ( var i = 0; i < customData.length; i++) {
-				if (customData[i].getKey() === "index") {
-					that._currentFacetIndex = customData[i].getValue();
-					break;
-				}
-			}
 
-			that._getSelectedFacetFilterList().fireListOpen({});
-			that._navcon.to(that.getId() + "-item");
-		}
-	});
+sap.m.FacetFilter.prototype.setLiveSearch = function(bVal) {
+	
+	// Allow app to change live search while the search field is displayed.
+	
+	this.setProperty("liveSearch", bVal);
+	
+	if(this._displayedList) {
 
-	var oFacetsSearchField = new sap.m.SearchField(this.getId() + "-facetsSearchField", {
-		width : "100%",
-		liveChange : function(oEvent) {
+		var oList = this._displayedList;
+		var oSearchField = sap.ui.getCore().byId(oList.getAssociation("search"));
+		
+		// Always detach the handler at first regardless of bVal, otherwise multiple calls of this method will add
+		// a separate change handler to the search field.
+		oSearchField.detachLiveChange(oList._handleSearchEvent, oList);
+		if (bVal) {
+			oSearchField.attachLiveChange(oList._handleSearchEvent, oList);
+		}				
+	}
+	return this;
+};
 
-			var binding = that._facetList.getBinding("items");
-			if (binding) {
-				var filter = new sap.ui.model.Filter("text", sap.ui.model.FilterOperator.Contains, oEvent.getParameters()["newValue"]);
-				binding.filter([ filter ]);
-			}
-		}
-	});
+sap.m.FacetFilter.prototype.getLists = function() {
+	
+	// Override to make sure we also return a list if it it is currently displayed
+	// in a display container (like the Popover or Dialog). When a list is displayed it is removed from the lists aggregation
+	// and placed into the display container, so it will no longer be part of the lists aggregation.
+	var aLists = this.getAggregation("lists");
+	if(!aLists) {
+		aLists = [];
+	}
+	if(this._displayedList) {
+		aLists.splice(this._listAggrIndex, 0, this._displayedList);
+	}
+	return aLists;
+};
 
-	this._navcon = new sap.m.NavContainer(this.getId() + "-navcon", {
 
-		navigate : function(oEvent) {
+sap.m.FacetFilter.prototype.removeList = function(vObject) {
+	
+		var oList = sap.ui.base.ManagedObject.prototype.removeAggregation.call(this, "lists", vObject);
+		this._removeList(oList);
+		return oList;
+};
 
-			that._bNavigationInProgress = true;
+sap.m.FacetFilter.prototype.removeAggregation = function() {
+	
+	var oList = sap.ui.base.ManagedObject.prototype.removeAggregation.apply(this, arguments);
+	if(arguments[0] === "lists") {
+		this._removeList(oList);	
+	}
+	return oList;	
+};
 
-			var oToPage = oEvent.getParameters()["to"];
-			if (oToPage.getId() === that.getId() + "-item") {
 
-				var oFacetFilterList = that._getSelectedFacetFilterList();
+// API doc provided in the meta-data
+sap.m.FacetFilter.prototype.openFilterDialog = function() {
 
-				oToPage.getSubHeader().addContentMiddle(oFacetFilterList._getSearchField());
-
-				// Only show the checkbox if the list is multi select
-				if (oFacetFilterList.getMultiSelect()) {
-					oToPage.addContent(oFacetFilterList._getSelectAllCheckboxBar());
-				}
-
-				oToPage.setTitle(oFacetFilterList.getTitle());
-				oToPage.addContent(oFacetFilterList._createFilterItemsList());
-			}
-		},
-		afterNavigate : function(oEvent) {
-
-			var oFromPage = oEvent.getParameters()["from"];
-			if (oFromPage.getId() === that.getId() + "-item") {
-				var oFacetFilterList = that._getSelectedFacetFilterList();
-				var oCheckboxBar = oFacetFilterList._getSelectAllCheckboxBar();
-				if (oFacetFilterList.getMultiSelect()) {
-					oFromPage.removeContent(oCheckboxBar);
-				}				
-			}
-
-			that._bNavigationInProgress = false;
-
-			if (that._bOkPressedDuringNavigate) {
-				that._bOkPressedDuringNavigate = false;
-				that._pressDialogOk();
-			}
-		},
-		pages : [ new sap.m.Page(this.getId() + "-filter", {
-			enableScrolling : true,
-			title : this._bundle.getText("FACETFILTER_TITLE"),
-			subHeader : new sap.m.Bar({
-				contentMiddle : oFacetsSearchField
-			}),
-			content : [ this._facetList ]
-		}), new sap.m.Page(this.getId() + "-item", {
-			showNavButton : true,
-			enableScrolling : true,
-			subHeader : new sap.m.Bar(), // Container for the search field
-			navButtonPress : function(oEvent) {
-
-				// Navigate from the filter items page to the facets page
-				that._applyDialogSelection();
-				that._facetList.getSelectedItem().setCounter(that._getSelectedFacetFilterList().getAllCount());
-				that._facetList.setSelectedItem(that._facetList.getSelectedItem(), false);
-				that._navcon.back(that.getId() + "-filter");
-				that._getSelectedFacetFilterList()._destroyListControls();
-			}
-		}) ]
-	});
-
-	this._dialog = new sap.m.Dialog(this.getId() + "-dialog", {
-		showHeader : false,
-		content : this._navcon,
-		stretch: jQuery.device.is.phone ? true : false,
-		afterClose : function() {
-
-			// Update the summary bar with latest selections
-			that._summaryBar.getContent()[0].setText(that._getSummaryText());
-		},
-		beginButton : new sap.m.Button(this.getId() + "-dialog-okbtn", {
-			text : this._bundle.getText("FACETFILTER_ACCEPT"),
-			press : function() {
-
-				that._pressDialogOk();
-			}
-		}),
-		// limit the dialog height on desktop and tablet in case there are many filter items (don't
-		// want the dialog height growing according to the number of filter items)
-		contentHeight : "500px"
-	});
+	var oDialog = this._getFacetDialog();
+	var oNavContainer = this._getFacetDialogNavContainer();
+	oDialog.addContent(oNavContainer);
+	oDialog.open();
+	return this;
 };
 
 /**
- * Detach the interval timer attached in onAfterRendering
+ * Gets the css width of the facet filter. (not the effective width). Even though there is no
+ * width property defined for the FacetFilter, this method is needed for proper display in the ToolBar. 
  * 
+ * @returns {string} the width as a string
+ * @protected
+ */
+sap.m.FacetFilter.prototype.getWidth = function() {
+	return "100%";
+};
+
+
+/**
+ * @private
+ */
+sap.m.FacetFilter.prototype.init = function() {
+
+	this._bundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+	
+	// Button map used to quickly get a button for a given list. This avoids having to iterate through the button aggregation
+	// to find a button for a list.
+	this._buttons = {}; 
+	
+	// Remove icon map used to quickly get the remove icon for a given list. This avoids having to iterate through the removeIcon aggregation
+	// to find an icon for a list.
+	this._removeFacetIcons = {}; 
+	
+	// The index of a list in the "lists" aggregation, used to restore the list back to the aggregation when it is no longer displayed
+	this._listAggrIndex = -1;
+	
+	// Reference to the currently displayed FacetFilterList. This is set after the list is moved from the lists aggregation
+	// to the display container.
+	this._displayedList = null; 
+	
+	// Last state of scrolling - using during rendering
+	this._lastScrolling = false;
+	
+	// Remember the facet button overflow state
+	this._bPreviousScrollForward = false; 
+	this._bPreviousScrollBack = false;	
+
+	this._getAddFacetButton();
+	this._getSummaryBar();
+	
+	// This is the reset button shown for Simple type (not the same as the button created for the summary bar)
+	this.setAggregation("resetButton", this._createResetButton()); 
+	
+	// Enable touch support for the carousel
+	if (jQuery.sap.touchEventMode === "ON" && !sap.ui.Device.system.phone) {
+		this._enableTouchSupport();
+	}	
+	
+	if (sap.ui.Device.system.phone) {
+		this.setType(sap.m.FacetFilterType.Light);
+	}	
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilter.prototype.exit = function() {
+
+	sap.ui.getCore().detachIntervalTimer(this._checkOverflow, this);
+};
+
+/**
  * @private
  */
 sap.m.FacetFilter.prototype.onBeforeRendering = function() {
 	
-	sap.ui.getCore().detachIntervalTimer(this._checkOverflow, this);
+	if(this.getShowSummaryBar() || this.getType() === sap.m.FacetFilterType.Light) {
+		
+		var oSummaryBar = this.getAggregation("summaryBar");
+		var oText = oSummaryBar.getContent()[0];
+		oText.setText(this._getSummaryText());
+	}
+	
+	// Detach the interval timer attached in onAfterRendering
+	sap.ui.getCore().detachIntervalTimer(this._checkOverflow, this);	
 };
 
 /**
@@ -663,138 +677,845 @@ sap.m.FacetFilter.prototype.onBeforeRendering = function() {
  */
 sap.m.FacetFilter.prototype.onAfterRendering = function() {
 
-	if (!jQuery.device.is.phone) {
+	if (!sap.ui.Device.system.phone) {
 		
 		sap.ui.getCore().attachIntervalTimer(this._checkOverflow, this); // proxy() is needed for the additional parameters, not for "this"
 	}
 };
 
-sap.m.FacetFilter.prototype.openFilterDialog = function() {
+/**
+ * Get the facet popover displayed when the user presses the facet button (Simple type only). The popover is created if it does not exist
+ * and is available via the "popover" aggregation. This aggregation is destroyed when the popover is closed.
+ * 
+ * @returns {sap.m.Popover} Multiple calls return the same popover instance.
+ * @private
+ */
+sap.m.FacetFilter.prototype._getPopover = function() {
+	
+	var oPopover = this.getAggregation("popover");
+	if(!oPopover) {
+		
+		var that = this;
+		
+		// Popover allowing the user to view, select, and search filter items	
+		oPopover = new sap.m.Popover({ 
 
-	this._aFacetFilterLists = [];
+			placement: sap.m.PlacementType.Bottom,
+			beforeOpen: function(oEvent) {
+				
+				this.setCustomHeader(that._createFilterItemsSearchFieldBar(that._displayedList));
+				var subHeaderBar = this.getSubHeader();
+				if (!subHeaderBar) {
+					this.setSubHeader(that._createSelectAllCheckboxBar(that._displayedList));
+				}
+			},
+			afterClose: function(oEvent) {
+				
+				var oList = that._restoreListFromDisplayContainer(this);
+				
+				// The facet button will not be removed when the remove icon is pressed if we don't delay hiding the icon in ie 9.
+				//
+				// CSS 0120061532 0004101226 2013 "sap.m.FacetFilterList - getActive inconsistent result"
+				// Moved "fireListCloseEvent" into the setTimeout function for IE9
+				//
+				// TODO: Remove when ie 9 is no longer supported
+				if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10) {
+					jQuery.sap.delayedCall(100, that, that._handlePopoverAfterClose, [oList]);
+				} else {
+					that._handlePopoverAfterClose(oList);
+				}
+			},
+			horizontalScrolling: false
+		});
+		
+		// Suppress invalidate so that FacetFilter is not rerendered when the popover is opened (causing it to immediately close)
+		this.setAggregation("popover", oPopover, true);
+		
+		// Set the minimum width of the popover to insure that it is not too small to display it's content properly.
+		// This is not the same as setting Popover.contentWidth, which sets a fixed width size. We want the popover
+		// to grow in width if any of its content is wider than the min width.
+		oPopover.addStyleClass("sapMFFPop");		
+	}
+	
+	if(this.getShowPopoverOKButton()) {
+		
+			this._addOKButtonToPopover(oPopover);	
+	} else {
+		oPopover.destroyAggregation("footer");
+	}		
+	
+	return oPopover;
+};
 
+/**
+ * 
+ * @private
+ */
+sap.m.FacetFilter.prototype._handlePopoverAfterClose = function(oList) {
+	this._displayRemoveIcon(false, oList);
+	oList._fireListCloseEvent();
+	// Destroy the popover aggregation, otherwise if the list is then moved to the dialog filter items page, it will still think it's DOM element parent
+	// is the popover causing facet filter item checkbox selection to not display the check mark when the item is selected.
+	this.destroyAggregation("popover");
+	if(this._oOpenPopoverDeferred) {
+		jQuery.sap.delayedCall(0, this, function () {
+			this._oOpenPopoverDeferred.resolve();
+			this._oOpenPopoverDeferred = undefined;
+		});
+	}
+};
+
+/**
+ * 
+ * @param oPopover
+ * @param oControl The control the popover will be opened "by"
+ */
+sap.m.FacetFilter.prototype._openPopover = function(oPopover, oControl) {
+	
+	// Don't open if already open, otherwise the popover will display empty.	
+	if (!oPopover.isOpen()) {
+		
+		var oList = sap.ui.getCore().byId(oControl.getAssociation("list"));
+		jQuery.sap.assert(oList, "The facet filter button should be associated with a list.");
+		
+		this._moveListToDisplayContainer(oList, oPopover);
+						
+		oList.fireListOpen({});
+		oPopover.openBy(oControl);
+		this._displayRemoveIcon(true, oList);
+	}			
+	return this;
+};
+
+/**
+ * 
+ * @returns {sap.m.Button}
+ * @private
+ */
+sap.m.FacetFilter.prototype._getAddFacetButton = function() {
+	
+	var oButton = this.getAggregation("addFacetButton");
+	if(!oButton) {
+		var that = this;
+		
+		var oButton = new sap.m.Button(this.getId() + "-add", {
+			
+			icon: sap.ui.core.IconPool.getIconURI("add-filter"),
+			type: sap.m.ButtonType.Transparent,
+			press: function(oEvent) {
+
+				that.openFilterDialog();
+			}			
+		});
+		this.setAggregation("addFacetButton", oButton, true);			
+	}
+	return oButton;
+};
+
+/**
+ * Get the facet button for the given list (it is created if it does not yet exist). The button text is set with the given list's title.
+ * 
+ * @param oList The list displayed when the button is pressed
+ * @returns {sap.m.Button}
+ * @private
+ */
+sap.m.FacetFilter.prototype._getButtonForList = function(oList) {
+
+	
+	if (this._buttons[oList.getId()]) {
+		
+		this._setButtonText(oList);
+		return this._buttons[oList.getId()];
+	}
+
+	var that = this;
+	var oButton = new sap.m.Button({
+	
+		type : sap.m.ButtonType.Transparent,
+		press : function(oEvent) {
+			var oThisButton = this;
+			var fnOpenPopover = function() {
+				var oPopover = that._getPopover();
+				that._openPopover(oPopover, oThisButton);
+			};
+			
+			// TODO: Remove when ie 9 is no longer supported
+			if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10) {
+				// Opening popover is delayed so it is called after the previous popover is closed
+				jQuery.sap.delayedCall(100, this, fnOpenPopover);
+			} else {				
+				var oPopover = that._getPopover();
+				if (oPopover.isOpen()){
+					// create a deferred that will be triggered after the popover is closed
+					that._oOpenPopoverDeferred = jQuery.Deferred();
+					that._oOpenPopoverDeferred.promise().done(fnOpenPopover);
+				} else {
+					that._openPopover(oPopover, this);
+				}
+			}
+		}
+	});
+	
+	this._buttons[oList.getId()] = oButton;
+	this.addAggregation("buttons", oButton); // Insures that the button text is updated if FacetFilterList.setTitle() is called
+	oButton.setAssociation("list", oList.getId(), true);
+	this._setButtonText(oList);
+	return oButton;
+};
+
+/**
+ * Update the facet button text based on selections in the given list.
+ * 
+ * @param oList 
+ * @private
+ */
+sap.m.FacetFilter.prototype._setButtonText = function(oList) {
+
+	var oButton = this._buttons[oList.getId()];
+	if(oButton) { // Button may not be created yet if FFL.setTitle() is called before the button is rendered the first time
+		
+		var sText = "";
+		var aSelectedKeyNames = Object.getOwnPropertyNames(oList._oSelectedKeys);
+		var iLength = aSelectedKeyNames.length;
+
+		if (iLength > 0) {
+
+			if (iLength === 1) { // Use selected item value for button label if only one selected
+				var sSelectedItemText = oList._oSelectedKeys[aSelectedKeyNames[0]];
+				sText = this._bundle.getText("FACETFILTER_ITEM_SELECTION", [ oList.getTitle(), sSelectedItemText ]);
+			} else {
+				sText = this._bundle.getText("FACETFILTER_ITEM_SELECTION", [ oList.getTitle(), iLength ]);
+			}
+		} else {
+			sText = this._bundle.getText("FACETFILTER_ALL_SELECTED", [ oList.getTitle() ]);
+		}
+		
+		oButton.setText(sText);
+	}	
+};
+
+/**
+ * Get the facet list remove icon for the given list (it is created if it does not yet exist). The icon is associated with the list id, which is why we only
+ * need to pass the list to retrieve the icon once it has been created.
+ * 
+ * @private
+ */
+sap.m.FacetFilter.prototype._getFacetRemoveIcon = function(oList) {
+
+	var oIcon = this._removeFacetIcons[oList.getId()];
+	if(!oIcon) {
+		oIcon = new sap.ui.core.Icon({
+
+			src : sap.ui.core.IconPool.getIconURI("sys-cancel"),
+			press : function(oEvent) {
+				var oList = sap.ui.getCore().byId(this.getAssociation("list"));
+				oList.removeSelections(true);
+				oList.setSelectedKeys();
+				oList.setProperty("active", false, true);
+			}
+		});
+
+		oIcon.setAssociation("list", oList.getId(), true);
+		oIcon.addStyleClass("sapMFFLRemoveIcon");
+		this._removeFacetIcons[oList.getId()] = oIcon;
+		this.addAggregation("removeFacetIcons", oIcon);
+		this._displayRemoveIcon(false, oList);		
+	}
+	return oIcon;
+};
+
+/**
+ * Show or hide the facet list remove icon for the given list.
+ * 
+ * @param bDisplay
+ * @param oList
+ * @private
+ */
+sap.m.FacetFilter.prototype._displayRemoveIcon = function(bDisplay, oList) {
+
+	if(this.getShowPersonalization()) {
+		var oIcon = this._removeFacetIcons[oList.getId()];
+		if (bDisplay) {
+
+			oIcon.removeStyleClass("sapMFFLHiddenRemoveIcon");
+			oIcon.addStyleClass("sapMFFLVisibleRemoveIcon");
+		} else {
+
+			oIcon.removeStyleClass("sapMFFLVisibleRemoveIcon");
+			oIcon.addStyleClass("sapMFFLHiddenRemoveIcon");
+		}
+	}
+};
+
+
+/**
+ * Create the navigation container displayed in the facet dialog. The container is created with an initial page for
+ * the list of facets and a second page for displaying a list of items associated with the facet selected on the initial page.
+ * 
+ * @private
+ */
+sap.m.FacetFilter.prototype._getFacetDialogNavContainer = function() {
+	
+	var oNavContainer = new sap.m.NavContainer();
+	var oFacetPage = this._createFacetPage();	
+	oNavContainer.addPage(oFacetPage);	
+	oNavContainer.setInitialPage(oFacetPage);
+	
+	var that = this;
+	oNavContainer.attachAfterNavigate(function(oEvent) {
+		
+		// Clean up transient filter items page controls. This must be done here instead of navFromFacetFilterList
+		// so that controls are not removed before the transition to the facet page is completed.  Otherwise you notice
+		// a slight visual change in the filter items page just prior to navigation.
+		var oToPage = oEvent.getParameters()["to"];
+		var oFromPage = oEvent.getParameters()['from'];
+		if (oToPage === oFacetPage) {
+			// Destroy the search field bar
+			oFromPage.destroySubHeader();
+			
+			jQuery.sap.assert(that._displayedList === null, "Filter items list should have been placed back in the FacetFilter aggregation before page content is destroyed.");
+			oFromPage.destroyContent(); // Destroy the select all checkbox bar	
+			
+			// TODO: Find out why the counter is not updated without forcing rendering of the facet list item
+			// App may have set a new allCount from a listClose event handler, so we need to update the counter on the facet list item.
+			that._selectedFacetItem.invalidate();
+			that._selectedFacetItem = null;
+		}		
+	});
+	
+	return oNavContainer;
+};
+
+/**
+ * Create a page that contains a list of facets and a search field for searching facets. Each facet represents one
+ * FacetFilterList.
+ * 
+ * @returns {sap.m.Page}
+ * @private
+ */
+sap.m.FacetFilter.prototype._createFacetPage = function() {
+	
+	var oFacetList = this._createFacetList();
+	var oFacetsSearchField = new sap.m.SearchField({
+		width : "100%",
+		liveChange : function(oEvent) {
+
+			var binding = oFacetList.getBinding("items");
+			if (binding) {
+				var filter = new sap.ui.model.Filter("text", sap.ui.model.FilterOperator.Contains, oEvent.getParameters()["newValue"]);
+				binding.filter([ filter ]);
+			}
+		}
+	});	
+	
+	var oPage = new sap.m.Page({
+		enableScrolling : true,
+		title : this._bundle.getText("FACETFILTER_TITLE"),
+		subHeader : new sap.m.Bar({
+			contentMiddle : oFacetsSearchField
+		}),
+		content : [  oFacetList ]
+	});		
+	return oPage;
+};
+
+/**
+ * Create a page that contains a FacetFilterList and a search field for searching items.
+ * 
+ * @returns {sap.m.Page}
+ * @private
+ */
+sap.m.FacetFilter.prototype._createFilterItemsPage = function() {
+	
+	var that = this;
+	var oPage = new sap.m.Page({
+		showNavButton : true,
+		enableScrolling : true,
+		navButtonPress : function(oEvent) {
+
+			var oNavContainer = oEvent.getSource().getParent();
+			that._navFromFilterItemsPage(oNavContainer);
+		}
+	});	
+	return oPage;
+};
+
+/**
+ * Create a new page that contains a FacetFilterList and a search field for searching items.
+ * Old page is destroyed.
+ * 
+ * @returns {sap.m.Page}
+ * @private
+ */
+sap.m.FacetFilter.prototype._getFilterItemsPage = function(oNavCont) {
+
+	var oOldPage = oNavCont.getPages()[1];
+	if (oOldPage){
+		oNavCont.removePage(oOldPage);
+		oOldPage.destroy();
+	}
+	
+	var oPage = this._createFilterItemsPage();
+	oNavCont.addPage(oPage);
+	
+	return oPage;
+};
+
+/**
+ * @private
+ */
+sap.m.FacetFilter.prototype._createFilterItemsSearchFieldBar = function(oList) {
+	
+	var that = this;
+	var oSearchField = new sap.m.SearchField({
+		value: oList._getSearchValue(), // Seed search field with previous search value for the list
+		width : "100%",
+		search : function(oEvent) {
+
+			that._displayedList._handleSearchEvent(oEvent);
+		}
+	});	
+	
+	if (this.getLiveSearch()) {
+		oSearchField.attachLiveChange(oList._handleSearchEvent, oList);
+	}	
+	
+	var oBar = new sap.m.Bar( {
+		contentMiddle: oSearchField
+	});	
+	
+	oList.setAssociation("search", oSearchField);
+	
+	return oBar;
+};
+
+/**
+ * Get the facet dialog. The dialog is created if it doesn't exist.  The dialog contains a NavContainer having two Pages. The first
+ * page contains a list of facets. Navigation proceeds to a second page containing facet filter items for the selected facet.
+ * 
+ * @private
+ */
+sap.m.FacetFilter.prototype._getFacetDialog = function() {
+	
+	var oDialog = this.getAggregation("dialog");
+	if(!oDialog) {
+		
+		var that = this;
+		oDialog = new sap.m.Dialog({
+			showHeader : false,
+			stretch: sap.ui.Device.system.phone ? true : false,
+			afterClose : function() {
+
+				// Make sure we restore the FacetFilterList back to the lists aggregation and update its active state
+				// if the user dismisses the dialog while on the filter items page.
+				var oNavContainer = this.getContent()[0];
+				var oFilterItemsPage = oNavContainer.getPages()[1];
+				if(oNavContainer.getCurrentPage() === oFilterItemsPage) {
+				
+					var oList = that._restoreListFromDisplayContainer(oFilterItemsPage);
+					oList._updateActiveState();
+					oList._fireListCloseEvent();
+				}
+				
+				// Destroy the nav container and all it contains so that the dialog content is initialized new each
+				// time it is opened.  This avoids the need to navigate back to the top page if the user previously dismissed
+				// the dialog while on the filter items page.
+				this.destroyAggregation("content", true);
+				
+				// Update button or summary bar text with latest selections
+				that.invalidate();
+			},
+			beginButton : new sap.m.Button({
+				text : this._bundle.getText("FACETFILTER_ACCEPT"),
+				press : function() {
+
+					that._closeDialog();
+				}
+			}),
+			// limit the dialog height on desktop and tablet in case there are many filter items (don't
+			// want the dialog height growing according to the number of filter items)
+			contentHeight : "500px"
+		});
+
+		oDialog.addStyleClass("sapMFFDialog");	
+		this.setAggregation("dialog", oDialog, true);				
+	}
+	return oDialog;
+};
+
+/**
+ * Close the facet dialog.
+ * @private
+ */
+sap.m.FacetFilter.prototype._closeDialog = function() {
+
+	var oDialog = this.getAggregation("dialog");
+	
+	if(oDialog && oDialog.isOpen()) {
+		oDialog.close();	
+	}
+};
+
+/**
+ * Close the facet popover.  This is used only for unit testing to verify destroy of popover contents.
+ * @private
+ */
+sap.m.FacetFilter.prototype._closePopover = function() {
+
+	var oPopover = this.getAggregation("popover");
+	if(oPopover && oPopover.isOpen()) {
+		oPopover.close();
+	}
+};
+
+
+/**
+ * Create the list of facets presented on the facets page in the dialog.
+ * 
+ * @returns {sap.m.List} A list populated with items, each displaying a title (from the FacetFilterList title) and a counter (from the FacetFilterList allCount)
+ * @private
+ */
+sap.m.FacetFilter.prototype._createFacetList = function() {
+	
+	var oFacetList =  new sap.m.List({
+		mode: sap.m.ListMode.None,
+		items: {
+			path: "/items",
+			template: new sap.m.StandardListItem({
+				title: "{text}",
+				counter: "{count}",
+				type: sap.m.ListType.Navigation,
+				customData : [ new sap.ui.core.CustomData({
+					key : "index",
+					value : "{index}"
+				}) ]				
+			})
+		}
+	});	
+	
+	// Create the facet list from a model binding so that we can implement facet list search using a filter.
+	var aFacetFilterLists = [];
 	for ( var i = 0; i < this.getLists().length; i++) {
 		var oList = this.getLists()[i];
 
-		this._aFacetFilterLists.push({
-			text : oList.getTitle(),
-			count : oList.getAllCount(),
+		aFacetFilterLists.push({
+			text: oList.getTitle(),
+			count: oList.getAllCount(),
 			index : i
 		});
 	}
 
-	var jsonModel = new sap.ui.model.json.JSONModel({
-		items : this._aFacetFilterLists
+	var oModel = new sap.ui.model.json.JSONModel({
+		items: aFacetFilterLists
 	});
-	this._facetList.setModel(jsonModel);
-
-	this._dialog.open();
-	this._navcon.backToTop();
+	
+	// Set up FacetFilterList press handler on each list item
+	// every time they are created (such as after facet list filtering).
+	var that = this;
+	oFacetList.attachUpdateFinished(function() {		
+		
+		for(var i=0; i < oFacetList.getItems().length; i++) {
+			
+			var oFacetListItem = this.getItems()[i];
+			oFacetListItem.detachPress(that._handleFacetListItemPress, that);
+			oFacetListItem.attachPress(that._handleFacetListItemPress, that);
+		}		
+	});
+	
+	oFacetList.setModel(oModel);
+	return oFacetList;
 };
 
 /**
- * Save current facet filter list selection to the model and fire ListCloseEvent.
+ * Create a bar containing a "select all" checkbox for the given list. The "checkbox" association is created
+ * from the list to the checkbox so that the checkbox selected state can be updated
+ * by the list when selection changes.
  * 
+ * @param oList
+ * @returns {sap.m.Bar} Bar, or null if the given list is not multi-select
  * @private
  */
-sap.m.FacetFilter.prototype._applyDialogSelection = function() {
-
-	if (this._navcon.getCurrentPage().getId() === this.getId() + "-item") {
-		// cached facet items;
-		var oFacetFilterList = this._getSelectedFacetFilterList();
-		var sModelName = oFacetFilterList._modelName;
-		var aFacetFilterItems = oFacetFilterList.getItems();
-		var aListItems = oFacetFilterList._getViewList().getItems();
-		var bSelected = false;
-
-		if (oFacetFilterList.getMultiSelect()) {
-			bSelected = oFacetFilterList._getSelectAllCheckbox().getSelected();
+sap.m.FacetFilter.prototype._createSelectAllCheckboxBar = function(oList) {
+	
+		if(!oList.getMultiSelect()) {
+			return null;
 		}
-
-		jQuery.each(aListItems, function(index, value) {
-
-			if (!value.getBindingInfo("selected")) {
-				for ( var i = index; i < aFacetFilterItems.length; i++) {
-					if (value.getBindingContext(sModelName) && value.getBindingContext(sModelName).getPath()) {
-						var path = value.getBindingContext(sModelName).getPath();
-						if (aFacetFilterItems[i].getBindingContext(sModelName) && aFacetFilterItems[i].getBindingContext(sModelName).getPath() === path) {
-							bSelected = bSelected || value.getSelected();
-							aFacetFilterItems[i].setSelected(value.getSelected());
-							break;
-						}
-					}
-				}
+		
+		var oCheckbox = new sap.m.CheckBox(oList.getId() + "-selectAll", {
+			text : this._bundle.getText("FACETFILTER_CHECKBOX_ALL"),
+			selected: oList.getActive() && !oList.getSelectedItem() && !Object.getOwnPropertyNames(oList._oSelectedKeys).length, 
+			select : function(oEvent) {
+				
+				fnHandleCheckboxSelection(!oEvent.getParameter("selected"));
 			}
 		});
+		
+		// We need to get the checkbox from the list when selection changes so that we can set the state of the
+		// checkbox.  See the selection change handler on FacetFilterList.
+		oList.setAssociation("allcheckbox", oCheckbox);
+		
+		var oBar = new sap.m.Bar();
+		
+		// Bar does not support the tap event, so create a delegate to handle tap and set the state of the select all checkbox.
+		oBar.addEventDelegate({
+			ontap: function(oEvent) {
+				
+				if(oEvent.srcControl === this) {
+					
+					fnHandleCheckboxSelection(oCheckbox.getSelected());
+				}				
+			}
+		}, oBar); 
+		oBar.addContentLeft(oCheckbox);
+		
+		var fnHandleCheckboxSelection = function(bSelected) {
+			
+			if(oList.getActive()) {
+				
+				oCheckbox.setSelected(true);
+		
+			} else {
+				
+				oCheckbox.setSelected(!bSelected);
+			}		
+			if(oCheckbox.getSelected()) {
+				oList.removeSelections(true);
+				oList.setSelectedKeys();
+			}			
+		};
+		oBar.addStyleClass("sapMFFCheckbar");
+	return oBar;	
+};
 
-		// Now we need to again go through the items and see if any are selected that were filtered out via search of the list
-		// at the time the user dismissed the dialog.
-		if (!bSelected) {
-			for ( var i = 0; i < aFacetFilterItems.length; i++) {
-				bSelected = aFacetFilterItems[i].getSelected();
-				if (bSelected) {
-					break;
+
+/**
+ * Navigate to the appropriate filter items page when a facet list item is pressed in the facet page.
+ * 
+ * @param oEvent
+ * @private
+ */
+sap.m.FacetFilter.prototype._handleFacetListItemPress = function(oEvent) {
+	
+	this._navToFilterItemsPage(oEvent.getSource());
+};
+
+/**
+ * Navigate to the facet filter items page associated with the given facet list item. The listOpen event is fired prior to navigation.
+ * 
+ * @param oFacetListItem The facet item selected on the dialog facet page
+ * @private
+ */
+sap.m.FacetFilter.prototype._navToFilterItemsPage = function(oFacetListItem) {
+	
+	this._selectedFacetItem = oFacetListItem;
+	
+	var oNavCont = this.getAggregation("dialog").getContent()[0];
+	var oCustomData = oFacetListItem.getCustomData();
+	jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
+	var iIndex = oCustomData[0].getValue();	
+	var oFacetFilterList = this.getLists()[iIndex];
+	var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
+	
+	// This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
+	//oFilterItemsPage.destroyAggregation("content", true);
+	
+	// Add the facet filter list
+	this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
+	
+	// Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
+	oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
+		
+	// Add the select all checkbox bar if the list being displayed on the filter items page
+	// is a multi select list. The bar is created only if the list is multi select.
+	// The bar is destroyed from NavContainer.afterNavigate.
+	var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
+	if(oCheckboxBar) {
+		oFilterItemsPage.insertContent(oCheckboxBar, 0);	
+	}
+
+	oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
+	
+	oFacetFilterList.fireListOpen({});
+	oNavCont.to(oFilterItemsPage);
+};
+
+/**
+ * 
+ * @param oNavContainer
+ * @private
+ */
+sap.m.FacetFilter.prototype._navFromFilterItemsPage = function(oNavContainer) {
+	
+	var oFilterItemsPage = oNavContainer.getPages()[1];
+	var oList = this._restoreListFromDisplayContainer(oFilterItemsPage);
+	
+	oList._updateActiveState();
+	oList._fireListCloseEvent();
+	this._selectedFacetItem.setCounter(oList.getAllCount());
+	oNavContainer.backToTop();	
+};
+
+/**
+ * 
+ * @param oList
+ * @param oContainer
+ * @private
+ */
+sap.m.FacetFilter.prototype._moveListToDisplayContainer = function(oList, oContainer) {
+	
+	this._listAggrIndex = this.indexOfAggregation("lists", oList);
+	jQuery.sap.assert(this._listAggrIndex > -1, "The lists index should be valid.");		
+	// Suppress invalidate when removing the list from the FacetFilter since this will cause the Popover to close
+	sap.ui.base.ManagedObject.prototype.removeAggregation.call(this, "lists", oList, true);
+	oContainer.addAggregation("content", oList, false);
+	
+	// Make the FacetFilter available from the list even after it is moved. This is actually no longer
+	// needed, however we keep it for compatibility.
+	oList.setAssociation("facetFilter", this, true); 
+	this._displayedList = oList;
+};
+
+/**
+ * 	Restore the displayed list back to its original location within the "lists" aggregation
+ * @param oContainer
+ * @returns The restored list.
+ * @private
+ */
+sap.m.FacetFilter.prototype._restoreListFromDisplayContainer = function(oContainer) {
+		
+	var oList = oContainer.removeAggregation("content", this._displayedList, true);
+	
+	//About invalidation on insert: Make sure we rerender if the list has been set inactive so that it is removed from the screen
+	this.insertAggregation("lists", oList, this._listAggrIndex, oList.getActive());
+	
+	this._listAggrIndex = -1;	
+	this._displayedList = null;
+	return oList;
+};
+
+/**
+ * Returns an array in ascending according to the sequence value of each FacetFilterList. If
+ * a list has sequence <= -1 then its sequence is reset to its index in the "lists" aggregation.
+ * 
+ * @returns Sorted list of FacetFilterLists.
+ * @private
+ */
+sap.m.FacetFilter.prototype._getSequencedLists = function() {
+
+	var iMaxSequence = -1;
+	var aSequencedLists = [];
+	var aLists = this.getLists();
+
+	if (aLists.length > 0) {
+		for ( var i=0; i < aLists.length; i++) {
+			if (aLists[i].getActive()) {
+				
+				// Make sure we reset sequences that are less than -1 so that they are rendered
+				// after lists that have non-negative sequences
+				if (aLists[i].getSequence() < -1) {
+					aLists[i].setSequence(-1);
+				}	
+				else if (aLists[i].getSequence() > iMaxSequence) {
+					iMaxSequence = aLists[i].getSequence();
 				}
+				aSequencedLists.push(aLists[i]);
+			} else {
+				aLists[i].setSequence(-1); // Reset the sequence if the list is inactive so that if it is made active again it is placed at the end
 			}
 		}
-
-		if (bSelected) {
-			oFacetFilterList.setActive(true);
-			oFacetFilterList._fireListCloseEvent();
-		}
+		
+		// Every list whose sequence is unspecified should be moved to the end
+		for ( var j=0; j < aSequencedLists.length; j++) {
+			if (aSequencedLists[j].getSequence() <= -1) {
+				iMaxSequence += 1;
+				aSequencedLists[j].setSequence(iMaxSequence);
+			}
+		}		
+		
+		if (aSequencedLists.length > 1) {
+			
+			// Sort compares items moving from least to greatest index
+			aSequencedLists.sort(function(item1, item2){
+					return item1.getSequence() - item2.getSequence();
+				});
+		}		
 	}
+	return aSequencedLists;
 };
+
 
 /**
  * @private
  */
-sap.m.FacetFilter.prototype._pressDialogOk = function() {
+sap.m.FacetFilter.prototype._getSummaryBar = function() {
+	
+	var oSummaryBar = this.getAggregation("summaryBar");
+	if(!oSummaryBar) {
 
-	if (this._bNavigationInProgress) {
-		this._bOkPressedDuringNavigate = true;
-		return;
+		var oText = new sap.m.Text({
+			maxLines : 1
+		});
+
+		var that = this;
+		oSummaryBar = new sap.m.Toolbar({
+			content : [ oText ], // Text is set before rendering
+			active : this.getType() === sap.m.FacetFilterType.Light ? true : false,
+			design : sap.m.ToolbarDesign.Info,
+			height: "auto",
+			press : function(oEvent) {
+				
+					that.openFilterDialog();					
+			}
+		});	
+		
+		this.setAggregation("summaryBar", oSummaryBar);		
 	}
-
-	this._applyDialogSelection();
-	this._dialog.close();
-
-	if (this._navcon.getCurrentPage().getId() === (this.getId() + "-item")) {
-		this._getSelectedFacetFilterList()._destroyListControls();
-	}
-
-	sap.ui.getCore().byId(this.getId() + "-facetsSearchField").setValue();
+	return oSummaryBar;
 };
 
-sap.m.FacetFilter.prototype.exit = function() {
+/**
+ * 
+ * @returns {sap.m.Button}
+ * @private
+ */
+sap.m.FacetFilter.prototype._createResetButton = function() { 
 
-	if (this._facetAddIcon) {
-		this._facetAddIcon.destroy();
-		this._facetAddIcon = undefined;
-	}
-	
-	if (this._resetIcon) {
-		this._resetIcon.destroy();
-		this._resetIcon = undefined;
-	}
+	var that = this;
+	var oButton = new sap.m.Button({
+		type: sap.m.ButtonType.Transparent,
+		icon : sap.ui.core.IconPool.getIconURI("undo"),
+		press : function(oEvent) {
 
-	if (this._summaryBar) {
-		this._summaryBar.destroy();
-		this._summaryBar = undefined;
-	}
+			that.fireReset();			
+			
+			// Make sure we update selection texts
+			that.invalidate();
+		}
+	});
+	return oButton;
+};
 
-	if (this._oArrowLeft) {
-		this._oArrowLeft.destroy();
-		this._oArrowLeft = undefined;
-	}
-	if (this._oArrowRight) {
-		this._oArrowRight.destroy();
-		this._oArrowRight = undefined;
-	}
+/**
+ * Create an OK button to dismiss the given popover.
+ * @param oPopover
+ */
+sap.m.FacetFilter.prototype._addOKButtonToPopover = function(oPopover) {
 
-	if (this._dialog) {
-		this._dialog.destroy();
-		this._dialog = undefined;
-	}
+	var oButton = oPopover.getFooter();
+	if(!oButton) {
+		
+		var that = this;
+		var oButton = new sap.m.Button({
+			text : this._bundle.getText("FACETFILTER_ACCEPT"),
+			width : "100%",
+			press : function() {
+
+				that._closePopover();
+			}
+		});
+		oPopover.setFooter(oButton);
+	}	
+	return oButton;
 };
 
 /**
@@ -804,34 +1525,34 @@ sap.m.FacetFilter.prototype.exit = function() {
  */
 sap.m.FacetFilter.prototype._getSummaryText = function() {
 
-	var COMMA_AND_SPACE = ", ";
-	var SPACE = " ";
-	var sFinalSummaryText = "";
-	var bFirst = true;
+  var COMMA_AND_SPACE = ", ";
+  var SPACE = " ";
+  var sFinalSummaryText = "";
+  var bFirst = true;
 
-	var aListOfFilters = this.getLists();
+  var aListOfFilters = this.getLists();
 
-	if (aListOfFilters.length > 0) {
+	  if (aListOfFilters.length > 0) {
 
-		for ( var i = 0; i < aListOfFilters.length; i++) {
+		for (var i = 0; i < aListOfFilters.length; i++) {
 			var oFacet = aListOfFilters[i];
 
 			if (oFacet.getActive()) {
-				var aListOfItems = oFacet.getSelectedItems();
+				var aListOfItems = this._getSelectedItemsText(oFacet);
 				var sText = "";
-				for ( var j = 0; j < aListOfItems.length; j++) {
-					sText = sText + aListOfItems[j].getText() + COMMA_AND_SPACE;
+				for (var j = 0; j < aListOfItems.length; j++) {
+					sText = sText + aListOfItems[j] + COMMA_AND_SPACE;
 				}
 
 				if (sText) {
 					sText = sText.substring(0, sText.lastIndexOf(COMMA_AND_SPACE)).trim();
 
 					if (bFirst) {
-						sFinalSummaryText = this._bundle.getText("FACETFILTER_INFOBAR_FILTERED_BY", [ oFacet.getTitle(), sText ]);
+						sFinalSummaryText = this._bundle.getText("FACETFILTER_INFOBAR_FILTERED_BY", [oFacet.getTitle(), sText]);
 						bFirst = false;
 					} else {
 						sFinalSummaryText = sFinalSummaryText + SPACE + this._bundle.getText("FACETFILTER_INFOBAR_AND") + SPACE
-								+ this._bundle.getText("FACETFILTER_INFOBAR_AFTER_AND", [ oFacet.getTitle(), sText ]);
+								+ this._bundle.getText("FACETFILTER_INFOBAR_AFTER_AND", [oFacet.getTitle(), sText]);
 					}
 				}
 			}
@@ -846,6 +1567,91 @@ sap.m.FacetFilter.prototype._getSummaryText = function() {
 };
 
 /**
+ * Returns texts of selected items, visible and invisible.
+ * 
+ * @param {sap.m.FacetFilterList}
+ *          oList source of selected items
+ * @returns {String[]} texts of selected items
+ * @private
+ */
+sap.m.FacetFilter.prototype._getSelectedItemsText = function(oList) {
+
+   var aTexts = oList.getSelectedItems().map(function(value) {
+		return value.getText();
+	});
+
+	oList._oSelectedKeys && Object.getOwnPropertyNames(oList._oSelectedKeys).forEach(function(value) {
+		aTexts.indexOf(oList._oSelectedKeys[value]) === -1 && aTexts.push(oList._oSelectedKeys[value]);
+	});
+	return aTexts;
+};
+
+
+
+/**
+ * Add the reset button to the given summary bar, positioned to the end of the bar.
+ * 
+ * @param oSummaryBar
+ * @private
+ */
+sap.m.FacetFilter.prototype._addResetToSummary = function(oSummaryBar) {
+	
+	if(oSummaryBar.getContent().length === 1) {
+		
+		oSummaryBar.addContent(new sap.m.ToolbarSpacer({width: ""})); // Push the reset button to the end of the toolbar
+		oSummaryBar.addContent(this._createResetButton());
+	}	
+};
+
+/**
+ * Remove the reset button from the given summary bar.
+ * 
+ * @param oSummaryBar
+ * @private
+ */
+sap.m.FacetFilter.prototype._removeResetFromSummary = function(oSummaryBar) {
+	
+	if(oSummaryBar.getContent().length === 3) {
+		
+		// Only remove reset controls if they are not already there (setShowReset called with bVal=false twice)
+		var oSpacer = oSummaryBar.removeAggregation("content", 1); // Remove spacer
+		oSpacer.destroy();
+		
+		var oButton = oSummaryBar.removeAggregation("content", 1); // Remove reset button
+		oButton.destroy();					
+	}		
+};
+
+
+/**
+ * Clean up facet buttons and remove facet icons for the given list.
+ * 
+ * @param oList
+ */
+sap.m.FacetFilter.prototype._removeList = function(oList) {
+	
+	if(oList) {
+
+		var oButton = this._buttons[oList.getId()];
+		if(oButton) {
+			this.removeAggregation("buttons", oButton);
+			oButton.destroy();
+		}
+		
+		var oRemoveIcon = this._removeFacetIcons[oList.getId()];
+		if(oRemoveIcon) {
+			this.removeAggregation("removeIcons", oRemoveIcon);
+			oRemoveIcon.destroy();
+		}
+		delete this._buttons[oList.getId()];
+		delete this._removeFacetIcons[oList.getId()];		
+	}	
+};
+
+
+// ---------------- Carousel Support ----------------
+
+/**
  * Returns arrows for the carousel
  * 
  * @param sName
@@ -854,24 +1660,38 @@ sap.m.FacetFilter.prototype._getSummaryText = function() {
  */
 sap.m.FacetFilter.prototype._getScrollingArrow = function(sName) {
 
-	var mProperties = {
+	var oArrowIcon = null;
+	var mProperties = {			
 		src : "sap-icon://navigation-" + sName + "-arrow"
 	};
-	var aCssClassesToAddLeft = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollLeft" ];
-	var aCssClassesToAddRight = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollRight" ];
-
+	
 	if (sName === "left") {
-		if (!this._oArrowLeft) {
-			this._oArrowLeft = sap.m.ImageHelper.getImageControl(this.getId() + "-arrowScrollLeft", this._oArrowLeft, this, mProperties, aCssClassesToAddLeft);
+		oArrowIcon = this.getAggregation("arrowLeft");
+		if (!oArrowIcon) {
+			mProperties.id = this.getId() + "-arrowScrollLeft";
+			oArrowIcon = sap.ui.core.IconPool.createControlByURI(mProperties);
+			var aCssClassesToAddLeft = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollLeft" ];
+			for(var i=0; i < aCssClassesToAddLeft.length; i++) {
+				oArrowIcon.addStyleClass(aCssClassesToAddLeft[i]);
+			}
+			this.setAggregation("arrowLeft", oArrowIcon);
 		}
-		return this._oArrowLeft;
 	}
-	if (sName === "right") {
-		if (!this._oArrowRight) {
-			this._oArrowRight = sap.m.ImageHelper.getImageControl(this.getId() + "-arrowScrollRight", this._oArrowRight, this, mProperties, aCssClassesToAddRight);
+	else if (sName === "right") {
+		oArrowIcon = this.getAggregation("arrowRight");
+		if (!oArrowIcon) {
+			mProperties.id = this.getId() + "-arrowScrollRight";
+			oArrowIcon = sap.ui.core.IconPool.createControlByURI(mProperties);
+			var aCssClassesToAddRight = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollRight" ];
+			for(var i=0; i < aCssClassesToAddRight.length; i++) {
+				oArrowIcon.addStyleClass(aCssClassesToAddRight[i]);
+			}
+			this.setAggregation("arrowRight", oArrowIcon);
 		}
-		return this._oArrowRight;
+	} else {
+		jQuery.sap.log.error("Scrolling arrow name "+ sName + " is not valid");
 	}
+	return oArrowIcon;
 };
 
 /**
@@ -881,9 +1701,9 @@ sap.m.FacetFilter.prototype._getScrollingArrow = function(sName) {
  */
 sap.m.FacetFilter.prototype._checkOverflow = function() {
 
-	var oBarHead = jQuery.sap.domById(this.getId() + "-head");
+	var oBarHead = this.getDomRef("head");
 	var $bar = this.$();
-
+	
 	var bScrolling = false;
 
 	if (oBarHead) {
@@ -975,7 +1795,7 @@ sap.m.FacetFilter.prototype.onclick = function(oEvent) {
  */
 sap.m.FacetFilter.prototype._scroll = function(iDelta, iDuration) {
 
-	var oDomRef = jQuery.sap.domById(this.getId() + "-head");
+	var oDomRef = this.getDomRef("head");
 	var iScrollLeft = oDomRef.scrollLeft;
 	if (!!!sap.ui.Device.browser.internet_explorer && this._bRtl) {
 		iDelta = -iDelta;
@@ -984,34 +1804,6 @@ sap.m.FacetFilter.prototype._scroll = function(iDelta, iDuration) {
 	jQuery(oDomRef).stop(true, true).animate({
 		scrollLeft : iScrollTarget
 	}, iDuration);
-};
-
-/**
- * Return type of "Light" if the device is phone, otherwise return the actual type
- * 
- * @private
- */
-sap.m.FacetFilter.prototype._getType = function() {
-
-	if (jQuery.device.is.phone) {
-		return sap.m.FacetFilterType.Light; // Always use light flow for phone
-	} else {
-		return this.getType();
-	}
-};
-
-/**
- * Check the type and return whether to show summary bar or not appropriately
- * 
- * @private
- */
-sap.m.FacetFilter.prototype._getShowSummaryBar = function() {
-
-	if (this._getType() === sap.m.FacetFilterType.Light) {
-		return true;
-	} else {
-		return this.getShowSummaryBar();
-	}
 };
 
 /**
@@ -1031,7 +1823,7 @@ sap.m.FacetFilter.prototype._enableTouchSupport = function() {
 			window.clearInterval(that._iInertiaIntervalId);
 		}
 
-		that.startScrollX = jQuery.sap.domById(that.getId() + "-head").scrollLeft;
+		that.startScrollX = that.getDomRef("head").scrollLeft;
 		that.startTouchX = evt.touches[0].pageX;
 		that._bTouchNotMoved = true;
 		that._lastMoveTime = new Date().getTime();
@@ -1041,7 +1833,7 @@ sap.m.FacetFilter.prototype._enableTouchSupport = function() {
 
 		var dx = evt.touches[0].pageX - that.startTouchX;
 
-		var oListRef = jQuery.sap.domById(that.getId() + "-head");
+		var oListRef = that.getDomRef("head");
 		var oldScrollLeft = oListRef.scrollLeft;
 		var newScrollLeft = that.startScrollX - dx;
 		oListRef.scrollLeft = newScrollLeft;
@@ -1063,7 +1855,7 @@ sap.m.FacetFilter.prototype._enableTouchSupport = function() {
 			evt.preventDefault();
 
 			// add some inertia... continue scrolling with decreasing velocity
-			var oListRef = jQuery.sap.domById(that.getId() + "-head");
+			var oListRef = that.getDomRef("head");
 			var dt = 50;
 			var endVelocity = Math.abs(that._velocity / 10); // continue scrolling until the speed has decreased to a fraction (v/10 means 11 iterations with slowing-down factor
 			// 0.8)
@@ -1089,17 +1881,15 @@ sap.m.FacetFilter.prototype._enableTouchSupport = function() {
 		that._lastMoveTime = undefined;
 	};
 
-	this.ontouchstart = fnTouchStart;
-	this.ontouchend = fnTouchEnd;
-	this.ontouchmove = fnTouchMove;
-};
-
-/**
- * Get the FacetFilterList control associated with the selected facet from the facet list page.
- * 
- * @private
- */
-sap.m.FacetFilter.prototype._getSelectedFacetFilterList = function() {
-
-	return this.getLists()[this._currentFacetIndex];
+	this.addEventDelegate({
+		ontouchstart: fnTouchStart
+	}, this);	
+	
+	this.addEventDelegate({
+		ontouchend: fnTouchEnd
+	}, this);	
+	
+	this.addEventDelegate({
+		ontouchmove: fnTouchMove
+	}, this);		
 };

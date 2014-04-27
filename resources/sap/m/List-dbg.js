@@ -53,11 +53,12 @@ jQuery.sap.require("sap.m.ListBase");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * List control provides a container for all type of list items.
+ * The List control provides a container for all types of list items.
+ * For mobile devices, the recommended limit of list items is 100 to assure proper performance. To improve initial rendering of large lists, use the "growing" feature. Please refer to the SAPUI5 Developer Guide for more information..
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public

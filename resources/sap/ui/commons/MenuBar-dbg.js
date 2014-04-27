@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.commons.MenuItem[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.MenuItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -207,6 +207,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
  * Getter for aggregation <code>items</code>.<br/>
  * Aggregation of menu items.
  * 
+ * <strong>Note</strong>: this is the default aggregation for MenuBar.
  * @return {sap.ui.commons.MenuItem[]}
  * @public
  * @name sap.ui.commons.MenuBar#getItems
@@ -407,8 +408,8 @@ sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
 	var sId = this.getId();
 	var jTarget = jQuery(oEvent.target);
 	var jTargetId = jTarget.attr("id");
-	var jItems = jQuery.sap.byId(sId + "-area").children();
 	if(!jTargetId || jTargetId == sId || jTargetId == sId + "-area"){
+		var jItems = this.$("area").children();
 		this.sCurrentFocusedItemRefId = jItems.length == 0 ? null : jQuery(jItems.get(0)).attr("id");
 	} else {
 		// Make sure the parent menu item get the focus when a menu is closed via
@@ -421,7 +422,7 @@ sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
 		oFocusElement.focus();
 	}
 	
-	jQuery.sap.byId(this.getId()).attr("tabindex", "-1");
+	this.$().attr("tabindex", "-1");
 };
 
 
@@ -433,7 +434,7 @@ sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
  */
 sap.ui.commons.MenuBar.prototype.onfocusout = function(oEvent){
 	//Add the control to tab chain again to make tab in working (see onfocusin)
-	jQuery.sap.byId(this.getId()).attr("tabindex", "0");
+	this.$().attr("tabindex", "0");
 };
 
 
@@ -640,7 +641,7 @@ var _getMenuItem = function(oThis, oEvent) {
 var getVisibleItemCount = function(oThis){
 	var iVisibleItems = 0;
 
-	var jAreaRef = jQuery.sap.byId(oThis.getId()+"-area");
+	var jAreaRef = oThis.$("area");
 	var jItems = jAreaRef.children();
 
 	var bRtl = sap.ui.getCore().getConfiguration().getRTL();
@@ -677,9 +678,9 @@ var updateAfterResize = function(oThis){
 	var iVisibleItems = getVisibleItemCount(oThis);
 	var _iVisibleItems = iVisibleItems;
 
-	var jAreaRef = jQuery.sap.byId(oThis.getId()+"-area");
+	var jAreaRef = oThis.$("area");
 	var jItems = jAreaRef.children();
-	var jOvrFlwRef = jQuery.sap.byId(oThis.getId()+"-ovrflw");
+	var jOvrFlwRef = oThis.$("ovrflw");
 
 	var bUpdateFocus = false;
 

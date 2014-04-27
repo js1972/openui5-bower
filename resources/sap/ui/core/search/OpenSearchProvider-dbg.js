@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.search.OpenSearchProvider.
-jQuery.sap.declare("sap.ui.core.search.OpenSearchProvider");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.search.SearchProvider");
+sap.ui.define(['sap/ui/core/library','./SearchProvider','jquery.sap.encoder'], function() {
+	"use strict";
 
 
 /**
@@ -57,7 +56,7 @@ jQuery.sap.require("sap.ui.core.search.SearchProvider");
  * @extends sap.ui.core.search.SearchProvider
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -143,8 +142,7 @@ sap.ui.core.search.SearchProvider.extend("sap.ui.core.search.OpenSearchProvider"
  */
 
 
-// Start of sap\ui\core\search\OpenSearchProvider.js
-jQuery.sap.require("jquery.sap.encoder");
+// Start of sap/ui/core/search/OpenSearchProvider.js
 
 /**
  * Call this function to get suggest values from the search provider.
@@ -197,3 +195,7 @@ sap.ui.core.search.OpenSearchProvider.prototype.suggest = function(sValue, fCall
 		}
 	});
 };
+
+	return sap.ui.core.search.OpenSearchProvider;
+
+}, /* bExport = */ true);

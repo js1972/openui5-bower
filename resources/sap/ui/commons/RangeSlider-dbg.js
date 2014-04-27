@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.commons.Slider");
  * @extends sap.ui.commons.Slider
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -124,7 +124,7 @@ sap.ui.commons.Slider.extend("sap.ui.commons.RangeSlider", { metadata : {
 // */
 sap.ui.commons.RangeSlider.prototype.onAfterRendering = function() {
 	
-	this.oGrip2 = jQuery.sap.domById(this.getId() + '-grip2');
+	this.oGrip2 = this.getDomRef("grip2");
 	// standard behavior of Slider
 	sap.ui.commons.Slider.prototype.onAfterRendering.apply(this);
 

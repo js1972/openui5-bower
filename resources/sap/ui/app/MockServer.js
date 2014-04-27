@@ -3,4 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.app.MockServer");jQuery.sap.require("sap.ui.core.util.MockServer");(function(){sap.ui.app.MockServer=sap.ui.core.util.MockServer})();
+sap.ui.define(['jquery.sap.global','sap/ui/core/util/MockServer'],function(q,M){"use strict";var a=M;return a},true);

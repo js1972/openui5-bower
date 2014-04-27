@@ -7,7 +7,7 @@
 jQuery.sap.declare("sap.m.SearchFieldRenderer");
 
 /**
- * @class SearchField renderer. 
+ * @class SearchField renderer.
  * @static
  */
 sap.m.SearchFieldRenderer = {
@@ -15,11 +15,11 @@ sap.m.SearchFieldRenderer = {
 
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
- * 
+ *
  * @param {sap.ui.core.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
-sap.m.SearchFieldRenderer.render = function(oRenderManager, oSF){ 
+sap.m.SearchFieldRenderer.render = function(oRenderManager, oSF){
 	// render nothing if control is invisible
 	if (!oSF.getVisible()) {
 		return;
@@ -29,18 +29,19 @@ sap.m.SearchFieldRenderer.render = function(oRenderManager, oSF){
 	var bShowMagnifier = oSF.getShowMagnifier();
 	var sPlaceholder = oSF.getPlaceholder();
 	var sValue = oSF.getValue();
+	var sWidth = oSF.getProperty("width");
 
 	// container
 	rm.write("<div");
 	rm.writeControlData(oSF);
-	if (oSF.getWidth()) { rm.writeAttribute("style", "width:" + oSF.getWidth() + ";"); }
-	
+	if (sWidth) { rm.writeAttribute("style", "width:" + sWidth + ";"); }
+
 	rm.addClass("sapMSF");
 	if (bShowMagnifier) { rm.addClass("sapMSFM"); }
-	if(jQuery.os.android && !(jQuery.browser.chrome)){
-		if(jQuery.os.fVersion < 3){
+	if(sap.ui.Device.os.android && !(sap.ui.Device.browser.chrome)){
+		if(sap.ui.Device.os.version < 3){
 			rm.addClass("sapMSFA2"); // specific Android 2.+ rendering
-		} else if (jQuery.os.fVersion <= 4){
+		} else if (sap.ui.Device.os.version <= 4){
 			rm.addClass("sapMSFA4"); // specific Android 4.0* rendering
 		}
 	}
@@ -64,7 +65,7 @@ sap.m.SearchFieldRenderer.render = function(oRenderManager, oSF){
 	}
 
 	rm.write("</div>");
-	
+
 };
 
 /**
@@ -76,31 +77,31 @@ sap.m.SearchFieldRenderer.renderMvi = function(rm, oSF, bShowMagnifier, sPlaceho
 
 	// 1. magnifier icon
 	if (bShowMagnifier) { rm.write('<div class="sapMSFMG"></div>'); }
-	
-	// 2. Input type="search". 
+
+	// 2. Input type="search".
 	//    Enclose input into a <form> to show a correct keyboard
 	//    method="post" to prevent unneeded "?" at the end of URL
 	rm.write('<form method="post" action="javascript:void(0);">');
-	
+
 	// self-made placeholder
 	if (!oSF._hasPlacehoder && sPlaceholder) {
 		rm.write("<label ");
 		rm.writeAttribute("id", sId + "-P");
 		rm.writeAttribute("for", sId + "-I");
-		
+
 		rm.addClass("sapMSFPlaceholder");
 		rm.writeClasses();
 		rm.write(">");
 		rm.writeEscaped(sPlaceholder);
 		rm.write("</label>");
 	}
-	
+
 	rm.write('<input type="search" autocorrect="off"');
 	rm.writeAttribute("id", oSF.getId() + "-I");
 
 	rm.addClass("sapMSFI");
 
-	if (jQuery.os.ios && jQuery.os.fVersion > 5) {
+	if (sap.ui.Device.os.ios && sap.ui.Device.os.version > 5) {
 			rm.addClass("sapMSFIIos6"); // specific Ios6+ rendering
 	}
 
@@ -147,25 +148,25 @@ sap.m.SearchFieldRenderer.renderBcd = function(rm, oSF, bShowMagnifier, sPlaceho
 	}
 	rm.writeClasses();
 	rm.write('>');
-	
+
 	// 2. Input type="search".
 	//    Enclose input into a <form> to show a correct keyboard
 	//    method="post" to prevent unneeded "?" at the end of URL
 	rm.write('<form method="post" action="javascript:void(0);">');
-	
+
 	// self-made placeholder
 	if (!oSF._hasPlacehoder && sPlaceholder) {
 		rm.write("<label ");
 		rm.writeAttribute("id", sId + "-P");
 		rm.writeAttribute("for", sId + "-I");
-		
+
 		rm.addClass("sapMSFPlaceholder");
 		rm.writeClasses();
 		rm.write(">");
 		rm.writeEscaped(sPlaceholder);
 		rm.write("</label>");
 	}
-	
+
 	rm.write('<input type="search" autocorrect="off"');
 	rm.writeAttribute("id", oSF.getId() + "-I");
 

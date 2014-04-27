@@ -40,7 +40,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -57,10 +57,12 @@ jQuery.sap.require("sap.ui.core.Control");
  *
  * @class
  * The Toolbar control is a horizontal items container that can be used to get an input from user or just to display output.
+ * 
+ * Note: By default, when Toolbar overflows, it provides shrinking for text controls(e.g. Text, Label) and the control that have percent width.(e.g. Input, Slider). This behaviour can be overwritten by providing sap.m.ToolbarLayoutData for your items.
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -164,6 +166,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 /**
  * Getter for property <code>active</code>.
  * Indicates that the whole toolbar is clickable. Press event of this control is fired only if this property is set "true"
+ * Note: This property should be used when there is no interactive control inside the toolbar but to make the toolbar itself interactive.
  *
  * Default value is <code>false</code>
  *
@@ -188,7 +191,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>enabled</code>.
- * Sets the enabled property of all controls defined in the content aggregation. Note: This property is not for the toolbar itself. See also the active property.
+ * Sets the enabled property of all controls defined in the content aggregation. Note: This property is not for the toolbar itself. See also the "active" property.
  *
  * Default value is <code>true</code>
  *
@@ -214,7 +217,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 /**
  * Getter for property <code>height</code>.
  * Defines the height of the control.
- * By default the height property depends on the theme and the design property.
+ * Note: By default, the height property depends on the theme and the design property.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -239,7 +242,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>design</code>.
- * Defines the toolbar design. Design settings are theme-dependent and can also define the default toolbar height.
+ * Defines the toolbar design. Design settings are theme-dependent and can also define the default height of the toolbar.
  *
  * Default value is <code>Auto</code>
  *
@@ -266,8 +269,9 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for aggregation <code>content</code>.<br/>
- * The content of the toolbar
+ * The content of the toolbar.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Toolbar.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.Toolbar#getContent
@@ -354,7 +358,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.core.Control} oControlEvent.getParameters.srcControl Holds which control caused the press event within the toolbar.
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.srcControl The control which caused the press event within the toolbar.
  * @public
  */
  
@@ -370,7 +374,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Toolbar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Toolbar</code>.<br/> itself.
  *
  * @return {sap.m.Toolbar} <code>this</code> to allow method chaining
  * @public
@@ -398,7 +402,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'srcControl' of type <code>sap.ui.core.Control</code> Holds which control caused the press event within the toolbar.</li>
+ * <li>'srcControl' of type <code>sap.ui.core.Control</code> The control which caused the press event within the toolbar.</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
@@ -411,9 +415,14 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 
 // Start of sap\m\Toolbar.js
 jQuery.sap.require("sap.m.ToolbarSpacer");
+jQuery.sap.require("sap.m.ToolbarDesign");
+jQuery.sap.require("sap.m.ToolbarLayoutData");
 jQuery.sap.require("sap.ui.core.ResizeHandler");
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.Toolbar.prototype);
+
+// shrinkable class name
+sap.m.Toolbar.shrinkClass = "sapMTBShrinkItem";
 
 /*
  * Checks whether the given width is relative or not
@@ -428,24 +437,8 @@ sap.m.Toolbar.isRelativeWidth = function(sWidth) {
 };
 
 /*
- * Returns the ceiled sub-pixel width of the given element
- *
- * @static
- * @protected
- * @param {Node} oDomRef DOM Node
- * @return {Number} ceiled sub-pixel(0 or 1)
- */
-sap.m.Toolbar.getSubPixelWidth = function(oDomRef) {
-	if (!oDomRef || !oDomRef.style) {
-		return 0;
-	}
-
-	var sWidth = window.getComputedStyle(oDomRef).getPropertyValue("width");
-	return Math.ceil(parseFloat(sWidth) % 1) || 0;
-};
-
-/*
- * Checks the given element horizontally overflowed
+ * This sets inner controls to the initial width and
+ * checks the given element horizontally overflows
  *
  * @static
  * @protected
@@ -458,31 +451,28 @@ sap.m.Toolbar.checkOverflow = function($Element) {
 	}
 
 	$Element.children().each(function() {
-		var sOrigWidth = sap.m.Toolbar.getOrigWidth(this);
-		this.style.width = sOrigWidth;
+		this.style.width = sap.m.Toolbar.getOrigWidth(this.id);
 	});
 
 	return $Element[0].scrollWidth > $Element[0].clientWidth;
+
 };
 
 /*
- * Returns the original width(currently only control width) via DOMRef
+ * Returns the original width(currently only control's width) via Control ID
  * TODO: This function is not smart enough to detect DOM width changes
  * But tracking width changes is also expensive
  * (last and original width values must be keep in DOM and need update)
  * For now we assume app developers call setWidth from the control
+ * And controls return correct width values even default value applied with CSS
  *
  * @static
  * @protected
- * @param {Node} oDomRef DOM Node
+ * @param {String} sId Control ID
  * @return {String} width
  */
-sap.m.Toolbar.getOrigWidth = function(oDomRef) {
-	if (!oDomRef || !oDomRef.id) {
-		return "";
-	}
-
-	var oControl = sap.ui.getCore().byId(oDomRef.id);
+sap.m.Toolbar.getOrigWidth = function(sId) {
+	var oControl = sap.ui.getCore().byId(sId);
 	if (!oControl || !oControl.getWidth) {
 		return "auto";
 	}
@@ -491,28 +481,46 @@ sap.m.Toolbar.getOrigWidth = function(oDomRef) {
 };
 
 /*
- * Checks DOMRef whether shrinkable or not and marks according to second param
+ * Checks given control whether shrinkable or not and marks according to second param
  * Percent widths and text nodes(without fixed width) are shrinkable
+ * ToolbarSpacer is already shrinkable if it does not have fixed width
  *
  * @static
  * @protected
- * @param {jQuery} $Element jQuery Object
+ * @param {sap.ui.core.Control} oControl UI5 Control
  * @param {String} [sShrinkClass] shrink item class name
+ * @returns {true|false|undefined|Object}
  */
-sap.m.Toolbar.checkShrinkable = function($Element, sShrinkClass) {
-	if (!$Element || !$Element.length) {
+sap.m.Toolbar.checkShrinkable = function(oControl, sShrinkClass) {
+	if (oControl instanceof sap.m.ToolbarSpacer) {
+		return this.isRelativeWidth(oControl.getWidth());
+	}
+
+	// remove old class
+	sShrinkClass = sShrinkClass || this.shrinkClass;
+	oControl.removeStyleClass(sShrinkClass);
+
+	// ignore the controls has fixed width
+	var sWidth = this.getOrigWidth(oControl.getId());
+	if (!this.isRelativeWidth(sWidth)) {
 		return;
 	}
 
-	var oDomRef = $Element[0];
-	var sWidth = this.getOrigWidth(oDomRef);
-	if (!this.isRelativeWidth(sWidth) || $Element.is(":hidden")) {
-		return;
+	// check shrinkable via layout data
+	var oLayout = oControl.getLayoutData();
+	if (oLayout instanceof sap.m.ToolbarLayoutData) {
+		return oLayout.getShrinkable() && oControl.addStyleClass(sShrinkClass);
 	}
 
-	if (sWidth.indexOf("%") > 0 || (oDomRef.firstChild || {}).nodeType == 3) {
-		$Element.addClass(sShrinkClass);
-		return true;
+	// is percent item?
+	if (sWidth.indexOf("%") > 0) {
+		return oControl.addStyleClass(sShrinkClass);
+	}
+
+	// is text element?
+	var oDomRef = oControl.getDomRef();
+	if (oDomRef && (oDomRef.firstChild || {}).nodeType == 3) {
+		return oControl.addStyleClass(sShrinkClass);
 	}
 };
 
@@ -522,8 +530,8 @@ sap.m.Toolbar.checkShrinkable = function($Element, sShrinkClass) {
  * @static
  * @protected
  * @param {jQuery} $Element The container of flex items
- * @param {String} [sFlexClass] flex item class name
- * @param {String} [sShrinkClass] shrink item class name
+ * @param {String} [sFlexClass] flexable item class
+ * @param {String} [sShrinkClass] shrinkable item class
  */
 sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
 
@@ -532,126 +540,186 @@ sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
 		return;
 	}
 
+	// set default values
+	sShrinkClass = sShrinkClass || this.shrinkClass;
+	sFlexClass = sFlexClass || sap.m.ToolbarSpacer.flexClass;
+
 	// initial values
-	var iInnerWidth = 0,
-		iTotalPercent = 0,
-		aFlexItems = [],
-		aPercentItems = [],
-		nOuterWidth = $Element.width(),
+	var iTotalPercent = 0,
+		aFlexibleItems = [],
+		aShrinkableItems = [],
+		iTotalUnShrinkableWidth = 0,
+		iInnerWidth = $Element.width(),
 		$Children = $Element.children(),
 		bOverflow = this.checkOverflow($Element),
-		pushPercentItem = function($item, nPercent) {
-			var nBoxSizing = 0;
-			var nWidth = $item.width();
-			iTotalPercent += nPercent;
-			iInnerWidth += $item.outerWidth(true) - nWidth;
-			if ($item.css("box-sizing") == "border-box") {
-				nBoxSizing = $item.outerWidth() - nWidth;
-			}
-			aPercentItems.push({
-				boxSizing : nBoxSizing,
-				percent : nPercent,
-				el : $item[0]
-			});
+		isAutoWidth = function(sWidth) {
+			return !sWidth || sWidth == "auto" || sWidth == "inherit";
 		},
-		canPercentItemsFit = function() {
-			if (aPercentItems.length) {
-				var nRemainWidth = nOuterWidth - iInnerWidth;
-				aPercentItems.forEach(function(oItem) {
-					var nWidth = (nOuterWidth * oItem.percent) / 100;
-					nRemainWidth -= Math.floor(nWidth);
-				});
-				return (nRemainWidth >= 0);
+		calcUnShrinkableItem = function($Item) {
+			// add too unshrinkable width calculation with margins
+			iTotalUnShrinkableWidth += $Item.outerWidth(true);
+		},
+		pushShrinkableItem = function($Item) {
+			// if calculated width and the min-width is same then item cannot shrink
+			var fBoxWidth = parseFloat($Item.css("width")) || 0;
+			var fMinWidth = parseFloat($Item.css("min-width")) || 0;
+			if (fBoxWidth == fMinWidth) {
+				calcUnShrinkableItem($Item);
+				return;
 			}
+
+			// calculate related percentage according to inner width
+			var iBoxSizing = 0;
+			var fWidth = $Item.width();
+			var fPercent = (fWidth * 100) / iInnerWidth;
+			iTotalPercent += fPercent;
+
+			// margins + paddings + borders are not shrinkable
+			iTotalUnShrinkableWidth += $Item.outerWidth(true) - fWidth;
+			if ($Item.css("box-sizing") == "border-box") {
+				iBoxSizing = $Item.outerWidth() - fWidth;
+			}
+
+			// should also take account of max width
+			// browsers does not respect computed max width when it has %
+			// https://code.google.com/p/chromium/issues/detail?id=228938
+			var sMaxWidth = $Item.css("max-width");
+			var fMaxWidth = parseFloat(sMaxWidth);
+			if (sMaxWidth.indexOf("%") > 0) {
+				fMaxWidth = Math.ceil((fMaxWidth * $Element.outerWidth()) / 100);
+			}
+
+			// push item
+			aShrinkableItems.push({
+				boxSizing : iBoxSizing,
+				maxWidth : fMaxWidth,
+				minWidth : fMinWidth,
+				percent : fPercent,
+				el : $Item[0]
+			});
 		},
 		setWidths = function(iTotalWidth) {
 			var iSumOfWidth = 0;
-			aPercentItems.forEach(function(oItem) {
-				var nRelativePercent = Math.min(100, (oItem.percent * 100) / iTotalPercent);
-				var nWidth = oItem.boxSizing + Math.floor((iTotalWidth * nRelativePercent) / 100);
-				var sWidth = nWidth + "px";
-				oItem.el.style.width = sWidth;
-				iSumOfWidth += nWidth;
+
+			// check for max and min width and remove items if they cannot not shrink or grow anymore
+			aShrinkableItems.forEach(function(oItem, iIndex) {
+				var fRelativePercent = Math.min(100, (oItem.percent * 100) / iTotalPercent);
+				var iContentWidth = Math.floor((iTotalWidth * fRelativePercent) / 100);
+				var iCalcWidth = oItem.boxSizing + iContentWidth;
+
+				// if we cannot set calculated shrink width because of the minimum width restriction
+				// then we should shrink the other items because current item cannot shrink more
+				if (iCalcWidth < oItem.minWidth) {
+					oItem.el.style.width = oItem.minWidth + "px";
+					iTotalWidth -= (oItem.minWidth - oItem.boxSizing);
+
+					// ignore this element cannot shrink more
+					iTotalPercent -= oItem.percent;
+					delete aShrinkableItems[iIndex];
+				}
+
+				// if there is a max width restriction and calculated grow width is more than max width
+				// then we should share this extra grow gap for the other items
+				if (oItem.maxWidth && oItem.maxWidth > oItem.minWidth && iCalcWidth > oItem.maxWidth) {
+					oItem.el.style.width = oItem.maxWidth + "px";
+					iTotalWidth += (iCalcWidth - oItem.maxWidth);
+
+					// ignore this element cannot grow more
+					iTotalPercent -= oItem.percent;
+					delete aShrinkableItems[iIndex];
+				}
 			});
 
+			// share the width to the items (can grow or shrink)
+			aShrinkableItems.forEach(function(oItem) {
+				var fRelativePercent = Math.min(100, (oItem.percent * 100) / iTotalPercent);
+				var fContentWidth = (iTotalWidth * fRelativePercent) / 100;
+				var fCalcWidth = oItem.boxSizing + fContentWidth;
+				oItem.el.style.width = fCalcWidth + "px";
+				iSumOfWidth += fCalcWidth;
+			});
+
+			// calculate remain width
 			iTotalWidth -= iSumOfWidth;
 			if (iTotalWidth > 1) {
-				aFlexItems.forEach(function(oFlexItemDomRef) {
-					oFlexItemDomRef.style.width = Math.floor(iTotalWidth / aFlexItems.length) + "px";
+				// share the remaining width to spacers
+				aFlexibleItems.forEach(function(oFlexibleItem) {
+					var fWidth = iTotalWidth / aFlexibleItems.length;
+					oFlexibleItem.style.width = fWidth + "px";
 				});
 			}
 		};
 
 	// start calculation
+	// here items are in their initial width
 	$Children.each(function() {
 		var $Child = jQuery(this);
-		var sWidth = this.style.width;
-		var bAutoWidth = !sWidth || sWidth == "auto" || sWidth == "inherit";
-		if (bAutoWidth && sFlexClass && $Child.hasClass(sFlexClass)) {
+		var bAutoWidth = isAutoWidth(this.style.width);
+		if (bAutoWidth && $Child.hasClass(sFlexClass)) {
 			// flexible item
-			aFlexItems.push(this);
+			aFlexibleItems.push(this);
 			this.style.width = "0px";
 		} else if ($Child.is(":hidden")) {
 			// invisible item
 			return;
-		} else if (sWidth.indexOf("%") > 0) {
-			// percent items
-			var nPercent = parseFloat(sWidth);
-			pushPercentItem($Child, nPercent);
-		} else if (bOverflow && bAutoWidth && (this.firstChild || {}).nodeType == 3) {
-			// if toolbar overflow then text nodes should behave like percent items
-			pushPercentItem($Child, ($Child.width() * 100 / nOuterWidth));
+		} else if (bOverflow && $Child.hasClass(sShrinkClass)) {
+			// shrinkable marked item when toolbar overflows
+			pushShrinkableItem($Child);
 		} else {
-			var iSubPixel = sap.m.Toolbar.getSubPixelWidth($Child[0]);
-			iInnerWidth += $Child.outerWidth(true) + iSubPixel;
-
-			// (in IE9) if toolbar is placed in a container which has absolute position and if inner item
-			// has sub pixel width(probably caused by auto width) then after calculation even the size is correct,
-			// browser increases the width of toolbar container and this cause a new resize handler trigger again.
-			// here as a workaround we set the absolute width and browser calculates it correctly
-			if (iSubPixel) {
-				$Child.width(iSubPixel + ($Child.css("box-sizing") == "border-box" ? $Child.outerWidth() : $Child.width()));
-			}
+			// unshrinkable item
+			calcUnShrinkableItem($Child);
 		}
 	});
 
-	// check if there is still place for flex
-	var nRemainWidth = nOuterWidth - iInnerWidth;
-	if (nRemainWidth > 0) {
-		setWidths(canPercentItemsFit() ? nOuterWidth : nRemainWidth);
-	}
+	// check if there is still place for flex or do the shrink
+	var iRemainWidth = iInnerWidth - iTotalUnShrinkableWidth;
+	setWidths(Math.max(iRemainWidth, 0));
 };
 
-// decides toolbar has flexbox support
+// determines whether toolbar has flexbox support or not
 sap.m.Toolbar.hasFlexBoxSupport = jQuery.support.hasFlexBoxSupport;
 
-// decides toolbar has new flexbox support
-// here we are interested with shrink support
+// determines whether toolbar has new flexbox (shrink) support
 sap.m.Toolbar.hasNewFlexBoxSupport = (function() {
 	var oStyle = document.documentElement.style;
-	return (oStyle.flex !== undefined || oStyle.msFlex !== undefined);
+	return (oStyle.flex !== undefined ||
+			oStyle.msFlex !== undefined ||
+			oStyle.webkitFlexShrink !== undefined);
 }());
 
 sap.m.Toolbar.prototype.onBeforeRendering = function() {
-	this._deregisterResize();
+	this._cleanup();
 };
 
 sap.m.Toolbar.prototype.onAfterRendering = function() {
-	// define behaviour according to flex support
+	// do nothing for invisible
+	if (this._isInvisible()) {
+		return;
+	}
+
+	// if there is no shrinkable item, layout is not needed
+	if (!this._checkContents()) {
+		return;
+	}
+
+	// let the new flexbox do the job
 	if (sap.m.Toolbar.hasNewFlexBoxSupport) {
-		this._markShrinkableContents();
-	} else if (sap.m.Toolbar.hasFlexBoxSupport) {
+		return;
+	}
+
+	// cache jQuery object
+	this._$this = this.$();
+
+	// define behaviour according to flex support
+	if (sap.m.Toolbar.hasFlexBoxSupport) {
 		this._resetOverflow();
 	} else {
 		this._reflexie();
 	}
-
-	// register resize handler if needed
-	this._registerResize();
 };
 
 sap.m.Toolbar.prototype.exit = function() {
-	this._deregisterResize();
+	this._cleanup();
 };
 
 sap.m.Toolbar.prototype.addContent = function(oContent) {
@@ -708,31 +776,61 @@ sap.m.Toolbar.prototype.ontouchstart = function(oEvent) {
 	this.getActive() && oEvent.setMarked();
 };
 
-// Reset the overflow add mark with classname if overflows
+// determines whether toolbar is visible or not
+sap.m.Toolbar.prototype._isInvisible = function() {
+	if (!this.getVisible() || !this.getContent().length) {
+		return true;
+	}
+};
+
+// mark shrinkable contents and render layout data
+// returns shrinkable and flexible content count
+sap.m.Toolbar.prototype._checkContents = function() {
+	var iShrinkableItemCount = 0;
+	this.getContent().forEach(function(oControl) {
+		if (sap.m.Toolbar.checkShrinkable(oControl)) {
+			iShrinkableItemCount++;
+		}
+
+		var oLayout = oControl.getLayoutData();
+		if (oLayout instanceof sap.m.ToolbarLayoutData) {
+			oLayout.applyProperties();
+		}
+	});
+
+	return iShrinkableItemCount;
+};
+
+// Reset overflow and mark with classname if overflows
 sap.m.Toolbar.prototype._resetOverflow = function() {
-	var $this = this.$();
+	this._deregisterResize();
+	var $this = this._$this;
+	var oDomRef = $this[0] || {};
 	$this.removeClass("sapMTBOverflow");
-	var bOverflow = $this[0].scrollWidth > $this[0].clientWidth;
+	var bOverflow = oDomRef.scrollWidth > oDomRef.clientWidth;
 	bOverflow && $this.addClass("sapMTBOverflow");
+	this._endPoint = this._getEndPoint();
+	this._registerResize();
+};
+
+// recalculate flexbox layout
+sap.m.Toolbar.prototype._reflexie = function() {
+	this._deregisterResize();
+	sap.m.Toolbar.flexie(this._$this);
+	this._endPoint = this._getEndPoint();
+	this._registerResize();
 };
 
 // called when a content property is changed
 sap.m.Toolbar.prototype._onContentPropertyChanged = function(oEvent) {
-	if (!sap.m.Toolbar.hasFlexBoxSupport || oEvent.getParameter("name") != "width") {
+	if (oEvent.getParameter("name") != "width") {
 		return;
 	}
 
 	// check and mark percent widths
 	var oControl = oEvent.getSource();
 	var bPercent = oControl.getWidth().indexOf("%") > 0;
-	oControl.$().toggleClass("sapMTBShrinkItem", bPercent);
-};
-
-// check and mark shrinkable contents with class name
-sap.m.Toolbar.prototype._markShrinkableContents = function() {
-	this.getContent().forEach(function(oControl) {
-		sap.m.Toolbar.checkShrinkable(oControl.$(), "sapMTBShrinkItem");
-	});
+	oControl.toggleStyleClass(sap.m.Toolbar.shrinkClass, bPercent);
 };
 
 // attach property change handler for the given control
@@ -760,7 +858,7 @@ sap.m.Toolbar.prototype._registerToolbarResize = function() {
 	// register resize handler only if toolbar has relative width
 	if (sap.m.Toolbar.isRelativeWidth(this.getWidth())) {
 		var fnResizeProxy = jQuery.proxy(this._handleToolbarResize, this);
-		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this, fnResizeProxy);
+		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this._$this[0], fnResizeProxy);
 	}
 };
 
@@ -769,49 +867,58 @@ sap.m.Toolbar.prototype._deregisterToolbarResize = function() {
 	sap.ui.getCore().detachIntervalTimer(this._handleContentResize, this);
 	if (this._sResizeListenerId) {
 		sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
-		this._sResizeListenerId = null;
+		this._sResizeListenerId = "";
 	}
 };
 
 // register resize handlers
 sap.m.Toolbar.prototype._registerResize = function() {
-	if (!sap.m.Toolbar.hasNewFlexBoxSupport) {
-		this._registerToolbarResize();
-		this._registerContentResize();
-	}
+	this._registerToolbarResize();
+	this._registerContentResize();
 };
 
 // deregister resize handlers
 sap.m.Toolbar.prototype._deregisterResize = function() {
-	if (!sap.m.Toolbar.hasNewFlexBoxSupport) {
-		this._deregisterToolbarResize();
-		this._deregisterContentResize();
-	}
+	this._deregisterToolbarResize();
+	this._deregisterContentResize();
+};
+
+// remove jquery cache and resize handlers
+sap.m.Toolbar.prototype._cleanup = function() {
+	this._deregisterResize();
+	this._$this = [];
 };
 
 // get the end position of last content
 sap.m.Toolbar.prototype._getEndPoint = function() {
-	var iEndPoint = 0;
-	var oDomRef = this.getDomRef();
-	if (oDomRef && oDomRef.lastElementChild) {
-		iEndPoint = oDomRef.lastElementChild.offsetLeft;
+	var oLastChild = (this._$this[0] || this.getDomRef() || {}).lastElementChild;
+	if (oLastChild) {
+		var iEndPoint = oLastChild.offsetLeft;
 		if (!sap.ui.getCore().getConfiguration().getRTL()) {
-			iEndPoint += oDomRef.lastElementChild.offsetWidth;
+			iEndPoint += oLastChild.offsetWidth;
 		}
 	}
-	return iEndPoint;
-};
-
-// recalculate flexbox layout
-sap.m.Toolbar.prototype._reflexie = function() {
-	this._deregisterContentResize();
-	sap.m.Toolbar.flexie(this.$(), sap.m.ToolbarSpacer.flexClass);
-	this._endPoint = this._getEndPoint();
-	this._registerContentResize();
+	return iEndPoint || 0;
 };
 
 // handle toolbar resize
 sap.m.Toolbar.prototype._handleToolbarResize = function() {
+	this._handleResize(false);
+};
+
+// handle inner content resize
+sap.m.Toolbar.prototype._handleContentResize = function() {
+	this._handleResize(true);
+};
+
+// generic resize handler
+sap.m.Toolbar.prototype._handleResize = function(bCheckEndPoint) {
+	// check whether end point is changed or not
+	if (bCheckEndPoint && this._endPoint == this._getEndPoint()) {
+		return;
+	}
+
+	// decide the behaviour
 	if (!sap.m.Toolbar.hasFlexBoxSupport) {
 		this._reflexie();
 	} else if (!sap.m.Toolbar.hasNewFlexBoxSupport) {
@@ -819,56 +926,38 @@ sap.m.Toolbar.prototype._handleToolbarResize = function() {
 	}
 };
 
-// handle inner content resize
-sap.m.Toolbar.prototype._handleContentResize = function() {
-	if (this._endPoint != this._getEndPoint()) {
-		this._reflexie();
+/*
+ * Augment design property setter.
+ * 2nd parameter can be used to define auto design context
+ *
+ * @param {sap.m.ToolbarDesign} sDesign The design for the Toolbar.
+ * @param {boolean} [bSetAutoDesign] Determines auto design context
+ * @returns {sap.m.Toolbar}
+ */
+sap.m.Toolbar.prototype.setDesign = function(sDesign, bSetAutoDesign) {
+	if (!bSetAutoDesign) {
+		return this.setProperty("design", sDesign);
 	}
-};
 
-// Augment 'design' property setter. If 'bCheckAutoDesign' is set,
-// the sDesign property will not be changed. The corresponding visual
-// design will only be applied if the toolbar's design property was 'Auto'.
-sap.m.Toolbar.prototype.setDesign = function(sDesign, bCheckAutoDesign) {
-	sDesign = this.validateProperty("design", sDesign);
-
-	if (this.getDesign() != sDesign) {
-		// For 'Auto', toolbar containers need to specify the
-		// context class themselves (see for example sap.m.ListBaseRenderer)
-		if (sap.m.ToolbarDesign.Auto != sDesign) {
-			this._setContextClass("sapMTB-"+ sDesign +"-CTX", !bCheckAutoDesign);
-		} else {
-			// remove current context class
-			var $this = this.$();
-			// remove old class
-			$this.removeClass(this._contextClass);
-		}
-
-		// Do suppress rerendering
-		if (!bCheckAutoDesign) {
-			this.setProperty("design", sDesign, true);
-		}
+	this._sAutoDesign = this.validateProperty("design", sDesign);
+	if (this.getDesign() == sap.m.ToolbarDesign.Auto) {
+		this.invalidate();
 	}
 
 	return this;
 };
 
-
-// Private setter for private property _contextClass
-sap.m.Toolbar.prototype._setContextClass = function(sClass, bForceChange) {
-	// make sure that _contextClass can only be changed if design is
-	// 'Auto'. If a design is specified for the toolbar, it should be
-	// applied.
-	if (bForceChange || sap.m.ToolbarDesign.Auto === this.getDesign()) {
-		var $this = this.$();
-		// remove old class first
-		$this.removeClass(this._contextClass);
-		this._contextClass = sClass;
-		// now set the new context class
-		$this.addClass(this._contextClass);
+/**
+ * Returns the currently applied design property of the Toolbar.
+ *
+ * @returns {sap.m.ToolbarDesign}
+ * @protected
+ */
+sap.m.Toolbar.prototype.getActiveDesign = function() {
+	var sDesign = this.getDesign();
+	if (sDesign != sap.m.ToolbarDesign.Auto) {
+		return sDesign;
 	}
-};
 
-sap.m.Toolbar.prototype._getContextClass = function() {
-	return this._contextClass;
+	return this._sAutoDesign || sDesign;
 };

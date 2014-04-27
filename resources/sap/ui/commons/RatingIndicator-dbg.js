@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -467,7 +467,7 @@ sap.ui.commons.RatingIndicator.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RatingIndicator</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RatingIndicator</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RatingIndicator} <code>this</code> to allow method chaining
  * @public
@@ -793,7 +793,7 @@ sap.ui.commons.RatingIndicator.prototype.onAfterRendering = function() {
  */
 sap.ui.commons.RatingIndicator.prototype.setAriaState = function() {
 	var val = this.iHoveredRating == -1 ? this._getDisplayValue() : this.iHoveredRating;
-	jQuery.sap.byId(this.getId()).attr("aria-valuenow", val).attr("aria-valuetext", this._getText("RATING_ARIA_VALUE" , [val])).attr("aria-label", this._getText("RATING_ARIA_NAME"));
+	this.$().attr("aria-valuenow", val).attr("aria-valuetext", this._getText("RATING_ARIA_VALUE" , [val])).attr("aria-label", this._getText("RATING_ARIA_NAME"));
 };
 
 /**
@@ -814,7 +814,7 @@ sap.ui.commons.RatingIndicator.prototype._getText = function(sKey, aArgs) {
  *
  * @param {jQuery.Event} oEvent
  * @param {boolean} bstopEvent
- * @param {integer} iNewValue
+ * @param {int} iNewValue
  * @private
  */
 sap.ui.commons.RatingIndicator.prototype.saveValue = function(oEvent, bstopEvent, iNewValue) {

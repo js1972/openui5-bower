@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getPages pages} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getPages pages} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -73,7 +73,7 @@ sap.ui.core.Control.extend("sap.m.NavContainer", { metadata : {
 	// ---- object ----
 	publicMethods : [
 		// methods
-		"to", "back", "backToPage", "backToTop", "getPage", "getCurrentPage", "getPreviousPage", "addCustomTransition", "insertPreviousPage"
+		"to", "back", "backToPage", "backToTop", "getPage", "getCurrentPage", "getPreviousPage", "addCustomTransition", "insertPreviousPage", "currentPageIsTopPage"
 	],
 
 	// ---- control specific ----
@@ -225,6 +225,7 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * 
  * These aggregated controls will receive navigation events like {@link sap.m.NavContainerChild#beforeShow beforeShow}, they are documented in the pseudo interface {@link sap.m.NavContainerChild sap.m.NavContainerChild}
  * 
+ * <strong>Note</strong>: this is the default aggregation for NavContainer.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.NavContainer#getPages
@@ -368,7 +369,7 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.NavContainer</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.NavContainer</code>.<br/> itself.
  *
  * @return {sap.m.NavContainer} <code>this</code> to allow method chaining
  * @public
@@ -456,7 +457,7 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.NavContainer</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.NavContainer</code>.<br/> itself.
  *
  * @return {sap.m.NavContainer} <code>this</code> to allow method chaining
  * @public
@@ -752,6 +753,19 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  */
 
 
+/**
+ * Returns whether the current page is the top/initial page.
+ * 
+ * Note: going to the initial page again with a row of "to" navigations causes the initial page to be displayed again, but logically one is not at the top level, so this method returns "false" in this case.
+ *
+ * @name sap.m.NavContainer.prototype.currentPageIsTopPage
+ * @function
+
+ * @type boolean
+ * @public
+ */
+
+
 // Start of sap\m\NavContainer.js
 sap.m.NavContainer.prototype.init = function() {
 	this._pageStack = [];
@@ -871,7 +885,7 @@ sap.m.NavContainer.prototype.getPage = function(pageId) {
 sap.m.NavContainer.prototype.getDefaultTransitionName = function() {
 	var sName = this.getProperty("defaultTransitionName");
 	if (!sName) {
-		sName = jQuery.os.winphone ? "door" : "slide";
+		sName = sap.ui.Device.os.windows_phone ? "door" : "slide";
 	}
 	return sName;
 };
@@ -910,6 +924,11 @@ sap.m.NavContainer.prototype.getPreviousPage = function() {
 	} else {
 		jQuery.sap.log.warning(this + ": page stack is empty but should have been initialized - application failed to provide a page to display");
 	}
+};
+
+sap.m.NavContainer.prototype.currentPageIsTopPage = function() {
+	var stack = this._ensurePageStackInitialized();
+	return (stack.length === 1);
 };
 
 
@@ -1009,7 +1028,9 @@ sap.m.NavContainer.prototype.to = function(pageId, transitionName, data, oTransi
 		};
 		var bContinue = this.fireNavigate(oNavInfo);
 		if (bContinue) { // ok, let's do the navigation
-		
+
+			sap.m.closeKeyboard();
+
 			// TODO: let one of the pages also cancel navigation?
 			var oEvent = jQuery.Event("BeforeHide", oNavInfo);
 			oEvent.srcControl = this; // store the element on the event (aligned with jQuery syntax)
@@ -1166,7 +1187,9 @@ sap.m.NavContainer.prototype._backTo = function(sType, backData, oTransitionPara
 		};
 		var bContinue = this.fireNavigate(oNavInfo);
 		if (bContinue) { // ok, let's do the navigation
-			
+
+			sap.m.closeKeyboard();
+
 			var oEvent = jQuery.Event("BeforeHide", oNavInfo);
 			oEvent.srcControl = this; // store the element on the event (aligned with jQuery syntax)
 			// no data needed for hiding
@@ -1364,7 +1387,7 @@ if (jQuery.support.cssTransitions) {
 				
 				// workaround for bug in current webkit versions: in slided-in elements the z-order may be wrong and will be corrected once a re-layout is enforced 
 				// see http://code.google.com/p/chromium/issues/detail?id=246965
-				if (jQuery.browser.webkit) {
+				if (sap.ui.Device.browser.webkit) {
 					window.setTimeout(function(){
 						oToPage.$().css("box-shadow", "0em 1px 0em rgba(128, 128, 1280, 0.1)"); // add box-shadow
 						window.setTimeout(function(){
@@ -1536,7 +1559,7 @@ if (jQuery.support.cssTransitions) {
 			var that = this;
 			window.setTimeout(function(){ // iPhone seems to need a zero timeout here, otherwise the to page is black (and may suddenly become visible when the DOM is touched)
 				
-				var isAndroid23 = (jQuery.os.android && jQuery.os.fVersion === 2.3);
+				var isAndroid23 = (sap.ui.Device.os.android && sap.ui.Device.os.version === 2.3);
 				
 				// if not Android2.3 then add perspective styles to NavContainer
 				!isAndroid23 && that.$().addClass("sapMNavFlip");
@@ -1588,7 +1611,7 @@ if (jQuery.support.cssTransitions) {
 	
 		back: function(oFromPage, oToPage, fCallback /*, oTransitionParameters is unused */) {
 			var that = this,
-				isAndroid23 = (jQuery.os.android && jQuery.os.fVersion === 2.3);
+				isAndroid23 = (sap.ui.Device.os.android && sap.ui.Device.os.version === 2.3);
 			
 			// if not Android2.3 then add perspective styles to NavContainer
 			!isAndroid23 && that.$().addClass("sapMNavFlip");
@@ -1652,7 +1675,7 @@ if (jQuery.support.cssTransitions) {
 			var that = this;
 			window.setTimeout(function(){ // iPhone seems to need a zero timeout here, otherwise the to page is black (and may suddenly become visible when the DOM is touched)
 				
-				var isAndroid23 = (jQuery.os.android && jQuery.os.fVersion === 2.3);
+				var isAndroid23 = (sap.ui.Device.os.android && sap.ui.Device.os.version === 2.3);
 				
 				// if not Android2.3 then add perspective styles to NavContainer
 				!isAndroid23 && that.$().addClass("sapMNavDoor");
@@ -1704,7 +1727,7 @@ if (jQuery.support.cssTransitions) {
 	
 		back: function(oFromPage, oToPage, fCallback /*, oTransitionParameters is unused */) {
 			var that = this,
-				isAndroid23 = (jQuery.os.android && jQuery.os.fVersion === 2.3);
+				isAndroid23 = (sap.ui.Device.os.android && sap.ui.Device.os.version === 2.3);
 			
 			// if not Android2.3 then add perspective styles to NavContainer
 			!isAndroid23 && that.$().addClass("sapMNavDoor");
@@ -1840,7 +1863,6 @@ sap.m.NavContainer.prototype.removeAllPages = function() {
 
 	return this.removeAllAggregation("pages");
 };
-
 
 sap.m.NavContainer.prototype.addPage = function(oPage) {
 	var aPages = this.getPages();

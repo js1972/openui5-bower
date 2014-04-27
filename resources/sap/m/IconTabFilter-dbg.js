@@ -41,7 +41,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -297,6 +297,7 @@ sap.ui.core.Item.extend("sap.m.IconTabFilter", { metadata : {
  * The content to show for this item (optional).
  * If this content is set, it will be displayed instead of the general content inside the IconTabBar.
  * 
+ * <strong>Note</strong>: this is the default aggregation for IconTabFilter.
  * @return {sap.ui.core.Control[]}
  * @public
  * @since 1.15.0

@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -442,7 +442,7 @@ sap.m.IconTabBar.M_EVENTS = {'select':'select','expand':'expand'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.IconTabBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.IconTabBar</code>.<br/> itself.
  *
  * @return {sap.m.IconTabBar} <code>this</code> to allow method chaining
  * @public
@@ -511,7 +511,7 @@ sap.m.IconTabBar.M_EVENTS = {'select':'select','expand':'expand'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.IconTabBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.IconTabBar</code>.<br/> itself.
  *
  * @return {sap.m.IconTabBar} <code>this</code> to allow method chaining
  * @public
@@ -581,14 +581,13 @@ sap.m.IconTabBar.prototype.init = function() {
 	this._oItemNavigation = new sap.ui.core.delegate.ItemNavigation().setCycling(false);
 	this.addDelegate(this._oItemNavigation);
 
-	if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) {
-
+	if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) {
 		jQuery.sap.require("sap.ui.core.delegate.ScrollEnablement");
 		this._oScroller = new sap.ui.core.delegate.ScrollEnablement(this, this.getId() + "-head", {
 			horizontal: true,
 			vertical: false,
 			zynga: false,
-			iscroll: true,
+			iscroll: "force",
 			preventDefault: false,
 			nonTouchScrolling: "scrollbar"
 		});
@@ -606,18 +605,18 @@ sap.m.IconTabBar.prototype.exit = function() {
 	if (this._oArrowRight) {
 		this._oArrowRight.destroy();
 	}
-	
+
 	if (this._oItemNavigation) {
 		this.removeDelegate(this._oItemNavigation);
 		this._oItemNavigation.destroy();
 		delete this._oItemNavigation;
 	}
-	
+
 	if (this._oScroller){
 		this._oScroller.destroy();
 		this._oScroller = null;
 	}
-	
+
 	if (this._sResizeListenerId) {
 		sap.ui.core.ResizeHandler.deregister(this._sResizeListenerId);
 		this._sResizeListenerId = null;
@@ -880,14 +879,14 @@ sap.m.IconTabBar.prototype._adjustArrow = function(){
 					var aItems = this.getItems();
 					var oFirstVisibleItem = this._getFirstVisibleItem(aItems);
 					if (((this.$("head").hasClass("sapMITBNoText") || this.oSelectedItem.$().hasClass("sapMITBHorizontal")) && ((this.oSelectedItem === oFirstVisibleItem)))
-							|| ((aItems.length > 0) && (this.oSelectedItem === aItems[aItems.length-1])) && !jQuery.device.is.desktop && !this.oSelectedItem.$().hasClass("sapMITBHorizontal")) {
+							|| ((aItems.length > 0) && (this.oSelectedItem === aItems[aItems.length-1])) && (!sap.ui.Device.system.desktop || sap.ui.Device.os.windows && sap.ui.Device.os.version === 8) && !this.oSelectedItem.$().hasClass("sapMITBHorizontal")) {
 						//first tab has less padding, last tab has more padding arrow would not point to the middle
 						iLeft -= 8;
 					}
 					if (this.oSelectedItem.$().hasClass("sapMITBHorizontal")) {
 						iLeft += 8;
 					}
-					if (!jQuery.device.is.desktop && !this.$("head").hasClass("sapMITBNoText")) {
+					if ( (!sap.ui.Device.system.desktop || sap.ui.Device.os.windows && sap.ui.Device.os.version === 8) && !this.$("head").hasClass("sapMITBNoText")) {
 						if (this.oSelectedItem === aItems[0]) {
 							iLeft -= 2;
 						} else if (this.oSelectedItem === aItems[aItems.length-1]) {
@@ -930,12 +929,12 @@ sap.m.IconTabBar.prototype.onAfterRendering = function() {
 		this.oSelectedItem.$().addClass("sapMITBSelected");
 	}
 
-	if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) {
+	if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) {
 		jQuery.sap.delayedCall(350, this, "_checkOverflow", [oHeadDomRef, $bar]);
 	}
 
 	// reset scroll state after re-rendering for non-touch devices (iScroll will handle this internally)
-	if (this._iCurrentScrollLeft !== 0 && !(sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop)) {
+	if (this._iCurrentScrollLeft !== 0 && (sap.ui.Device.system.desktop && !(sap.ui.Device.os.windows && sap.ui.Device.os.version === 8))) {
 		oHeadDomRef.scrollLeft = this._iCurrentScrollLeft;
 	}
 
@@ -1172,7 +1171,7 @@ sap.m.IconTabBar.prototype._checkNoText = function(aItems) {
 sap.m.IconTabBar.prototype._checkScrolling = function(oHead, $bar) {
 	var bScrolling = false;
 
-	if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) { //iScroll is used, therefore we need other calculation then in desktop mode
+	if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) { //iScroll is used, therefore we need other calculation then in desktop mode
 		var domScrollCont = this.getDomRef("scrollContainer");
 		var domHead = this.getDomRef("head");
 		if (domHead.offsetWidth > domScrollCont.offsetWidth) {
@@ -1239,7 +1238,7 @@ sap.m.IconTabBar.prototype._checkOverflow = function(oBarHead, $bar) {
 		var bScrollBack = false;
 		var bScrollForward = false;
 
-		if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) { //iScroll is used, therefore we need other calculation then in desktop mode
+		if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) { //iScroll is used, therefore we need other calculation then in desktop mode
 			var domScrollCont = this.getDomRef("scrollContainer");
 			var domHead = this.getDomRef("head");
 			if (this._oScroller.getScrollLeft() > 0) {
@@ -1308,13 +1307,43 @@ sap.m.IconTabBar.prototype._handleActivation = function(oEvent) {
 			// For scroll buttons: Prevent IE from firing beforeunload event -> see CSN 4378288 2012
 			oEvent.preventDefault();
 
+			//on mobile devices click on arrows has no effect
+			if (sTargetId == sId + "-arrowScrollLeft" && sap.ui.Device.system.desktop) {
+				if (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8) {
+					//combi devices with windows 8 should also scroll on click on arrows
+					//need to use iscroll
+					var iScrollLeft = this._oScroller.getScrollLeft() - sap.m.IconTabBar.SCROLL_STEP;
+					if (iScrollLeft < 0) {
+						iScrollLeft = 0;
+					}
+					// execute manual scrolling with iScroll's scrollTo method (delayedCall 0 is needed for positioning glitch)
+					this._scrollPreparation();
+					jQuery.sap.delayedCall(0, this._oScroller, "scrollTo", [iScrollLeft, 0, 500]);
+					jQuery.sap.delayedCall(500, this, "_afterIscroll");
+				} else {
+					// scroll back/left button
+					this._scroll(-sap.m.IconTabBar.SCROLL_STEP, 500);
+				}
 
-			if (sTargetId == sId + "-arrowScrollLeft" && jQuery.device.is.desktop) {
-				// scroll back/left button
-				this._scroll(-sap.m.IconTabBar.SCROLL_STEP, 500);
-			} else if (sTargetId == sId + "-arrowScrollRight" && jQuery.device.is.desktop) {
-				// scroll forward/right button
-				this._scroll(sap.m.IconTabBar.SCROLL_STEP, 500);
+			} else if (sTargetId == sId + "-arrowScrollRight" && sap.ui.Device.system.desktop) {
+				if (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8) {
+					//combi devices with windows 8 should also scroll on click on arrows
+					//need to use iscroll
+					var iScrollLeft = this._oScroller.getScrollLeft() + sap.m.IconTabBar.SCROLL_STEP;
+					var iContainerWidth = this.$("scrollContainer").width();
+					var iHeadWidth = this.$("head").width();
+					if (iScrollLeft > (iHeadWidth - iContainerWidth)) {
+						iScrollLeft = iHeadWidth - iContainerWidth;
+					}
+					// execute manual scrolling with iScroll's scrollTo method (delayedCall 0 is needed for positioning glitch)
+					this._scrollPreparation();
+					jQuery.sap.delayedCall(0, this._oScroller, "scrollTo", [iScrollLeft, 0, 500]);
+					jQuery.sap.delayedCall(500, this, "_afterIscroll");
+				} else {
+					// scroll forward/right button
+					this._scroll(sap.m.IconTabBar.SCROLL_STEP, 500);
+				}
+
 			} else {
 				// should be one of the items - select it
 				if (oControl instanceof sap.ui.core.Icon) { 
@@ -1356,7 +1385,7 @@ sap.m.IconTabBar.prototype._scrollIntoView = function(oItem, iDuration) {
 		var iItemPosLeft = $item.position().left;
 
 		// switch based on scrolling mode
-		if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) { // iScroll
+		if (!sap.ui.Device.system.desktop || (sap.ui.Device.os.windows && sap.ui.Device.os.version === 8)) { // iScroll
 			iScrollLeft = this._oScroller.getScrollLeft();
 			iContainerWidth = this.$("scrollContainer").width();
 			iNewScrollLeft = 0;

@@ -48,7 +48,7 @@ sap.m.InputRenderer.addOuterStyles = function(oRm, oControl) {
 sap.m.InputRenderer.writeInnerAttributes = function(oRm, oControl) {
 	oRm.writeAttribute("type", oControl.getType().toLowerCase());
 	if ((!oControl.getEnabled() && oControl.getType() == "Password")
-			|| (oControl.getShowSuggestion() && jQuery.device.is.phone)){
+			|| (oControl.getShowSuggestion() && sap.ui.Device.system.phone)){
 		// required for JAWS reader on password fields on desktop:
 		oRm.writeAttribute("readonly", "readonly");
 	}
@@ -75,5 +75,4 @@ sap.m.InputRenderer.writeInnerContent = function(oRm, oControl) {
 		oRm.renderControl(oControl._getValueHelpIcon());
 		oRm.write("</div>");
 	 }
-
 };

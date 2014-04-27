@@ -131,7 +131,7 @@ sap.ui.commons.RowRepeaterRenderer.renderTitle = function(oRenderManager, oContr
 
 //LOGO AND TITLE IN 2 SEPARATE DIVs:
 	// render the icon if it is defined
-	if(oTitle.getIcon()!==null) {
+	if(oTitle.getIcon()) {
 		// opening logo DIV
 		oRenderManager.write("<div");
 		oRenderManager.addClass("sapUiRrLogo");
@@ -151,7 +151,7 @@ sap.ui.commons.RowRepeaterRenderer.renderTitle = function(oRenderManager, oContr
 	}
 
 	// render the text if provided
-	if(oTitle.getText()!==null) {
+	if(oTitle.getText()) {
 		// opening title DIV
 		oRenderManager.write("<div");
 		oRenderManager.addClass("sapUiRrTitle");
@@ -174,41 +174,41 @@ sap.ui.commons.RowRepeaterRenderer.renderFilterToolbar = function(oRenderManager
 
 	// local variables
 	var aFilters = oControl.getFilters();
-
-	// opening filter toolbar DIV
-	oRenderManager.write("<div");
-	oRenderManager.addClass("sapUiRrFilters");
-	oRenderManager.writeClasses();
-	oRenderManager.write(">");
-
-	// don't render any content if there is not minimum 2 filters OR
-	// if the row repeater is not bound
-	if(aFilters.length>1 && oControl.isBound()) {
-		oRenderManager.renderControl(oControl.getAggregation("filterToolbar"));
+	if (aFilters.length > 0) {
+		// opening filter toolbar DIV
+		oRenderManager.write("<div");
+		oRenderManager.addClass("sapUiRrFilters");
+		oRenderManager.writeClasses();
+		oRenderManager.write(">");
+	
+		// don't render any content if there is not minimum 2 filters OR
+		// if the row repeater is not bound
+		if(aFilters.length>1 && oControl.isBound()) {
+			oRenderManager.renderControl(oControl.getAggregation("filterToolbar"));
+		}
+	
+		// closing filter toolbar DIV
+		oRenderManager.write("</div>");
 	}
-
-	// closing filter toolbar DIV
-	oRenderManager.write("</div>");
-
 };
 
 
 sap.ui.commons.RowRepeaterRenderer.renderController = function(oRenderManager, oControl) {
 
-	// opening controller DIV
-	oRenderManager.write("<div");
-	oRenderManager.addClass("sapUiRrCtrl");
-	oRenderManager.writeClasses();
-	oRenderManager.write(">");
-
-	// render "show more" button or pager depending on pager mode flag
 	if(!oControl.bPagingMode) {
-		oRenderManager.renderControl(oControl.getAggregation("headerShowMoreButton"));
+		// opening controller DIV
+		oRenderManager.write("<div");
+		oRenderManager.addClass("sapUiRrCtrl");
+		oRenderManager.writeClasses();
+		oRenderManager.write(">");
+	
+		// render "show more" button or pager depending on pager mode flag
+		
+			oRenderManager.renderControl(oControl.getAggregation("headerShowMoreButton"));
+		
+		// closing controller DIV
+		oRenderManager.write("</div>");
 	}
-
-	// closing controller DIV
-	oRenderManager.write("</div>");
-
 };
 
 

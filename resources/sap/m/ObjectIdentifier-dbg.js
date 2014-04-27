@@ -53,11 +53,11 @@ jQuery.sap.require("sap.ui.core.Control");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * Control that displays properties that identify an object.
+ * ObjectIdentifier is a display control that enables the user to easily identify a specific object. The object identifier title is the key identifier of the object and additional text and icons can be used to further distinguish it from other objects.
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -301,7 +301,7 @@ sap.m.ObjectIdentifier.prototype._getNotesIcon = function() {
  */
 sap.m.ObjectIdentifier.prototype._getIcon = function(sURI, sImageId) {
 
-    var sSize = jQuery.device.is.phone ? "1em" : "1em";
+    var sSize = sap.ui.Device.system.phone ? "1em" : "1em";
     var oImage;
 
     oImage = this._icon || sap.ui.core.IconPool.createControlByURI({

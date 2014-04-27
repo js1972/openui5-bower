@@ -24,8 +24,7 @@ sap.ui.commons.RadioButtonRenderer = {
  * @param {sap.ui.core.RenderManager} oRenderManager The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.ui.commons.RadioButton} oRadioButton The RadioButton control that should be rendered.
  */
-sap.ui.commons.RadioButtonRenderer.render = function(oRenderManager, oRadioButton) {
-	var rm = oRenderManager;
+sap.ui.commons.RadioButtonRenderer.render = function(rm, oRadioButton) {
 
 	// Return immediately if control is invisible
 	if (!oRadioButton.getVisible()) {
@@ -160,7 +159,7 @@ sap.ui.commons.RadioButtonRenderer.renderText = function(oRenderManager, sText, 
 	if (!eTextDirection || eTextDirection == sap.ui.core.TextDirection.Inherit){
 		rm.writeEscaped(sText);
 	} else {
-		rm.write("<span dir=\"" + eTextDirection + "\">");
+		rm.write("<span style=\"direction:" + eTextDirection.toLowerCase() + ";\">");
 		rm.writeEscaped(sText);
 		rm.write("</span>");
 	}
@@ -168,10 +167,8 @@ sap.ui.commons.RadioButtonRenderer.renderText = function(oRenderManager, sText, 
 
 sap.ui.commons.RadioButtonRenderer.setSelected = function(oRadioButton, bSelected) {
 
-	var sId = oRadioButton.getId();
-
-	jQuery.sap.byId(sId).toggleClass('sapUiRbSel', bSelected).attr('aria-checked', bSelected);
-	var $Dom = jQuery.sap.domById(sId+'-RB');
+	oRadioButton.$().toggleClass('sapUiRbSel', bSelected).attr('aria-checked', bSelected);
+	var $Dom = oRadioButton.getDomRef("RB");
 	if(bSelected){
 		$Dom.checked = true;
 		$Dom.setAttribute('checked', 'checked');

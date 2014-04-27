@@ -5,14 +5,11 @@
  */
 
 //Provides class sap.ui.core.Configuration
-jQuery.sap.declare("sap.ui.core.Configuration");
-jQuery.sap.require("sap.ui.base.Object");
-jQuery.sap.require("sap.ui.core.Locale");
-jQuery.sap.require("sap.ui.thirdparty.URI");
+sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Locale', 'sap/ui/thirdparty/URI'],
+	function(jQuery, BaseObject, Locale, URI1) {
+	"use strict";
 
-/*global URI *///declare unusual global vars for JSLint/SAPUI5 validation
-
-(function() {
+	/*global URI *///declare unusual global vars for JSLint/SAPUI5 validation
 
 	/**
 	 * Creates a new Configuration object.
@@ -51,7 +48,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 	 * @public
 	 * @name sap.ui.core.Configuration
 	 */
-	sap.ui.base.Object.extend("sap.ui.core.Configuration", /** @lends sap.ui.core.Configuration.prototype */ {
+	var Configuration = BaseObject.extend("sap.ui.core.Configuration", /** @lends sap.ui.core.Configuration.prototype */ {
 
 		constructor : function(oCore) {
 			
@@ -65,7 +62,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 					if ( match ) {
 						return match[1];
 					}
-          // okay, we couldn't find a language setting. It might be better to fallback to 'en' instead of having no language 
+					// okay, we couldn't find a language setting. It might be better to fallback to 'en' instead of having no language 
 				} 
 				return navigator.language || navigator.userLanguage || navigator.browserLanguage;
 			}
@@ -110,6 +107,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 					"xx-supportedLanguages" : { type : "string[]", defaultValue : [] }, // *=any, sapui5 or list of locales
 					"xx-bootTask"           : { type : "function", defaultValue : undefined, noUrl:true },
 					"xx-suppressDeactivationOfControllerCode" : { type : "boolean",  defaultValue : false }, //temporarily to suppress the deactivation of controller code in design mode
+					"xx-noNativeScroll"		: { type : "boolean",  defaultValue : false }, // suppress native scrolling on touch devices
 					"statistics"            : { type : "boolean",  defaultValue : false }
 			};
 
@@ -123,7 +121,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 					"sapMDialogWithPadding" : "1.14"
 			};
 
-			this.oFormatSettings = new sap.ui.core.Configuration.FormatSettings(this);
+			this.oFormatSettings = new Configuration.FormatSettings(this);
 
 			/* Object that carries the real configuration data */
 			var config = this;
@@ -315,7 +313,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			}
 
 		  // calculate RTL mode
-			this.derivedRTL = sap.ui.core.Locale._impliesRTL(config.language);
+			this.derivedRTL = Locale._impliesRTL(config.language);
 			
 			// analyze theme parameter
 			var sTheme = config.theme;
@@ -335,14 +333,18 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 
 			config.theme = this._normalizeTheme(config.theme, sThemeRoot); 
 
+			// the following placeholder is replaced during the build with a list of locales supported by the UI5 core  
+			var aCoreLangs = ",ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
+			if ( aCoreLangs.length === 1 && aCoreLangs[0].slice(0,1) === '@' ) {
+				aCoreLangs = undefined;
+			}
+			config['languagesDeliveredWithCore'] = aCoreLangs;
+
 			var aLangs = config['xx-supportedLanguages'];
 			if ( aLangs.length === 0 || (aLangs.length === 1 && aLangs[0] === '*') ) {
 				aLangs = [];
 			} else if ( aLangs.length === 1 && aLangs[0] === 'default' ) {
-				aLangs = ",ar,bg,ca,cs,da,de,el,en,es,et,fi,fr,hi,hr,hu,it,iw,ja,ko,lt,lv,nl,no,pl,pt,ro,ru,sh,sk,sl,sv,th,tr,uk,vi,zh_CN,zh_TW".split(/,/);
-				if ( aLangs.length === 1 && aLangs[0].slice(0,1) === '@' ) {
-					aLangs = [];
-				}
+				aLangs = aCoreLangs || [];
 			}
 			config['xx-supportedLanguages'] = aLangs; 
 			
@@ -474,7 +476,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			if ( sLanguage != this.language ) {
 				mChanges = this._collect();
 				this.language = mChanges.language = sLanguage;
-				this.derivedRTL = sap.ui.core.Locale._impliesRTL(sLanguage);
+				this.derivedRTL = Locale._impliesRTL(sLanguage);
 				if ( bOldRTL != this.getRTL() ) {
 					mChanges.rtl = this.getRTL();
 				}
@@ -490,7 +492,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 		 * @public
 		 */
 		getLocale : function () {
-			return new sap.ui.core.Locale(this.language);
+			return new Locale(this.language);
 		},
 
 		/**
@@ -535,6 +537,17 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 			return this;
 		},
 
+		/**
+		 * List of languages that the SAPUI5 core deliveres.
+		 * 
+		 * Might return undefined if the information is not available.
+		 *  
+		 * @experimental 
+		 */
+		getLanguagesDeliveredWithCore : function() {
+			return this["languagesDeliveredWithCore"];
+		},
+		
 		/**
 		 * @experimental 
 		 */
@@ -826,6 +839,17 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 		 */
 		getStatistics : function() {
 			return this.statistics || window.localStorage.getItem("sap-ui-statistics") == "X";
+		},
+
+		/**
+		 * Return whether native scrolling should be suppressed on touch devices
+		 *
+		 * @returns {boolean} whether native scrolling is suppressed on touch devices
+		 * @since 1.20.0
+		 * @private
+		 */
+		getNoNativeScroll : function() {
+			return this["xx-noNativeScroll"];
 		}
 
 	});
@@ -887,7 +911,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 	 * @extends sap.ui.base.Object
 	 * @public
 	 */
-	sap.ui.base.Object.extend("sap.ui.core.Configuration.FormatSettings", /** @lends sap.ui.core.Configuration.FormatSettings.prototype */ {
+	BaseObject.extend("sap.ui.core.Configuration.FormatSettings", /** @lends sap.ui.core.Configuration.FormatSettings.prototype */ {
 		constructor : function(oConfiguration) {
 			this.oConfiguration = oConfiguration;
 			this.mSettings = {};
@@ -924,7 +948,7 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 				}
 				return l;
 			}
-			return new sap.ui.core.Locale(this.oConfiguration.formatLocale || fallback(this));
+			return new Locale(this.oConfiguration.formatLocale || fallback(this));
 		},
 
 		_set : function(sKey, oValue) {
@@ -1165,4 +1189,6 @@ jQuery.sap.require("sap.ui.thirdparty.URI");
 		}
 	});
 
-}());
+	return Configuration;
+
+}, /* bExport= */ true);

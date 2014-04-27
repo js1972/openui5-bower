@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -202,7 +202,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
 
 /**
  * Setter for the aggregated <code>top</code>.
- * @param oTop {sap.ui.commons.layout.BorderLayoutArea}
+ * @param {sap.ui.commons.layout.BorderLayoutArea} oTop
  * @return {sap.ui.commons.layout.BorderLayout} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.BorderLayout#setTop
@@ -233,7 +233,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
 
 /**
  * Setter for the aggregated <code>begin</code>.
- * @param oBegin {sap.ui.commons.layout.BorderLayoutArea}
+ * @param {sap.ui.commons.layout.BorderLayoutArea} oBegin
  * @return {sap.ui.commons.layout.BorderLayout} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.BorderLayout#setBegin
@@ -264,7 +264,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
 
 /**
  * Setter for the aggregated <code>center</code>.
- * @param oCenter {sap.ui.commons.layout.BorderLayoutArea}
+ * @param {sap.ui.commons.layout.BorderLayoutArea} oCenter
  * @return {sap.ui.commons.layout.BorderLayout} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.BorderLayout#setCenter
@@ -295,7 +295,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
 
 /**
  * Setter for the aggregated <code>end</code>.
- * @param oEnd {sap.ui.commons.layout.BorderLayoutArea}
+ * @param {sap.ui.commons.layout.BorderLayoutArea} oEnd
  * @return {sap.ui.commons.layout.BorderLayout} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.BorderLayout#setEnd
@@ -326,7 +326,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
 
 /**
  * Setter for the aggregated <code>bottom</code>.
- * @param oBottom {sap.ui.commons.layout.BorderLayoutArea}
+ * @param {sap.ui.commons.layout.BorderLayoutArea} oBottom
  * @return {sap.ui.commons.layout.BorderLayout} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.layout.BorderLayout#setBottom

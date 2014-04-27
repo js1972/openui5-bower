@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -358,7 +358,7 @@ sap.m.InputBase.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.InputBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.InputBase</code>.<br/> itself.
  *
  * @return {sap.m.InputBase} <code>this</code> to allow method chaining
  * @public
@@ -399,161 +399,43 @@ sap.m.InputBase.M_EVENTS = {'change':'change'};
 
 // Start of sap\m\InputBase.js
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
-sap.ui.core.EnabledPropagator.call(sap.m.InputBase.prototype);
-
 jQuery.sap.require("sap.ui.core.IconPool");
+sap.ui.core.EnabledPropagator.call(sap.m.InputBase.prototype);
 sap.ui.core.IconPool.insertFontFaceStyle();
 
-sap.m.InputBase.prototype.init = function() {
-	this._curpos = 0;		// cursor position
-	this._lastValue = "";	// last changed value
-	this._changeProxy = jQuery.proxy(this._onChange, this);
-};
+/* =========================================================== */
+/* Private methods and properties                              */
+/* =========================================================== */
+
+/* ----------------------------------------------------------- */
+/* Private properties                                          */
+/* ----------------------------------------------------------- */
 
 // use labels as placeholder configuration
-sap.m.InputBase.prototype._showLabelAsPlaceholder = (function($, oDevice) {
+sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function($, oDevice) {
+
 	if (!("placeholder" in document.createElement("input"))) {
 		return true;
 	}
 
-	var useLabel = oDevice.support.touch;
-	if (useLabel && (
-		// these OS supports right alignable placeholder natively
-		// so we do not need selfmade placeholder
-		// test page :  http://jsfiddle.net/qKPX2/3/
-		(oDevice.os.ios && oDevice.os.version >= 6) ||
-		(oDevice.os.android && oDevice.browser.chrome)) ||
-		(oDevice.os.blackberry && oDevice.os.version >= 10)) {
-		useLabel = null;	//this means derived class can make it's own checking
+	var bUseLabel = oDevice.support.touch;
+
+	// These OS supports right alignable placeholder natively,
+	// so we do not need selfmade placeholder.
+	// test page :  http://jsfiddle.net/qKPX2/3/
+	if (bUseLabel && ((oDevice.os.ios && oDevice.os.version >= 6) ||
+						(oDevice.os.android && oDevice.browser.chrome)) ||
+						(oDevice.os.blackberry && oDevice.os.version >= 10)) {
+
+		bUseLabel = null;	// this means derived class can make it's own checking
 	}
-	return useLabel;
+
+	return bUseLabel;
 }(jQuery, sap.ui.Device));
 
-sap.m.InputBase.prototype.onBeforeRendering = function() {
-	if (this.getDomRef()) {
-		this._$input.off();	// remove all events
-		this._curpos = this._$input.cursorPos();
-	}
-};
-
-sap.m.InputBase.prototype.onAfterRendering = function() {
-	this._$input = jQuery.sap.byId(this.getId() + "-inner");
-	this._$input.bind("change", this._changeProxy);
-	if (this._showLabelAsPlaceholder) {
-		this._$label = this.$().find('label');
-		this._setLabelVisibility();
-
-		// workaround for iOS 5 bug - see http://stackoverflow.com/questions/7358781/tapping-on-label-in-mobile-safari
-		if (sap.ui.Device.os.ios && sap.ui.Device.os.version <= 5){
-			this._$label.bind("click", function(){});
-		}
-	}
-};
-
-sap.m.InputBase.prototype.exit = function() {
-	delete this._$input;
-	delete this._$label;
-};
-
-sap.m.InputBase.prototype.getFocusDomRef = function() {
-	return (this.getDomRef() ? this._$input[0] : null);
-};
-
-sap.m.InputBase.prototype.getIdForLabel = function() {
-	return this.getId() + '-inner';
-};
-
-sap.m.InputBase.prototype.ontouchstart = function(oEvent) {
-	//for control who need to know if they should handle events from the input control
-	oEvent.originalEvent._sapui_handledByControl = true;
-};
-
-sap.m.InputBase.prototype.ontouchend = function(oEvent) {
-	// remember the cursor position as early as possible
-	this._curpos = this._$input.cursorPos();
-};
-
-sap.m.InputBase.prototype.setValueState = function(sValueState) {
-	var sOldValueState = this.getValueState();
-	sValueState = this.validateProperty("valueState", sValueState);
-
-	if (sValueState == sOldValueState) {
-		return this;
-	}
-	if (!this.getDomRef()) {
-		return this.setProperty("valueState", sValueState);
-	}
-
-	var	$container = this.$();
-	this.setProperty("valueState", sValueState, true);
-
-	if (sOldValueState && sOldValueState != "None") {
-		$container.removeClass("sapMInputBase" + sOldValueState);
-		this._$input.removeClass("sapMInputBase" + sOldValueState + "Inner");
-	}
-	if (sValueState && sValueState != "None") {
-		$container.addClass("sapMInputBase" + sValueState);
-		this._$input.addClass("sapMInputBase" + sValueState + "Inner");
-	}
-
-	// set tooltip based on state (will be undefined when state is None)
-	var sTooltip = sap.ui.core.ValueStateSupport.enrichTooltip(this, this.getTooltip_AsString());
-	this.$().attr("title", ( sTooltip !== undefined ? sTooltip : "" ));
-
-	return this;
-};
-
-sap.m.InputBase.prototype.setValue = function(sValue) {
-	sValue = this.validateProperty("value", sValue);
-	sValue = this._getInputValue(sValue);
-	if (sValue != this.getValue()) {
-		this._lastValue = sValue;
-		this.setProperty("value", sValue, true);
-		if (this.getDomRef() && this._$input.val() != sValue) {
-			this._$input.val(sValue);
-			this._setLabelVisibility();
-			this._curpos = this._$input.cursorPos();
-		}
-	}
-	return this;
-};
-
-sap.m.InputBase.prototype.setWidth = function(sWidth) {
-	this.setProperty("width", sWidth, true);
-	if (this.getDomRef()) {
-		this.$().css("width", this.getWidth());
-	}
-	return this;
-};
-
-sap.m.InputBase.prototype.setPlaceholder = function(sPlaceholder) {
-	this.setProperty("placeholder", sPlaceholder, true);
-	if (this.getDomRef()) {
-		if (this._$label) {
-			this._$label.text(this.getPlaceholder());
-		} else {
-			this._$input.attr("placeholder", this.getPlaceholder());
-		}
-	}
-	return this;
-};
-
-sap.m.InputBase.prototype.setMaxLength = function(iMaxLength) {
-	if (iMaxLength < 0) {
-		return this;
-	}
-
-	this.setProperty("maxLength", iMaxLength, true);
-	if (this.getDomRef()){
-		if (iMaxLength == 0) {
-			this._$input.removeAttr("maxlength");
-		} else {
-			this._$input.val(this._$input.val().substring(0, iMaxLength));
-			this._$input.attr("maxlength", iMaxLength);
-		}
-	}
-	return this;
-};
+/* ----------------------------------------------------------- */
+/* Private methods                                             */
+/* ----------------------------------------------------------- */
 
 sap.m.InputBase.prototype._setLabelVisibility = function() {
 	if (this.getDomRef() && this._$label) {
@@ -563,71 +445,373 @@ sap.m.InputBase.prototype._setLabelVisibility = function() {
 
 sap.m.InputBase.prototype._getInputValue = function(sValue) {
 	sValue = (typeof sValue == "undefined") ? this._$input.val() : sValue.toString();
+
 	if (this.getMaxLength && this.getMaxLength() > 0) {
 		sValue = sValue.substring(0, this.getMaxLength());
 	}
+
 	return sValue;
 };
 
+sap.m.InputBase.prototype.setMaxLength = function(iMaxLength) {
+	if (iMaxLength < 0) {
+		return this;
+	}
+
+	this.setProperty("maxLength", iMaxLength, true);
+
+	if (this.getDomRef()) {
+		if (iMaxLength === 0) {
+			this._$input.removeAttr("maxlength");
+		} else {
+			this._$input.val(this._$input.val().substring(0, iMaxLength));
+			this._$input.attr("maxlength", iMaxLength);
+		}
+	}
+
+	return this;
+};
+
+/* =========================================================== */
+/* Lifecycle methods                                           */
+/* =========================================================== */
+
+/**
+ * Initialization hook.
+ *
+ * @private
+ */
+sap.m.InputBase.prototype.init = function() {
+	this._curpos = 0;	// cursor position
+	this._lastValue = "";	// last changed value
+	this._changeProxy = jQuery.proxy(this._onChange, this);
+};
+
+/**
+ * Required adaptations before rendering.
+ *
+ * @private
+ */
+sap.m.InputBase.prototype.onBeforeRendering = function() {
+	if (this.getDomRef()) {
+		this._$input.off();
+		this._curpos = this._$input.cursorPos();
+	}
+};
+
+/**
+ * Required adaptations after rendering.
+ *
+ * @private
+ */
+sap.m.InputBase.prototype.onAfterRendering = function() {
+	this._$input = this.$("inner");
+	this._$input.on("change", this._changeProxy);
+
+	if (this._bShowLabelAsPlaceholder) {
+		this._$label = this.$().find("label");
+		this._setLabelVisibility();
+
+		// workaround for iOS 5 bug - see http://stackoverflow.com/questions/7358781/tapping-on-label-in-mobile-safari
+		if (sap.ui.Device.os.ios && sap.ui.Device.os.version <= 5) {
+			this._$label.on("click", function() {});
+		}
+	}
+};
+
+/**
+ * Cleans up before destruction.
+ *
+ * @private
+ */
+sap.m.InputBase.prototype.exit = function() {
+	this._$input = null;
+	this._$label = null;
+};
+
+/* =========================================================== */
+/* Event handlers                                              */
+/* =========================================================== */
+
+/**
+ * Handle the touch start event on the Input.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.m.InputBase.prototype.ontouchstart = function(oEvent) {
+
+	// mark the event for components that needs to know if the event was handled
+	oEvent.setMarked();
+};
+
+/**
+ * Handle the touch end event on the Input.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.m.InputBase.prototype.ontouchend = function(oEvent) {
+	// remember the cursor position
+	this._curpos = this._$input.cursorPos();
+};
+
+sap.m.InputBase.prototype.onkeyup = function(oEvent) {
+	// remember the cursor position
+	this._curpos = this._$input.cursorPos();
+};
+
+sap.m.InputBase.prototype.onfocusout = function(oEvent) {
+
+	// IE doesn't fire change event on blur sometimes
+	// set initial value empty, type some text
+	// hit Enter (actually here does not update internal value because does not fire change with enter)
+	// return back to initial value and then blur
+	// no change event is fired
+	if (sap.ui.Device.browser.msie) {
+
+		// fire event
+		this._onChange(oEvent);
+	}
+
+	// ios Safari changes scrollTop, remove it in case of iScroll
+	if (sap.ui.Device.os.ios) {
+		var oScrollDelegate = sap.m.getScrollDelegate(this);
+
+		if (oScrollDelegate) {
+			oScrollDelegate.refresh();
+		}
+	}
+};
+
 sap.m.InputBase.prototype._onChange = function(oEvent) {
+	// make sure _$input exists on change for async calls
+	if (!this._$input) {
+		return;
+	}
+
+	// compare with the old known value
 	var sValue = this._getInputValue();
-	if (sValue != this._lastValue) {
+
+	if (sValue !== this._lastValue) {
 		this.setProperty("value", sValue, true);
 		this._curpos = this._$input.cursorPos();
 		this._setLabelVisibility();
 		this._lastValue = sValue;
 		this.fireChange({
-			newValue : sValue
+			value: sValue,
+
+			// backwards compatibility
+			newValue: sValue
 		});
 	}
 };
 
+/* ----------------------------------------------------------- */
+/* Keyboard handling                                           */
+/* ----------------------------------------------------------- */
+
+/**
+ * Handle when enter is pressed.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.m.InputBase.prototype.onsapenter = function(oEvent) {
+
+	// IE doesn't fire change event for inputs when we hit Enter
+	if (sap.ui.Device.browser.msie && oEvent.target.tagName.toUpperCase() === "INPUT") {
+
+		// fire event
+		this._onChange(oEvent);
+	}
+
+};
+
+/**
+ * Handle when escape is pressed.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.m.InputBase.prototype.onsapescape = function(oEvent) {
+
+	// revert to the old value
+	var sValue = this._getInputValue();
+
+	if (sValue !== this._lastValue) {
+		this.setValue(this._lastValue);
+		this.fireEvent("liveChange", {
+			value: this._lastValue,
+
+			// backwards compatibility
+			newValue: this._lastValue
+		});
+	}
+};
+
+/* =========================================================== */
+/* API methods                                                 */
+/* =========================================================== */
+
+/* ----------------------------------------------------------- */
+/* protected methods                                           */
+/* ----------------------------------------------------------- */
+
+/**
+ * Register an event listener to the browser input event.
+ *
+ * @param {function} fnCallback Function to be called when the value of the input element is changed.
+ * @protected
+ * @name sap.m.InputBase#_bindToInputEvent
+ */
 sap.m.InputBase.prototype._bindToInputEvent = function(fnCallback) {
 	this._$input.on("input", fnCallback);
 
 	// input event in IE9 doesn't fire when we hit BACKSPACE / DEL / CUT
-	var oBrowser = sap.ui.Device.browser;
-	if (oBrowser.internet_explorer && oBrowser.version < 10) {
+	var mBrowser = sap.ui.Device.browser;
+
+	if (mBrowser.msie && mBrowser.version < 10) {
 		this._$input.on({
-			cut : function(e) {
+			cut: function(oEvent) {
 				setTimeout(function() {
-					fnCallback(e);
+					fnCallback(oEvent);
 				}, 0);
 			},
-			keyup : function(e) {
+
+			keyup: function(oEvent) {
 				var oKC = jQuery.sap.KeyCodes;
-				if (e.keyCode == oKC.DELETE || e.keyCode == oKC.BACKSPACE) {
-					fnCallback(e);
+				if (oEvent.which === oKC.DELETE || oEvent.which === oKC.BACKSPACE) {
+					fnCallback(oEvent);
 				}
 			}
 		});
 	}
 };
 
-// IE doesn't fire change event for inputs when we hit Enter
-sap.m.InputBase.prototype.onsapenter = function(oEvent) {
-	if (sap.ui.Device.browser.internet_explorer && oEvent.target.tagName == "INPUT") {
-		this._onChange(oEvent);
+/* ----------------------------------------------------------- */
+/* public methods                                              */
+/* ----------------------------------------------------------- */
+
+/**
+ * Setter for property <code>valueState</code>.
+ *
+ * Default value is <code>None</code>.
+ *
+ * @param {sap.ui.core.ValueState} oValueState New value for property <code>valueState</code>.
+ * @return {sap.m.InputBase} <code>this</code> to allow method chaining.
+ * @public
+ * @name sap.m.InputBase#setValueState
+ * @function
+ */
+sap.m.InputBase.prototype.setValueState = function(sValueState) {
+	var sOldValueState = this.getValueState();
+	sValueState = this.validateProperty("valueState", sValueState);
+
+	if (sValueState === sOldValueState) {
+		return this;
 	}
+
+	if (!this.getDomRef()) {
+		return this.setProperty("valueState", sValueState);
+	}
+
+	var $container = this.$();
+	this.setProperty("valueState", sValueState, true);
+
+	if (sOldValueState) {
+		$container.removeClass("sapMInputBase" + sOldValueState);
+		this._$input.removeClass("sapMInputBase" + sOldValueState + "Inner");
+	}
+
+	if (sValueState) {
+		$container.addClass("sapMInputBase" + sValueState);
+		this._$input.addClass("sapMInputBase" + sValueState + "Inner");
+	}
+
+	// set tooltip based on state (will be undefined when state is None)
+	var sTooltip = sap.ui.core.ValueStateSupport.enrichTooltip(this, this.getTooltip_AsString());
+	this.$().attr("title", sTooltip || "");
+
+	return this;
 };
 
-// Revert to old value on escape
-sap.m.InputBase.prototype.onsapescape = function(oEvent) {
-	var sValue = this.getValue();
-	if (sValue != this._lastValue) {
-		this.setValue(this._lastValue);
-		if (this.fireLiveChange) {
-			this.fireLiveChange({
-				newValue : this._lastValue
-			});
+/**
+ * Setter for property <code>value</code>.
+ *
+ * Default value is empty/<code>undefined</code>.
+ *
+ * @param {string} sValue New value for property <code>value</code>.
+ * @return {sap.m.InputBase} <code>this</code> to allow method chaining.
+ * @public
+ * @name sap.m.InputBase#setValue
+ * @function
+ */
+sap.m.InputBase.prototype.setValue = function(sValue) {
+	sValue = this.validateProperty("value", sValue);
+	sValue = this._getInputValue(sValue);
+
+	if (sValue !== this.getValue()) {
+		this._lastValue = sValue;
+		this.setProperty("value", sValue, true);
+
+		if (this.getDomRef() && (this._getInputValue() !== sValue)) {
+			this._$input.val(sValue);
+			this._setLabelVisibility();
+			this._curpos = this._$input.cursorPos();
 		}
 	}
+
+	return this;
 };
 
-sap.m.InputBase.prototype.getFocusInfo = function () {
+/**
+ * Setter for property <code>width</code>.
+ *
+ * Default value is empty/<code>undefined</code>.
+ *
+ * @param {sap.ui.core.CSSSize} sWidth New value for property <code>width</code>.
+ * @return {sap.m.InputBase} <code>this</code> to allow method chaining.
+ * @public
+ * @name sap.m.InputBase#setWidth
+ * @function
+ */
+sap.m.InputBase.prototype.setWidth = function(sWidth) {
+	this.setProperty("width", sWidth, true);
+	this.$().css("width", this.getWidth());
+	return this;
+};
+
+/**
+ * Setter for property <code>placeholder</code>.
+ *
+ * Default value is empty/<code>undefined</code>.
+ *
+ * @param {string} sPlaceholder New value for property <code>placeholder</code>.
+ * @return {sap.m.InputBase} <code>this</code> to allow method chaining.
+ * @public
+ * @name sap.m.InputBase#setPlaceholder
+ * @function
+ */
+sap.m.InputBase.prototype.setPlaceholder = function(sPlaceholder) {
+	this.setProperty("placeholder", sPlaceholder, true);
+
+	if (this.getDomRef()) {
+
+		if (this._$label) {
+			this._$label.text(this.getPlaceholder());
+		} else {
+			this._$input.attr("placeholder", this.getPlaceholder());
+		}
+	}
+
+	return this;
+};
+
+sap.m.InputBase.prototype.getFocusInfo = function() {
 	return {
-		id : this.getId(),
-		cursorPos : this._curpos
+		id: this.getId(),
+		cursorPos: this._curpos
 	};
 };
 
@@ -636,24 +820,14 @@ sap.m.InputBase.prototype.applyFocusInfo = function(oFocusInfo) {
 		sap.ui.core.Element.prototype.applyFocusInfo.call(this, oFocusInfo);
 		this._$input.cursorPos(this._curpos);
 	}
+
 	return this;
 };
 
-sap.m.InputBase.prototype.onfocusout = function(oEvent) {
-	// IE doesn't fire change event on blur sometimes
-	// set initial value empty, type some text
-	// hit Enter (actually here does not update internal value because does not fire change with enter)
-	// return back to initial value and then blur
-	// no change event is fired
-	if (sap.ui.Device.browser.internet_explorer) {
-		this._onChange(oEvent);
-	}
+sap.m.InputBase.prototype.getFocusDomRef = function() {
+	return this.$("inner")[0] || null;
+};
 
-	// ios Safari changes scrollTop, remove it in case of iScroll
-	if (sap.ui.Device.os.ios) {
-		var oScrollDelegate = sap.m.getScrollDelegate(this);
-		if (oScrollDelegate) {
-			oScrollDelegate.refresh();
-		}
-	}
+sap.m.InputBase.prototype.getIdForLabel = function() {
+	return this.getId() + '-inner';
 };

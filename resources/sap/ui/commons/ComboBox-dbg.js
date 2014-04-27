@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.core.ListItem[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.core.ListItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -225,6 +225,7 @@ sap.ui.commons.TextField.extend("sap.ui.commons.ComboBox", { metadata : {
  * Getter for aggregation items. Allows setting ListItems (see sap.ui.core.ListBox) that shall be displayed in the list.
  * 
  * 
+ * <strong>Note</strong>: this is the default aggregation for ComboBox.
  * @return {sap.ui.core.ListItem[]}
  * @public
  * @name sap.ui.commons.ComboBox#getItems
@@ -546,7 +547,7 @@ sap.ui.commons.ComboBox.prototype.onsapescape = function(oEvent) {
  */
 sap.ui.commons.ComboBox.prototype.onsapenter = function(oEvent) {
 	this._close();
-	this._checkChange(oEvent, true);
+	this._checkChange(oEvent);
 };
 
 
@@ -554,20 +555,21 @@ sap.ui.commons.ComboBox.prototype.onsapenter = function(oEvent) {
 //Focus handling...
 //***********************************************************
 
-/**
+/*
  * Handle the sapfocusleave pseudo event and ensure that when the focus moves to the list box,
  * the check change functionality (incl. fireChange) is not triggered.
  * @protected
  */
 sap.ui.commons.ComboBox.prototype.onsapfocusleave = function(oEvent) {
-	this._resetCheck();
+
 	var oLB = this._getListBox();
 	if(oEvent.relatedControlId && jQuery.sap.containsOrEquals(oLB.getFocusDomRef(), sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())){
 		this.focus();
 	} else {
 		// we left the ComboBox to another (unrelated) control and thus have to fire the change (if needed).
-		this._checkChange(oEvent, true);
+		sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
 	}
+
 };
 
 //***********************************************************
@@ -584,13 +586,6 @@ sap.ui.commons.ComboBox.prototype.onsapfocusleave = function(oEvent) {
  * @protected
  */
 sap.ui.commons.ComboBox.prototype._checkChange = function(oEvent, bImmediate) {
-	this._resetCheck();
-	if(!bImmediate){
-		// in case there is no sapfocusleave (i.e. core does not know where the focus went to)
-		// we still fire this event (as obviously it cannot be in the Combo and related control(s) anymore)
-		this._sCheckId = jQuery.sap.delayedCall(50,this, "_checkChange", [oEvent, true]);
-		return;
-	}
 
 	var oInput = this.getInputDomRef();
 	if (!oInput) {
@@ -668,19 +663,6 @@ sap.ui.commons.ComboBox.prototype._checkChange = function(oEvent, bImmediate) {
 		}
 		this.fireChange({newValue:sNewVal, selectedItem: oItem});
 	}
-};
-
-
-/**
- * Resets check for changes in case there is a delayed one pending.
- * @private
- */
-sap.ui.commons.ComboBox.prototype._resetCheck = function() {
-	if(!this._sCheckId) {
-		return;
-	}
-	jQuery.sap.clearDelayedCall(this._sCheckId);
-	this._sCheckId = null;
 };
 
 //***********************************************************
@@ -1293,7 +1275,7 @@ sap.ui.commons.ComboBox.prototype._handleClosed = function(){
  * @private
  */
 sap.ui.commons.ComboBox.prototype._handleSelect = function(oControlEvent) {
-	this._resetCheck();
+
 	var iSelected = oControlEvent.getParameter("selectedIndex"),
 		iSelectedId = oControlEvent.getParameter("selectedId"),
 		oItem = oControlEvent.getParameter("selectedItem");

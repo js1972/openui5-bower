@@ -18,7 +18,12 @@ sap.ui.table.TreeTableRenderer = sap.ui.core.Renderer.extend(sap.ui.table.TableR
 
 sap.ui.table.TreeTableRenderer.renderTableCellControl = function(rm, oTable, oCell, iCellIndex) {
 	if (oTable.isTreeBinding("rows") && iCellIndex === 0 && !oTable.getUseGroupMode()) {
-		rm.write("<span class=\"sapUiTableTreeIcon sapUiTableTreeIconLeaf\" tabindex=\"-1\">&nbsp;</span>");
+		rm.write("<span");
+		rm.addClass("sapUiTableTreeIcon");
+		rm.addClass("sapUiTableTreeIconLeaf");
+		rm.writeClasses();
+		rm.writeAttribute("tabindex", -1);
+		rm.write(">&nbsp;</span>");
 	}
 	rm.renderControl(oCell);
 };

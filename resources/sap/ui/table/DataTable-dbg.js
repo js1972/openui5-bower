@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.TreeTable");
  * @extends sap.ui.table.TreeTable
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -206,7 +206,7 @@ sap.ui.table.DataTable.M_EVENTS = {'rowSelect':'rowSelect'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.table.DataTable</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.table.DataTable</code>.<br/> itself.
  *
  * @return {sap.ui.table.DataTable} <code>this</code> to allow method chaining
  * @public

@@ -1907,7 +1907,7 @@ L  0.78125% =  8px / 1024px
    ------------------------
 */
 /* ====================================================== */
-/* CSS for control sap.ui.layout/form/GridLayout.control */
+/* CSS for control sap.ui.layout/form/GridLayout.control  */
 /* ====================================================== */
 
 /*.sapUiGrid{
@@ -1942,22 +1942,6 @@ L  0.78125% =  8px / 1024px
 	bottom: 0;
 	right: 0;
 }
-
-.sapUiGridLabel > label{
-	max-width: 100%;
-	float: right;
-}
-
-/* required symbol is now left - if indicator is already at begin, don't change it */
-.sapUiGridLabel > .sapUiLbl.sapUiLblReqEnd:after {
-	padding-left: 0;
-	content : '';
-}
-
-/* defined in Label.css*/
-/*.sapUiGridLabel > .sapUiLbl.sapUiLblReqEnd:before {
-	.sapUiLbLReqInd;
-}*/
 /* ====================================================== */
 /* CSS for control sap.ui.layout/HorizontalLayout.control */
 /* ====================================================== */
@@ -2083,10 +2067,6 @@ HTML[data-sap-ui-browser*='ie'] .sapUiRFL {
 	min-height: @sapUiLineHeight;
 }
 
-.sapUiFormResGridLbl > label {
-	max-width: 100%; /* to have ellipsis if cell gets too small */
-}
-
 /* ================= */
 /*   SMALL DEVICES   */
 /* ================= */
@@ -2106,18 +2086,10 @@ HTML[data-sap-ui-browser*='ie'] .sapUiRFL {
 /*   SMALL, MEDIUM and LARGE DEVICES */
 /* ================================= */
 /* make labels right aligned if left from fields*/
-.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > label,
-.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > label,
-.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > label {
-	float: right;
-	padding-right: 0.25rem;
-}
-
-.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapUiLbl.sapUiLblReqEnd:after,
-.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapUiLbl.sapUiLblReqEnd:after,
-.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapUiLbl.sapUiLblReqEnd:after{
-	padding-left: 0;
-	content : '';
+.sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12),
+.sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12),
+.sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) {
+	padding-right: 0.5rem;
 }
 
 .sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl.sapUiRespGridSpanS12,
@@ -2173,16 +2145,6 @@ html[data-sap-ui-browser^=ie] .sapUiRLElementWithLabel > .sapUiRFLRow:first-chil
 html[dir=rtl][data-sap-ui-browser^=ie] .sapUiRLElementWithLabel > .sapUiRFLRow:first-child > .sapUiRFLContainer:first-child:not(.sapUiRFLFullLength) > div{
 	text-align: left;
 }
-
-.sapUiRLElementWithLabel > .sapUiRFLRow:first-child > .sapUiRFLContainer:first-child:not(.sapUiRFLFullLength) > div > .sapUiLbl.sapUiLblReqEnd:after { /* required symbol is now left */
-	padding-left: 0;
-	content : '';
-}
-
-/* defined in Label.css*/
-/* .sapUiRLElementWithLabel > .sapUiRFLRow:first-child > .sapUiRFLContainer:first-child:not(.sapUiRFLFullLength) > div > .sapUiLbl.sapUiLblReqEnd:before {
-	.sapUiLbLReqInd;
-}*/
 /* ===================================================== */
 /* CSS for control sap.ui.layout/form/SimpleForm.control */
 /* ===================================================== */

@@ -5,25 +5,33 @@
  */
 
 // Provides enumeration sap.ui.model.FilterOperator
-jQuery.sap.declare("sap.ui.model.FilterType");
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
-/**
-* @class
-* Operators for the Filter.
-*
-* @static
-* @public
-*/
-sap.ui.model.FilterType = {
-		/**
-		 * Filters which are changed by the application
-		 * @public
-		 */
-		Application: "Application",
 
-		/**
-		 * Filters which are set by the different controls
-		 * @public
-		 */
-		Control: "Control"
-};
+	/**
+	* @class
+	* Operators for the Filter.
+	*
+	* @static
+	* @public
+	* @name sap.ui.model.FilterType
+	*/
+	var FilterType = {
+			/**
+			 * Filters which are changed by the application
+			 * @public
+			 */
+			Application: "Application",
+	
+			/**
+			 * Filters which are set by the different controls
+			 * @public
+			 */
+			Control: "Control"
+	};
+
+	return FilterType;
+
+}, /* bExport= */ true);

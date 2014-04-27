@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -173,7 +173,7 @@ sap.ui.ux3.NotificationBar.M_EVENTS = {'display':'display','resize':'resize'};
 
 /**
  * Setter for the aggregated <code>messageNotifier</code>.
- * @param oMessageNotifier {sap.ui.core.Element}
+ * @param {sap.ui.core.Element} oMessageNotifier
  * @return {sap.ui.ux3.NotificationBar} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.NotificationBar#setMessageNotifier
@@ -297,7 +297,7 @@ sap.ui.ux3.NotificationBar.M_EVENTS = {'display':'display','resize':'resize'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NotificationBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NotificationBar</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.NotificationBar} <code>this</code> to allow method chaining
  * @public
@@ -362,7 +362,7 @@ sap.ui.ux3.NotificationBar.M_EVENTS = {'display':'display','resize':'resize'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NotificationBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.NotificationBar</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.NotificationBar} <code>this</code> to allow method chaining
  * @public
@@ -549,7 +549,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.NotifierView", {
 		 * height. Since a single message could contain no, little or much text.
 		 * So the messages' heights may vary.
 		 */
-		var $viewContent = jQuery.sap.byId(this.getId() + "-content");
+		var $viewContent = this.$("content");
 		var $aChildren = $viewContent.children();
 
 		var iTotalHeight = 0, iCount = 0;
@@ -1065,7 +1065,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			that.$().addClass("sapUiNotificationBarMaximized");
 			that.$().css("height", sHeight);
 
-			var $containers = jQuery.sap.byId(that.getId() + "-containers");
+			var $containers = that.$("containers");
 			$containers.css("max-height", sHeight);
 			break;
 
@@ -1165,7 +1165,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 		var height = jQuery(window).height();
 
 		var oNotiBar = oEvent.data.notibar;
-		var $hoverDomRef = jQuery.sap.byId(oNotiBar.getId() + "-hoverItem");
+		var $hoverDomRef = oNotiBar.$("hoverItem");
 
 		var clientY = oEvent.clientY;
 		var iClientTop = parseInt(clientY, 10);
@@ -1285,7 +1285,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 				}
 
 				// add the inplace message to the item navigation as well
-				oDomRef = jQuery.sap.domById(this.getId() + "-inplaceMessage");
+				oDomRef = this.getDomRef("inplaceMessage");
 				if (oDomRef && jQuery(oDomRef).hasClass("sapUiInPlaceMessageSelectable")) {
 					aItemDomRefs.push(oDomRef);
 				}
@@ -1320,7 +1320,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 		// set toggler always to visible if running on a mobile device
 		if (sap.ui.Device.browser.mobile) {
-			var $toggler = jQuery.sap.byId(this.getId() + "-toggler");
+			var $toggler = this.$("toggler");
 
 			if (this.getVisibleStatus() !== sap.ui.ux3.NotificationBarStatus.None) {
 				$toggler.css("display", "block");
@@ -1339,7 +1339,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	 */
 	var fnSetSeverityForMessageNotifier = function(oThis, oMN) {
 		if (oMN && oMN.hasItems()) {
-			var $messageCount = jQuery.sap.byId(oMN.getId() + "-counter");
+			var $messageCount = oMN.$("counter");
 
 			// remove all possible classes
 			$messageCount.removeClass("sapUiMessageInformation");
@@ -1378,8 +1378,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	};
 
 	var fnSetNotifierDescription = function(oThis, oNotifier, sKey, iCount) {
-		var sId = oNotifier.getId();
-		var $description = jQuery.sap.byId(sId + "-description");
+		var $description = oNotifier.$("description");
 
 		var sMessage = oThis._oResBundle.getText(sKey, [ iCount ]);
 		$description.html(sMessage);
@@ -1390,8 +1389,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	 * HTML-element
 	 */
 	var fnHover = function(oEvent) {
-		var sId = this.getId() + "-toggler";
-		var $toggler = jQuery.sap.byId(sId);
+		var $toggler = this.$("toggler");
 
 		var bDisplay = ($toggler.css("display") === "block") ? true : false;
 		if (bDisplay) {
@@ -1493,7 +1491,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			break;
 		}
 
-		var $hover = jQuery.sap.byId(oNotiBar.getId() + "-hoverItem");
+		var $hover = oNotiBar.$("hoverItem");
 		$hover.css("display", display);
 	};
 

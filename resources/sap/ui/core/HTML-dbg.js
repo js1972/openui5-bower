@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.HTML.
-jQuery.sap.declare("sap.ui.core.HTML");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control'], function() {
+	"use strict";
 
 
 /**
@@ -62,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author Frank Weigel 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -231,7 +230,7 @@ sap.ui.core.HTML.M_EVENTS = {'afterRendering':'afterRendering'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.core.HTML</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.core.HTML</code>.<br/> itself.
  *
  * @return {sap.ui.core.HTML} <code>this</code> to allow method chaining
  * @public
@@ -270,7 +269,7 @@ sap.ui.core.HTML.M_EVENTS = {'afterRendering':'afterRendering'};
  */
 
 
-// Start of sap\ui\core\HTML.js
+// Start of sap/ui/core/HTML.js
 /**
  * @return {Element} The element's DOM reference or null
  * @public
@@ -383,8 +382,8 @@ sap.ui.core.HTML.prototype._postprocessNewContent = function($newContent) {
  * Sets some new DOM content for this HTML control. The content will replace the existing content
  * after the next rendering. Properties are not modified, but preferDOM should be set to true.
  *
- * @param {DOMNode} oDom the new DOM content
- * @return this for chaining
+ * @param {Element} oDom the new DOM content
+ * @return {sap.ui.core.HTML} <code>this</code> to facilitate method chaining
  * @public
  */
 sap.ui.core.HTML.prototype.setDOMContent = function(oDom) {
@@ -407,3 +406,7 @@ sap.ui.core.HTML.prototype.setTooltip = function(sTooltip) {
 	jQuery.sap.log.warning("The sap.ui.core.HTML control doesn't support tooltips. Add the tooltip to the HTML content instead.");
 	return sap.ui.core.Control.prototype.setTooltip.apply(this, arguments);
 };
+
+	return sap.ui.core.HTML;
+
+}, /* bExport = */ true);

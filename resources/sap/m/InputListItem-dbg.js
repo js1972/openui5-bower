@@ -35,7 +35,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -57,7 +57,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -125,6 +125,7 @@ sap.m.ListItemBase.extend("sap.m.InputListItem", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Content controls can be added
  * 
+ * <strong>Note</strong>: this is the default aggregation for InputListItem.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.m.InputListItem#getContent

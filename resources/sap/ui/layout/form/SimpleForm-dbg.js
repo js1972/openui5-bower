@@ -49,7 +49,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Element[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Element[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li></ul>
  * </li>
  * <li>Associations
@@ -69,7 +69,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -554,6 +554,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
  * new sap.ui.commons.TextView({text:"Weight 1",
  * layoutData: new sap.ui.layout.ResponsiveFlowLayoutData({weight:1})}),
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/SimpleForm.
  * @return {sap.ui.core.Element[]}
  * @public
  * @name sap.ui.layout.form.SimpleForm#getContent
@@ -645,7 +646,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.SimpleForm} <code>this</code> to allow method chaining
  * @public
  * @since 1.16.3
@@ -752,17 +753,10 @@ jQuery.sap.require("sap.ui.layout.ResponsiveFlowLayoutData"); // because Respons
 
 	sap.ui.layout.form.SimpleForm.prototype.setEditable = function(bEditable) {
 
-		var bOldEditable = this.getEditable();
 		this.setProperty("editable", bEditable, true);
 
-		if (bEditable != bOldEditable) {
-			var oForm = this.getAggregation("form");
-			if (this.getEditable()) {
-				oForm.addStyleClass("sapUiFormEdit sapUiFormEdit-CTX");
-			}else{
-				oForm.addStyleClass("");
-			}
-		}
+		var oForm = this.getAggregation("form");
+		oForm.setEditable(bEditable);
 
 	};
 

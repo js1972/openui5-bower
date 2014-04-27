@@ -63,7 +63,11 @@
 		font-size: 9pt;
 		position: fixed;
 		bottom: 1px;
-		left: 45%;
+		text-align: center;
+		width: 100%;
+	}
+	
+	#footer > span {
 		border: 1px solid #DDDDDD;
 		background-color: white;
 	}
@@ -118,7 +122,7 @@
 	<pre class="codeblock">
 &lt;script id="sap-ui-bootstrap"
    src="<a href="resources/sap-ui-core.js"><script>document.write(loc)</script>/resources/sap-ui-core.js</a>"
-   data-sap-ui-theme="sap_goldreflection"
+   data-sap-ui-theme="sap_bluecrystal"
    data-sap-ui-libs="sap.ui.commons"&gt;&lt;/script&gt;</pre>
 
 	<div id="resBrowser" style="display: none;"><p>The available resources (libraries, themes,...) can be inspected in the <a href="resources/">resource browser</a>.</div> 
@@ -134,7 +138,7 @@
   
     &lt;script id='sap-ui-bootstrap' 
         src='<a href="resources/sap-ui-core.js"><script>document.write(loc)</script>/resources/sap-ui-core.js</a>'  
-        data-sap-ui-theme='sap_goldreflection'  
+        data-sap-ui-theme='sap_bluecrystal'  
         data-sap-ui-libs='sap.ui.commons'&gt;&lt;/script&gt;   
   
 &lt;script&gt;  
@@ -157,13 +161,11 @@
 	that library can be loaded as follows (the example loads it from a folder relative to the application HTML page):
 	<pre class="codeblock">
 sap.ui.getCore().loadLibrary("sample.uilib", "resources/sample/uilib");
-var oExample = new sample.uilib.Example({text : "Hello SAPUI5", tooltip : "My Tooltip"});</pre>
+var oExample = new sample.uilib.Example({text : "Hello OpenUI5", tooltip : "My Tooltip"});</pre>
 	<p>
-	
-	<span id="Demokit" style="display:none;">For a more extensive introduction check the <a href=".">SAPUI5 Demokit</a>.</span>
 	
 	</div>
 	
-	<div id="footer"> &copy; 2009-2014 SAP AG. Do not distribute without permission.</div>
+	<div id="footer"><span> &copy; 2009-2014 SAP AG. Licensed under the Apache License, Version 2.0. </span></div>
 </body>
 </html>

@@ -194,7 +194,7 @@
     "sapUiTextSelection": "#ffffff",
     "sapUiTextfieldBackground": "#ffffff",
     "sapUiLineHeight": "21px",
-    "sapUiFontFamily": "Arial,Helvetica,sans-serif",
+    "sapUiFontFamily": "Arial, Helvetica, sans-serif",
     "sapUiFontMonospaceFamily": "Lucida Console",
     "sapUiFontSize": "medium",
     "sapUiFontLargeSize": "large",
@@ -279,11 +279,11 @@
     "sap.ui.commons.ListBox:sapUiListBoxBorderRadius": "0",
     "sap.ui.commons.Menu:sapUiMnuItmHeight": "20px",
     "sap.ui.commons.Panel:sapUiPanelBorderRadius": "0",
+    "sap.ui.commons.RatingIndicator:sapUiRatingSymbolHovered": "img/rating/star_hover.png",
     "sap.ui.commons.RatingIndicator:sapUiRatingSymbolSelected": "img/rating/star_selected.png",
     "sap.ui.commons.RatingIndicator:sapUiRatingSymbolUnselected": "img/rating/star_unselected.png",
-    "sap.ui.commons.RatingIndicator:sapUiRatingSymbolHovered": "img/rating/star_hover.png",
     "sap.ui.commons.TextField:sapUiTextFieldHeight": "16px",
-    "sap.ui.commons.ValueHelpField:sapUiValueHelpIconRegularUrl": "/img/valuehelpfield/F4-Help_icon_regular.png",
+    "sap.ui.commons.ValueHelpField:sapUiValueHelpIconDsblUrl": "/img/valuehelpfield/F4-Help_icon_dsbl.png",
     "sap.ui.commons.ValueHelpField:sapUiValueHelpIconHoverUrl": "/img/valuehelpfield/F4-Help_icon_hover.png",
-    "sap.ui.commons.ValueHelpField:sapUiValueHelpIconDsblUrl": "/img/valuehelpfield/F4-Help_icon_dsbl.png"
+    "sap.ui.commons.ValueHelpField:sapUiValueHelpIconRegularUrl": "/img/valuehelpfield/F4-Help_icon_regular.png"
 }

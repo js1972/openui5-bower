@@ -41,7 +41,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getNodes nodes} : sap.ui.commons.TreeNode[]</li></ul>
+ * <li>{@link #getNodes nodes} <strong>(default aggregation)</strong> : sap.ui.commons.TreeNode[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -294,6 +294,7 @@ sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
  * Getter for aggregation <code>nodes</code>.<br/>
  * First level nodes
  * 
+ * <strong>Note</strong>: this is the default aggregation for Tree.
  * @return {sap.ui.commons.TreeNode[]}
  * @public
  * @name sap.ui.commons.Tree#getNodes
@@ -420,7 +421,7 @@ sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Tree</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Tree</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Tree} <code>this</code> to allow method chaining
  * @public
@@ -701,7 +702,7 @@ sap.ui.commons.Tree.prototype.getLastSibling= function(oDomNode) {
  * @private
 */
 sap.ui.commons.Tree.prototype.getFirst = function() {
-	var aDomFirstNode		= jQuery.sap.byId(this.getId()).find(".sapUiTreeNode:visible").first();
+	var aDomFirstNode		= this.$().find(".sapUiTreeNode:visible").first();
 
 	if(aDomFirstNode.length){
 		return aDomFirstNode[0];
@@ -714,7 +715,7 @@ sap.ui.commons.Tree.prototype.getFirst = function() {
  * @private
 */
 sap.ui.commons.Tree.prototype.getLast = function() {
-	var aDomLastNode		= jQuery.sap.byId(this.getId()).find(".sapUiTreeNode:visible").last();
+	var aDomLastNode		= this.$().find(".sapUiTreeNode:visible").last();
 
 	if(aDomLastNode.length){
 		return aDomLastNode[0];
@@ -738,7 +739,7 @@ sap.ui.commons.Tree.prototype.moveFocus = function(bMoveUp){
 
 	   var oCurrNode = sap.ui.getCore().getControl(afocusedNodeDom[0].id)
 ;
-	   var aDomAllNodes = jQuery.sap.byId(this.getId()).find(".sapUiTreeNode:visible");
+	   var aDomAllNodes = this.$().find(".sapUiTreeNode:visible");
 	   var currIndex	= aDomAllNodes.index(afocusedNodeDom[0]);
 
 	   var nextIndex = currIndex;
@@ -768,12 +769,12 @@ sap.ui.commons.Tree.prototype.moveFocus = function(bMoveUp){
  */
 sap.ui.commons.Tree.prototype.adjustFocus = function(){
 
-	var oFocusableNode = jQuery.sap.byId(this.getId()).find('.sapUiTreeNode[tabIndex="0"]');
+	var oFocusableNode = this.$().find('.sapUiTreeNode[tabIndex="0"]');
 
 	if(!oFocusableNode.is(':visible')){
 
 
-		var aDomAllNodes		= jQuery.sap.byId(this.getId()).find(".sapUiTreeNode");
+		var aDomAllNodes		= this.$().find(".sapUiTreeNode");
 		var focusIndex			= aDomAllNodes.index(oFocusableNode[0]);
 		var aDomPrecedingNodes	= aDomAllNodes.filter(":lt("+focusIndex+")");
 		var aDomVisiblePrecedingNodes = aDomPrecedingNodes.filter(":visible");
@@ -799,7 +800,7 @@ sap.ui.commons.Tree.prototype.placeFocus = function(oDomTargetNode){
 		return; //No Target node provided!
 	}
 
-	var oDomfocusedNode	= jQuery.sap.byId(this.getId()).find(".sapUiTreeNode[tabIndex='0']");
+	var oDomfocusedNode	= this.$().find(".sapUiTreeNode[tabIndex='0']");
 	if(oDomfocusedNode.length){
 		oDomfocusedNode[0].setAttribute("tabindex", "-1");
 	}
@@ -968,7 +969,7 @@ sap.ui.commons.Tree.prototype.setSelection = function(oNode, bSuppressEvent){
  */
 sap.ui.commons.Tree.prototype.onAfterRendering = function () {
 	if (this.iOldScrollTop) {
-		jQuery.sap.byId(this.getId() + "-TreeCont").scrollTop(this.iOldScrollTop);
+		this.$("TreeCont").scrollTop(this.iOldScrollTop);
 	}
 };
 
@@ -976,5 +977,5 @@ sap.ui.commons.Tree.prototype.onAfterRendering = function () {
  * @private
  */
 sap.ui.commons.Tree.prototype.onBeforeRendering = function() {
-	this.iOldScrollTop = jQuery.sap.byId(this.getId() + "-TreeCont").scrollTop();
+	this.iOldScrollTop = this.$("TreeCont").scrollTop();
 };

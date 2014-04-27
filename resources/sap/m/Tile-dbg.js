@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -155,7 +155,7 @@ sap.m.Tile.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Tile</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Tile</code>.<br/> itself.
  *
  * @return {sap.m.Tile} <code>this</code> to allow method chaining
  * @public
@@ -201,7 +201,7 @@ sap.m.Tile.M_EVENTS = {'press':'press'};
  */
 sap.m.Tile.prototype.init = function() {
 	//keyboard support for desktop environments
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		var fnOnSpace = jQuery.proxy(function(oEvent) {
 			this.ontap();
 			//event should not trigger any further actions
@@ -269,7 +269,7 @@ sap.m.Tile.prototype.setSize = function(iWidth,iHeight){
  * Returns and optionally sets whether the tile is editable.
  * @param {boolean} optional The editable state of the tile.
  * @returns {boolean} whether the tile is editable
- * @see {TileContainer}
+ * @see {sap.m.TileContainer}
  * @private
  */
 sap.m.Tile.prototype.isEditable = function(bIsEditable) {
@@ -284,7 +284,7 @@ sap.m.Tile.prototype.isEditable = function(bIsEditable) {
  * Returns and optionally sets whether the tile is dragged and applies or removes the drag styles.
  * @param {boolean} optional The editable state of the tile.
  * @returns {boolean} whether the tile is dragged
- * @see {TileContainer}
+ * @see {sap.m.TileContainer}
  * @private
  */
 sap.m.Tile.prototype.isDragged = function(bIsDragged) {

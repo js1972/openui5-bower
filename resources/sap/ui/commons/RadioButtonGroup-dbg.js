@@ -41,7 +41,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.core.Item[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.core.Item[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -302,6 +302,7 @@ sap.ui.commons.RadioButtonGroup.M_EVENTS = {'select':'select'};
  * Getter for aggregation <code>items</code>.<br/>
  * RadioButtons of this RadioButtonGroup
  * 
+ * <strong>Note</strong>: this is the default aggregation for RadioButtonGroup.
  * @return {sap.ui.core.Item[]}
  * @public
  * @name sap.ui.commons.RadioButtonGroup#getItems
@@ -501,7 +502,7 @@ sap.ui.commons.RadioButtonGroup.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RadioButtonGroup</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.RadioButtonGroup</code>.<br/> itself.
  *
  * @return {sap.ui.commons.RadioButtonGroup} <code>this</code> to allow method chaining
  * @public
@@ -594,7 +595,7 @@ sap.ui.commons.RadioButtonGroup.prototype.onAfterRendering = function() {
 
 	// update ARIA information of RadioButtons
 	for(var i = 0; i < this.aRBs.length; i++){
-		jQuery.sap.byId(this.aRBs[i].getId()).attr("aria-posinset", i+1).attr("aria-setsize", this.aRBs.length);
+		this.aRBs[i].$().attr("aria-posinset", i+1).attr("aria-setsize", this.aRBs.length);
 	}
 };
 
@@ -612,7 +613,7 @@ sap.ui.commons.RadioButtonGroup.prototype.initItemNavigation = function(){
 	var bEnabled = false;
 	for (var i=0; i < this.aRBs.length; i++) {
 		aActiveItems[aDomRefs.length] = i;
-		aDomRefs.push(jQuery.sap.domById(this.aRBs[i].getId()));
+		aDomRefs.push(this.aRBs[i].getDomRef());
 		if (!bEnabled && this.aRBs[i].getEnabled()) {
 			// at least one RadioButton is enabled
 			bEnabled = true;

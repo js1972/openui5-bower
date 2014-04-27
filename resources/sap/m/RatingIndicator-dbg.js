@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -391,7 +391,7 @@ sap.m.RatingIndicator.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.RatingIndicator</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.RatingIndicator</code>.<br/> itself.
  *
  * @return {sap.m.RatingIndicator} <code>this</code> to allow method chaining
  * @public
@@ -455,7 +455,7 @@ sap.m.RatingIndicator.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.RatingIndicator</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.RatingIndicator</code>.<br/> itself.
  *
  * @return {sap.m.RatingIndicator} <code>this</code> to allow method chaining
  * @public
@@ -511,10 +511,12 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 /* =========================================================== */
 
 /**
- * Initializes the control
+ * Initializes the control.
+ *
  * @private
  */
 sap.m.RatingIndicator.prototype.init = function () {
+
 	// deactivate text selection on drag events
 	this.allowTextSelection(false);
 	this._iIconCounter = 0;
@@ -526,33 +528,37 @@ sap.m.RatingIndicator.prototype.init = function () {
 };
 
 /**
- * Sets the rating value. The method is automatically checking whether the value is in the valid range of 0-{maxValue} and if it is a valid number
- * @param {float} fValue the rating value to be set
- * @returns {this} an instance of the rating control for chaining
+ * Sets the rating value. The method is automatically checking whether the value is in the valid range of 0-{maxValue} and if it is a valid number.
+ *
+ * @param {float} fValue The rating value to be set.
+ * @returns {sap.m.RatingIndicator} Returns <code>this</code> to facilitate method chaining.
  * @overwrite
  * @public
  */
 sap.m.RatingIndicator.prototype.setValue = function (fValue) {
+
 	// do not set negative values (will be returned by calculation function if there is an error)
 	if (fValue < 0) {
 		return this;
 	}
+
 	// check for valid numbers
 	if (isNaN(fValue)) {
 		jQuery.sap.log.warning('Ignored new rating value "' + fValue + '" because it is NAN');
+
 	// check if the number is in the range 0-maxValue (only if control is rendered)
 	// if control is not rendered it is handled by onBeforeRendering()
-	} else if (jQuery.sap.byId(this.getId()).length && (fValue > this.getMaxValue())) {
+	} else if (this.$().length && (fValue > this.getMaxValue())) {
 		jQuery.sap.log.warning('Ignored new rating value "' + fValue + '" because it is out  of range (0-' + this.getMaxValue() + ')');
 	} else {
 		fValue = this._roundValueToVisualMode(fValue);
 		this.setProperty("value", fValue, true);
-		
+
 		// always set hover value to current value to allow keyboard / mouse / touch navigation
 		this._fHoverValue = fValue;
 
 		// if control is already rendered reflect the changes in the UI as well
-		if (jQuery.sap.byId(this.getId()).length) {
+		if (this.$().length) {
 			this._updateUI(fValue);
 		}
 	}
@@ -560,25 +566,30 @@ sap.m.RatingIndicator.prototype.setValue = function (fValue) {
 };
 
 /**
- * Sets the icon size value. The method is automatically updating the UI components if the control has been rendered before
- * @param {float} fValue the rating value to be set
- * @returns {this} an instance of the rating control for chaining
+ * Sets the icon size value. The method is automatically updating the UI components if the control has been rendered before.
+ *
+ * @param {float} sIconSize
+ * @returns {sap.m.RatingIndicator} Returns <code>this</code> to facilitate method chaining.
  * @overwrite
  * @public
  */
 sap.m.RatingIndicator.prototype.setIconSize = function (sIconSize) {
+
 	// if control is already rendered we calculate the new pixel values for the icon size once
-	if (jQuery.sap.byId(this.getId()).length) {
+	if (this.$().length) {
 		this._iPxIconSize = this._toPx(sIconSize) || 16;
 	}
+
 	// then update the property and rerender since updating all widths would be too complex here
 	this.setProperty("iconSize", sIconSize, false);
+	return this;
 };
 
 /**
- * Sets the selected icon without rerendering the control
- * @param {sap.ui.core/URI} fValue the rating value to be set
- * @returns {this} an instance of the rating control for chaining
+ * Sets the selected icon without rerendering the control.
+ *
+ * @param {sap.ui.core.URI} sURI
+ * @returns {sap.m.RatingIndicator} Returns <code>this</code> to facilitate method chaining.
  * @overwrite
  * @public
  */
@@ -591,13 +602,16 @@ sap.m.RatingIndicator.prototype.setIconSelected = function (sURI) {
 			oItems[i].setSrc(sURI);
 		}
 	}
-	this.setProperty("iconSelected", sURI, true);	
+
+	this.setProperty("iconSelected", sURI, true);
+	return this;
 };
 
 /**
- * Sets the unselected icon without rerendering the control
- * @param {sap.ui.core/URI} fValue the rating value to be set
- * @returns {this} an instance of the rating control for chaining
+ * Sets the unselected icon without rerendering the control.
+ *
+ * @param {sap.ui.core.URI} sURI
+ * @returns {sap.m.RatingIndicator} Returns <code>this</code> to facilitate method chaining.
  * @overwrite
  * @public
  */
@@ -610,13 +624,16 @@ sap.m.RatingIndicator.prototype.setIconUnselected = function (sURI) {
 			oItems[i].setSrc(sURI);
 		}
 	}
-	this.setProperty("iconUnselected", sURI, true);	
+
+	this.setProperty("iconUnselected", sURI, true);
+	return this;
 };
 
 /**
- * Sets the hovered icon without rerendering the control
- * @param {sap.ui.core/URI} fValue the rating value to be set
- * @returns {this} an instance of the rating control for chaining
+ * Sets the hovered icon without rerendering the control.
+ *
+ * @param {sap.ui.core.URI} sURI
+ * @returns {sap.m.RatingIndicator} Returns <code>this</code> to facilitate method chaining.
  * @overwrite
  * @public
  */
@@ -629,11 +646,14 @@ sap.m.RatingIndicator.prototype.setIconHovered = function (sURI) {
 			oItems[i].setSrc(sURI);
 		}
 	}
-	this.setProperty("iconHovered", sURI, true);	
+
+	this.setProperty("iconHovered", sURI, true);
+	return this;
 };
 
 /**
- * Called before rendering starts by the renderer to readjust values outside the range
+ * Called before rendering starts by the renderer to readjust values outside the range.
+ *
  * @private
  */
 sap.m.RatingIndicator.prototype.onBeforeRendering = function () {
@@ -647,12 +667,14 @@ sap.m.RatingIndicator.prototype.onBeforeRendering = function () {
 		this.setValue(0);
 		jQuery.sap.log.warning("Set value to 0 because value is < 0 (" + fVal + " < 0).");
 	}
+
 	this._iPxIconSize = this._toPx(this.getIconSize()) || 16;
 	this._iPxPaddingSize = this._toPx(sap.ui.core.theming.Parameters.get("sapUiRIIconPadding")) || 4;
 };
 
 /**
- * Destroys the control
+ * Destroys the control.
+ *
  * @private
  */
 sap.m.RatingIndicator.prototype.exit = function () {
@@ -680,23 +702,26 @@ sap.m.RatingIndicator.prototype._toPx = function (cssSize) {
 		scopeVal = scopeTest.width();
 		scopeTest.remove();
 	}
+
 	sap.m.RatingIndicator._pxCalculations[cssSize] = Math.round(scopeVal);
 	return sap.m.RatingIndicator._pxCalculations[cssSize];
 };
 
 /**
- * Updates the controls's interface to reflect a value change of the rating
+ * Updates the controls's interface to reflect a value change of the rating.
+ *
  * @param {float} fValue the rating value to be set
  * @param {boolean} bHover if this parameter is set to true, the hover mode is activated and the value is displayed with {iconHovered} instead of {iconSelected}
  * @private
  */
 sap.m.RatingIndicator.prototype._updateUI = function (fValue, bHover) {
-	// save a reference on all needed DOM elements
-	var $SelectedDiv = jQuery.sap.byId(this.getId() + "-sel"),
-		$UnselectedContainerDiv = jQuery.sap.byId(this.getId() + "-unsel-wrapper"),
-		$HoveredDiv = jQuery.sap.byId(this.getId() + "-hov"),
 
-		// calculate padding, size, and measurement 
+	// save a reference on all needed DOM elements
+	var $SelectedDiv = this.$("sel"),
+		$UnselectedContainerDiv = this.$("unsel-wrapper"),
+		$HoveredDiv = this.$("hov"),
+
+		// calculate padding, size, and measurement
 		fIconSize = this._iPxIconSize,
 		fIconPadding = this._iPxPaddingSize,
 		sIconSizeMeasure = "px",
@@ -709,8 +734,8 @@ sap.m.RatingIndicator.prototype._updateUI = function (fValue, bHover) {
 
 	// always set hover value to current value to allow keyboard / mouse / touch navigation
 	this._fHoverValue = fValue;
-	
-	if (iSelectedWidth < 0) { //width should not be negative
+
+	if (iSelectedWidth < 0) {	// width should not be negative
 		iSelectedWidth = 0;
 	}
 
@@ -732,12 +757,14 @@ sap.m.RatingIndicator.prototype._updateUI = function (fValue, bHover) {
 };
 
 /**
- * Load the icons/images of the rating for the different rating states
- * @param {integer} iState The icon to be returned (0 = {iconSelected},  1 = {iconUnseleced}, 2 = {iconHovered}
+ * Load the icons/images of the rating for the different rating states.
+ *
+ * @param {int} iState The icon to be returned (0 = {iconSelected},  1 = {iconUnseleced}, 2 = {iconHovered}
  * @returns {object} either an sap.m.Image or an sap.m.Icon depending on the URI of the control parameters
  * @private
  */
 sap.m.RatingIndicator.prototype._getIcon = function (iState) {
+
 	// single initialization
 	var oImage = null,
 		sURI = null;
@@ -772,7 +799,7 @@ sap.m.RatingIndicator.prototype._getIcon = function (iState) {
 		case 0: // Selected
 			this.addAggregation("_iconsSelected", oImage, true);
 			break;
-		}	
+		}
 	}
 
 	return oImage;
@@ -782,8 +809,8 @@ sap.m.RatingIndicator.prototype._getIcon = function (iState) {
  * Calculated the selected value based on the event position of the tap/move/click event.
  * This function is called by the event handlers to determine the {value} of the rating.
  *
- * @param {jQuery.EventObject} oEvent The event object passed to the event handler
- * @returns {float} the rounded rating value based on {visualMode}
+ * @param {jQuery.Event} oEvent The event object passed to the event handler.
+ * @returns {float} The rounded rating value based on {visualMode}.
  * @private
  */
 sap.m.RatingIndicator.prototype._calculateSelectedValue = function (oEvent) {
@@ -819,6 +846,7 @@ sap.m.RatingIndicator.prototype._calculateSelectedValue = function (oEvent) {
 	} else if ((oEventPosition.pageX - oControlRoot.offset().left) >  oControlRoot.innerWidth() - fControlPadding) {
 		selectedValue = this.getMaxValue();
 	} else {
+
 		// calculate the selected value based on the percentage value of the event position
 		percentageWidth = (oEventPosition.pageX - oControlRoot.offset().left - fControlPadding) / oControlRoot.width();
 		selectedValue = percentageWidth * this.getMaxValue();
@@ -838,8 +866,8 @@ sap.m.RatingIndicator.prototype._calculateSelectedValue = function (oEvent) {
  * - A value of "Full" will result in integer values.
  * - A value of "Half" will result in float values rounded to 0.5.
  *
- * @param {float} fValue the rating value
- * @returns {float} the rounded rating value
+ * @param {float} fValue The rating value.
+ * @returns {float} The rounded rating value.
  * @private
  */
 sap.m.RatingIndicator.prototype._roundValueToVisualMode = function (fValue, bInputMode) {
@@ -857,6 +885,7 @@ sap.m.RatingIndicator.prototype._roundValueToVisualMode = function (fValue, bInp
 			fValue = Math.round(fValue * 2) / 2;
 		}
 	}
+
 	return parseFloat(fValue);
 };
 
@@ -872,12 +901,15 @@ sap.m.RatingIndicator.prototype._roundValueToVisualMode = function (fValue, bInp
  * Handle the touch start event happening on the rating.
  * The UI will be updated accordingly to show a preview of the rating value without actually setting the value.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype.ontouchstart = function (oEvent) {
+
 	if (this.getEnabled()) {
-		oEvent.originalEvent._sapui_handledByControl = true;
+
+		// mark the event for components that needs to know if the event was handled by this Control
+		oEvent.setMarked();
 
 		if (!this._touchEndProxy) {
 			this._touchEndProxy = jQuery.proxy(this._ontouchend, this);
@@ -886,16 +918,11 @@ sap.m.RatingIndicator.prototype.ontouchstart = function (oEvent) {
 		if (!this._touchMoveProxy) {
 			this._touchMoveProxy = jQuery.proxy(this._ontouchmove, this);
 		}
-		
+
 		// here also bound to the mouseup mousemove event to enable it working in
 		// desktop browsers
-		if (jQuery.support.touch) {
-			jQuery(window.document).bind("touchend touchcancel", this._touchEndProxy);
-			jQuery(window.document).bind("touchmove", this._touchMoveProxy);
-		} else {
-			jQuery(window.document).bind("mouseup", this._touchEndProxy);
-			jQuery(window.document).bind("mousemove", this._touchMoveProxy);
-		}
+		jQuery(document).on("touchend touchcancel mouseup", this._touchEndProxy);
+		jQuery(document).on("touchmove mousemove", this._touchMoveProxy);
 
 		this._fStartValue = this.getValue();
 		var fValue = this._calculateSelectedValue(oEvent);
@@ -903,7 +930,7 @@ sap.m.RatingIndicator.prototype.ontouchstart = function (oEvent) {
 		if (fValue >= 0 && fValue <= this.getMaxValue()) {
 			this._updateUI(fValue, true);
 			if (this._fStartValue !== fValue) {	// if the value if not the same
-				this.fireLiveChange({value: fValue});
+				this.fireLiveChange({ value: fValue });
 			}
 		}
 	}
@@ -913,10 +940,18 @@ sap.m.RatingIndicator.prototype.ontouchstart = function (oEvent) {
  * Handle the touch move event on the rating.
  * The UI will be updated accordingly to show a preview of the rating value without actually setting the value.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype._ontouchmove = function (oEvent) {
+
+	if (oEvent.isMarked("delayedMouseEvent")) {
+		return;
+	}
+
+	// note: prevent native document scrolling
+	oEvent.preventDefault();
+
 	if (this.getEnabled()) {
 		var fValue = this._calculateSelectedValue(oEvent);
 
@@ -933,26 +968,27 @@ sap.m.RatingIndicator.prototype._ontouchmove = function (oEvent) {
  * Handle the touch end event on the rating.
  * A change event will be fired when the touch ends, the value will be set, and the UI will be updated accordingly.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype._ontouchend = function (oEvent) {
+
+	if (oEvent.isMarked("delayedMouseEvent")) {
+		return;
+	}
+
 	if (this.getEnabled()) {
 		var fValue = this._calculateSelectedValue(oEvent);
 		this.setProperty("value", fValue, true);
 		this._updateUI(fValue, false);
+
 		if (this._fStartValue !== fValue) {	// if the value if not the same
-			this.fireLiveChange({value: fValue});
-			this.fireChange({value: fValue});
+			this.fireLiveChange({ value: fValue });
+			this.fireChange({ value: fValue });
 		}
 
-		if (jQuery.support.touch) {
-			jQuery(window.document).unbind("touchend touchcancel", this._touchEndProxy);
-			jQuery(window.document).unbind("touchmove", this._touchMoveProxy);
-		} else {
-			jQuery(window.document).unbind("mouseup", this._touchEndProxy);
-			jQuery(window.document).unbind("mousemove", this._touchMoveProxy);
-		}
+		jQuery(document).off("touchend touchcancel mouseup", this._touchEndProxy);
+		jQuery(document).off("touchmove mousemove", this._touchMoveProxy);
 
 		// remove unused properties
 		delete this._fStartValue;
@@ -960,9 +996,9 @@ sap.m.RatingIndicator.prototype._ontouchend = function (oEvent) {
 };
 
 /**
- * Touch cancel event
+ * Handle the touch end event.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype.ontouchcancel = sap.m.RatingIndicator.prototype.ontouchend;
@@ -970,7 +1006,7 @@ sap.m.RatingIndicator.prototype.ontouchcancel = sap.m.RatingIndicator.prototype.
 /**
  * Keyboard navigation event when the user presses Arrow Right (Left in RTL case) or Arrow Up.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype.onsapincrease = function (oEvent) {
@@ -995,8 +1031,8 @@ sap.m.RatingIndicator.prototype.onsapincrease = function (oEvent) {
 	this.setValue(fValue);
 
 	if (fValue !== fOldValue) {
-		this.fireLiveChange({value: fValue});
-		this.fireChange({value: fValue});
+		this.fireLiveChange({ value: fValue });
+		this.fireChange({ value: fValue });
 	}
 
 	// stop browsers default behavior
@@ -1009,7 +1045,7 @@ sap.m.RatingIndicator.prototype.onsapincrease = function (oEvent) {
 /**
  * Keyboard navigation event when the user presses Arrow Left (Right in RTL case) or Arrow Down.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype.onsapdecrease = function (oEvent) {
@@ -1033,8 +1069,8 @@ sap.m.RatingIndicator.prototype.onsapdecrease = function (oEvent) {
 	this.setValue(fValue);
 
 	if (fValue !== fOldValue) {
-		this.fireLiveChange({value: fValue});
-		this.fireChange({value: fValue});
+		this.fireLiveChange({ value: fValue });
+		this.fireChange({ value: fValue });
 	}
 
 	// stop browsers default behavior
@@ -1061,8 +1097,8 @@ sap.m.RatingIndicator.prototype.onsaphome = function (oEvent) {
 	this.setValue(fValue);
 
 	if (fValue !== fOldValue) {
-		this.fireLiveChange({value: fValue});
-		this.fireChange({value: fValue});
+		this.fireLiveChange({ value: fValue });
+		this.fireChange({ value: fValue });
 	}
 
 	// stop browsers default behavior
@@ -1089,8 +1125,8 @@ sap.m.RatingIndicator.prototype.onsapend = function (oEvent) {
 	this.setValue(fValue);
 
 	if (fValue !== fOldValue) {
-		this.fireLiveChange({value: fValue});
-		this.fireChange({value: fValue});
+		this.fireLiveChange({ value: fValue });
+		this.fireChange({ value: fValue });
 	}
 
 	// stop browsers default behavior
@@ -1103,7 +1139,7 @@ sap.m.RatingIndicator.prototype.onsapend = function (oEvent) {
 /**
  * Keyboard navigation event when the user presses Enter or Space.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.RatingIndicator.prototype.onsapselect = function (oEvent) {
@@ -1130,8 +1166,8 @@ sap.m.RatingIndicator.prototype.onsapselect = function (oEvent) {
 	this.setValue(fValue);
 
 	if (fValue !== fOldValue) {
-		this.fireLiveChange({value: fValue});
-		this.fireChange({value: fValue});
+		this.fireLiveChange({ value: fValue });
+		this.fireChange({ value: fValue });
 	}
 
 	// stop browsers default behavior

@@ -3,5 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.base.Exception");
-sap.ui.base.Exception=function(m){this.name="Exception";this.message=m};
+sap.ui.define(['jquery.sap.global'],function(q){"use strict";var E=function(m){this.name="Exception";this.message=m};return E},true);

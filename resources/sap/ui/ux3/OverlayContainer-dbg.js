@@ -34,7 +34,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * @extends sap.ui.ux3.Overlay
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -96,6 +96,7 @@ sap.ui.ux3.Overlay.extend("sap.ui.ux3.OverlayContainer", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Aggregation for content
  * 
+ * <strong>Note</strong>: this is the default aggregation for OverlayContainer.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.ux3.OverlayContainer#getContent
@@ -180,11 +181,11 @@ sap.ui.ux3.Overlay.extend("sap.ui.ux3.OverlayContainer", { metadata : {
  * @private
  */
 sap.ui.ux3.OverlayContainer.prototype._setFocusLast = function() {
-	var oFocus = jQuery.sap.byId(this.getId()+"-content").lastFocusableDomRef();
+	var oFocus = this.$("content").lastFocusableDomRef();
 	if (!oFocus && this.getCloseButtonVisible()) {
-		oFocus = jQuery.sap.domById(this.getId()+"-close");
+		oFocus = this.getDomRef("close");
 	} else if (!oFocus && this.getOpenButtonVisible()) {
-		oFocus = jQuery.sap.domById(this.getId()+"-openNew");
+		oFocus = this.getDomRef("openNew");
 	}
 	jQuery.sap.focus(oFocus);
 };
@@ -196,10 +197,10 @@ sap.ui.ux3.OverlayContainer.prototype._setFocusLast = function() {
  */
 sap.ui.ux3.OverlayContainer.prototype._setFocusFirst = function() {
 	if (this.getOpenButtonVisible()) {
-		jQuery.sap.focus(jQuery.sap.domById(this.getId()+"-openNew"));
+		jQuery.sap.focus(this.getDomRef("openNew"));
 	} else if (this.getCloseButtonVisible()) {
-		jQuery.sap.focus(jQuery.sap.domById(this.getId()+"-close"));
+		jQuery.sap.focus(this.getDomRef("close"));
 	} else {
-		jQuery.sap.focus(jQuery.sap.byId(this.getId()+"-content").firstFocusableDomRef());
+		jQuery.sap.focus(this.$("content").firstFocusableDomRef());
 	}
 };

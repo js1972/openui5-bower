@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.mvc.JSView.
-jQuery.sap.declare("sap.ui.core.mvc.JSView");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.mvc.View");
+sap.ui.define(['sap/ui/core/library','./View'], function() {
+	"use strict";
 
 
 /**
@@ -55,7 +54,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -87,7 +86,7 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.JSView", { metadata : {
  */
 
 
-// Start of sap\ui\core\mvc\JSView.js
+// Start of sap/ui/core/mvc/JSView.js
 (function(){
 	var mRegistry = {};
 	/**
@@ -194,3 +193,7 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.JSView", { metadata : {
 	 */
 
 }());
+
+	return sap.ui.core.mvc.JSView;
+
+}, /* bExport = */ true);

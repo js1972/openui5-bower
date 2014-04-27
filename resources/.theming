@@ -10,5 +10,6 @@
   "sRuntimePathPattern" : "/%frameworkId%/%libId%/themes/%themeId%/%fileId%.css",
   "sRuntimeResourcePathPattern" : "%../%%frameworkId%/%libId%/themes/%themeId%",
   "sSourcePathPattern" : "/%frameworkId%/%libId%/themes/%themeId%/%fileId%.less",
-  "sVendor" : "SAP"
+  "sVendor" : "SAP",
+  "sCompiler" : "Less"
 }

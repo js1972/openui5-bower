@@ -96,10 +96,15 @@ sap.ui.commons.TextAreaRenderer.renderInnerContent = function(oRenderManager, oT
 	var rm = oRenderManager;
 
 	var sValue = oTextArea.getValue();
+	var sPlaceholder = oTextArea.getPlaceholder();
 
 	if(sValue.length > oTextArea.getMaxLength() && oTextArea.getMaxLength() > 0){
 		sValue = sValue.substring(0,oTextArea.getMaxLength());
 	}
 
-	rm.writeEscaped(sValue);
+	if (!sap.ui.Device.support.input.placeholder && sPlaceholder && !sValue) {
+		rm.writeEscaped(sPlaceholder);
+	} else {
+		rm.writeEscaped(sValue);
+	}
 };

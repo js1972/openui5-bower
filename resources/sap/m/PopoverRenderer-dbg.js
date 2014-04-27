@@ -30,8 +30,7 @@ sap.m.PopoverRenderer.render = function(rm, oControl){
 	//container
 	rm.write("<div");
 	rm.writeControlData(oControl);
-	rm.writeAttribute("tabIndex", "-1");
-	
+
 	aClassNames= this.generateRootClasses(oControl);
 	aClassNames.forEach(function(sClassName, index){
 		rm.addClass(sClassName);
@@ -42,6 +41,8 @@ sap.m.PopoverRenderer.render = function(rm, oControl){
 	if (sTooltip) {
 		rm.writeAttributeEscaped("title", sTooltip);
 	}
+	rm.writeAttribute("tabindex", "-1");
+
 	rm.write(">");
 
 	this.renderContent(rm, oControl);
@@ -85,12 +86,12 @@ sap.m.PopoverRenderer.renderContent = function(rm, oControl){
 		oHeaderControl = oControl._getAnyHeader();
 	}
 	
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		//Invisible element for cycling keyboard navigation
-		rm.write("<span id='" + oControl.getId() + "-firstfe' tabIndex='0'></span>");
+		rm.write("<span id='" + oControl.getId() + "-firstfe' tabindex='0'></span>");
 	}
 
-	if(!jQuery.os.ios && !sap.m.Popover._bOneDesign){
+	if(!sap.ui.Device.os.ios && !sap.m.Popover._bOneDesign){
 		//arrow
 		rm.write("<span");
 		rm.writeAttribute("id", sId+"-arrow");
@@ -140,7 +141,7 @@ sap.m.PopoverRenderer.renderContent = function(rm, oControl){
 		rm.renderControl(oFooter.addStyleClass(sFooterClass));
 	}//footer
 	
-	if(jQuery.os.ios || sap.m.Popover._bOneDesign){
+	if(sap.ui.Device.os.ios || sap.m.Popover._bOneDesign){
 		//arrow
 		rm.write("<span");
 		rm.writeAttribute("id", sId+"-arrow");
@@ -149,9 +150,9 @@ sap.m.PopoverRenderer.renderContent = function(rm, oControl){
 		rm.write("></span>");//arrow tip
 	}
 
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		//Invisible element for desktop keyboard navigation
-		rm.write("<span id='" + oControl.getId() + "-lastfe' tabIndex='0'></span>");
+		rm.write("<span id='" + oControl.getId() + "-lastfe' tabindex='0'></span>");
 	}
 };
 

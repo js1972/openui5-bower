@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -265,7 +265,7 @@ sap.ui.ux3.Notifier.M_EVENTS = {'messageSelected':'messageSelected'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Notifier</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Notifier</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Notifier} <code>this</code> to allow method chaining
  * @public
@@ -394,7 +394,7 @@ jQuery.sap.require("sap.ui.commons.Callout");
 			 * Since the arrow is set with another CSS technique the position
 			 * needs to be corrected as well
 			 */
-			var $arrow = jQuery.sap.byId(this.getId() + "-arrow");
+			var $arrow = this.$("arrow");
 			$arrow.css("bottom", "-24px");
 
 			/*

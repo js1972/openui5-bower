@@ -53,11 +53,12 @@ jQuery.sap.require("sap.m.ListBase");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * Table control provides a set of sophisticated and comfort functions for responsive table design.
+ * The Table control provides a set of sophisticated and convenience functions for responsive table design.
+ * For mobile devices, the recommended limit of table rows is 100(based on 4 columns) to assure proper performance. To improve initial rendering on large tables, use the "growing" feature. Please refer to the SAPUI5 Developer Guide for more information
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -210,8 +211,8 @@ sap.m.Table.prototype.init = function() {
 };
 
 sap.m.Table.prototype.onBeforeRendering = function() {
+	this._oItemsContainerDomRef && this._notifyColumns("ItemsRemoved");
 	sap.m.ListBase.prototype.onBeforeRendering.call(this);
-	this.getDomRef() && this._notifyColumns("ItemsRemoved");
 	this._navRenderedBy = "";
 };
 
@@ -261,6 +262,13 @@ sap.m.Table.prototype.selectAll = function () {
 	return this;
 };
 
+/**
+ * Getter for aggregation columns.
+ *
+ * @param {Boolean} [bSort] set true to get the columns in an order that respects personalization settings
+ * @returns {sap.m.Column[]} columns of the Table
+ * @public
+ */
 sap.m.Table.prototype.getColumns = function(bSort) {
 	var aColumns = this.getAggregation("columns", []);
 	if (bSort) {
@@ -292,25 +300,25 @@ sap.m.Table.prototype.onItemSetSelected = function(oItem, bSelect) {
 	});
 };
 
-/**
- * Handle pop-in touch events for active feedback
- */
+// Handle pop-in touch events for active feedback
 sap.m.Table.prototype.ontouchstart = function(oEvent) {
-	if (sap.m.ListBase.prototype.ontouchstart) {
-		sap.m.ListBase.prototype.ontouchstart.call(this, oEvent);
-	}
-	if (this._hasPopin) {
-		sap.m.ColumnListItem.handleEvents(oEvent, "touchstart", this.getDomRef());
-	}
+	sap.m.ListBase.prototype.ontouchstart.call(this, oEvent);
+	this._handlePopinEvent(oEvent);
 };
 
-/**
- * Handle pop-in touch events for active feedback
- */
+// Handle pop-in touch events for active feedback
+sap.m.Table.prototype.ontouchend = function(oEvent) {
+	this._handlePopinEvent(oEvent);
+};
+
+// Handle pop-in touch events for active feedback
+sap.m.Table.prototype.ontouchmove = function(oEvent) {
+	this._handlePopinEvent(oEvent);
+};
+
+// Handle pop-in touch events for active feedback
 sap.m.Table.prototype.ontap = function(oEvent) {
-	if (this._hasPopin) {
-		sap.m.ColumnListItem.handleEvents(oEvent, "tap", this.getDomRef());
-	}
+	this._handlePopinEvent(oEvent);
 };
 
 sap.m.Table.prototype.getTableDomRef = function() {
@@ -318,12 +326,12 @@ sap.m.Table.prototype.getTableDomRef = function() {
 };
 
 /*
- * Returns items container DOM reference
+ * Cache frequently used DOM references
  * @protected
  * @overwrite
  */
-sap.m.Table.prototype.getItemsContainerDomRef = function() {
-	return this.getDomRef("tblBody");
+sap.m.Table.prototype.cacheDomRefs = function() {
+	this._oItemsContainerDomRef = this.getDomRef("tblBody");
 };
 
 /*
@@ -333,7 +341,7 @@ sap.m.Table.prototype.getItemsContainerDomRef = function() {
 sap.m.Table.prototype.onColumnResize = function(oColumn) {
 	// if list did not have pop-in and will not have pop-in
 	// then we do not need re-render, we can just change display of column
-	if (!this._hasPopin && !this._mutex) {
+	if (!this.hasPopin() && !this._mutex) {
 		var hasPopin = this.getColumns().some(function(col) {
 			return col.isPopin();
 		});
@@ -369,7 +377,7 @@ sap.m.Table.prototype.onColumnResize = function(oColumn) {
  * @protected
  */
 sap.m.Table.prototype.setTableHeaderVisibility = function(bColVisible) {
-	if (!this.getDomRef()) {
+	if (!this._oItemsContainerDomRef) {
 		return;
 	}
 
@@ -402,6 +410,21 @@ sap.m.Table.prototype._notifyColumns = function(action, param) {
 	});
 };
 
+// pass pop-in events to ColumnListItem
+sap.m.Table.prototype._handlePopinEvent = function(oEvent, bRowOnly) {
+	if (oEvent.isMarked()) {
+		return;
+	}
+
+	if (bRowOnly && !sap.m.ColumnListItem.isPopinFocused()) {
+		return;
+	}
+
+	if (this.hasPopin()) {
+		sap.m.ColumnListItem.handleEvents(oEvent, this.getItemsContainerDomRef());
+	}
+};
+
 /**
  * This method takes care of the select all checkbox for table lists. It
  * will automatically be created on demand and returned when needed
@@ -430,19 +453,14 @@ sap.m.Table.prototype._getSelectAllCheckbox = function() {
 sap.m.Table.prototype.updateSelectAllCheckbox = function () {
 	// checks if the list is in multi select mode and has selectAll checkbox
 	if (this._selectAllCheckBox && this.getMode() === "MultiSelect") {
-		var items = this.getItems(),
-			selectableItemCount = items.length,
-			selectedItemCount = this.getSelectedItems().length;
-
-		// find selectable item count
-		items.forEach(function(oItem) {
-			if (!oItem.isSelectable()) {
-				selectableItemCount--;
-			}
-		});
+		var aItems = this.getItems(),
+			iSelectedItemCount = this.getSelectedItems().length,
+			iSelectableItemCount = aItems.filter(function(oItem) {
+				return oItem.isSelectable();
+			}).length;
 
 		// set state of the checkbox by comparing item length and selected item length
-		this._selectAllCheckBox.setSelected(!!items.length && selectedItemCount == selectableItemCount);
+		this._selectAllCheckBox.setSelected(aItems.length > 0 && iSelectedItemCount == iSelectableItemCount);
 	}
 };
 
@@ -486,4 +504,17 @@ sap.m.Table.prototype.onsapspace = function(oEvent) {
 		oEvent.preventDefault();
 		oEvent.setMarked();
 	}
+
+	// handle space event for pop-in
+	this._handlePopinEvent(oEvent, true);
+};
+
+// Handle enter event for pop-in
+sap.m.Table.prototype.onsapenter = function(oEvent) {
+	this._handlePopinEvent(oEvent, true);
+};
+
+// Handle delete event for pop-in
+sap.m.Table.prototype.onsapdelete = function(oEvent) {
+	this._handlePopinEvent(oEvent, true);
 };

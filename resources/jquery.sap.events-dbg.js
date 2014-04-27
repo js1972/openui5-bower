@@ -5,10 +5,9 @@
  */
 
 // Provides functionality related to eventing.
-jQuery.sap.declare("jquery.sap.events", false);
-jQuery.sap.require("jquery.sap.keycodes");
-
-(function() {
+sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
+	function(jQuery/* , jQuerySap1 */) {
+	"use strict";
 
 	jQuery.sap._touchToMouseEvent = true;
 
@@ -20,7 +19,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 		aMouseEvents,
 		bIsSimulatingTouchToMouseEvent = false;
 
-	if (!!sap.ui.Device.browser.webkit && /Mobile/.test(navigator.userAgent) && "ontouchend" in document) {
+	if (sap.ui.Device.browser.webkit && /Mobile/.test(navigator.userAgent) && sap.ui.Device.support.touch) {
 
 		bIsSimulatingTouchToMouseEvent = true;
 
@@ -232,6 +231,14 @@ jQuery.sap.require("jquery.sap.keycodes");
 		"paste",
 		"cut"
 	];
+
+	// touch events natively supported
+	if (sap.ui.Device.support.touch) {
+
+		// Define additional native events to be added to the event list.
+		// TODO: maybe add "gesturestart", "gesturechange", "gestureend" later?
+		jQuery.sap.ControlEvents.push("touchstart", "touchend", "touchmove", "touchcancel");
+	}
 
 	/**
 	 * Enumeration of all so called "pseudo events", a useful classification
@@ -717,10 +724,194 @@ jQuery.sap.require("jquery.sap.keycodes");
 	 */
 	var PSEUDO_EVENTS = ["sapdown", "sapdownmodifiers", "sapshow", "sapup", "sapupmodifiers", "saphide", "sapleft", "sapleftmodifiers", "sapright", "saprightmodifiers", "saphome", "saphomemodifiers", "saptop", "sapend", "sapendmodifiers", "sapbottom", "sappageup", "sappageupmodifiers", "sappagedown", "sappagedownmodifiers", "sapselect", "sapselectmodifiers", "sapspace", "sapspacemodifiers", "sapenter", "sapentermodifiers", "sapexpand", "sapbackspace", "sapbackspacemodifiers", "sapdelete", "sapdeletemodifiers", "sapexpandmodifiers", "sapcollapse", "sapcollapsemodifiers", "sapcollapseall", "sapescape", "saptabnext", "saptabprevious", "sapskipforward", "sapskipback", "sapprevious", "sappreviousmodifiers", "sapnext", "sapnextmodifiers", "sapdecrease", "sapdecreasemodifiers", "sapincrease", "sapincreasemodifiers", "sapdelayeddoubleclick"];
 
-	//Add mobile touch events if touch is supported or we run in special dev test mode
+	//Add mobile touch events if touch is supported
 	(function initTouchEventSupport() {
+		jQuery.sap.touchEventMode = "SIM";
 
-		function simulateMobileTouchEventSupport() {
+		var aAdditionalControlEvents = [];
+		var aAdditionalPseudoEvents = [];
+
+		if (sap.ui.Device.support.touch){ // touch events natively supported
+			jQuery.sap.touchEventMode = "ON";
+
+			// ensure that "oEvent.touches", ... works (and not only "oEvent.originalEvent.touches", ...)
+			jQuery.event.props.push("touches", "targetTouches", "changedTouches");
+		}
+
+		/**
+		 * This function adds the simulated event prefixed with string "sap" to jQuery.sap.ControlEvents.
+		 * 
+		 * When UIArea binds to the simulated event with prefix, it internally binds to the original events with the given handler and 
+		 * also provides the additional configuration data in the follwing format:
+		 * 
+		 * {
+		 * 	domRef: // the dom reference of the UIArea
+		 * 	eventName: // the simulated event name
+		 * 	sapEventName: // the simulated event name with sap prefix
+		 * 	eventHandle: // the handler that should be registered to simulated event with sap prefix
+		 * }
+		 * 
+		 * @param {string} sSimEventName The name of the simulated event
+		 * @param {array} aOrigEvents The array of original events that should be simulated from
+		 * @param {function} fnHandler The function which is bound to the original events
+		 * 
+		 * @private
+		 */
+		var createSimulatedEvent = function(sSimEventName, aOrigEvents, fnHandler) {
+			var sHandlerKey = "__"+sSimEventName+"Handler";
+			var sSapSimEventName = "sap"+sSimEventName;
+			aAdditionalControlEvents.push(sSapSimEventName);
+			aAdditionalPseudoEvents.push({sName: sSimEventName, aTypes: [sSapSimEventName], fnCheck: function (oEvent) { return true; }});
+
+			jQuery.event.special[sSapSimEventName] = {
+				// When binding to the simulated event with prefix is done through jQuery, this function is called and redirect the registration
+				// to the original events. Doing in this way we can simulate the event from listening to the original events.
+				add: function(oHandle) {
+					var that = this,
+						$this = jQuery(this),
+						oAdditionalConfig = {
+							domRef: that,
+							eventName: sSimEventName,
+							sapEventName: sSapSimEventName,
+							eventHandle: oHandle
+						};
+
+					var fnHandlerWrapper = function(oEvent){
+						fnHandler(oEvent, oAdditionalConfig);
+					};
+
+					$this.data(sHandlerKey + oHandle.guid, fnHandlerWrapper);
+					for(var i=0; i<aOrigEvents.length; i++){
+						$this.on(aOrigEvents[i], fnHandlerWrapper);
+					}
+				},
+
+				// When unbinding to the simulated event with prefix is done through jQuery, this function is called and redirect the deregistration
+				// to the original events.
+				remove: function(oHandle) {
+					var $this = jQuery(this);
+					var fnHandler = $this.data(sHandlerKey + oHandle.guid);
+					$this.removeData(sHandlerKey + oHandle.guid);
+					for(var i=0; i<aOrigEvents.length; i++){
+						jQuery.event.remove(this, aOrigEvents[i], fnHandler);
+					}
+				}
+			};
+		};
+
+		/**
+		 * This function simulates the corresponding touch event by listening to mouse event.
+		 * 
+		 * The simulated event will be dispatch through UI5 event delegation which means that the on"EventName" function is called
+		 * on control's prototype.
+		 * 
+		 * @param {jQuery.Event} oEvent The original event object
+		 * @param {object} oConfig Additional configuration passed from createSimulatedEvent function
+		 * @private
+		 */
+		var fnMouseToTouchHandler = function(oEvent, oConfig) {
+			var $DomRef = jQuery(oConfig.domRef);
+			// Suppress the delayed mouse events simulated on touch enabled device
+			// the mark is done within jquery-mobile-custom.js
+			if(oEvent.isMarked("delayedMouseEvent")){
+				return;
+			}
+
+			// Checks if the mouseout event should be handled, the mouseout of the inner dom shouldn't be handled when the mouse cursor
+			// is still inside the control's root dom node
+			if(!(oEvent.type != "mouseout" || (oEvent.type === "mouseout" && jQuery.sap.checkMouseEnterOrLeave(oEvent, oConfig.domRef)))){
+				var bSkip = true;
+				var sControlId = $DomRef.data("__touchstart_control");
+				if(sControlId){
+					var oCtrlDom = jQuery.sap.domById(sControlId);
+					if(oCtrlDom && jQuery.sap.checkMouseEnterOrLeave(oEvent, oCtrlDom)){
+						bSkip = false;
+					}
+				}
+				if(bSkip){
+					return;
+				}
+			}
+
+			var oNewEvent = jQuery.event.fix(oEvent.originalEvent || oEvent);
+			oNewEvent.type = oConfig.sapEventName;
+
+			//reset the _sapui_handledByUIArea flag
+			if (oNewEvent.isMarked("firstUIArea")) {
+				oNewEvent.setMark("handledByUIArea", false);
+			}
+
+			var aTouches = [{
+				identifier: 1,
+				pageX: oNewEvent.pageX,
+				pageY: oNewEvent.pageY,
+				clientX: oNewEvent.clientX,
+				clientY: oNewEvent.clientY,
+				screenX: oNewEvent.screenX,
+				screenY: oNewEvent.screenY,
+				target: oNewEvent.target,
+				radiusX: 1,
+				radiusY: 1,
+				rotationAngle: 0
+			}];
+
+			switch (oConfig.eventName) {
+				case "touchstart":
+				case "touchmove":
+					oNewEvent.touches = oNewEvent.changedTouches = oNewEvent.targetTouches = aTouches;
+					break;
+
+				case "touchend":
+					oNewEvent.changedTouches = aTouches;
+					oNewEvent.touches = oNewEvent.targetTouches = [];
+					break;
+				// no default
+			}
+
+			if(oConfig.eventName === "touchstart" || $DomRef.data("__touch_in_progress")){
+				$DomRef.data("__touch_in_progress", "X");
+				var oControl = jQuery.fn.control ? jQuery(oEvent.target).control(0) : null;
+				if(oControl){
+					$DomRef.data("__touchstart_control", oControl.getId());
+				}
+
+				// When saptouchend event is generated from mouseout event, it has to be marked for being correctly handled inside UIArea.
+				// for example, when sap.m.Image control is used inside sap.m.Button control, the following situation can happen:
+				// 	1. Mousedown on image.
+				// 	2. Keep mousedown and move mouse out of image.
+				// 	3. ontouchend function will be called on image control and bubbled up to button control
+				// 	4. However, the ontouchend function shouldn't be called on button.
+				//
+				// With this parameter, UIArea can check if the touchend is generated from mouseout event and check if the target is still
+				// inside the current target. Executing the corresponding logic only when the target is out of the current target.
+				if(oEvent.type === "mouseout"){
+					oNewEvent.setMarked("fromMouseout");
+				}
+				oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
+				// here the fromMouseout flag is checked, terminate the touch progress only when touchend event is not marked with fromMouseout.
+				if(oConfig.eventName === "touchend" && !oNewEvent.isMarked("fromMouseout")){
+					$DomRef.removeData("__touch_in_progress");
+					$DomRef.removeData("__touchstart_control");
+				}
+			}
+		};
+		createSimulatedEvent("touchstart", ["mousedown"], fnMouseToTouchHandler);
+		createSimulatedEvent("touchend", ["mouseup", "mouseout"], fnMouseToTouchHandler);
+		createSimulatedEvent("touchmove", ["mousemove"], fnMouseToTouchHandler);
+
+		/**
+		 * This methods decides when extra events are needed. Extra events are: tap, swipe and the new touch to mouse event simulation.
+		 * 
+		 * The old touch to mouse simulation is done in a way that a real mouse event is fired when there's a corresponding touch event. But this will mess up
+		 * the mouse to touch event simulation and is not consistent with the mouse to touch event simulation. That's why when certain condition is met, the old
+		 * touch to mouse event simluation will be replaced with the new touch to mouse event simulation.
+		 * 
+		 * The new one can't completely replace the old one because the desktop controls which bind to events using jQuery or browser API directly have to be change.
+		 * Then the new one can replace the old one completely not under certain condition anymore.
+		 * 
+		 * @private
+		 */
+		function needsExtraEventSupport(){
 			var oCfgData = window["sap-ui-config"] || {},
 				sLibs = oCfgData.libs || "";
 
@@ -730,131 +921,88 @@ jQuery.sap.require("jquery.sap.keycodes");
 					!!oCfgData[sKey.toLowerCase()]; // currently, properties of oCfgData are converted to lower case (DOM attributes)
 			}
 
-			return hasConfig("xx-test-mobile") || //see sap.ui.core.Configuration -> M_SETTINGS
+			return sap.ui.Device.support.touch || // tap, swipe, etc. events are needed when touch is supported
+				hasConfig("xx-test-mobile") || // see sap.ui.core.Configuration -> M_SETTINGS
 				// also simulate touch events when sap-ui-xx-fakeOS is set (independently of the value and the current browser)
 				hasConfig("xx-fakeOS") || 
 				// always simulate touch events when the mobile lib is involved (FIXME: hack for Kelley, this does currently not work with dynamic library loading)
 				sLibs.match(/sap.m\b/);
 		}
 
-		jQuery.sap.touchEventMode = "OFF";
-
-		var aAdditionalControlEvents = [];
-		var aAdditionalPseudoEvents = [];
-
-		if(sap.ui.Device.support.touch){ //Touch events natively supported
-			jQuery.sap.touchEventMode = "ON";
-
-			//ensure that "oEvent.touches", ... works (and not only "oEvent.originalEvent.touches", ...)
-			jQuery.event.props.push("touches", "targetTouches", "changedTouches");
-
-			//Define additional native events to be added to the event list
-			//TODO maybe add "gesturestart", "gesturechange", "gestureend" later ?
-			// IMPORTANT: update the public documentation when extending this list
-			aAdditionalControlEvents.push("touchstart", "touchend", "touchmove", "touchcancel");
-
-		}else if(simulateMobileTouchEventSupport()){ //Touch Simulation mode
-			jQuery.sap.touchEventMode = "SIM";
-			jQuery.sap.log.warning("MOBILE TOUCH EVENT TEST MODE ACTIVE", "", "jQuery.sap.events");
-
-			var createSimulatedTouch = function(sName, aOrigEvents) {
-				var sHandlerKey = "__"+sName+"Handler";
-				var sSapName = "sap"+sName;
-				aAdditionalControlEvents.push(sSapName);
-				aAdditionalPseudoEvents.push({sName: sName, aTypes: [sSapName], fnCheck: function (oEvent) { return true; }});
-
-				jQuery.event.special[sSapName] = {
-					add: function(oHandle) {
-						var that = this,
-						$this = jQuery(this);
-						var fHandler = function(oEvent) {
-							if(!(oEvent.type != "mouseout" || (oEvent.type === "mouseout" && jQuery.sap.checkMouseEnterOrLeave(oEvent, that)))){
-								var bSkip = true;
-								var sControlId = $this.data("__touchstart_control");
-								if(sControlId){
-									var oCtrlDom = jQuery.sap.domById(sControlId);
-									if(oCtrlDom && jQuery.sap.checkMouseEnterOrLeave(oEvent, oCtrlDom)){
-										bSkip = false;
-									}
-								}
-								if(bSkip){
-									return;
-								}
-							}
-							var oNewEvent = jQuery.event.fix(oEvent.originalEvent);
-							oNewEvent.type = sSapName;
-							//reset the _sapui_handledByUIArea flag
-							if (oNewEvent.originalEvent._sapui_firstUIArea) {
-								oNewEvent.originalEvent._sapui_handledByUIArea = false;
-							}
-
-							var aTouches = [{
-								identifier: 1,
-								pageX: oNewEvent.pageX,
-								pageY: oNewEvent.pageY,
-								clientX: oNewEvent.clientX,
-								clientY: oNewEvent.clientY,
-								screenX: oNewEvent.screenX,
-								screenY: oNewEvent.screenY,
-								target: oNewEvent.target,
-								radiusX: 1,
-								radiusY: 1,
-								rotationAngle: 0
-							}];
-
-							switch (sName) {
-								case "touchstart":
-								case "touchmove":
-									oNewEvent.touches = oNewEvent.changedTouches = oNewEvent.targetTouches = aTouches;
-									break;
-	
-								case "touchend":
-									oNewEvent.changedTouches = aTouches;
-									oNewEvent.touches = oNewEvent.targetTouches = [];
-									break;
-
-								// no default
-							}
-
-							if(sName === "touchstart" || $this.data("__touch_in_progress")){
-								$this.data("__touch_in_progress", "X");
-								var oControl = jQuery.fn.control ? jQuery(oEvent.target).control(0) : null;
-								if(oControl){
-									$this.data("__touchstart_control", oControl.getId());
-								}
-								oHandle.handler.call(that, oNewEvent);
-								if(sName === "touchend"){
-									$this.removeData("__touch_in_progress");
-									$this.removeData("__touchstart_control");
-								}
-							}
-						};
-						$this.data(sHandlerKey + oHandle.guid, fHandler);
-						for(var i=0; i<aOrigEvents.length; i++){
-							$this.bind(aOrigEvents[i], fHandler);
-						}
-					},
-					remove: function(oHandle) {
-						var $this = jQuery(this);
-						var fHandler = $this.data(sHandlerKey + oHandle.guid);
-						$this.removeData(sHandlerKey + oHandle.guid);
-						for(var i=0; i<aOrigEvents.length; i++){
-							jQuery.event.remove(this, aOrigEvents[i], fHandler);
-						}
-					}
-				};
-			};
-
-			createSimulatedTouch("touchstart", ["mousedown"]);
-			createSimulatedTouch("touchend", ["mouseup", "mouseout"]);
-			createSimulatedTouch("touchmove", ["mousemove"]);
-		}
-
-		if(jQuery.sap.touchEventMode != "OFF"){
+		// If extra event support is needed, jQuery mobile event plugin is loaded to support tap, swipe and scrollstart/stop events.
+		// The old touch to mouse event simulation ((see line 25 in this file)) will be deregistered and the new one will be active.
+		if(needsExtraEventSupport()){
 			jQuery.sap.require("sap.ui.thirdparty.jquery-mobile-custom");
 
-			//Define additional jQuery Mobile events to be added to the event list
-			//TODO taphold cannot be used (does not bubble / has no target property) -> Maybe provide own solution
+			if(sap.ui.Device.support.touch){
+				var bFingerIsMoved = false,
+					iMoveThreshold = jQuery.vmouse.moveDistanceThreshold,
+					iStartX, iStartY;
+
+				/**
+				 * This function simulates the corresponding mouse event by listening to touch event.
+				 * 
+				 * The simulated event will be dispatch through UI5 event delegation which means that the on"EventName" function is called
+				 * on control's prototype.
+				 * 
+				 * @param {jQuery.Event} oEvent The original event object
+				 * @param {object} oConfig Additional configuration passed from createSimulatedEvent function
+				 */
+				var fnTouchToMouseHandler = function(oEvent, oConfig) {
+					var oTouch = oEvent.originalEvent.touches[0];
+					if(oEvent.type === "touchstart"){
+						bFingerIsMoved = false;
+						iStartX = oTouch.pageX;
+						iStartY = oTouch.pageY;
+					}else if(oEvent.type === "touchmove"){
+						bFingerIsMoved = bFingerIsMoved ||
+									(Math.abs(oTouch.pageX - iStartX) > iMoveThreshold ||
+											Math.abs(oTouch.pageY - iStartY) > iMoveThreshold) ;
+					}
+
+					var oNewEvent = jQuery.event.fix(oEvent.originalEvent || oEvent);
+					oNewEvent.type = oConfig.sapEventName;
+					//reset the _sapui_handledByUIArea flag
+					if (oNewEvent.isMarked("firstUIArea")) {
+						oNewEvent.setMark("handledByUIArea", false);
+					}
+
+					delete oNewEvent.touches;
+					delete oNewEvent.changedTouches;
+					delete oNewEvent.targetTouches;
+
+					var oMappedEvent = (oConfig.eventName === "mouseup" ? oEvent.changedTouches[0] : oEvent.touches[0]);
+
+					//TODO: add other properties that should be copied to the new event
+					oNewEvent.screenX = oMappedEvent.screenX;
+					oNewEvent.screenY = oMappedEvent.screenY;
+					oNewEvent.clientX = oMappedEvent.clientX;
+					oNewEvent.clientY = oMappedEvent.clientY;
+					oNewEvent.ctrlKey = oMappedEvent.ctrlKey;
+					oNewEvent.altKey = oMappedEvent.altKey;
+					oNewEvent.shiftKey = oMappedEvent.shiftKey;
+
+					oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
+
+					// also call the onclick event handler when touchend event is received and the movement is within threshold
+					if(oEvent.type === "touchend" && !bFingerIsMoved){
+						oNewEvent.type = "click";
+						oNewEvent.setMark("handledByUIArea", false);
+						oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
+					}
+				};
+
+				// Deregister the previous touch to mouse event simulation (see line 25 in this file)
+				jQuery.sap.disableTouchToMouseHandling();
+				jQuery.sap._touchToMouseEvent = false;
+
+				createSimulatedEvent("mousedown", ["touchstart"], fnTouchToMouseHandler);
+				createSimulatedEvent("mousemove", ["touchmove"], fnTouchToMouseHandler);
+				createSimulatedEvent("mouseup", ["touchend", "touchcancel"], fnTouchToMouseHandler);
+			}
+
+			// Define additional jQuery Mobile events to be added to the event list
+			// TODO taphold cannot be used (does not bubble / has no target property) -> Maybe provide own solution
 			// IMPORTANT: update the public documentation when extending this list
 			aAdditionalControlEvents.push("swipe", "tap", "swipeleft", "swiperight", "scrollstart", "scrollstop");
 
@@ -867,14 +1015,27 @@ jQuery.sap.require("jquery.sap.keycodes");
 				var bRtl = sap.ui.getCore().getConfiguration().getRTL();
 				return (!bRtl && oEvent.type === "swiperight") || (bRtl && oEvent.type === "swipeleft");
 			}});
+		}
 
-			//Add all defined events to the event infrastructure
+		// Add all defined events to the event infrastructure
+		//
+		// jQuery has inversed the order of event registration when multiple events are passed into jQuery.on method from version 1.9.1.
+		//
+		// UIArea binds to both touchstart and saptouchstart event and saptouchstart internally also binds to touchstart event. Before
+		// jQuery version 1.9.1, the touchstart event handler is called before the saptouchstart event handler and our flags (e.g. _sapui_handledByUIArea)
+		// still work. However since the order of event registration is inversed from jQuery version 1.9.1, the saptouchstart event hanlder is called
+		// before the touchstart one, our flags don't work anymore.
+		//
+		// Therefore jQuery version needs to be checked in order to decide the event order in jQuery.sap.ControlEvents.
+		if(jQuery.sap.Version(jQuery.fn.jquery).compareTo("1.9.1") < 0){
 			jQuery.sap.ControlEvents = jQuery.sap.ControlEvents.concat(aAdditionalControlEvents);
+		}else{
+			jQuery.sap.ControlEvents = aAdditionalControlEvents.concat(jQuery.sap.ControlEvents);
+		}
 
-			for(var i=0; i<aAdditionalPseudoEvents.length; i++){
-				jQuery.sap.PseudoEvents[aAdditionalPseudoEvents[i].sName] = aAdditionalPseudoEvents[i];
-				PSEUDO_EVENTS.push(aAdditionalPseudoEvents[i].sName);
-			}
+		for(var i=0; i<aAdditionalPseudoEvents.length; i++){
+			jQuery.sap.PseudoEvents[aAdditionalPseudoEvents[i].sName] = aAdditionalPseudoEvents[i];
+			PSEUDO_EVENTS.push(aAdditionalPseudoEvents[i].sName);
 		}
 	}());
 
@@ -1000,7 +1161,7 @@ jQuery.sap.require("jquery.sap.keycodes");
 
 		if ( e.keyCode != 0 ) {
 			try { // Sometimes setting keycode results in "Access Denied"
-				if(!!!sap.ui.Device.browser.firefox) {
+				if(!sap.ui.Device.browser.firefox) {
 					e.keyCode = 0;
 				}
 			} catch(ex) {}
@@ -1139,39 +1300,51 @@ jQuery.sap.require("jquery.sap.keycodes");
 		if (bStopHandlers) {
 			this._bIsStopHandlers = true;
 		}
-		
 	};
 
 	/**
 	 * PRIVATE EXTENSION: check if the handler propagation has been stopped.
 	 *
-	 * @see sap.ui.core.Element.prototype._callEventHandles 
+	 * @see sap.ui.core.Element.prototype._callEventHandles
 	 */
 	jQuery.Event.prototype.isImmediateHandlerPropagationStopped = function() {
 		return !!this._bIsStopHandlers;
 	};
-	
+
 	/**
-	 * PRIVATE EXTENSION: jQuery.Event
+	 * Mark the event object for components that needs to know if the event was handled by a child component.
+	 * PRIVATE EXTENSION
 	 *
-	 * Mark the event for components that needs to know if the event was handled by the control
-	 * @param {String} [sKey=handledByControl]
+	 * @param {string} [sKey="handledByControl"]
+	 * @param {string} [vValue=true]
 	 */
-	jQuery.Event.prototype.setMarked = function(sKey) {
+	jQuery.Event.prototype.setMark = function(sKey, vValue) {
 		sKey = sKey || "handledByControl";
-		(this.originalEvent || {})["_sapui_" + sKey] = true;
+		vValue = arguments.length < 2 ? true : vValue;
+		(this.originalEvent || this)["_sapui_" + sKey] = vValue;
 	};
-	
+
 	/**
-	 * PRIVATE EXTENSION: jQuery.Event
+	 * Mark the event object for components that needs to know if the event was handled by a child component.
+	 * PRIVATE EXTENSION
 	 *
-	 * Check the event whether is marked by the child control or not
-	 * @param {String} [sKey=handledByControl]
-	 * @returns {Boolean}
+	 * @see jQuery.Event.prototype.setMark
+	 * @param {string} [sKey="handledByControl"]
+	 */
+	jQuery.Event.prototype.setMarked = jQuery.Event.prototype.setMark;
+
+	/**
+	 * Check whether the event object is marked by the child component or not.
+	 * PRIVATE EXTENSION
+	 *
+	 * @param {string} [sKey="handledByControl"]
+	 * @returns {boolean}
 	 */
 	jQuery.Event.prototype.isMarked = function(sKey) {
 		sKey = sKey || "handledByControl";
-		return !!(this.originalEvent || {})["_sapui_" + sKey];
+		return !!(this.originalEvent || this)["_sapui_" + sKey];
 	};
 
-}());
+	return jQuery;
+
+}, /* bExport= */ false);

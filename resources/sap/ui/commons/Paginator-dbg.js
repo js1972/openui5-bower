@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -98,7 +98,7 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
 
 /**
  * Getter for property <code>currentPage</code>.
- * Represents the current page
+ * Represents the current page (first page has index 1, not 0, to match the visual number)
  *
  * Default value is <code>1</code>
  *
@@ -156,7 +156,9 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
  * @param {object} oControlEvent.getParameters
 
  * @param {int} oControlEvent.getParameters.srcPage The page which is the current one before the page event is fired (and another page is displayed)
- * @param {int} oControlEvent.getParameters.targetPage The page that shall be displayed next after the page event is fired
+ * @param {int} oControlEvent.getParameters.targetPage The page that shall be displayed next after the page event is fired.
+
+The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.
  * @param {sap.ui.commons.PaginatorEvent} oControlEvent.getParameters.type Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application 
 					how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly 
 					selected
@@ -175,7 +177,7 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Paginator</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Paginator</code>.<br/> itself.
  *
  * @return {sap.ui.commons.Paginator} <code>this</code> to allow method chaining
  * @public
@@ -204,7 +206,9 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
  * Expects following event parameters:
  * <ul>
  * <li>'srcPage' of type <code>int</code> The page which is the current one before the page event is fired (and another page is displayed)</li>
- * <li>'targetPage' of type <code>int</code> The page that shall be displayed next after the page event is fired</li>
+ * <li>'targetPage' of type <code>int</code> The page that shall be displayed next after the page event is fired.
+
+The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.</li>
  * <li>'type' of type <code>sap.ui.commons.PaginatorEvent</code> Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application 
 					how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly 
 					selected</li>
@@ -239,7 +243,7 @@ sap.ui.commons.Paginator.prototype.init = function(){
 
 
 /**
- * When the user clicks on a page link, we set the current page which will force a re-rendering of the control
+ * When the user clicks on a page link, we navigae to that page, either with animation or with rerendering
  * @param {jQuery.Event} oEvent The current event
  * @private
  */
@@ -375,7 +379,7 @@ sap.ui.commons.Paginator.prototype.triggerPaginatorAnimation = function() {
 	var focElem = document.activeElement;
 	var focId = focElem ? focElem.id : undefined; // remember ID of focused element - it should still be focused after rendering
 	
-	jQuery.sap.domById(this.getId() + "-pages").innerHTML = newHtml;
+	this.getDomRef("pages").innerHTML = newHtml;
 	
 	// restore focus
 	if (focId) {
@@ -506,7 +510,7 @@ sap.ui.commons.Paginator.prototype.onkeydown = function(oEvent){
  */
 sap.ui.commons.Paginator.prototype.triggerInternalNavigation = function(oEvent,sDirection){
 
-	var aFocusableElements = jQuery(jQuery.sap.domById(this.getId())).find(":sapFocusable");
+	var aFocusableElements = jQuery(this.getDomRef()).find(":sapFocusable");
 	var iCurrentIndex = jQuery(aFocusableElements).index(oEvent.target);
 
 	//Right key pressed
@@ -547,7 +551,7 @@ sap.ui.commons.Paginator.prototype.triggerInternalNavigation = function(oEvent,s
 sap.ui.commons.Paginator.prototype.triggerTabbingNavigation = function(oEvent,shiftKeyPressed){
 
 	//Get all focusable elements
-	var aFocusableElements = jQuery(jQuery.sap.domById(this.getId())).find(":sapFocusable");
+	var aFocusableElements = jQuery(this.getDomRef()).find(":sapFocusable");
 
 	//Tabbing --> Focus the last active element then let the browser focus the next active element
 	if (!shiftKeyPressed){

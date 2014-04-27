@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -297,9 +297,9 @@ sap.ui.commons.ProgressIndicator.prototype.setEndBar = function () {
 	var sBarColor = this.getBarColor();
 	var time;
 
-	this.oBar  = jQuery.sap.domById(this.getId() + '-bar');
-	this.oEnd  = jQuery.sap.domById(this.getId() + '-end');
-	this.oBox  = jQuery.sap.domById(this.getId() + '-box');
+	this.oBar  = this.getDomRef("bar");
+	this.oEnd  = this.getDomRef("end");
+	this.oBox  = this.getDomRef("box");
 
 	jQuery(this.oEnd).removeClass('sapUiProgIndEndHidden');
 
@@ -346,7 +346,7 @@ sap.ui.commons.ProgressIndicator.prototype.setEndBar = function () {
 
 	jQuery(this.oBar).animate({width: widthBar + '%'}, time, 'linear');
 	if(!this.oThis){
-		this.oThis = jQuery.sap.byId(this.getId());
+		this.oThis = this.$();
 	}
 	this.oThis.attr('aria-valuenow', widthBar + '%');
 
@@ -359,9 +359,9 @@ sap.ui.commons.ProgressIndicator.prototype.setEndBarGoesBack = function (iPercen
 	var sBarColor = this.getBarColor();
 	var time;
 
-	this.oBar  = jQuery.sap.domById(this.getId() + '-bar');
-	this.oEnd  = jQuery.sap.domById(this.getId() + '-end');
-	this.oBox  = jQuery.sap.domById(this.getId() + '-box');
+	this.oBar  = this.getDomRef("bar");
+	this.oEnd  = this.getDomRef("end");
+	this.oBox  = this.getDomRef("box");
 
 	if (iPercentValue > 100) {
 		widthBorder = (10000 / iPercentValue) + '%';
@@ -408,7 +408,7 @@ sap.ui.commons.ProgressIndicator.prototype.setEndBarGoesBack = function (iPercen
 
 	jQuery(this.oBar).animate({width: widthBar + '%'}, time, 'linear');
 	if(!this.oThis){
-		this.oThis = jQuery.sap.byId(this.getId());
+		this.oThis = this.$();
 	}
 	this.oThis.attr('aria-valuenow', widthBar + '%');
 
@@ -428,9 +428,9 @@ sap.ui.commons.ProgressIndicator.prototype.setPercentValue = function(iPercentVa
 	var widthBorder;
 	var sBarColor = this.getBarColor();
 
-	this.oBar  = jQuery.sap.domById(this.getId() + '-bar');
-	this.oEnd  = jQuery.sap.domById(this.getId() + '-end');
-	this.oBox  = jQuery.sap.domById(this.getId() + '-box');
+	this.oBar  = this.getDomRef("bar");
+	this.oEnd  = this.getDomRef("end");
+	this.oBox  = this.getDomRef("box");
 
 	var that = this;
 	var time;
@@ -489,7 +489,7 @@ sap.ui.commons.ProgressIndicator.prototype.setPercentValue = function(iPercentVa
 		jQuery(this.oBar).animate({width: iPercentValue + '%'}, time, 'linear', function() {
 		});
 		if(!this.oThis){
-			this.oThis = jQuery.sap.byId(this.getId());
+			this.oThis = this.$();
 		}
 		this.oThis.attr('aria-valuenow', iPercentValue + '%');
 	}
@@ -503,7 +503,7 @@ sap.ui.commons.ProgressIndicator.prototype.setPercentValue = function(iPercentVa
 		this.setProperty( 'percentValue', iPercentValue, true ); // Do not render complete control again
 		jQuery(this.oBar).animate({width: iPercentValue + '%'}, time, 'linear');
 		if(!this.oThis){
-			this.oThis = jQuery.sap.byId(this.getId());
+			this.oThis = this.$();
 		}
 		this.oThis.attr('aria-valuenow', iPercentValue + '%');
 	}

@@ -3,6 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.model.ParseException");jQuery.sap.require("sap.ui.base.Exception");
-sap.ui.model.ParseException=function(m){this.name="ParseException";this.message=m};
-sap.ui.model.ParseException.prototype=jQuery.sap.newObject(sap.ui.base.Exception.prototype);
+sap.ui.define(['jquery.sap.global','sap/ui/base/Exception'],function(q,E){"use strict";var P=function(m){this.name="ParseException";this.message=m};P.prototype=q.sap.newObject(E.prototype);return P},true);

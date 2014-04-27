@@ -33,7 +33,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <ul>
  * <li>{@link #getThumbnailSrc thumbnailSrc} : sap.ui.core.URI</li>
  * <li>{@link #getText text} : string</li>
- * <li>{@link #getType type} : sap.ui.ux3.FeederType (default: sap.ui.ux3.FeederType.Large)</li></ul>
+ * <li>{@link #getType type} : sap.ui.ux3.FeederType (default: sap.ui.ux3.FeederType.Large)</li>
+ * <li>{@link #getPlaceholderText placeholderText} : string</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -57,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -74,7 +75,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.Feeder", { metadata : {
 	properties : {
 		"thumbnailSrc" : {type : "sap.ui.core.URI", group : "Data", defaultValue : null},
 		"text" : {type : "string", group : "Data", defaultValue : null},
-		"type" : {type : "sap.ui.ux3.FeederType", group : "Appearance", defaultValue : sap.ui.ux3.FeederType.Large}
+		"type" : {type : "sap.ui.ux3.FeederType", group : "Appearance", defaultValue : sap.ui.ux3.FeederType.Large},
+		"placeholderText" : {type : "string", group : "Appearance", defaultValue : null}
 	},
 	events : {
 		"submit" : {}
@@ -178,6 +180,31 @@ sap.ui.ux3.Feeder.M_EVENTS = {'submit':'submit'};
 
 
 /**
+ * Getter for property <code>placeholderText</code>.
+ * This property could be used for costum placeholder. If it is not set, the default text is used.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string} the value of property <code>placeholderText</code>
+ * @public
+ * @name sap.ui.ux3.Feeder#getPlaceholderText
+ * @function
+ */
+
+/**
+ * Setter for property <code>placeholderText</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string} sPlaceholderText  new value for property <code>placeholderText</code>
+ * @return {sap.ui.ux3.Feeder} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.ux3.Feeder#setPlaceholderText
+ * @function
+ */
+
+
+/**
  * Event is fired when the entered text is submitted 
  *
  * @name sap.ui.ux3.Feeder#submit
@@ -202,7 +229,7 @@ sap.ui.ux3.Feeder.M_EVENTS = {'submit':'submit'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Feeder</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.Feeder</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.Feeder} <code>this</code> to allow method chaining
  * @public
@@ -286,7 +313,7 @@ sap.ui.ux3.Feeder.prototype.exit = function(){
  * @private
  */
 sap.ui.ux3.Feeder.prototype.onAfterRendering = function () {
-	this.oInput = jQuery.sap.byId(this.getId()+"-input");
+	this.oInput = this.$("input");
 };
 
 /**
@@ -345,7 +372,7 @@ sap.ui.ux3.Feeder.prototype.onfocusout = function(oEvent){
 
 // overrides sap.ui.core.Element.getFocusDomRef()
 sap.ui.ux3.Feeder.prototype.getFocusDomRef = function(){
-	return jQuery.sap.domById(this.getId() + "-input");
+	return this.getDomRef("input");
 };
 
 /**

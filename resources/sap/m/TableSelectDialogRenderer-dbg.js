@@ -18,5 +18,5 @@ sap.m.TableSelectDialogRenderer = {
  * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
-sap.m.TableSelectDialog.render = function (oRm, oControl) {
+sap.m.TableSelectDialogRenderer.render = function (oRm, oControl) {
 };

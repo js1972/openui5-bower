@@ -107,15 +107,15 @@ sap.ui.commons.TextViewRenderer.render = function(oRenderManager, oTextView) {
 	}
 
 	// Appearance
-	var oTextDir = oTextView.getTextDirection();
-	if(oTextDir) {
-		rm.writeAttribute("dir", oTextDir);
+	var sTextDir = oTextView.getTextDirection();
+	if (sTextDir) {
+		rm.addStyle("direction", sTextDir.toLowerCase());
 	}
 
 	var oTextAlign = oTextView.getTextAlign();
 	if(oTextAlign) {
 		// use class because it's easier to overwrite
-		var sAlign = r.getTextAlign(oTextAlign, oTextDir);
+		var sAlign = r.getTextAlign(oTextAlign, sTextDir);
 		sAlign = sAlign.charAt(0).toUpperCase() + sAlign.substring(1);
 		rm.addClass("sapUiTvAlign"+sAlign);
 	}

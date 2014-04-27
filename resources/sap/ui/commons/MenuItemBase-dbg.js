@@ -37,7 +37,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSubmenu submenu} : sap.ui.commons.Menu</li></ul>
+ * <li>{@link #getSubmenu submenu} <strong>(default aggregation)</strong> : sap.ui.commons.Menu</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -191,6 +191,7 @@ sap.ui.commons.MenuItemBase.M_EVENTS = {'select':'select'};
  * Getter for aggregation <code>submenu</code>.<br/>
  * Aggregation of a menu item's sub menu.
  * 
+ * <strong>Note</strong>: this is the default aggregation for MenuItemBase.
  * @return {sap.ui.commons.Menu}
  * @public
  * @name sap.ui.commons.MenuItemBase#getSubmenu
@@ -200,7 +201,7 @@ sap.ui.commons.MenuItemBase.M_EVENTS = {'select':'select'};
 
 /**
  * Setter for the aggregated <code>submenu</code>.
- * @param oSubmenu {sap.ui.commons.Menu}
+ * @param {sap.ui.commons.Menu} oSubmenu
  * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.MenuItemBase#setSubmenu
@@ -247,7 +248,7 @@ sap.ui.commons.MenuItemBase.M_EVENTS = {'select':'select'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.MenuItemBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.MenuItemBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
  * @public
@@ -309,7 +310,7 @@ sap.ui.commons.MenuItemBase.prototype.render = function(oRenderManager, oItem, o
  */
 sap.ui.commons.MenuItemBase.prototype.hover = function(bHovered, oMenu){
 	// Subclasses have to override this
-	jQuery.sap.byId(this.getId()+"-txt").attr("style", bHovered ? "white-space:nowrap;display:inline-block;padding:1px;color:red;" : "white-space:nowrap;display:inline-block;padding:1px;color:black;");
+	this.$("txt").attr("style", bHovered ? "white-space:nowrap;display:inline-block;padding:1px;color:red;" : "white-space:nowrap;display:inline-block;padding:1px;color:black;");
 };
 
 

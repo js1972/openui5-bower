@@ -5,73 +5,81 @@
  */
 
 // Provides enumeration sap.ui.model.FilterOperator
-jQuery.sap.declare("sap.ui.model.FilterOperator");
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
-/**
-* @class
-* Operators for the Filter.
-*
-* @static
-* @public
-*/
-sap.ui.model.FilterOperator = {
-		/**
-		 * FilterOperator equals
-		 * @public
-		 */
-		EQ: "EQ",
 
-		/**
-		 * FilterOperator not equals
-		 * @public
-		 */
-		NE: "NE",
+	/**
+	* @class
+	* Operators for the Filter.
+	*
+	* @static
+	* @public
+	* @name sap.ui.model.FilterOperator
+	*/
+	var FilterOperator = {
+			/**
+			 * FilterOperator equals
+			 * @public
+			 */
+			EQ: "EQ",
+	
+			/**
+			 * FilterOperator not equals
+			 * @public
+			 */
+			NE: "NE",
+	
+			/**
+			 * FilterOperator less than
+			 * @public
+			 */
+			LT: "LT",
+	
+			/**
+			 * FilterOperator less or equals
+			 * @public
+			 */
+			LE: "LE",
+	
+			/**
+			 * FilterOperator greater than
+			 * @public
+			 */
+			GT: "GT",
+	
+			/**
+			 * FilterOperator greater or equals
+			 * @public
+			 */
+			GE: "GE",
+	
+			/**
+			 * FilterOperator between
+			 * @public
+			 */
+			BT: "BT",
+	
+			/**
+			 * FilterOperator contains
+			 * @public
+			 */
+			Contains: "Contains",
+	
+			/**
+			 * FilterOperator starts with
+			 * @public
+			 */
+			StartsWith: "StartsWith",
+	
+			/**
+			 * FilterOperator ends with
+			 * @public
+			 */
+			EndsWith: "EndsWith"
+	};
 
-		/**
-		 * FilterOperator less than
-		 * @public
-		 */
-		LT: "LT",
+	return FilterOperator;
 
-		/**
-		 * FilterOperator less or equals
-		 * @public
-		 */
-		LE: "LE",
-
-		/**
-		 * FilterOperator greater than
-		 * @public
-		 */
-		GT: "GT",
-
-		/**
-		 * FilterOperator greater or equals
-		 * @public
-		 */
-		GE: "GE",
-
-		/**
-		 * FilterOperator between
-		 * @public
-		 */
-		BT: "BT",
-
-		/**
-		 * FilterOperator contains
-		 * @public
-		 */
-		Contains: "Contains",
-
-		/**
-		 * FilterOperator starts with
-		 * @public
-		 */
-		StartsWith: "StartsWith",
-
-		/**
-		 * FilterOperator ends with
-		 * @public
-		 */
-		EndsWith: "EndsWith"
-};
+}, /* bExport= */ true);

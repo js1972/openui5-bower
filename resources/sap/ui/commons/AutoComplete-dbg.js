@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -159,7 +159,7 @@ sap.ui.commons.AutoComplete.M_EVENTS = {'suggest':'suggest'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.AutoComplete</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.AutoComplete</code>.<br/> itself.
  *
  * @return {sap.ui.commons.AutoComplete} <code>this</code> to allow method chaining
  * @public
@@ -262,9 +262,17 @@ sap.ui.commons.AutoComplete.prototype.onkeypress = function(oEvent) {
 	}
 };
 
+sap.ui.commons.AutoComplete.prototype.onfocusin = function(oEvent) {
+
+	if(!this.$().hasClass("sapUiTfFoc")){
+		// if already focused do not execute again. (e.g. while changing suggestion list)
+		sap.ui.commons.ComboBox.prototype.onfocusin.apply(this, arguments);
+	}
+
+};
 
 (function(){
-	
+
 function getAriaDescribedBy(oAuto, bIncludeInfo){
 	var aDescBy = oAuto.getAriaDescribedBy();
 	var sDescBy = "";
@@ -274,11 +282,11 @@ function getAriaDescribedBy(oAuto, bIncludeInfo){
 			sDescBy += " ";
 		}
 	}
-	
+
 	if(bIncludeInfo){
 		sDescBy += " " + oAuto.getId() + "-ariaLbl";
 	}
-	
+
 	return sDescBy;
 };
 
@@ -286,7 +294,7 @@ function getAriaDescribedBy(oAuto, bIncludeInfo){
 function updateOnClose(oAuto){
 	var $input = jQuery(oAuto.getInputDomRef());
 	var sDescBy = getAriaDescribedBy(oAuto, false);
-	
+
 	if(sDescBy.length > 0){
 		$input.attr("aria-describedby", sDescBy);
 	}else{

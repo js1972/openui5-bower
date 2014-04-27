@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.LayoutData.
-jQuery.sap.declare("sap.ui.core.LayoutData");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['./library','./Element'], function() {
+	"use strict";
 
 
 /**
@@ -55,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -88,7 +87,7 @@ sap.ui.core.Element.extend("sap.ui.core.LayoutData", { metadata : {
  */
 
 
-// Start of sap\ui\core\LayoutData.js
+// Start of sap/ui/core/LayoutData.js
 sap.ui.core.LayoutData.prototype.invalidate = function() {
 	//No call of Element.invalidate to avoid bubbling of invalidate
 	var oParent = this.getParent();
@@ -114,3 +113,7 @@ sap.ui.core.LayoutData.prototype.setLayoutData = function(oLayoutData) {
 	return this;
 
 };
+
+	return sap.ui.core.LayoutData;
+
+}, /* bExport = */ true);

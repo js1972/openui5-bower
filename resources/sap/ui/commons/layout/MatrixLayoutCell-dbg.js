@@ -41,7 +41,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author d029921 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -316,6 +316,7 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.MatrixLayoutCell", { metadata 
  * 
  * If the matrix row has a defined height and the matrix has layoutFixed = true, the controls inside of a cell should all use the same unit for its height property.
  * 
+ * <strong>Note</strong>: this is the default aggregation for layout/MatrixLayoutCell.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.commons.layout.MatrixLayoutCell#getContent

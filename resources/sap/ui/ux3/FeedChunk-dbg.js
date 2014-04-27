@@ -82,7 +82,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -790,7 +790,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -849,7 +849,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -913,7 +913,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -976,7 +976,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1035,7 +1035,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1099,7 +1099,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1162,7 +1162,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1221,7 +1221,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1286,7 +1286,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.FeedChunk</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @public
@@ -1401,10 +1401,10 @@ sap.ui.ux3.FeedChunk.prototype.exit = function(){
 sap.ui.ux3.FeedChunk.prototype.onAfterRendering = function(){
 
 	// if text is cut show expand button
-	this.oText = jQuery.sap.byId(this.getId()).children(".sapUiFeedChunkText").get(0);
+	this.oText = this.$().children(".sapUiFeedChunkText").get(0);
 	if (this.oText.clientHeight < this.oText.scrollHeight) {
 		// if tags are rendered put button in tag-DIV
-		var oFather = jQuery.sap.byId(this.getId()).children(".sapUiFeedChunkByline").get(0);
+		var oFather = this.$().children(".sapUiFeedChunkByline").get(0);
 		jQuery(oFather).append(sap.ui.ux3.FeedChunkRenderer.renderExpander(this));
 
 		if (this.expanded) {

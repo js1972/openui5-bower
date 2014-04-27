@@ -51,7 +51,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getLabel label} : sap.ui.core.Control</li>
+ * <li>{@link #getLabel label} <strong>(default aggregation)</strong> : sap.ui.core.Control</li>
  * <li>{@link #getMultiLabels multiLabels} : sap.ui.core.Control[]</li>
  * <li>{@link #getTemplate template} : sap.ui.core.Control</li>
  * <li>{@link #getMenu menu} : sap.ui.commons.Menu</li></ul>
@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -575,6 +575,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
  * Getter for aggregation <code>label</code>.<br/>
  * Label (header renderer) of the column which is displayed in the column header. Define a control for each header row in the table. This aggregation is for the standard behaviour, if you only want to display one single row header.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Column.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.ui.table.Column#getLabel
@@ -584,7 +585,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>label</code>.
- * @param oLabel {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oLabel
  * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Column#setLabel
@@ -703,7 +704,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>template</code>.
- * @param oTemplate {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oTemplate
  * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Column#setTemplate
@@ -734,7 +735,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>menu</code>.
- * @param oMenu {sap.ui.commons.Menu}
+ * @param {sap.ui.commons.Menu} oMenu
  * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Column#setMenu
@@ -1019,7 +1020,7 @@ sap.ui.table.Column.prototype.onmousedown = function(oEvent) {
  * @private
  */
 sap.ui.table.Column.prototype.onmouseout = function(oEvent) {
-	if(this._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, jQuery.sap.domById(this.getId()))){
+	if(this._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
 		this._bSkipOpen = false;
 	}
 };
@@ -1129,7 +1130,7 @@ sap.ui.table.Column.prototype._renderSortIcon = function() {
 			var oRenderManager = new sap.ui.core.RenderManager();
 			var htmlImage = oRenderManager.getHTML(oImage);
 			this.$().find(".sapUiTableColIconsOrder").remove();
-			jQuery(htmlImage).prependTo(jQuery.sap.domById(this.getId() + "-icons"));
+			jQuery(htmlImage).prependTo(this.getDomRef("icons"));
 			this.$().attr("aria-sort", this.getSortOrder() === sap.ui.table.SortOrder.Ascending ? "ascending" : "descending");
 			
 			this.$().find(".sapUiTableColCell").addClass("sapUiTableColSorted");
@@ -1249,9 +1250,19 @@ sap.ui.table.Column.prototype.filter = function(sValue) {
 			var aFilters = [];
 			var aCols = oTable.getColumns();
 			for (var i = 0, l = aCols.length; i < l; i++) {
-				var oFilter = aCols[i]._getFilter();
+				var oCol = aCols[i],
+					oMenu = oCol.getMenu(),
+					oFilter;
+				
+				try {
+					oFilter = oCol._getFilter();
+				} catch (e) {
+					oMenu._setFilterState(sap.ui.core.ValueState.Error);
+					continue;
+				}
 				if (oFilter) {
 					aFilters.push(oFilter);
+					oMenu._setFilterState(sap.ui.core.ValueState.None);
 				}
 			}
 			oTable.getBinding("rows").filter(aFilters, sap.ui.model.FilterType.Control);
@@ -1273,11 +1284,7 @@ sap.ui.table.Column.prototype._parseFilterValue = function(sValue) {
 		if (jQuery.isFunction(oFilterType)) {
 			sValue = oFilterType(sValue);
 		} else {
-			try {
-				sValue = oFilterType.parseValue(sValue, "string");
-			} catch (e) {
-				jQuery.sap.log.error(e.message);
-			}
+			sValue = oFilterType.parseValue(sValue, "string");
 		}
 	}
 
@@ -1289,13 +1296,13 @@ sap.ui.table.Column.prototype._renderFilterIcon = function() {
 	if (oTable && oTable.getDomRef()) {
 		var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
 		var oImage = sap.ui.getCore().byId(this.getId() + "-filterIcon") || new sap.ui.commons.Image(this.getId() + "-filterIcon");
-		jQuery.sap.byId(oImage.getId()).remove();
+		oImage.$().remove();
 		oImage.addStyleClass("sapUiTableColIconsFilter");
 		if (this.getFiltered()) {
 			oImage.setSrc(sap.ui.resource("sap.ui.table", "themes/" + sCurrentTheme + "/img/ico12_filter.gif"));
 			var oRenderManager = new sap.ui.core.RenderManager();
 			var htmlImage = oRenderManager.getHTML(oImage);
-			jQuery(htmlImage).prependTo(jQuery.sap.domById(this.getId() + "-icons"));
+			jQuery(htmlImage).prependTo(this.getDomRef("icons"));
 			this.$().find(".sapUiTableColCell").addClass("sapUiTableColFiltered");
 		} else {
 			this.$().find(".sapUiTableColCell").removeClass("sapUiTableColFiltered");

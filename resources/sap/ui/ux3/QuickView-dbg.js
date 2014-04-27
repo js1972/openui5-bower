@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.commons.CalloutBase");
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -690,7 +690,7 @@ sap.ui.ux3.QuickView.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
 
 /**
  * Setter for the aggregated <code>actionBar</code>.
- * @param oActionBar {sap.ui.ux3.ActionBar}
+ * @param {sap.ui.ux3.ActionBar} oActionBar
  * @return {sap.ui.ux3.QuickView} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.QuickView#setActionBar
@@ -735,7 +735,7 @@ sap.ui.ux3.QuickView.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.QuickView} <code>this</code> to allow method chaining
  * @public
@@ -801,7 +801,7 @@ sap.ui.ux3.QuickView.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.QuickView} <code>this</code> to allow method chaining
  * @public
@@ -865,7 +865,7 @@ sap.ui.ux3.QuickView.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.QuickView</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.QuickView} <code>this</code> to allow method chaining
  * @public
@@ -975,21 +975,20 @@ sap.ui.ux3.QuickView.prototype.onAfterRendering = function(){
 
 	var	i,
 		oFocusRef = this.getDomRef(),
-		aDomRefs = [],
-		sId = this.getId();
+		aDomRefs = [];
 
 	// Title
-	var oRef = jQuery.sap.byId(sId+"-title");
+	var oRef = this.$("title");
 	aDomRefs.push(oRef);
 
 	// Name
-	oRef = jQuery.sap.byId(sId+"-link");
-	if(!oRef.length){oRef = jQuery.sap.byId(sId+"-name"); } // when no link, navigate to -name
+	oRef = this.$("link");
+	if(!oRef.length){oRef = this.$("name"); } // when no link, navigate to -name
 	if(!oRef.length){ return; } // do nothing if we have a title only
 	aDomRefs.push(oRef);
 
 	// Description
-	oRef = jQuery.sap.byId(sId+"-descr");
+	oRef = this.$("descr");
 	if(oRef.length){aDomRefs.push(oRef);}
 
 	// initialize item navigation

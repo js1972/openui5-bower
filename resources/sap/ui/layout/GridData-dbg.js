@@ -81,7 +81,7 @@ jQuery.sap.require("sap.ui.core.LayoutData");
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -844,10 +844,9 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	
 	/*
 	 * Get span information for the large screens
-     * @return {integer} the value of the span 
-     * @private
-     */   	
-
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanLarge = function() {
 
 		var iSpan = this.getSpanL();
@@ -872,9 +871,10 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	};
 	
 	/*
-	 * Get span information for the medium screens @return {integer} the value
-	 * of the span @private
-	 */   	
+	 * Get span information for the medium screens 
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanMedium = function() {
 		var iSpan = this.getSpanM();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {
@@ -899,9 +899,9 @@ sap.ui.core.LayoutData.extend("sap.ui.layout.GridData", { metadata : {
 	
 	/*
 	 * Get span information for the small screens
-     * @return {integer} the value of the span 
-     * @private
-     */   	
+	 * @return {int} the value of the span 
+	 * @private
+	 */
 	sap.ui.layout.GridData.prototype._getEffectiveSpanSmall = function() {
 		var iSpan = this.getSpanS();
 		if (iSpan && (iSpan > 0) && (iSpan < 13)) {

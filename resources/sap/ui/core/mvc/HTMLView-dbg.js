@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.mvc.HTMLView.
-jQuery.sap.declare("sap.ui.core.mvc.HTMLView");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.mvc.View");
+sap.ui.define(['sap/ui/core/library','./View','sap/ui/core/DeclarativeSupport','sap/ui/core/RenderManager'], function() {
+	"use strict";
 
 
 /**
@@ -55,7 +54,7 @@ jQuery.sap.require("sap.ui.core.mvc.View");
  * @extends sap.ui.core.mvc.View
  *
  * @author Stefan Hipfel, Tino Butz 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -88,11 +87,9 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.HTMLView", { metadata : {
  */
 
 
-// Start of sap\ui\core\mvc\HTMLView.js
-jQuery.sap.require("sap.ui.core.DeclarativeSupport");
-jQuery.sap.require("sap.ui.core.RenderManager");
+// Start of sap/ui/core/mvc/HTMLView.js
 
-(function(){
+
 	/**
 	 * Defines or creates an instance of a declarative HTML view.
 	 *
@@ -329,4 +326,7 @@ jQuery.sap.require("sap.ui.core.RenderManager");
 		this._connectedControls = this._connectedControls || [];
 		this._connectedControls.push(oControl);
 	};
-}());
+
+	return sap.ui.core.mvc.HTMLView;
+
+}, /* bExport = */ true);

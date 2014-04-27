@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.commons.ToolbarItem[]</li>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.ToolbarItem[]</li>
  * <li>{@link #getRightItems rightItems} : sap.ui.commons.ToolbarItem[]</li></ul>
  * </li>
  * <li>Associations
@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -208,6 +208,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Toolbar", { metadata : {
  * Getter for aggregation <code>items</code>.<br/>
  * Aggregating the tool bar items.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Toolbar.
  * @return {sap.ui.commons.ToolbarItem[]}
  * @public
  * @name sap.ui.commons.Toolbar#getItems
@@ -400,7 +401,7 @@ sap.ui.commons.Toolbar.prototype.onBeforeRendering = function() {
 	sap.ui.commons.ToolbarRenderer.emptyOverflowPopup(this); // if rerendering happens while there are still items in the popup (and it is open), the items will be duplicated
 	this.cleanup();
 
-	jQuery.sap.byId(this.getId() + "-mn").unbind("keyup", this._handleKeyUp);
+	this.$("mn").unbind("keyup", this._handleKeyUp);
 
 	this.bFirstTime = true;
 };
@@ -426,7 +427,7 @@ sap.ui.commons.Toolbar.prototype.onAfterRendering = function() {
 
 	// cannot use sapspace because this triggers onkeydown and sets the focus to the first button in the overflow popup
 	// and the subsequent keyup will make the browser fire a click event on that button
-	jQuery.sap.byId(this.getId() + "-mn").bind("keyup", jQuery.proxy(this._handleKeyUp, this));
+	this.$("mn").bind("keyup", jQuery.proxy(this._handleKeyUp, this));
 
 	this.sResizeListenerId = sap.ui.core.ResizeHandler.register(this.oDomRef, jQuery.proxy(this.ontoolbarresize, this));
 	var iRightItemsLength =  this.getRightItems().length;
@@ -834,7 +835,7 @@ sap.ui.commons.Toolbar.prototype.openPopup = function() {
 
 	//Open popup with a little delay in IE8 to avoid focus calls when the popup is not yet opened
 	var iDuration = !!sap.ui.Device.browser.internet_explorer && (sap.ui.Device.browser.version == 7 || sap.ui.Device.browser.version == 8) ? 1 : 0;
-	this.popup.open(iDuration, sap.ui.core.Popup.Dock.EndTop, sap.ui.core.Popup.Dock.EndBottom, jQuery.sap.byId(this.getId() + "-mn"));
+	this.popup.open(iDuration, sap.ui.core.Popup.Dock.EndTop, sap.ui.core.Popup.Dock.EndBottom, this.$("mn"));
 	this.bOpen = true;
 };
 
@@ -1207,7 +1208,7 @@ sap.ui.commons.Toolbar.prototype.onrightsideresize = function() {
 			jQuery(this.oInnerRef).css("margin-right", (iRightSideWidth + 10) + "px");
 		}
 		var oFirstItem = this.oDomRef.firstChild.firstChild.firstChild;
-		var iOverflowWidth = jQuery.sap.domById(this.getId() + "-mn").offsetWidth;
+		var iOverflowWidth = this.getDomRef("mn").offsetWidth;
 		var iMinWidth = oFirstItem.offsetWidth + iRightSideWidth + iOverflowWidth + 20; // 20px is margin for overflow button and the last  visible item
 		jQuery(this.oDomRef).css("min-width", iMinWidth + "px");
 		jQuery(this.oInnerRef).css("visibility", "visible");

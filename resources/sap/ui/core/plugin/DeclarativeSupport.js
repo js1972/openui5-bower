@@ -3,8 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.core.plugin.DeclarativeSupport");jQuery.sap.require("sap.ui.core.DeclarativeSupport");jQuery.sap.require("sap.ui.core.Core");
-sap.ui.core.plugin.DeclarativeSupport=function(){};
-sap.ui.core.plugin.DeclarativeSupport.prototype.startPlugin=function(c,o){jQuery.sap.log.info("Starting DeclarativeSupport plugin.");this.oCore=c;this.oWindow=window;sap.ui.core.DeclarativeSupport.compile(document.body)};
-sap.ui.core.plugin.DeclarativeSupport.prototype.stopPlugin=function(){jQuery.sap.log.info("Stopping DeclarativeSupport plugin.");this.oCore=null};
-(function(){var t=new sap.ui.core.plugin.DeclarativeSupport();sap.ui.getCore().registerPlugin(t)}());
+sap.ui.define(['jquery.sap.global','sap/ui/core/Core','sap/ui/core/DeclarativeSupport'],function(q,C,D){"use strict";var a=function(){};a.prototype.startPlugin=function(c,o){q.sap.log.info("Starting DeclarativeSupport plugin.");this.oCore=c;this.oWindow=window;D.compile(document.body)};a.prototype.stopPlugin=function(){q.sap.log.info("Stopping DeclarativeSupport plugin.");this.oCore=null};(function(){var t=new a();sap.ui.getCore().registerPlugin(t)}());return a},true);

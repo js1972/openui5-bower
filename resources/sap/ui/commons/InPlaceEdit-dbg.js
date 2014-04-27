@@ -37,7 +37,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -196,6 +196,7 @@ sap.ui.commons.InPlaceEdit.M_EVENTS = {'change':'change','liveChange':'liveChang
  * The following controls are allowed:
  * TextField, ComboBox, DropdownBox and Link
  * 
+ * <strong>Note</strong>: this is the default aggregation for InPlaceEdit.
  * @return {sap.ui.core.Control}
  * @public
  * @name sap.ui.commons.InPlaceEdit#getContent
@@ -205,7 +206,7 @@ sap.ui.commons.InPlaceEdit.M_EVENTS = {'change':'change','liveChange':'liveChang
 
 /**
  * Setter for the aggregated <code>content</code>.
- * @param oContent {sap.ui.core.Control}
+ * @param {sap.ui.core.Control} oContent
  * @return {sap.ui.commons.InPlaceEdit} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.InPlaceEdit#setContent
@@ -248,7 +249,7 @@ sap.ui.commons.InPlaceEdit.M_EVENTS = {'change':'change','liveChange':'liveChang
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.InPlaceEdit</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.InPlaceEdit</code>.<br/> itself.
  *
  * @return {sap.ui.commons.InPlaceEdit} <code>this</code> to allow method chaining
  * @public
@@ -313,7 +314,7 @@ sap.ui.commons.InPlaceEdit.M_EVENTS = {'change':'change','liveChange':'liveChang
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.InPlaceEdit</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.InPlaceEdit</code>.<br/> itself.
  *
  * @return {sap.ui.commons.InPlaceEdit} <code>this</code> to allow method chaining
  * @public
@@ -462,14 +463,14 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 		//
 
 		// if TextView is rendered make it not focusable (only InPlaceEdit is focused)
-		if (!this._bEditMode && this.getEditable() && this._oTextView && jQuery.sap.domById(this._oTextView.getId())) {
-			jQuery.sap.byId(this._oTextView.getId()).attr("tabindex", "0");
+		if (!this._bEditMode && this.getEditable() && this._oTextView && this._oTextView.getDomRef()) {
+			this._oTextView.$().attr("tabindex", "0");
 		}
 
-		var $Control = jQuery.sap.byId(this.getId());
+		var $Control = this.$();
 		// In edit mode use 100% width for edit control, because width is set outside
 		if (this._bEditMode) {
-			jQuery.sap.byId(this._oEditControl.getId()).css("width", "100%");
+			this._oEditControl.$().css("width", "100%");
 			if (this._iHeight > 0) {
 				// Control is in display mode higher than in edit mode
 				// add margins to center edit control
@@ -484,9 +485,9 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 			}
 		}else if(this._oDisplayControl.getMetadata().getName() == "sap.ui.commons.Link"){
 			// edit icon should be directly next to link
-			jQuery.sap.byId(this._oDisplayControl.getId()).css("width", "auto").css("max-width", "100%");
+			this._oDisplayControl.$().css("width", "auto").css("max-width", "100%");
 		}else{
-			var $DisplayControl = jQuery.sap.byId(this._oDisplayControl.getId());
+			var $DisplayControl = this._oDisplayControl.$();
 			$DisplayControl.css("width", "100%");
 			if (!this._iHeight && this._iHeight != 0 && this.getDesign() != sap.ui.commons.TextViewDesign.Standard) {
 				// check if TextView is higher than inPlaceEdits standards height (Header design) ->
@@ -509,11 +510,11 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 		}
 
 		// if undo button is rendered remove it from tab-chain
-		if (this._sOldTextAvailable && this._oUndoButton && jQuery.sap.domById(this._oUndoButton.getId())) {
-			jQuery.sap.byId(this._oUndoButton.getId()).attr("tabindex", "-1");
+		if (this._sOldTextAvailable && this._oUndoButton && this._oUndoButton.getDomRef()) {
+			this._oUndoButton.$().attr("tabindex", "-1");
 		}
-		if (this._oEditButton && jQuery.sap.domById(this._oEditButton.getId())) {
-			jQuery.sap.byId(this._oEditButton.getId()).attr("tabindex", "-1");
+		if (this._oEditButton && this._oEditButton.getDomRef()) {
+			this._oEditButton.$().attr("tabindex", "-1");
 		}
 
 		if(this._delayedCallId) {
@@ -529,7 +530,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 
 	sap.ui.commons.InPlaceEdit.prototype.removeValidVisualization = function() {
 
-		var oDomRef = jQuery.sap.byId(this.getId());
+		var oDomRef = this.$();
 		if(oDomRef) {
 			oDomRef.removeClass("sapUiIpeSucc");
 		}
@@ -593,7 +594,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 			} else {
 				this._bEsc = true;
 			}
-			if (jQuery.sap.byId(this.getId()).hasClass("sapUiIpeUndo")) {
+			if (this.$().hasClass("sapUiIpeUndo")) {
 				// undo is possible -> do not propagate escape (not close popup)
 				oEvent.stopPropagation();
 			}
@@ -620,7 +621,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 		if (oEvent.keyCode == jQuery.sap.KeyCodes.F2 && !this._bEditMode) {
 			var that = this;
 			switchToEditMode(that);
-			jQuery.sap.byId(this.getId()).addClass("sapUiIpeFocus");
+			this.$().addClass("sapUiIpeFocus");
 		}
 
 	};
@@ -634,7 +635,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 				var that = this;
 				switchToEditMode(that);
 			}
-			jQuery.sap.byId(this.getId()).addClass("sapUiIpeFocus");
+			this.$().addClass("sapUiIpeFocus");
 		}else if(this._focusDelay){
 			// foucusout handling not finished and focus again in control -> just stay in edit mode
 			jQuery.sap.clearDelayedCall(this._focusDelay);
@@ -669,7 +670,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 			// focus is not inside of the InPlaceEdit
 			// in display mode focus is on displayControl -> simulate focus on outer DIV
 			if (!this._bEditMode) {
-				jQuery.sap.byId(this.getId()).removeClass("sapUiIpeFocus");
+				this.$().removeClass("sapUiIpeFocus");
 			}
 			var that = this;
 			switchToDisplayMode(that);
@@ -1092,7 +1093,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 
 		if (this._bEditMode) {
 			this._oEditControl.focus();
-			jQuery.sap.byId(this.getId()).removeClass("sapUiIpeUndo");
+			this.$().removeClass("sapUiIpeUndo");
 		}
 
 	};
@@ -1168,7 +1169,7 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 
 		var that = this;
 		switchToEditMode(that);
-		jQuery.sap.byId(this.getId()).addClass("sapUiIpeFocus");
+		this.$().addClass("sapUiIpeFocus");
 
 	};
 
@@ -1187,9 +1188,9 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 	function handleContentChange(oEvent){
 
 		if (this._sOldText != oEvent.getParameter("newValue") && this.getUndoEnabled()){
-			jQuery.sap.byId(this.getId()).addClass("sapUiIpeUndo");
+			this.$().addClass("sapUiIpeUndo");
 		}else{
-			jQuery.sap.byId(this.getId()).removeClass("sapUiIpeUndo");
+			this.$().removeClass("sapUiIpeUndo");
 		}
 		this.fireChange(oEvent.getParameters());
 
@@ -1198,9 +1199,9 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 	function handleContentLiveChange(oEvent){
 
 		if (this._sOldText != oEvent.getParameter("liveValue") && this.getUndoEnabled()){
-			jQuery.sap.byId(this.getId()).addClass("sapUiIpeUndo");
+			this.$().addClass("sapUiIpeUndo");
 		}else{
-			jQuery.sap.byId(this.getId()).removeClass("sapUiIpeUndo");
+			this.$().removeClass("sapUiIpeUndo");
 		}
 
 		this.fireLiveChange({liveValue:oEvent.getParameter("liveValue")});
@@ -1216,30 +1217,30 @@ jQuery.sap.require("sap.ui.core.ValueStateSupport");
 			//if valueState changes -> class must be adopted on outer DIV but do not rerender
 			switch (this.getValueState()) {
 			case (sap.ui.core.ValueState.Error) :
-				if (!jQuery.sap.byId(this.getId()).hasClass('sapUiIpeErr')) {
-					jQuery.sap.byId(this.getId()).addClass('sapUiIpeErr');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeWarn');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeSucc');
+				if (!this.$().hasClass('sapUiIpeErr')) {
+					this.$().addClass('sapUiIpeErr');
+					this.$().removeClass('sapUiIpeWarn');
+					this.$().removeClass('sapUiIpeSucc');
 				}
 			break;
 			case (sap.ui.core.ValueState.Success) :
-				if (!jQuery.sap.byId(this.getId()).hasClass('sapUiIpeSucc')) {
-					jQuery.sap.byId(this.getId()).addClass('sapUiIpeSucc');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeErr');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeWarn');
+				if (!this.$().hasClass('sapUiIpeSucc')) {
+					this.$().addClass('sapUiIpeSucc');
+					this.$().removeClass('sapUiIpeErr');
+					this.$().removeClass('sapUiIpeWarn');
 				}
 			break;
 			case (sap.ui.core.ValueState.Warning) :
-				if (!jQuery.sap.byId(this.getId()).hasClass('sapUiIpeWarn')) {
-					jQuery.sap.byId(this.getId()).addClass('sapUiIpeWarn');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeErr');
-					jQuery.sap.byId(this.getId()).removeClass('sapUiIpeSucc');
+				if (!this.$().hasClass('sapUiIpeWarn')) {
+					this.$().addClass('sapUiIpeWarn');
+					this.$().removeClass('sapUiIpeErr');
+					this.$().removeClass('sapUiIpeSucc');
 				}
 			break;
 			default:
-				jQuery.sap.byId(this.getId()).removeClass('sapUiIpeWarn');
-				jQuery.sap.byId(this.getId()).removeClass('sapUiIpeErr');
-				jQuery.sap.byId(this.getId()).removeClass('sapUiIpeSucc');
+				this.$().removeClass('sapUiIpeWarn');
+				this.$().removeClass('sapUiIpeErr');
+				this.$().removeClass('sapUiIpeSucc');
 			break;
 			}
 		}

@@ -12,11 +12,10 @@ jQuery.sap.declare("sap.m.ButtonRenderer");
  */
 sap.m.ButtonRenderer = {};
 
-
 /**
  * Renders the HTML for the given control, using the provided
  * {@link sap.ui.core.RenderManager}.
- * 
+ *
  * @param {sap.ui.core.RenderManager}
  *            oRenderManager the RenderManager that can be used for writing to
  *            the Render-Output-Buffer
@@ -25,6 +24,7 @@ sap.m.ButtonRenderer = {};
  *            rendered
  */
 sap.m.ButtonRenderer.render = function(rm, oButton) {
+
 	// return immediately if control is invisible
 	if (!oButton.getVisible()) {
 		return;
@@ -41,17 +41,23 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 	rm.writeControlData(oButton);
 
 	// button style class
-	if (sType != sap.m.ButtonType.Unstyled) {
+	if (sType !== sap.m.ButtonType.Unstyled) {
 		rm.addClass("sapMBtn");
+	}
+
+	if (sap.ui.Device.system.desktop) {
+		rm.addClass("sapMBtnDesktop");
 	}
 
 	// special for platform independent themes (like BlueCrystal)
 	if (!oButton._isPlatformDependent) {
+
 		// set padding depending on icons left or right or none
 		if (!oButton.getIcon()) {
 			if (sType != sap.m.ButtonType.Back && sType != sap.m.ButtonType.Up) {
 				rm.addClass("sapMBtnPaddingLeft");
 			}
+
 			if (oButton.getText()) {
 				rm.addClass("sapMBtnPaddingRight");
 			}
@@ -59,6 +65,7 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 			if (oButton.getIcon() && oButton.getText() && oButton.getIconFirst()) {
 				rm.addClass("sapMBtnPaddingRight");
 			}
+
 			if (oButton.getIcon() && oButton.getText() && !oButton.getIconFirst()) {
 				rm.addClass("sapMBtnPaddingLeft");
 			}
@@ -66,6 +73,7 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 	}
 
 	if (oButton._isPlatformDependent) { //platform dependent themes (like MVI)
+
 		// check if button is disabled
 		if (!bEnabled) {
 			if (sType == sap.m.ButtonType.Back || sType == sap.m.ButtonType.Up) {
@@ -78,22 +86,25 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 		} else {
 			if (sType != "" && sType != sap.m.ButtonType.Unstyled) {
 				rm.addClass("sapMBtn" + jQuery.sap.escapeHTML(sType));
-			}	
+			}
 		}
-	} else if(sType != sap.m.ButtonType.Unstyled) {
+	} else if (sType !== sap.m.ButtonType.Unstyled) {
+
 		// platform independent themes (like BlueCrystal)
-		if (sType != "") {
+		if (sType !== "") {
 			rm.addClass("sapMBtn" + jQuery.sap.escapeHTML(sType));
 		}
+
 		// check if button is disabled
 		if (!bEnabled) {
 			rm.addClass("sapMBtnDisabled");
 			rm.writeAttribute("tabindex", "-1");
-		} else if( jQuery.device.is.desktop ) {
+		} else if( sap.ui.Device.system.desktop ) {
 			rm.writeAttribute("tabindex", "0");
+
 			// add classes for focus outline;
 			rm.addClass("sapMFocusable");
-			switch(sType){
+			switch (sType) {
 				case sap.m.ButtonType.Accept:
 				case sap.m.ButtonType.Reject:
 				case sap.m.ButtonType.Emphasized:
@@ -121,6 +132,7 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 	rm.writeClasses();
 
 	var sTooltip = oButton.getTooltip_AsString();
+
 	if (sTooltip) {
 		rm.writeAttributeEscaped("title", sTooltip);
 	}
@@ -129,23 +141,25 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 	rm.write(">");
 
 	// hook for inheriting controls to add their HTML
-	if(this.renderButtonContentBefore){
+	if (this.renderButtonContentBefore) {
 		this.renderButtonContentBefore(rm, oButton);
 	}
 
 	// check if additional content-DIV needs to rendered
-	if (sType == sap.m.ButtonType.Accept) { 
+	if (sType === sap.m.ButtonType.Accept) {
 		bExtraContentDiv = true;
 	}
-	if (sType == sap.m.ButtonType.Reject) {
+
+	if (sType === sap.m.ButtonType.Reject) {
 		bExtraContentDiv = true;
 	}
-	if (sType == sap.m.ButtonType.Up) {
+
+	if (sType === sap.m.ButtonType.Up) {
 		bExtraContentDiv = true;
 	}
 
 	// special for platform independent themes (like BlueCrystal)
-	if (!oButton._isPlatformDependent && sType == sap.m.ButtonType.Back) {
+	if (!oButton._isPlatformDependent && sType === sap.m.ButtonType.Back) {
 		bExtraContentDiv = true;
 	}
 
@@ -158,20 +172,28 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 		rm.write("<div");
 		if (sType != sap.m.ButtonType.Unstyled) {
 			rm.addClass("sapMBtnContent");
-			rm.writeClasses();	
+
+			if(oButton.getIcon()) {
+				rm.addClass("sapMBtnContentWithIcon");
+			}
+
+			rm.writeClasses();
 		}
-		rm.write(">");	
+		rm.write(">");
 	}
 
 	// special for platform independent themes (like BlueCrystal)
 	if (!oButton._isPlatformDependent) {
+
 		// set image for internal image control (back)
 		var sBackURI = sap.ui.core.IconPool.getIconURI("nav-back");
 		this.writeInternalIconPoolHtml(rm, oButton, sType, sap.m.ButtonType.Back, sBackURI);
 		this.writeInternalIconPoolHtml(rm, oButton, sType, sap.m.ButtonType.Up, sBackURI);
 	} else {
+
 		// special for non iOS
-		if (!jQuery.os.ios) {
+		if (!sap.ui.Device.os.ios) {
+
 			// set image for internal image control (accept)
 			var sAcceptURI = sap.ui.core.IconPool.getIconURI("accept");
 			this.writeInternalIconPoolHtml(rm, oButton, sType, sap.m.ButtonType.Accept, sAcceptURI);
@@ -179,26 +201,27 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 			// set image for internal image control (reject)
 			var sRejectURI = sap.ui.core.IconPool.getIconURI("decline");
 			this.writeInternalIconPoolHtml(rm, oButton, sType, sap.m.ButtonType.Reject, sRejectURI);
+
 			// set image for internal image control (up)
 			var sUpURI = sap.ui.core.IconPool.getIconURI("navigation-left-arrow");
 			this.writeInternalIconPoolHtml(rm, oButton, sType, sap.m.ButtonType.Up, sUpURI);
 		}
 	}
 
-	// write icon left	
+	// write icon left
 	if (oButton.getIcon() && oButton.getIconFirst()) {
 		this.writeImgHtml(rm, oButton);
 	}
 
-	// write button text	
+	// write button text
 	this.writeTextHtml(rm, oButton, bExtraContentDiv, sType);
 
-	// write icon right	
+	// write icon right
 	if (oButton.getIcon() && !oButton.getIconFirst()) {
 		this.writeImgHtml(rm, oButton);
 	}
 
-	// close button content tag	
+	// close button content tag
 	if (bExtraContentDiv) {
 		rm.write("</div>");
 	}
@@ -212,27 +235,28 @@ sap.m.ButtonRenderer.render = function(rm, oButton) {
 	rm.write("</button>");
 };
 
-
 /**
  * HTML for button text
  */
 sap.m.ButtonRenderer.writeTextHtml = function(rm, oButton, bExtraContentDiv, sType) {
 	if (oButton.getText()) {
 		rm.write("<span");
-		if (!bExtraContentDiv && sType != sap.m.ButtonType.Unstyled) {
+
+		if (!bExtraContentDiv && sType !== sap.m.ButtonType.Unstyled) {
 			rm.addClass("sapMBtnContent");
 			rm.writeClasses();
 		}
+
 		if (oButton.getIcon() && oButton.getText()) {
 			rm.addClass("sapMBtnContentSpan");
 			rm.writeClasses();
 		}
+
 		rm.write(">");
 		rm.writeEscaped(oButton.getText());
 		rm.write("</span>");
 	}
 };
-
 
 /**
  * HTML for image
@@ -241,34 +265,16 @@ sap.m.ButtonRenderer.writeImgHtml = function(rm, oButton) {
 	rm.renderControl(oButton._getImage((oButton.getId() + "-img"), oButton.getIcon(), oButton.getActiveIcon(), oButton.getIconDensityAware()));	
 };
 
-
 /**
  * HTML for internal image (icon pool)
  */
 sap.m.ButtonRenderer.writeInternalIconPoolHtml = function(rm, oButton, sType, sCheckType, sURI) {
 	if (sType === sCheckType) {
+
 		if (oButton._imageBtn) {
 			oButton._imageBtn.setSrc(sURI);
-		} else{		
+		} else {
 			rm.renderControl(oButton._getInternalIconBtn((oButton.getId() + "-iconBtn"), sURI));
 		}
 	}
-};
-
-
-/**
- * Function called when mouse enters the button
- * @private
- */
-sap.m.ButtonRenderer.onmouseover = function(oButton) {
-	jQuery.sap.byId(oButton.getId()).addClass("sapMBtnHover");
-};
-
-
-/**
- * Function called when mouse leaves the button
- * @private
- */
-sap.m.ButtonRenderer.onmouseout = function(oButton) {
-	jQuery.sap.byId(oButton.getId()).removeClass("sapMBtnHover");
 };

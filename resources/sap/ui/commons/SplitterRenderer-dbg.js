@@ -83,7 +83,7 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	rm.write("</div>");
 
 	/*rendering the splitter bar*/
-	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"" + oControl.getText("SPLITTER_MOVE") + "\"");
+	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"" + oControl.getText("SPLITTER_MOVE") + "\""); 
 	if (orientation == sap.ui.commons.Orientation.Vertical) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiVerticalSplitterBar");

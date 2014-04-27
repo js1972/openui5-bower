@@ -25,10 +25,10 @@ sap.m.TextRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign;
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
- * @param {sap.ui.core.Control} oText An object representation of the control that should be rendered.
+ * @param {sap.m.Text} oText An object representation of the control that should be rendered.
  */
 sap.m.TextRenderer.render = function(oRm, oText) {
-	// Return immediately if control is invisible
+	// return immediately if control is invisible
 	if (!oText.getVisible()) {
 		return;
 	}
@@ -55,22 +55,12 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 		if (!/\s/.test(sText)) {
 			oRm.addClass("sapMTextBreakWord");
 		}
-
-		// handle line clamp
-		if (nMaxLines > 1) {
-			if (oText._canUseNativeLineClamp()) {
-				oRm.addClass("sapMTextLineClamp");
-				oRm.addStyle("-webkit-line-clamp", nMaxLines);
-			} else {
-				oRm.addClass("sapMTextMaxLine");
-			}
-		}
 	}
 
 	// write style and attributes
-	sWidth && oRm.addStyle("width", sWidth);
-	sTextDir && oRm.writeAttribute("dir", sTextDir);
-	sTooltip &&	oRm.writeAttributeEscaped("title", sTooltip);
+	sWidth ? oRm.addStyle("width", sWidth) : oRm.addClass("sapMTextMaxWidth");
+	sTextDir && oRm.addStyle("direction", sTextDir.toLowerCase());
+	sTooltip && oRm.writeAttributeEscaped("title", sTooltip);
 	if (sTextAlign) {
 		sTextAlign = this.getTextAlign(sTextAlign, sTextDir);
 		if (sTextAlign) {
@@ -82,6 +72,48 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 	oRm.writeClasses();
 	oRm.writeStyles();
 	oRm.write(">");
-	oRm.writeEscaped(sText, bWrapping);
+
+	// handle max lines
+	if (bWrapping && nMaxLines > 1) {
+		this.renderMaxLines(oRm, oText);
+	} else {
+		this.renderText(oRm, oText);
+	}
+
+	// finalize
 	oRm.write("</span>");
+};
+
+/**
+ * Renders the max lines inner wrapper
+ * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
+ * @param {sap.m.Text} oText An object representation of the control that should be rendered.
+ */
+sap.m.TextRenderer.renderMaxLines = function(oRm, oText) {
+	oRm.write("<div");
+	oRm.writeAttribute("id", oText.getId() + "-inner");
+	oRm.addClass("sapMTextMaxLine");
+
+	// check native line clamp support
+	if (oText.canUseNativeLineClamp()) {
+		oRm.addClass("sapMTextLineClamp");
+		oRm.addStyle("-webkit-line-clamp", oText.getMaxLines());
+	}
+
+	oRm.writeClasses();
+	oRm.writeStyles();
+	oRm.write(">");
+	this.renderText(oRm, oText);
+	oRm.write("</div>");
+};
+
+/**
+ * Renders the normalized text according to wrapping property.
+ * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
+ * @param {sap.m.Text} oText An object representation of the control that should be rendered.
+ */
+sap.m.TextRenderer.renderText = function(oRm, oText) {
+	var sText = oText.getText(true);
+	var bWrapping = oText.getWrapping();
+	oRm.writeEscaped(sText, bWrapping);
 };

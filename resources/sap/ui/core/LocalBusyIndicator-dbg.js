@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.LocalBusyIndicator.
-jQuery.sap.declare("sap.ui.core.LocalBusyIndicator");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control','./theming/Parameters','./LocalBusyIndicatorRenderer'], function() {
+	"use strict";
 
 
 /**
@@ -61,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -157,11 +156,10 @@ sap.ui.core.Control.extend("sap.ui.core.LocalBusyIndicator", { metadata : {
  */
 
 
-// Start of sap\ui\core\LocalBusyIndicator.js
-jQuery.sap.require("sap.ui.core.theming.Parameters");
-jQuery.sap.require("sap.ui.core.LocalBusyIndicatorRenderer");
+// Start of sap/ui/core/LocalBusyIndicator.js
 
 (function() {
+	
 	sap.ui.core.LocalBusyIndicator.prototype.init = function() {
 		var sRoot = "sap.ui.core.LocalBusyIndicator:";
 
@@ -198,8 +196,7 @@ jQuery.sap.require("sap.ui.core.LocalBusyIndicatorRenderer");
 		$this.css("width", w + "px");
 		$this.css("height", h + "px");
 
-		var sId = this.getId();
-		var $animation = jQuery.sap.byId(sId + "-animation");
+		var $animation = this.$("animation");
 
 		var left = Math.floor(w / 2);
 		left -= Math.floor((5 * this._iBoxSize) / 2);
@@ -210,13 +207,13 @@ jQuery.sap.require("sap.ui.core.LocalBusyIndicatorRenderer");
 		$animation.css("top", top + "px");
 
 		if (!this._$left) {
-			this._$left = jQuery.sap.byId(sId + "-leftBox");
+			this._$left = this.$("leftBox");
 		}
 		if (!this._$middle) {
-			this._$middle = jQuery.sap.byId(sId + "-middleBox");
+			this._$middle = this.$("middleBox");
 		}
 		if (!this._$right) {
-			this._$right = jQuery.sap.byId(sId + "-rightBox");
+			this._$right = this.$("rightBox");
 		}
 
 		this._delayedCallId = jQuery.sap.delayedCall(0, this, this._animateProxy);
@@ -279,4 +276,9 @@ jQuery.sap.require("sap.ui.core.LocalBusyIndicatorRenderer");
 			this._delayedCallId = jQuery.sap.delayedCall(1200, this, this._animateProxy);
 		}
 	};
+
 }());
+
+	return sap.ui.core.LocalBusyIndicator;
+
+}, /* bExport = */ true);

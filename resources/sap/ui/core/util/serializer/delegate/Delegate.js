@@ -3,9 +3,4 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
-jQuery.sap.declare("sap.ui.core.util.serializer.delegate.Delegate");jQuery.sap.require("sap.ui.base.EventProvider");sap.ui.base.EventProvider.extend("sap.ui.core.util.serializer.delegate.Delegate",{constructor:function(){sap.ui.base.EventProvider.apply(this)}});
-sap.ui.core.util.serializer.delegate.Delegate.prototype.start=function(c,a,i){return""};
-sap.ui.core.util.serializer.delegate.Delegate.prototype.middle=function(c,a,i){return""};
-sap.ui.core.util.serializer.delegate.Delegate.prototype.end=function(c,a,i){return""};
-sap.ui.core.util.serializer.delegate.Delegate.prototype.startAggregation=function(c,a){return""};
-sap.ui.core.util.serializer.delegate.Delegate.prototype.endAggregation=function(c,a){return""};
+sap.ui.define(['jquery.sap.global','sap/ui/base/EventProvider'],function(q,E){"use strict";var D=E.extend("sap.ui.core.util.serializer.delegate.Delegate",{constructor:function(){E.apply(this)}});D.prototype.start=function(c,a,i){return""};D.prototype.middle=function(c,a,i){return""};D.prototype.end=function(c,a,i){return""};D.prototype.startAggregation=function(c,a){return""};D.prototype.endAggregation=function(c,a){return""};return D},true);

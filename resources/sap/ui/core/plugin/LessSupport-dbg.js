@@ -5,15 +5,13 @@
  */
 
 // Provides class sap.ui.core.plugin.LessSupport
-jQuery.sap.declare("sap.ui.core.plugin.LessSupport");
+sap.ui.define('sap/ui/core/plugin/LessSupport', ['jquery.sap.global', 'sap/ui/core/Core'],
+	function(jQuery, Core) {
+	"use strict";
 
-jQuery.sap.require("sap.ui.core.Core");
-
-/**
- * FEATURE TO INCREASE DEVELOPMENT EXPERIENCE! NO PRODUCTIVE USAGE ALLOWED!
- */
-(function() {
-
+	/**
+	 * FEATURE TO INCREASE DEVELOPMENT EXPERIENCE! NO PRODUCTIVE USAGE ALLOWED!
+	 */
 	
 	/**
 	 * Creates an instance of the class <code>sap.ui.core.plugin.LessSupport</code>
@@ -24,10 +22,11 @@ jQuery.sap.require("sap.ui.core.Core");
 	 *        feature - DO NOT USE IN PRODUCTIVE SCENARIOS!!
 	 *
 	 * @author Peter Muessig
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport
 	 */
-	sap.ui.core.plugin.LessSupport = function() {
+	var LessSupport = function() {
 	};
 
 	/**
@@ -36,8 +35,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * @param {sap.ui.core.Core} oCore reference to the Core
 	 * @param {boolean} [bOnInit] whether the hook is called during core initialization
 	 * @public
+	 * @name sap.ui.core.plugin.LessSupport#startPlugin
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.startPlugin = function(oCore, bOnInit) {
+	LessSupport.prototype.startPlugin = function(oCore, bOnInit) {
 		
 		jQuery.sap.log.info("Starting LessSupport plugin.");
 		jQuery.sap.log.warning("  NOT FOR PRODUCTIVE USAGE! LessSupport is an experimental feature which might change in future!");
@@ -63,7 +64,17 @@ jQuery.sap.require("sap.ui.core.Core");
 			jQuery.sap.log.info("  LessSupport can be deactivated by adding the following parameter to your URL: \"sap-ui-xx-noless=X\".");
 		}
 		
-		window.less = window.less || {env: "production"};
+		// configure LESS (development mode + error handling)
+		window.less = window.less || {
+			env: "development",
+			errorReporting: function(sMethod, ex, sRootHref) {
+				if (sMethod === "add") {
+					console.error("Failed to parse: " + sRootHref, ex);
+				}
+			}
+		};
+		
+		// include LESS (AMD fix is done in jQuery.sap.global)
 		jQuery.sap.require("sap.ui.thirdparty.less");
 		
 		this.oCore = oCore;
@@ -135,8 +146,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * Will be invoked by <code>sap.ui.core.Core</code> to notify the plugin to start
 	 * @param {sap.ui.core.Core} oCore reference to the Core
 	 * @public
+	 * @name sap.ui.core.plugin.LessSupport#stopPlugin
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.stopPlugin = function() {
+	LessSupport.prototype.stopPlugin = function() {
 		jQuery.sap.log.info("Stopping LessSupport plugin.");
 		if (this.bActive) {
 			// remove the content of the LESS style element 
@@ -158,8 +171,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * finally applied)
 	 * @param oLink {LinkElement} ref to a link element
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#initLink
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.initLink = function(oLink) {
+	LessSupport.prototype.initLink = function(oLink) {
 		
 		var bUseLess = this.updateLink(oLink);
 		
@@ -182,8 +197,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * finally applied)
 	 * @param oLink {LinkElement} ref to a link element
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#updateLink
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.updateLink = function(oLink) {
+	LessSupport.prototype.updateLink = function(oLink) {
 		
 		// modify style sheet URL to point to the new theme
 		// be aware of custom css included with the colon (see includeLibraryTheme) // TODO: what is this??
@@ -217,6 +234,16 @@ jQuery.sap.require("sap.ui.core.Core");
 			return false;
 		}
 		
+		// cleanup the local storage cache of less to avoid caching issues
+		// INFO: necessary when running in production mode
+		/*
+		if (window.localStorage) {
+			var sHref = oLink.href.replace(/.css$/i, ".less");
+			delete window.localStorage[sHref];
+			delete window.localStorage[sHref + ":timestamp"];
+		}
+		*/
+		
 		// use the LESS file!
 		oLink.title = sLibName;
 		oLink.href = sBaseUrl + fileName + ".less";
@@ -231,8 +258,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * @param sUrl {string} URL to a resource
 	 * @return {number} timestamp
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#getLastModified
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.getLastModified = function(sUrl) {
+	LessSupport.prototype.getLastModified = function(sUrl) {
 
 		// HEAD request to retrieve the last modified header
 		var sLastModified;
@@ -260,10 +289,12 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * @param sThemeName {string} name of the theme
 	 * @param sThemeBaseUrl {string} base URL of the theme
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#applyTheme
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.applyTheme = function(sThemeName, sThemeBaseUrl) {
+	LessSupport.prototype.applyTheme = function(sThemeName, sThemeBaseUrl) {
 		// execute the default behavior
-		sap.ui.core.Core.prototype.applyTheme.apply(this.oCore, arguments);
+		Core.prototype.applyTheme.apply(this.oCore, arguments);
 		// update the created links for less support
 		var that = this, bUseLess = false;
 		jQuery("link[id^=sap-ui-theme-]").each(function() {
@@ -279,10 +310,12 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * @param sThemeName {string} name of the theme
 	 * @param sThemeBaseUrl {string} base URL of the theme
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#includeLibraryTheme
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.includeLibraryTheme = function(sLibName) {
+	LessSupport.prototype.includeLibraryTheme = function(sLibName) {
 		// execute the default behavior
-		sap.ui.core.Core.prototype.includeLibraryTheme.apply(this.oCore, arguments);
+		Core.prototype.includeLibraryTheme.apply(this.oCore, arguments);
 		// initialize the created link for less support
 		var that = this, bUseLess = false;
 		jQuery("link[id='sap-ui-theme-" + sLibName +"']").each(function() {
@@ -296,8 +329,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * registers a link element in less to be observed when calling refresh()
 	 * @param oLink {LinkElement} ref to the link element  
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#registerLink
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.registerLink = function(oLink) {
+	LessSupport.prototype.registerLink = function(oLink) {
 		if (window.less && window.less.sheets) {
 			var iIndex = jQuery.inArray(oLink, window.less.sheets);
 			if (iIndex === -1) {
@@ -310,8 +345,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * unregisters a link element in less
 	 * @param oLink {LinkElement} ref to the link element  
 	 * @private
+	 * @name sap.ui.core.plugin.LessSupport#unregisterLink
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.unregisterLink = function(oLink) {
+	LessSupport.prototype.unregisterLink = function(oLink) {
 		if (window.less && window.less.sheets) {
 			var sLibName = oLink.id.substr(13);
 			var iIndex = jQuery.inArray(oLink, window.less.sheets);
@@ -331,8 +368,10 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * additionally it shows or hides a notifier if the less mode is active
 	 * @param bUseLess {boolean} flag whether less or css mode 
 	 * @private 
+	 * @name sap.ui.core.plugin.LessSupport#refreshLess
+	 * @function
 	 */
-	sap.ui.core.plugin.LessSupport.prototype.refreshLess = function(bUseLess) {
+	LessSupport.prototype.refreshLess = function(bUseLess) {
 
 		// add the less mode indicator
 		if (bUseLess) {
@@ -373,8 +412,9 @@ jQuery.sap.require("sap.ui.core.Core");
 	 * Create the <code>sap.ui.core.plugin.LessSupport</code> plugin and
 	 * register it within the <code>sap.ui.core.Core</code>.
 	 */
-	var oThis = new sap.ui.core.plugin.LessSupport();
+	var oThis = new LessSupport();
 	sap.ui.getCore().registerPlugin(oThis);
-	
 
-}());
+	return LessSupport;
+
+}, /* bExport= */ true);

@@ -44,7 +44,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} : sap.ui.core.Item[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.core.Item[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -95,9 +95,7 @@ sap.ui.core.Control.extend("sap.m.Select", { metadata : {
 	},
 	defaultAggregation : "items",
 	aggregations : {
-    	"items" : {type : "sap.ui.core.Item", multiple : true, singularName : "item", bindable : "bindable"}, 
-    	"popover" : {type : "sap.m.Popover", multiple : false, visibility : "hidden"}, 
-    	"dialog" : {type : "sap.m.Dialog", multiple : false, visibility : "hidden"}
+    	"items" : {type : "sap.ui.core.Item", multiple : true, singularName : "item", bindable : "bindable"}
 	},
 	associations : {
 		"selectedItem" : {type : "sap.ui.core.Item", multiple : false}
@@ -392,6 +390,7 @@ sap.m.Select.M_EVENTS = {'change':'change'};
  * Getter for aggregation <code>items</code>.<br/>
  * Items of the Item control.
  * 
+ * <strong>Note</strong>: this is the default aggregation for Select.
  * @return {sap.ui.core.Item[]}
  * @public
  * @name sap.m.Select#getItems
@@ -540,7 +539,7 @@ sap.m.Select.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Select</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Select</code>.<br/> itself.
  *
  * @return {sap.m.Select} <code>this</code> to allow method chaining
  * @public
@@ -670,8 +669,8 @@ sap.m.Select.M_EVENTS = {'change':'change'};
 
 
 // Start of sap\m\Select.js
-jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
+jQuery.sap.require("sap.m.SelectRenderer");
 jQuery.sap.require("sap.m.Input");
 jQuery.sap.require("sap.m.Bar");
 jQuery.sap.require("sap.m.List");
@@ -681,25 +680,15 @@ sap.ui.core.IconPool.insertFontFaceStyle();
 sap.ui.core.EnabledPropagator.apply(sap.m.Select.prototype, [true]);
 
 /* =========================================================== */
-/*             begin: private methods and properties           */
+/* Private methods and properties                              */
 /* =========================================================== */
 
 /* ----------------------------------------------------------- */
-/* private properties                                          */
-/* ----------------------------------------------------------- */
-
-sap.m.Select.prototype._oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
-
-sap.m.Select.prototype._bUsePopup = sap.ui.core.theming.Parameters.get("sapMPlatformDependent") !== "true";
-
-sap.m.Select.prototype._bUseCustomSelect = (sap.ui.Device.os.android && sap.ui.Device.os.version === 2.3) && sap.ui.core.theming.Parameters.get("sapMPlatformDependent") === "true";
-
-/* ----------------------------------------------------------- */
-/* private methods                                             */
+/* Private methods                                             */
 /* ----------------------------------------------------------- */
 
 /**
- * Cache DOM references
+ * Cache DOM references.
  *
  * @private
  */
@@ -707,15 +696,6 @@ sap.m.Select.prototype._cacheDomRefs = function() {
 
 	// jQuery DOM reference to the Select element
 	this._$Select = this.$();
-
-	// jQuery DOM reference to the native Select element
-	this._$HtmlSelect = this._$Select.children("select");
-
-	// jQuery DOM collection with all option elements
-	this._$Options = this._$HtmlSelect.children("option");
-
-	// jQuery DOM reference with the selected option
-	this._$SeletedOption = this._$Options.filter(":selected");
 
 	// jQuery DOM reference to the label used to show the text of the current selected item
 	this._$Label = this._$Select.children("." + sap.m.SelectRenderer.CSS_CLASS + "Label");
@@ -801,21 +781,10 @@ sap.m.Select.prototype._synchronizeSelectedItemAndKey = function(oItem, sKey, aI
 };
 
 /**
- * Removes the previously registered change event listener.
- *
- * @private
- */
-sap.m.Select.prototype._unbindBrowserChangeEvent = function() {
-	if (this._$HtmlSelect) {
-		this._$HtmlSelect.off("change." + sap.m.SelectRenderer.CSS_CLASS, this._handleBrowserChangeEvent);
-	}
-};
-
-/**
  * Retrieves the first enabled item from the aggregation named <code>items</code>.
  *
  * @param {array} [aItems]
- * @return {sap.ui.core.Item | null}
+ * @returns {sap.ui.core.Item | null}
  * @private
  */
 sap.m.Select.prototype._findFirstEnabledItem = function(aItems) {
@@ -834,7 +803,7 @@ sap.m.Select.prototype._findFirstEnabledItem = function(aItems) {
  * Retrieves the last enabled item from the aggregation named <code>items</code>.
  *
  * @param {array} [aItems]
- * @return {sap.ui.core.Item | null}
+ * @returns {sap.ui.core.Item | null}
  * @private
  */
 sap.m.Select.prototype._findLastEnabledItem = function(aItems) {
@@ -906,9 +875,38 @@ sap.m.Select.prototype._setSelectedListItem = function(oSelectedListItem) {
 };
 
 /**
+ * Sets the selected item by its index.
+ *
+ * @param {int} iIndex
+ * @private
+ */
+sap.m.Select.prototype._setSelectedItemByIndex = function(iIndex) {
+	var aItems = this.getItems(),
+		oItem;
+
+	// constrain the new index
+	iIndex = (iIndex > aItems.length - 1) ? aItems.length - 1 : Math.max(0, iIndex);
+
+	oItem = aItems[iIndex];
+
+	if (oItem) {
+
+		this._setSelectedItem({
+			item: oItem,
+			id: oItem.getId(),
+			key: oItem.getKey(),
+			fireChangeEvent: true,
+			suppressInvalidate: true
+		});
+
+		this._focusItem(this._getSelectedListItem());
+	}
+};
+
+/**
  * Get the selected item in the List.
  *
- * @return {sap.m.StandardListItem}
+ * @returns {sap.m.StandardListItem}
  * @private
  */
 sap.m.Select.prototype._getSelectedListItem = function() {
@@ -966,24 +964,21 @@ sap.m.Select._publishEventToPopup = function(mOptions) {
 };
 
 /**
- * Scrolls an element into the visual viewport.
+ * Scrolls an item into the visual viewport.
  *
  * @private
  */
-sap.m.Select.prototype._scrollElementIntoView = function(oElement, bAlignWithTop) {
-	var oElementDomRef;
+sap.m.Select.prototype._focusItem = function(oListItem) {
 
-	if (!oElement) {
+	if (!oListItem) {
 		return;
 	}
 
-	oElementDomRef = oElement.getDomRef();
+	// scrolls to the menu to the selected item
+	oListItem.focus();
 
-	if (sap.ui.Device.system.desktop) {
-
-		// scrolls the list item DOM reference into the visual viewport
-		oElementDomRef && oElementDomRef.scrollIntoView(bAlignWithTop);
-	}
+	// restore the focus to the select
+	jQuery.sap.delayedCall(0, this, "focus");
 };
 
 /**
@@ -1004,7 +999,7 @@ sap.m.Select.prototype._setValue = function(sValue) {
  * Map an item type of sap.ui.core.Item to an item type of sap.m.StandardListItem.
  *
  * @param {sap.ui.core.Item} oItem
- * @return {sap.m.StandardListItem}
+ * @returns {sap.m.StandardListItem}
  * @private
  */
 sap.m.Select.prototype._mapItemToListItem = function(oItem) {
@@ -1023,7 +1018,7 @@ sap.m.Select.prototype._mapItemToListItem = function(oItem) {
  *
  * @param {sap.m.StandardListItem} oListItem
  * @param {array} [aItems]
- * @return {sap.ui.core.Item | null}
+ * @returns {sap.ui.core.Item | null}
  * @private
  */
 sap.m.Select.prototype._findMappedItem = function(oListItem, aItems) {
@@ -1034,22 +1029,6 @@ sap.m.Select.prototype._findMappedItem = function(oListItem, aItems) {
 	}
 
 	return null;
-};
-
-/**
- * Update the selected option.
- *
- * @param {object} $NewSeletedOption
- * @private
- */
-sap.m.Select.prototype._updateSelectedOption = function($NewSeletedOption) {
-
-	// update the "selected" attribute
-	this._$SeletedOption[0].removeAttribute("selected");
-	$NewSeletedOption[0].setAttribute("selected", "selected");
-
-	// update the CSS selector with the new selected option
-	this._$SeletedOption = $NewSeletedOption;
 };
 
 /**
@@ -1088,15 +1067,6 @@ sap.m.Select.prototype._fillList = function(aItems) {
 		// to the corresponding mapped item
 		oListItem = this._mapItemToListItem(aItems[i]);
 
-		// required workaround
-		if (sap.ui.Device.support.touch || jQuery.sap.simulateMobileOnDesktop) {
-			oListItem.addEventDelegate({
-				ontouchstart: function(oEvent) {
-					(oEvent.originalEvent || oEvent)._sapui_cancelAutoClose = true;
-				}
-			});
-		}
-
 		// add the mapped item type of sap.m.StandardListItem to the list
 		this._oList.addAggregation("items", oListItem, true);	// note: suppress re-rendering
 
@@ -1120,7 +1090,7 @@ sap.m.Select.prototype._clearList = function() {
  * Popup Factory singleton.
  *
  * @param {string} sPopupType
- * @return {sap.m.Popover|sap.m.Dialog}
+ * @returns {sap.m.Popover|sap.m.Dialog}
  * @private
  * @function
  */
@@ -1135,13 +1105,11 @@ sap.m.Select.prototype._createPopupFactory = function(sPopupType) {
 /**
  * Whether the native HTML Select Element is required.
  *
- * @return {boolean}
+ * @returns {boolean}
  * @private
  */
 sap.m.Select.prototype._isRequiredSelectElement = function() {
-	if (!this._bUsePopup) {
-		return true;
-	} else if (this.getAutoAdjustWidth()) {
+	if (this.getAutoAdjustWidth()) {
 		return false;
 	} else if (this.getWidth() === "auto") {
 		return true;
@@ -1167,26 +1135,17 @@ sap.m.Select.prototype._removeActiveState = function() {
 };
 
 /**
- * Destroy some internal objects.
+ * Retrieves the first item from the aggregation named <code>items</code> whose first character match with the given <code>sChar</code>.
  *
+ * @param {string} sChar
+ * @returns {sap.ui.core.Item | undefined}
  * @private
  */
-sap.m.Select.prototype._destroyInternalObjects = function() {
-	this._$Select = null;
-	this._$HtmlSelect = null;
-	this._$Options = null;
-	this._$SeletedOption = null;
-	this._$Label = null;
-
-	if (this._oList) {
-		this._oList.destroy();
-		this._oList = null;
-	}
-
-	if (this._oPopup) {
-		this._oPopup = null;
-		this._oPopover = null;
-		this._oDialog = null;
+sap.m.Select.prototype._findItemByFirstCharacter = function(sChar) {
+	for (var i = 0, aItems = this.getItems(); i < aItems.length; i++) {
+		if (aItems[i].getText().charAt(0).toUpperCase() === sChar.toUpperCase()) {
+			return aItems[i];
+		}
 	}
 };
 
@@ -1197,7 +1156,7 @@ sap.m.Select.prototype._destroyInternalObjects = function() {
 /**
  * Create an instance type of <code>sap.m.List</code>.
  *
- * @return {sap.m.List}
+ * @returns {sap.m.List}
  * @private
  */
 sap.m.Select.prototype._createList = function() {
@@ -1243,9 +1202,6 @@ sap.m.Select.prototype._initPopup = function() {
 						onBeforeRendering: this.onBeforeRenderingPopup,
 						onAfterRendering: this.onAfterRenderingPopup
 					}, this);
-
-	// define a parent-child relationship between the Select (parent) and children
-	this.setAggregation(this._getPopupType().toLocaleLowerCase(), this.getPopup(), true);
 };
 
 /**
@@ -1261,7 +1217,8 @@ sap.m.Select.prototype.onBeforeOpen = function() {
 	this._addActiveState();
 
 	oPopup.addContent(this._oList);
-	this.addContent(oPopup);
+
+	this.addContent();
 
 	fnPopupTypeBeforeOpen && fnPopupTypeBeforeOpen.call(this);
 };
@@ -1313,7 +1270,7 @@ sap.m.Select.prototype._setPopupType = function(sPopupType) {
 /**
  * Getter for property <code>_sPopupType</code>
  *
- * @return {string}
+ * @returns {string}
  * @private
  */
 sap.m.Select.prototype._getPopupType = function() {
@@ -1327,7 +1284,7 @@ sap.m.Select.prototype._getPopupType = function() {
 /**
  * Creates an instance type of <code>sap.m.Popover</code>.
  *
- * @return {sap.m.Popover}
+ * @returns {sap.m.Popover}
  * @private
  */
 sap.m.Select.prototype._createPopover = function() {
@@ -1442,7 +1399,7 @@ sap.m.Select.prototype._onAfterRenderingPopover = function() {
 /**
  * Creates an instance type of <code>sap.m.Dialog</code>.
  *
- * @return {sap.m.Dialog}
+ * @returns {sap.m.Dialog}
  * @private
  */
 sap.m.Select.prototype._createDialog = function() {
@@ -1477,13 +1434,8 @@ sap.m.Select.prototype._onBeforeOpenDialog = function() {
 	oHeader.getContentLeft()[0].setValue(this.getSelectedItem().getText());
 };
 
-/* ========================================================== */
-/*              end: internal methods and properties          */
-/* ========================================================== */
-
-
 /* =========================================================== */
-/*                   begin: lifecycle methods                  */
+/* Lifecycle methods                                           */
 /* =========================================================== */
 
 /**
@@ -1492,15 +1444,9 @@ sap.m.Select.prototype._onBeforeOpenDialog = function() {
  * @private
  */
 sap.m.Select.prototype.init = function() {
-	if (this._bUsePopup) {
 
-		// initialize list
-		this._createList();
-
-	} else if (this._bUseCustomSelect) {
-		jQuery.sap.require("sap.m.CustomSelect");
-		sap.m.Select.prototype.init = undefined;
-	}
+	// initialize list
+	this._createList();
 };
 
 /**
@@ -1514,18 +1460,8 @@ sap.m.Select.prototype.onBeforeRendering = function() {
 		sKey = this.getSelectedKey();
 
 	this._synchronizeSelectedItemAndKey(oItem, sKey, aItems);
-
-	if (this._bUsePopup) {
-
-		this._clearList();
-		this._fillList(aItems);
-	} else {
-		this._unbindBrowserChangeEvent();
-	}
-
-	if (this._bUseCustomSelect) {
-		this._onBeforeRenderingCustom();
-	}
+	this._clearList();
+	this._fillList(aItems);
 };
 
 /**
@@ -1538,19 +1474,6 @@ sap.m.Select.prototype.onAfterRendering = function() {
 		oPopup;
 
 	this._cacheDomRefs();
-
-	this._$HtmlSelect.width("100%");
-
-	// register a listener to the browser change event
-	this._$HtmlSelect.on("change." + sap.m.SelectRenderer.CSS_CLASS, jQuery.proxy(this._handleBrowserChangeEvent, this));
-
-	if (this._bUseCustomSelect) {
-		this._onAfterRenderingCustom();
-	}
-
-	if (!this._bUsePopup) {
-		return;
-	}
 
 	// whether the Select has a Bar or a List as a parent
 	$ParentBar = this._$Select.closest(".sapMBar-CTX");
@@ -1590,35 +1513,45 @@ sap.m.Select.prototype.onAfterRendering = function() {
  * @private
  */
 sap.m.Select.prototype.exit = function() {
-	this._unbindBrowserChangeEvent();
+	var oPopup = this.getPopup();
+
 	this._removeFocusableParentPopup(this._getParentPopup());
-	this._destroyInternalObjects();
+
+	this._$Select = null;
+	this._$Label = null;
+
+	if (this._oList) {
+		this._oList.destroy();
+		this._oList = null;
+	}
+
+	if (oPopup) {
+		oPopup.destroy();
+		this._oPopover = null;
+		this._oDialog = null;
+		this._oPopup = null;
+	}
 };
 
 /* =========================================================== */
-/*                   end: lifecycle methods                    */
-/* =========================================================== */
-
-
-/* =========================================================== */
-/*                      begin: event handlers                  */
+/* Event handlers                                              */
 /* =========================================================== */
 
 /**
  * Handle the touch start event on the Select.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Select.prototype.ontouchstart = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// add the active state to the Select HTMLDIVElement container
 	this._addActiveState();
 
-	if (!this._bUsePopup || !this.hasContent() || !this.getEnabled()) {
+	if (!this.hasContent() || !this.getEnabled()) {
 		return;
 	}
 
@@ -1627,44 +1560,17 @@ sap.m.Select.prototype.ontouchstart = function(oEvent) {
 };
 
 /**
- * Handle the touch move event on the Select.
- *
- * @param {jQuery.EventObject} oEvent The event object
- * @private
- */
-sap.m.Select.prototype.ontouchmove = function(oEvent) {
-
-	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
-
-	if (!this.getEnabled()) {
-		return;
-	}
-
-	if (this._bUseCustomSelect) {
-		this._ontouchmoveCustom(oEvent);
-	}
-};
-
-/**
  * Handle the touch end event on the Select.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Select.prototype.ontouchend = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	if (!this.getEnabled()) {
-		return;
-	}
-
-	if (!this._bUsePopup) {
-
-		// remove the active state of the Select HTMLDIVElement container
-		this._removeActiveState();
 		return;
 	}
 
@@ -1678,17 +1584,17 @@ sap.m.Select.prototype.ontouchend = function(oEvent) {
 /**
  * Handle the tap event on the Select.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Select.prototype.ontap = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	var oPopup = this.getPopup();
 
-	if (!this._bUsePopup || !oPopup || !this.getEnabled()) {
+	if (!oPopup || !this.getEnabled()) {
 		return;
 	}
 
@@ -1707,24 +1613,6 @@ sap.m.Select.prototype.ontap = function(oEvent) {
 		// add the active state to the Select HTMLDIVElement container
 		this._addActiveState();
 	}
-};
-
-/**
- * Handle the change event on the Select.
- *
- * @private
- */
-sap.m.Select.prototype._handleBrowserChangeEvent = function() {
-	var $NewSeletedOption = this._$Options.filter(":selected"),
-		sOptionId = $NewSeletedOption[0].id,
-		oSelectedItem = this.getSelectedItem();
-
-	if (!oSelectedItem || oSelectedItem.getId() === sOptionId) {
-		return;
-	}
-
-	this._updateSelectedOption($NewSeletedOption);
-	this._updateSelectedItem(sap.ui.getCore().byId(sOptionId));
 };
 
 /**
@@ -1750,12 +1638,6 @@ sap.m.Select.prototype._handleSelectionChangeEvent = function(oControlEvent) {
 		return;
 	}
 
-	if (this._isRequiredSelectElement()) {
-
-		// update the selected option
-		this._updateSelectedOption(oNewSelectedItem.$());
-	}
-
 	// update the selected item
 	this._updateSelectedItem(oNewSelectedItem);
 };
@@ -1763,6 +1645,37 @@ sap.m.Select.prototype._handleSelectionChangeEvent = function(oControlEvent) {
 /* ----------------------------------------------------------- */
 /* Keyboard handling                                           */
 /* ----------------------------------------------------------- */
+
+/**
+ * Handle the keypress event.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.m.Select.prototype.onkeypress = function(oEvent) {
+
+	// mark the event for components that needs to know if the event was handled by the Select
+	oEvent.setMarked();
+
+	if (!this.getEnabled()) {
+		return;
+	}
+
+	var oItem = this._findItemByFirstCharacter(String.fromCharCode(oEvent.which));	// jQuery oEvent.which normalizes oEvent.keyCode and oEvent.charCode
+
+	if (oItem) {
+
+		this._setSelectedItem({
+			item: oItem,
+			id: oItem.getId(),
+			key: oItem.getKey(),
+			fireChangeEvent: true,
+			suppressInvalidate: true
+		});
+
+		this._focusItem(oItem._oListItem);
+	}
+};
 
 /**
  * Handle when F4 or Alt + DOWN arrow are pressed.
@@ -1773,15 +1686,11 @@ sap.m.Select.prototype._handleSelectionChangeEvent = function(oControlEvent) {
 sap.m.Select.prototype.onsapshow = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent browser address bar to be open in ie9, when F4 is pressed
 	if (oEvent.keyCode === jQuery.sap.KeyCodes.F4) {
 		oEvent.preventDefault();
-	}
-
-	if (!this._bUsePopup) {
-		return;
 	}
 
 	if (this.isOpen()) {
@@ -1813,7 +1722,7 @@ sap.m.Select.prototype.onsapescape = function(oEvent) {
 	if (this.isOpen()) {
 
 		// mark the event for components that needs to know if the event was handled by the Select
-		oEvent.originalEvent._sapui_handledByControl = true;
+		oEvent.setMarked();
 
 		this.close();
 	}
@@ -1828,7 +1737,7 @@ sap.m.Select.prototype.onsapescape = function(oEvent) {
 sap.m.Select.prototype.onsapenter = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	this.close();
 };
@@ -1842,7 +1751,7 @@ sap.m.Select.prototype.onsapenter = function(oEvent) {
 sap.m.Select.prototype.onsapdown = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
@@ -1867,17 +1776,9 @@ sap.m.Select.prototype.onsapdown = function(oEvent) {
 			suppressInvalidate: true
 		});
 
-		this._scrollElementIntoView(oItem._oListItem, false);
+		this._focusItem(oItem._oListItem);
 	}
 };
-
-/**
- * Handle when keyboard RIGHT arrow is pressed.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.m.Select.prototype.onsapright = sap.m.Select.prototype.onsapdown;
 
 /**
  * Handle when keyboard UP arrow is pressed.
@@ -1888,7 +1789,7 @@ sap.m.Select.prototype.onsapright = sap.m.Select.prototype.onsapdown;
 sap.m.Select.prototype.onsapup = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
@@ -1914,17 +1815,9 @@ sap.m.Select.prototype.onsapup = function(oEvent) {
 			suppressInvalidate: true
 		});
 
-		this._scrollElementIntoView(this._getSelectedListItem(), true);
+		this._focusItem(this._getSelectedListItem());
 	}
 };
-
-/**
- * Handle when keyboard LEFT arrow is pressed.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.m.Select.prototype.onsapleft = sap.m.Select.prototype.onsapup;
 
 /**
  * Handle Home key pressed.
@@ -1935,7 +1828,7 @@ sap.m.Select.prototype.onsapleft = sap.m.Select.prototype.onsapup;
 sap.m.Select.prototype.onsaphome = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent document scrolling when Home key is pressed
 	oEvent.preventDefault();
@@ -1952,7 +1845,7 @@ sap.m.Select.prototype.onsaphome = function(oEvent) {
 			suppressInvalidate: true
 		});
 
-		this._scrollElementIntoView(this._getSelectedListItem());
+		this._focusItem(this._getSelectedListItem());
 	}
 };
 
@@ -1965,7 +1858,7 @@ sap.m.Select.prototype.onsaphome = function(oEvent) {
 sap.m.Select.prototype.onsapend = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Select
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent document scrolling when End key is pressed
 	oEvent.preventDefault();
@@ -1982,17 +1875,46 @@ sap.m.Select.prototype.onsapend = function(oEvent) {
 			suppressInvalidate: true
 		});
 
-		this._scrollElementIntoView(this._getSelectedListItem());
+		this._focusItem(this._getSelectedListItem());
 	}
 };
 
-/* ============================================================ */
-/*                      end: event handlers                     */
-/* ============================================================ */
+/**
+ * Handle when page down key is pressed.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.m.Select.prototype.onsappagedown = function(oEvent) {
 
+	// mark the event for components that needs to know if the event was handled by the Select
+	oEvent.setMarked();
+
+	// note: prevent document scrolling when page down key is pressed
+	oEvent.preventDefault();
+
+	this._setSelectedItemByIndex(this.indexOfItem(this.getSelectedItem()) + 20);
+};
+
+/**
+ * Handle when page up key is pressed.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.m.Select.prototype.onsappageup = function(oEvent) {
+
+	// mark the event for components that needs to know if the event was handled by the Select
+	oEvent.setMarked();
+
+	// note: prevent document scrolling when page up key is pressed
+	oEvent.preventDefault();
+
+	this._setSelectedItemByIndex(this.indexOfItem(this.getSelectedItem()) - 20);
+};
 
 /* =========================================================== */
-/*                   begin: API method                         */
+/* API methods                                                 */
 /* =========================================================== */
 
 /* ----------------------------------------------------------- */
@@ -2011,7 +1933,7 @@ sap.m.Select.prototype.addContent = function(oPopup) {};
 /**
  * Getter for the Select Popup.
  *
- * @return {sap.m.Dialog | sap.m.Popover | null}
+ * @returns {sap.m.Dialog | sap.m.Popover | null}
  * @protected
  */
 sap.m.Select.prototype.getPopup = function() {
@@ -2021,7 +1943,7 @@ sap.m.Select.prototype.getPopup = function() {
 /**
  * Determines whether the Select has content or not.
  *
- * @return {boolean}
+ * @returns {boolean}
  * @protected
  */
 sap.m.Select.prototype.hasContent = function() {
@@ -2056,6 +1978,27 @@ sap.m.Select.prototype.onAfterRenderingPopup = function() {
 	fnOnAfterRenderingPopupType && fnOnAfterRenderingPopupType.call(this);
 };
 
+/**
+ * Open the Select.
+ *
+ * @returns {sap.m.Select} <code>this</code> to allow method chaining.
+ * @protected
+ * @since 1.16
+ * @name sap.m.Select#open
+ * @function
+ */
+sap.m.Select.prototype.open = function(/* only for internal uses */ bSuppressScrollIntoView) {
+
+	this.focus();
+
+	// initialize the pop-up lazily
+	this._initPopup();
+
+	this.getPopup().open();
+
+	return this;
+};
+
 /* ----------------------------------------------------------- */
 /* public methods                                              */
 /* ----------------------------------------------------------- */
@@ -2068,7 +2011,7 @@ sap.m.Select.prototype.onAfterRenderingPopup = function() {
  *    Alternatively, an sap.ui.core.Item instance may be given or null.
  *    If the value of null is provided the first enabled item will be selected (if any).
  *
- * @return {sap.m.Select} <code>this</code> to allow method chaining
+ * @returns {sap.m.Select} <code>this</code> to allow method chaining.
  * @public
  * @name sap.m.Select#setSelectedItem
  * @function
@@ -2108,7 +2051,7 @@ sap.m.Select.prototype.setSelectedItem = function(vItem) {
  * the first enabled item will be selected (if any).
  *
  * @param {string | undefined} vItem new value for property <code>selectedItemId</code>.
- * @return {sap.m.Select} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Select} <code>this</code> to allow method chaining.
  * @public
  * @since 1.12
  * @name sap.m.Select#setSelectedItemId
@@ -2148,7 +2091,7 @@ sap.m.Select.prototype.setSelectedItemId = function(vItem) {
  * In the case that an item has the default key value, it will be selected instead.
  *
  * @param {string} sKey new value for property <code>selectedKey</code>.
- * @return {sap.m.Select} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Select} <code>this</code> to allow method chaining.
  * @public
  * @since 1.11
  * @name sap.m.Select#setSelectedKey
@@ -2189,7 +2132,7 @@ sap.m.Select.prototype.setSelectedKey = function(sKey) {
  * Retrieves the item from the aggregation named <code>items</code> at the given 0-based index.
  *
  * @param {int} iIndex Index of the item to return.
- * @return {sap.ui.core.Item | null} Item at the given index, or null if none.
+ * @returns {sap.ui.core.Item | null} Item at the given index, or null if none.
  * @public
  * @since 1.16
  * @name sap.m.Select#getItemAt
@@ -2202,7 +2145,7 @@ sap.m.Select.prototype.getItemAt = function(iIndex) {
 /**
  * Retrieves the selected item object from the aggregation named <code>items</code>.
  *
- * @return {sap.ui.core.Item | null} The current target of the <code>selectedItem</code> association, or null.
+ * @returns {sap.ui.core.Item | null} The current target of the <code>selectedItem</code> association, or null.
  * @public
  * @name sap.m.Select#getSelectedItem
  * @function
@@ -2216,7 +2159,7 @@ sap.m.Select.prototype.getSelectedItem = function() {
 /**
  * Retrieves the first item from the aggregation named <code>items</code>.
  *
- * @return {sap.ui.core.Item | null} The first item, or null if there are no items.
+ * @returns {sap.ui.core.Item | null} The first item, or null if there are no items.
  * @public
  * @since 1.16
  * @name sap.m.Select#getFirstItem
@@ -2229,7 +2172,7 @@ sap.m.Select.prototype.getFirstItem = function() {
 /**
  * Retrieves the last item from the aggregation named <code>items</code>.
  *
- * @return {sap.ui.core.Item | null} The last item, or null if there are no items.
+ * @returns {sap.ui.core.Item | null} The last item, or null if there are no items.
  * @public
  * @since 1.16
  * @name sap.m.Select#getLastItem
@@ -2246,7 +2189,7 @@ sap.m.Select.prototype.getLastItem = function() {
  * based on the item key value supplied.
  *
  * @param {string} sKey An item key that specifies the item to retrieve.
- * @return {sap.ui.core.Item | null}
+ * @returns {sap.ui.core.Item | null}
  * @public
  * @since 1.16
  * @name sap.m.Select#getItemByKey
@@ -2266,7 +2209,7 @@ sap.m.Select.prototype.getItemByKey = function(sKey) {
  * Removes an item from the aggregation named <code>items</code>.
  *
  * @param {int | string | sap.ui.core.Item} vItem the item to remove or its index or id.
- * @return {sap.ui.core.Item} the removed item or null.
+ * @returns {sap.ui.core.Item} the removed item or null.
  * @public
  * @name sap.m.Select#removeItem
  * @function
@@ -2299,7 +2242,7 @@ sap.m.Select.prototype.removeItem = function(vItem) {
  * Checks if the Select is open. It returns true when the Select is currently open,
  * this includes opening and closing animations, otherwise it returns false.
  *
- * @return {boolean} Determines whether the Select is currently open (this includes opening and closing animations).
+ * @returns {boolean} Determines whether the Select is currently open (this includes opening and closing animations).
  * @public
  * @since 1.16
  * @name sap.m.Select#isOpen
@@ -2312,34 +2255,9 @@ sap.m.Select.prototype.isOpen = function() {
 };
 
 /**
- * Open the Select.
- *
- * @return {sap.m.Select} <code>this</code> to allow method chaining.
- * @protected
- * @since 1.16
- * @name sap.m.Select#open
- * @function
- */
-sap.m.Select.prototype.open = function(/* only for internal uses */ bSuppressScrollIntoView) {
-
-	if (!bSuppressScrollIntoView) {
-		this._scrollElementIntoView(this);
-	}
-
-	this.focus();
-
-	// initialize the pop-up lazily
-	this._initPopup();
-
-	this.getPopup().open();
-
-	return this;
-};
-
-/**
  * Closes the Select.
  *
- * @return {sap.m.Select} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Select} <code>this</code> to allow method chaining.
  * @public
  * @since 1.16
  * @name sap.m.Select#close
@@ -2352,7 +2270,3 @@ sap.m.Select.prototype.close = function() {
 
 	return this;
 };
-
-/* =========================================================== */
-/*                     end: API method                         */
-/* =========================================================== */

@@ -178,18 +178,17 @@ sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 
 	if (!sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
 		rm.write("<div");
-		rm.addClass("sapMOHStatus");
-		if (aRight[0] instanceof sap.ui.core.Icon) {
+		if (aRight[0] instanceof sap.m.ProgressIndicator) {
+			rm.addClass("sapMOHStatusFixedWidth");
+		}
+		else if (aRight[0] instanceof sap.ui.core.Icon) {
+			rm.addClass("sapMOHStatusFixedWidth");
 			rm.addClass("sapMObjStatusMarker");
 		}
-		rm.writeClasses();
-
-		if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft)) {				
-			if (!(aRight[0] instanceof sap.m.ProgressIndicator)) {				
-				rm.addStyle("width", "100%");
-				rm.writeStyles();
-			}			
+		else {
+			rm.addClass("sapMOHStatus");
 		}
+		rm.writeClasses();
 		rm.write(">");
 		sap.m.ObjectHeaderRenderer._renderObjects(rm, aRight);
 		rm.write("</div>");
@@ -240,7 +239,7 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 					aIconsAndStatuses.push([ aStatuses[i] ]);
 				} else {
 					jQuery.sap.log.warning("Only sap.m.ObjectStatus or sap.m.ProgressIndicator are allowed in \"sap.m.ObjectHeader.statuses\" aggregation." + " Current object is "
-						+ aStatuses[i].constructor.getMetadata().getName() + " with id \"" + aStatuses[i].getId() + "\"");
+							+ aStatuses[i].constructor.getMetadata().getName() + " with id \"" + aStatuses[i].getId() + "\"");
 				}
 			}
 		}
@@ -428,7 +427,7 @@ sap.m.ObjectHeaderRenderer.renderFullOH = function(rm, oOH) {
 
 	this.renderNumber(rm, oOH);
 	
-	rm.write("<div style='clear:both'/>");
+	rm.write("<div class=\"sapMOHDivider\"/>");
 	rm.write("</div>"); // End Top row container
 
 	if (oOH._hasBottomContent()) {
@@ -439,7 +438,7 @@ sap.m.ObjectHeaderRenderer.renderFullOH = function(rm, oOH) {
 
 		this.renderAttributesAndStatuses(rm, oOH);
 
-		rm.write("<div style='clear:both'/>");
+		rm.write("<div class=\"sapMOHDivider\"/>");
 		rm.write("</div>"); // End Bottom row container
 	}
 };
@@ -515,7 +514,7 @@ sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
 		this.renderFullOH(rm, oOH);
 	}
 	
-	rm.write("<div style='clear:both'/>");
+	rm.write("<div class=\"sapMOHLastDivider\"/>");
 
 	rm.write("</div>"); // End Main container\
 

@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -373,7 +373,7 @@ sap.m.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Slider</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Slider</code>.<br/> itself.
  *
  * @return {sap.m.Slider} <code>this</code> to allow method chaining
  * @public
@@ -437,7 +437,7 @@ sap.m.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Slider</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Slider</code>.<br/> itself.
  *
  * @return {sap.m.Slider} <code>this</code> to allow method chaining
  * @public
@@ -510,20 +510,21 @@ sap.m.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
 
 // Start of sap\m\Slider.js
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
+jQuery.sap.require("sap.m.SliderRenderer");
 sap.ui.core.EnabledPropagator.apply(sap.m.Slider.prototype, [true]);
 
 /* =========================================================== */
-/*             begin: private methods and properties           */
+/* Private methods and properties                              */
 /* =========================================================== */
 
 /* ----------------------------------------------------------- */
-/* private properties                                          */
+/* Private properties                                          */
 /* ----------------------------------------------------------- */
 
 sap.m.Slider._bRtl  = sap.ui.getCore().getConfiguration().getRTL();
 
 /* ----------------------------------------------------------- */
-/* private methods                                             */
+/* Private methods                                             */
 /* ----------------------------------------------------------- */
 
 /**
@@ -674,7 +675,7 @@ sap.m.Slider.prototype._validateProperties = function() {
  *
  * @see sap.m.Slider#setValue
  * @param {float} fValue new value for property <code>value</code>.
- * @return {sap.m.Slider} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Slider} <code>this</code> to allow method chaining.
  * @private
  * @function
  */
@@ -750,7 +751,7 @@ sap.m.Slider.prototype._setValue = function(fNewValue) {
  * @returns {object} The nearest handle jQuery DOM reference.
  * @private
  */
-sap.m.Slider.prototype._getNearestHandle = function() {
+sap.m.Slider.prototype._getClosestHandle = function() {
 
 	// there is only one handle, it is always the nearest
 	return this._$Handle;
@@ -813,13 +814,12 @@ sap.m.Slider.prototype._fireChangeAndLiveChange = function(oParam) {
 	this.fireLiveChange(oParam);
 };
 
-/* ========================================================== */
-/*              end: private methods and properties           */
-/* ========================================================== */
-
+sap.m.Slider.prototype._hasFocus = function() {
+	return document.activeElement === this.getFocusDomRef();
+};
 
 /* =========================================================== */
-/*                   begin: lifecycle methods                  */
+/* Lifecycle methods                                           */
 /* =========================================================== */
 
 /**
@@ -844,7 +844,9 @@ sap.m.Slider.prototype.onBeforeRendering = function() {
 	this._bInputRendered = !!this.getName();
 	this._bDisabled = !this.getEnabled();
 
-	this._fInitialFocusValue = this.getValue();
+	if (!this._hasFocus()) {
+		this._fInitialFocusValue = this.getValue();
+	}
 };
 
 /**
@@ -873,29 +875,37 @@ sap.m.Slider.prototype.exit = function() {
 };
 
 /* =========================================================== */
-/*                   end: lifecycle methods                    */
-/* =========================================================== */
-
-
-/* =========================================================== */
-/*                      begin: event handlers                  */
+/* Event handlers                                              */
 /* =========================================================== */
 
 /**
  * Handle the touchstart event happening on the slider.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.ontouchstart = function(oEvent) {
 	var fMin = this.getMin(),
+		oNearestHandleDomRef,
 		fNewValue;
 
 	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	if (oEvent.targetTouches.length > 1 || this._bDisabled) {	// suppress multiTouch events
 		return;
+	}
+
+	oNearestHandleDomRef = this._getClosestHandle()[0];
+
+	if (oEvent.target !== oNearestHandleDomRef) {
+
+		// set the focus to the nearest slider handle
+		jQuery.sap.delayedCall(0, oNearestHandleDomRef, "focus");
+	}
+
+	if (!this._hasFocus()) {
+		this._fInitialFocusValue = this.getValue();
 	}
 
 	// recalculate some styles,
@@ -908,7 +918,7 @@ sap.m.Slider.prototype.ontouchstart = function(oEvent) {
 	// add active state
 	this._$SliderInner.addClass(sap.m.SliderRenderer.CSS_CLASS + "Pressed");
 
-	if (this._$Handle[0].contains(oEvent.target)) {
+	if (oEvent.target === this._$Handle[0]) {
 
 		this._fDiffX = (oEvent.targetTouches[0].pageX - this._$Handle.offset().left) + this._fSliderPaddingLeft - (this._fHandleWidth / 2);
 	} else {
@@ -934,13 +944,16 @@ sap.m.Slider.prototype.ontouchstart = function(oEvent) {
 /**
  * Handle the touchmove event on the slider.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.ontouchmove = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
+
+	// note: prevent native document scrolling
+	oEvent.preventDefault();
 
 	if (this._bDisabled) {
 		return;
@@ -967,12 +980,13 @@ sap.m.Slider.prototype.ontouchmove = function(oEvent) {
 /**
  * Handle the touchend event on the slider.
  *
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.ontouchend = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	var fValue = this.getValue();
 
@@ -995,25 +1009,6 @@ sap.m.Slider.prototype.ontouchend = function(oEvent) {
  */
 sap.m.Slider.prototype.ontouchcancel = sap.m.Slider.prototype.ontouchend;
 
-/**
- * Handle the mousedown event on the slider.
- *
- * @private
- */
-sap.m.Slider.prototype.onmousedown = function(oEvent) {
-	var oHandleDomRef = this._getNearestHandle()[0];
-
-	if (document.activeElement !== this.getFocusDomRef()) {
-		this._fInitialFocusValue = this.getValue();
-	}
-
-	if (sap.ui.Device.system.desktop && (oEvent.target !== oHandleDomRef)) {
-
-		// set the focus to the slider handle
-		jQuery.sap.delayedCall(0, oHandleDomRef, "focus");
-	}
-};
-
 /* ----------------------------------------------------------- */
 /* Keyboard handling                                           */
 /* ----------------------------------------------------------- */
@@ -1021,18 +1016,18 @@ sap.m.Slider.prototype.onmousedown = function(oEvent) {
 /**
  * Handle when right arrow or up arrow is pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapincrease = function(oEvent) {
 	var fValue,
 		fNewValue;
 
-	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
-
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
+
+	// mark the event for components that needs to know if the event was handled by the Slider
+	oEvent.setMarked();
 
 	if (this.getEnabled()) {
 		fValue = this.getValue();
@@ -1048,16 +1043,16 @@ sap.m.Slider.prototype.onsapincrease = function(oEvent) {
 /**
  * Handle when Ctrl + right arrow or up arrow are pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapincreasemodifiers = function(oEvent) {
 
-	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
-
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
+
+	// mark the event for components that needs to know if the event was handled by the Slider
+	oEvent.setMarked();
 
 	this._increaseValueBy(this._getLongStep());
 };
@@ -1065,18 +1060,18 @@ sap.m.Slider.prototype.onsapincreasemodifiers = function(oEvent) {
 /**
  * Handle when left arrow or down arrow are pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapdecrease = function(oEvent) {
 	var fValue,
 		fNewValue;
 
-	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
-
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
+
+	// mark the event for components that needs to know if the event was handled by the Slider
+	oEvent.setMarked();
 
 	if (this.getEnabled()) {
 		fValue = this.getValue();
@@ -1092,16 +1087,16 @@ sap.m.Slider.prototype.onsapdecrease = function(oEvent) {
 /**
  * Handle when Ctrl + left or Ctrl + down keys are pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapdecreasemodifiers = function(oEvent) {
 
-	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
-
 	// note: prevent document scrolling when arrow keys are pressed
 	oEvent.preventDefault();
+
+	// mark the event for components that needs to know if the event was handled by the Slider
+	oEvent.setMarked();
 
 	this._decreaseValueBy(this._getLongStep());
 };
@@ -1109,7 +1104,7 @@ sap.m.Slider.prototype.onsapdecreasemodifiers = function(oEvent) {
 /**
  * Handle when "+" is pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapexpand = sap.m.Slider.prototype.onsapincrease;
@@ -1117,7 +1112,7 @@ sap.m.Slider.prototype.onsapexpand = sap.m.Slider.prototype.onsapincrease;
 /**
  * Handle when "-" is pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapcollapse = sap.m.Slider.prototype.onsapdecrease;
@@ -1125,7 +1120,7 @@ sap.m.Slider.prototype.onsapcollapse = sap.m.Slider.prototype.onsapdecrease;
 /**
  * Handle when page up is pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsappageup = sap.m.Slider.prototype.onsapincreasemodifiers;
@@ -1133,7 +1128,7 @@ sap.m.Slider.prototype.onsappageup = sap.m.Slider.prototype.onsapincreasemodifie
 /**
  * Handle when page down is pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsappagedown = sap.m.Slider.prototype.onsapdecreasemodifiers;
@@ -1141,13 +1136,13 @@ sap.m.Slider.prototype.onsappagedown = sap.m.Slider.prototype.onsapdecreasemodif
 /**
  * Handle Home key pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsaphome = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	var fMin = this.getMin();
 
@@ -1163,13 +1158,13 @@ sap.m.Slider.prototype.onsaphome = function(oEvent) {
 /**
  * Handle End key pressed.
  *
- * @param {jQuery.Event} oEvent
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Slider.prototype.onsapend = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Slider
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	var fMax = this.getMax();
 
@@ -1185,7 +1180,6 @@ sap.m.Slider.prototype.onsapend = function(oEvent) {
 /**
  * Handle when tab key is pressed.
  *
- * @param {jQuery.Event} oEvent
  * @private
  */
 sap.m.Slider.prototype.onsaptabnext = function() {
@@ -1195,7 +1189,6 @@ sap.m.Slider.prototype.onsaptabnext = function() {
 /**
  * Handle when shift + tab keys are pressed.
  *
- * @param {jQuery.Event} oEvent
  * @private
  */
 sap.m.Slider.prototype.onsaptabprevious = function() {
@@ -1205,27 +1198,21 @@ sap.m.Slider.prototype.onsaptabprevious = function() {
 /**
  * Handle when escape key is pressed.
  *
- * @param {jQuery.Event} oEvent
  * @private
  */
-sap.m.Slider.prototype.onsapescape = function(oEvent) {
+sap.m.Slider.prototype.onsapescape = function() {
 
 	// reset the slider back to the value
 	// which it had when it got the focus
 	this.setValue(this._fInitialFocusValue);
 };
 
-/* ============================================================ */
-/*                      end: event handlers                     */
-/* ============================================================ */
-
-
 /* =========================================================== */
-/*                   begin: API method                         */
+/* API method                                                  */
 /* =========================================================== */
 
 /* ----------------------------------------------------------- */
-/* public methods                                              */
+/* Public methods                                              */
 /* ----------------------------------------------------------- */
 
 sap.m.Slider.prototype.getFocusDomRef = function() {
@@ -1238,7 +1225,7 @@ sap.m.Slider.prototype.getFocusDomRef = function() {
  * @name sap.m.Slider.prototype.stepUp
  * @function
  * @param {int} [iStep=1] The number of steps the slider goes up.
- * @return {sap.m.Slider} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Slider} <code>this</code> to allow method chaining.
  * @type sap.m.Slider
  * @public
  */
@@ -1252,7 +1239,7 @@ sap.m.Slider.prototype.stepUp = function(iStep) {
  * @name sap.m.Slider.prototype.stepDown
  * @function
  * @param {int} [iStep=1] The number of steps the slider goes down.
- * @return {sap.m.Slider} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Slider} <code>this</code> to allow method chaining.
  * @type sap.m.Slider
  * @public
  */
@@ -1266,7 +1253,7 @@ sap.m.Slider.prototype.stepDown = function(iStep) {
  * Default value is <code>0</code>.
  *
  * @param {float} fValue new value for property <code>value</code>.
- * @return {sap.m.Slider} <code>this</code> to allow method chaining.
+ * @returns {sap.m.Slider} <code>this</code> to allow method chaining.
  * @public
  * @name sap.m.Slider#setValue
  * @function
@@ -1281,7 +1268,3 @@ sap.m.Slider.prototype.setValue = function(fNewValue) {
 	// update the value and suppress re-rendering
 	return this.setProperty("value", fNewValue, true);
 };
-
-/* =========================================================== */
-/*                     end: API method                         */
-/* =========================================================== */

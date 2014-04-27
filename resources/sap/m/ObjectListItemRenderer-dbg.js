@@ -129,7 +129,15 @@ sap.m.ObjectListItemRenderer.renderLIContent = function(rm, oLI) {
 	rm.addClass("sapMObjLTopRow");
 	rm.writeClasses();
 	rm.write(">");
-			
+	
+	if(!!oLI.getIcon()) {
+		rm.write("<div");
+		rm.addClass("sapMObjLIconDiv");
+		rm.writeClasses();
+		rm.write(">");
+		rm.renderControl(oLI._getImageControl());
+		rm.write("</div>");
+	}
 	
 	// Container for a number and a units qualifier.
 	rm.write("<div"); // Start Number/units container
@@ -164,23 +172,17 @@ sap.m.ObjectListItemRenderer.renderLIContent = function(rm, oLI) {
 	
 	// Title container displayed to the left of the number and number units container.
 	rm.write("<div"); // Start Title container
-	rm.writeAttribute("id", oLI.getId() + "-title");
-	rm.addClass("sapMObjLTitle");
-	rm.writeClasses();
+	rm.addStyle("display","-webkit-box");
+	rm.addStyle("overflow","hidden");
+	rm.writeStyles();
 	rm.write(">");
-	
-	if(!!oLI.getIcon()) {
-		rm.write("<div");
-		rm.addClass("sapMObjLIconDiv");
-		rm.writeClasses();
-		rm.write(">");
-		rm.renderControl(oLI._getImageControl());
-		rm.write("</div>");
-	}		
-		
-	if (oLI.getTitle()) {
-		rm.writeEscaped(oLI.getTitle());
+	var oTitleText = oLI._getTitleText();
+	if (oTitleText) {
+		oTitleText.setText(oLI.getTitle());
+		oTitleText.addStyleClass("sapMObjLTitle");
+		rm.renderControl(oTitleText);
 	}
+	
 	rm.write("</div>"); // End Title container	
 	
 	rm.write("</div>"); // End Top row container

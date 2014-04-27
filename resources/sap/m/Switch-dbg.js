@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -312,7 +312,7 @@ sap.m.Switch.M_EVENTS = {'change':'change'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Switch</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Switch</code>.<br/> itself.
  *
  * @return {sap.m.Switch} <code>this</code> to allow method chaining
  * @public
@@ -355,30 +355,31 @@ sap.m.Switch.M_EVENTS = {'change':'change'};
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.IconPool");
+jQuery.sap.require("sap.m.SwitchRenderer");
 sap.ui.core.IconPool.insertFontFaceStyle();
 
 sap.ui.core.EnabledPropagator.apply(sap.m.Switch.prototype, [true]);
 
 /* =========================================================== */
-/*           begin: internal methods and properties            */
+/* Internal methods and properties                             */
 /* =========================================================== */
 
 /**
- * Update the switch UI during the dragging process.
+ * Slide the switch.
  *
  * @private
  */
-sap.m.Switch.prototype._updateUI = function(iPositionLeft) {
-	iPositionLeft = iPositionLeft > sap.m.Switch._OFFPOSITION ? sap.m.Switch._OFFPOSITION
-																: iPositionLeft < sap.m.Switch._ONPOSITION ? sap.m.Switch._ONPOSITION : iPositionLeft;
+sap.m.Switch.prototype._slide = function(iPosition) {
+	iPosition = iPosition > sap.m.Switch._OFFPOSITION ? sap.m.Switch._OFFPOSITION
+														: iPosition < sap.m.Switch._ONPOSITION ? sap.m.Switch._ONPOSITION : iPosition;
 
-	if (this._iCurrentPositionLeft === iPositionLeft) {
+	if (this._iCurrentPosition === iPosition) {
 		return;
 	}
 
-	this._iCurrentPositionLeft = iPositionLeft;
-	this._$SwitchInner[0].style[sap.m.Switch._bRtl ? "right" : "left"] = iPositionLeft + "px";
-	this._setTempState(Math.abs(iPositionLeft) < sap.m.Switch._SWAPPOINT);
+	this._iCurrentPosition = iPosition;
+	this._$SwitchInner[0].style[sap.m.Switch._bRtl ? "right" : "left"] = iPosition + "px";
+	this._setTempState(Math.abs(iPosition) < sap.m.Switch._SWAPPOINT);
 };
 
 sap.m.Switch.prototype._setTempState = function(b) {
@@ -396,10 +397,6 @@ sap.m.Switch._getCssParameter = function(sParameter) {
 	return fnGetCssParameter(sParameter) || fnGetCssParameter(sParameter + "-" + sap.ui.Device.os.name.toLowerCase());
 };
 
-sap.m.Switch.prototype.handleFocus = function() {
-	this._$Handle[0].focus();
-};
-
 (function() {
 	var sParamTransitionTime = "sapMSwitch-TRANSITIONTIME",
 
@@ -410,7 +407,7 @@ sap.m.Switch.prototype.handleFocus = function() {
 
 	// the milliseconds takes the transition from one state to another
 	sap.m.Switch._TRANSITIONTIME = Number(sTransitionTime) || 0;
-})();
+}());
 
 sap.m.Switch._bRtl  = sap.ui.getCore().getConfiguration().getRTL();
 
@@ -427,11 +424,7 @@ sap.m.Switch._SWAPPOINT = Math.abs((sap.m.Switch._ONPOSITION - sap.m.Switch._OFF
 sap.m.Switch._oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 
 /* =========================================================== */
-/*                      end: internal methods                  */
-/* =========================================================== */
-
-/* =========================================================== */
-/*                   begin: lifecycle methods                  */
+/* Lifecycle methods                                           */
 /* =========================================================== */
 
 /**
@@ -456,89 +449,76 @@ sap.m.Switch.prototype.onBeforeRendering = function() {
  * @private
  */
 sap.m.Switch.prototype.onAfterRendering = function() {
-	var $SwitchCont;
+	var $SwitchCont,
+		CSS_CLASS = "." + sap.m.SwitchRenderer.CSS_CLASS;
 
 	// switch control container jQuery DOM reference
 	$SwitchCont = this.$();
 
 	// switch jQuery DOM reference
-	this._$Switch = $SwitchCont.find(".sapMSwt");
+	this._$Switch = $SwitchCont.find(CSS_CLASS);
 
 	// switch inner jQuery DOM reference
-	this._$SwitchInner = this._$Switch.children(".sapMSwtInner");
+	this._$SwitchInner = this._$Switch.children(CSS_CLASS + "Inner");
 
 	// switch handle jQuery DOM reference
-	this._$Handle = this._$SwitchInner.children(".sapMSwtHandle");
+	this._$Handle = this._$SwitchInner.children(CSS_CLASS + "Handle");
 
 	// checkbox jQuery DOM reference
 	this._$Checkbox = $SwitchCont.children("input");
-
-	// width of the switch
-	this._iSwitchWidth = this._$Switch.outerWidth();
 };
 
 /* =========================================================== */
-/*                   end: lifecycle methods                    */
-/* =========================================================== */
-
-
-/* =========================================================== */
-/*                      begin: event handlers                  */
+/* Event handlers                                              */
 /* =========================================================== */
 
 /**
  * Handle the touch start event happening on the switch.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Switch.prototype.ontouchstart = function(oEvent) {
-	var oTargetTouch = oEvent.targetTouches[0];
+	var oTargetTouch = oEvent.targetTouches[0],
+		CSS_CLASS = sap.m.SwitchRenderer.CSS_CLASS;
 
 	// mark the event for components that needs to know if the event was handled by the Switch
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
-	// Only process single touches. If there is already a touch happening
-	// or two simultaneous touches, then just ignore them.
-	//
-	// Important to note that oEvent.targetTouches.length is related
-	// to the current target DOM element, it could be the control
-	// container or its children elements.
-	//
-	// Also note that oEvent.touches.length is related to
-	// the UI-Area because event delegation.
+	// Process only single touches, if there is already a touch happening
+	// or two simultaneous touches, then ignore them.
 	if (sap.m.touch.countContained(oEvent.touches, this.getId()) > 1 || this._bDisabled) {
 		return;
 	}
 
-	if (jQuery.device.is.desktop) {
-		jQuery.sap.delayedCall(0, this, "handleFocus");
-	}
+	jQuery.sap.delayedCall(0, this._$Handle[0], "focus");
+
+	this._$Switch.addClass(CSS_CLASS + "Pressed")
+				.removeClass(CSS_CLASS + "Trans");
 
 	this._iActiveTouch = oTargetTouch.identifier;
-
-	this._$Switch.addClass("sapMSwtPressed")
-				.removeClass("sapMSwtTrans");
-
 	this._bTempState = this.getState();
-	this._iTouchStartPageX = oTargetTouch.pageX;
-	this._iSwitchPositionLeft = this._$SwitchInner.position().left;
-	this._bDragged = false;
+	this._iStartPressPosX = oTargetTouch.pageX;
+	this._iPosition = this._$SwitchInner.position().left;
+	this._bDragging = false;
 };
 
 /**
  * Handle the touch move event on the switch.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Switch.prototype.ontouchmove = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Switch
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
+
+	// note: prevent native document scrolling
+	oEvent.preventDefault();
 
 	var oTouch,
-		iPositionLeft,
+		iPosition,
 		fnTouch = sap.m.touch;
 
 	if (this._bDisabled) {
@@ -546,44 +526,41 @@ sap.m.Switch.prototype.ontouchmove = function(oEvent) {
 	}
 
 	// the active touch has to be in the list of touches
-	jQuery.sap.assert(fnTouch.find(oEvent.touches, this._iActiveTouch), 'sap.m.Switch.prototype.ontouchmove(): missing touchEnd');
+	jQuery.sap.assert(fnTouch.find(oEvent.touches, this._iActiveTouch), "missing touchend");
 
 	// find the active touch
 	oTouch = fnTouch.find(oEvent.changedTouches, this._iActiveTouch);
 
-	if (!oTouch || // only respond to the active touch
+	// only respond to the active touch
+	if (!oTouch ||
 
 		// Note: do not rely on a specific granularity of the touchmove event.
 		// On windows 8 surfaces, the touchmove events are dispatched even if
 		// the user doesn’t move the touch point along the surface.
-		oTouch.pageX === this._iTouchStartPageX) {
+		oTouch.pageX === this._iStartPressPosX) {
 		return;
 	}
 
-	this._bDragged = true;
-	iPositionLeft = ((this._iTouchStartPageX - oTouch.pageX) * -1) + this._iSwitchPositionLeft;
+	this._bDragging = true;
+	iPosition = ((this._iStartPressPosX - oTouch.pageX) * -1) + this._iPosition;
 
 	if (sap.m.Switch._bRtl) {
-		iPositionLeft = -iPositionLeft;
+		iPosition = -iPosition;
 	}
 
-	this._updateUI(iPositionLeft);
+	this._slide(iPosition);
 };
-
-if (sap.ui.Device.os.ios && sap.ui.Device.os.version <= 5 && sap.ui.core.theming.Parameters.get("sapMPlatformDependent") == "true") {
-	sap.m.Switch.prototype.ontouchmove = null;
-}
 
 /**
  * Handle the touch end event on the switch.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Switch.prototype.ontouchend = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Switch
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	var fnTouch = sap.m.touch,
 		assert = jQuery.sap.assert;
@@ -592,9 +569,9 @@ sap.m.Switch.prototype.ontouchend = function(oEvent) {
 		return;
 	}
 
-	assert(this._iActiveTouch !== undefined, 'sap.m.Switch.prototype.ontouchend(): expect to already be touching');
+	assert(this._iActiveTouch !== undefined, "expect to already be touching");
 
-	// if the touch we're tracking isn't changing here, ignore this touch end event
+	// if the touch we're tracking isn't changing here, ignore this event
 	if (!fnTouch.find(oEvent.changedTouches, this._iActiveTouch)) {
 
 		// In most cases, our active touch will be in the touches collection,
@@ -603,20 +580,20 @@ sap.m.Switch.prototype.ontouchend = function(oEvent) {
 		return;
 	}
 
-	// this is touch end for the touch we're monitoring
-	assert(!fnTouch.find(oEvent.touches, this._iActiveTouch), 'sap.m.Switch.prototype.ontouchend(): touch ended also still active');
+	// the touchend for the touch we're monitoring
+	assert(!fnTouch.find(oEvent.touches, this._iActiveTouch), "touch ended also still active");
 
 	// remove active state
-	this._$Switch.removeClass("sapMSwtPressed");
+	this._$Switch.removeClass(sap.m.SwitchRenderer.CSS_CLASS + "Pressed");
 
 	// change the state
-	this.setState(this._bDragged ? this._bTempState : !this._bTempState, true);
+	this.setState(this._bDragging ? this._bTempState : !this._bTempState, true);
 };
 
 /**
- * Handle the touch cancel event on the switch.
+ * Handle the touchcancel event on the switch.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Switch.prototype.ontouchcancel = sap.m.Switch.prototype.ontouchend;
@@ -624,13 +601,13 @@ sap.m.Switch.prototype.ontouchcancel = sap.m.Switch.prototype.ontouchend;
 /**
  *  Handle when the space or enter key are pressed.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object.
  * @private
  */
 sap.m.Switch.prototype.onsapselect = function(oEvent) {
 
 	// mark the event for components that needs to know if the event was handled by the Switch
-	oEvent.originalEvent._sapui_handledByControl = true;
+	oEvent.setMarked();
 
 	// note: prevent document scrolling when space keys is pressed
 	oEvent.preventDefault();
@@ -638,13 +615,8 @@ sap.m.Switch.prototype.onsapselect = function(oEvent) {
 	this.setState(!this.getState());
 };
 
-/* ============================================================ */
-/*                      end: event handlers						*/
-/* ============================================================ */
-
-
 /* =========================================================== */
-/*                   begin: API method                         */
+/* API method                                                  */
 /* =========================================================== */
 
 sap.m.Switch.prototype.getFocusDomRef = function() {
@@ -656,12 +628,13 @@ sap.m.Switch.prototype.getFocusDomRef = function() {
  *
  * @param {boolean} bState
  * @public
- * @return {sap.m.Switch} <code>this</code> to allow method chaining
+ * @return {sap.m.Switch} <code>this</code> to allow method chaining.
  */
 sap.m.Switch.prototype.setState = function(bState, bTriggerEvent) {
 	var sState,
 		bNewState,
-		Swt = sap.m.Switch;
+		Swt = sap.m.Switch,
+		CSS_CLASS = sap.m.SwitchRenderer.CSS_CLASS;
 
 	if (this._bDisabled && bTriggerEvent) {
 		return this;
@@ -688,28 +661,24 @@ sap.m.Switch.prototype.setState = function(bState, bTriggerEvent) {
 			this._$Checkbox[0].setAttribute("value", sState);
 		}
 
-		bState ? this._$Switch.removeClass("sapMSwtOff").addClass("sapMSwtOn")
-				: this._$Switch.removeClass("sapMSwtOn").addClass("sapMSwtOff");
+		bState ? this._$Switch.removeClass(CSS_CLASS + "Off").addClass(CSS_CLASS + "On")
+				: this._$Switch.removeClass(CSS_CLASS + "On").addClass(CSS_CLASS + "Off");
 
 		if (bTriggerEvent) {
 			if (Swt._bUseTransition) {
-				jQuery.sap.delayedCall(Swt._TRANSITIONTIME, this, function _sapSwtFireChangeDelayed() {
-					this.fireChange({state:bState});
+				jQuery.sap.delayedCall(Swt._TRANSITIONTIME, this, function() {
+					this.fireChange({ state: bState });
 				}, [bState]);
 			} else {
-				this.fireChange({state:bState});
+				this.fireChange({ state: bState });
 			}
 		}
 	}
 
-	this._$Switch.addClass("sapMSwtTrans");
+	this._$Switch.addClass(CSS_CLASS + "Trans");
 
 	// remove inline styles
 	this._$SwitchInner.removeAttr("style");
 
 	return this;
 };
-
-/* =========================================================== */
-/*                     end: API method                         */
-/* =========================================================== */

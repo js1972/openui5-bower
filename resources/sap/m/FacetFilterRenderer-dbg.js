@@ -1,169 +1,137 @@
-/**
- * @copyright
- */
+/*
+* @copyright
+*/
 
 jQuery.sap.declare("sap.m.FacetFilterRenderer");
 
 /**
- * @class FacetFilter renderer.
+ * @class FacetFilter renderer. 
  * @static
  */
-sap.m.FacetFilterRenderer = {};
+sap.m.FacetFilterRenderer = {
+};
+
 
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  * 
- * @param {sap.ui.core.RenderManager}
- *            oRm the RenderManager that can be used for writing to the render output buffer
- * @param {sap.ui.core.Control}
- *            oControl an object representation of the control that should be rendered
+ * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
-sap.m.FacetFilterRenderer.render = function(oRm, oControl) {
-
-	// return immediately if control is invisible
+sap.m.FacetFilterRenderer.render = function(oRm, oControl){ 
+	
+	// Return immediately if control is invisible
 	if (!oControl.getVisible()) {
 		return;
 	}
 
-	// write the HTML into the render manager
-	oRm.write("<div");
-	oRm.writeControlData(oControl);
-	oRm.addClass("sapMFF");
-	if (oControl._lastScrolling) {
-		oRm.addClass("sapMFFScrolling");
-	} else {
-		oRm.addClass("sapMFFNoScrolling");
-	}
-	oRm.writeClasses();
-
-	oRm.write(">");
-
-	var oFlowType = oControl._getType();
-
-	switch (oFlowType) {
+	switch (oControl.getType()) {
 
 	case sap.m.FacetFilterType.Simple:
 		sap.m.FacetFilterRenderer.renderSimpleFlow(oRm, oControl);
 		break;
 
 	case sap.m.FacetFilterType.Light:
-		sap.m.FacetFilterRenderer.renderLightFlow(oRm, oControl);
+		sap.m.FacetFilterRenderer.renderSummaryBar(oRm, oControl);
 		break;
 	}
-
-	oRm.write("</div>");
 };
 
-sap.m.FacetFilterRenderer.renderLightFlow = function(oRm, oControl) {
-
-	oControl._summaryBar.setActive(true);
-	sap.m.FacetFilterRenderer.renderSummaryBar(oRm, oControl);
-};
-
+/**
+ * 
+ * 
+ * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+ */
 sap.m.FacetFilterRenderer.renderSimpleFlow = function(oRm, oControl) {
-
-	if (!oControl._getShowSummaryBar()) {
-		if (jQuery.device.is.desktop) {
-			oRm.renderControl(oControl._getScrollingArrow("left"));
+	
+	oRm.write("<div");
+	oRm.writeControlData(oControl);		
+	oRm.addClass("sapMFF");
+	
+	if(oControl.getShowSummaryBar()) {
+		
+		oRm.write(">");
+		sap.m.FacetFilterRenderer.renderSummaryBar(oRm, oControl);
+	} else {
+		
+		if (oControl._lastScrolling) { 
+			
+			oRm.addClass("sapMFFScrolling");
+		} else {
+			
+			oRm.addClass("sapMFFNoScrolling");
+		}		
+		
+		if(oControl.getShowReset()) {		
+			
+			oRm.addClass("sapMFFResetSpacer");
 		}
-
-		// render the div for the carousel
-		oRm.write("<div id='" + oControl.getId() + "-head'");
+		oRm.writeClasses();
+		oRm.write(">");		
+		
+		
+		if (sap.ui.Device.system.desktop) {
+			oRm.renderControl(oControl._getScrollingArrow("left"));
+		}		
+		
+		// Render the div for the carousel
+		oRm.write("<div");
+		oRm.writeAttribute("id", oControl.getId() + "-head");
 		oRm.writeControlData(oControl);
 		oRm.addClass("sapMFFHead");
 		oRm.writeClasses();
-
-		oRm.write(">");
-		sap.m.FacetFilterRenderer.renderItems(oRm, oControl);
-
-		if (oControl.getShowPersonalization()) {
-			sap.m.FacetFilterRenderer.renderPersonalization(oRm, oControl);
+		oRm.write(">");	
+		
+		var aLists = oControl._getSequencedLists();
+		for(var i=0; i < aLists.length; i++) {
+			
+			oRm.renderControl(oControl._getButtonForList(aLists[i]));
+			if (oControl.getShowPersonalization()) {
+				
+				oRm.renderControl(oControl._getFacetRemoveIcon(aLists[i]));
+			}			
 		}
-		oRm.write("</div>");
-
-		if (jQuery.device.is.desktop) {
+		
+		if (oControl.getShowPersonalization()) {
+			oRm.renderControl(oControl.getAggregation("addFacetButton"));
+		}		
+		oRm.write("</div>"); // Close carousel div
+		
+		if (sap.ui.Device.system.desktop) {
 			oRm.renderControl(oControl._getScrollingArrow("right"));
-		}
-
-		oRm.write("<span");
-		oRm.addClass("sapMFFResetIcon");
-		oRm.writeClasses();
-		oRm.write(">");
-		oRm.renderControl(oControl._resetIcon.setVisible(oControl.getShowReset()));
-		oRm.write("</span>");
-
-	} else {
-		sap.m.FacetFilterRenderer.renderSummaryBar(oRm, oControl);
+		}	
+		
+		if(oControl.getShowReset()) {
+			
+			oRm.write("<div");
+			oRm.addClass("sapMFFResetDiv");
+			oRm.writeClasses();
+			oRm.write(">");
+			oRm.renderControl(oControl.getAggregation("resetButton"));
+			oRm.write("</div>");
+		}				
 	}
+	oRm.write("</div>");
 };
 
-sap.m.FacetFilterRenderer.renderItems = function(oRm, oControl) {
 
-	var aLists = oControl.getLists();
-	var aActiveList = sap.m.FacetFilterRenderer.setSequenceOnItems(aLists);
-	
-	if (aActiveList.length > 1) {
-		aActiveList.sort(function(a,b){return a.getSequence() - b.getSequence()});
-	}
-	
-	for ( var i = 0; i < aActiveList.length; i++) {
-		var oFFList = aActiveList[i];
-		oFFList._getFacetButton().setText(oFFList._getSelectionText());
-		oRm.renderControl(oFFList._getFacetButton());
-		if (oControl.getShowPersonalization()) {
-			oRm.renderControl(oFFList._getFacetRemoveIcon());
-		};
-	}
-};
-
-sap.m.FacetFilterRenderer.renderPersonalization = function(oRm, oControl) {
-
-	oRm.renderControl(oControl._facetAddIcon);
-};
-
+/**
+ * 
+ * 
+ * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+ */
 sap.m.FacetFilterRenderer.renderSummaryBar = function(oRm, oControl) {
 
-	oControl._summaryBar.getContent()[0].setText(oControl._getSummaryText());
-	oControl._resetIcon.setVisible(oControl.getShowReset());
-	
+	// We cannot just render the toolbar without the parent div.  Otherwise it is
+	// not possible to switch type from light to simple.
 	oRm.write("<div");
-	oRm.writeAttribute("id", oControl.getId() + "-summaryBarDiv");
-	oRm.addClass("sapMTB-Info-CTX");
+	oRm.writeControlData(oControl);		
+	oRm.addClass("sapMFF");
 	oRm.writeClasses();
-	oRm.write(">");
-	if (oControl.getShowReset()) {
-		oControl._summaryBar.addStyleClass("sapMFFSummayBarMargin");
-	}
-	oRm.renderControl(oControl._summaryBar);
-	oRm.renderControl(oControl._resetIcon);
-	oRm.write("</div>"); 
-};
-
-sap.m.FacetFilterRenderer.setSequenceOnItems = function(oLists) {
-
-	var iMaxSequence = -1;
-	var aActiveList = [];
-
-	// if the filter list is not active, make its sequence -1
-	if (oLists) {
-		for ( var i = 0; i < oLists.length; i++) {
-			if (!oLists[i].getActive()) {
-				oLists[i].setSequence(-1);
-			} else {
-				if (oLists[i].getSequence() > iMaxSequence) {
-					iMaxSequence = oLists[i].getSequence();
-				}
-				aActiveList.push(oLists[i]);
-			}
-		}
-
-		for ( var j = 0; j < aActiveList.length; j++) {
-			if (aActiveList[j].getSequence() == -1) {
-				iMaxSequence = iMaxSequence + 1;
-				aActiveList[j].setSequence(iMaxSequence);
-			}
-		}
-	}
-
-	return aActiveList;
+	oRm.write(">");		
+	var oSummaryBar = oControl.getAggregation("summaryBar");
+	oRm.renderControl(oSummaryBar);
+	oRm.write("</div>");
 };

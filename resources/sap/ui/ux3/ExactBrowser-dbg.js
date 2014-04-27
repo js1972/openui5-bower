@@ -45,7 +45,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getAttributes attributes} : sap.ui.ux3.ExactAttribute[]</li>
+ * <li>{@link #getAttributes attributes} <strong>(default aggregation)</strong> : sap.ui.ux3.ExactAttribute[]</li>
  * <li>{@link #getOptionsMenu optionsMenu} : sap.ui.commons.Menu</li></ul>
  * </li>
  * <li>Associations
@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -423,6 +423,7 @@ sap.ui.ux3.ExactBrowser.M_EVENTS = {'attributeSelected':'attributeSelected','sav
  * Getter for aggregation <code>attributes</code>.<br/>
  * The attributes which shall be available.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ExactBrowser.
  * @return {sap.ui.ux3.ExactAttribute[]}
  * @public
  * @name sap.ui.ux3.ExactBrowser#getAttributes
@@ -513,7 +514,7 @@ sap.ui.ux3.ExactBrowser.M_EVENTS = {'attributeSelected':'attributeSelected','sav
 
 /**
  * Setter for the aggregated <code>optionsMenu</code>.
- * @param oOptionsMenu {sap.ui.commons.Menu}
+ * @param {sap.ui.commons.Menu} oOptionsMenu
  * @return {sap.ui.ux3.ExactBrowser} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.ux3.ExactBrowser#setOptionsMenu
@@ -586,7 +587,7 @@ sap.ui.ux3.ExactBrowser.M_EVENTS = {'attributeSelected':'attributeSelected','sav
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactBrowser</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactBrowser</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ExactBrowser} <code>this</code> to allow method chaining
  * @public
@@ -650,7 +651,7 @@ sap.ui.ux3.ExactBrowser.M_EVENTS = {'attributeSelected':'attributeSelected','sav
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactBrowser</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ExactBrowser</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ExactBrowser} <code>this</code> to allow method chaining
  * @public

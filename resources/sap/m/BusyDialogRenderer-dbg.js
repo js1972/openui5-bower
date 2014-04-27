@@ -43,7 +43,7 @@ sap.m.BusyDialogRenderer.render = function(oRm, oControl){
 		oRm.writeEscaped(oControl.getTitle());
 		oRm.write("</header>");
 	}
-	if(jQuery.os.ios || !oControl._isPlatformDependent) {
+	if(sap.ui.Device.os.ios || !oControl._isPlatformDependent) {
 		oRm.renderControl(oControl._oLabel);
 		oRm.renderControl(oControl._busyIndicator);
 	} else {

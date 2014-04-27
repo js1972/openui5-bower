@@ -218,6 +218,6 @@ sap.ui.commons.layout.BorderLayoutRenderer = {};
 
 	function $area(oArea, sAreaId) {
 		var oOtherArea = oArea.getParent().getArea(sAreaId);
-		return oOtherArea ? jQuery.sap.byId(oOtherArea.getId()) : jQuery();
+		return oOtherArea ? oOtherArea.$() : jQuery();
 	}
 }());

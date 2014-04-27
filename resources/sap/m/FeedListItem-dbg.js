@@ -68,7 +68,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -396,7 +396,7 @@ sap.m.FeedListItem.M_EVENTS = {'senderPress':'senderPress','iconPress':'iconPres
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.FeedListItem</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.FeedListItem</code>.<br/> itself.
  *
  * @return {sap.m.FeedListItem} <code>this</code> to allow method chaining
  * @public
@@ -460,7 +460,7 @@ sap.m.FeedListItem.M_EVENTS = {'senderPress':'senderPress','iconPress':'iconPres
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.FeedListItem</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.FeedListItem</code>.<br/> itself.
  *
  * @return {sap.m.FeedListItem} <code>this</code> to allow method chaining
  * @public
@@ -531,7 +531,7 @@ sap.m.FeedListItem.prototype.exit = function(oEvent) {
 sap.m.FeedListItem.prototype.ontap = function(oEvent) {
 	if (oEvent.srcControl.getId() === this.getId() + "-icon" && this.getIconActive()) {
 		//Use figure dom ref because some image content might be cut off
-		var sFigureDomRef = jQuery.sap.domById(this.getId() + "-figure");
+		var sFigureDomRef = this.getDomRef("figure");
 		this.fireIconPress({ domRef: sFigureDomRef});
 	} else if(!this._oLinkControl || !this.getSenderActive() || oEvent.srcControl.getId() !== this._oLinkControl.getId()) {
 		sap.m.ListItemBase.prototype.ontap.apply(this, [oEvent]);
@@ -574,7 +574,7 @@ sap.m.FeedListItem.prototype._getLinkControl = function() {
 		var that = this;
 		this._oLinkControl =  new sap.m.Link({
 				press : function() {
-					var sSenderDomRef = jQuery.sap.domById(this.getId());
+					var sSenderDomRef = this.getDomRef();
 					that.fireSenderPress({ domRef: sSenderDomRef});
 				}
 			});

@@ -42,10 +42,9 @@ sap.m.LabelRenderer.render = function(rm, oLabel){
 		rm.addStyle("font-weight", "bold");
 	}
 
-	if (oLabel.getRequired()){
+	if (oLabel.getRequired()) {
 		rm.addClass("sapMLabelRequired");
 	}
-
 
 	if (oLabel.getLabelForRendering()) {
 		var oFor = sap.ui.getCore().byId(oLabel.getLabelForRendering());
@@ -60,21 +59,23 @@ sap.m.LabelRenderer.render = function(rm, oLabel){
 	}
 
 	// Text direction
-	var oTextDir = oLabel.getTextDirection();
-	if (oTextDir) {
-		rm.writeAttribute("dir", oTextDir);
+	var sTextDir = oLabel.getTextDirection();
+	if (sTextDir) {
+		rm.addStyle("direction", sTextDir.toLowerCase());
 	}
 
 	// Style for width
 	var sWidth = oLabel.getWidth();
-	if(sWidth) {
+	if (sWidth) {
 		rm.addStyle("width", sWidth);
+	} else {
+		rm.addClass("sapMLabelMaxWidth");
 	}
 
 	// Style for text alignment
-	var oTextAlign = oLabel.getTextAlign();
-	if(oTextAlign) {
-		var sTextAlign = r.getTextAlign(oTextAlign, oTextDir);
+	var sTextAlign = oLabel.getTextAlign();
+	if(sTextAlign) {
+		var sTextAlign = r.getTextAlign(sTextAlign, sTextDir);
 		if (sTextAlign) {
 			rm.addStyle("text-align", sTextAlign);
 		}
@@ -92,11 +93,11 @@ sap.m.LabelRenderer.render = function(rm, oLabel){
 	if (sTooltip) {
 		rm.writeAttributeEscaped("title", sTooltip);
 	}
-	
+
 	rm.write(">");
 
 	// Write the label text
-	
+
 	if (sLabelText) {
 		rm.writeEscaped(sLabelText);
 	}

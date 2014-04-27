@@ -18,15 +18,20 @@ sap.ui.commons.PasswordFieldRenderer = sap.ui.core.Renderer.extend(sap.ui.common
  * Renders the HTML for the given control, using the provided {@link sap.ui.fw.RenderManager}.
  *
  * @param {sap.ui.fw.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
- * @param {sap.ui.fw.Control} oControl an object representation of the control that should be rendered
+ * @param {sap.ui.fw.Control} oPasswordField an object representation of the control that should be rendered
  */
-sap.ui.commons.PasswordFieldRenderer.renderInnerAttributes = function(rm, oTextField) {
-	rm.writeAttribute('type', 'password');
+sap.ui.commons.PasswordFieldRenderer.renderInnerAttributes = function(rm, oPasswordField) {
+
+	if (sap.ui.Device.support.input.placeholder || oPasswordField.getValue() || !oPasswordField.getPlaceholder()) {
+		// if browser not supports placeholder on input tag, set the password type only if placeholder is not displayed
+		rm.writeAttribute('type', 'password');
+	}
+
 };
 
 
-sap.ui.commons.PasswordFieldRenderer.renderTextFieldEnabled = function(rm, oTextField) {
-	if (!oTextField.getEnabled() && !oTextField.getEditable()) {
+sap.ui.commons.PasswordFieldRenderer.renderTextFieldEnabled = function(rm, oPasswordField) {
+	if (!oPasswordField.getEnabled() && !oPasswordField.getEditable()) {
 		// "disabled" may not be rendered because the Jaws screenreader then reads the password
 		// use "readonly" instead
 		// but write it only if it has not yet been written by the TextFieldRenderer
@@ -39,11 +44,11 @@ sap.ui.commons.PasswordFieldRenderer.renderTextFieldEnabled = function(rm, oText
 
 
 // this method uses "readonly" instead of "disabled" because with "disabled" the Jaws screenreader reads the password
-sap.ui.commons.PasswordFieldRenderer.setEnabled = function(oTextField, bEnabled) {
-	var oTfRef = jQuery.sap.domById(oTextField.getId());
+sap.ui.commons.PasswordFieldRenderer.setEnabled = function(oPasswordField, bEnabled) {
+	var oTfRef = oPasswordField.getDomRef();
 
 	if (bEnabled) {
-		if (oTextField.getEditable()) {
+		if (oPasswordField.getEditable()) {
 			jQuery(oTfRef).removeClass('sapUiTfDsbl').addClass('sapUiTfStd');
 			jQuery(oTfRef).removeAttr('readonly').attr('tabindex', '0');
 		} else {
@@ -51,7 +56,7 @@ sap.ui.commons.PasswordFieldRenderer.setEnabled = function(oTextField, bEnabled)
 			jQuery(oTfRef).attr('tabindex', '0');
 		}
 	} else {
-		if (oTextField.getEditable()) {
+		if (oPasswordField.getEditable()) {
 			jQuery(oTfRef).removeClass('sapUiTfStd').addClass('sapUiTfDsbl');
 			jQuery(oTfRef).attr('readonly', 'readonly').attr('tabindex', '-1');
 		} else {

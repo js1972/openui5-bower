@@ -40,7 +40,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getNodes nodes} : sap.ui.commons.TreeNode[]</li></ul>
+ * <li>{@link #getNodes nodes} <strong>(default aggregation)</strong> : sap.ui.commons.TreeNode[]</li></ul>
  * </li>
  * <li>Associations
  * <ul>
@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -279,6 +279,7 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
  * Getter for aggregation <code>nodes</code>.<br/>
  * Subnodes for the current node
  * 
+ * <strong>Note</strong>: this is the default aggregation for TreeNode.
  * @return {sap.ui.commons.TreeNode[]}
  * @public
  * @name sap.ui.commons.TreeNode#getNodes
@@ -455,7 +456,7 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TreeNode</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TreeNode</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
  * @public
@@ -518,7 +519,7 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TreeNode</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TreeNode</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
  * @public
@@ -601,14 +602,14 @@ sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.TreeNode.prototype);
 
 sap.ui.commons.TreeNode.prototype.expand = function(bExpandChildren){
 
-	var oDomNode = jQuery.sap.byId(this.getId());
+	var oDomNode = this.$();
 
 	if(oDomNode.hasClass("sapUiTreeNodeCollapsed")){
 		//If not, not an expandable node
 		oDomNode.toggleClass("sapUiTreeNodeCollapsed");
 		oDomNode.toggleClass("sapUiTreeNodeExpanded");
 
-		var oDomChildrenNodes = jQuery.sap.byId(this.getId() + "-children");
+		var oDomChildrenNodes = this.$("children");
 		if(oDomChildrenNodes){
 			oDomChildrenNodes.stop(true, true);
 			oDomChildrenNodes.show(sap.ui.commons.TreeNode.ANIMATION_DURATION,this.getCallbackFunction(this,oDomNode,false));
@@ -636,7 +637,7 @@ sap.ui.commons.TreeNode.prototype.expand = function(bExpandChildren){
  */
 sap.ui.commons.TreeNode.prototype.collapse = function(bCollapseChildren){
 
-	var oDomNode = jQuery.sap.byId(this.getId());
+	var oDomNode = this.$();
 
 	if(oDomNode.hasClass("sapUiTreeNodeExpanded")){
 		//If not, not a collapsable node
@@ -644,7 +645,7 @@ sap.ui.commons.TreeNode.prototype.collapse = function(bCollapseChildren){
 		oDomNode.toggleClass("sapUiTreeNodeCollapsed");
 		oDomNode.toggleClass("sapUiTreeNodeExpanded");
 
-		var oDomChildrenNodes = jQuery.sap.byId(this.getId() + "-children");
+		var oDomChildrenNodes = this.$("children");
 		if(oDomChildrenNodes){
 			oDomChildrenNodes.stop(true, true);
 			oDomChildrenNodes.hide(sap.ui.commons.TreeNode.ANIMATION_DURATION,this.getCallbackFunction(this,oDomNode,true));
@@ -693,7 +694,7 @@ sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent) {
 	}
 
 	//Set selection on clicked node
-	jQuery.sap.byId(this.getId()).closest(".sapUiTreeNode").addClass("sapUiTreeNodeSelected").attr("aria-selected", "true");
+	this.$().closest(".sapUiTreeNode").addClass("sapUiTreeNodeSelected").attr("aria-selected", "true");
 
 	if (!bSuppressEvent) {
 		this.fireSelected();

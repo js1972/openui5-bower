@@ -5,10 +5,9 @@
  */
 
 // Provides useful string operations not available in pure JavaScript.
-jQuery.sap.declare("jquery.sap.strings", false);
-
-(function(){
-
+sap.ui.define(['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
 
 	/**
 	 * Checks whether a given sString ends with sEndString
@@ -96,7 +95,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 * converted into upper case. the first char position is 0.
 	 *
 	 * @param {string} sString The string to be checked
-	 * @param {integer} iPos the position of the character that will be uppercase
+	 * @param {int} iPos the position of the character that will be uppercase
 	 * @return The string with the firstletter in upper case
 	 * @type {string}
 	 * @public
@@ -121,7 +120,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 *
 	 * @param {string} sString The string to be padded
 	 * @param {string} sPadChar The char to use for the padding
-	 * @param {integer} iLength the target length of the string
+	 * @param {int} iLength the target length of the string
 	 * @return The padded string
 	 * @type {string}
 	 * @public
@@ -142,7 +141,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 *
 	 * @param {string} sString The string to be padded
 	 * @param {string} sPadChar The char to use for the padding
-	 * @param {integer} iLength the target length of the string
+	 * @param {int} iLength the target length of the string
 	 * @return The padded string
 	 * @type {string}
 	 * @public
@@ -298,5 +297,7 @@ jQuery.sap.declare("jquery.sap.strings", false);
 	 *                    [-1] [----- quoted string -----] [------ placeholder ------] [--]
 	 */
 	var rMessageFormat = /('')|'([^']+(?:''[^']*)*)(?:'|$)|\{([0-9]+(?:\s*,[^{}]*)?)\}|[{}]/g;
-	
-}());
+
+	return jQuery;
+
+}, /* bExport= */ false);

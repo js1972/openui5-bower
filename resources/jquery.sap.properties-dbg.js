@@ -5,10 +5,9 @@
  */
 
 // Provides access to Java-like properties files
-jQuery.sap.declare("jquery.sap.properties", false);
-jQuery.sap.require("jquery.sap.sjax");
-
-(function() {
+sap.ui.define(['jquery.sap.global', 'jquery.sap.sjax'],
+	function(jQuery/* , jQuerySap1 */) {
+	"use strict";
 
 	// Javadoc for private inner class "Properties" - this list of comments is intentional!
 	/**
@@ -26,7 +25,7 @@ jQuery.sap.require("jquery.sap.sjax");
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -253,15 +252,13 @@ jQuery.sap.require("jquery.sap.sjax");
 		var oProp = new Properties();
 		mParams = jQuery.extend({url: undefined, headers: {}}, mParams);
 		if (typeof(mParams.url) == "string"){
-			var sText = jQuery.sap.sjax({
+			var sText = jQuery.sap.loadResource({
 				url: mParams.url,
-				type: 'GET',
 				dataType: 'text',
-				complexResult: false,
-				fallback: undefined,
-				headers: mParams.headers
+				headers: mParams.headers,
+				failOnError: false
 			});
-			
+		
 			if (typeof(sText) == "string") {
 				parse(sText, oProp);
 			}
@@ -269,5 +266,6 @@ jQuery.sap.require("jquery.sap.sjax");
 		return oProp;
 	};
 
-}());
+	return jQuery;
 
+}, /* bExport= */ false);

@@ -74,7 +74,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -537,7 +537,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>customHeader</code>.
- * @param oCustomHeader {sap.m.Bar}
+ * @param {sap.m.Bar} oCustomHeader
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setCustomHeader
@@ -568,7 +568,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>subHeader</code>.
- * @param oSubHeader {sap.m.Bar}
+ * @param {sap.m.Bar} oSubHeader
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setSubHeader
@@ -599,7 +599,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>beginButton</code>.
- * @param oBeginButton {sap.m.Button}
+ * @param {sap.m.Button} oBeginButton
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setBeginButton
@@ -630,7 +630,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>endButton</code>.
- * @param oEndButton {sap.m.Button}
+ * @param {sap.m.Button} oEndButton
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setEndButton
@@ -698,7 +698,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
  *
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
@@ -766,7 +766,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
  *
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
@@ -837,7 +837,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
  *
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
@@ -911,7 +911,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.ResponsivePopover</code>.<br/> itself.
  *
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
@@ -1018,7 +1018,7 @@ sap.m.ResponsivePopover.prototype.init = function(){
 			that.fireAfterClose(oEvent);
 		}
 	};
-	if(jQuery.device.is.phone){
+	if(sap.ui.Device.system.phone){
 		this._aNotSupportedProperties = ["placement", "modal", "offsetX", "offsetY", "showCloseButton"];
 		settings.stretch = true;
 		settings.type = sap.m.DialogType.Standard;
@@ -1035,7 +1035,7 @@ sap.m.ResponsivePopover.prototype.init = function(){
 			var bShowCloseButton = this.getShowCloseButton(),
 				oNavContent, oHeader, oPage, oRealPage;
 			
-			if(!bShowCloseButton ||  !jQuery.device.is.phone || !this._bContentChanged){
+			if(!bShowCloseButton ||  !sap.ui.Device.system.phone || !this._bContentChanged){
 				return;
 			}
 			
@@ -1103,7 +1103,7 @@ sap.m.ResponsivePopover.prototype.openBy = function(oParent){
 		this._bAppendedToUIArea = true;
 	}
 	
-	if(jQuery.device.is.phone){
+	if(sap.ui.Device.system.phone){
 		return this._oControl.open();
 	}else{
 		return this._oControl.openBy(oParent);

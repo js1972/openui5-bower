@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
  * <li>{@link #getSecondaryContent secondaryContent} : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -154,6 +154,7 @@ sap.ui.core.Control.extend("sap.ui.unified.SplitContainer", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * The content to appear in the main area.
  * 
+ * <strong>Note</strong>: this is the default aggregation for SplitContainer.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.unified.SplitContainer#getContent
@@ -350,8 +351,8 @@ sap.ui.unified.SplitContainer.prototype.exit = function(){
 
 sap.ui.unified.SplitContainer.prototype.onAfterRendering = function() {
 	// Shortcuts to the main DOM containers
-	this._contentContainer 			= jQuery.sap.byId(this.getId() + "-canvas");
-	this._secondaryContentContainer = jQuery.sap.byId(this.getId() + "-pane");
+	this._contentContainer 			= this.$("canvas");
+	this._secondaryContentContainer = this.$("pane");
 
 // Design decided that content does not need to be handled differently depending on device - remove 
 // comments if needed again...
@@ -446,9 +447,9 @@ sap.ui.unified.SplitContainer.prototype._applySecondaryContentSize = function(){
  * Optimization method that prevents the normal render from rerendering the whole control.
  * See _ContentRenderer in file shared.js for details.
  * 
- * @param fMod Method that is called to perform the requested change
- * @param oDoIfRendered Renderer Instance
- * @returns the return value from the first parameter
+ * @param {function} fMod Method that is called to perform the requested change
+ * @param {sap.ui.core.Renderer} oDoIfRendered Renderer Instance
+ * @returns {any} the return value from the first parameter
  * 
  * @private
  */

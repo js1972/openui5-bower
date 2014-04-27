@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.Icon.
-jQuery.sap.declare("sap.ui.core.Icon");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Control");
+sap.ui.define(['./library','./Control','./IconPool'], function() {
+	"use strict";
 
 
 /**
@@ -67,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -446,7 +445,7 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.core.Icon</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.core.Icon</code>.<br/> itself.
  *
  * @return {sap.ui.core.Icon} <code>this</code> to allow method chaining
  * @public
@@ -480,101 +479,166 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
  */
 
 
-// Start of sap\ui\core\Icon.js
-jQuery.sap.require("sap.ui.core.IconPool");
+// Start of sap/ui/core/Icon.js
 
-(function(){
-	var bTouchModeOff = (jQuery.sap.touchEventMode === "OFF"),
-		sActiveEventName = (bTouchModeOff ? "onmousedown" : "ontouchstart"),
-		sClickEventName = (bTouchModeOff ? "onclick" : "ontap");
-	
-	/**
-	 * This binds to the mousedown/touchstart event to change the color and background color to the active values.
-	 * @private
-	 *
-	 */
-	sap.ui.core.Icon.prototype[sActiveEventName] = function(oEvent){
-		//for control who need to know if they should handle events from the image control
-		//TODO: here may also be relevant to the bTouchModeOff
-		if(oEvent.srcControl.mEventRegistry["press"] || oEvent.srcControl.mEventRegistry["tap"]){
-			oEvent.originalEvent._sapui_handledByControl = true;
-		}
-		var sActiveColor = this.getActiveColor(),
-			sActiveBackgroundColor = this.getActiveBackgroundColor(),
-			$this;
-		if(sActiveColor || sActiveBackgroundColor){
-			//change the source only when the first finger is on the Icon, the following fingers doesn't affect
-			if((oEvent.targetTouches && oEvent.targetTouches.length === 1) || !oEvent.targetTouches){
-				$this = this.$();
-				
-				$this.addClass("sapUiIconActive");
-				
-				if(sActiveColor){
-					$this.css("color", sActiveColor);
-				}
-				
-				if(sActiveBackgroundColor){
-					$this.css("background-color", sActiveBackgroundColor);
-				}
-				
-				this._isActiveState = true;
-				if(!this._touchEndProxy){
-					this._touchEndProxy = jQuery.proxy(this._ontouchend, this);
-				}
-				
-				if(!sap.ui.Device.support.touch){
-					//binding to document when runs in desktop browser
-					//here also bound to the mouseup event to enable it working in desktop browsers
-					jQuery(window.document).bind("mouseup", this._touchEndProxy);
-				}else{
-					//binding to the image itself when runs in mobile device
-					//Galaxy Note (4.0.4) can't bubble the touchend event to document
-					this.$().bind("touchcancel touchend", this._touchEndProxy);
-				}
-			}
-		}
-	};
-	
-	sap.ui.core.Icon.prototype[sClickEventName] = function(oEvent){
-		this.firePress({/* no parameters */});
-	};
-	
-	if(bTouchModeOff){
-		sap.ui.core.Icon.prototype.onmouseover = function(oEvent){
-			var sHoverColor = this.getHoverColor(),
-				sHoverBackgroundColor = this.getHoverBackgroundColor(),
-				$this = this.$();
-				
-			if(sHoverColor){
-				$this.css("color", sHoverColor);
-			}
-			if(sHoverBackgroundColor){
-				$this.css("background-color", sHoverBackgroundColor);
-			}
-		};
-		
-		sap.ui.core.Icon.prototype.onmouseout = function(oEvent){
-			if(!this._isActiveState){
-				this._restoreColors();
-			}
-		};
-	}
-}());
+/* =========================================================== */
+/* Lifecycle methods                                           */
+/* =========================================================== */
 
-sap.ui.core.Icon.prototype.onAfterRendering = function(){
+/**
+ * Required adaptations after rendering.
+ *
+ * @private
+ */
+sap.ui.core.Icon.prototype.onAfterRendering = function() {
 	var $this = this.$();
-	
-	//When cursor css style is set via css class, chrome doesn't return the set value by calling domNode.style.cursor
-	//Therefore inline style has to be set here.
-	if(sap.ui.Device.browser.chrome && this.hasListeners("press")){
+
+	// When cursor CSS style is set via CSS class,
+	// chrome doesn't return the set value by calling domNode.style.cursor,
+	// therefore inline style has to be set here.
+	if (sap.ui.Device.browser.chrome && this.hasListeners("press")) {
 		$this.css("cursor", "pointer");
 	}
-	//this is to check if no cursor property inherited from parent dom. If the current value is auto, set it to default.
-	//this is to fix the cursor: auto interpreted as text cursor in firefox and IE.
-	if($this.css("cursor") === "auto"){
+
+	// This is to check if no cursor property inherited from parent DOM.
+	// If the current value is auto, set it to default.
+	// This is to fix the cursor: auto interpreted as text cursor in firefox and IE.
+	if ($this.css("cursor") === "auto") {
 		$this.css("cursor", "default");
 	}
 };
+
+/* =========================================================== */
+/* Event handlers                                              */
+/* =========================================================== */
+
+/**
+ * Handle the mousedown event on the Icon.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.ui.core.Icon.prototype.onmousedown = function(oEvent) {
+
+	this._bPressFired = false;
+
+	if (oEvent.srcControl.mEventRegistry["press"] || oEvent.srcControl.mEventRegistry["tap"]) {
+
+		// mark the event for components that needs to know if the event was handled by this component
+		oEvent.setMarked();
+	}
+
+	var sActiveColor = this.getActiveColor(),
+		sActiveBackgroundColor = this.getActiveBackgroundColor(),
+		$this;
+
+	if (sActiveColor || sActiveBackgroundColor) {
+
+		// change the source only when the first finger is on the Icon, the following fingers doesn't affect
+		if (!oEvent.targetTouches || (oEvent.targetTouches && oEvent.targetTouches.length === 1)) {
+			$this = this.$();
+
+			$this.addClass("sapUiIconActive");
+
+			if (sActiveColor) {
+				$this.css("color", sActiveColor);
+			}
+
+			if (sActiveBackgroundColor) {
+				$this.css("background-color", sActiveBackgroundColor);
+			}
+		}
+	}
+};
+
+/**
+ * Handle the touchstart event on the Icon.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.ui.core.Icon.prototype.ontouchstart = sap.ui.core.Icon.prototype.onmousedown;
+
+/**
+ * Handle the mouseup event on the Icon.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.ui.core.Icon.prototype.onmouseup = function(oEvent) {
+
+	// change the source back only when all fingers leave the icon
+	if (!oEvent.targetTouches || (oEvent.targetTouches && oEvent.targetTouches.length === 0)) {
+
+		this.$().removeClass("sapUiIconActive");
+		this._restoreColors();
+	}
+};
+
+/**
+ * Handle the touchend event on the Icon.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.ui.core.Icon.prototype.ontouchend = sap.ui.core.Icon.prototype.onmouseup;
+
+/**
+ * Handle the touchcancel event on the Icon.
+ *
+ * @param {jQuery.Event} oEvent The event object.
+ * @private
+ */
+sap.ui.core.Icon.prototype.ontouchcancel = sap.ui.core.Icon.prototype.onmouseup;
+
+/**
+ * Handle the mouseover event on the Icon.
+ *
+ * @private
+ */
+sap.ui.core.Icon.prototype.onmouseover = function() {
+
+	var sHoverColor = this.getHoverColor(),
+		sHoverBackgroundColor = this.getHoverBackgroundColor(),
+		$this = this.$();
+
+	if (sHoverColor) {
+		$this.css("color", sHoverColor);
+	}
+
+	if (sHoverBackgroundColor) {
+		$this.css("background-color", sHoverBackgroundColor);
+	}
+};
+
+/**
+ * Handle the mouseout event on the Icon.
+ *
+ * @private
+ */
+sap.ui.core.Icon.prototype.onmouseout = function() {
+	this._restoreColors();
+};
+
+/**
+ * Handle the click or tap event on the Icon.
+ *
+ * @private
+ */
+sap.ui.core.Icon.prototype.onclick = function() {
+	if (this._bPressFired) {
+		return;
+	}
+
+	this.firePress({/* no parameters */});
+	this._bPressFired = true;
+};
+
+sap.ui.core.Icon.prototype.ontap = sap.ui.core.Icon.prototype.onclick;
+
+/* ----------------------------------------------------------- */
+/* Keyboard handling                                           */
+/* ----------------------------------------------------------- */
 
 /**
  * Handle the key down event for SPACE and ENTER.
@@ -583,20 +647,25 @@ sap.ui.core.Icon.prototype.onAfterRendering = function(){
  * @private
  */
 sap.ui.core.Icon.prototype.onkeydown = function(oEvent) {
-	if(oEvent.which == jQuery.sap.KeyCodes.SPACE || oEvent.which == jQuery.sap.KeyCodes.ENTER){
+
+	if (oEvent.which === jQuery.sap.KeyCodes.SPACE || oEvent.which === jQuery.sap.KeyCodes.ENTER) {
+
+		// note: prevent document scrolling
+		oEvent.preventDefault();
+
 		var $this = this.$(),
 			sActiveColor = this.getActiveColor(),
 			sActiveBackgroundColor = this.getActiveBackgroundColor();
+
 		$this.addClass("sapUiIconActive");
-		if(sActiveColor){
+
+		if (sActiveColor) {
 			$this.css("color", sActiveColor);
 		}
-		if(sActiveBackgroundColor){
+
+		if (sActiveBackgroundColor) {
 			$this.css("background-color", sActiveBackgroundColor);
 		}
-		this._isActiveState = true;
-		
-		oEvent.preventDefault();
 	}
 };
 
@@ -607,111 +676,107 @@ sap.ui.core.Icon.prototype.onkeydown = function(oEvent) {
  * @private
  */
 sap.ui.core.Icon.prototype.onkeyup = function(oEvent) {
-	if(oEvent.which == jQuery.sap.KeyCodes.SPACE || oEvent.which == jQuery.sap.KeyCodes.ENTER){
-		this._isActiveState = false;
+
+	if (oEvent.which === jQuery.sap.KeyCodes.SPACE || oEvent.which === jQuery.sap.KeyCodes.ENTER) {
+
 		this.$().removeClass("sapUiIconActive");
 		this._restoreColors();
 		this.firePress({/* no parameters */});
 	}
 };
 
-/**
- * This changes the src property of the image back to the src property of the image control.
- * @private
- *
- */
-sap.ui.core.Icon.prototype._ontouchend = function(oEvent){
-	//change the source back only when all fingers leave the icon
-	if((oEvent.targetTouches && oEvent.targetTouches.length === 0) || !oEvent.targetTouches){
-		this._isActiveState = false;
-		
-		this.$().removeClass("sapUiIconActive");
-		
-		this._restoreColors();
-		
-		if(!sap.ui.Device.support.touch){
-			jQuery(window.document).unbind("mouseup", this._touchEndProxy);
-		}else{
-			this.$().unbind("touchcancel touchend", this._touchEndProxy);
-		}
-	}
-};
+/* =========================================================== */
+/* Private methods                                             */
+/* =========================================================== */
 
-sap.ui.core.Icon.prototype._restoreColors = function(){	
+sap.ui.core.Icon.prototype._restoreColors = function() {
 	this.$().css({
 		"color": this.getColor() || "",
 		"background-color": this.getBackgroundColor() || ""
 	});
 };
 
-sap.ui.core.Icon.prototype.setSrc = function(sSrc){
+/* =========================================================== */
+/* API method                                                  */
+/* =========================================================== */
+
+sap.ui.core.Icon.prototype.setSrc = function(sSrc) {
 	var oIconInfo = sap.ui.core.IconPool.getIconInfo(sSrc),
 		bTextNeeded = (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9),
 		$this = this.$();
-	if(oIconInfo){
+
+	if (oIconInfo) {
 		$this.css("font-family", oIconInfo.fontFamily);
-		if(bTextNeeded){
+
+		if (bTextNeeded) {
 			$this.text(oIconInfo.content);
-		}else{
+		} else {
 			$this.attr("data-sap-ui-icon-content", oIconInfo.content);
 		}
+
 		$this.toggleClass("sapUiIconMirrorInRTL", !oIconInfo.suppressMirroring);
 	}
-	//when the given sSrc can't be found in IconPool, rerender the icon is needed.
+
+	// when the given sSrc can't be found in IconPool, rerender the icon is needed.
 	this.setProperty("src", sSrc, !!oIconInfo);
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setWidth = function(sWidth){
+sap.ui.core.Icon.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth, true);
 	this.$().css("width", sWidth);
-	
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setHeight = function(sHeight){
+sap.ui.core.Icon.prototype.setHeight = function(sHeight) {
 	this.setProperty("height", sHeight, true);
 	this.$().css({
 		"height": sHeight,
 		"line-height": sHeight
 	});
-	
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setSize = function(sSize){
+sap.ui.core.Icon.prototype.setSize = function(sSize) {
 	this.setProperty("size", sSize, true);
 	this.$().css("font-size", sSize);
-	
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setColor = function(sColor){
+sap.ui.core.Icon.prototype.setColor = function(sColor) {
 	this.setProperty("color", sColor, true);
 	this.$().css("color", sColor);
-	
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setActiveColor = function(sColor){
+sap.ui.core.Icon.prototype.setActiveColor = function(sColor) {
 	return this.setProperty("activeColor", sColor, true);
 };
 
-sap.ui.core.Icon.prototype.setHoverColor = function(sColor){
+sap.ui.core.Icon.prototype.setHoverColor = function(sColor) {
 	return this.setProperty("hoverColor", sColor, true);
 };
 
-sap.ui.core.Icon.prototype.setBackgroundColor = function(sColor){
+sap.ui.core.Icon.prototype.setBackgroundColor = function(sColor) {
 	this.setProperty("backgroundColor", sColor, true);
 	this.$().css("background-color", sColor);
-	
+
 	return this;
 };
 
-sap.ui.core.Icon.prototype.setActiveBackgroundColor = function(sColor){
+sap.ui.core.Icon.prototype.setActiveBackgroundColor = function(sColor) {
 	return this.setProperty("activeBackgroundColor", sColor, true);
 };
 
-sap.ui.core.Icon.prototype.setHoverBackgroundColor = function(sColor){
+sap.ui.core.Icon.prototype.setHoverBackgroundColor = function(sColor) {
 	return this.setProperty("hoverBackgroundColor", sColor, true);
 };
+
+	return sap.ui.core.Icon;
+
+}, /* bExport = */ true);

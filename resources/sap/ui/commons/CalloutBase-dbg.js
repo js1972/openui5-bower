@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.TooltipBase");
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -130,7 +130,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @public
@@ -193,7 +193,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @public
@@ -252,7 +252,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @public
@@ -318,7 +318,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @public
@@ -380,7 +380,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
  *
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @public
@@ -562,7 +562,7 @@ sap.ui.commons.CalloutBase.prototype.setTip = function() {
 
 	var $parent = this._currentControl.$(),
 		$this = this.$(),
-		$arrow = jQuery.sap.byId(this.getId() + "-arrow"),
+		$arrow = this.$("arrow"),
 		$offset = $this.offset(),
 		$pOffset = $parent.offset(),
 		bShow = true,
@@ -692,7 +692,7 @@ sap.ui.commons.CalloutBase.prototype.focus = function() {
 		// Focus the first focusable child. If the callout is empty, focus the content container div.
 		// Empty callout should be focused too because the contents may appear at a later time point
 		// and we need input focus to react to the ESC key.
-		var $Content = jQuery.sap.byId(this.getId() + "-cont");
+		var $Content = this.$("cont");
 		jQuery.sap.focus($Content.firstFocusableDomRef() || $Content.get(0));
 	}
 };
@@ -869,10 +869,10 @@ sap.ui.commons.CalloutBase.prototype.onfocusin = function(oEvent){
 	// The same logic as in the Dialog.control:
 	if (oSourceDomRef.id === this.getId() + "-fhfe") {
 		// the FocusHandlingFirstElement was focused and thus the focus should move to the last element.
-		jQuery.sap.focus(jQuery.sap.byId(this.getId() + "-cont").lastFocusableDomRef());
+		jQuery.sap.focus(this.$("cont").lastFocusableDomRef());
 	} else if (oSourceDomRef.id === this.getId() + "-fhee") {
 		// the FocusHandlingEndElement was focused and thus the focus should move to the first element.
-		jQuery.sap.focus(jQuery.sap.byId(this.getId() + "-cont").firstFocusableDomRef());
+		jQuery.sap.focus(this.$("cont").firstFocusableDomRef());
 	}
 };
 

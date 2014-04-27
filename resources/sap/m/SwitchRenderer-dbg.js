@@ -13,10 +13,17 @@ jQuery.sap.declare("sap.m.SwitchRenderer");
 sap.m.SwitchRenderer = {};
 
 /**
+ * CSS class to be applied to the HTML root element of the Switch control.
+ *
+ * @type {string}
+ */
+sap.m.SwitchRenderer.CSS_CLASS = "sapMSwt";
+
+/**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  *
- * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the Render-Output-Buffer
- * @param {sap.ui.core.Control} oSwitch an object representation of the control that should be rendered
+ * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the Render-Output-Buffer.
+ * @param {sap.ui.core.Control} oSwitch An object representation of the control that should be rendered.
  */
 sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 	var bState = oSwitch.getState(),
@@ -25,7 +32,8 @@ sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 		sType = oSwitch.getType(),
 		bDefault = (sType === "Default"),
 		bDisabled =  !oSwitch.getEnabled(),
-		sName = oSwitch.getName();
+		sName = oSwitch.getName(),
+		CSS_CLASS = sap.m.SwitchRenderer.CSS_CLASS;
 
 	// suppress rendering if not visible
 	if (!oSwitch.getVisible()) {
@@ -33,10 +41,10 @@ sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 	}
 
 	oRm.write('<div');
-	oRm.addClass("sapMSwtCont");
+	oRm.addClass(CSS_CLASS + "Cont");
 
 	if (bDisabled) {
-		oRm.addClass("sapMSwtContDisabled");
+		oRm.addClass(CSS_CLASS + "ContDisabled");
 	}
 
 	oRm.writeClasses();
@@ -50,17 +58,17 @@ sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 	oRm.write(">");
 
 		oRm.write("<div");
-		oRm.addClass("sapMSwt");
-		oRm.addClass(bState ? "sapMSwtOn" : "sapMSwtOff");
-		oRm.addClass("sapMSwt" + sType);
+		oRm.addClass(CSS_CLASS);
+		oRm.addClass(bState ? CSS_CLASS + "On" : CSS_CLASS + "Off");
+		oRm.addClass(CSS_CLASS + sType);
 
 		if (bDisabled) {
-			oRm.addClass("sapMSwtDisabled");
+			oRm.addClass(CSS_CLASS + "Disabled");
 		}
 
 		oRm.writeClasses();
 		oRm.write(">");
-			oRm.write('<div class="sapMSwtInner">');
+			oRm.write('<div class="' + CSS_CLASS + 'Inner">');
 
 				// text
 				this._renderText(oRm, oSwitch, bDefault);
@@ -82,9 +90,10 @@ sap.m.SwitchRenderer.render = function(oRm, oSwitch) {
 };
 
 sap.m.SwitchRenderer._renderText = function(oRm, oSwitch, bDefault) {
+	var CSS_CLASS = sap.m.SwitchRenderer.CSS_CLASS;
 
 	// on
-	oRm.write('<div class="sapMSwtText sapMSwtTextOn">');
+	oRm.write('<div class="' + CSS_CLASS + 'Text ' + CSS_CLASS + 'TextOn">');
 		oRm.write("<span>");
 			if (bDefault) {
 				oRm.writeEscaped(oSwitch._sOn);
@@ -93,7 +102,7 @@ sap.m.SwitchRenderer._renderText = function(oRm, oSwitch, bDefault) {
 	oRm.write("</div>");
 
 	// off
-	oRm.write('<div class="sapMSwtText sapMSwtTextOff">');
+	oRm.write('<div class="' + CSS_CLASS + 'Text ' + CSS_CLASS + 'TextOff">');
 		oRm.write("<span>");
 			if (bDefault) {
 				oRm.writeEscaped(oSwitch._sOff);
@@ -103,11 +112,13 @@ sap.m.SwitchRenderer._renderText = function(oRm, oSwitch, bDefault) {
 };
 
 sap.m.SwitchRenderer._renderHandle = function(oRm, oSwitch, sState, bDisabled) {
-	oRm.write("<div");
-	oRm.addClass("sapMSwtHandle");
+	var CSS_CLASS = sap.m.SwitchRenderer.CSS_CLASS;
 
-	if (sap.ui.Device.browser.webkit && Number(jQuery.browser.version).toFixed(2) === "537.35") {
-		oRm.addClass("sapMSwtWebKit537-35");
+	oRm.write("<div");
+	oRm.addClass(CSS_CLASS + "Handle");
+
+	if (sap.ui.Device.browser.webkit && Number(sap.ui.Device.browser.webkitVersion).toFixed(2) === "537.35") {
+		oRm.addClass(CSS_CLASS + "WebKit537-35");
 	}
 
 	oRm.writeClasses();

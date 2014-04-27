@@ -23,8 +23,7 @@ sap.ui.commons.CheckBoxRenderer = {
  * @param {sap.ui.core.RenderManager} oRenderManager The RenderManager that is used for writing to the render output buffer.
  * @param {sap.ui.commons.CheckBox} oCheckBox The CheckBox control that should be rendered.
  */
-sap.ui.commons.CheckBoxRenderer.render = function(oRenderManager, oCheckBox) {
-	var rm = oRenderManager;
+sap.ui.commons.CheckBoxRenderer.render = function(rm, oCheckBox) {
 
 	// Return immediately if control is invisible
 	if (!oCheckBox.getVisible()) {
@@ -66,7 +65,7 @@ sap.ui.commons.CheckBoxRenderer.render = function(oRenderManager, oCheckBox) {
 		// This changed in 2013 back to not in the tabchain: see CSN 0002937527 2013
 		// Let's see how often this will be changed back and forth in the future... Accessibility fun! :-D
 		// End of 2013 is have to be again in the tabchain.
-		// But not in the Form. But this is handled in the FromLayout control
+		// But not in the Form. But this is handled in the FormLayout control
 		// Let's see what happens 2014... ;-)
 		myTabIndex = 0;
 	}
@@ -152,7 +151,7 @@ sap.ui.commons.CheckBoxRenderer.renderText = function(oRenderManager, sText, eTe
 	if (!eTextDirection || eTextDirection == sap.ui.core.TextDirection.Inherit) {
 		rm.writeEscaped(sText);
 	} else {
-		rm.write("<span dir=\"" + eTextDirection + "\">");
+		rm.write("<span style=\"direction:" + eTextDirection.toLowerCase() + ";\">");
 		rm.writeEscaped(sText);
 		rm.write("</span>");
 	}

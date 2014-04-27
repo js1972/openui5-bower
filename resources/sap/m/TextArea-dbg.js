@@ -61,7 +61,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -256,7 +256,7 @@ sap.m.TextArea.M_EVENTS = {'liveChange':'liveChange'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.TextArea</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.TextArea</code>.<br/> itself.
  *
  * @return {sap.m.TextArea} <code>this</code> to allow method chaining
  * @public
@@ -320,14 +320,15 @@ sap.m.TextArea.prototype.onAfterRendering = function() {
 	this._bindToInputEvent(this._inputProxy);
 
 	if (sap.ui.Device.support.touch) {
+
 		if (this._behaviour.INSIDE_SCROLLABLE_WITHOUT_FOCUS) {
 			this._oIScroll = null;	// set null to find iScroll
 
 			// Bind browser events to mimic native scrolling
 			this._$input.on("touchstart", jQuery.proxy(this._onTouchStart, this));
 			this._$input.on("touchmove", jQuery.proxy(this._onTouchMove, this));
-		}
-		else if (this._behaviour.PAGE_NON_SCROLLABLE_AFTER_FOCUS) {
+		} else if (this._behaviour.PAGE_NON_SCROLLABLE_AFTER_FOCUS) {
+
 			// stop bubbling to disable iScroll
 			this._$input.on("touchmove", function(e) {
 				if (jQuery(this).is(":focus")) {
@@ -340,25 +341,31 @@ sap.m.TextArea.prototype.onAfterRendering = function() {
 
 sap.m.TextArea.prototype.setRows = function(iRows) {
 	this.setProperty("rows", iRows, true);
+
 	if (this.getDomRef()) {
 		this._$input.attr("rows", this.getRows());
 	}
+
 	return this;
 };
 
 sap.m.TextArea.prototype.setCols = function(iCols) {
 	this.setProperty("cols", iCols, true);
+
 	if (this.getDomRef()) {
 		this._$input.attr("cols", this.getCols());
 	}
+
 	return this;
 };
 
 sap.m.TextArea.prototype.setHeight = function(sHeight) {
 	this.setProperty("height", sHeight, true);
+
 	if (this.getDomRef()) {
 		this._$input.css("height", this.getHeight());
 	}
+
 	return this;
 };
 
@@ -407,6 +414,7 @@ sap.m.TextArea.prototype._onTouchStart = function(oEvent) {
 	if (this._oIScroll === null) {
 		this._oIScroll = sap.m.getIScroll(this);
 	}
+
 	this._startY = oEvent.touches[0].pageY;
 	this._startX = oEvent.touches[0].pageX;
 	this._bHorizontalScroll = undefined;
@@ -433,16 +441,19 @@ sap.m.TextArea.prototype._onTouchMove = function(oEvent) {
 		isOnEnd = isTop && isGoingDown || isBottom && isGoingUp;
 
 	// Native scrolling:
-	if(!this._oIScroll){
+	if (!this._oIScroll) {
+
 		if(this._bHorizontalScroll === undefined){ // do once
 			this._bHorizontalScroll = Math.abs(this._startY - pageY) < Math.abs(this._startX - oEvent.touches[0].pageX);
 		}
-		if(this._bHorizontalScroll || !isOnEnd){ // mark if it can scroll itself
+
+		if (this._bHorizontalScroll || !isOnEnd) { // mark if it can scroll itself
 			oEvent.setMarked();
 		}
+
 		return;
 	}
-	
+
 	// iScroll:
 
 	// update position
@@ -451,6 +462,7 @@ sap.m.TextArea.prototype._onTouchMove = function(oEvent) {
 	// if we reached the edges of textarea then enable page scrolling
 	if (isOnEnd) {
 		var iDirection = (isGoingDown) ? -1 : 1;
+
 		if (!(this._iDirection == iDirection) && this._oIScroll) {
 			// set current touch point as iscroll last point
 			this._oIScroll.pointY = pageY;

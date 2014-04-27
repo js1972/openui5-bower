@@ -37,7 +37,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getFormElements formElements} : sap.ui.layout.form.FormElement[]</li>
+ * <li>{@link #getFormElements formElements} <strong>(default aggregation)</strong> : sap.ui.layout.form.FormElement[]</li>
  * <li>{@link #getTitle title} : sap.ui.core.Title|string</li></ul>
  * </li>
  * <li>Associations
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -184,6 +184,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormContainer", { metadata : {
  * Getter for aggregation <code>formElements</code>.<br/>
  * Elements of the FormContainer.
  * 
+ * <strong>Note</strong>: this is the default aggregation for form/FormContainer.
  * @return {sap.ui.layout.form.FormElement[]}
  * @public
  * @name sap.ui.layout.form.FormContainer#getFormElements
@@ -274,7 +275,7 @@ sap.ui.core.Element.extend("sap.ui.layout.form.FormContainer", { metadata : {
 
 /**
  * Setter for the aggregated <code>title</code>.
- * @param oTitle {sap.ui.core.Title|string}
+ * @param {sap.ui.core.Title|string} oTitle
  * @return {sap.ui.layout.form.FormContainer} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.layout.form.FormContainer#setTitle

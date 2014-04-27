@@ -35,7 +35,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getContent content} : sap.ui.core.Control[]</li></ul>
+ * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -54,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -123,6 +123,7 @@ sap.ui.core.Control.extend("sap.ui.layout.ResponsiveFlowLayout", { metadata : {
  * Getter for aggregation <code>content</code>.<br/>
  * Added content that should be positioned. Every content item should have a ResponsiveFlowLayoutData attached otherwise the default values are used.
  * 
+ * <strong>Note</strong>: this is the default aggregation for ResponsiveFlowLayout.
  * @return {sap.ui.core.Control[]}
  * @public
  * @name sap.ui.layout.ResponsiveFlowLayout#getContent
@@ -784,7 +785,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 	 * 
 	 * @param {Object}
 	 *            [oContent] the content that should be inserted to the layout
-	 * @param {integer}
+	 * @param {int}
 	 *            [iIndex] the index where the content should be inserted into
 	 * @public
 	 */

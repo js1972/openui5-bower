@@ -73,7 +73,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -108,7 +108,7 @@ sap.ui.core.Control.extend("sap.ui.commons.TextField", { metadata : {
 		"helpId" : {type : "string", group : "Behavior", defaultValue : ''},
 		"accessibleRole" : {type : "sap.ui.core.AccessibleRole", group : "Accessibility", defaultValue : sap.ui.core.AccessibleRole.Textbox},
 		"name" : {type : "string", group : "Misc", defaultValue : null},
-		"placeholder" : {type : "string", group : "Misc", defaultValue : null}
+		"placeholder" : {type : "string", group : "Appearance", defaultValue : null}
 	},
 	associations : {
 		"ariaDescribedBy" : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"}, 
@@ -665,7 +665,7 @@ sap.ui.commons.TextField.M_EVENTS = {'change':'change','liveChange':'liveChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TextField</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TextField</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TextField} <code>this</code> to allow method chaining
  * @public
@@ -729,7 +729,7 @@ sap.ui.commons.TextField.M_EVENTS = {'change':'change','liveChange':'liveChange'
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TextField</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.TextField</code>.<br/> itself.
  *
  * @return {sap.ui.commons.TextField} <code>this</code> to allow method chaining
  * @public
@@ -820,17 +820,17 @@ sap.ui.commons.TextField.prototype.onfocusin = function(oEvent) {
  * @param {jQuery.Event} oEvent
  * @protected
  */
-sap.ui.commons.TextField.prototype.onfocusout = function(oEvent) {
+sap.ui.commons.TextField.prototype.onsapfocusleave = function(oEvent) {
 
 	// restore old value in case of escape key (not possible in onsapescape in firefox)
 	// happens e.g. in table because focus is set outside TextField
 	this._doOnEscape(oEvent);
 
+	this._checkChange(oEvent);
+
 	if(this.getEditable() && this.getEnabled() && this.getRenderer().onblur) {
 		this.getRenderer().onblur(this);
 	}
-
-	this._checkChange(oEvent);
 
 	// if control is left action mode is ended
 	var $FocusDomRef = jQuery(this.getFocusDomRef());
@@ -1078,7 +1078,7 @@ sap.ui.commons.TextField.prototype._fireLiveChange = function(oEvent) {
 /* Overwrite of generated function - no new JS-doc.
  * Property setter for the ValueState
  *
- * @param {Valuestate} oValueState
+ * @param {sap.ui.core.ValueState} oValueState
  * @return {sap.ui.commons.TextField} <code>this</code> to allow method chaining
  * @public
  */
@@ -1226,13 +1226,27 @@ sap.ui.commons.TextField.prototype.setValue = function(sValue) {
 	var newValue = sValue;
 	if( newValue && newValue.length > this.getMaxLength() && this.getMaxLength() > 0){
 		newValue = newValue.substring(0,this.getMaxLength());
-//		this.fireChange({newValue:newValue});
 	}
 
 	this.setProperty("value", newValue, true); // no re-rendering!
+	newValue = this.getValue(); // to use validated value
 	var oInput = this.getInputDomRef();
 	if(oInput && oInput.value !== newValue) {
-		oInput.value = this.getValue();
+		if (!sap.ui.Device.support.input.placeholder) {
+			if (newValue) {
+				this.$().removeClass('sapUiTfPlace');
+				oInput.value = newValue;
+			} else {
+				this.$().addClass('sapUiTfPlace');
+				var sPlaceholder = this.getPlaceholder();
+				if (this.getRenderer().convertPlaceholder) {
+					sPlaceholder = this.getRenderer().convertPlaceholder(this);
+				}
+				oInput.value = sPlaceholder;
+			}
+		}else {
+			oInput.value =  newValue;
+		}
 	}
 
 	return this;

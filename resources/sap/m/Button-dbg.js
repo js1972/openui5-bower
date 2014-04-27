@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -363,7 +363,7 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Button</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Button</code>.<br/> itself.
  *
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @public
@@ -421,7 +421,7 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.m.Button</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Button</code>.<br/> itself.
  *
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @public
@@ -458,146 +458,96 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
 // Start of sap\m\Button.js
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.Button.prototype);
-
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.IconPool");
 
-
 /**
  * Function is called to define the behavior for the control.
- * 
+ *
  * @private
  */
-sap.m.Button.prototype.init = function() { 
-	this.orientationProxy = jQuery.proxy(this._handleOrientationChange, this);
-	jQuery(window).bind("orientationchange", this.orientationProxy);
-	
+sap.m.Button.prototype.init = function() {
 	this._isPlatformDependent = sap.ui.core.theming.Parameters.get("sapMPlatformDependent") == "true";
 };
 
-
 /**
  * Function is called when exiting the control.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype.exit = function(oEvent) {
+
 	// destroy image controls if initialized
 	if (this._image) {
 		this._image.destroy();
 	}
+
 	if (this._iconBtn) {
 		this._iconBtn.destroy();
 	}
-	// unbind orientation change proxy
-	if (this.orientationProxy) {
-		jQuery(window).unbind("orientationchange", this.orientationProxy);
-	}
 };
-
-
-/**
- * This overrides the default setter of the iconDensityAware property in order to avoid the rerendering.
-
- * @public *
- */
-sap.m.Image.prototype.setIconDensityAware = function(bIconDensityAware){
-	this.setProperty("iconDensityAware", bIconDensityAware, true);
-	
-	if (this._image) {
-		this._image.setDensityAware(bIconDensityAware);
-	}
-};
-
 
 /**
  * Function is called when touchstart occurs on button .
- * 
+ *
  * @private
  */
 sap.m.Button.prototype.ontouchstart = function(oEvent) {
-	// for control who need to know if they should handle events from the button control
-	oEvent.originalEvent._sapui_handledByControl = true;
+
+	// mark the event for components that needs to know if the event was handled by the button
+	oEvent.setMarked();
+
 	// change the source only when the first finger is on the control, the
 	// following fingers doesn't affect
-	if ((oEvent.targetTouches && oEvent.targetTouches.length === 1) || !oEvent.targetTouches) {
-		this._touchedY = oEvent.targetTouches[0].clientY;
-		this._touchedX = oEvent.targetTouches[0].clientX;
-		if (!this._touchEndProxy) {
-			this._touchEndProxy = jQuery.proxy(this._ontouchend, this);
-		}
-		// bind touch proxy
-		if (!jQuery.support.touch) {
-			// binding to document when runs in desktop browser
-			// here also bound to the mouseup event to enable it working in
-			// desktop browsers
-			jQuery(window.document).bind("mouseup", this._touchEndProxy);
-		} else {
-			// binding to the image itself when runs in mobile device
-			// Galaxy Note (4.0.4) can't bubble the touchend event to document
-			this.$().bind("touchcancel touchend", this._touchEndProxy);
-		}
+	if (oEvent.targetTouches.length === 1) {
+
 		// set active button state
 		this._activeButton();
+
 		// set target which started the event
 		this._target = oEvent.target;
 	}
 };
 
-
-/**
- * Function is called when touchmove occurs on button .
- * 
- * @private
- */	
-sap.m.Button.prototype.ontouchmove = function(oEvent) {
-	var touchMovement = oEvent.targetTouches && ((Math.abs(this._touchedY - oEvent.targetTouches[0].clientY) > 10) || Math.abs(this._touchedX - oEvent.targetTouches[0].clientX) > 10);
-	// check if target which started the event is the same
-	if ( ((!!this._target) && (this._target != oEvent.target)) || touchMovement) {
-		this._ontouchend(oEvent);
-	}
-};
-
-
 /**
  * Function is called when touchend occurs on button .
- * 
+ *
  * @private
  */
-sap.m.Button.prototype._ontouchend = function(oEvent) {
+sap.m.Button.prototype.ontouchend = function(oEvent) {
+
 	// set inactive button state
 	this._inactiveButton();
-	// unbind touch proxy
-	if (!jQuery.support.touch) {
-		jQuery(window.document).unbind("mouseup", this._touchEndProxy);
-	} else {
-		this.$().unbind("touchcancel touchend", this._touchEndProxy);
-	}
 };
-
 
 /**
  * Function is called when tap occurs on button.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype.ontap = function(oEvent) {
+
+	// mark the event for components that needs to know if the event was handled by the button
+	oEvent.setMarked();
+
 	// fire tap event
 	if (this.getEnabled()) {
+
 		// if target is empty set target (specially for selenium test)
 		if (!this._target) {
 			this._target = oEvent.target;
 		}
+
 		// check if target which started the event is the same
 		if ((!!this._target) && (this._target === oEvent.target)) {
 			this.fireTap({/* no parameters */}); // (This event is deprecated, use the "press" event instead)
 			this.firePress({/* no parameters */});
 		}
 	}
+
 	// reset target which started the event
 	delete this._target;
 };
-
 
 /**
  * Handle the key down event for SPACE and ENTER.
@@ -607,29 +557,40 @@ sap.m.Button.prototype.ontap = function(oEvent) {
  * @private
  */
 sap.m.Button.prototype.onkeydown = function(oEvent) {
-	if(oEvent.which == jQuery.sap.KeyCodes.SPACE || oEvent.which == jQuery.sap.KeyCodes.ENTER){
+
+	if (oEvent.which === jQuery.sap.KeyCodes.SPACE || oEvent.which === jQuery.sap.KeyCodes.ENTER) {
+
+		// mark the event for components that needs to know if the event was handled by the button
+		oEvent.setMarked();
+
 		// set active button state
 		this._activeButton();
+
 		// set target which started the event
 		this._target = oEvent.target;
 	}
 };
 
-
 /**
  * Handle the key up event for SPACE and ENTER.
+ *
  * @param {jQuery.Event} oEvent - the keyboard event.
  * @private
  */
 sap.m.Button.prototype.onkeyup = function(oEvent) {
+
 	// if keydown isn't caught by button, ignore the keyup.
-	if(!this._target){
+	if (!this._target) {
 		return;
 	}
-	
+
 	this._target = null;
-	
-	if(oEvent.which == jQuery.sap.KeyCodes.SPACE || oEvent.which == jQuery.sap.KeyCodes.ENTER){
+
+	if (oEvent.which === jQuery.sap.KeyCodes.SPACE || oEvent.which === jQuery.sap.KeyCodes.ENTER) {
+
+		// mark the event for components that needs to know if the event was handled by the button
+		oEvent.setMarked();
+
 		// set inactive button state
 		this._inactiveButton();
 		this.firePress({/* no parameters */});
@@ -638,116 +599,73 @@ sap.m.Button.prototype.onkeyup = function(oEvent) {
 
 /**
  * Ensure that the active button state is removed by focus loss.
+ *
+ * @param {jQuery.Event} oEvent
  * @private
  */
-sap.m.Button.prototype.sapfocusleave = function() {
+sap.m.Button.prototype.onfocusout = function(oEvent) {
+
+	// set inactive button state
 	this._inactiveButton();
 };
 
-
-/**
- * Function is called when the orientation of the device changes.
- * 
- * @private
- */
-sap.m.Button.prototype._handleOrientationChange = function() {
-	//console.log("---------> _handleOrientationChange");
-};
-
-
-/**
- * Function is called when mouse is over a button.
- * 
- * @private
- */
-sap.m.Button.prototype.onmouseover = function(oEvent) {
-	// (only on desktop)
-	if (jQuery.device.is.desktop) {
-		if (this.getEnabled() && this.getRenderer().onmouseover) {
-			this.getRenderer().onmouseover(this);
-		}
-	}
-};
-
-
-/**
- * Function is called when mouse is out of a button.
- * 
- * @private
- */
-sap.m.Button.prototype.onmouseout = function(oEvent) {
-	// (only on desktop)
-	if (jQuery.device.is.desktop) {
-		if (this.getEnabled() && this.getRenderer().onmouseout) {
-			this.getRenderer().onmouseout(this);
-		}
-	}
-};
-
-
 /**
  * Function is called when button is active.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype._activeButton = function() {
-	if (jQuery.device.is.desktop) {
-		if (this.$().hasClass("sapMBtnHover")) {
-			this.$().removeClass("sapMBtnHover");
-		}
-	}
-	// active handling for android/blackberry
-	//if (jQuery.os.android || jQuery.os.blackberry) {
-		this.$().addClass("sapMBtnActive");
-	//}
+	this.$().addClass("sapMBtnActive");
+
 	// handling active icon
 	if (this.getEnabled()) {
 		if (this.getIcon() && this.getActiveIcon() && this._image instanceof sap.m.Image) {
 			this._image.setSrc(this.getActiveIcon());
 		}
 	}
-};	
-
+};
 
 /**
  * Function is called when button is inactive.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype._inactiveButton = function() {
-	var $this = this.$();
-	if($this.hasClass("sapMBtnActive")){
-		$this.removeClass("sapMBtnActive");
-		// handling active icon
-		if (this.getEnabled()) {
-			if (this.getIcon() && this.getActiveIcon() && this._image instanceof sap.m.Image) {
-				this._image.setSrc(this.getIcon());
-			}
+	this.$().removeClass("sapMBtnActive");
+
+	// handling active icon
+	if (this.getEnabled()) {
+		if (this.getIcon() && this.getActiveIcon() && this._image instanceof sap.m.Image) {
+			this._image.setSrc(this.getIcon());
 		}
 	}
 };
 
-
 /**
  * Function is called when image control needs to be loaded.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensityAware) {
+
 	// check if image source has changed - if yes destroy and reset image control
 	if(this._image && (this._image.getSrc() != sSrc)){
 		this._image.destroy();
 		this._image = undefined;
 	}
+
 	// update or create image control
 	var oImage = this._image;
+
 	if (!!oImage) {
+
 		oImage.setSrc(sSrc);
 		if(oImage instanceof sap.m.Image) {
 			oImage.setActiveSrc(sActiveSrc);
 			oImage.setDensityAware(bIconDensityAware);
 		}
 	} else {
+
 		oImage = sap.ui.core.IconPool.createControlByURI({
 			id: sImgId,
 			src : sSrc,
@@ -755,21 +673,23 @@ sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensi
 			densityAware : bIconDensityAware
 		}, sap.m.Image).addStyleClass("sapMBtnCustomIcon").setParent(this, null, true);
 	}
+
 	return this._image = oImage;
 };
 
-
 /**
  * Function is called when internal image control needs to be loaded.
- * 
+ *
  * @private
  */
 sap.m.Button.prototype._getInternalIconBtn = function(sImgId, sSrc) {
 	var oIcon = this._iconBtn;
+
 	if (!!oIcon) {
 		oIcon.setSrc(sSrc);
 	} else {
 		oIcon = sap.ui.core.IconPool.createControlByURI(sSrc, sap.m.Image);
 	}
+
 	return this._iconBtn = oIcon;
 };

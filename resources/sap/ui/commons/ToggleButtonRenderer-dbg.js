@@ -41,21 +41,21 @@ sap.ui.commons.ToggleButtonRenderer.renderButtonAttributes = function(rm, oToggl
  * Function called by ToggleButton control to enable Pressed state.
  */
 sap.ui.commons.ToggleButtonRenderer.onactivePressed = function(oToggleButton) {
-	jQuery.sap.byId(oToggleButton.getId()).addClass("sapUiToggleBtnPressed").attr('aria-pressed', true);
+	oToggleButton.$().addClass("sapUiToggleBtnPressed").attr('aria-pressed', true);
 };
 
 /**
  * Function called by button control to disable Pressed state.
  */
 sap.ui.commons.ToggleButtonRenderer.ondeactivePressed = function(oToggleButton) {
-	jQuery.sap.byId(oToggleButton.getId()).removeClass("sapUiToggleBtnPressed").attr('aria-pressed', false);
+	oToggleButton.$().removeClass("sapUiToggleBtnPressed").attr('aria-pressed', false);
 };
 
 /**
  * Function called by button control to update image based on state.
  */
 sap.ui.commons.ToggleButtonRenderer.updateImage = function(oToggleButton) {
-	jQuery.sap.byId(oToggleButton.getId() + '-img').attr('src',this._getIconForState(oToggleButton, "base"));
+	oToggleButton.$("img").attr('src',this._getIconForState(oToggleButton, "base"));
 };
 
 /**

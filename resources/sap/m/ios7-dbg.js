@@ -54,7 +54,7 @@ jQuery.sap.declare("sap.m._Ios7");
 	/**
 	 * gets the height of the navigation bar in px. Only returns a number < 0 in landscape mode - will return 0 for portrait mode or if no navigation bar is shown.
 	 * @internal
-	 * @returns {integer} the height of the navigation bar
+	 * @returns {int} the height of the navigation bar
 	 */
 	sap.m._Ios7.prototype.getNavigationBarHeight = function () {
 		if(!this._bNavigationBarEventFired) {

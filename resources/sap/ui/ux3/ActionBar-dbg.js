@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -531,7 +531,7 @@ sap.ui.ux3.ActionBar.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ActionBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ActionBar</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ActionBar} <code>this</code> to allow method chaining
  * @public
@@ -597,7 +597,7 @@ sap.ui.ux3.ActionBar.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener=this] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ActionBar</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.ux3.ActionBar</code>.<br/> itself.
  *
  * @return {sap.ui.ux3.ActionBar} <code>this</code> to allow method chaining
  * @public
@@ -753,7 +753,7 @@ sap.ui.ux3.ActionBar.prototype.exit = function() {
  * @protected
  */
 sap.ui.ux3.ActionBar.prototype.isActive = function() {
-	var bResult = jQuery.sap.domById(this.getId()) != null;
+	var bResult = this.getDomRef() != null;
 	
 	return bResult;
 };
@@ -1043,7 +1043,7 @@ sap.ui.ux3.ActionBar.prototype._getSocialAction = function (sActionId) {
   */    
 sap.ui.ux3.ActionBar.prototype._updateSocialActionDomRef = function(oSocialAction) {    
 	
-	var content = jQuery.sap.byId(oSocialAction.getId());
+	var content = oSocialAction.$();
 	if(content) {
 		//Replace css classes with action's standard css
 		content.attr("class", oSocialAction.cssClass);
@@ -1069,7 +1069,7 @@ sap.ui.ux3.ActionBar.prototype._updateSocialActionDomRef = function(oSocialActio
  * @private
  */
 sap.ui.ux3.ActionBar.prototype._rerenderSocialActions = function() {
-	var content = jQuery.sap.byId(this.getId() + "-socialActions");
+	var content = this.$("socialActions");
 	if (content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		sap.ui.ux3.ActionBarRenderer.renderSocialActions(rm, this);
@@ -1086,7 +1086,7 @@ sap.ui.ux3.ActionBar.prototype._rerenderSocialActions = function() {
  * @private
  */
 sap.ui.ux3.ActionBar.prototype._rerenderBusinessAction = function(oButton) {
-	var content = jQuery.sap.byId(oButton.getId());
+	var content = oButton.$();
 	if (content.length > 0) {
 		var rm = sap.ui.getCore().createRenderManager();
 		rm.renderControl(oButton);
@@ -1103,7 +1103,7 @@ sap.ui.ux3.ActionBar.prototype._rerenderBusinessAction = function(oButton) {
  */
 sap.ui.ux3.ActionBar.prototype._rerenderBusinessActions = function() {
 	if(!this.getAlwaysShowMoreMenu()) {
-		var content = jQuery.sap.byId(this.getId() + "-businessActions");
+		var content = this.$("businessActions");
 		if (content && content.length > 0) {
 			var rm = sap.ui.getCore().createRenderManager();
 			sap.ui.ux3.ActionBarRenderer.renderBusinessActionButtons(rm, this);
@@ -1726,7 +1726,7 @@ sap.ui.ux3.ActionBar.prototype._getMoreMenuButton = function() {
 sap.ui.ux3.ActionBar.prototype._onresize = function(oEvent) {
 
 	//set min width for action bar
-	var oActionBarDomRef = jQuery.sap.byId(this.getId());
+	var oActionBarDomRef = this.$();
 	
 	if(oActionBarDomRef) {
 		var sActionBarMinWidth = this.getActionBarMinWidth() + "px";
@@ -1740,7 +1740,7 @@ sap.ui.ux3.ActionBar.prototype._onresize = function(oEvent) {
 		//Only show 'More' menu button if there is more than one business action
 		var bShowMoreMenuButton = false;
 		if( this._getBusinessActionButtons().length > 1) {
-			var iMoreMenuButtonWidth = jQuery.sap.byId(this._oMoreMenuButton.getId()).outerWidth();
+			var iMoreMenuButtonWidth = this._oMoreMenuButton.$().outerWidth();
 			
 			var iMaxButtonsWidth = oActionBarDomRef.outerWidth() 
 				- this._getSocialActionListMinWidth() 
@@ -1750,7 +1750,7 @@ sap.ui.ux3.ActionBar.prototype._onresize = function(oEvent) {
 			var iButtonWidth = 0;
 			
 			for(var iIndex=0; iIndex<actionButtons.length; iIndex++) {
-				var oIthButtonDomRef = jQuery.sap.byId(actionButtons[iIndex].getId()).parent();
+				var oIthButtonDomRef = actionButtons[iIndex].$().parent();
 				iButtonWidth += oIthButtonDomRef.outerWidth();
 				if(iIndex == actionButtons.length -1) {
 					//special treatment for last button since it toggles with more menu button
@@ -1787,7 +1787,7 @@ sap.ui.ux3.ActionBar.prototype._onresize = function(oEvent) {
 			bShowMoreMenuButton |= this.getAggregation("businessActions").length > actionButtons.length;
 		}
 		
-		var oMoreMenuButtonDomRef = jQuery.sap.byId(this._oMoreMenuButton.getId()).parent();
+		var oMoreMenuButtonDomRef = this._oMoreMenuButton.$().parent();
 		if(oMoreMenuButtonDomRef.length > 0) {
 			bShowMoreMenuButton ? oMoreMenuButtonDomRef.css('display', '') : oMoreMenuButtonDomRef.css('display', 'none');
 		}
@@ -1864,7 +1864,7 @@ sap.ui.ux3.ActionBar.prototype.getActionBarMinWidth = function() {
 		// use parent's outer width because the menu button's outer width
 		// has turned out to change, depending on the speed in which you resize 
 		// the browser window.
-		var oParentDomRef =  jQuery.sap.byId(oRightControl.getId()).parent();
+		var oParentDomRef =  oRightControl.$().parent();
 		if(oParentDomRef) {
 			iResult += oParentDomRef.outerWidth() - 3; //substract left padding
 		}

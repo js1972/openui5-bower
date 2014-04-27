@@ -66,7 +66,7 @@ sap.m.DialogRenderer.render = function(oRm, oControl) {
 	}
 	
 	if(!sap.m.Dialog._bOneDesign){
-		if(jQuery.os.ios && !oHeader){
+		if(sap.ui.Device.os.ios && !oHeader){
 			oRm.addClass("sapMDialogNoHeader");
 		}
 		
@@ -78,7 +78,7 @@ sap.m.DialogRenderer.render = function(oRm, oControl) {
 			}
 		}
 	}else{
-		if(jQuery.device.is.phone){
+		if(sap.ui.Device.system.phone){
 			oRm.addClass("sapMDialogPhone");
 		}
 	}
@@ -89,17 +89,19 @@ sap.m.DialogRenderer.render = function(oRm, oControl) {
 	if (sTooltip) {
 		oRm.writeAttributeEscaped("title", sTooltip);
 	}
-	
+
+	oRm.writeAttribute("tabindex", "-1");
+
 	oRm.write(">");
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		//Invisible element which is used to determine when desktop keyboard navigation
 		//has reached the first focusable element of a dialog and went beyond. In that case, the controller
 		//will focus the last focusable element
-		oRm.write("<span id='" + oControl.getId() + "-firstfe' tabIndex='0'/>");
+		oRm.write("<span id='" + oControl.getId() + "-firstfe' tabindex='0'/>");
 	}
 
 	if(!sap.m.Dialog._bOneDesign){
-		if(jQuery.os.ios) {
+		if(sap.ui.Device.os.ios) {
 			if(bMessage){
 				if(bShowHeader && oControl.getTitle()) {
 					oRm.write("<header class=\"sapMDialogTitle\">");
@@ -146,7 +148,7 @@ sap.m.DialogRenderer.render = function(oRm, oControl) {
 	oRm.write("</div>");
 	oRm.write("</section>");
 	
-	if((sap.m.Dialog._bOneDesign || !jQuery.os.ios || bMessage) && (oLeftButton || oRightButton)) {
+	if((sap.m.Dialog._bOneDesign || !sap.ui.Device.os.ios || bMessage) && (oLeftButton || oRightButton)) {
 		
 		oRm.write("<footer class='sapMDialogActions sapMBar-CTX sapMFooter-CTX'>");
 
@@ -164,11 +166,11 @@ sap.m.DialogRenderer.render = function(oRm, oControl) {
 		
 		oRm.write("</footer>");
 	}
-	if(jQuery.device.is.desktop) {
+	if(sap.ui.Device.system.desktop) {
 		//Invisible element which is used to determine when desktop keyboard navigation
 		//has reached the last focusable element of a dialog and went beyond. In that case, the controller
 		//will focus the first focusable element
-		oRm.write("<span id='" + oControl.getId() + "-lastfe' tabIndex='0'/>");
+		oRm.write("<span id='" + oControl.getId() + "-lastfe' tabindex='0'/>");
 	}
 	oRm.write("</div>");
 };

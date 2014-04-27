@@ -10,9 +10,8 @@
  * ---------------------------------------------------------------------------------- */
 
 // Provides control sap.ui.core.CustomData.
-jQuery.sap.declare("sap.ui.core.CustomData");
-jQuery.sap.require("sap.ui.core.library");
-jQuery.sap.require("sap.ui.core.Element");
+sap.ui.define(['./library','./Element'], function() {
+	"use strict";
 
 
 /**
@@ -58,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.18.12
+ * @version 1.20.4
  *
  * @constructor   
  * @public
@@ -180,7 +179,7 @@ sap.ui.core.Element.extend("sap.ui.core.CustomData", { metadata : {
  */
 
 
-// Start of sap\ui\core\CustomData.js
+// Start of sap/ui/core/CustomData.js
 sap.ui.core.CustomData.prototype.setValue = function(oValue) {
 	this.setProperty("value", oValue, true);
 	
@@ -200,3 +199,7 @@ sap.ui.core.CustomData.prototype.setValue = function(oValue) {
 	}
 	return this;
 };
+
+	return sap.ui.core.CustomData;
+
+}, /* bExport = */ true);

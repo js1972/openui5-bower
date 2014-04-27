@@ -83,7 +83,7 @@
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -116,6 +116,7 @@
 		 * @name jQuery.sap.Version#toString
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.toString = function() {
 			return vMajor + "." + iMinor + "." + iPatch + sSuffix; 
@@ -128,6 +129,7 @@
 		 * @name jQuery.sap.Version#getMajor
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.getMajor = function() { return vMajor; };
 		
@@ -138,6 +140,7 @@
 		 * @name jQuery.sap.Version#getMinor
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.getMinor = function() { return iMinor; };
 		
@@ -148,6 +151,7 @@
 		 * @name jQuery.sap.Version#getPatch
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.getPatch = function() { return iPatch; };
 		
@@ -158,6 +162,7 @@
 		 * @name jQuery.sap.Version#getSuffix
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.getSuffix = function() { return sSuffix; };
 
@@ -173,6 +178,7 @@
 		 * @name jQuery.sap.Version#compareTo
 		 * @public
 		 * @since 1.15.0
+		 * @function
 		 */
 		this.compareTo = function() {
 			var vOther = Version.apply(window, arguments);
@@ -195,6 +201,7 @@
 	 * @name jQuery.sap.Version#inRange
 	 * @public
 	 * @since 1.15.0
+	 * @function
 	 */
 	Version.prototype.inRange = function(vMin, vMax) {
 		return this.compareTo(vMin) >= 0 && this.compareTo(vMax) < 0; 
@@ -469,7 +476,7 @@
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.18.12
+	 * @version 1.20.4
 	 * @namespace
 	 * @public
 	 * @static
@@ -659,8 +666,8 @@
 			 * Creates a new fatal-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log instance for method chaining
 			 * @name jQuery.sap.log.Logger#fatal
 			 * @function
@@ -676,8 +683,8 @@
 			 * Creates a new error-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log instance
 			 * @name jQuery.sap.log.Logger#error
 			 * @function
@@ -693,8 +700,8 @@
 			 * Creates a new warning-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log instance
 			 * @name jQuery.sap.log.Logger#warning
 			 * @function
@@ -709,8 +716,8 @@
 			 * Creates a new info-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log instance
 			 * @name jQuery.sap.log.Logger#info
 			 * @function
@@ -725,8 +732,8 @@
 			 * Creates a new debug-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log instance
 			 * @name jQuery.sap.log.Logger#debug
 			 * @function
@@ -741,8 +748,8 @@
 			 * Creates a new trace-level entry in the log with the given message, details and calling component.
 			 *
 			 * @param {string} sMessage Message text to display
-			 * @param {string} [sDetails=""] Details about the message, might be omitted
-			 * @param {string} [sComponent=""] Name of the component that produced the log entry
+			 * @param {string} [sDetails=''] Details about the message, might be omitted
+			 * @param {string} [sComponent=''] Name of the component that produced the log entry
 			 * @return {jQuery.sap.log.Logger} The log-instance
 			 * @name jQuery.sap.log.Logger#trace
 			 * @function
@@ -1354,13 +1361,14 @@
 				'sap/ui/thirdparty/datajs.js': true,
 				'sap/ui/thirdparty/hasher.js': true,
 				'sap/ui/thirdparty/IPv6.js': true,
+				'sap/ui/thirdparty/jquery/jquery-1.10.2.js': true,
 				'sap/ui/thirdparty/jquery/jquery-1.10.1.js': true,
 				'sap/ui/thirdparty/jquery/jquery.1.7.1.js': true,
 				'sap/ui/thirdparty/jquery/jquery.1.8.1.js': true,
 				'sap/ui/thirdparty/jquery-mobile-custom.js': true,
-				'sap/ui/thirdparty/less.js.js': true,
+				'sap/ui/thirdparty/less.js': true,
 				'sap/ui/thirdparty/punycode.js': true,
-				'sap/ui/thirdparty/require.js.js': true,
+				'sap/ui/thirdparty/require.js': true,
 				'sap/ui/thirdparty/SecondLevelDomains.js': true,
 				'sap/ui/thirdparty/signals.js': true,
 				'sap/ui/thirdparty/URI.js' : true
@@ -1457,7 +1465,9 @@
 			var aSegments = sResourceName.split(/\//),
 				l, sNamePrefix, sResult, m;
 	
+			// if no suffix was given and if the name is not empty, try to guess the suffix from the last segment 
 			if ( arguments.length === 1  &&  aSegments.length > 0 ) {
+				// only known types (and their known subtypes) are accepted 
 				m = rSubTypes.exec(aSegments[aSegments.length-1]);
 				if ( m ) {
 					sSuffix = m[0];
@@ -1485,6 +1495,26 @@
 			jQuery.sap.assert(false, "should never happen");
 		}
 
+		function guessResourceName(sURL) {
+			var iLength = -1, 
+				sResourceName, 
+				sCandidate,
+				sCandidateUrl;
+			
+			for(var sCandidate in mUrlPrefixes) {
+				sCandidateUrl = mUrlPrefixes[sCandidate];
+				sCandidateUrl = sCandidateUrl + (sCandidateUrl.slice(-1) !== '/' ? "/" : "");
+				if ( mUrlPrefixes.hasOwnProperty(sCandidate)
+						 && sCandidate.length > iLength
+						 && (sURL === sCandidateUrl || sURL.indexOf(sCandidateUrl) === 0) ) {
+					iLength = sCandidate.length;
+					sResourceName = sCandidate + (sCandidate ? "/" : "") + sURL.slice(sCandidateUrl.length);
+				}
+			}
+			
+			return iLength < 0 ? undefined : sResourceName;
+		}
+		
 		function declareModule(sModuleName) {
 			var oModule;
 			
@@ -1647,14 +1677,14 @@
 						// make URL absolute so Chrome displays the file tree correctly
 						oUri = URI(oModule.url);
 						sAbsoluteUrl = oUri.absoluteTo(sDocumentLocation);
-						_window.eval(oModule.data + "\r\n//@ sourceURL=" + sAbsoluteUrl); // Firebug, Chrome and Safari debugging help, appending the string seems to cost ZERO performance
+						_window.eval(oModule.data + "\r\n//# sourceURL=" + sAbsoluteUrl); // Firebug, Chrome and Safari debugging help, appending the string seems to cost ZERO performance
 					}
 					_execStack.pop();
 					oModule.state = READY;
 					oModule.data = undefined;
-					// best guess for legacy modules that don't use jQuery.sap.define
+					// best guess for legacy modules that don't use sap.ui.define
 					// TODO implement fallback for raw modules
-					oModule.content = oModule.content || jQuery.sap.getObject(sModuleName); 
+					oModule.content = oModule.content || jQuery.sap.getObject(urnToUI5(sModuleName)); 
 	
 					if ( log.isLoggable() ) {
 						sLogPrefix = sOldPrefix;
@@ -1683,7 +1713,9 @@
 				sDepModName = aDependencies[i];
 				log.debug(sLogPrefix + "require '" + sDepModName + "'");
 				requireModule(sDepModName + ".js");
-				aModules[i] = mModules[sDepModName + ".js"].content; 
+				// best guess for legacy modules that don't use sap.ui.define
+				// TODO implement fallback for raw modules
+				aModules[i] = mModules[sDepModName + ".js"].content || jQuery.sap.getObject(urnToUI5(sDepModName + ".js")); 
 				log.debug(sLogPrefix + "require '" + sDepModName + "': done.");
 			}
 	
@@ -1962,6 +1994,9 @@
 			requireModule(sModuleName + ".js");
 		}
 
+		window.sap = window.sap || {};
+		sap.ui = sap.ui || {};
+
 		/**
 		 * Provides an AMD like way to define UI5 modules. 
 		 * 
@@ -1974,7 +2009,7 @@
 		 * @param {boolean} [bExport]
 		 * @private
 		 */
-		jQuery.sap.define = function(sId, aDependencies, vFactory, bExport) {
+		sap.ui.define = function(sId, aDependencies, vFactory, bExport) {
 			var aModules = [],
 				sModuleName,
 				sDepModName,
@@ -1998,6 +2033,14 @@
 				bExport = vFactory;
 				vFactory = aDependencies;
 				aDependencies = [];
+			} else {
+				// resolve relative module names
+				var sPackage = sModuleName.slice(0,1+sModuleName.lastIndexOf('/'));
+				for(i=0; i<aDependencies.length; i++) {
+					if ( /^\.\//.test(aDependencies[i]) ) {
+						aDependencies[i] = sPackage + aDependencies[i].slice(2); 
+					}
+				}
 			}
 
 			if ( log.isLoggable() ) {
@@ -2012,6 +2055,11 @@
 				// factory
 				if ( log.isLoggable() ) {
 					log.debug("define(" + sModuleName + "): calling factory " + typeof vFactory);
+				}
+
+				if ( bExport ) {
+					// ensure parent namespace
+					jQuery.sap.getObject(sId, 1);
 				}
 
 				if ( typeof vFactory === "function" ) {
@@ -2173,7 +2221,8 @@
 		 * 
 		 * If the resource was found in the local preload cache and any necessary conversion succeeded
 		 * or when the resource was retrieved from the backend successfully, the content of the resource will
-		 * be returned. In any other case, an exception will be thrown. 
+		 * be returned. In any other case, an exception will be thrown, or if option failOnError is set to true,
+		 * <code>null</code> will be returned.
 		 * 
 		 * Future implementations of this API might add more options, esp. asynchronous calls might 
 		 * be possible. Generic implementations that accept an <code>mOptions</code> object and propagate it
@@ -2182,10 +2231,14 @@
 		 * 
 		 * For asynchronous calls the return type of this method will change. 
 		 * 
-		 * @param {string} sResourceName resourceName in unified resource name syntax
-		 * @param {object} [options] options 
-		 * @param {object} [options.type] one of "xml", "html", "json" or "text". If not specified it will be derived from the resource name (extension)
-		 * @return {string|Document|object} content of the resource. A string for text or html, an object for JSON, an Document for XML
+		 * @param {string} [sResourceName] resourceName in unified resource name syntax
+		 * @param {object} [mOptions] options 
+		 * @param {object} [mOptions.dataType] one of "xml", "html", "json" or "text". If not specified it will be derived from the resource name (extension)
+		 * @param {string} [mOptions.name] name of the resource to load (alternative syntax)
+		 * @param {string} [mOptions.url] url of a resource to load (alternative syntax, name will only be a guess)
+		 * @param {string} [mOptions.headers] Http headers for an eventual XHR request
+		 * @param {string} [mOptions.failOnError=true] whether to propagate load errors or not
+		 * @return {string|Document|object} content of the resource. A string for text or html, an Object for JSON, a Document for XML
 		 * @throws Error if loading the resource failed
 		 * @private
 		 * @experimental API is not yet fully mature and may change in future.
@@ -2193,21 +2246,32 @@
 		 */
 		jQuery.sap.loadResource = function(sResourceName, mOptions) {
 
-			var oModule = mModules[sResourceName],
-				oData = oModule && oModule.data,
-				sType,
+			var sType,
+				oData,
 				vConverter, 
 				sUrl,
 				oError;
 
-			mOptions = mOptions || {};
+			if ( typeof sResourceName === "string" ) {
+				mOptions = mOptions || {};
+			} else {
+				mOptions = sResourceName || {};
+				sResourceName = mOptions.name;
+				if ( !sResourceName && mOptions.url) {
+					sResourceName = guessResourceName(mOptions.url);
+				}
+			}
+			// defaulting
+			mOptions = jQuery.extend({ failOnError: true }, mOptions);
+			
 			sType = mOptions.dataType; 
-			if ( sType == null ) {
+			if ( sType == null && sResourceName ) {
 				sType = (sType = rTypes.exec(sResourceName)) && sType[1];
 			}
 
 			jQuery.sap.assert(/^(xml|html|json|text)$/.test(sType), "type must be one of xml, html, json or text");
 
+			oData = sResourceName && mModules[sResourceName] && mModules[sResourceName].data;
 			if ( oData != null ) {
 
 				vConverter = jQuery.ajaxSettings.converters["text " + sType];
@@ -2218,23 +2282,25 @@
 			} else {
 
 				jQuery.ajax({
-					url : sUrl = getResourcePath(sResourceName),
+					url : sUrl = mOptions.url || getResourcePath(sResourceName),
 					async : false,
 					dataType : sType,
+					headers: mOptions.headers,
 					success : function(data, textStatus, xhr) {
 						oData = data;
 					},
 					error : function(xhr, textStatus, error) {
+						oData = null; // normalize 
 						oError = new Error("resource " + sResourceName + " could not be loaded from " + sUrl + ". Check for 'file not found' or parse errors.");
 						oError.status = textStatus;
 						oError.error = error;
 						oError.statusCode = xhr.status;
 					}
-				})
+				});
 
 			}
 
-			if ( !oData && oData !== "" ) {
+			if ( oData == null && mOptions.failOnError ) {
 				throw oError || new Error("no data returned for " + sResourceName);
 			}
 
@@ -2331,39 +2397,80 @@
 	 */
 	jQuery.sap.includeStyleSheet = function includeStyleSheet(sUrl, sId, fnLoadCallback, fnErrorCallback) {
 
-		// create the new link element
-		var oLink = document.createElement("link");
-		oLink.type = "text/css";
-		oLink.rel = "stylesheet";
-		oLink.href = sUrl;
-		if (sId) {
-			oLink.id = sId;
-		}
-		
-		jQuery(oLink).load(function() {
-			jQuery(oLink).attr("sap-ui-ready", "true");
-			if (fnLoadCallback) {
-				fnLoadCallback();
+		var _createLink = function(sUrl, sId, fnLoadCallback, fnErrorCallback){
+
+			// create the new link element
+			var oLink = document.createElement("link");
+			oLink.type = "text/css";
+			oLink.rel = "stylesheet";
+			oLink.href = sUrl;
+			if (sId) {
+				oLink.id = sId;
 			}
-		});
-		
-		jQuery(oLink).error(function() {
-			jQuery(oLink).attr("sap-ui-ready", "false");
-			if (fnErrorCallback) {
-				fnErrorCallback();
+
+			jQuery(oLink).load(function() {
+				jQuery(oLink).attr("sap-ui-ready", "true");
+				if (fnLoadCallback) {
+					fnLoadCallback();
+				}
+			});
+
+			jQuery(oLink).error(function() {
+				jQuery(oLink).attr("sap-ui-ready", "false");
+				if (fnErrorCallback) {
+					fnErrorCallback();
+				}
+			});
+			return oLink;
+
+		};
+
+		var _appendStyle = function(sUrl, sId, fnLoadCallback, fnErrorCallback){
+
+			if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 9 && document.styleSheets.length >= 29) {
+				// in IE9 only 30 links are alowed, so use stylesheet object insted
+				var sRootUrl = URI.parse(document.URL).path;
+				jQuery.sap.log.warning("StlyeSheet "+sId+" not added as LINK because of IE limits", sUrl, "jQuery.sap.includeStyleSheet");
+				if (!this._oIEStyleSheet) {
+					// create a style sheet to add additional style sheet. But for this the Replace logic will not work any more
+					// the callback functions are not used in this case
+					// the sap-ui-ready attribute will not be set -> maybe problems with ThemeCheck
+					this._oIEStyleSheet = document.createStyleSheet();
+					this._oIEStyleSheet.addImport(URI(sUrl).absoluteTo(sRootUrl));
+				} else {
+					// add up to 30 style sheets to every of this style sheets. (result is a tree of style sheets)
+					var bAdded = false;
+					for ( var i = 0; i < this._oIEStyleSheet.imports.length; i++) {
+						var oStyleSheet = this._oIEStyleSheet.imports[i];
+						if (oStyleSheet.imports.length < 30) {
+							oStyleSheet.addImport(URI(sUrl).absoluteTo(sRootUrl));
+							bAdded = true;
+							break;
+						}
+					}
+					if (!bAdded) {
+						this._oIEStyleSheet.addImport(URI(sUrl).absoluteTo(sRootUrl));
+					}
+				}
+			}else {
+				appendHead(_createLink(sUrl, sId, fnLoadCallback, fnErrorCallback));
 			}
-		});
+
+		};
 
 		// check for existence of the link
 		var oOld, bReplace;
 		if ((sId && (oOld = jQuery.sap.domById(sId)) && (bReplace = oOld.tagName === "LINK" && oOld.rel ==="stylesheet")) || window.document.body) {
 			if (bReplace) {
-				jQuery(oOld).replaceWith(oLink);
+				// if link exists and URL would not change and if no callbacks are given, then don't touch the link 
+				if ( oOld.getAttribute("href") !== sUrl || fnLoadCallback || fnErrorCallback ) {
+					jQuery(oOld).replaceWith(_createLink(sUrl, sId, fnLoadCallback, fnErrorCallback));
+				}
 			} else {
-				appendHead(oLink);
+				_appendStyle(sUrl, sId, fnLoadCallback, fnErrorCallback);
 			}
 		} else {
-			appendHead(oLink);
+			_appendStyle(sUrl, sId, fnLoadCallback, fnErrorCallback);
 		}
 
 	};

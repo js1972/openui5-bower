@@ -41,6 +41,11 @@ sap.ui.layout.form.FormRenderer.render = function(oRenderManager, oForm){
 		rm.addClass(sClass);
 	}
 
+	if (oForm.getEditable()) {
+		rm.addClass("sapUiFormEdit");
+		rm.addClass("sapUiFormEdit-CTX");
+	}
+
 	if (oForm.getWidth()) {
 		rm.addStyle("width", oForm.getWidth());
 	}
