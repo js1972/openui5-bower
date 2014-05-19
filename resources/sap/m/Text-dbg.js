@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -302,12 +302,54 @@ sap.ui.core.Control.extend("sap.m.Text", { metadata : {
 
 
 // Start of sap\m\Text.js
-// default value when line-height is normal
+/**
+ * Default line height value as a number when line-height is normal.
+ * This value is required during max-height calculation for the browsers that do not support line-clamping.
+ * It is better to define line-height in CSS instead of "normal" to get consistent maxLines results since normal line-height
+ * not only vary from browser to browser but they also vary from one font face to another and can also vary within a given face.
+ *
+ * Default value is 1.2
+ *
+ * @since 1.22
+ * @protected
+ * @type {Number}
+ */
 sap.m.Text.prototype.normalLineHeight = 1.2;
 
-// decides if line height should be cached or not
+/**
+ * Determines per instance whether line height should be cached or not.
+ * Default value is true.
+ *
+ * @since 1.22
+ * @protected
+ * @type {Boolean}
+ */
 sap.m.Text.prototype.cacheLineHeight = true;
 
+/**
+ * Ellipsis(…) text to indicate more text when clampText function is used.
+ * Can be overwritten with 3dots(...) if fonts do not support this UTF-8 character.
+ *
+ * @since 1.13.2
+ * @protected
+ * @type {String}
+ */
+sap.m.Text.prototype.ellipsis = '…';
+
+/**
+ * Defines whether browser supports native line clamp or not
+ *
+ * @since 1.13.2
+ * @returns {Boolean}
+ * @protected
+ * @readonly
+ * @static
+ */
+sap.m.Text.hasNativeLineClamp = (function() {
+	return (typeof document.documentElement.style.webkitLineClamp != "undefined");
+})();
+
+// returns the text value and remove normalize line-ending character for rendering
 sap.m.Text.prototype.getText = function(bNormalize) {
 	var sText = this.getProperty("text");
 	if (bNormalize) {
@@ -316,80 +358,153 @@ sap.m.Text.prototype.getText = function(bNormalize) {
 	return sText;
 };
 
+// required adaptations after rendering
 sap.m.Text.prototype.onAfterRendering = function() {
-	// check visible, wrapping and max lines clamping support
+	// check visible, wrapping, max-lines and line-clamping support
 	if (this.getVisible() &&
 		this.getWrapping() &&
 		this.getMaxLines() > 1 &&
 		!this.canUseNativeLineClamp()) {
 
-		// set the max height
-		var oDomRef = this.getDomRef("inner");
-		var iMaxHeight = this._getClampHeight(oDomRef);
-		oDomRef.style.maxHeight = iMaxHeight + "px";
+		// set max-height for maxLines support
+		this.clampHeight();
 	}
 };
 
 /**
- * Defines whether browser supports native line clamp or not
+ * Returns the text node container's DOM reference.
+ * This can be different then getDomRef when inner wrapper is needed.
  *
- * @since 1.13.2
+ * @since 1.22
  * @protected
- * @static
+ * @returns {HTMLElement|null}
  */
-sap.m.Text.hasNativeLineClamp = (function() {
-	return (typeof document.documentElement.style.webkitLineClamp != "undefined");
-})();
+sap.m.Text.prototype.getTextDomRef = function() {
+	var oDomRef = this.getDomRef();
+	return oDomRef && (oDomRef.firstElementChild || oDomRef);
+};
 
 /**
- * Ellipsis(…) text to indicate more text for browser which does not support native line clamp
- * Can be overwritten with 3dots(...) if fonts do not support this UTF-8 character.
- * NOTE: Changing this does not affect native ellipsis support
- *
- * @since 1.13.2
- * @protected
- */
-sap.m.Text.prototype.ellipsis = '…';
-
-/**
- * Decides whether the control can use native line clamp feature or not
+ * Decides whether the control can use native line clamp feature or not.
  * In RTL mode native line clamp feature is not supported
  *
  * @since 1.20
  * @protected
+ * @return {Boolean}
  */
 sap.m.Text.prototype.canUseNativeLineClamp = function() {
+	// has line clamp feature
 	if (!sap.m.Text.hasNativeLineClamp) {
 		return false;
 	}
-	if (this.getTextDirection() == sap.ui.core.TextDirection.RTL) {
+
+	// is text direction rtl
+	var oDirection = sap.ui.core.TextDirection;
+	if (this.getTextDirection() == oDirection.RTL) {
 		return false;
 	}
-	if (this.getTextDirection() == sap.ui.core.TextDirection.Inherit && sap.ui.getCore().getConfiguration().getRTL()) {
+
+	// is text direction inherited as rtl
+	if (this.getTextDirection() == oDirection.Inherit && sap.ui.getCore().getConfiguration().getRTL()) {
 		return false;
 	}
 
 	return true;
 };
 
+
+
 /**
- * Clamps the wrapping text according to max lines
- * and returns the found ellipsis position.
+ * Caches and returns the computed line height of the text.
  *
- * Parameters can be used for better performance
+ * @since 1.22
+ * @protected
+ * @see sap.m.Text#cacheLineHeight
+ * @param {HTMLElement} [oDomRef] DOM reference of the text container.
+ * @returns {Number}
+ */
+sap.m.Text.prototype.getLineHeight = function(oDomRef) {
+	// return cached value if possible and available
+	if (this.cacheLineHeight && this._iLineHeight) {
+		return this._iLineHeight;
+	}
+
+	// check whether dom ref exist or not
+	oDomRef = oDomRef || this.getTextDomRef();
+	if (!oDomRef) {
+		return 0;
+	}
+
+	// check line-height
+	var oStyle = window.getComputedStyle(oDomRef),
+		fLineHeight = parseFloat(oStyle.lineHeight);
+
+	// we should ignore "normal" line-height so calculate with font-size
+	if (!fLineHeight) {
+		fLineHeight = parseFloat(oStyle.fontSize) * this.normalLineHeight;
+	}
+
+	// on rasterizing the font, sub pixel line-heights are converted to integer
+	// this can differ from browser font rendering engine, in this case
+	// we should create one line text on the fly and check the height
+	var iLineHeight = Math.floor(fLineHeight);
+
+	// cache line height
+	if (this.cacheLineHeight) {
+		this._iLineHeight = iLineHeight;
+	}
+
+	// return
+	return iLineHeight;
+};
+
+/**
+ * Returns the max height according to max lines and line height calculation.
+ * This is not calculated max-height!
  *
- * @param {HTMLElement} [oDomRef] DOM reference of the control.
+ * @since 1.22
+ * @protected
+ * @param {HTMLElement} [oDomRef] DOM reference of the text container.
+ * @returns {Number}
+ */
+sap.m.Text.prototype.getClampHeight = function(oDomRef) {
+	oDomRef = oDomRef || this.getTextDomRef();
+	return this.getMaxLines() * this.getLineHeight(oDomRef);
+};
+
+/**
+ * Sets the max-height to support maxLines property
+ *
+ * @since 1.22
+ * @protected
+ * @param {HTMLElement} [oDomRef] DOM reference of the text container.
+ * @returns {Number} calculated max height value
+ */
+sap.m.Text.prototype.clampHeight = function(oDomRef) {
+	oDomRef = oDomRef || this.getTextDomRef();
+	if (!oDomRef) {
+		return 0;
+	}
+
+	var iMaxHeight = this.getClampHeight(oDomRef);
+	oDomRef.style.maxHeight = iMaxHeight + "px";
+	return iMaxHeight;
+};
+
+/**
+ * Clamps the wrapping text according to max lines and returns the found ellipsis position.
+ * Parameters can be used for better performance.
+ *
+ * @param {HTMLElement} [oDomRef] DOM reference of the text container.
  * @param {number} [iStartPos] Start point of the ellipsis search.
  * @param {number} [iEndPos] End point of the ellipsis search.
- *
  * @returns {number|undefined} Returns found ellipsis position or undefined
- *
  * @since 1.20
  * @protected
  */
 sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
-	// get DOM reference
-	oDomRef = oDomRef || this.getDomRef("inner");
+	// check DOM reference
+	oDomRef = oDomRef || this.getTextDomRef();
 	if (!oDomRef) {
 		return;
 	}
@@ -397,7 +512,7 @@ sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
 	// init
 	var iEllipsisPos;
 	var sText = this.getText(true);
-	var iMaxHeight = this._getClampHeight(oDomRef);
+	var iMaxHeight = this.getClampHeight(oDomRef);
 
 	// init positions
 	iStartPos = iStartPos || 0;
@@ -445,30 +560,4 @@ sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
 	}
 
 	return iEllipsisPos;
-};
-
-// cache and returns the line height
-sap.m.Text.prototype._getLineHeight = function(oDomRef) {
-	// return cached value if possible
-	if (this.cacheLineHeight && this._iLineHeight) {
-		return this._iLineHeight;
-	}
-
-	// check line-height
-	oDomRef = oDomRef || this.getDomRef("inner");
-	var oStyle = window.getComputedStyle(oDomRef);
-	var fLineHeight = parseFloat(oStyle.lineHeight);
-
-	// we should ignore "normal" line-height so calculate with font-size
-	if (!fLineHeight) {
-		fLineHeight = parseFloat(oStyle.fontSize) * this.normalLineHeight;
-	}
-
-	// cache and return as integer
-	return (this._iLineHeight = Math.floor(fLineHeight));
-};
-
-// returns max height according to max lines and line height
-sap.m.Text.prototype._getClampHeight = function(oDomRef) {
-	return this.getMaxLines() * this._getLineHeight(oDomRef);
 };

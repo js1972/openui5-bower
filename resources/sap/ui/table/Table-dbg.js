@@ -91,7 +91,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -3621,7 +3621,7 @@ sap.ui.table.Table.prototype.onmousedown = function(oEvent) {
 sap.ui.table.Table.prototype.onmouseup = function(oEvent) {
 	if (this.$().find(".sapUiTableCtrl td :focus").length > 0) {
 		// when clicking into a focusable control we enter the action mode!
-		this._enterActionMode(this.$().find(".sapUiTableCtrl td :focus").get(0));
+		this._enterActionMode(this.$().find(".sapUiTableCtrl td :focus"));
 	} else {
 		// when clicking anywhere else in the table we leave the action mode!
 		this._leaveActionMode(oEvent);
@@ -4615,12 +4615,12 @@ sap.ui.table.Table.prototype._isBottomRow = function(oEvent) {
  * aligned with the official WAI-ARIA 1.0.
  * @private
  */
-sap.ui.table.Table.prototype._enterActionMode = function(oDomRef) {
+sap.ui.table.Table.prototype._enterActionMode = function($Focusable) {
 	// only enter the action mode when not already in action mode and:
-	if (oDomRef && !this._bActionMode) {
+	if ($Focusable.length > 0 && !this._bActionMode) {
 
 		//If cell has no tabbable element, we don't do anything
-		if(jQuery(oDomRef).filter(":sapTabbable").length == 0) {
+		if($Focusable.filter(":sapTabbable").length == 0) {
 			return;
 		}
 
@@ -4632,8 +4632,7 @@ sap.ui.table.Table.prototype._enterActionMode = function(oDomRef) {
 		jQuery(this._oItemNavigation.getFocusedDomRef()).attr("tabindex", "-1");
 
 		// set the focus to the active control
-		jQuery(oDomRef).focus();
-
+		$Focusable.filter(":sapTabbable").eq(0).focus();
 	}
 };
 
@@ -4714,7 +4713,7 @@ sap.ui.table.Table.prototype.onkeydown = function(oEvent) {
 		oEvent.keyCode == jQuery.sap.KeyCodes.F2 ||
 		oEvent.keyCode == jQuery.sap.KeyCodes.ENTER) {
 		if ($this.find(".sapUiTableCtrl td:focus").length > 0) {
-			this._enterActionMode($this.find(".sapUiTableCtrl td:focus").find(":sapFocusable").get(0));
+			this._enterActionMode($this.find(".sapUiTableCtrl td:focus").find(":sapFocusable"));
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}

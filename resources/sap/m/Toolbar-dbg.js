@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -928,7 +928,8 @@ sap.m.Toolbar.prototype._handleResize = function(bCheckEndPoint) {
 
 /*
  * Augment design property setter.
- * 2nd parameter can be used to define auto design context
+ * 2nd parameter can be used to define auto design context.
+ * Note: When the second parameter is used, Toolbar does not rerender. This should be done by the setter.
  *
  * @param {sap.m.ToolbarDesign} sDesign The design for the Toolbar.
  * @param {boolean} [bSetAutoDesign] Determines auto design context
@@ -940,10 +941,6 @@ sap.m.Toolbar.prototype.setDesign = function(sDesign, bSetAutoDesign) {
 	}
 
 	this._sAutoDesign = this.validateProperty("design", sDesign);
-	if (this.getDesign() == sap.m.ToolbarDesign.Auto) {
-		this.invalidate();
-	}
-
 	return this;
 };
 

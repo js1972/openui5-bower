@@ -162,7 +162,7 @@
     {
       "name" : "sap/m/Column.js",
       "description" : "Provides control sap.m.Column.",
-      "size" : 29396,
+      "size" : 29410,
       "compressedSize" : 7505,
       "required" : ["sap/m/library.js", "sap/ui/core/Element.js", "sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
@@ -233,8 +233,8 @@
     {
       "name" : "sap/m/Dialog.js",
       "description" : "Provides control sap.m.Dialog.",
-      "size" : 83119,
-      "compressedSize" : 26455,
+      "size" : 81712,
+      "compressedSize" : 26070,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/Popup.js", "sap/m/Bar.js", "sap/ui/core/delegate/ScrollEnablement.js", "sap/m/InstanceManager.js", "sap/ui/core/IconPool.js", "sap/ui/core/theming/Parameters.js", "sap/ui/core/ValueState.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -653,8 +653,8 @@
     {
       "name" : "sap/m/ObjectHeader.js",
       "description" : "Provides control sap.m.ObjectHeader.",
-      "size" : 43240,
-      "compressedSize" : 6568,
+      "size" : 43241,
+      "compressedSize" : 6571,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/IconPool.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -765,8 +765,8 @@
     {
       "name" : "sap/m/Popover.js",
       "description" : "Provides control sap.m.Popover.",
-      "size" : 97763,
-      "compressedSize" : 30737,
+      "size" : 97706,
+      "compressedSize" : 30734,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/Popup.js", "sap/m/Bar.js", "sap/ui/core/delegate/ScrollEnablement.js", "sap/m/InstanceManager.js", "sap/ui/core/theming/Parameters.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -837,8 +837,8 @@
     {
       "name" : "sap/m/RatingIndicatorRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 4833,
-      "compressedSize" : 2032,
+      "size" : 4978,
+      "compressedSize" : 2099,
       "required" : ["sap/ui/core/theming/Parameters.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1116,8 +1116,8 @@
     {
       "name" : "sap/m/Text.js",
       "description" : "Provides control sap.m.Text.",
-      "size" : 14041,
-      "compressedSize" : 2728,
+      "size" : 16339,
+      "compressedSize" : 2966,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1155,16 +1155,16 @@
     {
       "name" : "sap/m/TileContainer.js",
       "description" : "Provides control sap.m.TileContainer.",
-      "size" : 55040,
-      "compressedSize" : 21569,
+      "size" : 54952,
+      "compressedSize" : 21497,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/IconPool.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/m/TileContainerRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
-      "size" : 2116,
-      "compressedSize" : 1473,
+      "size" : 2078,
+      "compressedSize" : 1439,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -1179,8 +1179,8 @@
     {
       "name" : "sap/m/Toolbar.js",
       "description" : "Provides control sap.m.Toolbar.",
-      "size" : 30412,
-      "compressedSize" : 8707,
+      "size" : 30442,
+      "compressedSize" : 8642,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/m/ToolbarSpacer.js", "sap/m/ToolbarDesign.js", "sap/m/ToolbarLayoutData.js", "sap/ui/core/ResizeHandler.js", "sap/ui/core/EnabledPropagator.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1274,7 +1274,7 @@
     },
     {
       "name" : "sap/m/library.js",
-      "description" : "Initialization Code and shared classes of library sap.m (1.20.4)",
+      "description" : "Initialization Code and shared classes of library sap.m (1.20.5)",
       "size" : 68817,
       "compressedSize" : 12538,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "jquery.sap.mobile.js", "sap/m/Support.js", "sap/ui/Device.js", "sap/m/ios7.js", "jquery.sap.global.js"],

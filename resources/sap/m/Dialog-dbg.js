@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -1106,69 +1106,40 @@ sap.m.Dialog.prototype.init = function(){
 
 	this._fnRepositionAfterOpen = jQuery.proxy(this._repositionAfterOpen, this);
 
-	this.oPopup._applyPosition = function(oPosition, bFromResize){
+	this.oPopup._applyPosition = function(oPosition, bFromResize) {
 		var $that = that.$(),
 			self = this,
-			//hide the reposition process for all standard type dialog which doesn't have stretch enabled.
-			bHideRepositionProcess = !sap.ui.Device.system.desktop && that.oPopup.getOpenState() === sap.ui.core.OpenState.OPEN && (!that.getStretch() || that._bMessageType),
-			fnPosition = function(){
-				sap.ui.core.Popup.prototype._applyPosition.call(self, oPosition);
-
-				var iWindowScrollTop = that._$Window.scrollTop(),
-					iTop = $that.offset().top;
-				if(sap.ui.Device.os.ios && iWindowScrollTop){
-					//on iOS devices, the window is shifted up when keyboard opens. That's why the dialog should also be positioned higher because jQuery UI position doesn't
-					//take window scrollTop into consideration.
-					$that.css("top", iTop - iWindowScrollTop);
-				}
-
-				//TODO: remove this code after Apple fixes the jQuery(window).height() is 20px more than the window.innerHeight issue.
-				if(sap.m.Dialog._bIOS7Tablet && sap.ui.Device.orientation.landscape){
-					iTop = $that.offset().top;
-					$that.css("top", iTop - 10); //the calculated window size is 20px more than the actual size in ios 7 tablet landscape mode.
-				}
-
-				if(bHideRepositionProcess){
-					// set the dialog visible again
-					if(sap.ui.Device.os.ios){
-						$that.css("visibility", "visible");
-					}else{
-						$that.css("opacity", "1");
-					}
-				}
-
-				that._registerResizeHandler();
-			};
-
-		if(bHideRepositionProcess){
-			// make dialog invisible before position it again to avoid flickering
-			// in iOS this has to be done with property visibility because setting opacity can't hide the reposition process
-			// in Android device visibility: hidden can't be used because in NEXUS 7 setting visibility to hidden will reset the focus which can
-			// close the already opened on screen keyboard
-			// Here is chosen: for iOS uses visibility and the rest uses opacity
-			if(sap.ui.Device.os.ios){
-				$that.css("visibility", "hidden");
-			}else{
-				$that.css("opacity", "0");
-			}
-		}
+			$Window = jQuery(window);
 
 		that._deregisterResizeHandler();
 		that._setDimensions();
 		that._adjustScrollingPane();
 
-		if(!sap.ui.Device.system.desktop && bFromResize){
-			// if it runs on mobile device and not the first time opening
-			// the reposition has to be done within a timeout to wait for the UI update
-			// in _setDimensions and _adjustScrollingPane to finish
-			window.setTimeout(function(){
-				fnPosition();
-			}, 0);
-		}else{
-			fnPosition();
+		//TODO: if sap_mvi has to be restored, here has to be changed.
+		oPosition.at = {
+			left: ($Window.width() - $that.outerWidth()) / 2,
+			top: ($Window.height() - $that.outerHeight()) / 2
 		}
+
+		sap.ui.core.Popup.prototype._applyPosition.call(self, oPosition);
+
+		var iWindowScrollTop = that._$Window.scrollTop(),
+			iTop = $that.offset().top;
+		if(sap.ui.Device.os.ios && iWindowScrollTop){
+			//on iOS devices, the window is shifted up when keyboard opens. That's why the dialog should also be positioned higher because jQuery UI position doesn't
+			//take window scrollTop into consideration.
+			$that.css("top", iTop - iWindowScrollTop);
+		}
+
+		//TODO: remove this code after Apple fixes the jQuery(window).height() is 20px more than the window.innerHeight issue.
+		if(sap.m.Dialog._bIOS7Tablet && sap.ui.Device.orientation.landscape){
+			iTop = $that.offset().top;
+			$that.css("top", iTop - 10); //the calculated window size is 20px more than the actual size in ios 7 tablet landscape mode.
+		}
+
+		that._registerResizeHandler();
 	};
-	
+
 	if(sap.m.Dialog._bPaddingByDefault){
 		this.addStyleClass("sapUiPopupWithPadding");
 	}
@@ -1506,10 +1477,6 @@ sap.m.Dialog.prototype._setDimensions = function() {
 		"height": "",
 		"min-width": "",
 		"max-width": "",
-		"left": "0px",
-		"top": "0px",
-		"right": "",
-		"bottom": "",
 		"max-height": ""
 	});
 	
@@ -1692,11 +1659,7 @@ sap.m.Dialog.prototype._repositionAfterOpen = function(){
 };
 
 sap.m.Dialog.prototype._reapplyPosition = function(){
-	var that = this;
-	
-	window.setTimeout(function(){
-		that.oPopup && that.oPopup._applyPosition(that.oPopup._oLastPosition, true);
-	}, 0);
+	this.oPopup && this.oPopup._applyPosition(this.oPopup._oLastPosition, true);
 };
 
 sap.m.Dialog.prototype._onResize = function(){

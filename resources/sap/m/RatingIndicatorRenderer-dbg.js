@@ -36,7 +36,8 @@ sap.m.RatingIndicatorRenderer.render = function (oRm, oControl) {
 		oIconSel,
 		oIconUnsel,
 		oIconHov,
-		i = 0;
+		i = 0,
+		sTooltip = oControl.getTooltip_AsString();
 
 	// return immediately if control is invisible
 	if (!oControl.getVisible()) {
@@ -63,7 +64,12 @@ sap.m.RatingIndicatorRenderer.render = function (oRm, oControl) {
 		oRm.addClass("sapMRIDisabled");
 	}
 	oRm.writeClasses();
+	// add tooltip if available
+	if (sTooltip) {
+		oRm.writeAttributeEscaped("title", sTooltip);
+	}	
 	oRm.write(">");
+	
 
 	// render selected items div
 	oRm.write("<div class='sapMRISel'");

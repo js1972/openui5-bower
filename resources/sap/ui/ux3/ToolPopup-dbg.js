@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -1178,25 +1178,32 @@ var fnSetInitialFocus = function(oThis){
 	var sFirstFocusId = sId + "-firstFocusable";
 	var sLastFocusId = sId + "-lastFocusable";
 	
-	var $element = jQuery.sap.byId(sFirstFocusId);
-	var $Focusables = jQuery(":sapFocusable", oThis.$());
+	var oElement = jQuery.sap.byId(sFirstFocusId).get(0);
+	var aFocusables = jQuery(":sapFocusable", oThis.$()).get();
 	
 	// if there is an initial focus it was already set to the Popup onBeforeRendering
 	if (!oThis._bFocusSet){
 		// search the first focusable element
-		if($Focusables.length > 0) {
-			for (var i = 0; i < $Focusables.length; i++){
-				sTempId = $Focusables[i].id;
+		if(aFocusables.length > 0) {
+			for (var i = 0; i < aFocusables.length; i++){
+				sTempId = aFocusables[i].id;
  
 				if (sTempId !== sFirstFocusId && sTempId !== sLastFocusId) {
-					$element = $Focusables[i];
+					oElement = aFocusables[i];
 					break;
 				}
 			}
 		}
 
-		$element.focus();
-		oThis._sInitialFocusId = $element.id;
+		// If focusables are part of a control, focus the controls instead
+		var oFocusControl = jQuery(oElement).control();
+		if (oFocusControl[0]) {
+			var oFocusDomRef = oFocusControl[0].getFocusDomRef();
+			oElement = oFocusDomRef ? oFocusDomRef : oElement;
+		}
+		
+		jQuery.sap.focus(oElement);
+		oThis._sInitialFocusId = oElement.id;
 	} else {
 		oThis._sInitialFocusId = oThis.oPopup._sInitialFocusId;
 	}
@@ -1206,11 +1213,11 @@ var fnSetInitialFocus = function(oThis){
 		oThis._sLastFocusableId = sFirstFocusId;
 		oThis._sFirstFocusableId = sLastFocusId;
 		
-		if ($Focusables.length > 2) {
+		if (aFocusables.length > 2) {
 			// using second array content since first focusable item is the fake element
-			oThis._sFirstFocusableId = $Focusables[1].id;
+			oThis._sFirstFocusableId = aFocusables[1].id;
 			// using the second to last element in array since last one is the fake element
-			oThis._sLastFocusableId = $Focusables[$Focusables.length -2].id;
+			oThis._sLastFocusableId = aFocusables[aFocusables.length -2].id;
 		}
 		
 	} 

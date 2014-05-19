@@ -791,7 +791,7 @@ html[data-sap-ui-browser*='ie'] .sapMBtnContentWithIcon {
 	flex: auto;
 }
 /* ============================================= */
-/* CSS for control sap.me/StandardTile.control */
+/* CSS for control sap.m/CustomTile.control */
 /* ============================================= */
 
 /* Style for Tablet/Desktop */
@@ -2970,11 +2970,11 @@ html[data-sap-ui-os^="iOS7"][data-sap-ui-browser^="msf"]:not(.sap-tablet) .sapMP
 	width: auto;
 }
 
+/* This css rule is for mvi theme. Because mvi is deleted right now, this rule will be commented out here in case mvi has to be restored.
 .sapMPopover:not(.sapMPopoverWithFooter) .sapMPopoverCont .sapMPage:not(.sapMPageWithFooter) > section { 
-/* .sapMPopoverWithoutBar .sapMPopoverCont .sapMPage:not(.sapMPageWithFooter) > section */
-/* 	padding-bottom: 0; */
 	bottom: 0.625em;
 }
+*/
 
 .sapMPopoverWithoutBar .sapMPage footer.sapMBar{
 	position: absolute;
@@ -4438,7 +4438,7 @@ html[dir=rtl] .sapMStdTileInfo{
 }
 
 .sapMTextLineClamp {
-	display: -webkit-inline-box;
+	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
 
@@ -4572,7 +4572,6 @@ html[data-sap-ui-browser*='ie'] .sapMTile {
 }
 
 .sapMTC .sapMTCCnt {
-	visibility: hidden;
 	height: 100%;
 	width: 100%;
 	overflow: visible;
@@ -4890,15 +4889,16 @@ html[data-sap-ui-browser^="ff"] .sapMTC.sapMTCEditable .sapMTile .sapMTCRemove {
 }
 
 /* NonFlex */
-/* vertical centering trick */
-.sapMTBNoFlex:before {
-	content: '';
+/* vertical centering trick, without flexbox, for the elements that we don't know the dimensions of the element to be centered */
+/* we set up a "ghost" element inside the parent that is 100% height, then we vertical-align: middle both that and the element to be centered */
+/* TODO: This can break the after pseudo element theming so we should add a wrapper and implement the trick for the wrapper */
+.sapMTBNoFlex::after {
+	content: "";
 	height: 100%;
 	display: inline-block;
-	vertical-align: middle; 
+	vertical-align: middle;
 }
 .sapMTB.sapMTBNoFlex > * {
-	/* align-items: center polyfill */
 	vertical-align: middle; 
 	display: inline-block;
 	margin-bottom: 0;

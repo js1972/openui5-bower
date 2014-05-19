@@ -8,7 +8,7 @@
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -31,7 +31,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.4";
+		var apiVersion = "1.20.5";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -85,7 +85,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.4";
+		var v = "1.20.5";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -1407,7 +1407,10 @@ if(typeof window.sap.ui !== "object"){
 	var bKeyboardOpen = false;
 	var iLastResizeTime;
 	var rInputTagRegex = /INPUT|TEXTAREA|SELECT/;
-	var bIPhone7_0_XSafari = device.system.phone && device.os.ios && device.os.version >= 7 && device.os.version < 7.1 && device.browser.name === "sf";
+	// On iPhone with iOS version 7.0.x and on iPad with iOS version 7.x (tested with all versions below 7.1.1), there's a invalide resize event fired
+	// when changing the orientation while keyboard is shown.
+	var bSkipFirstResize = device.os.ios && device.browser.name === "sf" && 
+		((device.system.phone && device.os.version >= 7 && device.os.version < 7.1) || (device.system.tablet && device.os.version >= 7));
 	
 	function isLandscape(bFromOrientationChange){
 		if (device.support.touch && device.support.orientation) {
@@ -1435,7 +1438,7 @@ if(typeof window.sap.ui !== "object"){
 		if (evt.type == "resize") {
 			// supress the first invalid resize event fired before orientationchange event while keyboard is open on iPhone 7.0.x
 			// because this event has wrong size infos
-			if (bIPhone7_0_XSafari && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
+			if (bSkipFirstResize && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
 				return;
 			}
 
@@ -16448,7 +16451,7 @@ $.ui.position = {
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -16841,7 +16844,7 @@ $.ui.position = {
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @namespace
 	 * @public
 	 * @static
@@ -22301,7 +22304,7 @@ sap.ui.define("jquery.sap.script",['jquery.sap.global'],
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -23307,7 +23310,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -23523,7 +23526,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -23561,7 +23564,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {
@@ -24739,7 +24742,7 @@ sap.ui.define("sap/ui/base/Interface",['jquery.sap.global'],
 	 *        only the defined functions will be visible, no internals of the class can be accessed.
 	 *
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @param {sap.ui.base.Object}
 	 *            oObject the instance that needs an interface created
 	 * @param {string[]}
@@ -24810,7 +24813,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 	 *
 	 * @class Metadata for a class.
 	 * @author Frank Weigel
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.8.6
 	 * @public
 	 * @name sap.ui.base.Metadata
@@ -25188,7 +25191,7 @@ sap.ui.define("sap/ui/base/Object",['jquery.sap.global', './Interface', './Metad
 	 * @class Base class for all SAPUI5 Objects
 	 * @abstract
 	 * @author Malte Wedel
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.base.Object
 	 */
@@ -25392,7 +25395,7 @@ sap.ui.define("sap/ui/base/ObjectPool",['jquery.sap.global', './Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @name sap.ui.base.ObjectPool
 	 * @public
@@ -25591,7 +25594,7 @@ sap.ui.define("sap/ui/core/DeclarativeSupport",['jquery.sap.global'],
 	 * @class Static class for enabling declarative UI support.  
 	 *
 	 * @author Peter Muessig, Tino Butz
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 1.7.0
 	 * @public
 	 * @name sap.ui.core.DeclarativeSupport
@@ -26238,7 +26241,7 @@ sap.ui.define("sap/ui/core/History",['jquery.sap.global', 'sap/ui/base/Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @name sap.ui.core.History
 	 * @private
@@ -26903,7 +26906,7 @@ sap.ui.define("sap/ui/core/Locale",['jquery.sap.global', 'sap/ui/base/Object'],
 		 *
 		 * @extends sap.ui.base.Object
 		 * @author SAP AG
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @constructor
 		 * @public
 		 * @name sap.ui.core.Locale
@@ -27202,7 +27205,7 @@ sap.ui.define("sap/ui/core/Renderer",['jquery.sap.global'],
 	 * @class Base Class for Renderer.
 	 *
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @static
 	 * @public
 	 * @name sap.ui.core.Renderer
@@ -28401,7 +28404,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 			 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 			 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 			 *
-			 * @version 1.20.4
+			 * @version 1.20.5
 			 * @constructor
 			 * @protected
 			 */
@@ -29660,7 +29663,7 @@ sap.ui.define("sap/ui/core/util/LibraryInfo",['jquery.sap.global', 'sap/ui/base/
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @private
 	 * @name sap.ui.core.util.LibraryInfo
@@ -29798,7 +29801,7 @@ sap.ui.define("sap/ui/core/ws/ReadyState",['jquery.sap.global'],
 	/**
 	 * @class Defines the different ready states for a WebSocket connection.
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @static
 	 * @public
 	 * @name sap.ui.core.ws.ReadyState
@@ -30255,7 +30258,7 @@ sap.ui.define("sap/ui/model/Type",['jquery.sap.global', 'sap/ui/base/Object'],
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -30474,7 +30477,7 @@ sap.ui.define("sap/ui/model/odata/ODataAnnotations",['jquery.sap.global'],
 	 *
 	 * @author SAP AG
 	 * @version
-	 * 1.20.4
+	 * 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -31260,7 +31263,7 @@ sap.ui.define("sap/ui/model/odata/ODataMetadata",['jquery.sap.global'],
 	 * Implementation to access oData metadata
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -31297,6 +31300,15 @@ sap.ui.define("sap/ui/model/odata/ODataMetadata",['jquery.sap.global'],
 		var that = this;
 	
 		function _handleSuccess(oMetadata, oResponse) {
+			if(!oMetadata || !oMetadata.dataServices){
+				var oError = {
+					message: "Invalid metadata document",
+					request: oRequest,
+					response: oResponse
+				};
+				_handleError(oError);
+				return;
+			}
 			that.oMetadata = oMetadata;
 	
 			if (!that.oModel.bUseBatch) {
@@ -39398,7 +39410,7 @@ sap.ui.define("jquery.sap.properties",['jquery.sap.global', 'jquery.sap.sjax'],
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -39690,7 +39702,7 @@ sap.ui.define("jquery.sap.resources",['jquery.sap.global', 'jquery.sap.propertie
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -40110,7 +40122,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
  * sap.ui.lazyRequire("sap.ui.core.Control");
  * sap.ui.lazyRequire("sap.ui.commons.Button");
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -40133,7 +40145,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap</code> namespace is automatically registered with the
 	 * OpenAjax hub if it exists.
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @namespace
 	 * @public
 	 * @name sap
@@ -40146,7 +40158,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
 	 * point for UI related JavaScript functionality provided by SAP.
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @namespace
 	 * @name sap.ui
 	 * @public
@@ -40159,8 +40171,8 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 			 * The version of the SAP UI Library
 			 * @type string
 			 */
-			version: "1.20.4",
-			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "20140423-1633" }
+			version: "1.20.5",
+			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201405121342" }
 		});
 	
 	/**
@@ -40385,7 +40397,7 @@ sap.ui.define("sap/ui/base/Event",['jquery.sap.global', './Object'],
 	 * @extends sap.ui.base.Object
 	 * @implements sap.ui.base.Poolable
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.base.Event
 	 * @public
 	 */
@@ -40551,7 +40563,7 @@ sap.ui.define("sap/ui/base/EventProvider",['jquery.sap.global', './Event', './Ob
 	 * @abstract
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @public
 	 * @name sap.ui.base.EventProvider
@@ -40890,7 +40902,7 @@ sap.ui.define("sap/ui/base/ManagedObjectMetadata",['jquery.sap.global', './DataT
 	 *
 	 * @class
 	 * @author Frank Weigel
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.8.6
 	 * @name sap.ui.base.ManagedObjectMetadata
 	 */
@@ -41629,7 +41641,7 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 1.9.2
 	 * @name sap.ui.core.ComponentMetadata
 	 */
@@ -43228,7 +43240,7 @@ sap.ui.define("sap/ui/core/ElementMetadata",['jquery.sap.global', 'sap/ui/base/M
 	 *
 	 * @class
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 0.8.6
 	 * @name sap.ui.core.ElementMetadata
 	 */
@@ -43372,7 +43384,7 @@ sap.ui.define("sap/ui/core/EventBus",['jquery.sap.global', 'sap/ui/base/EventPro
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @public
 	 * @since 1.8.0
@@ -43885,7 +43897,7 @@ sap.ui.define("sap/ui/core/IntervalTrigger",['jquery.sap.global', './EventBus'],
 		 * 
 		 * @extends sap.ui.base.Object
 		 * @author SAP AG
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @constructor
 		 * @public
 		 * @since 1.11.0
@@ -44034,7 +44046,7 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData
@@ -44484,7 +44496,7 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -45982,7 +45994,7 @@ sap.ui.define("sap/ui/core/UIComponentMetadata",['jquery.sap.global', './Compone
 	 * @experimental Since 1.15.1. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 1.15.1
 	 * @name sap.ui.core.UIComponentMetadata
 	 */
@@ -46174,7 +46186,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @param {Element[]} aItemDomRefs Array of DOM elements representing the items for the navigation
 	 * @param {boolean} [bNotInTabChain=false] Whether the selected element should be in the tab chain or not
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @name sap.ui.core.delegate.ItemNavigation
 	 * @public
@@ -49932,7 +49944,7 @@ sap.ui.define("sap/ui/core/util/serializer/Serializer",['jquery.sap.global', 'sa
 	 * @class Serializer class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.Serializer
 	 * @experimental Since 1.15.1. The Serializer is still under construction, so some implementation details can be changed in future.
 	 */
@@ -50079,7 +50091,7 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/Delegate",['jquery.sap.globa
 	 * @class Abstract serializer delegate class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.delegate.Delegate
 	 * @experimental Since 1.15.1. The abstract serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
@@ -50197,7 +50209,7 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/HTML",['jquery.sap.global', 
 	 * @class HTML serializer delegate class.
 	 * @extends sap.ui.core.util.serializer.delegate.Delegate
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.delegate.HTML
 	 * @experimental Since 1.15.1. The HTML serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
@@ -50490,7 +50502,7 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/XML",['jquery.sap.global', '
 	 * @class XML serializer delegate class.
 	 * @extends sap.ui.core.util.serializer.delegate.Delegate
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.delegate.XML
 	 * @experimental Since 1.15.1. The XML serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
@@ -50836,7 +50848,7 @@ sap.ui.define("sap/ui/core/ws/WebSocket",['jquery.sap.global', 'sap/ui/Device', 
 	 * @class Basic WebSocket class
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.ws.WebSocket
 	 */
 	var WebSocket = EventProvider.extend("sap.ui.core.ws.WebSocket", /** @lends sap.ui.core.ws.WebSocket */ {
@@ -52424,7 +52436,7 @@ sap.ui.define("sap/ui/model/Model",['jquery.sap.global', 'sap/ui/base/EventProvi
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -53249,7 +53261,7 @@ sap.ui.define("sap/ui/model/SelectionModel",['jquery.sap.global', 'sap/ui/base/E
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @param {int} iSelectionMode <code>sap.ui.model.SelectionModel.SINGLE_SELECTION</code> or <code>sap.ui.model.SelectionModel.MULTI_SELECTION</code>
 	 *
@@ -53693,7 +53705,7 @@ sap.ui.define("sap/ui/model/SimpleType",['jquery.sap.global', './FormatException
 	 * @extends sap.ui.model.Type
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -55556,7 +55568,7 @@ sap.ui.define("sap/ui/model/type/Boolean",['jquery.sap.global', 'sap/ui/core/for
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -55675,7 +55687,7 @@ sap.ui.define("sap/ui/model/type/Date",['jquery.sap.global', 'sap/ui/core/format
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -55884,7 +55896,7 @@ sap.ui.define("sap/ui/model/type/DateTime",['jquery.sap.global', './Date'],
 	 * @extends sap.ui.model.type.Date
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -55965,7 +55977,7 @@ sap.ui.define("sap/ui/model/type/Float",['jquery.sap.global', 'sap/ui/core/forma
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -56120,7 +56132,7 @@ sap.ui.define("sap/ui/model/type/Integer",['jquery.sap.global', 'sap/ui/core/for
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -56274,7 +56286,7 @@ sap.ui.define("sap/ui/model/type/String",['jquery.sap.global', 'sap/ui/core/form
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -56468,7 +56480,7 @@ sap.ui.define("sap/ui/model/type/Time",['jquery.sap.global', './Date'],
 	 * @extends sap.ui.model.type.Date
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -56561,7 +56573,7 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.20.4
+//	 * @version 1.20.5
 //	 * @namespace
 //	 * @public
 //	 */
@@ -56729,7 +56741,7 @@ sap.ui.define("sap/ui/app/ApplicationMetadata",['jquery.sap.global', 'sap/ui/cor
 	 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
 	 * @class
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @since 1.13.2
 	 * @name sap.ui.app.ApplicationMetadata
 	 */
@@ -56824,7 +56836,7 @@ sap.ui.define("sap/ui/core/util/serializer/HTMLViewSerializer",['jquery.sap.glob
 	 * @class HTMLViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.HTMLViewSerializer
 	 * @experimental Since 1.15.1. The HTMLViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
@@ -56916,7 +56928,7 @@ sap.ui.define("sap/ui/core/util/serializer/XMLViewSerializer",['jquery.sap.globa
 	 * @class XMLViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.XMLViewSerializer
 	 * @experimental Since 1.15.1. The XMLViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
@@ -57032,7 +57044,7 @@ sap.ui.define("sap/ui/core/ws/SapPcpWebSocket",['jquery.sap.global', './WebSocke
 	 * @class WebSocket class implementing the pcp-protocol
 	 * @extends sap.ui.core.ws.WebSocket
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.ws.SapPcpWebSocket
 	 */
 	var SapPcpWebSocket = WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket */ {
@@ -59434,7 +59446,7 @@ sap.ui.define("sap/ui/core/util/serializer/ViewSerializer",['jquery.sap.global',
 	 * @class ViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.util.serializer.ViewSerializer
 	 * @experimental Since 1.15.1. The ViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
@@ -59991,7 +60003,7 @@ sap.ui.define("sap/ui/model/control/ControlModel",['jquery.sap.global', 'sap/ui/
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @name sap.ui.model.control.ControlModel
@@ -60205,7 +60217,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -63282,7 +63294,7 @@ sap.ui.define("sap/ui/model/resource/ResourceModel",['jquery.sap.global', 'sap/u
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @param {object} oData parameters used to initialize the ResourceModel; at least either bundleUrl or bundleName must be set on this object; if both are set, bundleName wins
 	 * @param {string} [oData.bundleUrl] the URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")
@@ -63550,7 +63562,7 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 	 * @class Base Class for managed objects.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.base.ManagedObject
 	 * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -66686,7 +66698,7 @@ sap.ui.define("sap/ui/core/Fragment",['jquery.sap.global', 'sap/ui/base/ManagedO
 		 * @class Fragment
 		 * @extends sap.ui.base.ManagedObject
 		 * @author SAP
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @public
 		 * @name sap.ui.core.Fragment
 		 */
@@ -67770,7 +67782,7 @@ sap.ui.define("sap/ui/core/tmpl/Template",['jquery.sap.global', 'sap/ui/base/Man
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.tmpl.Template
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -68395,7 +68407,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.core.util.MockServer
 	 * @experimental Since 1.15.1. The mock server is still under construction, so some implementation details can be changed in future.
@@ -70459,7 +70471,7 @@ sap.ui.define("sap/ui/model/ClientModel",['jquery.sap.global', './ClientContextB
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @param {object} oData URL where to load the data from
 	 * @constructor
@@ -70698,7 +70710,7 @@ sap.ui.define("sap/ui/model/json/JSONModel",['jquery.sap.global', 'sap/ui/model/
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @param {object} oData either the URL where to load the JSON from or a JS object
 	 * @constructor
@@ -71016,7 +71028,7 @@ sap.ui.define("sap/ui/model/xml/XMLModel",['jquery.sap.global', 'sap/ui/model/Cl
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @param {object} oData either the URL where to load the XML from or a XML
 	 * @constructor
@@ -71485,7 +71497,7 @@ sap.ui.define("sap/ui/app/MockServer",['jquery.sap.global', 'sap/ui/core/util/Mo
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.app.MockServer
 	 * @experimental Since 1.13.0. The mock server is still under construction, so some implementation details can be changed in future.
@@ -71535,7 +71547,7 @@ sap.ui.define("sap/ui/core/tmpl/HandlebarsTemplate",['jquery.sap.global', './Tem
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.tmpl.HandlebarsTemplate
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -72014,7 +72026,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.Component
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -72678,7 +72690,7 @@ sap.ui.define("sap/ui/core/Element",['jquery.sap.global', 'sap/ui/base/ManagedOb
 	 * @class Base Class for Elements.
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.core.Element
 	 */
@@ -74077,7 +74089,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	 * @extends sap.ui.core.Element
 	 * @abstract
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.Control
 	 */
 	var Control = Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -74645,6 +74657,9 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 				var $BusyIndicator = jQuery('<div class="sapUiLocalBusyIndicator"><div class="sapUiLocalBusyIndicatorAnimation"><div class="sapUiLocalBusyIndicatorBox"></div><div class="sapUiLocalBusyIndicatorBox"></div><div class="sapUiLocalBusyIndicatorBox"></div></div></div>');
 				$BusyIndicator.attr("id",this.getId() + "-busyIndicator")
 				$this.append($BusyIndicator);
+				if (this._busyDelayedCallId) {
+					jQuery.sap.clearDelayedCall(this._busyDelayedCallId);
+				}
 				this._busyDelayedCallId = jQuery.sap.delayedCall(1200, this, fnAnimate);
 				fnHandleInteraction.apply(this, [true]);
 			},
@@ -74856,7 +74871,7 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	 *
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
 	 * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
 	 * @public
@@ -75783,7 +75798,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	 * @extends sap.ui.base.EventProvider
 	 * @final
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @name sap.ui.core.Core 
 	 * @public
@@ -78498,7 +78513,7 @@ sap.ui.define("sap/ui/app/Application",['jquery.sap.global', './ApplicationMetad
 		 * @extends sap.ui.core.Component
 		 * @abstract
 		 * @author SAP
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @name sap.ui.app.Application
 		 * @experimental Since 1.11.1. The Application class is still under construction, so some implementation details can be changed in future.
 		 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
@@ -79272,7 +79287,7 @@ sap.ui.define("sap/ui/core/CustomizingConfiguration",['jquery.sap.global', './Co
 		 * gets removed again.
 		 *
 		 * @author SAP AG
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @constructor
 		 * @private
 		 * @since 1.15.1
@@ -79468,7 +79483,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.core (1.20.4)
+ * Initialization Code and shared classes of library sap.ui.core (1.20.5)
  */
 jQuery.sap.declare('sap.ui.core.library'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
 sap.ui.define("sap/ui/core/library",['./Core'], function() {
@@ -79560,7 +79575,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.search.SearchProvider",
     "sap.ui.core.tmpl.DOMAttribute"
   ],
-  version: "1.20.4"});
+  version: "1.20.5"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -79582,7 +79597,7 @@ sap.ui.define("sap/ui/core/AccessibleRole", function() {
  * For more information, goto "Roles for Accessible Rich Internet Applications (WAI-ARIA Roles)" at the www.w3.org homepage.
  * 
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -79996,7 +80011,7 @@ sap.ui.define("sap/ui/core/BarColor", function() {
 /**
  * @class Configuration options for the colors of a progress bar
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80182,7 +80197,7 @@ sap.ui.define("sap/ui/core/Design", function() {
 /**
  * @class Font design for texts
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80259,7 +80274,7 @@ sap.ui.define("sap/ui/core/HorizontalAlign", function() {
 /**
  * @class Configuration options for horizontal alignments of controls
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80349,7 +80364,7 @@ sap.ui.define("sap/ui/core/IconColor", function() {
 /**
  * @class Semantic Colors of an icon.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80408,7 +80423,7 @@ sap.ui.define("sap/ui/core/ImeMode", function() {
 /**
  * @class State of the Input Method Editor (IME) for the control. Depending on its value, it allows users to enter and edit for example Chinese characters.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80471,7 +80486,7 @@ sap.ui.define("sap/ui/core/MessageType", function() {
 /**
  * @class Defines the different message types of a message
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80530,7 +80545,7 @@ sap.ui.define("sap/ui/core/OpenState", function() {
 /**
  * @class Defines the different possible states of an element that can be open or closed and does not only toggle between these states, but also spends some time in between (e.g. because of an animation).
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80625,7 +80640,7 @@ sap.ui.define("sap/ui/core/ScrollBarAction", function() {
 /**
  * @class Actions are: Click on track, button, drag of thumb, or mouse wheel click
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80678,7 +80693,7 @@ sap.ui.define("sap/ui/core/Scrolling", function() {
 /**
  * @class Defines the possible values for horizontal and vertical scrolling behavior.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80731,7 +80746,7 @@ sap.ui.define("sap/ui/core/TextAlign", function() {
 /**
  * @class Configuration options for text alignments.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80790,7 +80805,7 @@ sap.ui.define("sap/ui/core/TextDirection", function() {
 /**
  * @class Configuration options for the direction of texts.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80837,7 +80852,7 @@ sap.ui.define("sap/ui/core/TitleLevel", function() {
 /**
  * @class Level of a title.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @since 1.9.1
@@ -80940,7 +80955,7 @@ sap.ui.define("sap/ui/core/ValueState", function() {
 /**
  * @class Marker for the correctness of the current value.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -80995,7 +81010,7 @@ sap.ui.define("sap/ui/core/VerticalAlign", function() {
  * Configuration options for vertical alignments, for example of a layout cell content within the borders.
  * 
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -81056,7 +81071,7 @@ sap.ui.define("sap/ui/core/Wrapping", function() {
 /**
  * @class Configuration options for text wrapping.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -81109,7 +81124,7 @@ sap.ui.define("sap/ui/core/mvc/ViewType", function() {
 /**
  * @class Specifies possible view types
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -81168,7 +81183,7 @@ sap.ui.define("sap/ui/core/routing/HistoryDirection", function() {
 /**
  * @class Enumaration for different HistoryDirections
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -81265,7 +81280,7 @@ sap.ui.define("sap/ui/core/plugin/TemplatingSupport",['jquery.sap.global', 'sap/
 	 * @author Peter Muessig
 	 * @public
 	 * @since 1.15.0
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.plugin.TemplatingSupport
 	 */
 	var TemplatingSupport = function() {
@@ -81373,7 +81388,7 @@ sap.ui.define("sap/ui/core/search/SearchProvider",['sap/ui/core/library','sap/ui
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -81687,7 +81702,7 @@ sap.ui.define("sap/ui/core/tmpl/DOMAttribute",['sap/ui/core/library','sap/ui/cor
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -81853,7 +81868,7 @@ sap.ui.define("sap/ui/core/CustomData",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -82030,7 +82045,7 @@ sap.ui.define("sap/ui/core/EnabledPropagator",['jquery.sap.global', './Control']
 	 * </code>
 	 *
 	 * @author Daniel Brinkmann
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @param {boolean} [bDefault=true] the value that should be used as default value for the enhancement of the control.
 	 * @param {boolean} [bLegacy=false] whether the introduced property should use the old name 'Enabled' 
 	 * @public
@@ -82160,7 +82175,7 @@ sap.ui.define("sap/ui/core/HTML",['./library','./Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author Frank Weigel 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -82581,7 +82596,7 @@ sap.ui.define("sap/ui/core/Icon",['./library','./Control','./IconPool'], functio
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -83360,7 +83375,7 @@ sap.ui.define("sap/ui/core/Item",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -83563,7 +83578,7 @@ sap.ui.define("sap/ui/core/LayoutData",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -83690,7 +83705,7 @@ sap.ui.define("sap/ui/core/ListItem",['./library','./Item'], function() {
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -83849,7 +83864,7 @@ sap.ui.define("sap/ui/core/LocalBusyIndicator",['./library','./Control','./themi
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -84138,7 +84153,7 @@ sap.ui.define("sap/ui/core/Message",['./library','./Element','./theming/Paramete
  * @extends sap.ui.core.Element
  *
  * @author SAP 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -86628,7 +86643,7 @@ sap.ui.define("sap/ui/core/ScrollBar",['./library','./Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -87576,7 +87591,7 @@ sap.ui.define("sap/ui/core/SeparatorItem",['./library','./Item'], function() {
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -87683,7 +87698,7 @@ sap.ui.define("sap/ui/core/Title",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -87896,7 +87911,7 @@ sap.ui.define("sap/ui/core/TooltipBase",['./library','./Control','./Popup'], fun
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -88620,7 +88635,7 @@ sap.ui.define("sap/ui/core/VariantLayoutData",['./library','./LayoutData'], func
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -88808,7 +88823,7 @@ sap.ui.define("sap/ui/core/mvc/View",['sap/ui/core/library','sap/ui/core/Control
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -89635,7 +89650,7 @@ sap.ui.define("sap/ui/core/mvc/XMLView",['sap/ui/core/library','./View','jquery.
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -89888,7 +89903,7 @@ sap.ui.define("sap/ui/core/search/OpenSearchProvider",['sap/ui/core/library','./
  * @extends sap.ui.core.search.SearchProvider
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -90092,7 +90107,7 @@ sap.ui.define("sap/ui/core/tmpl/DOMElement",['sap/ui/core/library','sap/ui/core/
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -90591,7 +90606,7 @@ sap.ui.define("sap/ui/core/tmpl/TemplateControl",['sap/ui/core/library','sap/ui/
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -91099,7 +91114,7 @@ sap.ui.define("sap/ui/core/BusyIndicator",['jquery.sap.global', './Popup'],
 	/**
 	 * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
 	 * @static 
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @public
 	 * @name sap.ui.core.BusyIndicator
 	 */
@@ -91387,7 +91402,7 @@ sap.ui.define("sap/ui/core/ComponentContainer",['./library','./Control'], functi
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -92013,7 +92028,7 @@ sap.ui.define("sap/ui/core/UIComponent",['jquery.sap.global', './Component', './
 	 * @extends sap.ui.core.Component
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @name sap.ui.core.UIComponent
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -92395,7 +92410,7 @@ sap.ui.define("sap/ui/core/mvc/HTMLView",['sap/ui/core/library','./View','sap/ui
  * @extends sap.ui.core.mvc.View
  *
  * @author Stefan Hipfel, Tino Butz 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -92731,7 +92746,7 @@ sap.ui.define("sap/ui/core/mvc/JSONView",['sap/ui/core/library','./View'], funct
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -92952,7 +92967,7 @@ sap.ui.define("sap/ui/core/mvc/JSView",['sap/ui/core/library','./View'], functio
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -93155,7 +93170,7 @@ sap.ui.define("sap/ui/core/mvc/TemplateView",['sap/ui/core/library','./View'], f
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

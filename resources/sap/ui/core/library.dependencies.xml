@@ -2,7 +2,7 @@
 <library  version="2.0" name="sap.ui.core">
   <module name="jquery-1.7.1.js" size="248235" compressedSize="98690" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="jquery-sap.js" size="400537" compressedSize="121712" dynamicDependencies="true">
+  <module name="jquery-sap.js" size="400799" compressedSize="121752" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -141,7 +141,7 @@
       <module name="sap/ui/Device.js"/>
     </requires>
   </module>
-  <module name="sap-ui-core-lean.js" size="501270" compressedSize="174567" dynamicDependencies="true">
+  <module name="sap-ui-core-lean.js" size="501532" compressedSize="174607" dynamicDependencies="true">
     <requires>
       <module name="sap/ui/core/Core.js"/>
     </requires>
@@ -153,7 +153,7 @@
       <module name="jquery.sap.global.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core-nojQuery.js" size="1086730" compressedSize="290918" dynamicDependencies="true">
+  <module name="sap-ui-core-nojQuery.js" size="1087091" compressedSize="291033" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -212,7 +212,7 @@
       <module name="jquery.sap.resources.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core.js" size="1376013" compressedSize="396710" dynamicDependencies="true">
+  <module name="sap-ui-core.js" size="1376374" compressedSize="396825" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/thirdparty/jquery/jquery-1.10.2.js"/>
       <module name="sap/ui/thirdparty/jqueryui/jquery-ui-position.js"/>
@@ -308,9 +308,9 @@
       <module name="jquery.sap.strings.js"/>
     </includes>
   </module>
-  <module name="sap/ui/Device.js" size="46171" compressedSize="14182" raw="true">
+  <module name="sap/ui/Device.js" size="46433" compressedSize="14222" raw="true">
   </module>
-  <module name="sap/ui/Global.js" size="10504" compressedSize="1882">
+  <module name="sap/ui/Global.js" size="10503" compressedSize="1881">
     <requires>
       <module name="jquery.sap.global.js"/>
       <module name="jquery.sap.dom.js"/>
@@ -488,7 +488,7 @@
       <module name="sap/ui/thirdparty/URI.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Control.js" size="28036" compressedSize="7513">
+  <module name="sap/ui/core/Control.js" size="28136" compressedSize="7589">
     <description>Provides base class sap.ui.core.Control for all controls</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1112,7 +1112,7 @@
     </requires>
   </module>
   <module name="sap/ui/core/library.js" size="51070" compressedSize="12079">
-    <description>Initialization Code and shared classes of library sap.ui.core (1.20.4)</description>
+    <description>Initialization Code and shared classes of library sap.ui.core (1.20.5)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
@@ -1954,7 +1954,7 @@
       <module name="sap/ui/model/odata/Filter.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataMetadata.js" size="14016" compressedSize="4339">
+  <module name="sap/ui/model/odata/ODataMetadata.js" size="14223" compressedSize="4440">
     <description>Provides class sap.ui.model.odata.ODataMetadata</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -2094,7 +2094,7 @@
     </requires>
   </module>
   <module name="sap/ui/qunit/QUnitUtils.js" size="24837" compressedSize="6671" excludeFromAllInOne="true">
-    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.4 @namespace @name sap.ui.test.qunit @public</description>
+    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.5 @namespace @name sap.ui.test.qunit @public</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>

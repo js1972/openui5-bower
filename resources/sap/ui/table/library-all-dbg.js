@@ -981,7 +981,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.table.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.table (1.20.4)
+ * Initialization Code and shared classes of library sap.ui.table (1.20.5)
  */
 jQuery.sap.declare("sap.ui.table.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1023,7 +1023,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.table.Column",
     "sap.ui.table.Row"
   ],
-  version: "1.20.4"});
+  version: "1.20.5"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1043,7 +1043,7 @@ jQuery.sap.declare("sap.ui.table.NavigationMode");
 /**
  * @class Navigation mode of the table
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -1080,7 +1080,7 @@ jQuery.sap.declare("sap.ui.table.SelectionBehavior");
 /**
  * @class Selection behavior of the table
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -1123,7 +1123,7 @@ jQuery.sap.declare("sap.ui.table.SelectionMode");
 /**
  * @class Selection mode of the table
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -1172,7 +1172,7 @@ jQuery.sap.declare("sap.ui.table.SortOrder");
 /**
  * @class Sort order of a column
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -1209,7 +1209,7 @@ jQuery.sap.declare("sap.ui.table.VisibleRowCountMode");
 /**
  * @class VisibleRowCountMode of the table
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -1325,7 +1325,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -2648,7 +2648,7 @@ jQuery.sap.require('sap.ui.commons.Menu'); // unlisted dependency retained
  * @extends sap.ui.commons.Menu
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -3109,7 +3109,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -3348,7 +3348,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -6884,7 +6884,7 @@ sap.ui.table.Table.prototype.onmousedown = function(oEvent) {
 sap.ui.table.Table.prototype.onmouseup = function(oEvent) {
 	if (this.$().find(".sapUiTableCtrl td :focus").length > 0) {
 		// when clicking into a focusable control we enter the action mode!
-		this._enterActionMode(this.$().find(".sapUiTableCtrl td :focus").get(0));
+		this._enterActionMode(this.$().find(".sapUiTableCtrl td :focus"));
 	} else {
 		// when clicking anywhere else in the table we leave the action mode!
 		this._leaveActionMode(oEvent);
@@ -7878,12 +7878,12 @@ sap.ui.table.Table.prototype._isBottomRow = function(oEvent) {
  * aligned with the official WAI-ARIA 1.0.
  * @private
  */
-sap.ui.table.Table.prototype._enterActionMode = function(oDomRef) {
+sap.ui.table.Table.prototype._enterActionMode = function($Focusable) {
 	// only enter the action mode when not already in action mode and:
-	if (oDomRef && !this._bActionMode) {
+	if ($Focusable.length > 0 && !this._bActionMode) {
 
 		//If cell has no tabbable element, we don't do anything
-		if(jQuery(oDomRef).filter(":sapTabbable").length == 0) {
+		if($Focusable.filter(":sapTabbable").length == 0) {
 			return;
 		}
 
@@ -7895,8 +7895,7 @@ sap.ui.table.Table.prototype._enterActionMode = function(oDomRef) {
 		jQuery(this._oItemNavigation.getFocusedDomRef()).attr("tabindex", "-1");
 
 		// set the focus to the active control
-		jQuery(oDomRef).focus();
-
+		$Focusable.filter(":sapTabbable").eq(0).focus();
 	}
 };
 
@@ -7977,7 +7976,7 @@ sap.ui.table.Table.prototype.onkeydown = function(oEvent) {
 		oEvent.keyCode == jQuery.sap.KeyCodes.F2 ||
 		oEvent.keyCode == jQuery.sap.KeyCodes.ENTER) {
 		if ($this.find(".sapUiTableCtrl td:focus").length > 0) {
-			this._enterActionMode($this.find(".sapUiTableCtrl td:focus").find(":sapFocusable").get(0));
+			this._enterActionMode($this.find(".sapUiTableCtrl td:focus").find(":sapFocusable"));
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}
@@ -8579,7 +8578,7 @@ jQuery.sap.declare("sap.ui.table.TreeTable");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -9117,9 +9116,11 @@ sap.ui.table.TreeTable.prototype.onkeydown = function(oEvent) {
 	if (oEvent.keyCode == jQuery.sap.KeyCodes.TAB && this._bActionMode && $TargetTD.find('.sapUiTableTreeIcon').length > 0) {
 		//If node icon has focus set tab to control else set tab to node icon
 		if ($Target.hasClass('sapUiTableTreeIcon')) {
-			$TargetTD.find(':sapFocusable:not(.sapUiTableTreeIcon)').first().focus();
+			if (!$Target.hasClass("sapUiTableTreeIconLeaf")) {
+				$TargetTD.find(':sapFocusable:not(.sapUiTableTreeIcon)').first().focus();
+			}
 		} else {
-			$TargetTD.find('.sapUiTableTreeIcon').focus();
+			$TargetTD.find('.sapUiTableTreeIcon:not(.sapUiTableTreeIconLeaf)').focus();
 		}
 		oEvent.preventDefault();
 	}
@@ -9193,11 +9194,11 @@ sap.ui.table.TreeTable.prototype.isExpanded = function(iRowIndex) {
 	return false;
 };
 
-sap.ui.table.TreeTable.prototype._enterActionMode = function(oDomRef) {
-	var $domRef = jQuery(oDomRef);
+sap.ui.table.TreeTable.prototype._enterActionMode = function($Tabbable) {
+	var $domRef = $Tabbable.eq(0);
 	
 	sap.ui.table.Table.prototype._enterActionMode.apply(this, arguments);
-	if (oDomRef && $domRef.hasClass("sapUiTableTreeIcon")) {
+	if ($Tabbable.length > 0 && $domRef.hasClass("sapUiTableTreeIcon") && !$domRef.hasClass("sapUiTableTreeIconLeaf")) {
 		//Set tabindex to 0 to have make node icon accessible
 		$domRef.attr("tabindex", 0).focus();
 		//set action mode to true so that _leaveActionMode is called to remove the tabindex again
@@ -9274,7 +9275,7 @@ jQuery.sap.declare("sap.ui.table.DataTable");
  * @extends sap.ui.table.TreeTable
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

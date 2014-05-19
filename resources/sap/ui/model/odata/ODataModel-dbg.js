@@ -47,7 +47,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public

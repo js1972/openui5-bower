@@ -28,7 +28,6 @@ sap.m.TileContainerRenderer.render = function(rm, oControl) {
 	rm.writeControlData(oControl);
 	rm.addStyle("height",oControl.getHeight());
 	rm.addStyle("width",oControl.getWidth());
-	rm.addStyle("visibility","hidden");
 	rm.writeStyles();
 	rm.addClass("sapMTC");
 	rm.writeClasses();

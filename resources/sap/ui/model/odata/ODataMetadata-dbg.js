@@ -23,7 +23,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * Implementation to access oData metadata
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 *
 	 * @constructor
 	 * @public
@@ -60,6 +60,15 @@ sap.ui.define(['jquery.sap.global'],
 		var that = this;
 	
 		function _handleSuccess(oMetadata, oResponse) {
+			if(!oMetadata || !oMetadata.dataServices){
+				var oError = {
+					message: "Invalid metadata document",
+					request: oRequest,
+					response: oResponse
+				};
+				_handleError(oError);
+				return;
+			}
 			that.oMetadata = oMetadata;
 	
 			if (!that.oModel.bUseBatch) {

@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.layout.form.SimpleForm");
  * @extends sap.ui.layout.form.SimpleForm
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

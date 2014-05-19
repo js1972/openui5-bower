@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

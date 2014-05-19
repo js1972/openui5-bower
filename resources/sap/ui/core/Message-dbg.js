@@ -61,7 +61,7 @@ sap.ui.define(['./library','./Element','./theming/Parameters'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

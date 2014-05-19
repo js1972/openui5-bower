@@ -43,7 +43,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './DeclarativeS
 		 * @class Fragment
 		 * @extends sap.ui.base.ManagedObject
 		 * @author SAP
-		 * @version 1.20.4
+		 * @version 1.20.5
 		 * @public
 		 * @name sap.ui.core.Fragment
 		 */
