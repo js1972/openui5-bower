@@ -1,6 +1,6 @@
 {
 	"name": "openui5-bower",
-	"version": "1.20.4",
+	"version": "1.20.5",
 	"author": "SAP AG",
 	"contributors": [
 		"SAP AG <*@sap.com>"
@@ -16,6 +16,7 @@
 		"node_modules",
 		"bower_components",
 		"test",
-		"tests"
+		"tests",
+		"README.md"
 	]
 }

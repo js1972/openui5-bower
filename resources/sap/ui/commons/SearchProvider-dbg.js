@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.search.OpenSearchProvider");
  * @extends sap.ui.core.search.OpenSearchProvider
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

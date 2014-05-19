@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.Panel");
  * @extends sap.ui.commons.Panel
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

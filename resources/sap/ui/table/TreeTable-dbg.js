@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.Table");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -597,9 +597,11 @@ sap.ui.table.TreeTable.prototype.onkeydown = function(oEvent) {
 	if (oEvent.keyCode == jQuery.sap.KeyCodes.TAB && this._bActionMode && $TargetTD.find('.sapUiTableTreeIcon').length > 0) {
 		//If node icon has focus set tab to control else set tab to node icon
 		if ($Target.hasClass('sapUiTableTreeIcon')) {
-			$TargetTD.find(':sapFocusable:not(.sapUiTableTreeIcon)').first().focus();
+			if (!$Target.hasClass("sapUiTableTreeIconLeaf")) {
+				$TargetTD.find(':sapFocusable:not(.sapUiTableTreeIcon)').first().focus();
+			}
 		} else {
-			$TargetTD.find('.sapUiTableTreeIcon').focus();
+			$TargetTD.find('.sapUiTableTreeIcon:not(.sapUiTableTreeIconLeaf)').focus();
 		}
 		oEvent.preventDefault();
 	}
@@ -673,11 +675,11 @@ sap.ui.table.TreeTable.prototype.isExpanded = function(iRowIndex) {
 	return false;
 };
 
-sap.ui.table.TreeTable.prototype._enterActionMode = function(oDomRef) {
-	var $domRef = jQuery(oDomRef);
+sap.ui.table.TreeTable.prototype._enterActionMode = function($Tabbable) {
+	var $domRef = $Tabbable.eq(0);
 	
 	sap.ui.table.Table.prototype._enterActionMode.apply(this, arguments);
-	if (oDomRef && $domRef.hasClass("sapUiTableTreeIcon")) {
+	if ($Tabbable.length > 0 && $domRef.hasClass("sapUiTableTreeIcon") && !$domRef.hasClass("sapUiTableTreeIconLeaf")) {
 		//Set tabindex to 0 to have make node icon accessible
 		$domRef.attr("tabindex", 0).focus();
 		//set action mode to true so that _leaveActionMode is called to remove the tabindex again

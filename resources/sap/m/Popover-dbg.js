@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -1181,38 +1181,38 @@ sap.m.Popover.prototype.init = function(){
 		//calculate the best placement of the popover if placementType is horizontal,  vertical or auto
 		var iPlacePos = jQuery.inArray(that.getPlacement(), that._placements);
 		if (iPlacePos > 3 && !that._bPosCalced) {
-			that._bResizeAfterPositionCalced = bFromResize;
 			that._calcPlacement();
 			return;
 		}
 
-		//update the "of" property on oPosition because parent can be already rerendered
-		oPosition.of = (that._oOpenBy instanceof sap.ui.core.Element) ? that._oOpenBy.getDomRef() : that._oOpenBy;
+		// update the "of" property on oPosition because parent can be already rerendered
+		if (that._oOpenBy instanceof sap.ui.core.Element) {
+			oPosition.of = that._oOpenBy.getDomRef();
+		}
 
-		if(!oPosition.of){
-			jQuery.sap.log.warning("sap.m.Popover: in function applyPosition, the openBy element doesn't have any DOM output " + that);
+		// if the openBy dom reference is null or already detached from the dom tree because of rerendering
+		// there's no need to reposition the popover again
+		if(!oPosition.of || !jQuery.sap.containsOrEquals(document.documentElement, oPosition.of)){
+			jQuery.sap.log.warning("sap.m.Popover: in function applyPosition, the openBy element doesn't have any DOM output or the DOM is already detached from DOM tree" + that);
 			return;
 		}
 
+		// some browser changes the scrollLeft of window after firing resize event
+		// which caused the popover to be positioned at the wrong place.
+		jQuery(window).scrollLeft(0);
 		//deregister the content resize handler before repositioning
 		that._deregisterContentResizeHandler();
-
 		sap.ui.core.Popup.prototype._applyPosition.call(this, oPosition);
 		that._fnSetArrowPosition();
 		that._restoreScrollPosition();
 		//reset the flags
 		that._bCalSize = false;
 		that._bPosCalced = false;
-		
-		if (that._bResizeAfterPositionCalced || bFromResize) {
-			// if _applyPosition is called within Popup.js, this time point is too early for registering the content resize listener
-			// that's why the registration is only done here when orientation changes or content size changes
-			// register resize listener on scroll area after positioning is done
-			that._registerContentResizeHandler();
-			that._bResizeAfterPositionCalced = false;
-		}
+
+		//register the content resize handler
+		that._registerContentResizeHandler();
 	};
-	
+
 	// when popup's close method is called by autoclose handler, the beforeClose event also needs to be fired.
 	// popup's close method has been inherited here in order to fire the beforeClose event for calling close on
 	// autoclose.
@@ -1431,8 +1431,6 @@ sap.m.Popover.prototype.openBy = function(oControl, bSkipInstanceManager){
 				// Save current focused element to restore the focus after closing the dialog
 				that._oPreviousFocus = sap.ui.core.Popup.getCurrentFocusInfo();
 				oPopup.open();
-				// register content size change listener here in order to react to content size change during the opening process
-				that._registerContentResizeHandler();
 				//if popover shouldn't be managed by Instance Manager
 				//e.g. SplitContainer in PopoverMode, the popover which contains the master area should be managed by the SplitContainer control
 				if(!bSkipInstanceManager){
@@ -1566,12 +1564,14 @@ sap.m.Popover.prototype._onOrientationChange = function(){
 	if(this._bCalSize){
 		return;
 	}
-	
+
 	var ePopupState = this.oPopup.getOpenState();
 	if(!(ePopupState === sap.ui.core.OpenState.OPEN || ePopupState === sap.ui.core.OpenState.OPENING)){
 		return;
 	}
+
 	this.oPopup._applyPosition(this.oPopup._oLastPosition, true);
+
 };
 
 /**
@@ -2045,7 +2045,10 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 			iLeft = iMarginLeft;
 			if (bRtl){
 				// as offset has been updated, the right position applied before also needs to be adjusted
-				iRight = parseInt($this.css("right"),10) - iLeft; 
+				iRight = parseInt($this.css("right"), 10) - (iLeft - $offset.left);
+				if (iRight < iMarginRight) {
+					iRight = iMarginRight;
+				}
 			}
 		}else if(bOverRight){
 			iRight = iMarginRight;
@@ -2569,7 +2572,7 @@ sap.m.Popover.prototype.setOffsetX = function(iValue){
 	
 	if(iPlacePos > -1){
 		oLastPosition.offset = this._calcOffset(this._offsets[iPlacePos]);
-		this.oPopup._applyPosition(oLastPosition, true);
+		this.oPopup._applyPosition(oLastPosition);
 	}
 	
 	return this;
@@ -2592,7 +2595,7 @@ sap.m.Popover.prototype.setOffsetY = function(iValue){
 	
 	if(iPlacePos > -1){
 		oLastPosition.offset = this._calcOffset(this._offsets[iPlacePos]);
-		this.oPopup._applyPosition(oLastPosition, true);
+		this.oPopup._applyPosition(oLastPosition);
 	}
 	
 	return this;

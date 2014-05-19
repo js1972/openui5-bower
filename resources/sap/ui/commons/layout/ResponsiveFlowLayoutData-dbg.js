@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.layout.ResponsiveFlowLayoutData");
  * @extends sap.ui.layout.ResponsiveFlowLayoutData
  *
  * @author SAP 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

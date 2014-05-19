@@ -39,5 +39,5 @@ sap.m.Toolbar.prototype._getEndPoint=function(){var l=(this._$this[0]||this.getD
 sap.m.Toolbar.prototype._handleToolbarResize=function(){this._handleResize(false)};
 sap.m.Toolbar.prototype._handleContentResize=function(){this._handleResize(true)};
 sap.m.Toolbar.prototype._handleResize=function(c){if(c&&this._endPoint==this._getEndPoint()){return}if(!sap.m.Toolbar.hasFlexBoxSupport){this._reflexie()}else if(!sap.m.Toolbar.hasNewFlexBoxSupport){this._resetOverflow()}};
-sap.m.Toolbar.prototype.setDesign=function(d,s){if(!s){return this.setProperty("design",d)}this._sAutoDesign=this.validateProperty("design",d);if(this.getDesign()==sap.m.ToolbarDesign.Auto){this.invalidate()}return this};
+sap.m.Toolbar.prototype.setDesign=function(d,s){if(!s){return this.setProperty("design",d)}this._sAutoDesign=this.validateProperty("design",d);return this};
 sap.m.Toolbar.prototype.getActiveDesign=function(){var d=this.getDesign();if(d!=sap.m.ToolbarDesign.Auto){return d}return this._sAutoDesign||d};

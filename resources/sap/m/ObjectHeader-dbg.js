@@ -77,7 +77,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -1136,7 +1136,7 @@ sap.m.ObjectHeader.prototype.ontap = function(oEvent) {
 		this.fireIntroPress({
 			domRef : jQuery.sap.domById(sourceId)
 		});
-	} else if (this.getTitleActive() && sourceId === this._titleText.getId()) {
+	} else if (this.getTitleActive() && oEvent.srcControl === this._titleText) {
 		this.fireTitlePress({
 			domRef : jQuery.sap.domById(sourceId)
 		});

@@ -4170,7 +4170,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.ux3.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.ux3 (1.20.4)
+ * Initialization Code and shared classes of library sap.ui.ux3 (1.20.5)
  */
 jQuery.sap.declare("sap.ui.ux3.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -4242,7 +4242,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.ux3.ThingAction",
     "sap.ui.ux3.ThingGroup"
   ],
-  version: "1.20.4"});
+  version: "1.20.5"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -4262,7 +4262,7 @@ jQuery.sap.declare("sap.ui.ux3.ActionBarSocialActions");
 /**
  * @class Enumeration of available standard actions for 'sap.ui.ux3.ActionBar'. To be used as parameters for function 'sap.ui.ux3.ActionBar.getSocialAction'.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4329,7 +4329,7 @@ jQuery.sap.declare("sap.ui.ux3.ExactOrder");
 /**
  * @class Defines the order of the sub lists of a list in the ExactBrowser.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @since 1.7.1
@@ -4367,7 +4367,7 @@ jQuery.sap.declare("sap.ui.ux3.FeederType");
 /**
  * @class Type of an Feeder.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -4412,7 +4412,7 @@ jQuery.sap.declare("sap.ui.ux3.FollowActionState");
 /**
  * @class Defines the states of the follow action
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -4455,7 +4455,7 @@ jQuery.sap.declare("sap.ui.ux3.NotificationBarStatus");
 /**
  * @class This entries are used to set the visibility status of a NotificationBar
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -4504,7 +4504,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellDesignType");
 /**
  * @class Available shell design types.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @since 1.12.0
@@ -4555,7 +4555,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellHeaderType");
 /**
  * @class Available shell header display types.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -4604,7 +4604,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingViewerHeaderType");
 /**
  * @class Available ThingViewer header display types.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  * @since 1.16.3
@@ -4642,7 +4642,7 @@ jQuery.sap.declare("sap.ui.ux3.VisibleItemCountMode");
 /**
  * @class VisibleItemCountMode of the FacetFilter defines if the FacetFilter takes the whole available height (Auto) in the surrounding container, or is so high as needed to show 5 Items ("Fixed " - default).
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @static
  * @public
  */
@@ -4737,7 +4737,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -6738,7 +6738,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -7282,7 +7282,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -8367,7 +8367,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -9684,7 +9684,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -9990,7 +9990,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -10821,7 +10821,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -11172,7 +11172,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -11926,7 +11926,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -13718,7 +13718,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -13954,7 +13954,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -14553,7 +14553,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -15080,7 +15080,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -16175,7 +16175,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -16416,7 +16416,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -18104,7 +18104,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -18628,7 +18628,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -19284,7 +19284,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayContainer");
  * @extends sap.ui.ux3.Overlay
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -19564,7 +19564,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayDialog");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -20061,7 +20061,7 @@ jQuery.sap.require('sap.ui.commons.CalloutBase'); // unlisted dependency retaine
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -21311,7 +21311,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -25194,7 +25194,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -25434,7 +25434,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -25766,7 +25766,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -26839,7 +26839,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -27942,25 +27942,32 @@ var fnSetInitialFocus = function(oThis){
 	var sFirstFocusId = sId + "-firstFocusable";
 	var sLastFocusId = sId + "-lastFocusable";
 	
-	var $element = jQuery.sap.byId(sFirstFocusId);
-	var $Focusables = jQuery(":sapFocusable", oThis.$());
+	var oElement = jQuery.sap.byId(sFirstFocusId).get(0);
+	var aFocusables = jQuery(":sapFocusable", oThis.$()).get();
 	
 	// if there is an initial focus it was already set to the Popup onBeforeRendering
 	if (!oThis._bFocusSet){
 		// search the first focusable element
-		if($Focusables.length > 0) {
-			for (var i = 0; i < $Focusables.length; i++){
-				sTempId = $Focusables[i].id;
+		if(aFocusables.length > 0) {
+			for (var i = 0; i < aFocusables.length; i++){
+				sTempId = aFocusables[i].id;
  
 				if (sTempId !== sFirstFocusId && sTempId !== sLastFocusId) {
-					$element = $Focusables[i];
+					oElement = aFocusables[i];
 					break;
 				}
 			}
 		}
 
-		$element.focus();
-		oThis._sInitialFocusId = $element.id;
+		// If focusables are part of a control, focus the controls instead
+		var oFocusControl = jQuery(oElement).control();
+		if (oFocusControl[0]) {
+			var oFocusDomRef = oFocusControl[0].getFocusDomRef();
+			oElement = oFocusDomRef ? oFocusDomRef : oElement;
+		}
+		
+		jQuery.sap.focus(oElement);
+		oThis._sInitialFocusId = oElement.id;
 	} else {
 		oThis._sInitialFocusId = oThis.oPopup._sInitialFocusId;
 	}
@@ -27970,11 +27977,11 @@ var fnSetInitialFocus = function(oThis){
 		oThis._sLastFocusableId = sFirstFocusId;
 		oThis._sFirstFocusableId = sLastFocusId;
 		
-		if ($Focusables.length > 2) {
+		if (aFocusables.length > 2) {
 			// using second array content since first focusable item is the fake element
-			oThis._sFirstFocusableId = $Focusables[1].id;
+			oThis._sFirstFocusableId = aFocusables[1].id;
 			// using the second to last element in array since last one is the fake element
-			oThis._sLastFocusableId = $Focusables[$Focusables.length -2].id;
+			oThis._sLastFocusableId = aFocusables[aFocusables.length -2].id;
 		}
 		
 	} 
@@ -28925,7 +28932,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -29872,7 +29879,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -31097,7 +31104,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -32884,7 +32891,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingInspector");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public
@@ -34432,7 +34439,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

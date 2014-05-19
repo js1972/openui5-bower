@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.layout.form.GridElementData");
  * @extends sap.ui.layout.form.GridElementData
  *
  * @author SAP AG 
- * @version 1.20.4
+ * @version 1.20.5
  *
  * @constructor   
  * @public

@@ -10299,7 +10299,7 @@ $.ui.position = {
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.4
+ * @version 1.20.5
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10322,7 +10322,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.4";
+		var apiVersion = "1.20.5";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -10376,7 +10376,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.4";
+		var v = "1.20.5";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -11698,7 +11698,10 @@ if(typeof window.sap.ui !== "object"){
 	var bKeyboardOpen = false;
 	var iLastResizeTime;
 	var rInputTagRegex = /INPUT|TEXTAREA|SELECT/;
-	var bIPhone7_0_XSafari = device.system.phone && device.os.ios && device.os.version >= 7 && device.os.version < 7.1 && device.browser.name === "sf";
+	// On iPhone with iOS version 7.0.x and on iPad with iOS version 7.x (tested with all versions below 7.1.1), there's a invalide resize event fired
+	// when changing the orientation while keyboard is shown.
+	var bSkipFirstResize = device.os.ios && device.browser.name === "sf" && 
+		((device.system.phone && device.os.version >= 7 && device.os.version < 7.1) || (device.system.tablet && device.os.version >= 7));
 	
 	function isLandscape(bFromOrientationChange){
 		if (device.support.touch && device.support.orientation) {
@@ -11726,7 +11729,7 @@ if(typeof window.sap.ui !== "object"){
 		if (evt.type == "resize") {
 			// supress the first invalid resize event fired before orientationchange event while keyboard is open on iPhone 7.0.x
 			// because this event has wrong size infos
-			if (bIPhone7_0_XSafari && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
+			if (bSkipFirstResize && rInputTagRegex.test(document.activeElement.tagName) && !bOrientationchange) {
 				return;
 			}
 
@@ -13868,7 +13871,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -14261,7 +14264,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.4
+	 * @version 1.20.5
 	 * @namespace
 	 * @public
 	 * @static
