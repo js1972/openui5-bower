@@ -22,7 +22,7 @@ sap.ui.define('sap/ui/core/plugin/LessSupport', ['jquery.sap.global', 'sap/ui/co
 	 *        feature - DO NOT USE IN PRODUCTIVE SCENARIOS!!
 	 *
 	 * @author Peter Muessig
-	 * @version 1.20.5
+	 * @version 1.20.6
 	 * @private
 	 * @name sap.ui.core.plugin.LessSupport
 	 */

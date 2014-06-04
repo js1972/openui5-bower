@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -412,9 +412,9 @@ sap.ui.core.IconPool.insertFontFaceStyle();
 /* ----------------------------------------------------------- */
 
 // use labels as placeholder configuration
-sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function($, oDevice) {
+sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function(oDevice) {
 
-	if (!("placeholder" in document.createElement("input"))) {
+	if (!oDevice.support.input.placeholder) {
 		return true;
 	}
 
@@ -431,7 +431,7 @@ sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function($, oDevice) {
 	}
 
 	return bUseLabel;
-}(jQuery, sap.ui.Device));
+}(sap.ui.Device));
 
 /* ----------------------------------------------------------- */
 /* Private methods                                             */

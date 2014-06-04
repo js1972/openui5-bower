@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.TreeTable");
  * @extends sap.ui.table.TreeTable
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public

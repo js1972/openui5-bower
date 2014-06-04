@@ -9,7 +9,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ActionListItemRenderer.js" size="1210" compressedSize="676">
+  <module name="sap/m/ActionListItemRenderer.js" size="1210" compressedSize="680">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -25,7 +25,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ActionSelectRenderer.js" size="1060" compressedSize="576">
+  <module name="sap/m/ActionSelectRenderer.js" size="1060" compressedSize="580">
     <requires>
       <module name="sap/m/SelectRenderer.js"/>
       <module name="sap/ui/core/Renderer.js"/>
@@ -43,7 +43,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ActionSheetRenderer.js" size="1671" compressedSize="881">
+  <module name="sap/m/ActionSheetRenderer.js" size="1671" compressedSize="883">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -57,7 +57,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/AppRenderer.js" size="932" compressedSize="771">
+  <module name="sap/m/AppRenderer.js" size="932" compressedSize="773">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -73,7 +73,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/BarRenderer.js" size="3442" compressedSize="1847">
+  <module name="sap/m/BarRenderer.js" size="3442" compressedSize="1851">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -89,7 +89,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/BusyDialogRenderer.js" size="1860" compressedSize="1140">
+  <module name="sap/m/BusyDialogRenderer.js" size="1860" compressedSize="1144">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -104,7 +104,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/BusyIndicatorRenderer.js" size="3758" compressedSize="2298">
+  <module name="sap/m/BusyIndicatorRenderer.js" size="3758" compressedSize="2300">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -121,7 +121,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ButtonRenderer.js" size="7763" compressedSize="3891">
+  <module name="sap/m/ButtonRenderer.js" size="7763" compressedSize="3893">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -136,7 +136,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/CarouselRenderer.js" size="4435" compressedSize="2031">
+  <module name="sap/m/CarouselRenderer.js" size="4435" compressedSize="2033">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -151,7 +151,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/CheckBoxRenderer.js" size="2464" compressedSize="1390">
+  <module name="sap/m/CheckBoxRenderer.js" size="2464" compressedSize="1394">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/ValueStateSupport.js"/>
@@ -175,7 +175,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ColumnListItemRenderer.js" size="5131" compressedSize="2792">
+  <module name="sap/m/ColumnListItemRenderer.js" size="5131" compressedSize="2796">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -192,7 +192,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/CustomListItemRenderer.js" size="1198" compressedSize="658">
+  <module name="sap/m/CustomListItemRenderer.js" size="1198" compressedSize="662">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -208,7 +208,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/CustomTileRenderer.js" size="1402" compressedSize="839">
+  <module name="sap/m/CustomTileRenderer.js" size="1402" compressedSize="841">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/m/TileRenderer.js"/>
@@ -230,7 +230,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/DateTimeInputRenderer.js" size="1806" compressedSize="722">
+  <module name="sap/m/DateTimeInputRenderer.js" size="1403" compressedSize="631">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/InputBaseRenderer.js"/>
@@ -252,7 +252,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/DialogRenderer.js" size="5224" compressedSize="2956">
+  <module name="sap/m/DialogRenderer.js" size="5224" compressedSize="2958">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/m/BarRenderer.js"/>
@@ -267,7 +267,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/DisplayListItemRenderer.js" size="1467" compressedSize="858">
+  <module name="sap/m/DisplayListItemRenderer.js" size="1467" compressedSize="862">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -275,7 +275,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FacetFilter.js" size="57224" compressedSize="20502">
+  <module name="sap/m/FacetFilter.js" size="57585" compressedSize="20583">
     <description>Provides control sap.m.FacetFilter.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -293,7 +293,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FacetFilterItemRenderer.js" size="846" compressedSize="437">
+  <module name="sap/m/FacetFilterItemRenderer.js" size="846" compressedSize="439">
     <description>@copyright</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -301,7 +301,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FacetFilterList.js" size="31227" compressedSize="7383">
+  <module name="sap/m/FacetFilterList.js" size="31397" compressedSize="7480">
     <description>Provides control sap.m.FacetFilterList.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -309,7 +309,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FacetFilterListRenderer.js" size="567" compressedSize="467">
+  <module name="sap/m/FacetFilterListRenderer.js" size="567" compressedSize="471">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -317,7 +317,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FacetFilterRenderer.js" size="3496" compressedSize="1730">
+  <module name="sap/m/FacetFilterRenderer.js" size="3496" compressedSize="1732">
     <description>@copyright</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -331,7 +331,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FeedListItemRenderer.js" size="5253" compressedSize="3001">
+  <module name="sap/m/FeedListItemRenderer.js" size="5253" compressedSize="3005">
     <description>Provides default renderer for the sap.m.FeedListItem</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -348,19 +348,19 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FlexBoxCssPropertyMap.js" size="3395" compressedSize="2546">
+  <module name="sap/m/FlexBoxCssPropertyMap.js" size="3395" compressedSize="2550">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FlexBoxRenderer.js" size="4445" compressedSize="2565">
+  <module name="sap/m/FlexBoxRenderer.js" size="4445" compressedSize="2569">
     <requires>
       <module name="sap/m/FlexBoxStylingHelper.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/FlexBoxStylingHelper.js" size="11878" compressedSize="4100">
+  <module name="sap/m/FlexBoxStylingHelper.js" size="11878" compressedSize="4104">
     <requires>
       <module name="sap/m/FlexBoxCssPropertyMap.js"/>
       <module name="sap/ui/thirdparty/flexie.js" conditional="true"/>
@@ -384,7 +384,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/GroupHeaderListItemRenderer.js" size="2130" compressedSize="1033">
+  <module name="sap/m/GroupHeaderListItemRenderer.js" size="2130" compressedSize="1037">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -392,7 +392,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/GrowingEnablement.js" size="24488" compressedSize="11682">
+  <module name="sap/m/GrowingEnablement.js" size="24630" compressedSize="11821">
     <description>Provides class sap.m.GrowingEnablement</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -407,7 +407,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/GrowingListRenderer.js" size="1064" compressedSize="709">
+  <module name="sap/m/GrowingListRenderer.js" size="1064" compressedSize="711">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -423,7 +423,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/HBoxRenderer.js" size="829" compressedSize="400">
+  <module name="sap/m/HBoxRenderer.js" size="829" compressedSize="402">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/m/FlexBoxRenderer.js"/>
@@ -440,7 +440,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/IconTabBarRenderer.js" size="5975" compressedSize="3842">
+  <module name="sap/m/IconTabBarRenderer.js" size="5975" compressedSize="3846">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/IconPool.js"/>
@@ -471,7 +471,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ImageRenderer.js" size="2724" compressedSize="1210">
+  <module name="sap/m/ImageRenderer.js" size="2724" compressedSize="1212">
     <description>Provides default renderer for control sap.m.Image</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -492,7 +492,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/InputBase.js" size="24173" compressedSize="5938">
+  <module name="sap/m/InputBase.js" size="24145" compressedSize="5907">
     <description>Provides control sap.m.InputBase.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -502,7 +502,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/InputBaseRenderer.js" size="8659" compressedSize="3173">
+  <module name="sap/m/InputBaseRenderer.js" size="8661" compressedSize="3177">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/ValueStateSupport.js"/>
@@ -517,7 +517,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/InputListItemRenderer.js" size="1495" compressedSize="861">
+  <module name="sap/m/InputListItemRenderer.js" size="1495" compressedSize="865">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -525,14 +525,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/InputRenderer.js" size="2982" compressedSize="1171">
+  <module name="sap/m/InputRenderer.js" size="2587" compressedSize="1088">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/InputBaseRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/InstanceManager.js" size="11223" compressedSize="2725">
+  <module name="sap/m/InstanceManager.js" size="11223" compressedSize="2727">
     <description>Provides class sap.m.InstanceManager</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -546,7 +546,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/LabelRenderer.js" size="2742" compressedSize="1338">
+  <module name="sap/m/LabelRenderer.js" size="2742" compressedSize="1340">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -562,7 +562,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/LinkRenderer.js" size="1807" compressedSize="1050">
+  <module name="sap/m/LinkRenderer.js" size="1807" compressedSize="1054">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -576,7 +576,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListBase.js" size="92367" compressedSize="21842">
+  <module name="sap/m/ListBase.js" size="92120" compressedSize="21620">
     <description>Provides control sap.m.ListBase.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -587,14 +587,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListBaseRenderer.js" size="6208" compressedSize="2656">
+  <module name="sap/m/ListBaseRenderer.js" size="5930" compressedSize="2588">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/theming/Parameters.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListItemBase.js" size="31294" compressedSize="10394">
+  <module name="sap/m/ListItemBase.js" size="31452" compressedSize="10442">
     <description>Provides control sap.m.ListItemBase.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -603,7 +603,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListItemBaseRenderer.js" size="12105" compressedSize="7542">
+  <module name="sap/m/ListItemBaseRenderer.js" size="12105" compressedSize="7546">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/theming/Parameters.js"/>
@@ -611,14 +611,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListRenderer.js" size="1551" compressedSize="865">
+  <module name="sap/m/ListRenderer.js" size="1551" compressedSize="869">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/ListBaseRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/MessageBox.js" size="11455" compressedSize="2907">
+  <module name="sap/m/MessageBox.js" size="11455" compressedSize="2909">
     <description>Provides class sap.m.MessageBox</description>
     <requires>
       <module name="sap/m/Button.js"/>
@@ -629,7 +629,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/MessageToast.js" size="15653" compressedSize="6813">
+  <module name="sap/m/MessageToast.js" size="15653" compressedSize="6817">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Popup.js"/>
@@ -645,7 +645,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/NavContainerRenderer.js" size="1678" compressedSize="785">
+  <module name="sap/m/NavContainerRenderer.js" size="1678" compressedSize="787">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -659,7 +659,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectAttributeRenderer.js" size="1163" compressedSize="564">
+  <module name="sap/m/ObjectAttributeRenderer.js" size="1163" compressedSize="566">
     <description>@copyright</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -674,7 +674,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectHeaderRenderer.js" size="14891" compressedSize="6733">
+  <module name="sap/m/ObjectHeaderRenderer.js" size="14891" compressedSize="6735">
     <description>@copyright</description>
     <requires>
       <module name="sap/ui/core/IconPool.js"/>
@@ -690,7 +690,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectIdentifierRenderer.js" size="2471" compressedSize="1449">
+  <module name="sap/m/ObjectIdentifierRenderer.js" size="2471" compressedSize="1453">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -705,7 +705,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectListItemRenderer.js" size="6467" compressedSize="3440">
+  <module name="sap/m/ObjectListItemRenderer.js" size="6467" compressedSize="3444">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -721,7 +721,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectNumberRenderer.js" size="1460" compressedSize="704">
+  <module name="sap/m/ObjectNumberRenderer.js" size="1460" compressedSize="706">
     <description>@copyright</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -736,7 +736,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectStatusRenderer.js" size="1631" compressedSize="897">
+  <module name="sap/m/ObjectStatusRenderer.js" size="1631" compressedSize="901">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -750,7 +750,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/PageRenderer.js" size="2250" compressedSize="1233">
+  <module name="sap/m/PageRenderer.js" size="2250" compressedSize="1237">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -764,7 +764,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/PanelRenderer.js" size="1914" compressedSize="1043">
+  <module name="sap/m/PanelRenderer.js" size="1914" compressedSize="1047">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -783,7 +783,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/PopoverRenderer.js" size="6325" compressedSize="3472">
+  <module name="sap/m/PopoverRenderer.js" size="6325" compressedSize="3474">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -797,7 +797,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ProgressIndicatorRenderer.js" size="2777" compressedSize="1564">
+  <module name="sap/m/ProgressIndicatorRenderer.js" size="2777" compressedSize="1566">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -812,7 +812,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/PullToRefreshRenderer.js" size="2383" compressedSize="1307">
+  <module name="sap/m/PullToRefreshRenderer.js" size="2383" compressedSize="1309">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/IconPool.js"/>
@@ -828,7 +828,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/RadioButtonRenderer.js" size="3620" compressedSize="1809">
+  <module name="sap/m/RadioButtonRenderer.js" size="3620" compressedSize="1811">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/ValueStateSupport.js"/>
@@ -845,7 +845,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/RatingIndicatorRenderer.js" size="4978" compressedSize="2099">
+  <module name="sap/m/RatingIndicatorRenderer.js" size="4978" compressedSize="2103">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/theming/Parameters.js"/>
@@ -863,7 +863,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ResponsivePopoverRenderer.js" size="751" compressedSize="347">
+  <module name="sap/m/ResponsivePopoverRenderer.js" size="751" compressedSize="351">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -877,7 +877,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ScrollContainerRenderer.js" size="1763" compressedSize="969">
+  <module name="sap/m/ScrollContainerRenderer.js" size="1763" compressedSize="973">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -894,7 +894,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SearchFieldRenderer.js" size="6338" compressedSize="3352">
+  <module name="sap/m/SearchFieldRenderer.js" size="6338" compressedSize="3354">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -909,7 +909,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SegmentedButtonRenderer.js" size="2881" compressedSize="1664">
+  <module name="sap/m/SegmentedButtonRenderer.js" size="2881" compressedSize="1666">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -930,7 +930,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SelectDialog.js" size="51077" compressedSize="12305">
+  <module name="sap/m/SelectDialog.js" size="51077" compressedSize="12307">
     <description>Provides control sap.m.SelectDialog.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -942,13 +942,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SelectDialogRenderer.js" size="731" compressedSize="332">
+  <module name="sap/m/SelectDialogRenderer.js" size="731" compressedSize="336">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SelectRenderer.js" size="6425" compressedSize="2585">
+  <module name="sap/m/SelectRenderer.js" size="6425" compressedSize="2589">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/ValueStateSupport.js"/>
@@ -963,7 +963,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ShellRenderer.js" size="3780" compressedSize="2501">
+  <module name="sap/m/ShellRenderer.js" size="3780" compressedSize="2505">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -979,7 +979,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SliderRenderer.js" size="3061" compressedSize="1887">
+  <module name="sap/m/SliderRenderer.js" size="3061" compressedSize="1891">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -993,7 +993,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SplitAppRenderer.js" size="975" compressedSize="811">
+  <module name="sap/m/SplitAppRenderer.js" size="975" compressedSize="813">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -1011,7 +1011,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SplitContainerRenderer.js" size="2671" compressedSize="1609">
+  <module name="sap/m/SplitContainerRenderer.js" size="2671" compressedSize="1611">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1027,7 +1027,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/StandardListItemRenderer.js" size="4696" compressedSize="3227">
+  <module name="sap/m/StandardListItemRenderer.js" size="4696" compressedSize="3231">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -1044,14 +1044,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/StandardTileRenderer.js" size="3141" compressedSize="2036">
+  <module name="sap/m/StandardTileRenderer.js" size="3141" compressedSize="2040">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/m/TileRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Support.js" size="7315" compressedSize="3545">
+  <module name="sap/m/Support.js" size="7315" compressedSize="3547">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1069,13 +1069,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/SwitchRenderer.js" size="3657" compressedSize="2098">
+  <module name="sap/m/SwitchRenderer.js" size="3657" compressedSize="2102">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Table.js" size="16306" compressedSize="5672">
+  <module name="sap/m/Table.js" size="16748" compressedSize="5831">
     <description>Provides control sap.m.Table.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1083,7 +1083,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TablePersoController.js" size="15150" compressedSize="6317">
+  <module name="sap/m/TablePersoController.js" size="15148" compressedSize="6326">
     <description>Provides TablePersoController</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
@@ -1091,7 +1091,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TablePersoDialog.js" size="12469" compressedSize="5803">
+  <module name="sap/m/TablePersoDialog.js" size="12469" compressedSize="5807">
     <description>Provides TablePersoDialog</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
@@ -1105,21 +1105,21 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TablePersoProvider.js" size="3245" compressedSize="1161">
+  <module name="sap/m/TablePersoProvider.js" size="3245" compressedSize="1165">
     <description>Provides TablePersoProvider</description>
     <requires>
       <module name="sap/ui/base/ManagedObject.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TableRenderer.js" size="6091" compressedSize="3697">
+  <module name="sap/m/TableRenderer.js" size="5859" compressedSize="3585">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/ListBaseRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TableSelectDialog.js" size="54121" compressedSize="12662">
+  <module name="sap/m/TableSelectDialog.js" size="54121" compressedSize="12664">
     <description>Provides control sap.m.TableSelectDialog.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1131,13 +1131,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TableSelectDialogRenderer.js" size="746" compressedSize="347">
+  <module name="sap/m/TableSelectDialogRenderer.js" size="746" compressedSize="351">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Text.js" size="16339" compressedSize="2966">
+  <module name="sap/m/Text.js" size="16975" compressedSize="3249">
     <description>Provides control sap.m.Text.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1145,7 +1145,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TextArea.js" size="16025" compressedSize="4175">
+  <module name="sap/m/TextArea.js" size="15837" compressedSize="4050">
     <description>Provides control sap.m.TextArea.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1153,14 +1153,14 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TextAreaRenderer.js" size="2014" compressedSize="1228">
+  <module name="sap/m/TextAreaRenderer.js" size="2014" compressedSize="1230">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/InputBaseRenderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TextRenderer.js" size="3467" compressedSize="1524">
+  <module name="sap/m/TextRenderer.js" size="3223" compressedSize="1463">
     <description>Provides default renderer for control sap.m.Text</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -1184,20 +1184,20 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TileContainerRenderer.js" size="2078" compressedSize="1439">
+  <module name="sap/m/TileContainerRenderer.js" size="2078" compressedSize="1441">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TileRenderer.js" size="1581" compressedSize="940">
+  <module name="sap/m/TileRenderer.js" size="1581" compressedSize="944">
     <description>Provides default renderer for control sap.m.Text</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Toolbar.js" size="30442" compressedSize="8642">
+  <module name="sap/m/Toolbar.js" size="30456" compressedSize="8651">
     <description>Provides control sap.m.Toolbar.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1218,7 +1218,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ToolbarRenderer.js" size="1589" compressedSize="1170">
+  <module name="sap/m/ToolbarRenderer.js" size="1589" compressedSize="1174">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -1233,7 +1233,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ToolbarSpacerRenderer.js" size="745" compressedSize="599">
+  <module name="sap/m/ToolbarSpacerRenderer.js" size="745" compressedSize="603">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
@@ -1248,7 +1248,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/VBoxRenderer.js" size="829" compressedSize="400">
+  <module name="sap/m/VBoxRenderer.js" size="829" compressedSize="402">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/m/FlexBoxRenderer.js"/>
@@ -1288,7 +1288,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ios7.js" size="6354" compressedSize="3291">
+  <module name="sap/m/ios7.js" size="6354" compressedSize="3295">
     <description>declare unusual global vars for JSLint/SAPUI5 validation</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1297,8 +1297,8 @@
       <module name="sap/m/_Ios7.js"/>
     </includes>
   </module>
-  <module name="sap/m/library.js" size="68817" compressedSize="12538">
-    <description>Initialization Code and shared classes of library sap.m (1.20.5)</description>
+  <module name="sap/m/library.js" size="68817" compressedSize="12540">
+    <description>Initialization Code and shared classes of library sap.m (1.20.6)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>
@@ -1418,7 +1418,7 @@
   </module>
   <module name="sap/m/messagebundle_zh_TW.properties" size="7301">
   </module>
-  <module name="sap/m/routing/RouteMatchedHandler.js" size="11896" compressedSize="3871">
+  <module name="sap/m/routing/RouteMatchedHandler.js" size="11896" compressedSize="3875">
     <description>! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>

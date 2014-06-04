@@ -12,7 +12,7 @@
       "name" : "sap/ui/commons/AccordionRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Accordion",
       "size" : 6574,
-      "compressedSize" : 4269,
+      "compressedSize" : 4273,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -36,7 +36,7 @@
       "name" : "sap/ui/commons/ApplicationHeaderRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ApplicationHeader",
       "size" : 4636,
-      "compressedSize" : 2263,
+      "compressedSize" : 2267,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -60,7 +60,7 @@
       "name" : "sap/ui/commons/AutoCompleteRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.AutoComplete",
       "size" : 1984,
-      "compressedSize" : 1418,
+      "compressedSize" : 1422,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/commons/ComboBoxRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -76,7 +76,7 @@
       "name" : "sap/ui/commons/ButtonRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Button",
       "size" : 9066,
-      "compressedSize" : 5422,
+      "compressedSize" : 5426,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -100,7 +100,7 @@
       "name" : "sap/ui/commons/CalloutBaseRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2607,
-      "compressedSize" : 1410,
+      "compressedSize" : 1412,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -108,7 +108,7 @@
       "name" : "sap/ui/commons/CalloutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2610,
-      "compressedSize" : 862,
+      "compressedSize" : 864,
       "required" : ["sap/ui/commons/CalloutBaseRenderer.js", "sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -124,7 +124,7 @@
       "name" : "sap/ui/commons/CarouselRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Carousel",
       "size" : 5044,
-      "compressedSize" : 3037,
+      "compressedSize" : 3039,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -140,7 +140,7 @@
       "name" : "sap/ui/commons/CheckBoxRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.CheckBox",
       "size" : 4678,
-      "compressedSize" : 2218,
+      "compressedSize" : 2222,
       "required" : ["sap/ui/core/ValueStateSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -156,15 +156,15 @@
       "name" : "sap/ui/commons/ColorPickerRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ColorPicker",
       "size" : 1088,
-      "compressedSize" : 453,
+      "compressedSize" : 455,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/ComboBox.js",
       "description" : "Provides control sap.ui.commons.ComboBox.",
-      "size" : 61814,
-      "compressedSize" : 24153,
+      "size" : 62878,
+      "compressedSize" : 24317,
       "required" : ["sap/ui/commons/library.js", "sap/ui/commons/TextField.js", "jquery.sap.strings.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -172,15 +172,15 @@
       "name" : "sap/ui/commons/ComboBoxRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ComboBox",
       "size" : 5298,
-      "compressedSize" : 2400,
+      "compressedSize" : 2404,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/commons/TextFieldRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/DatePicker.js",
       "description" : "Provides control sap.ui.commons.DatePicker.",
-      "size" : 52482,
-      "compressedSize" : 19674,
+      "size" : 52732,
+      "compressedSize" : 19785,
       "required" : ["sap/ui/commons/library.js", "sap/ui/commons/TextField.js", "sap/ui/thirdparty/jqueryui/jquery-ui-core.js", "sap/ui/thirdparty/jqueryui/jquery-ui-datepicker.js", "sap/ui/model/type/Date.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -188,15 +188,15 @@
       "name" : "sap/ui/commons/DatePickerRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.DatePicker",
       "size" : 6482,
-      "compressedSize" : 2076,
+      "compressedSize" : 2078,
       "required" : ["sap/ui/commons/TextFieldRenderer.js", "sap/ui/commons/DatePicker.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/Dialog.js",
       "description" : "Provides control sap.ui.commons.Dialog.",
-      "size" : 55253,
-      "compressedSize" : 12128,
+      "size" : 55716,
+      "compressedSize" : 12278,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -204,7 +204,7 @@
       "name" : "sap/ui/commons/DialogRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Dialog",
       "size" : 4662,
-      "compressedSize" : 3023,
+      "compressedSize" : 3027,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -220,7 +220,7 @@
       "name" : "sap/ui/commons/DropdownBoxRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.DropdownBox",
       "size" : 3040,
-      "compressedSize" : 1343,
+      "compressedSize" : 1347,
       "required" : ["sap/ui/commons/ComboBoxRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -244,7 +244,7 @@
       "name" : "sap/ui/commons/FileUploaderRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.FileUploader",
       "size" : 2782,
-      "compressedSize" : 1691,
+      "compressedSize" : 1695,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -260,7 +260,7 @@
       "name" : "sap/ui/commons/FormattedTextViewRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2687,
-      "compressedSize" : 1227,
+      "compressedSize" : 1229,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -276,7 +276,7 @@
       "name" : "sap/ui/commons/HorizontalDividerRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.HorizontalDivider",
       "size" : 1672,
-      "compressedSize" : 961,
+      "compressedSize" : 965,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -300,7 +300,7 @@
       "name" : "sap/ui/commons/ImageMapRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2732,
-      "compressedSize" : 1437,
+      "compressedSize" : 1441,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -308,7 +308,7 @@
       "name" : "sap/ui/commons/ImageRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Image",
       "size" : 3005,
-      "compressedSize" : 1263,
+      "compressedSize" : 1267,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -324,7 +324,7 @@
       "name" : "sap/ui/commons/InPlaceEditRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 4260,
-      "compressedSize" : 2437,
+      "compressedSize" : 2441,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -340,7 +340,7 @@
       "name" : "sap/ui/commons/LabelRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Label",
       "size" : 3900,
-      "compressedSize" : 1934,
+      "compressedSize" : 1938,
       "required" : ["sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -356,7 +356,7 @@
       "name" : "sap/ui/commons/LinkRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Link",
       "size" : 1905,
-      "compressedSize" : 1048,
+      "compressedSize" : 1052,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -371,8 +371,8 @@
     {
       "name" : "sap/ui/commons/ListBoxRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ListBox",
-      "size" : 10791,
-      "compressedSize" : 5234,
+      "size" : 10877,
+      "compressedSize" : 5268,
       "required" : ["sap/ui/core/Renderer.js", "jquery.sap.strings.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -380,7 +380,7 @@
       "name" : "sap/ui/commons/Menu.js",
       "description" : "Provides control sap.ui.commons.Menu.",
       "size" : 39091,
-      "compressedSize" : 14181,
+      "compressedSize" : 14188,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "sap/ui/commons/MenuItemBase.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -396,7 +396,7 @@
       "name" : "sap/ui/commons/MenuBarRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.MenuBar",
       "size" : 3387,
-      "compressedSize" : 2226,
+      "compressedSize" : 2230,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -412,7 +412,7 @@
       "name" : "sap/ui/commons/MenuButtonRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.MenuButton",
       "size" : 1883,
-      "compressedSize" : 750,
+      "compressedSize" : 754,
       "required" : ["sap/ui/commons/ButtonRenderer.js", "sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -436,7 +436,7 @@
       "name" : "sap/ui/commons/MenuRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Menu",
       "size" : 3194,
-      "compressedSize" : 1871,
+      "compressedSize" : 1875,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -468,7 +468,7 @@
       "name" : "sap/ui/commons/MessageBarRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.MessageBar",
       "size" : 2965,
-      "compressedSize" : 1392,
+      "compressedSize" : 1396,
       "required" : ["sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -476,7 +476,7 @@
       "name" : "sap/ui/commons/MessageBox.js",
       "description" : "Provides class sap.ui.commons.MessageBox",
       "size" : 10712,
-      "compressedSize" : 2669,
+      "compressedSize" : 2673,
       "required" : ["sap/ui/commons/Button.js", "sap/ui/commons/Dialog.js", "sap/ui/commons/Image.js", "sap/ui/commons/layout/MatrixLayout.js", "sap/ui/commons/TextView.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -492,7 +492,7 @@
       "name" : "sap/ui/commons/MessageListRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.MessageList",
       "size" : 1395,
-      "compressedSize" : 580,
+      "compressedSize" : 584,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -500,7 +500,7 @@
       "name" : "sap/ui/commons/MessageRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Message",
       "size" : 2183,
-      "compressedSize" : 903,
+      "compressedSize" : 907,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -516,7 +516,7 @@
       "name" : "sap/ui/commons/MessageToastRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.MessageToast",
       "size" : 2104,
-      "compressedSize" : 841,
+      "compressedSize" : 845,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -532,7 +532,7 @@
       "name" : "sap/ui/commons/PaginatorRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Paginator",
       "size" : 7445,
-      "compressedSize" : 4138,
+      "compressedSize" : 4142,
       "required" : ["jquery.sap.encoder.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -548,7 +548,7 @@
       "name" : "sap/ui/commons/PanelRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Panel",
       "size" : 6914,
-      "compressedSize" : 3467,
+      "compressedSize" : 3471,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -564,7 +564,7 @@
       "name" : "sap/ui/commons/PasswordFieldRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2662,
-      "compressedSize" : 1398,
+      "compressedSize" : 1402,
       "required" : ["sap/ui/commons/TextFieldRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -580,7 +580,7 @@
       "name" : "sap/ui/commons/ProgressIndicatorRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ProgressIndicator",
       "size" : 4852,
-      "compressedSize" : 2720,
+      "compressedSize" : 2724,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -604,7 +604,7 @@
       "name" : "sap/ui/commons/RadioButtonGroupRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RadioButtonGroup",
       "size" : 3086,
-      "compressedSize" : 1493,
+      "compressedSize" : 1497,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -612,7 +612,7 @@
       "name" : "sap/ui/commons/RadioButtonRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RadioButton",
       "size" : 5430,
-      "compressedSize" : 2778,
+      "compressedSize" : 2782,
       "required" : ["sap/ui/core/ValueStateSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -628,7 +628,7 @@
       "name" : "sap/ui/commons/RangeSliderRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RangeSlider",
       "size" : 3245,
-      "compressedSize" : 1728,
+      "compressedSize" : 1732,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/commons/SliderRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -644,7 +644,7 @@
       "name" : "sap/ui/commons/RatingIndicatorRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RatingIndicator",
       "size" : 6237,
-      "compressedSize" : 3284,
+      "compressedSize" : 3288,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -668,7 +668,7 @@
       "name" : "sap/ui/commons/ResponsiveContainerRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ResponsiveContainer",
       "size" : 1820,
-      "compressedSize" : 941,
+      "compressedSize" : 945,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -684,7 +684,7 @@
       "name" : "sap/ui/commons/RichTooltipRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RichTooltip",
       "size" : 3655,
-      "compressedSize" : 2059,
+      "compressedSize" : 2063,
       "required" : ["sap/ui/core/ValueStateSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -700,7 +700,7 @@
       "name" : "sap/ui/commons/RoadMapRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RoadMap",
       "size" : 29386,
-      "compressedSize" : 12558,
+      "compressedSize" : 12562,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -732,7 +732,7 @@
       "name" : "sap/ui/commons/RowRepeaterRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RowRepeater",
       "size" : 10536,
-      "compressedSize" : 4195,
+      "compressedSize" : 4199,
       "required" : ["sap/ui/commons/Paginator.js", "sap/ui/commons/Toolbar.js", "sap/ui/commons/Button.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -747,8 +747,8 @@
     {
       "name" : "sap/ui/commons/SearchField.js",
       "description" : "Provides control sap.ui.commons.SearchField.",
-      "size" : 49054,
-      "compressedSize" : 16109,
+      "size" : 49130,
+      "compressedSize" : 16155,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "sap/ui/commons/ComboBox.js", "sap/ui/commons/ComboBoxRenderer.js", "sap/ui/commons/TextField.js", "sap/ui/commons/TextFieldRenderer.js", "sap/ui/commons/ListBox.js", "sap/ui/core/Renderer.js", "sap/ui/core/History.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -756,7 +756,7 @@
       "name" : "sap/ui/commons/SearchFieldRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.SearchField",
       "size" : 1920,
-      "compressedSize" : 896,
+      "compressedSize" : 900,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -780,7 +780,7 @@
       "name" : "sap/ui/commons/SegmentedButtonRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2042,
-      "compressedSize" : 1076,
+      "compressedSize" : 1078,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -796,7 +796,7 @@
       "name" : "sap/ui/commons/SliderRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Slider",
       "size" : 5444,
-      "compressedSize" : 2896,
+      "compressedSize" : 2900,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -812,7 +812,7 @@
       "name" : "sap/ui/commons/SplitterRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Splitter",
       "size" : 4279,
-      "compressedSize" : 2281,
+      "compressedSize" : 2285,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -836,7 +836,7 @@
       "name" : "sap/ui/commons/TabStripRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TabStrip",
       "size" : 6211,
-      "compressedSize" : 3410,
+      "compressedSize" : 3414,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -852,7 +852,7 @@
       "name" : "sap/ui/commons/TextAreaRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TextArea",
       "size" : 3589,
-      "compressedSize" : 1898,
+      "compressedSize" : 1900,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/commons/TextFieldRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -868,7 +868,7 @@
       "name" : "sap/ui/commons/TextFieldRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TextField",
       "size" : 11614,
-      "compressedSize" : 7180,
+      "compressedSize" : 7184,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/core/ValueStateSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -884,7 +884,7 @@
       "name" : "sap/ui/commons/TextViewRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TextView",
       "size" : 4315,
-      "compressedSize" : 2292,
+      "compressedSize" : 2296,
       "required" : ["sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -908,7 +908,7 @@
       "name" : "sap/ui/commons/ToggleButtonRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Togglebutton",
       "size" : 2800,
-      "compressedSize" : 1506,
+      "compressedSize" : 1508,
       "required" : ["sap/ui/commons/ButtonRenderer.js", "sap/ui/core/Renderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -924,7 +924,7 @@
       "name" : "sap/ui/commons/ToolbarRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.Toolbar",
       "size" : 7374,
-      "compressedSize" : 3273,
+      "compressedSize" : 3277,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -956,7 +956,7 @@
       "name" : "sap/ui/commons/TreeRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TreeRenderer",
       "size" : 5714,
-      "compressedSize" : 3393,
+      "compressedSize" : 3397,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -972,7 +972,7 @@
       "name" : "sap/ui/commons/TriStateCheckBoxRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.TriStateCheckBox",
       "size" : 4165,
-      "compressedSize" : 2119,
+      "compressedSize" : 2123,
       "required" : ["sap/ui/core/ValueStateSupport.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -988,7 +988,7 @@
       "name" : "sap/ui/commons/ValueHelpFieldRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ValueHelpField",
       "size" : 5582,
-      "compressedSize" : 1332,
+      "compressedSize" : 1336,
       "required" : ["sap/ui/commons/TextFieldRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1028,7 +1028,7 @@
       "name" : "sap/ui/commons/form/FormLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 476,
-      "compressedSize" : 471,
+      "compressedSize" : 475,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/FormLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1036,7 +1036,7 @@
       "name" : "sap/ui/commons/form/FormRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 451,
-      "compressedSize" : 447,
+      "compressedSize" : 451,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/FormRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1068,7 +1068,7 @@
       "name" : "sap/ui/commons/form/GridLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 474,
-      "compressedSize" : 471,
+      "compressedSize" : 475,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/GridLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1084,7 +1084,7 @@
       "name" : "sap/ui/commons/form/ResponsiveLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 498,
-      "compressedSize" : 495,
+      "compressedSize" : 499,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/ResponsiveLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1100,7 +1100,7 @@
       "name" : "sap/ui/commons/form/SimpleFormRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 474,
-      "compressedSize" : 471,
+      "compressedSize" : 475,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/SimpleFormRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1116,7 +1116,7 @@
       "name" : "sap/ui/commons/layout/AbsoluteLayoutRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.layout.AbsoluteLayout",
       "size" : 5477,
-      "compressedSize" : 2980,
+      "compressedSize" : 2984,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -1140,7 +1140,7 @@
       "name" : "sap/ui/commons/layout/BorderLayoutRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.layout.BorderLayout",
       "size" : 5891,
-      "compressedSize" : 3017,
+      "compressedSize" : 3021,
       "required" : ["jquery.sap.encoder.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1156,7 +1156,7 @@
       "name" : "sap/ui/commons/layout/HorizontalLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 493,
-      "compressedSize" : 489,
+      "compressedSize" : 493,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/HorizontalLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1180,7 +1180,7 @@
       "name" : "sap/ui/commons/layout/MatrixLayoutRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.layout.MatrixLayout",
       "size" : 18758,
-      "compressedSize" : 8178,
+      "compressedSize" : 8182,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -1212,7 +1212,7 @@
       "name" : "sap/ui/commons/layout/ResponsiveFlowLayoutData.js",
       "description" : "Provides control sap.ui.commons.layout.ResponsiveFlowLayoutData.",
       "size" : 4329,
-      "compressedSize" : 554,
+      "compressedSize" : 556,
       "required" : ["sap/ui/commons/library.js", "sap/ui/layout/ResponsiveFlowLayoutData.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1220,7 +1220,7 @@
       "name" : "sap/ui/commons/layout/ResponsiveFlowLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 508,
-      "compressedSize" : 505,
+      "compressedSize" : 509,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/ResponsiveFlowLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1236,13 +1236,13 @@
       "name" : "sap/ui/commons/layout/VerticalLayoutRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.layout.VerticalLayout",
       "size" : 564,
-      "compressedSize" : 481,
+      "compressedSize" : 485,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/VerticalLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.5)",
+      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.6)",
       "size" : 41162,
       "compressedSize" : 9137,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/layout/library.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],

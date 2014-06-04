@@ -54,7 +54,7 @@ sap.ui.define(['sap/ui/core/library','./View','sap/ui/core/DeclarativeSupport','
  * @extends sap.ui.core.mvc.View
  *
  * @author Stefan Hipfel, Tino Butz 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public

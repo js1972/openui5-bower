@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1141,6 +1141,7 @@ var _initChildControls = function(oThis, bEnableListSuggest) {
 	var oNewControl = null;
 	if(bEnableListSuggest){
 		oNewControl = new sap.ui.commons.SearchField.CB(oThis.getId()+"-cb", {listBox: oThis._lb, maxPopupItems: _DEFAULT_VISIBLE_ITEM_COUNT});
+		oNewControl.addDependent(oThis._lb);
 	}else{
 		oNewControl = new sap.ui.commons.SearchField.TF(oThis.getId()+"-tf");
 	}
@@ -1165,6 +1166,7 @@ var _initChildControls = function(oThis, bEnableListSuggest) {
 			oNewControl.addAriaLabelledBy(aAsso[i]);
 		}
 		oOldControl.removeAllAriaLabelledBy();
+		oOldControl.removeAllDependents();
 		
 		oOldControl.destroy();
 	}

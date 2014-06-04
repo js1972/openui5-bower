@@ -1916,8 +1916,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	 * this._oRenderManager is optionally used if defined in order to improve performance. It indicates a state where multiple items can be subsequently rendered.
 	 * If this._oRenderManager is defined, it is the responsibility of the caller to flush and destroy the RenderManager after the last call.
 	 */
-	_renderItemIntoContainer : function(oItem, bDoNotPreserve, vInsert) {
-		var oDomRef = this._oControl.getItemsContainerDomRef();
+	_renderItemIntoContainer : function(oItem, bDoNotPreserve, vInsert, oDomRef) {
+		oDomRef = oDomRef || this._oContainerDomRef;
 		if (oDomRef) {
 			var rm = this._oRenderManager || sap.ui.getCore().createRenderManager();
 			rm.renderControl(oItem);
@@ -2154,7 +2154,6 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	 * function is called to insert single list item or row.
 	 */
 	insertListItem : function(oItem, iIndex) {
-		// TODO: should be a better way to set private variables
 		this._oControl.insertAggregation("items", oItem, iIndex, true);
 		this._iRenderedDataItems++;
 		this._renderItemIntoContainer(oItem, false, this._getDomIndex(iIndex));
@@ -2210,8 +2209,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 			this._onBeforePageLoaded(sChangeReason);
 		}
 
-		var	aContexts = oBinding ? oBinding.getContexts(0, this._iItemCount) || [] : [],
-			oContainerDomRef = this._oControl.getItemsContainerDomRef();
+		// get the context from binding
+		var aContexts = oBinding ? oBinding.getContexts(0, this._iItemCount) || [] : [];
 
 		// if the binding context is already requested
 		if (aContexts.dataRequested) {
@@ -2219,13 +2218,16 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 			return;
 		}
 
+		// cache dom ref for internal functions not to lookup again and again
+		this._oContainerDomRef = this._oControl.getItemsContainerDomRef();
+
 		// aContexts.diff ==> undefined : New data we should build from scratch
 		// aContexts.diff ==> [] : There is no diff, means data did not changed but maybe it was already grouped and we need to handle group headers
 		// aContexts.diff ==> [{index : 0, type: "delete"}, ...] :Run the diff logic
 		if (oBinding.isGrouped()) {
 			var bFromScratch = true;
 			if (aContexts.length > 0) {
-				if (oContainerDomRef) {
+				if (this._oContainerDomRef) {
 					// check if diff array exists
 					if (aContexts.diff) {
 						// check if the model diff-array is empty
@@ -2271,7 +2273,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 		} else { // no grouping, stable implementation
 			if (aContexts.length > 0) {
-				if (oContainerDomRef) {
+				if (this._oContainerDomRef) {
 					// check if model diff-array exists and execute
 					if (aContexts.diff) {
 						// if previously grouped
@@ -2288,7 +2290,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 							if (aContexts.diff[i].type === "delete") { // case 1: element is removed
 								if (iFlushIndex !== -1) {
-									this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+									this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 									iFlushIndex = -1;
 									iLastIndex = -1;
 								}
@@ -2306,7 +2308,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 								// otherwise check for the end of a burst of subsequent items
 								} else if (iLastIndex >= 0 && iIndex !== iLastIndex + 1) { // this item is not simply appended to the last one that has been inserted, so we need to flush what we have so far
-									this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+									this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 									iFlushIndex = iIndex;
 								}
 
@@ -2321,7 +2323,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 						}
 
 						if (iFlushIndex !== -1) {
-							this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+							this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 						}
 						// clean up the shared RenderManager
 						this._oRenderManager.destroy();
@@ -2340,6 +2342,9 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 				this.destroyListItems();
 			}
 		}
+
+		// remove dom cache
+		this._oContainerDomRef = null;
 
 		// remember the old grouping path
 		this._sGroupingPath = this._getGroupingPath(oBinding);
@@ -2841,7 +2846,7 @@ sap.m.InputBaseRenderer.render = function(rm, oControl) {
 	rm.write(">");
 
 	// enable self-made placeholder
-	if (oControl._showLabelAsPlaceholder) {
+	if (oControl._bShowLabelAsPlaceholder) {
 		rm.write("<label class='sapMInputBasePlaceholder'");
 		rm.writeAttribute("id", oControl.getId() + "-placeholder");
 		rm.writeAttribute("for", oControl.getId() + "-inner");
@@ -2862,7 +2867,7 @@ sap.m.InputBaseRenderer.render = function(rm, oControl) {
 	}
 
 	// let the browser handle placeholder
-	if (!oControl._showLabelAsPlaceholder && oControl.getPlaceholder()) {
+	if (!oControl._bShowLabelAsPlaceholder && oControl.getPlaceholder()) {
 		rm.writeAttributeEscaped("placeholder", oControl.getPlaceholder());
 	}
 
@@ -3066,16 +3071,6 @@ sap.m.InputRenderer.addOuterClasses = function(oRm, oControl) {
 	if(oControl.getShowValueHelp() && oControl.getEnabled() && oControl.getEditable()) {
 		oRm.addClass("sapMInputVH");
 	}
-};
-
-/**
- * Add extra styles for input container
- *
- * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.InputRenderer.addOuterStyles = function(oRm, oControl) {
-	oRm.addStyle("width", oControl.getWidth());
 };
 
 /**
@@ -3742,10 +3737,10 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 
 	// render child controls
 	var aItems = oControl.getItems();
-	var bRenderItems = this.shouldRenderItems(oControl);
+	var bRenderItems = oControl.shouldRenderItems();
 
 	//TODO: There should be a better way to set these private variables
-	bRenderItems && aItems.forEach(function(oItem){
+	bRenderItems && aItems.forEach(function(oItem) {
 		oControl._applySettingsToItem(oItem, true);
 		rm.renderControl(oItem);
 	});
@@ -3826,21 +3821,11 @@ sap.m.ListBaseRenderer.renderListEndAttributes = function(rm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.ListBaseRenderer.renderNoData = function(rm, oControl) {
-	rm.write("<li id='"+ oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
-	rm.write("<span id='"+ oControl.getId("nodata-text") + "'>");
+	rm.write("<li id='" + oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
+	rm.write("<span id='" + oControl.getId("nodata-text") + "'>");
 	rm.writeEscaped(oControl.getNoDataText());
 	rm.write("</span></li>");
 };
-
-/**
- * This hook method is called to determine whether items should render or not
- *
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.ListBaseRenderer.shouldRenderItems = function(oControl) {
-	return true;
-};
-
 }; // end of sap/m/ListBaseRenderer.js
 if ( !jQuery.sap.isDeclared('sap.m.ListItemBaseRenderer') ) {
 /*!
@@ -8253,7 +8238,7 @@ jQuery.sap.require('sap.ui.base.ManagedObject'); // unlisted dependency retained
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.20.5
+ * @version 1.20.6
  * @name sap.m.TablePersoProvider
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoProvider", /** @lends sap.m.TablePersoProvider */
@@ -8561,14 +8546,6 @@ sap.m.TableRenderer.renderNoData = function(rm, oControl) {
 	rm.write("</td></tr>");
 };
 
-/**
- * if there is no visible column then we do not need to render items
- */
-sap.m.TableRenderer.shouldRenderItems = function(oControl) {
-	return oControl.getColumns().some(function(oColumn) {
-		return oColumn.getVisible();
-	});
-};
 }; // end of sap/m/TableRenderer.js
 if ( !jQuery.sap.isDeclared('sap.m.TableSelectDialogRenderer') ) {
 /*!
@@ -8684,13 +8661,6 @@ jQuery.sap.require('sap.ui.core.Renderer'); // unlisted dependency retained
 sap.m.TextRenderer = {};
 
 /**
- * Dummy inheritance of static methods/functions.
- * @see sap.ui.core.Renderer.getTextAlign
- * @private
- */
-sap.m.TextRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign;
-
-/**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.m.Text} oText An object representation of the control that should be rendered.
@@ -8730,7 +8700,7 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 	sTextDir && oRm.addStyle("direction", sTextDir.toLowerCase());
 	sTooltip && oRm.writeAttributeEscaped("title", sTooltip);
 	if (sTextAlign) {
-		sTextAlign = this.getTextAlign(sTextAlign, sTextDir);
+		sTextAlign = sap.ui.core.Renderer.getTextAlign(sTextAlign, sTextDir);
 		if (sTextAlign) {
 			oRm.addStyle("text-align", sTextAlign);
 		}
@@ -8742,7 +8712,7 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 	oRm.write(">");
 
 	// handle max lines
-	if (bWrapping && nMaxLines > 1) {
+	if (oText.hasMaxLines()) {
 		this.renderMaxLines(oRm, oText);
 	} else {
 		this.renderText(oRm, oText);
@@ -8776,14 +8746,13 @@ sap.m.TextRenderer.renderMaxLines = function(oRm, oText) {
 };
 
 /**
- * Renders the normalized text according to wrapping property.
+ * Renders the normalized text property.
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.m.Text} oText An object representation of the control that should be rendered.
  */
 sap.m.TextRenderer.renderText = function(oRm, oText) {
 	var sText = oText.getText(true);
-	var bWrapping = oText.getWrapping();
-	oRm.writeEscaped(sText, bWrapping);
+	oRm.writeEscaped(sText);
 };
 }; // end of sap/m/TextRenderer.js
 if ( !jQuery.sap.isDeclared('sap.m.TileContainerRenderer') ) {
@@ -9015,7 +8984,7 @@ if ( !jQuery.sap.isDeclared('sap.m.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.m (1.20.5)
+ * Initialization Code and shared classes of library sap.m (1.20.6)
  */
 jQuery.sap.declare("sap.m.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -9154,7 +9123,7 @@ sap.ui.getCore().initLibrary({
     "sap.m.ViewSettingsFilterItem",
     "sap.m.ViewSettingsItem"
   ],
-  version: "1.20.5"});
+  version: "1.20.6"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -9174,7 +9143,7 @@ jQuery.sap.declare("sap.m.BackgroundDesign");
 /**
  * @class Available Background Design.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9217,7 +9186,7 @@ jQuery.sap.declare("sap.m.ButtonType");
 /**
  * @class Different types for a button (predefined types)
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9290,7 +9259,7 @@ jQuery.sap.declare("sap.m.DateTimeInputType");
 /**
  * @class A subset of DateTimeInput types that fit to a simple API returning one string.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9333,7 +9302,7 @@ jQuery.sap.declare("sap.m.DialogType");
 /**
  * @class Enum for the type of sap.m.Dialog control.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9371,7 +9340,7 @@ jQuery.sap.declare("sap.m.FacetFilterType");
  * @class Used by the FacetFilter control to adapt its design according to type.
  * 
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9408,7 +9377,7 @@ jQuery.sap.declare("sap.m.FlexAlignItems");
 /**
  * @class Available options for the layout of all elements along the cross axis of the flexbox layout.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9469,7 +9438,7 @@ jQuery.sap.declare("sap.m.FlexAlignSelf");
 /**
  * @class Available options for the layout of individual elements along the cross axis of the flexbox layout overriding the default alignment.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9536,7 +9505,7 @@ jQuery.sap.declare("sap.m.FlexDirection");
 /**
  * @class Available directions for flex layouts.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9591,7 +9560,7 @@ jQuery.sap.declare("sap.m.FlexJustifyContent");
 /**
  * @class Available options for the layout of elements along the main axis of the flexbox layout.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9652,7 +9621,7 @@ jQuery.sap.declare("sap.m.FlexRendertype");
 /**
  * @class Determines the type of HTML elements used for rendering controls.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9689,7 +9658,7 @@ jQuery.sap.declare("sap.m.HeaderLevel");
 /**
  * @class Different levels for headers
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9761,7 +9730,7 @@ jQuery.sap.declare("sap.m.IconTabFilterDesign");
 /**
  * @class Available Filter Item Design.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9799,7 +9768,7 @@ jQuery.sap.declare("sap.m.InputType");
  * @class A subset of input types that fit to a simple API returning one string.
  * Not available on purpose: button, checkbox, hidden, image, password, radio, range, reset, search, submit.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9908,7 +9877,7 @@ jQuery.sap.declare("sap.m.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -9945,7 +9914,7 @@ jQuery.sap.declare("sap.m.ListHeaderDesign");
 /**
  * @class Defines the differnet header styles.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  * @deprecated Since version 1.16. 
@@ -9984,7 +9953,7 @@ jQuery.sap.declare("sap.m.ListMode");
 /**
  * @class Different modes for the list selection (predefined modes)
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10045,7 +10014,7 @@ jQuery.sap.declare("sap.m.ListSeparators");
 /**
  * @class Defines which separator style will be taken.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10088,7 +10057,7 @@ jQuery.sap.declare("sap.m.ListType");
 /**
  * @class List types
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10143,7 +10112,7 @@ jQuery.sap.declare("sap.m.PageBackgroundDesign");
 /**
  * @class Available Page Background Design.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10192,7 +10161,7 @@ jQuery.sap.declare("sap.m.PlacementType");
 /**
  * @class Types for the placement of popover control.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10259,7 +10228,7 @@ jQuery.sap.declare("sap.m.PopinDisplay");
 /**
  * @class Defines the display of table pop-ins
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  * @since 1.13.2
@@ -10297,7 +10266,7 @@ jQuery.sap.declare("sap.m.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10334,7 +10303,7 @@ jQuery.sap.declare("sap.m.ScreenSize");
 /**
  * @class Breakpoint names for different screen sizes.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10419,7 +10388,7 @@ jQuery.sap.declare("sap.m.SelectType");
 /**
  * @class Enumeration for different Select types.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  * @since 1.16
@@ -10457,7 +10426,7 @@ jQuery.sap.declare("sap.m.SplitAppMode");
 /**
  * @class The mode of SplitContainer or SplitApp control to show/hide the master area.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10506,7 +10475,7 @@ jQuery.sap.declare("sap.m.StandardTileType");
 /**
  * @class Types for StandardTile
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10549,7 +10518,7 @@ jQuery.sap.declare("sap.m.SwipeDirection");
 /**
  * @class Directions for swipe event.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10592,7 +10561,7 @@ jQuery.sap.declare("sap.m.SwitchType");
 /**
  * @class Enumaration for different switch types.
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  */
@@ -10629,7 +10598,7 @@ jQuery.sap.declare("sap.m.ToolbarDesign");
 /**
  * @class Types of the Toolbar Design
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  * @since 1.16.8
@@ -11595,7 +11564,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -12320,7 +12289,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -13060,7 +13029,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -13786,7 +13755,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -14491,7 +14460,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -15756,7 +15725,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -16280,7 +16249,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -17527,16 +17496,6 @@ sap.m.DateTimeInputRenderer.addCursorClass = function(oRm, oControl) {
 		oRm.addClass("sapMPointer");
 	}
 };
-
-/**
- * Add extra styles for input container
- *
- * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.DateTimeInputRenderer.addOuterStyles = function(oRm, oControl) {
-	oRm.addStyle("width", oControl.getWidth());
-};
 }; // end of sap/m/DateTimeInputRenderer.js
 if ( !jQuery.sap.isDeclared('sap.m.Dialog') ) {
 /*!
@@ -17618,7 +17577,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -20135,7 +20094,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -20877,7 +20836,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -21221,7 +21180,7 @@ jQuery.sap.declare("sap.m.HBox");
  * @extends sap.m.FlexBox
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -21350,7 +21309,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -22954,7 +22913,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -23375,7 +23334,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -23572,7 +23531,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -24347,7 +24306,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -24700,9 +24659,9 @@ sap.ui.core.IconPool.insertFontFaceStyle();
 /* ----------------------------------------------------------- */
 
 // use labels as placeholder configuration
-sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function($, oDevice) {
+sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function(oDevice) {
 
-	if (!("placeholder" in document.createElement("input"))) {
+	if (!oDevice.support.input.placeholder) {
 		return true;
 	}
 
@@ -24719,7 +24678,7 @@ sap.m.InputBase.prototype._bShowLabelAsPlaceholder = (function($, oDevice) {
 	}
 
 	return bUseLabel;
-}(jQuery, sap.ui.Device));
+}(sap.ui.Device));
 
 /* ----------------------------------------------------------- */
 /* Private methods                                             */
@@ -25241,7 +25200,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -25563,7 +25522,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -25953,7 +25912,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -26789,6 +26748,7 @@ sap.m.ListItemBase.prototype._isActivationHandled = function(oEvent) {
 /* Keyboard Handling */
 sap.m.ListItemBase.prototype.onsapspace = function(oEvent) {
 	if (!this._listId ||
+		oEvent.isMarked() ||
 		!this.isSelectable() ||
 		oEvent.srcControl !== this ||
 		this._mode == "Delete" ||
@@ -26811,6 +26771,7 @@ sap.m.ListItemBase.prototype.onsapspace = function(oEvent) {
 
 sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
 	if (!this._listId ||
+		oEvent.isMarked() ||
 		oEvent.srcControl !== this) {
 		return;
 	}
@@ -26851,11 +26812,16 @@ sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
 };
 
 sap.m.ListItemBase.prototype.onsapdelete = function(oEvent) {
-	if (this._listId && oEvent.srcControl === this && this._mode == "Delete") {
-		this._delete.call(this._delIcon || this._delImage);
-		oEvent.preventDefault();
-		oEvent.setMarked();
+	if (!this._listId ||
+		oEvent.isMarked() ||
+		oEvent.srcControl !== this ||
+		this._mode != "Delete") {
+		return;
 	}
+
+	this._delete.call(this._delIcon || this._delImage);
+	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 sap.m.ListItemBase.prototype._switchFocus = function(oEvent) {
@@ -26869,9 +26835,14 @@ sap.m.ListItemBase.prototype._switchFocus = function(oEvent) {
 };
 
 sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
+	// check whether event is marked or not
+	var mKeyCodes = jQuery.sap.KeyCodes;
+	if (oEvent.isMarked()) {
+		return;
+	}
 
 	// switch focus to row and focused item with F7
-	if (oEvent.which == jQuery.sap.KeyCodes.F7 && !oEvent.isMarked()) {
+	if (oEvent.which == mKeyCodes.F7) {
 		this._switchFocus(oEvent);
 		oEvent.preventDefault();
 		oEvent.setMarked();
@@ -26879,7 +26850,7 @@ sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
 	}
 
 	// Ctrl + A to select all
-	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == jQuery.sap.KeyCodes.A) {
+	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == mKeyCodes.A) {
 		sap.ui.getCore().byId(this._listId).selectAll(true);
 		oEvent.preventDefault();
 		oEvent.setMarked();
@@ -26952,7 +26923,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -28930,7 +28901,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -29232,7 +29203,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -30552,7 +30523,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -30883,7 +30854,7 @@ jQuery.sap.declare("sap.m.ObjectListItem");
  * @extends sap.m.ListItemBase
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -31634,7 +31605,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -31925,7 +31896,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -32209,7 +32180,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -33336,7 +33307,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -33751,7 +33722,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -36454,7 +36425,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -36826,7 +36797,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -37366,7 +37337,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -37948,7 +37919,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -39145,7 +39116,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -40432,7 +40403,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -40877,7 +40848,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -41769,7 +41740,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -42458,7 +42429,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -43035,7 +43006,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -44349,7 +44320,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -47185,7 +47156,7 @@ jQuery.sap.declare("sap.m.StandardListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -47713,7 +47684,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -48402,7 +48373,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -48692,26 +48663,53 @@ sap.m.Text.hasNativeLineClamp = (function() {
 	return (typeof document.documentElement.style.webkitLineClamp != "undefined");
 })();
 
-// returns the text value and remove normalize line-ending character for rendering
+
+// suppress invalidation of text property setter
+sap.m.Text.prototype.setText = function(sText) {
+	this.setProperty("text", sText , true);
+
+	// check text dom ref
+	var oDomRef = this.getTextDomRef();
+	if (oDomRef) {
+		oDomRef.textContent = this.getText(true);
+	}
+
+	return this;
+};
+
+// returns the text value and normalize line-ending character for rendering
 sap.m.Text.prototype.getText = function(bNormalize) {
 	var sText = this.getProperty("text");
+
+	// handle line ending characters for renderer
 	if (bNormalize) {
 		return sText.replace(/\r\n/g, "\n");
 	}
+
 	return sText;
 };
 
 // required adaptations after rendering
 sap.m.Text.prototype.onAfterRendering = function() {
-	// check visible, wrapping, max-lines and line-clamping support
+	// check visible, max-lines and line-clamping support
 	if (this.getVisible() &&
-		this.getWrapping() &&
-		this.getMaxLines() > 1 &&
+		this.hasMaxLines() &&
 		!this.canUseNativeLineClamp()) {
 
 		// set max-height for maxLines support
 		this.clampHeight();
 	}
+};
+
+/**
+ * Determines whether max lines should be rendered or not
+ *
+ * @since 1.22
+ * @protected
+ * @returns {HTMLElement|null}
+ */
+sap.m.Text.prototype.hasMaxLines = function() {
+	return (this.getWrapping() && this.getMaxLines() > 1);
 };
 
 /**
@@ -48723,8 +48721,15 @@ sap.m.Text.prototype.onAfterRendering = function() {
  * @returns {HTMLElement|null}
  */
 sap.m.Text.prototype.getTextDomRef = function() {
-	var oDomRef = this.getDomRef();
-	return oDomRef && (oDomRef.firstElementChild || oDomRef);
+	if (!this.getVisible()) {
+		return null;
+	}
+
+	if (this.hasMaxLines()) {
+		return this.getDomRef("inner");
+	}
+
+	return this.getDomRef();
 };
 
 /**
@@ -48754,8 +48759,6 @@ sap.m.Text.prototype.canUseNativeLineClamp = function() {
 
 	return true;
 };
-
-
 
 /**
  * Caches and returns the computed line height of the text.
@@ -48829,6 +48832,7 @@ sap.m.Text.prototype.clampHeight = function(oDomRef) {
 		return 0;
 	}
 
+	// calc the max height and set on dom
 	var iMaxHeight = this.getClampHeight(oDomRef);
 	oDomRef.style.maxHeight = iMaxHeight + "px";
 	return iMaxHeight;
@@ -48902,6 +48906,7 @@ sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
 		oStyle.height = sHeight;
 	}
 
+	// return the found position
 	return iEllipsisPos;
 };
 }; // end of sap/m/Text.js
@@ -48969,7 +48974,7 @@ jQuery.sap.declare("sap.m.TextArea");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -49204,12 +49209,6 @@ sap.m.TextArea.M_EVENTS = {'liveChange':'liveChange'};
 
 
 // Start of sap\m\TextArea.js
-
-// IE9 does not have support for placeholder
-sap.m.TextArea.prototype._showLabelAsPlaceholder = (function() {
-	return !("placeholder" in document.createElement("textarea"));
-}());
-
 sap.m.TextArea.prototype.init = function() {
 	sap.m.InputBase.prototype.init.call(this);
 	this._inputProxy = jQuery.proxy(this._onInput, this);
@@ -49493,7 +49492,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -49860,7 +49859,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -51752,7 +51751,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -51957,7 +51956,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -52088,7 +52087,7 @@ jQuery.sap.declare("sap.m.VBox");
  * @extends sap.m.FlexBox
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -52221,7 +52220,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -54602,7 +54601,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -55046,7 +55045,7 @@ jQuery.sap.declare("sap.m.ActionListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -55182,7 +55181,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -56314,7 +56313,7 @@ jQuery.sap.declare("sap.m.App");
  * @extends sap.m.NavContainer
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -56731,7 +56730,7 @@ jQuery.sap.declare("sap.m.ColumnListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -57068,7 +57067,7 @@ jQuery.sap.declare("sap.m.CustomListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -57273,7 +57272,7 @@ jQuery.sap.declare("sap.m.CustomTile");
  * @extends sap.m.Tile
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -57409,7 +57408,7 @@ jQuery.sap.declare("sap.m.DateTimeInput");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -58527,7 +58526,7 @@ jQuery.sap.declare("sap.m.DisplayListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -58687,7 +58686,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -59934,36 +59933,46 @@ sap.m.FacetFilter.prototype._handleFacetListItemPress = function(oEvent) {
  */
 sap.m.FacetFilter.prototype._navToFilterItemsPage = function(oFacetListItem) {
 	
-	this._selectedFacetItem = oFacetListItem;
-	
-	var oNavCont = this.getAggregation("dialog").getContent()[0];
-	var oCustomData = oFacetListItem.getCustomData();
-	jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
-	var iIndex = oCustomData[0].getValue();	
-	var oFacetFilterList = this.getLists()[iIndex];
-	var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
-	
-	// This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
-	//oFilterItemsPage.destroyAggregation("content", true);
-	
-	// Add the facet filter list
-	this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
-	
-	// Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
-	oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
-		
-	// Add the select all checkbox bar if the list being displayed on the filter items page
-	// is a multi select list. The bar is created only if the list is multi select.
-	// The bar is destroyed from NavContainer.afterNavigate.
-	var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
-	if(oCheckboxBar) {
-		oFilterItemsPage.insertContent(oCheckboxBar, 0);	
-	}
+	       this._selectedFacetItem = oFacetListItem;
+       
+       var oNavCont = this.getAggregation("dialog").getContent()[0];
+       var oCustomData = oFacetListItem.getCustomData();
+       jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
+       var iIndex = oCustomData[0].getValue();  
+       var oFacetFilterList = this.getLists()[iIndex];
+       
+       this._listIndexAgg = this.indexOfAggregation("lists", oFacetFilterList);
 
-	oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
-	
-	oFacetFilterList.fireListOpen({});
-	oNavCont.to(oFilterItemsPage);
+       if (this._listIndexAgg == iIndex)
+       {
+
+       
+       var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
+       
+       // This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
+       //oFilterItemsPage.destroyAggregation("content", true);
+       
+       // Add the facet filter list
+       this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
+       
+       // Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
+       oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
+              
+       // Add the select all checkbox bar if the list being displayed on the filter items page
+       // is a multi select list. The bar is created only if the list is multi select.
+       // The bar is destroyed from NavContainer.afterNavigate.
+       var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
+       if(oCheckboxBar) {
+              oFilterItemsPage.insertContent(oCheckboxBar, 0);       
+       }
+
+       oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
+       
+       oFacetFilterList.fireListOpen({});
+       oNavCont.to(oFilterItemsPage);
+       
+       };
+
 };
 
 /**
@@ -60583,7 +60592,7 @@ jQuery.sap.declare("sap.m.FacetFilterItem");
  * @extends sap.m.ListItemBase
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -60798,7 +60807,7 @@ jQuery.sap.declare("sap.m.FeedListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -61409,7 +61418,7 @@ jQuery.sap.declare("sap.m.GroupHeaderListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -61610,7 +61619,7 @@ jQuery.sap.declare("sap.m.InputListItem");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -61873,7 +61882,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -63483,7 +63492,6 @@ jQuery.sap.require('sap.ui.core.delegate.ItemNavigation'); // unlisted dependenc
 
 
 sap.m.ListBase.prototype.init = function() {
-	this._oItemsContainerDomRef = null;
 	this._oGrowingDelegate = null;
 	this._bSelectionMode = false;
 	this._bReceivingData = false;
@@ -63494,7 +63502,6 @@ sap.m.ListBase.prototype.init = function() {
 };
 
 sap.m.ListBase.prototype.onBeforeRendering = function() {
-	this.clearDomRefs();
 	this._aNavSections.length = 0;
 	if (this.hasOwnProperty("_$touchBlocker")) {
 		this._removeSwipeContent();	// remove the swipe content from screen immediately
@@ -63503,7 +63510,6 @@ sap.m.ListBase.prototype.onBeforeRendering = function() {
 };
 
 sap.m.ListBase.prototype.onAfterRendering = function() {
-	this.cacheDomRefs();
 	this._startItemNavigation();
 	if (!this._oGrowingDelegate && this.isBound("items")) {
 		this._updateFinished();
@@ -63517,7 +63523,6 @@ sap.m.ListBase.prototype.exit = function () {
 	this._aSelectedPaths.length = 0;
 	this._destroyGrowingDelegate();
 	this._destroyItemNavigation();
-	this.clearDomRefs();
 };
 
 // this gets called only with oData Model when first load or filter/sort
@@ -63680,7 +63685,7 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 	bInset = this.validateProperty("inset", bInset);
 	if (bInset != this.getInset()) {
 		this.setProperty("inset", bInset, true);
-		if (this._oItemsContainerDomRef) {
+		if (this.getDomRef()) {
 			this.$().toggleClass("sapMListInsetBG", bInset);
 			this.$("listUl").toggleClass("sapMListInset", bInset);
 			this._setSwipePosition();
@@ -63854,27 +63859,11 @@ sap.m.ListBase.prototype.onItemSetSelected = function(oItem, bSelect) {
 };
 
 /*
- * Cache frequently used DOM references
- * @protected
- */
-sap.m.ListBase.prototype.cacheDomRefs = function() {
-	this._oItemsContainerDomRef = this.getDomRef("listUl");
-};
-
-/*
- * Clear the cached DOM references
- * @protected
- */
-sap.m.ListBase.prototype.clearDomRefs = function() {
-	this._oItemsContainerDomRef = null;
-};
-
-/*
  * Returns items container DOM reference
  * @protected
  */
 sap.m.ListBase.prototype.getItemsContainerDomRef = function() {
-	return this._oItemsContainerDomRef;
+	return this.getDomRef("listUl");
 };
 
 /*
@@ -63925,6 +63914,14 @@ sap.m.ListBase.prototype.getMaxItemsCount = function() {
 		return oBinding.getLength() || 0;
 	}
 	return this.getItems().length;
+};
+
+/*
+ * This hook method is called from renderer to determine whether items should render or not
+ * @protected
+ */
+sap.m.ListBase.prototype.shouldRenderItems = function() {
+	return true;
 };
 
 // call the base aggregation functions according to given parameters
@@ -64453,7 +64450,7 @@ sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
 
 	// search all parents to find next/prev tabbable item
 	for (var oParent = this; (oParent = oParent.getParent()) && oParent.$;) {
-		var $Tabbables = oParent.$().find(":tabbable");
+		var $Tabbables = oParent.$().find(":sapTabbable");
 		var iLimit = bAfter ? $Tabbables.length - 1 : 0;
 		var iIndex = $Tabbables.index($Element);
 
@@ -64465,7 +64462,7 @@ sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
 	}
 
 	// find next/prev tabbable item and reset tabindex
-	$Tabbables = $Tabbables || this.$().parent().find(":tabbable");
+	$Tabbables = $Tabbables || this.$().parent().find(":sapTabbable");
 	iIndex = $Tabbables.index($Element) + iStep;
 	$Element.attr("tabindex", "-1");
 
@@ -64945,7 +64942,7 @@ jQuery.sap.declare("sap.m.SplitApp");
  * @extends sap.m.SplitContainer
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -65223,7 +65220,7 @@ jQuery.sap.declare("sap.m.StandardTile");
  * @extends sap.m.Tile
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -65610,7 +65607,7 @@ jQuery.sap.declare("sap.m.Table");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -65763,7 +65760,7 @@ sap.m.Table.prototype.init = function() {
 };
 
 sap.m.Table.prototype.onBeforeRendering = function() {
-	this._oItemsContainerDomRef && this._notifyColumns("ItemsRemoved");
+	this.getDomRef() && this._notifyColumns("ItemsRemoved");
 	sap.m.ListBase.prototype.onBeforeRendering.call(this);
 	this._navRenderedBy = "";
 };
@@ -65842,6 +65839,16 @@ sap.m.Table.prototype.onAfterPageLoaded = function() {
 };
 
 /*
+ * This hook method is called from renderer to determine whether items should render or not
+ * @overwrite
+ */
+sap.m.Table.prototype.shouldRenderItems = function() {
+	return this.getColumns().some(function(oColumn) {
+		return oColumn.getVisible();
+	});
+};
+
+/*
  * This function runs when setSelected is called from ListItemBase
  * @overwrite
  */
@@ -65852,38 +65859,44 @@ sap.m.Table.prototype.onItemSetSelected = function(oItem, bSelect) {
 	});
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in touch start events for active feedback
 sap.m.Table.prototype.ontouchstart = function(oEvent) {
 	sap.m.ListBase.prototype.ontouchstart.call(this, oEvent);
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in touch end events for active feedback
 sap.m.Table.prototype.ontouchend = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Android cancels touch events by native scrolling, deactivate popin
+sap.m.Table.prototype.ontouchcancel = sap.m.Table.prototype.ontouchend;
+
+// Handle pop-in touch move events for active feedback
 sap.m.Table.prototype.ontouchmove = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in tap events for active feedback
 sap.m.Table.prototype.ontap = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
+/*
+ * Returns the <table> DOM reference
+ * @protected
+ */
 sap.m.Table.prototype.getTableDomRef = function() {
 	return this.getDomRef("listUl");
 };
 
 /*
- * Cache frequently used DOM references
+ * Returns items container DOM reference
  * @protected
- * @overwrite
  */
-sap.m.Table.prototype.cacheDomRefs = function() {
-	this._oItemsContainerDomRef = this.getDomRef("tblBody");
+sap.m.Table.prototype.getItemsContainerDomRef = function() {
+	return this.getDomRef("tblBody");
 };
 
 /*
@@ -65929,7 +65942,7 @@ sap.m.Table.prototype.onColumnResize = function(oColumn) {
  * @protected
  */
 sap.m.Table.prototype.setTableHeaderVisibility = function(bColVisible) {
-	if (!this._oItemsContainerDomRef) {
+	if (!this.getDomRef()) {
 		return;
 	}
 
@@ -66141,7 +66154,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -67645,7 +67658,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -68339,14 +68352,14 @@ sap.m.Toolbar.prototype.ontap = function(oEvent) {
 	if (this.getActive() && !oEvent.isMarked()) {
 		oEvent.setMarked();
 		this.firePress({
-			srcControl : oEvent.srcControl || this
+			srcControl : oEvent.srcControl
 		});
 	}
 };
 
 // fire press event when enter is hit on the active toolbar
 sap.m.Toolbar.prototype.onsapenter = function(oEvent) {
-	if (this.getActive() && oEvent.srcControl === this) {
+	if (this.getActive() && oEvent.srcControl === this && !oEvent.isMarked()) {
 		oEvent.setMarked();
 		this.firePress({
 			srcControl : this
@@ -68606,7 +68619,7 @@ jQuery.sap.declare("sap.m.ViewSettingsCustomItem");
  * @extends sap.m.ViewSettingsItem
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -68798,7 +68811,7 @@ jQuery.sap.declare("sap.m.ViewSettingsFilterItem");
  * @extends sap.m.ViewSettingsItem
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -69007,7 +69020,7 @@ jQuery.sap.declare("sap.m.List");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -69278,7 +69291,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -70636,7 +70649,7 @@ jQuery.sap.require('sap.m.SwitchType'); // unlisted dependency retained
  * @class Table Personalization Dialog
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.5
+ * @version 1.20.6
  * @name sap.m.TablePersoDialog
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.TablePersoDialog */
@@ -71086,7 +71099,7 @@ jQuery.sap.declare("sap.m.FacetFilterList");
  * @extends sap.m.List
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -71614,10 +71627,13 @@ sap.m.FacetFilterList.prototype.removeSelectedKeys = function() {
 
 sap.m.FacetFilterList.prototype.removeItem = function(vItem) {
 	
-	// Update the selected keys cache if an item is removed
-	var oItem = sap.m.ListBase.prototype.removeItem.apply(this, arguments);
-	oItem && oItem.getSelected() && this.removeSelectedKey(oItem.getKey(), oItem.getText());
-	return oItem;
+	       // Update the selected keys cache if an item is removed
+    var oItem = sap.m.ListBase.prototype.removeItem.apply(this, arguments);   
+    if(!this._filtering){
+    oItem && oItem.getSelected() && this.removeSelectedKey(oItem.getKey(), oItem.getText());
+    return oItem;
+    }
+
 };
 
 
@@ -71891,17 +71907,21 @@ sap.m.FacetFilterList.prototype.onItemSetSelected = function(oItem, bSelect) {
 
 sap.m.FacetFilterList.prototype.updateItems = function(sReason) {	
 	
-	// This method override runs when the list updates its items. The reason
-	// for the update is given by sReason, which for example can be when the
-	// list is filtered or when it grows.
-  sap.m.ListBase.prototype.updateItems.apply(this, arguments);
+	       // This method override runs when the list updates its items. The reason
+       // for the update is given by sReason, which for example can be when the
+       // list is filtered or when it grows.
+
+  this._filtering = sReason === sap.ui.model.ChangeReason.Filter;
+  sap.m.ListBase.prototype.updateItems.apply(this,arguments);   
+  this._filtering=false;
   
   // If this list is not set to growing or it has been filtered then we must make sure that selections are
   // applied to items matching keys contained in the selected keys cache.  Selections
   // in a growing list are handled by the updateFinished handler. 
   if(!this.getGrowing() || sReason === sap.ui.model.ChangeReason.Filter) {
-  	this._selectItemsByKeys();
+       this._selectItemsByKeys();
   }
+
 };
 
 }; // end of sap/m/FacetFilterList.js
@@ -71966,7 +71986,7 @@ jQuery.sap.declare("sap.m.GrowingList");
  * @extends sap.m.List
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -72187,7 +72207,7 @@ jQuery.sap.declare("sap.m.Input");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -73540,7 +73560,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -75779,7 +75799,7 @@ jQuery.sap.require('sap.ui.base.ManagedObject'); // unlisted dependency retained
  * @class Table Personalization Controller
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.5
+ * @version 1.20.6
  * @name sap.m.TablePersoController
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.TablePersoController */
@@ -75861,11 +75881,10 @@ sap.m.TablePersoController.prototype.init = function() {
 sap.m.TablePersoController.prototype.exit = function() {
 
 	// Clean up onBeforRendering delegates
-	if(!!this._mDelegateMap) {
-		for (var oTable in this._mDelegateMap) {
-			oTable.removeDelegate(this._mDelegateMap[oTable]);
-		}
-	}
+	this._callFunctionForAllTables(jQuery.proxy(function(oTable){
+		oTable.removeDelegate(this._mDelegateMap[oTable]);
+	}, this));
+	
 	
 	delete this._oPersService;
 	delete this._mDelegateMap;
@@ -76305,7 +76324,7 @@ jQuery.sap.declare("sap.m.ActionSelect");
  * @extends sap.m.Select
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public

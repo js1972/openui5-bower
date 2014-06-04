@@ -7341,9 +7341,14 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapMOHStatusFixedWidth {
 	text-overflow: ellipsis;
 }
 
+html[data-sap-ui-browser="ie9"] .sapMText.sapMObjLTitle {
+	word-break: break-all;
+}
+
+
 .sapMText.sapMObjLTitle {
 	vertical-align: top;
-	word-break: break-all;
+	word-break: break-word;
 }
 
 .sapMObjLNumberDiv {

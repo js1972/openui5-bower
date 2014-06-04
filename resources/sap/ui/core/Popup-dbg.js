@@ -1944,6 +1944,16 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ob
 	//****************************************************
 	Popup.DockTrigger = new IntervalTrigger(200);
 	
+	var fnRectEqual = function(oRectOne, oRectTwo) {
+		if (oRectOne.left != oRectTwo.left
+				|| oRectOne.top != oRectTwo.top
+				|| oRectOne.width != oRectTwo.width
+				|| oRectOne.height != oRectTwo.height) {
+			return false;
+		}
+		return true;
+	};
+	
 	Popup.checkDocking = function(){
 		if (this.getOpenState() === sap.ui.core.OpenState.OPEN) {
 			var oCurrentOfRect = jQuery(this._oLastPosition.of instanceof sap.ui.core.Element ? this._oLastPosition.of.getDomRef() : this._oLastPosition.of).rect();
@@ -1953,21 +1963,23 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ob
 				this.close();
 				return;
 			}
-	
-			if (oCurrentOfRect && oCurrentOfRect.left === 0 
-					&& oCurrentOfRect.top === 0
-					&& oCurrentOfRect.width === 0
-					&& oCurrentOfRect.height === 0) {
-				
-				// Try to get the newest 
+
+			// Check if the current rect-object of the given 'of' became 0 it is sure that the 'of'
+			// was rerendered and all corresponding stuff has to be updated to position the popup
+			// properly again
+			if (fnRectEqual(oCurrentOfRect, {left : 0, top : 0, width : 0, height : 0})) {
 				if (this._oLastPosition.of.id && this._oLastPosition.of.id !== "") {
-					// If the 'of' was rerendered the newest DOM-element has to be taken for the corresponding rect-object.
-					// Because the id of the 'of' may be still the same but due to its rerendering the reference changed and has to be taken 
-					var oNewestOfRect = jQuery(jQuery.sap.domById(this._oLastPosition.of.id)).rect();
+					// The 'of' was rerendered so the newest DOM-element has to be updated for the corresponding rect-object.
+					// Because the id of the 'of' may be still the same but due to its rerendering the reference changed and has to be updated 
+					var oNewestOf = jQuery.sap.domById(this._oLastPosition.of.id);
+					var oNewestOfRect = jQuery(oNewestOf).rect();
 					
 					// if there is a newest corresponding DOM-reference and it differs from the current -> use the newest one
-					if (oNewestOfRect && oNewestOfRect !== oCurrentOfRect) {
+					if (oNewestOfRect && !fnRectEqual(oCurrentOfRect, oNewestOfRect)) {
 						oCurrentOfRect = oNewestOfRect;
+						
+						delete this._oLastPosition.of;
+						this._oLastPosition.of = oNewestOf;
 					}
 				} 
 			}
@@ -1977,13 +1989,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ob
 			 * Therefore '_oLastOfRect' wasn't set due to the Popup didn't set it in '_applyPosition'.
 			 */
 			if (this._oLastOfRect) {
-				if (this._oLastOfRect.left != oCurrentOfRect.left
-						|| this._oLastOfRect.top != oCurrentOfRect.top
-						|| this._oLastOfRect.width != oCurrentOfRect.width
-						|| this._oLastOfRect.height != oCurrentOfRect.height) {
-	
+				if (!fnRectEqual(this._oLastOfRect, oCurrentOfRect)) {
 					if (this._followOfHandler) {
-	
 						// provide the last position additionally if the call back needs it also
 						// e.g. the Callout needs it => create deep copy of old positioning object
 						var oLastCopy = jQuery.extend(true, {}, this._oLastPosition);

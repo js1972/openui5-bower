@@ -30,16 +30,6 @@ sap.m.InputRenderer.addOuterClasses = function(oRm, oControl) {
 };
 
 /**
- * Add extra styles for input container
- *
- * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.InputRenderer.addOuterStyles = function(oRm, oControl) {
-	oRm.addStyle("width", oControl.getWidth());
-};
-
-/**
  * add extra attributes to Input
  *
  * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer

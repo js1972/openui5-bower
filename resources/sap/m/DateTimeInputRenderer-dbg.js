@@ -38,13 +38,3 @@ sap.m.DateTimeInputRenderer.addCursorClass = function(oRm, oControl) {
 		oRm.addClass("sapMPointer");
 	}
 };
-
-/**
- * Add extra styles for input container
- *
- * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.DateTimeInputRenderer.addOuterStyles = function(oRm, oControl) {
-	oRm.addStyle("width", oControl.getWidth());
-};

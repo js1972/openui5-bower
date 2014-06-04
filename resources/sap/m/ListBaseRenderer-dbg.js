@@ -105,10 +105,10 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 
 	// render child controls
 	var aItems = oControl.getItems();
-	var bRenderItems = this.shouldRenderItems(oControl);
+	var bRenderItems = oControl.shouldRenderItems();
 
 	//TODO: There should be a better way to set these private variables
-	bRenderItems && aItems.forEach(function(oItem){
+	bRenderItems && aItems.forEach(function(oItem) {
 		oControl._applySettingsToItem(oItem, true);
 		rm.renderControl(oItem);
 	});
@@ -189,17 +189,8 @@ sap.m.ListBaseRenderer.renderListEndAttributes = function(rm, oControl) {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.ListBaseRenderer.renderNoData = function(rm, oControl) {
-	rm.write("<li id='"+ oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
-	rm.write("<span id='"+ oControl.getId("nodata-text") + "'>");
+	rm.write("<li id='" + oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
+	rm.write("<span id='" + oControl.getId("nodata-text") + "'>");
 	rm.writeEscaped(oControl.getNoDataText());
 	rm.write("</span></li>");
-};
-
-/**
- * This hook method is called to determine whether items should render or not
- *
- * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
- */
-sap.m.ListBaseRenderer.shouldRenderItems = function(oControl) {
-	return true;
 };

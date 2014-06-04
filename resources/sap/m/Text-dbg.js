@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -349,26 +349,53 @@ sap.m.Text.hasNativeLineClamp = (function() {
 	return (typeof document.documentElement.style.webkitLineClamp != "undefined");
 })();
 
-// returns the text value and remove normalize line-ending character for rendering
+
+// suppress invalidation of text property setter
+sap.m.Text.prototype.setText = function(sText) {
+	this.setProperty("text", sText , true);
+
+	// check text dom ref
+	var oDomRef = this.getTextDomRef();
+	if (oDomRef) {
+		oDomRef.textContent = this.getText(true);
+	}
+
+	return this;
+};
+
+// returns the text value and normalize line-ending character for rendering
 sap.m.Text.prototype.getText = function(bNormalize) {
 	var sText = this.getProperty("text");
+
+	// handle line ending characters for renderer
 	if (bNormalize) {
 		return sText.replace(/\r\n/g, "\n");
 	}
+
 	return sText;
 };
 
 // required adaptations after rendering
 sap.m.Text.prototype.onAfterRendering = function() {
-	// check visible, wrapping, max-lines and line-clamping support
+	// check visible, max-lines and line-clamping support
 	if (this.getVisible() &&
-		this.getWrapping() &&
-		this.getMaxLines() > 1 &&
+		this.hasMaxLines() &&
 		!this.canUseNativeLineClamp()) {
 
 		// set max-height for maxLines support
 		this.clampHeight();
 	}
+};
+
+/**
+ * Determines whether max lines should be rendered or not
+ *
+ * @since 1.22
+ * @protected
+ * @returns {HTMLElement|null}
+ */
+sap.m.Text.prototype.hasMaxLines = function() {
+	return (this.getWrapping() && this.getMaxLines() > 1);
 };
 
 /**
@@ -380,8 +407,15 @@ sap.m.Text.prototype.onAfterRendering = function() {
  * @returns {HTMLElement|null}
  */
 sap.m.Text.prototype.getTextDomRef = function() {
-	var oDomRef = this.getDomRef();
-	return oDomRef && (oDomRef.firstElementChild || oDomRef);
+	if (!this.getVisible()) {
+		return null;
+	}
+
+	if (this.hasMaxLines()) {
+		return this.getDomRef("inner");
+	}
+
+	return this.getDomRef();
 };
 
 /**
@@ -411,8 +445,6 @@ sap.m.Text.prototype.canUseNativeLineClamp = function() {
 
 	return true;
 };
-
-
 
 /**
  * Caches and returns the computed line height of the text.
@@ -486,6 +518,7 @@ sap.m.Text.prototype.clampHeight = function(oDomRef) {
 		return 0;
 	}
 
+	// calc the max height and set on dom
 	var iMaxHeight = this.getClampHeight(oDomRef);
 	oDomRef.style.maxHeight = iMaxHeight + "px";
 	return iMaxHeight;
@@ -559,5 +592,6 @@ sap.m.Text.prototype.clampText = function(oDomRef, iStartPos, iEndPos) {
 		oStyle.height = sHeight;
 	}
 
+	// return the found position
 	return iEllipsisPos;
 };

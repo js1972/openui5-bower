@@ -211,12 +211,3 @@ sap.m.TableRenderer.renderNoData = function(rm, oControl) {
 	rm.writeEscaped(oControl.getNoDataText());
 	rm.write("</td></tr>");
 };
-
-/**
- * if there is no visible column then we do not need to render items
- */
-sap.m.TableRenderer.shouldRenderItems = function(oControl) {
-	return oControl.getColumns().some(function(oColumn) {
-		return oColumn.getVisible();
-	});
-};

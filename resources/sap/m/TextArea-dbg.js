@@ -61,7 +61,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -296,12 +296,6 @@ sap.m.TextArea.M_EVENTS = {'liveChange':'liveChange'};
 
 
 // Start of sap\m\TextArea.js
-
-// IE9 does not have support for placeholder
-sap.m.TextArea.prototype._showLabelAsPlaceholder = (function() {
-	return !("placeholder" in document.createElement("textarea"));
-}());
-
 sap.m.TextArea.prototype.init = function() {
 	sap.m.InputBase.prototype.init.call(this);
 	this._inputProxy = jQuery.proxy(this._onInput, this);

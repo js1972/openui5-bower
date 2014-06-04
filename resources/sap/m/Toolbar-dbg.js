@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -753,14 +753,14 @@ sap.m.Toolbar.prototype.ontap = function(oEvent) {
 	if (this.getActive() && !oEvent.isMarked()) {
 		oEvent.setMarked();
 		this.firePress({
-			srcControl : oEvent.srcControl || this
+			srcControl : oEvent.srcControl
 		});
 	}
 };
 
 // fire press event when enter is hit on the active toolbar
 sap.m.Toolbar.prototype.onsapenter = function(oEvent) {
-	if (this.getActive() && oEvent.srcControl === this) {
+	if (this.getActive() && oEvent.srcControl === this && !oEvent.isMarked()) {
 		oEvent.setMarked();
 		this.firePress({
 			srcControl : this

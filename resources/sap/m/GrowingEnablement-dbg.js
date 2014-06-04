@@ -177,8 +177,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	 * this._oRenderManager is optionally used if defined in order to improve performance. It indicates a state where multiple items can be subsequently rendered.
 	 * If this._oRenderManager is defined, it is the responsibility of the caller to flush and destroy the RenderManager after the last call.
 	 */
-	_renderItemIntoContainer : function(oItem, bDoNotPreserve, vInsert) {
-		var oDomRef = this._oControl.getItemsContainerDomRef();
+	_renderItemIntoContainer : function(oItem, bDoNotPreserve, vInsert, oDomRef) {
+		oDomRef = oDomRef || this._oContainerDomRef;
 		if (oDomRef) {
 			var rm = this._oRenderManager || sap.ui.getCore().createRenderManager();
 			rm.renderControl(oItem);
@@ -415,7 +415,6 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	 * function is called to insert single list item or row.
 	 */
 	insertListItem : function(oItem, iIndex) {
-		// TODO: should be a better way to set private variables
 		this._oControl.insertAggregation("items", oItem, iIndex, true);
 		this._iRenderedDataItems++;
 		this._renderItemIntoContainer(oItem, false, this._getDomIndex(iIndex));
@@ -471,8 +470,8 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 			this._onBeforePageLoaded(sChangeReason);
 		}
 
-		var	aContexts = oBinding ? oBinding.getContexts(0, this._iItemCount) || [] : [],
-			oContainerDomRef = this._oControl.getItemsContainerDomRef();
+		// get the context from binding
+		var aContexts = oBinding ? oBinding.getContexts(0, this._iItemCount) || [] : [];
 
 		// if the binding context is already requested
 		if (aContexts.dataRequested) {
@@ -480,13 +479,16 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 			return;
 		}
 
+		// cache dom ref for internal functions not to lookup again and again
+		this._oContainerDomRef = this._oControl.getItemsContainerDomRef();
+
 		// aContexts.diff ==> undefined : New data we should build from scratch
 		// aContexts.diff ==> [] : There is no diff, means data did not changed but maybe it was already grouped and we need to handle group headers
 		// aContexts.diff ==> [{index : 0, type: "delete"}, ...] :Run the diff logic
 		if (oBinding.isGrouped()) {
 			var bFromScratch = true;
 			if (aContexts.length > 0) {
-				if (oContainerDomRef) {
+				if (this._oContainerDomRef) {
 					// check if diff array exists
 					if (aContexts.diff) {
 						// check if the model diff-array is empty
@@ -532,7 +534,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 		} else { // no grouping, stable implementation
 			if (aContexts.length > 0) {
-				if (oContainerDomRef) {
+				if (this._oContainerDomRef) {
 					// check if model diff-array exists and execute
 					if (aContexts.diff) {
 						// if previously grouped
@@ -549,7 +551,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 							if (aContexts.diff[i].type === "delete") { // case 1: element is removed
 								if (iFlushIndex !== -1) {
-									this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+									this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 									iFlushIndex = -1;
 									iLastIndex = -1;
 								}
@@ -567,7 +569,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 
 								// otherwise check for the end of a burst of subsequent items
 								} else if (iLastIndex >= 0 && iIndex !== iLastIndex + 1) { // this item is not simply appended to the last one that has been inserted, so we need to flush what we have so far
-									this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+									this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 									iFlushIndex = iIndex;
 								}
 
@@ -582,7 +584,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 						}
 
 						if (iFlushIndex !== -1) {
-							this._oRenderManager.flush(oContainerDomRef, false, this._getDomIndex(iFlushIndex));
+							this._oRenderManager.flush(this._oContainerDomRef, false, this._getDomIndex(iFlushIndex));
 						}
 						// clean up the shared RenderManager
 						this._oRenderManager.destroy();
@@ -601,6 +603,9 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 				this.destroyListItems();
 			}
 		}
+
+		// remove dom cache
+		this._oContainerDomRef = null;
 
 		// remember the old grouping path
 		this._sGroupingPath = this._getGroupingPath(oBinding);

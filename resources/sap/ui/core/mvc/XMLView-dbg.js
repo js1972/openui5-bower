@@ -54,7 +54,7 @@ sap.ui.define(['sap/ui/core/library','./View','jquery.sap.xml','sap/ui/base/Data
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -229,6 +229,11 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.XMLView", { metadata : {
 		this._$oldContent = undefined;
 	};
 	
+	sap.ui.core.mvc.XMLView.prototype._onChildRerenderedEmpty = function(oControl, oElement) {
+		// when the render manager notifies us about an empty child rendering, we replace the old DOM with a dummy
+		jQuery(oElement).replaceWith('<div id="sap-ui-dummy-' + oControl.getId() + '" class="sapUiHidden"/>');
+		return true; // indicates that we have taken care
+	};
 	
 	/**
 	 * Dummy control for after rendering notification before onAfterRendering of

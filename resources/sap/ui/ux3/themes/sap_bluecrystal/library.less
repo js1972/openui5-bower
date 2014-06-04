@@ -4126,6 +4126,7 @@ html[dir="rtl"] .sapUiUx3NavBarToplevel.sapUiUx3NavBarScrollForward > .sapUiUx3N
 	-o-user-select: none;
 	user-select: none;
 	outline : none;
+	z-index: 2; /* needed when the NotiBar has to cover the Table's row headers */
 }
 
 HTML[data-sap-ui-browser='ie8'] .sapUiNotificationBar {

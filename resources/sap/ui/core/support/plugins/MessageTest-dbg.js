@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/RenderManager', 'sap/ui/core/su
 		 *
 		 * @abstract
 		 * @extends sap.ui.base.Object
-		 * @version 1.20.5
+		 * @version 1.20.6
 		 * @constructor
 		 * @private
 		 * @name sap.ui.core.support.plugins.MessageTest
