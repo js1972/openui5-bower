@@ -20,7 +20,7 @@
       "name" : "sap/ui/layout/GridRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 8346,
-      "compressedSize" : 4057,
+      "compressedSize" : 4061,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -36,7 +36,7 @@
       "name" : "sap/ui/layout/HorizontalLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 1480,
-      "compressedSize" : 734,
+      "compressedSize" : 738,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -52,7 +52,7 @@
       "name" : "sap/ui/layout/ResponsiveFlowLayoutData.js",
       "description" : "Provides control sap.ui.layout.ResponsiveFlowLayoutData.",
       "size" : 9570,
-      "compressedSize" : 1964,
+      "compressedSize" : 1966,
       "required" : ["sap/ui/layout/library.js", "sap/ui/core/LayoutData.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -60,7 +60,7 @@
       "name" : "sap/ui/layout/ResponsiveFlowLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 1093,
-      "compressedSize" : 502,
+      "compressedSize" : 506,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -76,7 +76,7 @@
       "name" : "sap/ui/layout/VerticalLayoutRenderer.js",
       "description" : "Provides default renderer for control sap.ui.layout.VerticalLayout",
       "size" : 1722,
-      "compressedSize" : 754,
+      "compressedSize" : 758,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -116,7 +116,7 @@
       "name" : "sap/ui/layout/form/FormLayoutRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 5478,
-      "compressedSize" : 2931,
+      "compressedSize" : 2935,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -124,7 +124,7 @@
       "name" : "sap/ui/layout/form/FormRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 2014,
-      "compressedSize" : 1094,
+      "compressedSize" : 1098,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -155,7 +155,7 @@
     {
       "name" : "sap/ui/layout/form/GridLayoutRenderer.js",
       "size" : 15963,
-      "compressedSize" : 6979,
+      "compressedSize" : 6983,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/FormLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -170,7 +170,7 @@
     {
       "name" : "sap/ui/layout/form/ResponsiveGridLayoutRenderer.js",
       "size" : 1402,
-      "compressedSize" : 960,
+      "compressedSize" : 964,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/FormLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -185,7 +185,7 @@
     {
       "name" : "sap/ui/layout/form/ResponsiveLayoutRenderer.js",
       "size" : 1433,
-      "compressedSize" : 950,
+      "compressedSize" : 954,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/layout/form/FormLayoutRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -201,13 +201,13 @@
       "name" : "sap/ui/layout/form/SimpleFormRenderer.js",
       "description" : "! SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5) (c) Copyright 2009-2014 SAP AG or an SAP affiliate company.  Licensed under the Apache License, Version 2.0 - see LICENSE.txt.",
       "size" : 1044,
-      "compressedSize" : 530,
+      "compressedSize" : 534,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/layout/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.layout (1.20.5)",
+      "description" : "Initialization Code and shared classes of library sap.ui.layout (1.20.6)",
       "size" : 9350,
       "compressedSize" : 2830,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],

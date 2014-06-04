@@ -23,7 +23,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * Implementation to access oData metadata
 	 *
 	 * @author SAP AG
-	 * @version 1.20.5
+	 * @version 1.20.6
 	 *
 	 * @constructor
 	 * @public

@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -192,7 +192,12 @@ jQuery.sap.require("sap.ui.model.type.Date");
 				// the Month while the picker is still closed.
 				// "_focusCalendar()" will check for that!
 //				jQuery.sap.log.debug("DATEPICKER: CalendarPad CALLBACK");
-				setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
+				var oParent = jQuery(this).parent(); // outer DIV of DatePicker
+				var oDatePicker = sap.ui.getCore().byId(oParent.attr("id"));
+				if (oDatePicker.oPrivate.bIsVisible) {
+					//only if datepicker is shown
+					setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
+				}
 			}
 		}
 	};
@@ -652,6 +657,10 @@ sap.ui.commons.DatePicker._focusCalendar = function() {
 		return;
 	}
 	var oControl      = sap.ui.getCore().getControl(sControlID);
+	if (!oControl) {
+		return;
+	}
+
 	// Return if the Picker is now closed. May happen after setTimeout():
 	if (!oControl.oPrivate.bIsVisible) {
 		oPicker.attr('restoreFocusOnDay', "");

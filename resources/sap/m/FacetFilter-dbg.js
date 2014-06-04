@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1307,36 +1307,46 @@ sap.m.FacetFilter.prototype._handleFacetListItemPress = function(oEvent) {
  */
 sap.m.FacetFilter.prototype._navToFilterItemsPage = function(oFacetListItem) {
 	
-	this._selectedFacetItem = oFacetListItem;
-	
-	var oNavCont = this.getAggregation("dialog").getContent()[0];
-	var oCustomData = oFacetListItem.getCustomData();
-	jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
-	var iIndex = oCustomData[0].getValue();	
-	var oFacetFilterList = this.getLists()[iIndex];
-	var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
-	
-	// This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
-	//oFilterItemsPage.destroyAggregation("content", true);
-	
-	// Add the facet filter list
-	this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
-	
-	// Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
-	oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
-		
-	// Add the select all checkbox bar if the list being displayed on the filter items page
-	// is a multi select list. The bar is created only if the list is multi select.
-	// The bar is destroyed from NavContainer.afterNavigate.
-	var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
-	if(oCheckboxBar) {
-		oFilterItemsPage.insertContent(oCheckboxBar, 0);	
-	}
+	       this._selectedFacetItem = oFacetListItem;
+       
+       var oNavCont = this.getAggregation("dialog").getContent()[0];
+       var oCustomData = oFacetListItem.getCustomData();
+       jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
+       var iIndex = oCustomData[0].getValue();  
+       var oFacetFilterList = this.getLists()[iIndex];
+       
+       this._listIndexAgg = this.indexOfAggregation("lists", oFacetFilterList);
 
-	oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
-	
-	oFacetFilterList.fireListOpen({});
-	oNavCont.to(oFilterItemsPage);
+       if (this._listIndexAgg == iIndex)
+       {
+
+       
+       var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
+       
+       // This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
+       //oFilterItemsPage.destroyAggregation("content", true);
+       
+       // Add the facet filter list
+       this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
+       
+       // Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
+       oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
+              
+       // Add the select all checkbox bar if the list being displayed on the filter items page
+       // is a multi select list. The bar is created only if the list is multi select.
+       // The bar is destroyed from NavContainer.afterNavigate.
+       var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
+       if(oCheckboxBar) {
+              oFilterItemsPage.insertContent(oCheckboxBar, 0);       
+       }
+
+       oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
+       
+       oFacetFilterList.fireListOpen({});
+       oNavCont.to(oFilterItemsPage);
+       
+       };
+
 };
 
 /**

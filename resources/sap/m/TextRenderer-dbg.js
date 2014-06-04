@@ -16,13 +16,6 @@ jQuery.sap.require("sap.ui.core.Renderer");
 sap.m.TextRenderer = {};
 
 /**
- * Dummy inheritance of static methods/functions.
- * @see sap.ui.core.Renderer.getTextAlign
- * @private
- */
-sap.m.TextRenderer.getTextAlign = sap.ui.core.Renderer.getTextAlign;
-
-/**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.m.Text} oText An object representation of the control that should be rendered.
@@ -62,7 +55,7 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 	sTextDir && oRm.addStyle("direction", sTextDir.toLowerCase());
 	sTooltip && oRm.writeAttributeEscaped("title", sTooltip);
 	if (sTextAlign) {
-		sTextAlign = this.getTextAlign(sTextAlign, sTextDir);
+		sTextAlign = sap.ui.core.Renderer.getTextAlign(sTextAlign, sTextDir);
 		if (sTextAlign) {
 			oRm.addStyle("text-align", sTextAlign);
 		}
@@ -74,7 +67,7 @@ sap.m.TextRenderer.render = function(oRm, oText) {
 	oRm.write(">");
 
 	// handle max lines
-	if (bWrapping && nMaxLines > 1) {
+	if (oText.hasMaxLines()) {
 		this.renderMaxLines(oRm, oText);
 	} else {
 		this.renderText(oRm, oText);
@@ -108,12 +101,11 @@ sap.m.TextRenderer.renderMaxLines = function(oRm, oText) {
 };
 
 /**
- * Renders the normalized text according to wrapping property.
+ * Renders the normalized text property.
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.m.Text} oText An object representation of the control that should be rendered.
  */
 sap.m.TextRenderer.renderText = function(oRm, oText) {
 	var sText = oText.getText(true);
-	var bWrapping = oText.getWrapping();
-	oRm.writeEscaped(sText, bWrapping);
+	oRm.writeEscaped(sText);
 };

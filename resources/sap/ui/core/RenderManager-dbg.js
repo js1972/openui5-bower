@@ -34,7 +34,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.20.5
+	 * @version 1.20.6
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -472,8 +472,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 							if (RenderManager.isInlineTemplate(oldDomNode)) {
 								jQuery(oldDomNode).empty();
 							} else {
-								jQuery(oldDomNode).remove();
+								// give parent control a chance to handle emptied children properly (e.g. XMLView)
+								if ( !oControl.getParent() 
+										 || !oControl.getParent()._onChildRerenderedEmpty 
+										 || !oControl.getParent()._onChildRerenderedEmpty(oControl, oldDomNode) ) {
+									jQuery(oldDomNode).remove();
+								}
 							}
+
 						}
 	
 					}

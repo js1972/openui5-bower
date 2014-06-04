@@ -66,7 +66,7 @@ sap.ui.define(['./library','./Control','./IconPool'], function() {
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public

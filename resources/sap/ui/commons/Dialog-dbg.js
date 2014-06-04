@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1268,7 +1268,18 @@ sap.ui.commons.Dialog.prototype.onfocusin = function(oEvent){
 	
 	if (oFocusDomRef) {
 		// if an objects was found to focus
-		jQuery(oFocusDomRef).focus();
+		if (sap.ui.Device.browser.internet_explorer &&  sap.ui.Device.browser.version === 9) {
+			/*
+			 * This check especially for IE9 is needed because when IE9 is used together with JAWS the element that will be 
+			 * focused isn't read when the focus happens too fast. Therefore a delay is added to JAWS can read the newly
+			 * focused element. 
+			 */
+			jQuery.sap.delayedCall(100, this, function(){
+				jQuery.sap.focus(oFocusDomRef); 
+			});
+		} else {
+			jQuery(oFocusDomRef).focus();
+		}
 	}
 };
 

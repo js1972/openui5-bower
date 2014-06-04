@@ -362,7 +362,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.20.5)
+ * Initialization Code and shared classes of library sap.ui.unified (1.20.6)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -397,7 +397,7 @@ sap.ui.getCore().initLibrary({
   elements: [
     "sap.ui.unified.ShellHeadItem"
   ],
-  version: "1.20.5"});
+  version: "1.20.6"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -417,7 +417,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  * @public
  * @since 1.16.0
@@ -591,7 +591,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1030,7 +1030,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1390,7 +1390,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1950,7 +1950,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -3333,7 +3333,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public

@@ -58,7 +58,7 @@ jQuery.sap.require("sap.m.ListBase");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -211,7 +211,7 @@ sap.m.Table.prototype.init = function() {
 };
 
 sap.m.Table.prototype.onBeforeRendering = function() {
-	this._oItemsContainerDomRef && this._notifyColumns("ItemsRemoved");
+	this.getDomRef() && this._notifyColumns("ItemsRemoved");
 	sap.m.ListBase.prototype.onBeforeRendering.call(this);
 	this._navRenderedBy = "";
 };
@@ -290,6 +290,16 @@ sap.m.Table.prototype.onAfterPageLoaded = function() {
 };
 
 /*
+ * This hook method is called from renderer to determine whether items should render or not
+ * @overwrite
+ */
+sap.m.Table.prototype.shouldRenderItems = function() {
+	return this.getColumns().some(function(oColumn) {
+		return oColumn.getVisible();
+	});
+};
+
+/*
  * This function runs when setSelected is called from ListItemBase
  * @overwrite
  */
@@ -300,38 +310,44 @@ sap.m.Table.prototype.onItemSetSelected = function(oItem, bSelect) {
 	});
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in touch start events for active feedback
 sap.m.Table.prototype.ontouchstart = function(oEvent) {
 	sap.m.ListBase.prototype.ontouchstart.call(this, oEvent);
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in touch end events for active feedback
 sap.m.Table.prototype.ontouchend = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Android cancels touch events by native scrolling, deactivate popin
+sap.m.Table.prototype.ontouchcancel = sap.m.Table.prototype.ontouchend;
+
+// Handle pop-in touch move events for active feedback
 sap.m.Table.prototype.ontouchmove = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
-// Handle pop-in touch events for active feedback
+// Handle pop-in tap events for active feedback
 sap.m.Table.prototype.ontap = function(oEvent) {
 	this._handlePopinEvent(oEvent);
 };
 
+/*
+ * Returns the <table> DOM reference
+ * @protected
+ */
 sap.m.Table.prototype.getTableDomRef = function() {
 	return this.getDomRef("listUl");
 };
 
 /*
- * Cache frequently used DOM references
+ * Returns items container DOM reference
  * @protected
- * @overwrite
  */
-sap.m.Table.prototype.cacheDomRefs = function() {
-	this._oItemsContainerDomRef = this.getDomRef("tblBody");
+sap.m.Table.prototype.getItemsContainerDomRef = function() {
+	return this.getDomRef("tblBody");
 };
 
 /*
@@ -377,7 +393,7 @@ sap.m.Table.prototype.onColumnResize = function(oColumn) {
  * @protected
  */
 sap.m.Table.prototype.setTableHeaderVisibility = function(bColVisible) {
-	if (!this._oItemsContainerDomRef) {
+	if (!this.getDomRef()) {
 		return;
 	}
 

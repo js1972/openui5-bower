@@ -63,7 +63,7 @@ jQuery.sap.require("sap.m.List");
  * @extends sap.m.List
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -591,10 +591,13 @@ sap.m.FacetFilterList.prototype.removeSelectedKeys = function() {
 
 sap.m.FacetFilterList.prototype.removeItem = function(vItem) {
 	
-	// Update the selected keys cache if an item is removed
-	var oItem = sap.m.ListBase.prototype.removeItem.apply(this, arguments);
-	oItem && oItem.getSelected() && this.removeSelectedKey(oItem.getKey(), oItem.getText());
-	return oItem;
+	       // Update the selected keys cache if an item is removed
+    var oItem = sap.m.ListBase.prototype.removeItem.apply(this, arguments);   
+    if(!this._filtering){
+    oItem && oItem.getSelected() && this.removeSelectedKey(oItem.getKey(), oItem.getText());
+    return oItem;
+    }
+
 };
 
 
@@ -868,15 +871,19 @@ sap.m.FacetFilterList.prototype.onItemSetSelected = function(oItem, bSelect) {
 
 sap.m.FacetFilterList.prototype.updateItems = function(sReason) {	
 	
-	// This method override runs when the list updates its items. The reason
-	// for the update is given by sReason, which for example can be when the
-	// list is filtered or when it grows.
-  sap.m.ListBase.prototype.updateItems.apply(this, arguments);
+	       // This method override runs when the list updates its items. The reason
+       // for the update is given by sReason, which for example can be when the
+       // list is filtered or when it grows.
+
+  this._filtering = sReason === sap.ui.model.ChangeReason.Filter;
+  sap.m.ListBase.prototype.updateItems.apply(this,arguments);   
+  this._filtering=false;
   
   // If this list is not set to growing or it has been filtered then we must make sure that selections are
   // applied to items matching keys contained in the selected keys cache.  Selections
   // in a growing list are handled by the updateFinished handler. 
   if(!this.getGrowing() || sReason === sap.ui.model.ChangeReason.Filter) {
-  	this._selectItemsByKeys();
+       this._selectItemsByKeys();
   }
+
 };

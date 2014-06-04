@@ -25,7 +25,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.sjax'],
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.5
+	 * @version 1.20.6
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public

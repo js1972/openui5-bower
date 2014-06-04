@@ -55,6 +55,10 @@ sap.ui.define(['jquery.sap.global', './ViewRenderer'],
 					rm.write(fragment);
 				} else {
 					rm.renderControl(fragment);
+					// when the child control did not render anything (e.g. visible=false), we add a placeholder to know where to render the child later 
+					if ( !fragment.bOutput ) {
+						rm.write('<div id="sap-ui-dummy-' + fragment.getId() + '" class="sapUiHidden"/>');
+					}
 				}
 			}
 			if (!bSubView) {

@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1052,8 +1052,10 @@ sap.ui.ux3.ActionBar.prototype._updateSocialActionDomRef = function(oSocialActio
 			content.addClass("sapUiUx3ActionBarAction");
 			content.addClass(oSocialAction.fnCalculateState(this));
 		}
-		
-		if(oSocialAction.isMenu) {
+		if (oSocialAction.name == this.mActionKeys.Flag || oSocialAction.name == this.mActionKeys.Favorite) {
+			content.attr("aria-pressed", oSocialAction.fnCalculateState(this) == "Selected" ? "true" : "false");
+		}
+		if (oSocialAction.isMenu) {
 			//Update aria description
 			content.attr("aria-haspopup", oSocialAction.isMenu(this) ? "true" : "false");
 		}

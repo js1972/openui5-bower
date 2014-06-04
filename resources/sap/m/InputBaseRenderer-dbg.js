@@ -42,7 +42,7 @@ sap.m.InputBaseRenderer.render = function(rm, oControl) {
 	rm.write(">");
 
 	// enable self-made placeholder
-	if (oControl._showLabelAsPlaceholder) {
+	if (oControl._bShowLabelAsPlaceholder) {
 		rm.write("<label class='sapMInputBasePlaceholder'");
 		rm.writeAttribute("id", oControl.getId() + "-placeholder");
 		rm.writeAttribute("for", oControl.getId() + "-inner");
@@ -63,7 +63,7 @@ sap.m.InputBaseRenderer.render = function(rm, oControl) {
 	}
 
 	// let the browser handle placeholder
-	if (!oControl._showLabelAsPlaceholder && oControl.getPlaceholder()) {
+	if (!oControl._bShowLabelAsPlaceholder && oControl.getPlaceholder()) {
 		rm.writeAttributeEscaped("placeholder", oControl.getPlaceholder());
 	}
 

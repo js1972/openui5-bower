@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -896,6 +896,7 @@ sap.m.ListItemBase.prototype._isActivationHandled = function(oEvent) {
 /* Keyboard Handling */
 sap.m.ListItemBase.prototype.onsapspace = function(oEvent) {
 	if (!this._listId ||
+		oEvent.isMarked() ||
 		!this.isSelectable() ||
 		oEvent.srcControl !== this ||
 		this._mode == "Delete" ||
@@ -918,6 +919,7 @@ sap.m.ListItemBase.prototype.onsapspace = function(oEvent) {
 
 sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
 	if (!this._listId ||
+		oEvent.isMarked() ||
 		oEvent.srcControl !== this) {
 		return;
 	}
@@ -958,11 +960,16 @@ sap.m.ListItemBase.prototype.onsapenter = function(oEvent) {
 };
 
 sap.m.ListItemBase.prototype.onsapdelete = function(oEvent) {
-	if (this._listId && oEvent.srcControl === this && this._mode == "Delete") {
-		this._delete.call(this._delIcon || this._delImage);
-		oEvent.preventDefault();
-		oEvent.setMarked();
+	if (!this._listId ||
+		oEvent.isMarked() ||
+		oEvent.srcControl !== this ||
+		this._mode != "Delete") {
+		return;
 	}
+
+	this._delete.call(this._delIcon || this._delImage);
+	oEvent.preventDefault();
+	oEvent.setMarked();
 };
 
 sap.m.ListItemBase.prototype._switchFocus = function(oEvent) {
@@ -976,9 +983,14 @@ sap.m.ListItemBase.prototype._switchFocus = function(oEvent) {
 };
 
 sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
+	// check whether event is marked or not
+	var mKeyCodes = jQuery.sap.KeyCodes;
+	if (oEvent.isMarked()) {
+		return;
+	}
 
 	// switch focus to row and focused item with F7
-	if (oEvent.which == jQuery.sap.KeyCodes.F7 && !oEvent.isMarked()) {
+	if (oEvent.which == mKeyCodes.F7) {
 		this._switchFocus(oEvent);
 		oEvent.preventDefault();
 		oEvent.setMarked();
@@ -986,7 +998,7 @@ sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
 	}
 
 	// Ctrl + A to select all
-	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == jQuery.sap.KeyCodes.A) {
+	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == mKeyCodes.A) {
 		sap.ui.getCore().byId(this._listId).selectAll(true);
 		oEvent.preventDefault();
 		oEvent.setMarked();

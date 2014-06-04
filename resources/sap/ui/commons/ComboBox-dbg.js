@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -327,9 +327,8 @@ sap.ui.commons.TextField.extend("sap.ui.commons.ComboBox", { metadata : {
 
 
 /**
- * 
  * Using this method, you provide a listbox control. This allows reuse of item lists in different controls. Either a control id can be used as new target, or a control instance.
- * 
+ * The ListBox must not be rendered somewhere in the UI. But if you want to bind the ListBox Items to a model it must be in the control tree. So we suggest to add it as dependent somewhere (e.g. to the view or the first used ComboBox). If it is not set as child or dependant to an other control it will be automatically set as dependent to the first ComboBox where it is assigned.
  *
  * @return {string} Id of the element which is the current target of the <code>listBox</code> association, or null
  * @public
@@ -338,9 +337,8 @@ sap.ui.commons.TextField.extend("sap.ui.commons.ComboBox", { metadata : {
  */
 
 /**
- * 
  * Using this method, you provide a listbox control. This allows reuse of item lists in different controls. Either a control id can be used as new target, or a control instance.
- * 
+ * The ListBox must not be rendered somewhere in the UI. But if you want to bind the ListBox Items to a model it must be in the control tree. So we suggest to add it as dependent somewhere (e.g. to the view or the first used ComboBox). If it is not set as child or dependant to an other control it will be automatically set as dependent to the first ComboBox where it is assigned.
  *
  * @param {string | sap.ui.commons.ListBox} vListBox 
  *    Id of an element which becomes the new target of this <code>listBox</code> association.
@@ -1379,6 +1377,10 @@ sap.ui.commons.ComboBox.prototype.setListBox = function(sListBox) {
 	if (oOldListBox) {
 		oOldListBox.detachEvent("itemsChanged", this._handleItemsChanged, this);
 		oOldListBox.detachEvent("itemInvalidated",this._handleItemInvalidated, this);
+		if (this._bListBoxDependentSet) {
+			this.removeDependent(oOldListBox);
+			this._bListBoxDependentSet = false;
+		}
 	}
 
 	// if we created our own listBox beforehand, destroy it as the newly set one should win.
@@ -1398,6 +1400,12 @@ sap.ui.commons.ComboBox.prototype.setListBox = function(sListBox) {
 	if (oListBox && oListBox.attachEvent) {
 		oListBox.attachEvent("itemsChanged",this._handleItemsChanged, this);
 		oListBox.attachEvent("itemInvalidated",this._handleItemInvalidated, this);
+	}
+
+	if (oListBox && !oListBox.getParent()) {
+		// ListBox has no parent, add as dependent to prove the model in case of databinding
+			this.addDependent(oListBox);
+			this._bListBoxDependentSet = true;
 	}
 
 	if (this.getDomRef() && oListBox) {

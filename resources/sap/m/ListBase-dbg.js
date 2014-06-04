@@ -87,7 +87,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -1695,7 +1695,6 @@ jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
 jQuery.sap.require("sap.m.GroupHeaderListItem");
 
 sap.m.ListBase.prototype.init = function() {
-	this._oItemsContainerDomRef = null;
 	this._oGrowingDelegate = null;
 	this._bSelectionMode = false;
 	this._bReceivingData = false;
@@ -1706,7 +1705,6 @@ sap.m.ListBase.prototype.init = function() {
 };
 
 sap.m.ListBase.prototype.onBeforeRendering = function() {
-	this.clearDomRefs();
 	this._aNavSections.length = 0;
 	if (this.hasOwnProperty("_$touchBlocker")) {
 		this._removeSwipeContent();	// remove the swipe content from screen immediately
@@ -1715,7 +1713,6 @@ sap.m.ListBase.prototype.onBeforeRendering = function() {
 };
 
 sap.m.ListBase.prototype.onAfterRendering = function() {
-	this.cacheDomRefs();
 	this._startItemNavigation();
 	if (!this._oGrowingDelegate && this.isBound("items")) {
 		this._updateFinished();
@@ -1729,7 +1726,6 @@ sap.m.ListBase.prototype.exit = function () {
 	this._aSelectedPaths.length = 0;
 	this._destroyGrowingDelegate();
 	this._destroyItemNavigation();
-	this.clearDomRefs();
 };
 
 // this gets called only with oData Model when first load or filter/sort
@@ -1892,7 +1888,7 @@ sap.m.ListBase.prototype.setInset = function(bInset) {
 	bInset = this.validateProperty("inset", bInset);
 	if (bInset != this.getInset()) {
 		this.setProperty("inset", bInset, true);
-		if (this._oItemsContainerDomRef) {
+		if (this.getDomRef()) {
 			this.$().toggleClass("sapMListInsetBG", bInset);
 			this.$("listUl").toggleClass("sapMListInset", bInset);
 			this._setSwipePosition();
@@ -2066,27 +2062,11 @@ sap.m.ListBase.prototype.onItemSetSelected = function(oItem, bSelect) {
 };
 
 /*
- * Cache frequently used DOM references
- * @protected
- */
-sap.m.ListBase.prototype.cacheDomRefs = function() {
-	this._oItemsContainerDomRef = this.getDomRef("listUl");
-};
-
-/*
- * Clear the cached DOM references
- * @protected
- */
-sap.m.ListBase.prototype.clearDomRefs = function() {
-	this._oItemsContainerDomRef = null;
-};
-
-/*
  * Returns items container DOM reference
  * @protected
  */
 sap.m.ListBase.prototype.getItemsContainerDomRef = function() {
-	return this._oItemsContainerDomRef;
+	return this.getDomRef("listUl");
 };
 
 /*
@@ -2137,6 +2117,14 @@ sap.m.ListBase.prototype.getMaxItemsCount = function() {
 		return oBinding.getLength() || 0;
 	}
 	return this.getItems().length;
+};
+
+/*
+ * This hook method is called from renderer to determine whether items should render or not
+ * @protected
+ */
+sap.m.ListBase.prototype.shouldRenderItems = function() {
+	return true;
 };
 
 // call the base aggregation functions according to given parameters
@@ -2665,7 +2653,7 @@ sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
 
 	// search all parents to find next/prev tabbable item
 	for (var oParent = this; (oParent = oParent.getParent()) && oParent.$;) {
-		var $Tabbables = oParent.$().find(":tabbable");
+		var $Tabbables = oParent.$().find(":sapTabbable");
 		var iLimit = bAfter ? $Tabbables.length - 1 : 0;
 		var iIndex = $Tabbables.index($Element);
 
@@ -2677,7 +2665,7 @@ sap.m.ListBase.prototype._navToTabChain = function(bAfter) {
 	}
 
 	// find next/prev tabbable item and reset tabindex
-	$Tabbables = $Tabbables || this.$().parent().find(":tabbable");
+	$Tabbables = $Tabbables || this.$().parent().find(":sapTabbable");
 	iIndex = $Tabbables.index($Element) + iStep;
 	$Element.attr("tabindex", "-1");
 

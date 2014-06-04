@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.base.ManagedObject");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.20.5
+ * @version 1.20.6
  * @name sap.m.TablePersoProvider
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoProvider", /** @lends sap.m.TablePersoProvider */

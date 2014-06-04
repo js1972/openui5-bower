@@ -27,7 +27,7 @@ jQuery.sap.require("sap.m.TablePersoDialog");
  * @class Table Personalization Controller
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.5
+ * @version 1.20.6
  * @name sap.m.TablePersoController
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.TablePersoController */
@@ -109,11 +109,10 @@ sap.m.TablePersoController.prototype.init = function() {
 sap.m.TablePersoController.prototype.exit = function() {
 
 	// Clean up onBeforRendering delegates
-	if(!!this._mDelegateMap) {
-		for (var oTable in this._mDelegateMap) {
-			oTable.removeDelegate(this._mDelegateMap[oTable]);
-		}
-	}
+	this._callFunctionForAllTables(jQuery.proxy(function(oTable){
+		oTable.removeDelegate(this._mDelegateMap[oTable]);
+	}, this));
+	
 	
 	delete this._oPersService;
 	delete this._mDelegateMap;

@@ -13,7 +13,7 @@ jQuery.sap.require("jquery.sap.strings");
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.20.5
+ * @version 1.20.6
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -78,9 +78,10 @@ sap.ui.commons.ListBoxRenderer.render = function(rm, oListBox) {
 	if (sWidth) {
 		rm.addStyle("width", sWidth);
 		var bDisplaySecondaryValues = oListBox.getDisplaySecondaryValues();
-		if (!bDisplaySecondaryValues) {
-			// if fixed width and no secondary values use table-layout:fixed; to enable text-overflow:ellipsis;
-			// not possible with secondary value because of auto width function of table not available with fixed layout
+		var bDisplayIcons = oListBox.getDisplayIcons();
+		if (!bDisplaySecondaryValues && !bDisplayIcons) {
+			// if fixed width, no secondary values and no icons use table-layout:fixed; to enable text-overflow:ellipsis;
+			// not possible with secondary value / icons because of auto width function of table not available with fixed layout
 			rm.addClass("sapUiLbxFixed");
 		}
 	}

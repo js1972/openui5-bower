@@ -54,7 +54,7 @@ sap.ui.define(['sap/ui/core/library','./View'], function() {
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.20.5
+ * @version 1.20.6
  *
  * @constructor   
  * @public
@@ -168,6 +168,7 @@ sap.ui.core.mvc.View.extend("sap.ui.core.mvc.TemplateView", { metadata : {
 		});
 		this._sControllerName = this._oTemplate._sControllerName;
 		this._oTemplate = this._oTemplate.createControl(undefined, undefined, this);
+		this.addContent(this._oTemplate);
 	};
 
 }());

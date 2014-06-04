@@ -20,7 +20,7 @@
       "name" : "sap/ui/table/ColumnMenuRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ComboBox",
       "size" : 576,
-      "compressedSize" : 437,
+      "compressedSize" : 441,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/commons/MenuRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -36,7 +36,7 @@
       "name" : "sap/ui/table/DataTableRenderer.js",
       "description" : "Provides default renderer for control sap.ui.table.DataTable",
       "size" : 556,
-      "compressedSize" : 441,
+      "compressedSize" : 445,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/table/TreeTableRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -60,7 +60,7 @@
       "name" : "sap/ui/table/TableRenderer.js",
       "description" : "Provides default renderer for control sap.ui.table.Table",
       "size" : 27193,
-      "compressedSize" : 17649,
+      "compressedSize" : 17653,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -76,13 +76,13 @@
       "name" : "sap/ui/table/TreeTableRenderer.js",
       "description" : "Provides default renderer for control sap.ui.table.TreeTable",
       "size" : 955,
-      "compressedSize" : 746,
+      "compressedSize" : 750,
       "required" : ["sap/ui/core/Renderer.js", "sap/ui/table/TableRenderer.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/table/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.5)",
+      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.6)",
       "size" : 7978,
       "compressedSize" : 1601,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/commons/library.js", "jquery.sap.global.js"],
