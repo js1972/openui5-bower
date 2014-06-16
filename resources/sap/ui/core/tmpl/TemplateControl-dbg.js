@@ -55,7 +55,7 @@ sap.ui.define(['sap/ui/core/library','sap/ui/core/Control','./DOMElement','./DOM
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

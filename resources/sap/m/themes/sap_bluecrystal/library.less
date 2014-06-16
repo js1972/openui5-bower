@@ -9086,6 +9086,12 @@ input.sapMSFI[type="search"]:focus {
 .sapMSegB.sapMSegBHide {
 	visibility: hidden;
 }
+
+.sapMSegBBtn.sapMSegBBtnDis{
+	text-shadow:      none;
+	cursor:           default;
+	opacity:          0.5;
+}
 /* ==============================================*/
 /* CSS for control sap.m/SegmentedButton.control */
 /* BlueCrystal theme                             */
@@ -9135,7 +9141,7 @@ input.sapMSFI[type="search"]:focus {
 		outline: 1px dotted @sapUiFocus;
 		outline-offset: -1px;
 	}
-	.sapMSegBBtn.sapMSegBBtnSel:focus:not(.sapMSegBBtnDis) {
+	.sapMSegBBtn:not(.sapMSegBBtnDis).sapMSegBBtnSel:focus {
 		outline-color:  @sapUiInvertedFocus;
 	}
 }
@@ -9181,7 +9187,7 @@ input.sapMSFI[type="search"]:focus {
 		text-shadow: 0;
 	}
 }
-.sapMSegBBtn.sapMBtnActive {
+.sapMSegBBtn:not(.sapMSegBBtnDis).sapMBtnActive {
 	background: @sapUiSegmentedBtnBGSelected;
 	color: @sapUiSegmentedBtnTextActive;
 	.sapUiIcon{

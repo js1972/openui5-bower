@@ -28,7 +28,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/base/ManagedObject'
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @public
 	 * @name sap.ui.core.util.MockServer
 	 * @experimental Since 1.15.1. The mock server is still under construction, so some implementation details can be changed in future.

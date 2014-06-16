@@ -16,7 +16,7 @@ sap.ui.define(['jquery.sap.global', './ControlTree', './Highlighter', './LogView
 	 * @class Central Class for the Debug Environment
 	 *
 	 * @author Martin Schaus, Frank Weigel
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @private
 	 * @name sap.ui.debug.DebugEnv
 	 */

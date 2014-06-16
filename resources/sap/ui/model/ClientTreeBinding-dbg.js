@@ -80,7 +80,7 @@ sap.ui.define(['jquery.sap.global', './TreeBinding'],
 			var aContexts = [],
 				that = this;
 			jQuery.each(this.oModel._getObject(this.sPath), function(iIndex, oObject) {
-				aContexts.push(that.oModel.getContext(that.sPath + (jQuery.sap.endsWith(that.sPath, "/") ? "" : "/") + iIndex));
+				that._saveSubContext(oObject, aContexts, that.sPath + (jQuery.sap.endsWith(that.sPath, "/") ? "" : "/"), iIndex);
 			});
 			return aContexts;
 		}

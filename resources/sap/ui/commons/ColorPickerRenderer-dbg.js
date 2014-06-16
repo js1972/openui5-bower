@@ -26,6 +26,7 @@ sap.ui.commons.ColorPickerRenderer.render = function(oRm, oControl){
 	// write the HTML into the render manager
 	oRm.write("<div");   // Outer DIV
 	oRm.writeControlData(oControl);
+	oRm.writeClasses();
 	oRm.write(">"); // <DIV> element
 	oRm.renderControl(oControl.oMatrix);
 	oRm.write("</div>");  // outer DIV

@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.LayoutData");
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1257,12 +1257,16 @@ sap.ui.table.Column.prototype.filter = function(sValue) {
 				try {
 					oFilter = oCol._getFilter();
 				} catch (e) {
-					oMenu._setFilterState(sap.ui.core.ValueState.Error);
+					if (oMenu._setFilterState) {
+						oMenu._setFilterState(sap.ui.core.ValueState.Error);
+					}
 					continue;
 				}
 				if (oFilter) {
 					aFilters.push(oFilter);
-					oMenu._setFilterState(sap.ui.core.ValueState.None);
+					if (oMenu._setFilterState) {
+						oMenu._setFilterState(sap.ui.core.ValueState.None);
+					}
 				}
 			}
 			oTable.getBinding("rows").filter(aFilters, sap.ui.model.FilterType.Control);

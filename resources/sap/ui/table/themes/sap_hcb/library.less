@@ -574,6 +574,16 @@
 	border-bottom: 1px solid @sapUiListHeaderBorderColor;
 }
 
+.sapUiTable.sapUiLocalBusy > div:nth-last-child(2) {
+	border-bottom: 1px solid @sapUiListHeaderBorderColor;
+}
+
+.sapUiTable > div.sapUiLocalBusyIndicator {
+	border-bottom: none;
+	z-index: 2;
+}
+
+
 .sapUiTableHdr,
 .sapUiTableFtr {
 	padding: 0px 10px;

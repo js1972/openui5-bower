@@ -6,7 +6,6 @@
 /*global window, document *///declare unusual global vars for JSLint/SAPUI5 validation
 
 jQuery.sap.declare("sap.m.ios7");
-jQuery.sap.declare("sap.m._Ios7");
 
 (function () {
 	sap.ui.base.EventProvider.extend("sap.m._Ios7", {

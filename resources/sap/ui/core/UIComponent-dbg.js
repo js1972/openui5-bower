@@ -31,7 +31,7 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 	 * @extends sap.ui.core.Component
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @name sap.ui.core.UIComponent
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -61,6 +61,7 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 			routing: {
 				/*
 				config: { // default values for routing
+					routerClass : myAppNamespace.MyRouterClass
 					viewType : "XML",
 					viewPath: "NavigationWithoutMasterDetailPattern.view",
 					targetParent: "myViewId",
@@ -119,7 +120,9 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 		// create the router for the component instance
 		if (aRoutes) {
 			jQuery.sap.require("sap.ui.core.routing.Router");
-			this._oRouter = new sap.ui.core.routing.Router(aRoutes, oRoutingConfig, this);
+			var fnRouterConstructor = oRoutingConfig.routerClass || sap.ui.core.routing.Router;
+
+			this._oRouter = new fnRouterConstructor(aRoutes, oRoutingConfig, this);
 		}
 	
 		// create the content
@@ -157,6 +160,14 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 	 * Returns the reference to the router instance. The passed controller or view
 	 * have to be created in the context of a UIComponent to return the router 
 	 * instance. Otherwise this function will return undefined.
+	 * You may define the routerClass property in the config section of the routing to make the Component create your router extension.
+	 * eg: 
+	 * routing: {
+	 * 	config: {
+	 * 		routerClass : myAppNamespace.MyRouterClass
+	 * 		...
+	 * }
+	 * ...
 	 * @param {sap.ui.core.mvc.View|sap.ui.core.mvc.Controller} either a view or controller
 	 * @return {sap.ui.core.routing.Router} the router instance
 	 * @since 1.16.1

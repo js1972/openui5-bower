@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author d029921 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

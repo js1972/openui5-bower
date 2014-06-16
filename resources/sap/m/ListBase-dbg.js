@@ -87,7 +87,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1909,7 +1909,13 @@ sap.m.ListBase.prototype.setNoDataText = function(sNoDataText) {
 	return this;
 };
 
-sap.m.ListBase.prototype.getNoDataText = function() {
+sap.m.ListBase.prototype.getNoDataText = function(bCheckBusy) {
+	// check busy state
+	if (bCheckBusy && this._bBusy) {
+		return "";
+	}
+
+	// return no data text from resource bundle when there is no custom
 	var sNoDataText = this.getProperty("noDataText");
 	if (!sNoDataText) {
 		var oRB = sap.ui.getCore().getLibraryResourceBundle("sap.m");
@@ -2184,14 +2190,30 @@ sap.m.ListBase.prototype._fireUpdateFinished = function(oInfo) {
 };
 
 sap.m.ListBase.prototype._showBusyIndicator = function() {
-	if (this.getEnableBusyIndicator() && !this.getBusy()) {
+	if (this.getEnableBusyIndicator() && !this.getBusy() && !this._bBusy) {
+		// set the busy state
+		this._bBusy = true;
+
+		// TODO: would be great to have an event when busy indicator visually seen
+		this._sBusyTimer = jQuery.sap.delayedCall(this.getBusyIndicatorDelay(), this, function() {
+			// clean no data text
+			this.$("nodata-text").text("");
+		});
+
+		// set busy property
 		this.setBusy(true, "listUl");
 	}
 };
 
 sap.m.ListBase.prototype._hideBusyIndicator = function() {
-	if (this.getEnableBusyIndicator() && this.getBusy()) {
+	if (this._bBusy) {
+		// revert busy state
 		this.setBusy(false);
+
+		// revert no data texts when necessary
+		jQuery.sap.clearDelayedCall(this._sBusyTimer);
+		this.$("nodata-text").text(this.getNoDataText());
+		this._bBusy = false;
 	}
 };
 

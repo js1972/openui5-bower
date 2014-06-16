@@ -32,7 +32,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Properties
  * <ul>
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li>
+ * <li>{@link #getEnabled enabled} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -57,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -75,7 +76,8 @@ sap.ui.core.Control.extend("sap.m.SegmentedButton", { metadata : {
 	library : "sap.m",
 	properties : {
 		"width" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
-		"visible" : {type : "boolean", group : "Appearance", defaultValue : true}
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true}
 	},
 	defaultAggregation : "buttons",
 	aggregations : {
@@ -157,6 +159,31 @@ sap.m.SegmentedButton.M_EVENTS = {'select':'select'};
  * @return {sap.m.SegmentedButton} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.SegmentedButton#setVisible
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>enabled</code>.
+ * If disabled all buttons look grey, you cannot focus on them, you can not even click on them.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>enabled</code>
+ * @public
+ * @name sap.m.SegmentedButton#getEnabled
+ * @function
+ */
+
+/**
+ * Setter for property <code>enabled</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bEnabled  new value for property <code>enabled</code>
+ * @return {sap.m.SegmentedButton} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.SegmentedButton#setEnabled
  * @function
  */
 
@@ -356,6 +383,8 @@ sap.m.SegmentedButton.M_EVENTS = {'select':'select'};
 
 // Start of sap\m\SegmentedButton.js
 jQuery.sap.require("sap.ui.core.delegate.ItemNavigation");
+jQuery.sap.require("sap.ui.core.EnabledPropagator");
+sap.ui.core.EnabledPropagator.call(sap.m.SegmentedButton.prototype);
 
 sap.m.SegmentedButton.prototype.init = function() {
 	if(sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 10) {
@@ -613,22 +642,66 @@ sap.m.SegmentedButton.prototype.createButton = function(sText, sURI, bEnabled) {
 	return oButton;
 };
 
-sap.m.SegmentedButton.prototype.addButton = function(oButton) {
-var that = this;
-	oButton.attachPress(function(oEvent){
-		that._buttonPressed(oEvent);
-	});
-	this.addAggregation('buttons',oButton);
-	return this;
+
+(function(){
+	sap.m.SegmentedButton.prototype.addButton = function(oButton) {
+		if(oButton){
+			processButton(oButton, this);
+			
+			this.addAggregation('buttons', oButton);
+			return this;
+		}
+		
+	};
+
+	sap.m.SegmentedButton.prototype.insertButton = function(oButton) {
+		if(oButton){
+			processButton(oButton, this);
+			
+			this.insertAggregation('buttons', oButton);
+			return this;
+		}
+		
+	};
+
+	function processButton(oButton, oParent){
+		oButton.attachPress(function(oEvent) {
+			oParent._buttonPressed(oEvent);
+		});
+
+		var fnOriginalSetEnabled = sap.m.Button.prototype.setEnabled;
+		oButton.setEnabled = function(bEnabled) {
+			oButton.$().toggleClass("sapMSegBBtnDis", !bEnabled)
+					   .toggleClass("sapMFocusable", bEnabled);
+
+			fnOriginalSetEnabled.apply(oButton, arguments);
+		}
+		
+	};
+	
+})();
+
+sap.m.SegmentedButton.prototype.removeButton = function(oButton) {
+	if(oButton){
+		delete oButton.setEnabled;
+		this.removeAggregation("buttons", oButton);
+	}
+	
 };
 
-sap.m.SegmentedButton.prototype.insertButton = function(oButton) {
-	var that = this;
-	oButton.attachPress(function(oEvent){
-		that._buttonPressed(oEvent);
-	});
-	this.insertAggregation('buttons',oButton);
-	return this;
+sap.m.SegmentedButton.prototype.removeAllButtons = function() {
+	var aButtons = this.getButtons();
+	if(aButtons){
+		for ( var i = 0; i < aButtons.length; i++) {
+			var oButton = aButtons[i];
+			if(oButton){
+				delete oButton.setEnabled;
+				this.removeAggregation("buttons", oButton);
+			}
+			
+		}
+	}
+	
 };
 
 sap.m.SegmentedButton.prototype._buttonPressed = function(oEvent) {

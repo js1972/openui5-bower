@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -558,7 +558,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.NotifierView", {
 
 		// i=1 since view's title should be skipped for
 		// calculation
-		for ( var i = 1; i < $aChildren.length; i++) {
+		for (var i = 1; i < $aChildren.length; i++) {
 			var child = jQuery($aChildren[i]);
 
 			if (child.hasClass("sapUiNotifierMessage")) {
@@ -735,7 +735,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 						var aMessageViews = oNotiView.getMessages();
 						var tmpMsgView;
 
-						for ( var i = 0; i < aMessageViews.length; i++) {
+						for (var i = 0; i < aMessageViews.length; i++) {
 							tmpMsgView = aMessageViews[i];
 
 							if (oMessage.getId() === tmpMsgView._message.getId()) {
@@ -802,7 +802,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			}
 
 			var aMessages = oNotifier.getMessages();
-			for ( var i = 0; i < aMessages.length; i++) {
+			for (var i = 0; i < aMessages.length; i++) {
 				var oView = fnCreateMessageView(aMessages[i], oNotifier, this);
 				oNotifierView.addMessage(oView);
 			}
@@ -976,7 +976,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	sap.ui.ux3.NotificationBar.prototype.removeAllNotifiers = function() {
 		var aChildren = this.removeAllAggregation("notifiers");
 
-		for ( var i = 0; i < aChildren.length; i++) {
+		for (var i = 0; i < aChildren.length; i++) {
 			var oNotifier = aChildren[i];
 			fnDeregisterNotifierFromEvents(this, oNotifier);
 		}
@@ -986,7 +986,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	sap.ui.ux3.NotificationBar.prototype.destroyNotifiers = function() {
 		var aChildren = this.getNotifiers();
 
-		for ( var i = 0; i < aChildren.length; i++) {
+		for (var i = 0; i < aChildren.length; i++) {
 			var oNotifier = aChildren[i];
 			fnDeregisterNotifierFromEvents(this, oNotifier);
 		}
@@ -1053,17 +1053,18 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	};
 
 	var fnSetResizeClasses = function(that, sStatus) {
+		var $That = that.$();
 
 		switch (sStatus) {
 		case sap.ui.ux3.NotificationBarStatus.Min:
-			that.$().addClass("sapUiNotificationBarMinimized");
+			$That.addClass("sapUiNotificationBarMinimized");
 			break;
 
 		case sap.ui.ux3.NotificationBarStatus.Max:
 			var sHeight = that.getHeightOfStatus(that.getVisibleStatus());
 
-			that.$().addClass("sapUiNotificationBarMaximized");
-			that.$().css("height", sHeight);
+			$That.addClass("sapUiNotificationBarMaximized");
+			$That.css("height", sHeight);
 
 			var $containers = that.$("containers");
 			$containers.css("max-height", sHeight);
@@ -1071,14 +1072,14 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 		case sap.ui.ux3.NotificationBarStatus.None:
 			if (!that._resizeTo) {
-				that.$().css("display", "none");
+				$That.css("display", "none");
 			}
 			break;
 
 		case sap.ui.ux3.NotificationBarStatus.Default:
 		default:
-			that.$().removeClass("sapUiNotificationBarMaximized");
-			that.$().removeClass("sapUiNotificationBarMinimized");
+			$That.removeClass("sapUiNotificationBarMaximized");
+			$That.removeClass("sapUiNotificationBarMinimized");
 
 			break;
 		}
@@ -1087,33 +1088,38 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	var fnResizeStuff = function(that) {
 		if (fnWasResized(that)) {
 			var sFromHeight = that.getHeightOfStatus(that._resizeFrom);
-			that.$().css("height", sFromHeight);
+			var $That = that.$();
+			$That.css("height", sFromHeight);
 
 			var sToHeight = that.getHeightOfStatus(that._resizeTo);
-			that.$().stop().animate({
+			$That.stop().animate({
 				height : sToHeight
-			}, "fast", function() {
-				var sStatus = that.getVisibleStatus();
-				if (sStatus === "None") {
-					that.$().css("display", "none");
+			}, {
+				duration : "fast",
+				queue : true,
+				always : function() {
+					var sStatus = that.getVisibleStatus();
+					if (sStatus === "None") {
+						$That.css("display", "none");
 
-					if (that.hasItems()) {
-						if (that.getMessageNotifier()) {
-							var oMN = that.getMessageNotifier();
-							oMN.$().css("display", "none");
-						}
+						if (that.hasItems()) {
+							if (that.getMessageNotifier()) {
+								var oMN = that.getMessageNotifier();
+								oMN.$().css("display", "none");
+							}
 
-						if (that.getNotifiers().length > 0) {
-							var aNotifiers = that.getNotifiers();
-							for ( var i = 0; i < aNotifiers.length; i++) {
-								aNotifiers[i].$().css("display", "none");
+							if (that.getNotifiers().length > 0) {
+								var aNotifiers = that.getNotifiers();
+								for (var i = 0; i < aNotifiers.length; i++) {
+									aNotifiers[i].$().css("display", "none");
+								}
 							}
 						}
 					}
-				}
 
-				fnSetResizeClasses(that, sStatus);
-				fnResize(that, sStatus);
+					fnSetResizeClasses(that, sStatus);
+					fnResize(that, sStatus);
+				}
 			});
 		} else {
 			/*
@@ -1139,7 +1145,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 				var $children = $domRef.children();
 
-				for ( var i = 0; i < $children.length; i++) {
+				for (var i = 0; i < $children.length; i++) {
 					var $child = jQuery($children[i]);
 
 					if ($child.hasClass("sapUiNotifier")) {
@@ -1247,7 +1253,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 				var aMessages = oMessageNotifier.getMessages();
 				var sId = oMessageNotifier.getId() + "-messageNotifierView-messageView-";
 
-				for ( var i = aMessages.length - 1; i >= 0; i--) {
+				for (var i = aMessages.length - 1; i >= 0; i--) {
 					var oDomRef = jQuery.sap.domById(sId + aMessages[i].getId());
 					if (oDomRef) {
 						aItemDomRefs.push(oDomRef);
@@ -1256,11 +1262,11 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			}
 
 			var aNotifiers = this.getNotifiers();
-			for ( var i = 0; i < aNotifiers.length; i++) {
+			for (var i = 0; i < aNotifiers.length; i++) {
 				var aMessages = aNotifiers[i].getMessages();
 				var sId = aNotifiers[i].getId() + "-notifierView-messageView-";
 
-				for ( var j = aMessages.length - 1; j >= 0; j--) {
+				for (var j = aMessages.length - 1; j >= 0; j--) {
 					var oDomRef = jQuery.sap.domById(sId + aMessages[j].getId());
 					if (oDomRef) {
 						aItemDomRefs.push(oDomRef);
@@ -1270,7 +1276,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 		} else {
 			var aNotifiers = this.getNotifiers();
-			for ( var i = 0; i < aNotifiers.length; i++) {
+			for (var i = 0; i < aNotifiers.length; i++) {
 				var oDomRef = aNotifiers[i].getDomRef();
 				if (oDomRef) {
 					aItemDomRefs.push(oDomRef);
@@ -1369,7 +1375,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	var fnSetItemsDescription = function(oThis) {
 		var aNotifiers = oThis.getNotifiers();
 
-		for ( var i = 0; i < aNotifiers.length; i++) {
+		for (var i = 0; i < aNotifiers.length; i++) {
 			var iCount = aNotifiers[i].getMessages().length;
 			var sKey = "NOTIBAR_NOTIFIER_COUNT_TEXT_" + iCount === 1 ? "SING" : "PL";
 
@@ -1429,7 +1435,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 		// Checking all notifiers if any has items
 		var mNotifiers = this.getNotifiers();
 		if (mNotifiers.length > 0) {
-			for ( var i = 0; i < mNotifiers.length; i++) {
+			for (var i = 0; i < mNotifiers.length; i++) {
 				var oNotifier = mNotifiers[i];
 				if (oNotifier.hasItems()) {
 					return true;
@@ -1449,6 +1455,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 	var fnResize = function(oNotiBar, toStatus) {
 		var display = "none";
+		var $NotiBar = oNotiBar.$();
 
 		switch (toStatus) {
 		/*
@@ -1463,12 +1470,15 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			 * Since minimizing doesn't need any re-rendering all necessary
 			 * stuff can be done here
 			 */
-			oNotiBar.$().stop().animate({
+			$NotiBar.stop().animate({
 				height : oNotiBar.getHeightOfStatus(toStatus)
-			}, "fast");
+			}, {
+				duration : "fast",
+				queue : true
+			});
 
-			oNotiBar.$().addClass("sapUiNotificationBarMinimized");
-			
+			$NotiBar.addClass("sapUiNotificationBarMinimized");
+
 			oNotiBar.$("notifiers").css("display", "none");
 
 			display = "block";
@@ -1481,12 +1491,15 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			 * is needed. Otherwise a simple animation and CSS exchange is
 			 * enough
 			 */
-			oNotiBar.$().stop().animate({
+			$NotiBar.stop().animate({
 				height : oNotiBar.getHeightOfStatus(toStatus)
-			}, "fast");
+			}, {
+				duration : "fast",
+				queue : true
+			});
 
-			oNotiBar.$().removeClass("sapUiNotificationBarMaximized");
-			oNotiBar.$().removeClass("sapUiNotificationBarMinimized");
+			$NotiBar.removeClass("sapUiNotificationBarMaximized");
+			$NotiBar.removeClass("sapUiNotificationBarMinimized");
 
 			break;
 		}
@@ -1601,7 +1614,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 	var fnCloseAllCallouts = function(that) {
 		var mNotifiers = that.getNotifiers();
 
-		for ( var i = 0; i < mNotifiers.length; i++) {
+		for (var i = 0; i < mNotifiers.length; i++) {
 			var oNotifier = mNotifiers[i];
 
 			oNotifier._oCallout.close();

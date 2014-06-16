@@ -83,7 +83,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -2466,6 +2466,7 @@ sap.ui.ux3.Shell.prototype._getFeederTool = function() {
 
 
 sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
+	var that = this;
 	jQuery.sap.assert(typeof sPaneId === "string", "sPaneId must be given as string");
 	var item = sap.ui.getCore().byId(sPaneId);
 	if (item && (sPaneId != this._sOpenPaneId) && this.getShowPane()) {
@@ -2478,14 +2479,19 @@ sap.ui.ux3.Shell.prototype.openPane = function(sPaneId) {
 		
 		if (!this._sOpenPaneId) {
 			// pane area not open yet, open it
-			this._openPane();
+			this._openPane(function() {
+				// Due to the display:none of the pane bar content in bluecrystal in combination 
+				// with the jQuery-animation, we need to wait until the pane bar content animation 
+				// is finished and thus the content focusable by jQuery.
+				that.focusPaneStart();
+			});
 		} else {
 			// pane area already open for a different pane bar item - unselect that one
 			jQuery.sap.byId(this.getId() + "-pb_" + this._sOpenPaneId).removeClass("sapUiUx3ShellPaneEntrySelected");
 		}
 
 		this._sOpenPaneId = sPaneId;
-		this.focusPaneStart();
+		
 	}
 	return this;
 };
@@ -2567,7 +2573,7 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 		this._sOpenPaneId = null;
 	};
 
-	sap.ui.ux3.Shell.prototype._openPane = function() {
+	sap.ui.ux3.Shell.prototype._openPane = function(fnOpenedCallback) {
 		var id = this.getId();
 		var PANE_WIDTH = this.getPaneWidth();
 		var iPaneBarWidth = jQuery.sap.byId(id + "-paneBarRight").outerWidth();
@@ -2585,6 +2591,10 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 				jQuery.sap.byId(id + "-content").css("overflow-x", "");
 				jQuery.sap.byId(id+"-canvasBackground").removeClass("sapUiUx3ShellCanvasBackgroundClosed").addClass("sapUiUx3ShellCanvasBackgroundOpen");
 				jQuery.sap.byId(id+"-paneBar").addClass("sapUiUx3ShellPaneBarOpened");
+				
+				if (fnOpenedCallback) {
+					fnOpenedCallback();
+				}
 			});
 		} else {
 			jQuery.sap.byId(id+"-paneBar")
@@ -2598,6 +2608,10 @@ sap.ui.ux3.Shell.prototype._handlePaneBarItemClick = function(sPaneId) {
 				jQuery.sap.byId(id + "-content").css("overflow-x", "");
 				jQuery.sap.byId(id+"-canvasBackground").removeClass("sapUiUx3ShellCanvasBackgroundClosed").addClass("sapUiUx3ShellCanvasBackgroundOpen");
 				jQuery.sap.byId(id+"-paneBar").addClass("sapUiUx3ShellPaneBarOpened");
+
+				if (fnOpenedCallback) {
+					fnOpenedCallback();
+				}
 			});
 		}
 	};

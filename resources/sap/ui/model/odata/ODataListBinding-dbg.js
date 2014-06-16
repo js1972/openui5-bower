@@ -522,7 +522,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 			var sUrl = this.oModel._createRequestUrl(sPath + "/$count", null, aParams);
 			var oRequest = this.oModel._createRequest(sUrl, "GET", false);
 			// count needs other accept header
-			oRequest.headers["Accept"] = "text/plain";
+			oRequest.headers["Accept"] = "text/plain, */*;q=0.5";
 		
 			// execute the request and use the metadata if available
 			// (since $count requests are synchronous we skip the withCredentials here)

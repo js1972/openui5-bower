@@ -76,7 +76,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1125,15 +1125,9 @@ sap.m.Dialog.prototype.init = function(){
 
 		var iWindowScrollTop = that._$Window.scrollTop(),
 			iTop = $that.offset().top;
-		if(sap.ui.Device.os.ios && iWindowScrollTop){
-			//on iOS devices, the window is shifted up when keyboard opens. That's why the dialog should also be positioned higher because jQuery UI position doesn't
-			//take window scrollTop into consideration.
-			$that.css("top", iTop - iWindowScrollTop);
-		}
 
 		//TODO: remove this code after Apple fixes the jQuery(window).height() is 20px more than the window.innerHeight issue.
 		if(sap.m.Dialog._bIOS7Tablet && sap.ui.Device.orientation.landscape){
-			iTop = $that.offset().top;
 			$that.css("top", iTop - 10); //the calculated window size is 20px more than the actual size in ios 7 tablet landscape mode.
 		}
 
@@ -1477,7 +1471,9 @@ sap.m.Dialog.prototype._setDimensions = function() {
 		"height": "",
 		"min-width": "",
 		"max-width": "",
-		"max-height": ""
+		"max-height": "",
+		"left": "",
+		"top": ""
 	});
 	
 	$scrollArea.css({
@@ -1680,8 +1676,6 @@ sap.m.Dialog.prototype._onResize = function(){
 			that._fnOrientationChange();
 		}
 		that._sResizeTimer = null;
-		that._iResizeDomWidth = null;
-		that._iResizeDomHeight = null;
 	}, 0);
 };
 

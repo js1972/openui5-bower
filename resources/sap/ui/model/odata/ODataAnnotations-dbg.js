@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global'],
 	 *
 	 * @author SAP AG
 	 * @version
-	 * 1.20.6
+	 * 1.20.7
 	 *
 	 * @constructor
 	 * @public

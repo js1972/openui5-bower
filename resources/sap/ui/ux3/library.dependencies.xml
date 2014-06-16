@@ -263,7 +263,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/ux3/NotificationBar.js" size="50219" compressedSize="16993">
+  <module name="sap/ui/ux3/NotificationBar.js" size="50387" compressedSize="17046">
     <description>Provides control sap.ui.ux3.NotificationBar.</description>
     <requires>
       <module name="sap/ui/ux3/library.js"/>
@@ -355,7 +355,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/ux3/Shell.js" size="140312" compressedSize="49032">
+  <module name="sap/ui/ux3/Shell.js" size="140727" compressedSize="49074">
     <description>Provides control sap.ui.ux3.Shell.</description>
     <requires>
       <module name="sap/ui/ux3/library.js"/>
@@ -456,7 +456,7 @@
     </requires>
   </module>
   <module name="sap/ui/ux3/library.js" size="14283" compressedSize="2780">
-    <description>Initialization Code and shared classes of library sap.ui.ux3 (1.20.6)</description>
+    <description>Initialization Code and shared classes of library sap.ui.ux3 (1.20.7)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>

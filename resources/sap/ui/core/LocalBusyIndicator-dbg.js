@@ -60,7 +60,7 @@ sap.ui.define(['./library','./Control','./theming/Parameters','./LocalBusyIndica
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

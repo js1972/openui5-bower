@@ -31,7 +31,7 @@ sap.ui.define(['jquery.sap.global', './Template', 'sap/ui/thirdparty/handlebars'
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @name sap.ui.core.tmpl.HandlebarsTemplate
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */

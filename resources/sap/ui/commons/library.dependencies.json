@@ -147,24 +147,24 @@
     {
       "name" : "sap/ui/commons/ColorPicker.js",
       "description" : "Provides control sap.ui.commons.ColorPicker.",
-      "size" : 53699,
-      "compressedSize" : 25932,
+      "size" : 53773,
+      "compressedSize" : 25945,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/ColorPickerRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.ColorPicker",
-      "size" : 1088,
-      "compressedSize" : 455,
+      "size" : 1110,
+      "compressedSize" : 472,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/ui/commons/ComboBox.js",
       "description" : "Provides control sap.ui.commons.ComboBox.",
-      "size" : 62878,
-      "compressedSize" : 24317,
+      "size" : 63562,
+      "compressedSize" : 24575,
       "required" : ["sap/ui/commons/library.js", "sap/ui/commons/TextField.js", "jquery.sap.strings.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -195,8 +195,8 @@
     {
       "name" : "sap/ui/commons/Dialog.js",
       "description" : "Provides control sap.ui.commons.Dialog.",
-      "size" : 55716,
-      "compressedSize" : 12278,
+      "size" : 55896,
+      "compressedSize" : 12325,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "sap/ui/core/Popup.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -699,8 +699,8 @@
     {
       "name" : "sap/ui/commons/RoadMapRenderer.js",
       "description" : "Provides default renderer for control sap.ui.commons.RoadMap",
-      "size" : 29386,
-      "compressedSize" : 12562,
+      "size" : 29279,
+      "compressedSize" : 12514,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -1242,7 +1242,7 @@
     },
     {
       "name" : "sap/ui/commons/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.6)",
+      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.7)",
       "size" : 41162,
       "compressedSize" : 9137,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/layout/library.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],

@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1173,7 +1173,7 @@ sap.m.Popover.prototype.init = function(){
 			return;
 		}
 		//set flag to avoid double calculation
-		if (!that._bPosCalced) {
+		if (!that._bCalSize) {
 			that._bCalSize = true;
 			that._storeScrollPosition();
 			that._clearCSSStyles();
@@ -2111,6 +2111,7 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 		oCSS["height"] = Math.min(iMaxContentHeight, $content.height()) + "px";
 	}else{
 		oCSS["height"] = "";
+		oCSS["max-height"] = iMaxContentHeight + "px";
 	}
 	$content.css(oCSS);
 

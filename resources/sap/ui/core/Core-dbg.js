@@ -33,7 +33,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	 * @extends sap.ui.base.EventProvider
 	 * @final
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @constructor
 	 * @name sap.ui.core.Core 
 	 * @public
