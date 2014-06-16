@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1003,13 +1003,11 @@ sap.m.Select.prototype._setValue = function(sValue) {
  * @private
  */
 sap.m.Select.prototype._mapItemToListItem = function(oItem) {
-	var oListItem = new sap.m.StandardListItem({
-		title: oItem.getText(),
-		type: oItem.getEnabled() ? sap.m.ListType.Active : sap.m.ListType.Inactive
-	});
-
+	var oListItem = new sap.m.StandardListItem();
+	oListItem.setTitle(oItem.getText());
+	oListItem.setType(oItem.getEnabled() ? sap.m.ListType.Active : sap.m.ListType.Inactive);
+	oListItem.setTooltip(oItem.getTooltip());
 	oItem._oListItem = oListItem;
-
 	return oListItem;
 };
 

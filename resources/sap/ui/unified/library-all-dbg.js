@@ -362,7 +362,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.20.6)
+ * Initialization Code and shared classes of library sap.ui.unified (1.20.7)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -397,7 +397,7 @@ sap.ui.getCore().initLibrary({
   elements: [
     "sap.ui.unified.ShellHeadItem"
   ],
-  version: "1.20.6"});
+  version: "1.20.7"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -417,7 +417,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @since 1.16.0
@@ -591,7 +591,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1030,7 +1030,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1390,7 +1390,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1950,7 +1950,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -2700,6 +2700,9 @@ sap.ui.unified.Shell._SIDEPANE_WIDTH_DESKTOP = 240;
 sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE = true; /*Whether header hiding is technically possible (touch enabled)*/
 sap.ui.unified.Shell._HEADER_AUTO_CLOSE = true;
 sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 30;
+if(sap.ui.Device.os.windows && sap.ui.Device.os.version == 8 && sap.ui.Device.browser.chrome){
+	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 15;
+}
 	
 sap.ui.unified.Shell.prototype.init = function(){
 	var that = this;
@@ -2849,6 +2852,8 @@ if(sap.ui.Device.support.touch){
 		this._startY = undefined;
 		this._currY = undefined;
 	};
+	
+	sap.ui.unified.Shell.prototype.ontouchcancel = sap.ui.unified.Shell.prototype.ontouchend;
 	
 	sap.ui.unified.Shell.prototype.ontouchmove = function(oEvent){
 		this._currY = oEvent.touches[0].pageY;
@@ -3333,7 +3338,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

@@ -74,7 +74,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -110,7 +110,8 @@ sap.ui.core.Control.extend("sap.m.ResponsivePopover", { metadata : {
     	"customHeader" : {type : "sap.m.Bar", multiple : false}, 
     	"subHeader" : {type : "sap.m.Bar", multiple : false}, 
     	"beginButton" : {type : "sap.m.Button", multiple : false}, 
-    	"endButton" : {type : "sap.m.Button", multiple : false}
+    	"endButton" : {type : "sap.m.Button", multiple : false}, 
+    	"_popup" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
 	},
 	associations : {
 		"initialFocus" : {type : "sap.ui.core.Control", multiple : false}
@@ -1027,7 +1028,9 @@ sap.m.ResponsivePopover.prototype.init = function(){
 		this._aNotSupportedProperties = ["icon", "showCloseButton"];
 		this._oControl = new sap.m.Popover(this.getId()+ "-popover", settings);
 	}
-	
+
+	this.setAggregation("_popup", this._oControl);
+
 	this._oControl.addStyleClass("sapMResponsivePopover");
 	
 	this._oDelegate = {
@@ -1096,7 +1099,7 @@ sap.m.ResponsivePopover.prototype.init = function(){
 };
 
 sap.m.ResponsivePopover.prototype.openBy = function(oParent){
-	if(!this._bAppendedToUIArea){
+	if(!this._bAppendedToUIArea && !this.getParent()){
 		var oStatic = sap.ui.getCore().getStaticAreaRef();
 		oStatic = sap.ui.getCore().getUIArea(oStatic);
 		oStatic.addContent(this, true);
@@ -1276,13 +1279,16 @@ sap.m.ResponsivePopover.prototype.getEndButton = function(){
 			if(jQuery.type(arguments[0]) === "string"){
 				if(iLastUpperCase !== -1){
 					sMethodName = sName.substring(0, iLastUpperCase) + this._firstLetterUpperCase(arguments[0]);
-					if(this._oControl[sMethodName]){
+					//_oControl can be already destroyed in exit method
+					if(this._oControl && this._oControl[sMethodName]){
 						res = this._oControl[sMethodName].apply(this._oControl, Array.prototype.slice.call(arguments, 1));
 						return res === this._oControl ? this : res;
+					}else{
+						return sap.ui.core.Control.prototype[sName].apply(this, arguments);
 					}
 				}
 			}
-			res = this._oControl[sName].apply(this._oControl ,arguments);
+			res = this._oControl[sName].apply(this._oControl, arguments);
 			return res === this._oControl ? this : res; 
 		};
 });

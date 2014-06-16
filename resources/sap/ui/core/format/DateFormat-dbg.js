@@ -663,6 +663,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 					iHours = parseInt(sPart, 10);
 					if (iHours == 12) {
 						iHours = 0;
+						// 12:00 defaults to 12:00 PM 
+						bPM = true;
 					}
 					break;
 				case "minute":

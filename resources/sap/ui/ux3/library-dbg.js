@@ -10,7 +10,7 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.ux3 (1.20.6)
+ * Initialization Code and shared classes of library sap.ui.ux3 (1.20.7)
  */
 jQuery.sap.declare("sap.ui.ux3.library");
 jQuery.sap.require("sap.ui.core.Core");
@@ -79,7 +79,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.ux3.ThingAction",
     "sap.ui.ux3.ThingGroup"
   ],
-  version: "1.20.6"});
+  version: "1.20.7"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -99,7 +99,7 @@ jQuery.sap.declare("sap.ui.ux3.ActionBarSocialActions");
 /**
  * @class Enumeration of available standard actions for 'sap.ui.ux3.ActionBar'. To be used as parameters for function 'sap.ui.ux3.ActionBar.getSocialAction'.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -166,7 +166,7 @@ jQuery.sap.declare("sap.ui.ux3.ExactOrder");
 /**
  * @class Defines the order of the sub lists of a list in the ExactBrowser.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @since 1.7.1
@@ -204,7 +204,7 @@ jQuery.sap.declare("sap.ui.ux3.FeederType");
 /**
  * @class Type of an Feeder.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @experimental Since version 1.2. 
@@ -249,7 +249,7 @@ jQuery.sap.declare("sap.ui.ux3.FollowActionState");
 /**
  * @class Defines the states of the follow action
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  */
@@ -292,7 +292,7 @@ jQuery.sap.declare("sap.ui.ux3.NotificationBarStatus");
 /**
  * @class This entries are used to set the visibility status of a NotificationBar
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  */
@@ -341,7 +341,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellDesignType");
 /**
  * @class Available shell design types.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @since 1.12.0
@@ -392,7 +392,7 @@ jQuery.sap.declare("sap.ui.ux3.ShellHeaderType");
 /**
  * @class Available shell header display types.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  */
@@ -441,7 +441,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingViewerHeaderType");
 /**
  * @class Available ThingViewer header display types.
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  * @since 1.16.3
@@ -479,7 +479,7 @@ jQuery.sap.declare("sap.ui.ux3.VisibleItemCountMode");
 /**
  * @class VisibleItemCountMode of the FacetFilter defines if the FacetFilter takes the whole available height (Auto) in the surrounding container, or is so high as needed to show 5 Items ("Fixed " - default).
  *
- * @version 1.20.6
+ * @version 1.20.7
  * @static
  * @public
  */

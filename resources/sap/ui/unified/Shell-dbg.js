@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -810,6 +810,9 @@ sap.ui.unified.Shell._SIDEPANE_WIDTH_DESKTOP = 240;
 sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE = true; /*Whether header hiding is technically possible (touch enabled)*/
 sap.ui.unified.Shell._HEADER_AUTO_CLOSE = true;
 sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 30;
+if(sap.ui.Device.os.windows && sap.ui.Device.os.version == 8 && sap.ui.Device.browser.chrome){
+	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 15;
+}
 	
 sap.ui.unified.Shell.prototype.init = function(){
 	var that = this;
@@ -959,6 +962,8 @@ if(sap.ui.Device.support.touch){
 		this._startY = undefined;
 		this._currY = undefined;
 	};
+	
+	sap.ui.unified.Shell.prototype.ontouchcancel = sap.ui.unified.Shell.prototype.ontouchend;
 	
 	sap.ui.unified.Shell.prototype.ontouchmove = function(oEvent){
 		this._currY = oEvent.touches[0].pageY;

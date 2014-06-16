@@ -18,6 +18,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 		 * Instantiates a SAPUI5 Router
 		 * 
 		 * @class
+		 * @extends sap.ui.base.EventProvider
 		 *
 		 * @param {object|array} [oRoutes] may contain many Route configurations as @see sap.ui.core.routing.Route#constructor.<br/>
 		 * Each of the routes contained in the array/object will be added to the router.
@@ -83,6 +84,23 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 			RoutePatternMatched : "routePatternMatched",
 			ViewCreated : "viewCreated"
 		};
+		
+		/**
+		 * Creates a new subclass of class sap.ui.core.routing.Router with name <code>sClassName</code> 
+		 * and enriches it with the information contained in <code>oClassInfo</code>.
+		 * 
+		 * For a detailed description of <code>oClassInfo</code> or <code>FNMetaImpl</code> 
+		 * see {@link sap.ui.base.Object.extend Object.extend}.
+		 *   
+		 * @param {string} sClassName name of the class to be created
+		 * @param {object} [oClassInfo] object literal with informations about the class  
+		 * @param {function} [FNMetaImpl] alternative constructor for a metadata object
+		 * @return {function} the created class / constructor function
+		 * @public
+		 * @static
+		 * @name sap.ui.core.routing.Router.extend
+		 * @function
+		 */
 		
 		/**
 		 * Adds a route to the router

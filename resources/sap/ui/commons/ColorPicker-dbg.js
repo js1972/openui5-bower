@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1103,9 +1103,13 @@ sap.ui.commons.ColorPicker.prototype._calculateRGB = function( hue, sat, val){
 		this.RGB.g = Math.round(sat*2.55);
 		this.RGB.b = Math.round(sat*2.55);
 
-		//	calculate values
+		// calculate values
 	} else {
 		hue = hue / 60;
+		//hue value is cyclic, so 360 = 0
+		if (hue == 6) {
+			hue = 0;
+		}
 		sat = sat / 100;
 		val = val / 100;
 		var redValue, greenValue, blueValue;

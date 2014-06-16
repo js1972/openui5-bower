@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -783,6 +783,7 @@ sap.m.FacetFilter.prototype._openPopover = function(oPopover, oControl) {
 		oList.fireListOpen({});
 		oPopover.openBy(oControl);
 		this._displayRemoveIcon(true, oList);
+		oList._applySearch();
 	}			
 	return this;
 };

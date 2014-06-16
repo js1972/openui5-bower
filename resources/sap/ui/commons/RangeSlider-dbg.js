@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.commons.Slider");
  * @extends sap.ui.commons.Slider
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

@@ -58,7 +58,7 @@ sap.ui.define(['./library','./Item'], function() {
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

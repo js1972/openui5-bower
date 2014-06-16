@@ -24,7 +24,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', './delegate/HTM
 	 * @class HTMLViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @name sap.ui.core.util.serializer.HTMLViewSerializer
 	 * @experimental Since 1.15.1. The HTMLViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */

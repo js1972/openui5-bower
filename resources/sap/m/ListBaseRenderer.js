@@ -9,4 +9,4 @@ sap.m.ListBaseRenderer.renderContainerAttributes=function(r,c){};
 sap.m.ListBaseRenderer.renderListHeadAttributes=function(r,c){};
 sap.m.ListBaseRenderer.renderListStartAttributes=function(r,c){r.write("<ul");c.addNavSection(c.getId("listUl"))};
 sap.m.ListBaseRenderer.renderListEndAttributes=function(r,c){r.write("</ul>")};
-sap.m.ListBaseRenderer.renderNoData=function(r,c){r.write("<li id='"+c.getId("nodata")+"' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");r.write("<span id='"+c.getId("nodata-text")+"'>");r.writeEscaped(c.getNoDataText());r.write("</span></li>")};
+sap.m.ListBaseRenderer.renderNoData=function(r,c){r.write("<li id='"+c.getId("nodata")+"' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");r.write("<span id='"+c.getId("nodata-text")+"'>");r.writeEscaped(c.getNoDataText(true));r.write("</span></li>")};

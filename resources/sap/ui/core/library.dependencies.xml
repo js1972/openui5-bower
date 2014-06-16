@@ -153,7 +153,7 @@
       <module name="jquery.sap.global.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core-nojQuery.js" size="1087377" compressedSize="291200" dynamicDependencies="true">
+  <module name="sap-ui-core-nojQuery.js" size="1087472" compressedSize="291287" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -212,7 +212,7 @@
       <module name="jquery.sap.resources.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core.js" size="1376660" compressedSize="397022" dynamicDependencies="true">
+  <module name="sap-ui-core.js" size="1376755" compressedSize="397109" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/thirdparty/jquery/jquery-1.10.2.js"/>
       <module name="sap/ui/thirdparty/jqueryui/jquery-ui-position.js"/>
@@ -488,7 +488,7 @@
       <module name="sap/ui/thirdparty/URI.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Control.js" size="28136" compressedSize="7593">
+  <module name="sap/ui/core/Control.js" size="28213" compressedSize="7662">
     <description>Provides base class sap.ui.core.Control for all controls</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -552,7 +552,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/Element.js" size="49446" compressedSize="7688">
+  <module name="sap/ui/core/Element.js" size="49464" compressedSize="7706">
     <description>Provides the base class for all controls and UI elements.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -821,7 +821,7 @@
       <module name="jquery.sap.ui.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/UIComponent.js" size="10744" compressedSize="2498">
+  <module name="sap/ui/core/UIComponent.js" size="11118" compressedSize="2521">
     <description>Provides base class sap.ui.core.Component for all components</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1097,7 +1097,7 @@
       <module name="sap/ui/base/Object.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/format/DateFormat.js" size="25770" compressedSize="10910">
+  <module name="sap/ui/core/format/DateFormat.js" size="25825" compressedSize="10917">
     <description>Provides class sap.ui.core.format.DateFormat</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1112,7 +1112,7 @@
     </requires>
   </module>
   <module name="sap/ui/core/library.js" size="51070" compressedSize="12079">
-    <description>Initialization Code and shared classes of library sap.ui.core (1.20.6)</description>
+    <description>Initialization Code and shared classes of library sap.ui.core (1.20.7)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
@@ -1346,7 +1346,7 @@
       <module name="sap/ui/thirdparty/signals.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/routing/Router.js" size="16349" compressedSize="3921">
+  <module name="sap/ui/core/routing/Router.js" size="17124" compressedSize="3921">
     <description>declare unusual global vars for JSLint/SAPUI5 validation</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1738,7 +1738,7 @@
       <module name="sap/ui/model/PropertyBinding.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/ClientTreeBinding.js" size="13049" compressedSize="4661">
+  <module name="sap/ui/model/ClientTreeBinding.js" size="13050" compressedSize="4655">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1910,7 +1910,7 @@
       <module name="sap/ui/model/ClientPropertyBinding.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/json/JSONTreeBinding.js" size="5003" compressedSize="1122">
+  <module name="sap/ui/model/json/JSONTreeBinding.js" size="5008" compressedSize="1122">
     <description>Provides the JSON model implementation of a list binding</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1943,7 +1943,7 @@
       <module name="sap/ui/model/ContextBinding.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataListBinding.js" size="31095" compressedSize="11262">
+  <module name="sap/ui/model/odata/ODataListBinding.js" size="31106" compressedSize="11273">
     <description>Provides class sap.ui.model.odata.ODataListBinding</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -2094,7 +2094,7 @@
     </requires>
   </module>
   <module name="sap/ui/qunit/QUnitUtils.js" size="24837" compressedSize="6675" excludeFromAllInOne="true">
-    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.6 @namespace @name sap.ui.test.qunit @public</description>
+    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.7 @namespace @name sap.ui.test.qunit @public</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>

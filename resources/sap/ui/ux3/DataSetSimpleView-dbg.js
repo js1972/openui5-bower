@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

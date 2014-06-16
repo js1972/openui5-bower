@@ -56,7 +56,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './Core', './El
 	 * @class Base Class for Elements.
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @public
 	 * @name sap.ui.core.Element
 	 */
@@ -264,9 +264,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './Core', './El
 	 */
 	Element.prototype._handleEvent = function (oEvent) {
 		var sHandlerName = "on" + oEvent.type;
-		this._callEventHandles(this.aBeforeDelegates, sHandlerName, oEvent, true);
+		this._callEventHandles(this.aBeforeDelegates.slice(0), sHandlerName, oEvent, true);
 		this._callEventHandles([this], sHandlerName, oEvent);
-		this._callEventHandles(this.aDelegates, sHandlerName, oEvent, true);
+		this._callEventHandles(this.aDelegates.slice(0), sHandlerName, oEvent, true);
 	};
 	
 	/**

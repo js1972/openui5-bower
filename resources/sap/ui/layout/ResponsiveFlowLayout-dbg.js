@@ -54,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -229,7 +229,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 					this.addStyle(key, oStyles[key]);
 				}
 			}
-			for ( var i = 0; i < aClasses.length; i++) {
+			for (var i = 0; i < aClasses.length; i++) {
 				this.addClass(aClasses[i]);
 			}
 
@@ -272,7 +272,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 		var minWidth = 0, weight = 0, length = 0;
 		var bBreak = false, bMargin = false, bLinebreakable = false;
 
-		for ( var i = 0; i < aControls.length; i++) {
+		for (var i = 0; i < aControls.length; i++) {
 			// use default values -> are overwritten if LayoutData exists
 			minWidth = sap.ui.layout.ResponsiveFlowLayoutData.MIN_WIDTH;
 			weight = sap.ui.layout.ResponsiveFlowLayoutData.WEIGHT;
@@ -322,7 +322,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 			if (!!!bLinebreakable) {
 				// if an element mustn't break -> find any previous element that
 				// is allowed to do wrapping
-				for ( var br = length; br > 0; br--) {
+				for (var br = length; br > 0; br--) {
 					oLast = aRows[iRow].cont[br - 1];
 					if (oLast.linebreakable) {
 						oLast.breakWith.push(oItem);
@@ -341,13 +341,12 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 		oThis._rows = aRows;
 	};
 
-	var getCurrrentWrapping = function(oRow, $Row, oThis) {
+	var getCurrentWrapping = function(oRow, $Row, oThis) {
 		var r = [];
 		var lastOffsetLeft = 10000000;
 		var currentRow = -1;
 
-		// Find out the "rows" within a row
-		for ( var j = 0; j < oRow.cont.length; j++) {
+		var fnCurrentWrapping = function(j) {
 			var $cont = jQuery.sap.byId(oRow.cont[j].id);
 			if ($cont.length > 0) {
 				var offset = $cont[0].offsetLeft;
@@ -361,6 +360,19 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 				r[currentRow].cont.push(oRow.cont[j]);
 			}
 		}
+
+		// Find out the "rows" within a row
+		if (sap.ui.getCore().getConfiguration().getRTL()) {
+			// for RTL-mode the elements have to be checked the other way round
+			for (var i = oRow.cont.length - 1; i >= 0; i--) {
+				fnCurrentWrapping(i);
+			}
+		} else {
+			for (var i = 0; i < oRow.cont.length; i++) {
+				fnCurrentWrapping(i);
+			}
+		}
+
 		return r;
 	};
 
@@ -423,7 +435,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 			return true;
 		}
 
-		for ( var i = 0; i < wrap1.length; i++) {
+		for (var i = 0; i < wrap1.length; i++) {
 			if (wrap1[i].cont.length != wrap2[i].cont.length) {
 				return true;
 			}
@@ -488,7 +500,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 				if (oCont.breakWith.length > 0) {
 					tWeight = oCont.weight;
 					tMinWidth = oCont.minWidth;
-					for ( var br = 0; br < oCont.breakWith.length; br++) {
+					for (var br = 0; br < oCont.breakWith.length; br++) {
 						tWeight += oCont.breakWith[br].weight;
 						tMinWidth += oCont.breakWith[br].minWidth;
 					}
@@ -509,8 +521,10 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 				iProcWidth = 100 / totalWeight * oCont.weight;
 				var iProcMinWidth = oStyles["min-width"] / iWidth * 100;
 				// round the values BEFORE they are used for the percental value
-				// because if the un-rounded values don't need the percental value
-				// of the min-width the percentage value of the calculated width might be lower
+				// because if the un-rounded values don't need the percental
+				// value
+				// of the min-width the percentage value of the calculated width
+				// might be lower
 				// after it is floored.
 				var iPMinWidth = Math.ceil(iProcMinWidth);
 				var iPWidth = Math.floor(iProcWidth);
@@ -647,11 +661,11 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 			var bRender = false;
 
 			if (this._rows) {
-				for ( var i = 0; i < this._rows.length; i++) {
+				for (var i = 0; i < this._rows.length; i++) {
 					var $Row = this._$DomRef.find("#" + sId + "-row" + i);
 
 					var oTargetWrapping = getTargetWrapping(this._rows[i], iInnerWidth);
-					var oCurrentWrapping = getCurrrentWrapping(this._rows[i], $Row, this);
+					var oCurrentWrapping = getCurrentWrapping(this._rows[i], $Row, this);
 
 					// render if wrapping differs
 					bRender = checkWrappingDiff(oCurrentWrapping, oTargetWrapping);
@@ -666,7 +680,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 					}
 
 					// if this sould be the initial rendering -> do it
-					bRender = bRender || (typeof(bInitial) === "boolean" && bInitial);
+					bRender = bRender || (typeof (bInitial) === "boolean" && bInitial);
 
 					if (this._bLayoutDataChanged || bRender) {
 						this._oDomRef.innerHTML = "";
@@ -680,7 +694,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 				if (this._oDomRef.innerHTML === "") {
 					this.oRm.flush(this._oDomRef);
 
-					for ( var i = 0; i < this._rows.length; i++) {
+					for (var i = 0; i < this._rows.length; i++) {
 						var oTmpRect = jQuery.sap.byId(sId + "-row" + i).rect();
 						this._rows[i].oRect = oTmpRect;
 					}
@@ -689,6 +703,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 				if (this._rows.length === 0) {
 					if (this._resizeHandlerComputeWidthsID) {
 						sap.ui.core.ResizeHandler.deregister(this._resizeHandlerComputeWidthsID);
+						delete this._resizeHandlerComputeWidthsID;
 					}
 				}
 			}
@@ -705,6 +720,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 
 		if (this._resizeHandlerFullLengthID) {
 			sap.ui.core.ResizeHandler.deregister(this._resizeHandlerFullLengthID);
+			delete this._resizeHandlerFullLengthID;
 		}
 	};
 
@@ -716,12 +732,17 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 		this._oDomRef = this.getDomRef();
 		this._$DomRef = jQuery(this._oDomRef);
 
-		if (this.getResponsive()) {
-			// Initial Width Adaptation
-			this._proxyComputeWidths(true);
+		// Initial Width Adaptation
+		this._proxyComputeWidths(true);
 
+		if (this.getResponsive()) {
 			if (!this._resizeHandlerComputeWidthsID) {
 				this._resizeHandlerComputeWidthsID = sap.ui.core.ResizeHandler.register(this, this._proxyComputeWidths);
+			}
+		} else {
+			if (this._resizeHandlerComputeWidthsID) {
+				sap.ui.core.ResizeHandler.deregister(this._resizeHandlerComputeWidthsID);
+				delete this._resizeHandlerComputeWidthsID;
 			}
 		}
 	};
@@ -754,7 +775,7 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 		} else if (oLayoutData.getMetadata().getName() == "sap.ui.core.VariantLayoutData") {
 			// multiple LayoutData available - search here
 			var aLayoutData = oLayoutData.getMultipleLayoutData();
-			for ( var i = 0; i < aLayoutData.length; i++) {
+			for (var i = 0; i < aLayoutData.length; i++) {
 				var oLayoutData2 = aLayoutData[i];
 				if (oLayoutData2 instanceof sap.ui.layout.ResponsiveFlowLayoutData) {
 					return oLayoutData2;

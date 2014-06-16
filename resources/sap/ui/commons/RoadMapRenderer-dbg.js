@@ -479,7 +479,7 @@ sap.ui.commons.RoadMapRenderer.addEllipses = function(oStep){
 	}
 
 	var jStepLabel = oStep.$("label");
-	var sOriginalText = jQuery.sap.escapeHTML(oStep.getLabel());
+	var sOriginalText = oStep.getLabel();
 	var sText = sOriginalText + "";
 
 	var jClone = jQuery("<label class=\"sapUiRoadMapTitle\" style=\"display:none;position:absolute;overflow:visible;font-weight:bold;height:auto\">"+sText+"</label>");
@@ -490,16 +490,12 @@ sap.ui.commons.RoadMapRenderer.addEllipses = function(oStep){
 	while(sText.length > 0 && jClone.height() > jStepLabel.height()){
 		//TODO: Do we need special RTL handling here?
 		sText = sText.substr(0, sText.length - 1);
-		jClone.html(sText + "...");
+		jClone.html(jQuery.sap.escapeHTML(sText + "..."));
 		bIsShortened = true;
 	}
 
 	if(bIsShortened){
-		var sHTML = jClone.html();
-		sHTML = sHTML.substr(0, sHTML.length - 3);
-		sHTML = jQuery.sap.escapeHTML(sHTML);
-		sHTML = "<span>" +sHTML + "</span>";
-		jStepLabel.html(sHTML);
+		jStepLabel.html("<span>" + jQuery.sap.escapeHTML(sText) + "</span>");
 		jStepLabel.attr("title", oStep.getLabel());
 	}else{
 		jStepLabel.attr("title", getStepTooltip(oStep));

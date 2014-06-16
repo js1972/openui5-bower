@@ -55,7 +55,7 @@ sap.ui.define(['./library','./LayoutData'], function() {
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public

@@ -143,7 +143,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/ColorPicker.js" size="53699" compressedSize="25932">
+  <module name="sap/ui/commons/ColorPicker.js" size="53773" compressedSize="25945">
     <description>Provides control sap.ui.commons.ColorPicker.</description>
     <requires>
       <module name="sap/ui/commons/library.js"/>
@@ -151,13 +151,13 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/ColorPickerRenderer.js" size="1088" compressedSize="455">
+  <module name="sap/ui/commons/ColorPickerRenderer.js" size="1110" compressedSize="472">
     <description>Provides default renderer for control sap.ui.commons.ColorPicker</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/ComboBox.js" size="62878" compressedSize="24317">
+  <module name="sap/ui/commons/ComboBox.js" size="63562" compressedSize="24575">
     <description>Provides control sap.ui.commons.ComboBox.</description>
     <requires>
       <module name="sap/ui/commons/library.js"/>
@@ -194,7 +194,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/Dialog.js" size="55716" compressedSize="12278">
+  <module name="sap/ui/commons/Dialog.js" size="55896" compressedSize="12325">
     <description>Provides control sap.ui.commons.Dialog.</description>
     <requires>
       <module name="sap/ui/commons/library.js"/>
@@ -687,7 +687,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/RoadMapRenderer.js" size="29386" compressedSize="12562">
+  <module name="sap/ui/commons/RoadMapRenderer.js" size="29279" compressedSize="12514">
     <description>Provides default renderer for control sap.ui.commons.RoadMap</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1239,7 +1239,7 @@
     </requires>
   </module>
   <module name="sap/ui/commons/library.js" size="41162" compressedSize="9137">
-    <description>Initialization Code and shared classes of library sap.ui.commons (1.20.6)</description>
+    <description>Initialization Code and shared classes of library sap.ui.commons (1.20.7)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>

@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 	 * @extends sap.ui.core.Element
 	 * @abstract
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.6
+	 * @version 1.20.7
 	 * @name sap.ui.core.Control
 	 */
 	var Control = Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -595,6 +595,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 				var $BusyIndicator = jQuery('<div class="sapUiLocalBusyIndicator"><div class="sapUiLocalBusyIndicatorAnimation"><div class="sapUiLocalBusyIndicatorBox"></div><div class="sapUiLocalBusyIndicatorBox"></div><div class="sapUiLocalBusyIndicatorBox"></div></div></div>');
 				$BusyIndicator.attr("id",this.getId() + "-busyIndicator")
 				$this.append($BusyIndicator);
+				$this.addClass('sapUiLocalBusy');
 				if (this._busyDelayedCallId) {
 					jQuery.sap.clearDelayedCall(this._busyDelayedCallId);
 				}
@@ -679,6 +680,11 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 				this.addDelegate(oBusyIndicatorDelegate, false, this);
 			} else {
 				this.removeDelegate(oBusyIndicatorDelegate);
+				//If there is a pending delayed call we clear it
+				if (this._busyIndicatorDelayedCallId) {
+					jQuery.sap.clearDelayedCall(this._busyIndicatorDelayedCallId);
+					delete this._busyIndicatorDelayedCallId;
+				}
 			}
 			
 			//If no domref exists stop here.
@@ -693,14 +699,9 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 					this._busyIndicatorDelayedCallId = jQuery.sap.delayedCall(this.getBusyIndicatorDelay(), this, fnAppendBusyIndicator);
 				}
 			} else {
-				//If there is a pending delayed call we clear it
-				if (this._busyIndicatorDelayedCallId) {
-					jQuery.sap.clearDelayedCall(this._busyIndicatorDelayedCallId);
-					delete this._busyIndicatorDelayedCallId;
-				}
-				
 				//Remove the busy indicator from the DOM
 				this.$("busyIndicator").remove();
+				this.$().removeClass('sapUiLocalBusy');
 				
 				//Reset the position style to its original state
 				if (this._busyStoredPosition) {

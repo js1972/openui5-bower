@@ -81,18 +81,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ClientTreeBinding'],
 			aArrayNames = this.mParameters && this.mParameters.arrayNames,
 			aChildArray;
 		
-		if (aArrayNames && jQuery.isArray(aArrayNames)) {
-			
-			jQuery.each(aArrayNames, function(iIndex, sArrayName){
-				aChildArray = oNode[sArrayName];
-				if (aChildArray) {
-					jQuery.each(aChildArray, function(sSubName, oSubChild) {
-						that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);
-					})
-				}
-			});
-		} else {
-			if (oNode) {
+		if (oNode) {
+			if (aArrayNames && jQuery.isArray(aArrayNames)) {
+				jQuery.each(aArrayNames, function(iIndex, sArrayName){
+					aChildArray = oNode[sArrayName];
+					if (aChildArray) {
+						jQuery.each(aChildArray, function(sSubName, oSubChild) {
+							that._saveSubContext(oSubChild, aContexts, sContextPath, sArrayName + "/" + sSubName);
+						})
+					}
+				});
+			} else {
 				jQuery.sap.each(oNode, function(sName, oChild) {
 					if (jQuery.isArray(oChild)){
 						jQuery.each(oChild, function(sSubName, oSubChild) {

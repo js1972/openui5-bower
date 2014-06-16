@@ -191,6 +191,6 @@ sap.m.ListBaseRenderer.renderListEndAttributes = function(rm, oControl) {
 sap.m.ListBaseRenderer.renderNoData = function(rm, oControl) {
 	rm.write("<li id='" + oControl.getId("nodata") + "' class='sapMLIB sapMListNoData sapMLIBTypeInactive'>");
 	rm.write("<span id='" + oControl.getId("nodata-text") + "'>");
-	rm.writeEscaped(oControl.getNoDataText());
+	rm.writeEscaped(oControl.getNoDataText(true));
 	rm.write("</span></li>");
 };

@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.6
+ * @version 1.20.7
  *
  * @constructor   
  * @public
@@ -1442,6 +1442,14 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 	var bFoundById = false;
 	var bFoundByValue = false;
 	this._iClosedUpDownIdx = -1;
+	var bBoundValue = !!this.getBinding("value");
+	var bBoundSelectedKey = !!this.getBinding("selectedKey");
+	// binding for itemId makes no sense...
+
+	if (bBoundValue && bBoundSelectedKey) {
+		// if both bound -> only use key
+		bBoundValue = false;
+	}
 
 	for ( var i = 0; i < aItems.length; i++) {
 		var oItem= aItems[i];
@@ -1456,7 +1464,7 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 			this._sWantedSelectedKey = undefined;
 			this._sWantedSelectedItemId = undefined;
 			break;
-		}else if (sSelectedKey && oItem.getKey() == sSelectedKey && oItem.getEnabled()) {
+		}else if (sSelectedKey && oItem.getKey() == sSelectedKey && oItem.getEnabled() && !(bFoundByValue && bBoundValue)) {
 			// if not a WantedKey or Id is used, first search for key
 			bFoundByKey = true;
 			sNewKey = sSelectedKey;
@@ -1469,20 +1477,28 @@ sap.ui.commons.ComboBox.prototype._handleItemsChanged = function(oEvent, bDelaye
 				// value, id and key still the same and no not items searched for existence
 				break;
 			}
-		}else if (sSelectedItemId && oItem.getId() == sSelectedItemId && oItem.getEnabled() && !bFoundByKey) {
+			if (bBoundSelectedKey && !this._sWantedSelectedKey  && !this._sWantedSelectedItemId) {
+				// bound on key and no not items searched for existence
+				break;
+			}
+		}else if (sSelectedItemId && oItem.getId() == sSelectedItemId && oItem.getEnabled() && !bFoundByKey && !(bFoundByValue && bBoundValue)) {
 			// if not a WantedKey or Id is used and not found by key search for ID
 			bFoundById = true;
 			sNewKey = oItem.getKey();
 			sNewId = sSelectedItemId;
 			sNewValue = oItem.getText();
 			iIndex = i;
-		}else if (oItem.getText() == sValue && oItem.getEnabled() && !bFoundByKey && !bFoundById && !bFoundByValue) {
+		}else if (oItem.getText() == sValue && oItem.getEnabled() && !(bFoundByKey && !bBoundValue) && !(bFoundById && !bBoundValue) && !bFoundByValue) {
 			// if not a WantedKey or Id is used and not found by key or ID, search for Value (use only first hit)
 			bFoundByValue = true;
 			sNewKey = oItem.getKey();
 			sNewId = oItem.getId();
 			sNewValue = sValue;
 			iIndex = i;
+			if (bBoundValue && !this._sWantedSelectedKey  && !this._sWantedSelectedItemId) {
+				// bound on value and no not items searched for existence
+				break;
+			}
 		}
 	}
 
