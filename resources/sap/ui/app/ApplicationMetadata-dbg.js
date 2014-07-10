@@ -20,7 +20,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/ComponentMetadata'],
 	 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
 	 * @class
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 1.13.2
 	 * @name sap.ui.app.ApplicationMetadata
 	 */

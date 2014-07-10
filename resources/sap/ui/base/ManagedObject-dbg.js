@@ -52,7 +52,7 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 	 * @class Base Class for managed objects.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @public
 	 * @name sap.ui.base.ManagedObject
 	 * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 

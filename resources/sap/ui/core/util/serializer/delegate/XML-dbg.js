@@ -22,7 +22,7 @@ sap.ui.define(['jquery.sap.global', './Delegate'],
 	 * @class XML serializer delegate class.
 	 * @extends sap.ui.core.util.serializer.delegate.Delegate
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.core.util.serializer.delegate.XML
 	 * @experimental Since 1.15.1. The XML serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */

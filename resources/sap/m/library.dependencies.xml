@@ -127,7 +127,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Carousel.js" size="41526" compressedSize="9977">
+  <module name="sap/m/Carousel.js" size="42692" compressedSize="10423">
     <description>Provides control sap.m.Carousel.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1296,7 +1296,7 @@
     </requires>
   </module>
   <module name="sap/m/library.js" size="68817" compressedSize="12540">
-    <description>Initialization Code and shared classes of library sap.m (1.20.8)</description>
+    <description>Initialization Code and shared classes of library sap.m (1.20.9)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>

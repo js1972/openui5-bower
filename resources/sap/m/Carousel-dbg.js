@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -759,6 +759,40 @@ sap.m.Carousel.prototype._cleanUpScrollContainer = function() {
 	}
 };
 
+/**
+ * Delegates 'touchstart' event to mobify carousel
+ * 
+ * @param oEvent
+ */
+sap.m.Carousel.prototype.ontouchstart = function(oEvent) {
+	if(this._oMobifyCarousel) {
+		this._oMobifyCarousel.touchstart(oEvent);
+	}
+};
+
+/**
+ * Delegates 'touchmove' event to mobify carousel
+ * 
+ * @param oEvent
+ */
+sap.m.Carousel.prototype.ontouchmove = function(oEvent) {
+	if(this._oMobifyCarousel) {
+		this._oMobifyCarousel.touchmove(oEvent);
+	}
+};
+
+/**
+ * Delegates 'touchend' event to mobify carousel
+ * 
+ * @param oEvent
+ */
+sap.m.Carousel.prototype.ontouchend = function(oEvent) {
+	if(this._oMobifyCarousel) {
+		this._oMobifyCarousel.touchend(oEvent);
+	}
+};
+
+
 
 /**
  * Cleans up bindings
@@ -810,19 +844,22 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 	
 	if(sActivePage) {
 		var iIndex = this._getPageNumber(sActivePage);
-		if(isNaN(iIndex)) {
+		if(isNaN(iIndex) || iIndex == 0) {
 			if(this.getPages().length > 0) {
 				//First page is always shown as default
+				//Do not fire page changed event, though
 				this.setAssociation("activePage", this.getPages()[0].getId(), true);
+				this._adjustHUDVisibility(1);
 			}
 		} else {
 			this._oMobifyCarousel.changeAnimation('sapMCrslNoTransition');
 			//mobify carousel is 1-based
 			this._oMobifyCarousel.move(iIndex + 1);
+			this._changePage(iIndex + 1);
 		}
 	}
 	
-	this._fnAdjustHUDVisibility(sActivePage ? (this._getPageNumber(sActivePage) + 1) : 1);
+	
 	
 	//attach delegate for firing 'PageChanged' events to mobify carousel's
 	//'afterSlide'
@@ -834,16 +871,7 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 		}
 
 		if(iNextSlide > 0){
-			this._fnAdjustHUDVisibility(iNextSlide);
-			var sOldActivePageId = this.getActivePage();
-			var sNewActivePageId = this.getPages()[iNextSlide -1].getId();
-			this.setAssociation("activePage", sNewActivePageId, true);
-
-			jQuery.sap.log.debug("sap.m.Carousel: firing pageChanged event: old page: " + sOldActivePageId 
-					+ ", new page: " + sNewActivePageId);
-
-			this.firePageChanged( { oldActivePageId: sOldActivePageId,
-				newActivePageId: sNewActivePageId});
+			this._changePage(iNextSlide);
 		}
 	}, this));
 	this._$InnerDiv = this.$().find(sap.m.Carousel._INNER_SELECTOR)[0];
@@ -854,16 +882,36 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 	}
 };
 
+/**
+ * Private method which adjusts the Hud visibility and fires a page change
+ * event when the active page changes
+ * 
+ * @param iNewPageIndex index of new page in 'pages' aggregation.
+ * @private
+ */
+sap.m.Carousel.prototype._changePage = function(iNewPageIndex) {
+	this._adjustHUDVisibility(iNewPageIndex);
+	var sOldActivePageId = this.getActivePage();
+	var sNewActivePageId = this.getPages()[iNewPageIndex - 1].getId();
+	this.setAssociation("activePage", sNewActivePageId, true);
+
+	jQuery.sap.log.debug("sap.m.Carousel: firing pageChanged event: old page: " + sOldActivePageId 
+			+ ", new page: " + sNewActivePageId);
+
+	this.firePageChanged( { oldActivePageId: sOldActivePageId,
+		newActivePageId: sNewActivePageId});
+};
+
 
 
 /**
  * Sets HUD control's visibility after page has changed
  * 
- * @param iNextSlide index of the next acrtive page
+ * @param iNextSlide index of the next active page
  * @private
  *
  */
-sap.m.Carousel.prototype._fnAdjustHUDVisibility = function(iNextSlide) {
+sap.m.Carousel.prototype._adjustHUDVisibility = function(iNextSlide) {
 	if (sap.ui.Device.system.desktop && !this.getLoop() && this.getPages().length > 1) {
 		//update HUD arrow visibility for left- and
 		//rightmost pages
@@ -966,31 +1014,37 @@ sap.m.Carousel.prototype.onfocusin = function(oEvent){
  *
  */
 sap.m.Carousel.prototype.setActivePage = function (vPage) {
-	var sPagedId = null,
-		bHasMoved = false;
+	var sPageId = null,
+		bPageFound = false;
 	if(typeof(vPage) == 'string') {
-		sPagedId = vPage;
+		sPageId = vPage;
 	} else if (vPage instanceof sap.ui.core.Control) {
-		sPagedId = vPage.getId();
+		sPageId = vPage.getId();
 	}
 	
-	if(sPagedId) {
-		if(this._oMobifyCarousel) {
-			var iPageNr = this._getPageNumber(sPagedId);
-			
-			if(!isNaN(iPageNr)) {
+	if(sPageId) {
+		if(sPageId === this.getActivePage()) {
+			//page has not changed, nothing to do, return
+			return this;
+		}
+		var iPageNr = this._getPageNumber(sPageId);
+		
+		if(!isNaN(iPageNr)) {
+			bPageFound = true;
+			if(this._oMobifyCarousel) {
 				//mobify carousel's move function is '1' based
 				this._oMobifyCarousel.move(iPageNr + 1);
-				bHasMoved = true;
-			} 
-		}
+				this._changePage(iPageNr + 1);
+			}
+			// if oMobifyCarousel is not present yet, move takes place
+			// 'onAfterRendering', when oMobifyCarousel is created
+		} 
 	} 
 	
-	if(bHasMoved || !this._oMobifyCarousel) {
+	if(bPageFound) {
 		//active page shall only be set, if vPage has been 
-		//found amongst the carousel's pages or if carousel has not been 
-		//rendered yet
-		this.setAssociation("activePage", sPagedId, true);
+		//found amongst the carousel's pages
+		this.setAssociation("activePage", sPageId, true);
 	} else {
 		jQuery.sap.log.warning("sap.m.Carousel.prototype.setActivePage: Cannot set active page " + 
 	 	"because it is neither of type 'string' nor a 'sap.ui.core.Control'");
@@ -1201,11 +1255,11 @@ sap.m.Carousel.prototype.next = function () {
  * @return the position of a given page in the carousel's page list or 'undefined' if it does not exist in the list.
  * @private
  */
-sap.m.Carousel.prototype._getPageNumber = function(sPagedId) {
+sap.m.Carousel.prototype._getPageNumber = function(sPageId) {
 	var i, result;
 	
 	for(i=0; i<this.getPages().length; i++) {
-		if(this.getPages()[i].getId() == sPagedId) {
+		if(this.getPages()[i].getId() == sPageId) {
 			result = i;
 			break;
 		}

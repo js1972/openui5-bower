@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

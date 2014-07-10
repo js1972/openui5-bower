@@ -1112,7 +1112,7 @@
     </requires>
   </module>
   <module name="sap/ui/core/library.js" size="51070" compressedSize="12079">
-    <description>Initialization Code and shared classes of library sap.ui.core (1.20.8)</description>
+    <description>Initialization Code and shared classes of library sap.ui.core (1.20.9)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
@@ -1943,7 +1943,7 @@
       <module name="sap/ui/model/ContextBinding.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataListBinding.js" size="31308" compressedSize="11395">
+  <module name="sap/ui/model/odata/ODataListBinding.js" size="31106" compressedSize="11273">
     <description>Provides class sap.ui.model.odata.ODataListBinding</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -2094,7 +2094,7 @@
     </requires>
   </module>
   <module name="sap/ui/qunit/QUnitUtils.js" size="24837" compressedSize="6675" excludeFromAllInOne="true">
-    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.8 @namespace @name sap.ui.test.qunit @public</description>
+    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.9 @namespace @name sap.ui.test.qunit @public</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
@@ -2387,7 +2387,7 @@
   </module>
   <module name="sap/ui/thirdparty/less.js" size="268776" compressedSize="103519" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="sap/ui/thirdparty/mobify-carousel.js" size="17939" compressedSize="7455" excludeFromAllInOne="true" requiresTopLevelScope="true" exposedGlobals="Mobify" raw="true">
+  <module name="sap/ui/thirdparty/mobify-carousel.js" size="19179" compressedSize="7960" excludeFromAllInOne="true" requiresTopLevelScope="true" exposedGlobals="Mobify" raw="true">
   </module>
   <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js" size="3551" compressedSize="1757" excludeFromAllInOne="true" raw="true">
     <requires>

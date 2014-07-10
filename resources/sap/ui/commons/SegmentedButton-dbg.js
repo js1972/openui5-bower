@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

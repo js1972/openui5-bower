@@ -427,12 +427,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 		function fnError(oError) {
 			that.oRequestHandle = null;
 			that.bPendingRequest = false;
-			// reset data and trigger update
-			that.aKeys = [];
-			that.iLength = 0;
-			that.bLengthFinal = true;
-			that.bDataAvailable = true;
-			that._fireChange({reason: sap.ui.model.ChangeReason.Change});
 			that.fireDataReceived();
 		}
 		

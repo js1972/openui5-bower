@@ -82,7 +82,7 @@
     },
     {
       "name" : "sap/ui/table/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.8)",
+      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.9)",
       "size" : 7978,
       "compressedSize" : 1601,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/commons/library.js", "jquery.sap.global.js"],

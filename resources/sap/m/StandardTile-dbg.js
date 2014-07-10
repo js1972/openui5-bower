@@ -64,7 +64,7 @@ jQuery.sap.require("sap.m.Tile");
  * @extends sap.m.Tile
  *
  * @author SAP AG 
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

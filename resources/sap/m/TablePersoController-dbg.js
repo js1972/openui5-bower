@@ -27,7 +27,7 @@ jQuery.sap.require("sap.m.TablePersoDialog");
  * @class Table Personalization Controller
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.8
+ * @version 1.20.9
  * @name sap.m.TablePersoController
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.TablePersoController */

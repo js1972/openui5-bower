@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem,sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

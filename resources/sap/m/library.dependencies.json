@@ -130,8 +130,8 @@
     {
       "name" : "sap/m/Carousel.js",
       "description" : "Provides control sap.m.Carousel.",
-      "size" : 41526,
-      "compressedSize" : 9977,
+      "size" : 42692,
+      "compressedSize" : 10423,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/thirdparty/mobify-carousel.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1274,7 +1274,7 @@
     },
     {
       "name" : "sap/m/library.js",
-      "description" : "Initialization Code and shared classes of library sap.m (1.20.8)",
+      "description" : "Initialization Code and shared classes of library sap.m (1.20.9)",
       "size" : 68817,
       "compressedSize" : 12540,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "jquery.sap.mobile.js", "sap/m/Support.js", "sap/ui/Device.js", "sap/m/ios7.js", "jquery.sap.global.js"],

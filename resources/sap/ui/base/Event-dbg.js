@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global', './Object'],
 	 * @extends sap.ui.base.Object
 	 * @implements sap.ui.base.Poolable
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.base.Event
 	 * @public
 	 */

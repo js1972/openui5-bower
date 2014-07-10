@@ -1465,7 +1465,7 @@
     },
     {
       "name" : "sap/ui/core/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.core (1.20.8)",
+      "description" : "Initialization Code and shared classes of library sap.ui.core (1.20.9)",
       "size" : 51070,
       "compressedSize" : 12079,
       "required" : ["sap/ui/core/Core.js", "jquery.sap.global.js"],
@@ -2497,8 +2497,8 @@
     {
       "name" : "sap/ui/model/odata/ODataListBinding.js",
       "description" : "Provides class sap.ui.model.odata.ODataListBinding",
-      "size" : 31308,
-      "compressedSize" : 11395,
+      "size" : 31106,
+      "compressedSize" : 11273,
       "required" : ["jquery.sap.global.js", "sap/ui/core/format/DateFormat.js", "sap/ui/model/FilterType.js", "sap/ui/model/ListBinding.js", "sap/ui/model/odata/CountMode.js", "sap/ui/model/odata/Filter.js"],
       "includes" : []
     },
@@ -2648,7 +2648,7 @@
     },
     {
       "name" : "sap/ui/qunit/QUnitUtils.js",
-      "description" : "The <code>sap.ui.test.qunit</code> namespace contains helper functionality for QUnit tests.  @version 1.20.8 @namespace @name sap.ui.test.qunit @public",
+      "description" : "The <code>sap.ui.test.qunit</code> namespace contains helper functionality for QUnit tests.  @version 1.20.9 @namespace @name sap.ui.test.qunit @public",
       "size" : 24837,
       "compressedSize" : 6675,
       "required" : ["jquery.sap.global.js"],
@@ -3131,8 +3131,8 @@
     },
     {
       "name" : "sap/ui/thirdparty/mobify-carousel.js",
-      "size" : 17939,
-      "compressedSize" : 7455,
+      "size" : 19179,
+      "compressedSize" : 7960,
       "required" : [],
       "includes" : [],
       "excludeFromAllInOne" : true

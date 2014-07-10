@@ -981,7 +981,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.table.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.table (1.20.8)
+ * Initialization Code and shared classes of library sap.ui.table (1.20.9)
  */
 jQuery.sap.declare("sap.ui.table.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1023,7 +1023,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.table.Column",
     "sap.ui.table.Row"
   ],
-  version: "1.20.8"});
+  version: "1.20.9"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1043,7 +1043,7 @@ jQuery.sap.declare("sap.ui.table.NavigationMode");
 /**
  * @class Navigation mode of the table
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @static
  * @public
  */
@@ -1080,7 +1080,7 @@ jQuery.sap.declare("sap.ui.table.SelectionBehavior");
 /**
  * @class Selection behavior of the table
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @static
  * @public
  */
@@ -1123,7 +1123,7 @@ jQuery.sap.declare("sap.ui.table.SelectionMode");
 /**
  * @class Selection mode of the table
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @static
  * @public
  */
@@ -1172,7 +1172,7 @@ jQuery.sap.declare("sap.ui.table.SortOrder");
 /**
  * @class Sort order of a column
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @static
  * @public
  */
@@ -1209,7 +1209,7 @@ jQuery.sap.declare("sap.ui.table.VisibleRowCountMode");
 /**
  * @class VisibleRowCountMode of the table
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @static
  * @public
  */
@@ -1325,7 +1325,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -2652,7 +2652,7 @@ jQuery.sap.require('sap.ui.commons.Menu'); // unlisted dependency retained
  * @extends sap.ui.commons.Menu
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -3113,7 +3113,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -3352,7 +3352,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -8585,7 +8585,7 @@ jQuery.sap.declare("sap.ui.table.TreeTable");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
@@ -9282,7 +9282,7 @@ jQuery.sap.declare("sap.ui.table.DataTable");
  * @extends sap.ui.table.TreeTable
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

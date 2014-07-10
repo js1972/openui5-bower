@@ -10299,7 +10299,7 @@ $.ui.position = {
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10322,7 +10322,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.8";
+		var apiVersion = "1.20.9";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -10376,7 +10376,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.8";
+		var v = "1.20.9";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -13876,7 +13876,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -14269,7 +14269,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @namespace
 	 * @public
 	 * @static
@@ -16873,7 +16873,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
  * sap.ui.lazyRequire("sap.ui.core.Control");
  * sap.ui.lazyRequire("sap.ui.commons.Button");
  *
- * @version 1.20.8
+ * @version 1.20.9
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -17771,7 +17771,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap</code> namespace is automatically registered with the
 	 * OpenAjax hub if it exists.
 	 *
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @namespace
 	 * @public
 	 * @name sap
@@ -17784,7 +17784,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
 	 * point for UI related JavaScript functionality provided by SAP.
 	 *
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @namespace
 	 * @name sap.ui
 	 * @public
@@ -17797,8 +17797,8 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 			 * The version of the SAP UI Library
 			 * @type string
 			 */
-			version: "1.20.8",
-			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201406231654" }
+			version: "1.20.9",
+			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201406261025" }
 		});
 	
 	/**
@@ -18407,7 +18407,7 @@ sap.ui.define("sap/ui/base/Interface",['jquery.sap.global'],
 	 *        only the defined functions will be visible, no internals of the class can be accessed.
 	 *
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @param {sap.ui.base.Object}
 	 *            oObject the instance that needs an interface created
 	 * @param {string[]}
@@ -18568,7 +18568,7 @@ sap.ui.define("jquery.sap.script",['jquery.sap.global'],
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -19334,7 +19334,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 	 *
 	 * @class Metadata for a class.
 	 * @author Frank Weigel
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.8.6
 	 * @public
 	 * @name sap.ui.base.Metadata
@@ -19695,7 +19695,7 @@ sap.ui.define("sap/ui/base/Object",['jquery.sap.global', './Interface', './Metad
 	 * @class Base class for all SAPUI5 Objects
 	 * @abstract
 	 * @author Malte Wedel
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @public
 	 * @name sap.ui.base.Object
 	 */
@@ -19870,7 +19870,7 @@ sap.ui.define("sap/ui/base/Event",['jquery.sap.global', './Object'],
 	 * @extends sap.ui.base.Object
 	 * @implements sap.ui.base.Poolable
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.base.Event
 	 * @public
 	 */
@@ -20059,7 +20059,7 @@ sap.ui.define("sap/ui/base/ObjectPool",['jquery.sap.global', './Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @constructor
 	 * @name sap.ui.base.ObjectPool
 	 * @public
@@ -20175,7 +20175,7 @@ sap.ui.define("sap/ui/base/EventProvider",['jquery.sap.global', './Event', './Ob
 	 * @abstract
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @constructor
 	 * @public
 	 * @name sap.ui.base.EventProvider
@@ -20770,7 +20770,7 @@ sap.ui.define("sap/ui/base/ManagedObjectMetadata",['jquery.sap.global', './DataT
 	 *
 	 * @class
 	 * @author Frank Weigel
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.8.6
 	 * @name sap.ui.base.ManagedObjectMetadata
 	 */
@@ -22114,7 +22114,7 @@ sap.ui.define("sap/ui/model/Type",['jquery.sap.global', 'sap/ui/base/Object'],
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 *
 	 * @constructor
 	 * @public
@@ -22222,7 +22222,7 @@ sap.ui.define("sap/ui/model/SimpleType",['jquery.sap.global', './FormatException
 	 * @extends sap.ui.model.Type
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 *
 	 * @constructor
 	 * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -23101,7 +23101,7 @@ sap.ui.define("sap/ui/model/Model",['jquery.sap.global', 'sap/ui/base/EventProvi
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 *
 	 * @constructor
 	 * @public
@@ -24431,7 +24431,7 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 	 * @class Base Class for managed objects.
 	 * @extends sap.ui.base.EventProvider
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @public
 	 * @name sap.ui.base.ManagedObject
 	 * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
@@ -27544,7 +27544,7 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 1.9.2
 	 * @name sap.ui.core.ComponentMetadata
 	 */
@@ -27950,7 +27950,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.core.Component
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -28587,7 +28587,7 @@ sap.ui.define("sap/ui/core/Locale",['jquery.sap.global', 'sap/ui/base/Object'],
 		 *
 		 * @extends sap.ui.base.Object
 		 * @author SAP AG
-		 * @version 1.20.8
+		 * @version 1.20.9
 		 * @constructor
 		 * @public
 		 * @name sap.ui.core.Locale
@@ -30106,7 +30106,7 @@ sap.ui.define("sap/ui/core/ElementMetadata",['jquery.sap.global', 'sap/ui/base/M
 	 *
 	 * @class
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.8.6
 	 * @name sap.ui.core.ElementMetadata
 	 */
@@ -30279,7 +30279,7 @@ sap.ui.define("sap/ui/core/Element",['jquery.sap.global', 'sap/ui/base/ManagedOb
 	 * @class Base Class for Elements.
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @public
 	 * @name sap.ui.core.Element
 	 */
@@ -31678,7 +31678,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	 * @extends sap.ui.core.Element
 	 * @abstract
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.core.Control
 	 */
 	var Control = Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -33224,7 +33224,7 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
@@ -34956,7 +34956,7 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.20.8
+//	 * @version 1.20.9
 //	 * @namespace
 //	 * @public
 //	 */
@@ -35117,7 +35117,7 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	 *
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
 	 * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
 	 * @public
@@ -36051,7 +36051,7 @@ sap.ui.define("sap/ui/core/tmpl/Template",['jquery.sap.global', 'sap/ui/base/Man
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @name sap.ui.core.tmpl.Template
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -39374,7 +39374,7 @@ sap.ui.define("jquery.sap.properties",['jquery.sap.global', 'jquery.sap.sjax'],
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -39666,7 +39666,7 @@ sap.ui.define("jquery.sap.resources",['jquery.sap.global', 'jquery.sap.propertie
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -40093,7 +40093,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	 * @extends sap.ui.base.EventProvider
 	 * @final
 	 * @author SAP
-	 * @version 1.20.8
+	 * @version 1.20.9
 	 * @constructor
 	 * @name sap.ui.core.Core 
 	 * @public

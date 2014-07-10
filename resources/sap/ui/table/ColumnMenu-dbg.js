@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.commons.Menu");
  * @extends sap.ui.commons.Menu
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.Table");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public

@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.MenuItemBase");
  * @extends sap.ui.commons.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.20.8
+ * @version 1.20.9
  *
  * @constructor   
  * @public
