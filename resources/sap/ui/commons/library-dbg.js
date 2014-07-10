@@ -10,7 +10,7 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.commons (1.20.9)
+ * Initialization Code and shared classes of library sap.ui.commons (1.20.10)
  */
 jQuery.sap.declare("sap.ui.commons.library");
 jQuery.sap.require("sap.ui.core.Core");
@@ -158,7 +158,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.layout.PositionContainer",
     "sap.ui.commons.layout.ResponsiveFlowLayoutData"
   ],
-  version: "1.20.9"});
+  version: "1.20.10"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -178,7 +178,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonStyle");
 /**
  * @class different styles for a button.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -237,7 +237,7 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerHeight");
 /**
  * @class Enumeration of possible HorizontalDivider height settings.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -286,7 +286,7 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerType");
 /**
  * @class Enumeration of possible HorizontalDivider types.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -323,7 +323,7 @@ jQuery.sap.declare("sap.ui.commons.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -360,7 +360,7 @@ jQuery.sap.declare("sap.ui.commons.MenuBarDesign");
 /**
  * @class Determines the visual design of a MenuBar. The feature might be not supported by all themes.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -397,7 +397,7 @@ jQuery.sap.declare("sap.ui.commons.MessageType");
 /**
  * @class [Enter description for MessageType]
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -440,7 +440,7 @@ jQuery.sap.declare("sap.ui.commons.Orientation");
 /**
  * @class Orientation of an UI element
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -477,7 +477,7 @@ jQuery.sap.declare("sap.ui.commons.PaginatorEvent");
 /**
  * @class Disctinct paginator event types
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -532,7 +532,7 @@ jQuery.sap.declare("sap.ui.commons.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -575,7 +575,7 @@ jQuery.sap.declare("sap.ui.commons.RowRepeaterDesign");
 /**
  * @class Determines the visual design of a RowRepeater.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -648,7 +648,7 @@ jQuery.sap.declare("sap.ui.commons.TextViewColor");
 /**
  * @class Semantic Colors of a text.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -697,7 +697,7 @@ jQuery.sap.declare("sap.ui.commons.TextViewDesign");
 /**
  * @class Designs for TextView.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -794,7 +794,7 @@ jQuery.sap.declare("sap.ui.commons.ToolbarDesign");
 /**
  * @class Determines the visual design of a Toolbar.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -855,7 +855,7 @@ jQuery.sap.declare("sap.ui.commons.ToolbarSeparatorDesign");
 /**
  * @class Design of the Toolbar Separator.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -892,7 +892,7 @@ jQuery.sap.declare("sap.ui.commons.TriStateCheckBoxState");
 /**
  * @class States for TriStateCheckBox
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  * @since 1.7.2
@@ -936,7 +936,7 @@ jQuery.sap.declare("sap.ui.commons.enums.AreaDesign");
 /**
  * @class Value set for the background design of areas
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -979,7 +979,7 @@ jQuery.sap.declare("sap.ui.commons.enums.BorderDesign");
 /**
  * @class Value set for the border design of areas
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1016,7 +1016,7 @@ jQuery.sap.declare("sap.ui.commons.enums.Orientation");
 /**
  * @class Orientation of a UI element
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1055,7 +1055,7 @@ jQuery.sap.declare("sap.ui.commons.layout.BackgroundDesign");
  * Background design (i.e. color), e.g. of a layout cell.
  * 
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1136,7 +1136,7 @@ jQuery.sap.declare("sap.ui.commons.layout.BorderLayoutAreaTypes");
 /**
  * @class The type (=position) of a BorderLayoutArea
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1195,7 +1195,7 @@ jQuery.sap.declare("sap.ui.commons.layout.HAlign");
  * others do not.
  * 
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1265,7 +1265,7 @@ jQuery.sap.declare("sap.ui.commons.layout.Padding");
  * or end of a line, in the current locale's writing direction.
  * 
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1339,7 +1339,7 @@ jQuery.sap.declare("sap.ui.commons.layout.Separation");
  * defined width, with or without a vertical line in its middle.
  * 
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1422,7 +1422,7 @@ jQuery.sap.declare("sap.ui.commons.layout.VAlign");
  * Vertical alignment, e.g. of a layout cell's content within the cell's borders.
  * 
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */

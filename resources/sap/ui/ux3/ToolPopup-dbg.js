@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public

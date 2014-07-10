@@ -69,7 +69,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -758,6 +758,8 @@ jQuery.sap.require("sap.ui.layout.ResponsiveFlowLayoutData"); // because Respons
 		var oForm = this.getAggregation("form");
 		oForm.setEditable(bEditable);
 
+		return this;
+
 	};
 
 	/*
@@ -1196,7 +1198,7 @@ jQuery.sap.require("sap.ui.layout.ResponsiveFlowLayoutData"); // because Respons
 	sap.ui.layout.form.SimpleForm.prototype.getContent = function() {
 
 		if (!this._aElements) {
-			this._aElements = this.getAggregation("content");
+			this._aElements = this.getAggregation("content", []);
 		}
 		return this._aElements;
 
@@ -1252,6 +1254,8 @@ jQuery.sap.require("sap.ui.layout.ResponsiveFlowLayoutData"); // because Respons
 				}
 			}
 		}
+
+		return this;
 
 	};
 

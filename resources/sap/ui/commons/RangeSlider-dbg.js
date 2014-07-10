@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.commons.Slider");
  * @extends sap.ui.commons.Slider
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -204,19 +204,20 @@ sap.ui.commons.RangeSlider.prototype.onfocusin = function(oEvent) {
 sap.ui.commons.RangeSlider.prototype.onsaphome = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
+		var fNewValue = 0;
+		var iNewPos = 0;
+
 		if (this.oMovingGrip == this.oGrip) {
-			if (this.getVertical()) {
-				this.setValue(this.getMin());
-			} else {
-				this.setValue(this.getMin());
+			fNewValue = this.getMin();
+			if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+				iNewPos = this.getBarWidth();
 			}
 		} else if (this.oMovingGrip == this.oGrip2) {
-			if (this.getVertical()) {
-				this.setValue2(this.getMin());
-			} else {
-				this.setValue2(this.getMin());
-			}
+			fNewValue = this.getValue();
+			iNewPos = this.getOffsetLeft(this.oGrip) + this.iShiftGrip;
 		}
+
+		this.changeGrip(fNewValue, iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
@@ -233,33 +234,27 @@ sap.ui.commons.RangeSlider.prototype.onsaphome = function(oEvent) {
 sap.ui.commons.RangeSlider.prototype.onsapend = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
+		var fNewValue = 0;
+		var iNewPos = 0;
+
 		if (this.oMovingGrip == this.oGrip) {
-			if (!this.getVertical()) {
-				this.setValue(this.getMax());
-			} else {
-				this.setValue(this.getMax());
-			}
+			fNewValue = this.getValue2();
+			iNewPos = this.getOffsetLeft(this.oGrip2) + this.iShiftGrip;
 		} else if (this.oMovingGrip == this.oGrip2) {
-			if (!this.getVertical()) {
-				this.setValue2(this.getMax());
-			} else {
-				this.setValue2(this.getMax());
+			fNewValue = this.getMax();
+			if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+				iNewPos = 0;
+			}else{
+				iNewPos = this.getBarWidth();
 			}
 		}
+
+		this.changeGrip(fNewValue, iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
 	oEvent.preventDefault();
 	oEvent.stopPropagation();
-};
-
-/**
- * fires the change event. The liveEvent is not fired here.
- *
- * @private
- */
-sap.ui.commons.RangeSlider.prototype.handleFireChangeWithoutLive = function() {
-	this.fireChange({value: this.getValue(),value2: this.getValue2()});
 };
 
 /**
@@ -269,8 +264,8 @@ sap.ui.commons.RangeSlider.prototype.handleFireChangeWithoutLive = function() {
  *            oGrip, float fNewValue
  * @private
  */
-sap.ui.commons.RangeSlider.prototype.fireLiveChangeForGrip = function(oGrip,
-		fNewValue, fOldValue) {
+sap.ui.commons.RangeSlider.prototype.fireLiveChangeForGrip = function(oGrip, fNewValue, fOldValue) {
+
 	if (oGrip == this.oGrip) {
 		if (fOldValue != fNewValue) {
 			// fire event only if value changed
@@ -372,6 +367,8 @@ sap.ui.commons.RangeSlider.prototype.setValue = function(fValue) {
 
 	this.setProperty('value', fValue, true); // No re-rendering
 
+	this._oldValue1 = fValue;
+
 	// Check for number -> if NaN -> no change
 	if (isNaN(fValue)) {
 		return this;
@@ -402,12 +399,13 @@ sap.ui.commons.RangeSlider.prototype.setValue = function(fValue) {
 		iNewPos = (fNewValue - this.getMin()) / (this.getMax() - this.getMin())
 				* this.getBarWidth();
 	}
-	
+
 	if(this.bRtl && !this.getVertical()){
 		iNewPos = this.getBarWidth() - iNewPos;
 	}
 
 	this.changeGrip(fNewValue, iNewPos, this.oGrip);
+	this._oldValue1 = fNewValue;
 
 	return this;
 
@@ -423,6 +421,8 @@ sap.ui.commons.RangeSlider.prototype.setValue = function(fValue) {
 sap.ui.commons.RangeSlider.prototype.setValue2 = function(fValue) {
 
 	this.setProperty('value2', fValue, true); // No re-rendering
+
+	this._oldValue2 = fValue;
 
 	// Check for number -> if NaN -> no change
 	if (isNaN(fValue)) {
@@ -458,8 +458,9 @@ sap.ui.commons.RangeSlider.prototype.setValue2 = function(fValue) {
 	if(this.bRtl && !this.getVertical()){
 		iNewPos = this.getBarWidth() - iNewPos;
 	}
-	
+
 	this.changeGrip(fNewValue, iNewPos, this.oGrip2);
+	this._oldValue2 = fNewValue;
 
 	return this;
 
@@ -522,14 +523,14 @@ sap.ui.commons.RangeSlider.prototype.validateNewPosition = function(fNewValue,
 			} else {
 				if (fNewValue >= this.getValue2()) {
 					fNewValue = this.getValue2();
-					iNewPos = this.getOffsetLeft(this.oGrip2) + this.iShiftLeft;
+					iNewPos = this.getOffsetLeft(this.oGrip2) + this.iShiftGrip;
 				}
 			}
 		} else {
 			if (bMin) {
 				if (fNewValue <= this.getValue()) {
 					fNewValue = this.getValue();
-					iNewPos = this.getOffsetLeft(this.oGrip) + this.iShiftLeft;
+					iNewPos = this.getOffsetLeft(this.oGrip) + this.iShiftGrip;
 				}
 			} else {
 				if (fNewValue >= this.getMax() || iNewPos >= this.getBarWidth()) {
@@ -604,33 +605,40 @@ sap.ui.commons.RangeSlider.prototype.handleMove = function(event) {
 	sap.ui.commons.Slider.prototype.handleMove.apply(this, [event]);
 };
 
-/**
+/*
  * fires the change event. The liveChange event must be fired too if the change
  * event is fired.
- * 
+ *
+ * @param bNoLiveChange fire no LiveChange event
  * @private
  */
-sap.ui.commons.RangeSlider.prototype.handleFireChange = function() {
+sap.ui.commons.RangeSlider.prototype.handleFireChange = function(bNoLiveChange) {
+
 	var iValue1 = this.getValue();
 	var iValue2 = this.getValue2();
-	
+
 	// Only fire the events if the values actually changed
 	if (iValue1 !== this._oldValue1 || iValue2 !== this._oldValue2) {
+		this._oldValue1 = iValue1;
+		this._oldValue2 = iValue2;
+
 		this.fireChange({
 			value2 : iValue2,
 			value  : iValue1
 		});
-		this.fireLiveChange({
-			value  : iValue1,
-			value2 : iValue2
-		});
 
-		this._oldValue1 = iValue1;
-		this._oldValue2 = iValue2;
+		if (!bNoLiveChange) {
+			this.fireLiveChange({
+				value  : iValue1,
+				value2 : iValue2
+			});
+		}
+
 	}
+
 };
 
-/**
+/*
  * Function returns nearest grip
  * 
  * @private

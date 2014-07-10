@@ -31,7 +31,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject'],
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
 	 * @author SAP
-	 * @version 1.20.9
+	 * @version 1.20.10
 	 * @name sap.ui.core.tmpl.Template
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
@@ -560,6 +560,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject'],
 				
 				// retrieve the content 
 				sContent = $element.html();
+
+				var rBindingPattern = /path="(\w|\/|&gt;)+"/i;
+				if (rBindingPattern.test(sContent)) {
+					// Since jQuery.html() escapes such chars like '>' with '&gt;'
+					// check if a binding path is inside the content and replace
+					// the escaped '&gt;' with a '>'.
+					sContent = sContent.replace("&gt;", ">");
+				}
 	
 				// check the preconditions for rendering and set the render property
 				// if the DOM ref is part of the documents body

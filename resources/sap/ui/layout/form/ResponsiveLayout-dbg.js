@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -546,7 +546,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 								aContent.push(oLabel);
 							}
 							if(oLayout.mContainers[sContainerId] && oLayout.mContainers[sContainerId][2] &&
-									oLayout.mContainers[sContainerId][2][sElementId]){
+									oLayout.mContainers[sContainerId][2][sElementId] &&
+									oLayout.mContainers[sContainerId][2][sElementId][1]){
 								aContent.push(oLayout.mContainers[sContainerId][2][sElementId][1]);
 							}
 						}

@@ -41,7 +41,7 @@ sap.ui.define(['jquery.sap.global', './Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel
-	 * @version 1.20.9
+	 * @version 1.20.10
 	 * @constructor
 	 * @name sap.ui.base.ObjectPool
 	 * @public

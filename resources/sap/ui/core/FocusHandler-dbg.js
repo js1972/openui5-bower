@@ -126,14 +126,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 			if(!oEvent) {
 				return;
 			}
-			if(oEvent.type == "focus"){
-				this.onfocusEvent(oEvent.controlId);
-			}else if(oEvent.type == "blur"){
-				this.onblurEvent(oEvent.controlId);
-			}
-			this.aEventQueue.shift();
-			if(this.aEventQueue.length > 0) {
-				this.processEvent();
+			try{
+				if(oEvent.type == "focus"){
+					this.onfocusEvent(oEvent.controlId);
+				}else if(oEvent.type == "blur"){
+					this.onblurEvent(oEvent.controlId);
+				}
+			}finally{ //Ensure that queue is processed until it is empty!
+				this.aEventQueue.shift();
+				if(this.aEventQueue.length > 0) {
+					this.processEvent();
+				}
 			}
 		};
 	

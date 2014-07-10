@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.layout.HorizontalLayout");
  * @extends sap.ui.layout.HorizontalLayout
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public

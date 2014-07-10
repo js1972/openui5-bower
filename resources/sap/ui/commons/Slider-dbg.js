@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -938,6 +938,12 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
 
 sap.ui.commons.Slider.prototype.ontouchstart = function(oEvent) {
 
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
+
 	this._cancelMousedown = false;
 
 	this.onmousedown(oEvent);
@@ -953,8 +959,8 @@ sap.ui.commons.Slider.prototype.ontouchstart = function(oEvent) {
  * @private
  */
 sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
-	if (this.getEditable() && this.getEnabled()){
 
+	if (this.getEditable() && this.getEnabled()){
 		// Mouseup is handled on every div, not only on grip
 
 		this.bGripMousedown = false;
@@ -967,7 +973,7 @@ sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
 			if ( this.iStartLeft != ( this.getOffsetLeft(this.oMovingGrip) + this.iShiftGrip )){
 				// Only if position was changed
 				// only fire change event because liveChange is already fired in handleMove
-				this.handleFireChangeWithoutLive();
+				this.handleFireChange(true); // without liveChange
 			}
 
 			this.handleMoveCall = null;
@@ -980,6 +986,12 @@ sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
 };
 
 sap.ui.commons.Slider.prototype.ontouchend = function(oEvent) {
+
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
 
 	this.onmouseup(oEvent);
 
@@ -1060,6 +1072,12 @@ sap.ui.commons.Slider.prototype.handleMove = function(event) {
 };
 
 sap.ui.commons.Slider.prototype.ontouchmove = function(oEvent) {
+
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
 
 	this.handleMove(oEvent);
 
@@ -1291,7 +1309,12 @@ sap.ui.commons.Slider.prototype.onsapcollapse = function(oEvent) {
 sap.ui.commons.Slider.prototype.onsaphome = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
-		this.setValue(this.getMin());
+		var iNewPos = 0;
+		if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+			iNewPos = this.getBarWidth();
+		}
+
+		this.changeGrip(this.getMin(), iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
@@ -1308,7 +1331,12 @@ sap.ui.commons.Slider.prototype.onsaphome = function(oEvent) {
 sap.ui.commons.Slider.prototype.onsapend = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
-		this.setValue(this.getMax());
+		var iNewPos = this.getBarWidth();
+		if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+			iNewPos = 0;
+		}
+
+		this.changeGrip(this.getMax(), iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
@@ -1782,6 +1810,8 @@ sap.ui.commons.Slider.prototype.setValue = function(fValue) {
 
 	this.setProperty('value', fValue, true); // No re-rendering
 
+	this._lastValue = fValue;
+
 	// Check for number -> if NaN -> no change
 	if( isNaN(fValue) ){
 		return this;
@@ -1812,41 +1842,39 @@ sap.ui.commons.Slider.prototype.setValue = function(fValue) {
 	}else{
 			iNewPos = ( fNewValue - this.getMin() ) / ( this.getMax() - this.getMin() ) * this.getBarWidth() ;
 	}
-	
+
 	if(this.bRtl && !this.getVertical()){
 		iNewPos = this.getBarWidth() - iNewPos;
 	}
 
 	this.changeGrip( fNewValue, iNewPos, this.oGrip );
+	this._lastValue = fNewValue;
 
 	return this;
 
 };
 
-/**
- * fires the change event. The liveEvent is not fired here.
- *
- * @private
- */
-sap.ui.commons.Slider.prototype.handleFireChangeWithoutLive = function() {
-	this.fireChange({value: this.getValue()});
-};
-
-/**
+/*
  * fires the change event. The liveChange event must be fired too if the change event is fired.
  *
+ * @param bNoLiveChange fire no LiveChange event
  * @private
  */
-sap.ui.commons.Slider.prototype.handleFireChange = function() {
+sap.ui.commons.Slider.prototype.handleFireChange = function(bNoLiveChange) {
+
 	var iValue = this.getValue();
+
 	if (iValue !== this._lastValue) {
 		this.fireChange({value: iValue});
-		this.fireLiveChange({value: iValue});
+		if (!bNoLiveChange) {
+			this.fireLiveChange({value: iValue});
+		}
 		this._lastValue = iValue;
 	}
+
 };
 
-/**
+/*
  * Updates the ARIA state initially and in case of changes.
  *
  * @private
@@ -1854,7 +1882,7 @@ sap.ui.commons.Slider.prototype.handleFireChange = function() {
 sap.ui.commons.Slider.prototype.setAriaState = function() {
 
 	var fValue = this.getValue();
-	
+
 	if (this.bTextLabels) {
 		fValue = this.getNearestLabel(fValue);
 	}

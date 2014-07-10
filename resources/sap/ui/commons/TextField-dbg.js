@@ -73,7 +73,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1039,7 +1039,8 @@ sap.ui.commons.TextField.prototype.onkeyup = function(oEvent) {
 		} else if($FocusDomRef.data("sap.InNavArea") === false) { // check for false to avoid undefined
 			$FocusDomRef.data("sap.InNavArea", true);
 		}
-	}else if(oEvent.keyCode != jQuery.sap.KeyCodes.TAB && oEvent.keyCode != jQuery.sap.KeyCodes.ENTER){
+	}else if(oEvent.keyCode != jQuery.sap.KeyCodes.TAB && oEvent.keyCode != jQuery.sap.KeyCodes.ENTER
+	          && oEvent.keyCode != jQuery.sap.KeyCodes.F4){
 		this._fireLiveChange(oEvent);
 	}
 

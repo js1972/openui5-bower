@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1035,12 +1035,15 @@ sap.ui.commons.DropdownBox.prototype.onfocusin = function(oEvent) {
  * @protected
  */
 sap.ui.commons.DropdownBox.prototype.onselect = function(oEvent) {
+
+	var iTimeStamp = new Date().getTime();
+
 	if(this._bIgnoreSelect) {
 		this._bIgnoreSelect = false;
-		this.iOldTimestamp = oEvent.originalEvent.timeStamp;
+		this.iOldTimestamp = iTimeStamp;
 		return;
 	}
-	if (this.iOldTimestamp && oEvent.originalEvent.timeStamp - this.iOldTimestamp < 50) {
+	if (this.iOldTimestamp && iTimeStamp - this.iOldTimestamp < 50) {
 		// prevent double call of event in IE9 and jQuery 1.7.1
 		return;
 	}

@@ -78,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1187,7 +1187,7 @@ sap.m.Popover.prototype.init = function(){
 
 		// update the "of" property on oPosition because parent can be already rerendered
 		if (that._oOpenBy instanceof sap.ui.core.Element) {
-			oPosition.of = that._oOpenBy.getDomRef();
+			oPosition.of = that._getOpenByDomRef();
 		}
 
 		// if the openBy dom reference is null or already detached from the dom tree because of rerendering
@@ -1287,7 +1287,7 @@ sap.m.Popover.prototype.onAfterRendering = function(){
 	if(!this._marginTopInit){
 		this._marginTop = 2;
 		if(this._oOpenBy){
-			$openedBy = (this._oOpenBy instanceof sap.ui.core.Element) ? this._oOpenBy.$() : jQuery(this._oOpenBy);
+			$openedBy = jQuery(this._getOpenByDomRef());
 			//first check if the openedBy isn't inside a header
 			if(!($openedBy.closest("header.sapMBar").length > 0)){
 				$page = $openedBy.closest(".sapMPage");
@@ -1408,7 +1408,7 @@ sap.m.Popover.prototype.openBy = function(oControl, bSkipInstanceManager){
 	// Open popup
 	iPlacePos = jQuery.inArray(this.getPlacement(), this._placements);
 	if(iPlacePos > -1){
-		oParentDomRef = (this._oOpenBy instanceof sap.ui.core.Element) ? this._oOpenBy.getDomRef() : this._oOpenBy;
+		oParentDomRef = this._getOpenByDomRef();
 		if(!oParentDomRef){
 			jQuery.sap.log.error("sap.m.Popover id = " + this.getId() + ": is opened by a control which isn't rendered yet.");
 			return;
@@ -1758,7 +1758,7 @@ sap.m.Popover.prototype._calcOffset = function(sOffset){
 
 sap.m.Popover.prototype._calcPlacement = function() {
 	var oPlacement = this.getPlacement();
-	var oParentDomRef = (this._oOpenBy instanceof sap.ui.core.Element) ? this._oOpenBy.getDomRef() : this._oOpenBy;
+	var oParentDomRef = this._getOpenByDomRef();
 	
 	//calculate the position of the popover
 	switch (oPlacement) {
@@ -1944,7 +1944,7 @@ sap.m.Popover.prototype._setArrowPosition = function() {
 		return;
 	}
 
-	var $parent = (this._oOpenBy instanceof sap.ui.core.Element) ? this._oOpenBy.$() : jQuery(this._oOpenBy),
+	var $parent = jQuery(this._getOpenByDomRef()),
 		$this = this.$(),
 		iPopoverBorderLeft = window.parseInt($this.css("border-left-width"), 10),
 		iPopoverBorderRight = window.parseInt($this.css("border-right-width"), 10),
@@ -2180,7 +2180,7 @@ sap.m.Popover.prototype._setArrowPosition = function() {
  * @private
  */
 sap.m.Popover.prototype._isPopupElement = function(oDOMNode) {
-	var oParentDomRef = (this._oOpenBy instanceof sap.ui.core.Element) ? this._oOpenBy.getDomRef() : this._oOpenBy;
+	var oParentDomRef = this._getOpenByDomRef();
 	return !!(jQuery(oDOMNode).closest(sap.ui.getCore().getStaticAreaRef()).length) || !!(jQuery(oDOMNode).closest(oParentDomRef).length);
 };
 
@@ -2355,6 +2355,42 @@ sap.m.Popover.prototype._removeFollowOfDelegate = function(){
 	if(sap.ui.Device.system.desktop && (this._oOpenBy instanceof sap.ui.core.Element)){
 		this._oOpenBy.removeEventDelegate(this._oFollowOfDelegate);
 	}
+};
+
+sap.m.Popover.prototype._repositionOffset = function() {
+	var ePopupState = this.oPopup.getOpenState(),
+		oLastPosition, iPlacePos;
+
+	//if popup isn't open, just return
+	if(!(ePopupState === sap.ui.core.OpenState.OPEN)){
+		return this;
+	}
+
+	//popup is open
+	oLastPosition = this.oPopup._oLastPosition;
+	iPlacePos = jQuery.inArray(this.getPlacement(), this._placements);
+
+	if (iPlacePos === -1) {
+		return this;
+	}
+
+	if (iPlacePos < 4) {
+		oLastPosition.offset = this._calcOffset(this._offsets[iPlacePos]);
+		this.oPopup._applyPosition(oLastPosition);
+	} else {
+		this._calcPlacement();
+	}
+
+	return this;
+};
+
+sap.m.Popover.prototype._getOpenByDomRef = function() {
+	if (!this._oOpenBy) {
+		return null;
+	}
+	
+	return (this._oOpenBy instanceof sap.ui.core.Element) ?
+			(this._oOpenBy.getFocusDomRef() || this._oOpenBy.getDomRef()) : this._oOpenBy;
 };
 
 /**
@@ -2557,49 +2593,15 @@ sap.m.Popover.prototype.setModal = function(bModal, sModalCSSClass) {
 };
 
 sap.m.Popover.prototype.setOffsetX = function(iValue){
-	var ePopupState = this.oPopup.getOpenState(),
-		oLastPosition, iPlacePos;
-	
 	this.setProperty("offsetX", iValue, true);
-	
-	//if popup isn't open, just return
-	if(!(ePopupState === sap.ui.core.OpenState.OPEN)){
-		return this;
-	}
-	
-	//popup is open
-	oLastPosition = this.oPopup._oLastPosition;
-	iPlacePos = jQuery.inArray(this.getPlacement(), this._placements);	
-	
-	if(iPlacePos > -1){
-		oLastPosition.offset = this._calcOffset(this._offsets[iPlacePos]);
-		this.oPopup._applyPosition(oLastPosition);
-	}
-	
-	return this;
+
+	return this._repositionOffset();
 };
 
 sap.m.Popover.prototype.setOffsetY = function(iValue){
-	var ePopupState = this.oPopup.getOpenState(),
-		oLastPosition, iPlacePos;
-	
 	this.setProperty("offsetY", iValue, true);
-	
-	//if popup isn't open, just return
-	if(!(ePopupState === sap.ui.core.OpenState.OPEN)){
-		return this;
-	}
-	
-	//popup is open
-	oLastPosition = this.oPopup._oLastPosition;
-	iPlacePos = jQuery.inArray(this.getPlacement(), this._placements);
-	
-	if(iPlacePos > -1){
-		oLastPosition.offset = this._calcOffset(this._offsets[iPlacePos]);
-		this.oPopup._applyPosition(oLastPosition);
-	}
-	
-	return this;
+
+	return this._repositionOffset();
 };
 
 sap.m.Popover.prototype.setEnableScrolling = function(bValue) {

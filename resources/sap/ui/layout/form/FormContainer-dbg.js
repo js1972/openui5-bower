@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -334,6 +334,8 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 			_setExpanderIcon(that);
 		}
 
+		return this;
+
 	};
 
 	sap.ui.layout.form.FormContainer.prototype.setExpanded = function(bExpanded){
@@ -347,6 +349,8 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
 		if (oForm && oForm.toggleContainerExpanded) {
 			oForm.toggleContainerExpanded(that);
 		}
+
+		return this;
 
 	};
 

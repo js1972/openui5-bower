@@ -51,7 +51,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 			 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 			 *
-			 * @version 1.20.9
+			 * @version 1.20.10
 			 * @constructor
 			 * @protected
 			 */
@@ -650,8 +650,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 						.css("-webkit-overflow-scrolling", "touch");
 				} else { //other browsers do not support -webkit-overflow-scrolling
 					$Container
-						.css("overflow-x", this._bHorizontal ? "auto" : "hidden")
-						.css("overflow-y", this._bVertical ? "auto" : "hidden");
+						.css("overflow-x", this._bHorizontal && !this._bDragScroll ? "auto" : "hidden")
+						.css("overflow-y", this._bVertical && !this._bDragScroll ? "auto" : "hidden");
 				}
 			},
 	
@@ -693,6 +693,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 				if (this._fnScrollLoadCallback && $Container[0].scrollHeight - $Container.scrollTop() - $Container.height() < 100 ) {
 					this._fnScrollLoadCallback(); // close to the bottom
 				}
+
+				// IconTabBar
+				if (this._oIconTabBar && this._fnScrollEndCallback) {
+					this._fnScrollEndCallback();
+				}
 			},
 	
 			_onStart : function(oEvent){
@@ -721,9 +726,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			},
 	
 			_onTouchMove : function(oEvent){
+				var container = this._$Container[0];
+				var point = oEvent.touches[0];
 				if(this._iDirection == ""){ // do once at start
-					var container = this._$Container[0];
-					var point = oEvent.touches[0];
 					var dx = point.pageX - this._iX;
 					var dy = point.pageY - this._iY;
 
@@ -750,7 +755,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 					// prevent scrolling
 					oEvent.preventDefault();
 				}
-	
+
+				// Special case for scrolling without overflow: auto
+				if(this._bDragScroll){
+					// Check first if the touch move direction is correct
+					if(this._iDirection == "v" && this._bVertical || this._iDirection == "h" && this._bHorizontal){
+						container.scrollLeft = container.scrollLeft + this._iX - point.pageX;
+						container.scrollTop = container.scrollTop + this._iY - point.pageY;
+						this._iX = point.pageX;
+						this._iY = point.pageY;
+						oEvent.stopPropagation();
+						oEvent.preventDefault();
+					}
+					return;
+				}
+
 				if(this._bAllowScroll || this._bHorizontal && this._iDirection == "h"){
 					oEvent.setMarked(); // see jQuery.sap.mobile.js
 					if(window.iScroll){ // if both iScroll and native scrolling are used (IconTabBar)
@@ -759,10 +778,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 				}
 			},
 	
-			_onEnd : function(){
+			_onEnd : function(oEvent){
 				if (this._oPullDown && this._oPullDown._bTouchMode) {
 					this._oPullDown.doScrollEnd();
 					this._refresh();
+				}
+
+				if(this._bDragScroll && this._iDirection){
+					oEvent.setMarked();
 				}
 			},
 	
@@ -839,7 +862,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 						.on("touchcancel touchend", jQuery.proxy(this._onEnd, this))
 						.on("touchstart", jQuery.proxy(this._onStart, this))
 						.on("touchmove", jQuery.proxy(this._onTouchMove, this));
-				} else if(this._bMouseDrag){
+				} else if(this._bDragScroll){
 					$Container
 						.on("mouseup mouseleave", jQuery.proxy(this._onMouseUp, this))
 						.mousedown(jQuery.proxy(this._onMouseDown, this))
@@ -946,7 +969,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 							}
 							$.extend(this, oNativeScrollDelegate);
 							if(oConfig.nonTouchScrolling === true){
-								this._bMouseDrag = true; // optional mouse drag scrolling
+								this._bDragScroll = true; // optional drag instead of native scrolling
 							}
 							if (sap.ui.getCore().getConfiguration().getRTL()) {
 								this._scrollX = 9999; // in RTL case initially scroll to the very right

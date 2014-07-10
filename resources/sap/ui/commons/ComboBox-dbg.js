@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1202,6 +1202,7 @@ sap.ui.commons.ComboBox.prototype._prepareOpen = function(oListBox) {
 		$Ref.attr("aria-posinset", iIndex+1);
 		$Ref.val(oNewValue);
 		this._doSelect();
+		this._fireLiveChange();
 	}
 	var iItemsLength = oListBox.getItems().length;
 	var iMaxPopupItems = this.getMaxPopupItems();

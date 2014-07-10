@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -799,9 +799,9 @@ sap.ui.commons.Splitter.prototype.onmousedown = function(oEvent) {
 			+ width + "px; left:" + offset.left + "px; top:" + offset.top + "px;z-index:" + iZIndex + "\"></div>");
 
 	// append overlay over splitter to enable correct functionality of moving the splitter
-	jQuery(this.splitterDIV).append(
+	jQuery(document.body).append(
 			"<div id=\"" + this.getId() + "_overlay\" style =\"left: 0px;" +
-					" right: 0px; bottom: 0px; top: 0px; position:absolute\" ></div>");
+					" right: 0px; bottom: 0px; top: 0px; position:fixed; z-index:" + iZIndex + "\" ></div>");
 
 	jQuery(document).bind("mouseup", jQuery.proxy(this.onGhostMouseRelease, this));
 	jQuery(document).bind("mousemove", jQuery.proxy(this.onGhostMouseMove, this));

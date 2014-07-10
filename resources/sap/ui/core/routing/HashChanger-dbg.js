@@ -10,6 +10,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	 * Fires a "hashChanged" event if the browser hash changes.
 	 *
 	 * @class
+	 * @extends sap.ui.base.EventProvider
 	 *
 	 * @public
 	 * @name sap.ui.core.routing.HashChanger

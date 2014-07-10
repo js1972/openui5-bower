@@ -12,7 +12,7 @@ jQuery.sap.declare("sap.ui.layout.GridRenderer");
  * @class
  * @author SAP AG
  * @version
- * 1.20.9
+ * 1.20.10
  * @static
  */
 sap.ui.layout.GridRenderer = {};
@@ -1382,7 +1382,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.layout.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.layout (1.20.9)
+ * Initialization Code and shared classes of library sap.ui.layout (1.20.10)
  */
 jQuery.sap.declare("sap.ui.layout.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1432,7 +1432,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.layout.form.GridContainerData",
     "sap.ui.layout.form.GridElementData"
   ],
-  version: "1.20.9"});
+  version: "1.20.10"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1483,7 +1483,7 @@ jQuery.sap.declare("sap.ui.layout.GridPosition");
 /**
  * @class Position of the Grid. Can be "Left", "Center" or "Right". "Left" is default.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  */
@@ -1588,7 +1588,7 @@ jQuery.sap.declare("sap.ui.layout.form.SimpleFormLayout");
 /**
  * @class Available FormLayouts used for the SimpleForm.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  * @public
  * @since 1.16.0
@@ -1697,7 +1697,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -2230,7 +2230,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -3231,7 +3231,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -3471,7 +3471,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -3738,7 +3738,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -4010,7 +4010,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -4335,6 +4335,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 			}
 		}
 
+		return this;
+
 	};
 
 }());
@@ -4404,7 +4406,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -4679,6 +4681,8 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 			_setExpanderIcon(that);
 		}
 
+		return this;
+
 	};
 
 	sap.ui.layout.form.FormContainer.prototype.setExpanded = function(bExpanded){
@@ -4692,6 +4696,8 @@ jQuery.sap.require('sap.ui.core.theming.Parameters'); // unlisted dependency ret
 		if (oForm && oForm.toggleContainerExpanded) {
 			oForm.toggleContainerExpanded(that);
 		}
+
+		return this;
 
 	};
 
@@ -4822,7 +4828,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -5354,7 +5360,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -6258,7 +6264,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -6391,7 +6397,7 @@ jQuery.sap.require('sap.ui.core.LayoutData'); // unlisted dependency retained
  * @extends sap.ui.core.LayoutData
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -6551,7 +6557,7 @@ jQuery.sap.declare("sap.ui.layout.form.GridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -6847,7 +6853,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveGridLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -8026,7 +8032,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -8715,6 +8721,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 		var oForm = this.getAggregation("form");
 		oForm.setEditable(bEditable);
 
+		return this;
+
 	};
 
 	/*
@@ -9153,7 +9161,7 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 	sap.ui.layout.form.SimpleForm.prototype.getContent = function() {
 
 		if (!this._aElements) {
-			this._aElements = this.getAggregation("content");
+			this._aElements = this.getAggregation("content", []);
 		}
 		return this._aElements;
 
@@ -9209,6 +9217,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.SimpleForm", { metadata : {
 				}
 			}
 		}
+
+		return this;
 
 	};
 
@@ -9742,7 +9752,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -10583,7 +10593,7 @@ jQuery.sap.declare("sap.ui.layout.form.ResponsiveLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -11074,7 +11084,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveLayoutPanel", {
 								aContent.push(oLabel);
 							}
 							if(oLayout.mContainers[sContainerId] && oLayout.mContainers[sContainerId][2] &&
-									oLayout.mContainers[sContainerId][2][sElementId]){
+									oLayout.mContainers[sContainerId][2][sElementId] &&
+									oLayout.mContainers[sContainerId][2][sElementId][1]){
 								aContent.push(oLayout.mContainers[sContainerId][2][sElementId][1]);
 							}
 						}

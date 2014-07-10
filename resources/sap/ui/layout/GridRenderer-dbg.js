@@ -9,7 +9,7 @@ jQuery.sap.declare("sap.ui.layout.GridRenderer");
  * @class
  * @author SAP AG
  * @version
- * 1.20.9
+ * 1.20.10
  * @static
  */
 sap.ui.layout.GridRenderer = {};

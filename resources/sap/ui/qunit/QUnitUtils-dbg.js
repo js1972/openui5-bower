@@ -18,7 +18,7 @@
  * The <code>sap.ui.test.qunit</code> namespace contains helper functionality for
  * QUnit tests.
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @namespace
  * @name sap.ui.test.qunit
  * @public

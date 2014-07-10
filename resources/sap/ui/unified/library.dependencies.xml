@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <library  version="2.0" name="sap.ui.unified">
-  <module name="sap/ui/unified/ContentSwitcher.js" size="14623" compressedSize="2262">
+  <module name="sap/ui/unified/ContentSwitcher.js" size="14624" compressedSize="2262">
     <description>Provides control sap.ui.unified.ContentSwitcher.</description>
     <requires>
       <module name="sap/ui/unified/library.js"/>
@@ -14,7 +14,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/unified/Shell.js" size="45696" compressedSize="15765">
+  <module name="sap/ui/unified/Shell.js" size="45697" compressedSize="15765">
     <description>Provides control sap.ui.unified.Shell.</description>
     <requires>
       <module name="sap/ui/unified/library.js"/>
@@ -28,7 +28,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/unified/ShellHeadItem.js" size="11826" compressedSize="2163">
+  <module name="sap/ui/unified/ShellHeadItem.js" size="11827" compressedSize="2163">
     <description>Provides control sap.ui.unified.ShellHeadItem.</description>
     <requires>
       <module name="sap/ui/unified/library.js"/>
@@ -37,7 +37,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/unified/ShellOverlay.js" size="18032" compressedSize="7073">
+  <module name="sap/ui/unified/ShellOverlay.js" size="18033" compressedSize="7073">
     <description>Provides control sap.ui.unified.ShellOverlay.</description>
     <requires>
       <module name="sap/ui/unified/library.js"/>
@@ -61,7 +61,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/unified/SplitContainer.js" size="19275" compressedSize="4741">
+  <module name="sap/ui/unified/SplitContainer.js" size="19276" compressedSize="4741">
     <description>Provides control sap.ui.unified.SplitContainer.</description>
     <requires>
       <module name="sap/ui/unified/library.js"/>
@@ -76,8 +76,8 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/unified/library.js" size="4981" compressedSize="1888">
-    <description>Initialization Code and shared classes of library sap.ui.unified (1.20.9)</description>
+  <module name="sap/ui/unified/library.js" size="4984" compressedSize="1889">
+    <description>Initialization Code and shared classes of library sap.ui.unified (1.20.10)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>
@@ -87,7 +87,7 @@
       <module name="sap/ui/unified/ContentSwitcherAnimation.js"/>
     </includes>
   </module>
-  <module name="sap/ui/unified/library.properties" size="499">
+  <module name="sap/ui/unified/library.properties" size="500">
   </module>
   <module name="sap/ui/unified/messagebundle.properties" size="338">
   </module>

@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global', './FormatException', './ParseException', './
 	 * @extends sap.ui.model.Type
 	 *
 	 * @author SAP AG
-	 * @version 1.20.9
+	 * @version 1.20.10
 	 *
 	 * @constructor
 	 * @param {object} [oFormatOptions] options as provided by concrete subclasses

@@ -236,8 +236,12 @@ sap.ui.define(['jquery.sap.global'],
 	
 				// ensure that control and library are loaded
 				jQuery.sap.require(sClassName); // make sure oClass.getMetadata() exists
-	
-				return jQuery.sap.getObject(sClassName);
+				var oClassObject = jQuery.sap.getObject(sClassName);
+				if (oClassObject) {
+					return oClassObject;
+				} else {
+					jQuery.sap.log.error("Can't find object class '"+ sClassName + "' for XML-view", "", "XMLTemplateProcessor.js");
+				}
 			}
 	
 			/**
@@ -355,13 +359,17 @@ sap.ui.define(['jquery.sap.global'],
 			function createRegularControls(node) {
 				var ns = node.namespaceURI,
 				oClass = findControlClass(ns, localName(node)),
-				oMetadata = oClass.getMetadata(),
-				mJSONKeys = oMetadata.getJSONKeys(),
 				mSettings = {},
 				sStyleClasses = "",
 				aCustomData = [],
 				sOriginalControlId;
-	
+
+				if (!oClass) {
+					return [];
+				}
+				var oMetadata = oClass.getMetadata();
+				var mJSONKeys = oMetadata.getJSONKeys();
+
 				for (var i = 0; i < node.attributes.length; i++) {
 					var attr = node.attributes[i];
 	

@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -882,7 +882,8 @@ sap.m.TableSelectDialog.prototype.init = function () {
 	};
 
 	// internally set top and bottom margin of the dialog to 8rem respectively
-	this._oDialog._iVMargin = 8 * parseInt(sap.ui.core.theming.Parameters.get("sapUiFontSize") || 16, 10); //128
+	// CSN# 333642/2014: in base theme the parameter sapUiFontSize is "medium", implement a fallback
+	this._oDialog._iVMargin = 8 * (parseInt(sap.ui.core.theming.Parameters.get("sapUiFontSize"), 10) || 16); //128
 
 	// helper variables for search update behaviour
 	this._sSearchFieldValue = "";

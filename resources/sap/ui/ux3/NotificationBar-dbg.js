@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1085,41 +1085,39 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 		}
 	};
 
-	var fnResizeStuff = function(that) {
-		if (fnWasResized(that)) {
-			var sFromHeight = that.getHeightOfStatus(that._resizeFrom);
-			var $That = that.$();
+	var fnResizeStuff = function(oThat) {
+		if (fnWasResized(oThat)) {
+			var sFromHeight = oThat.getHeightOfStatus(oThat._resizeFrom);
+			var $That = oThat.$();
 			$That.css("height", sFromHeight);
 
-			var sToHeight = that.getHeightOfStatus(that._resizeTo);
-			$That.stop().animate({
+			var sToHeight = oThat.getHeightOfStatus(oThat._resizeTo);
+
+			// animate accordingly to the used jQuery version
+			$That.stop(true, true).animate({
 				height : sToHeight
-			}, {
-				duration : "fast",
-				queue : true,
-				always : function() {
-					var sStatus = that.getVisibleStatus();
-					if (sStatus === "None") {
-						$That.css("display", "none");
+			}, "fast", function() {
+				var sStatus = oThat.getVisibleStatus();
+				if (sStatus === "None") {
+					$That.css("display", "none");
 
-						if (that.hasItems()) {
-							if (that.getMessageNotifier()) {
-								var oMN = that.getMessageNotifier();
-								oMN.$().css("display", "none");
-							}
+					if (oThat.hasItems()) {
+						if (oThat.getMessageNotifier()) {
+							var oMN = oThat.getMessageNotifier();
+							oMN.$().css("display", "none");
+						}
 
-							if (that.getNotifiers().length > 0) {
-								var aNotifiers = that.getNotifiers();
-								for (var i = 0; i < aNotifiers.length; i++) {
-									aNotifiers[i].$().css("display", "none");
-								}
+						if (oThat.getNotifiers().length > 0) {
+							var aNotifiers = oThat.getNotifiers();
+							for (var i = 0; i < aNotifiers.length; i++) {
+								aNotifiers[i].$().css("display", "none");
 							}
 						}
 					}
-
-					fnSetResizeClasses(that, sStatus);
-					fnResize(that, sStatus);
 				}
+
+				fnSetResizeClasses(oThat, sStatus);
+				fnResize(oThat, sStatus);
 			});
 		} else {
 			/*
@@ -1127,12 +1125,12 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 			 * maximized e.g. and a new message was added and triggered a
 			 * re-rendering
 			 */
-			var sStatus = that.getVisibleStatus();
-			fnSetResizeClasses(that, sStatus);
+			var sStatus = oThat.getVisibleStatus();
+			fnSetResizeClasses(oThat, sStatus);
 		}
 
-		delete that._resizeFrom;
-		delete that._resizeTo;
+		delete oThat._resizeFrom;
+		delete oThat._resizeTo;
 	};
 
 	var fnSettingWidth = function(that) {
@@ -1359,7 +1357,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 			// create key for description text
 			var iCount = oMN.getMessages().length;
-			var sKey = "NOTIBAR_MESSAGE_NOTIFIER_DESC_LEVEL_" + sLvl.toUpperCase() + iCount === 1 ? "_SING" : "_PL";
+			var sKey = "NOTIBAR_MESSAGE_NOTIFIER_DESC_LEVEL_" + (sLvl.toUpperCase() + iCount === 1 ? "SING" : "PL");
 
 			// set description (i.e. "3 messages available: Highest severity
 			// "Error")
@@ -1377,7 +1375,7 @@ sap.ui.core.Control.extend("sap.ui.ux3.NotificationBar.MessageView", {
 
 		for (var i = 0; i < aNotifiers.length; i++) {
 			var iCount = aNotifiers[i].getMessages().length;
-			var sKey = "NOTIBAR_NOTIFIER_COUNT_TEXT_" + iCount === 1 ? "SING" : "PL";
+			var sKey = "NOTIBAR_NOTIFIER_COUNT_TEXT_" + (iCount === 1 ? "SING" : "PL");
 
 			fnSetNotifierDescription(oThis, aNotifiers[i], sKey, iCount);
 		}

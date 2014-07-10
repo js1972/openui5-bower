@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.TooltipBase");
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -688,7 +688,7 @@ sap.ui.commons.CalloutBase.prototype.adjustPosition = function() {
  * @private
  */
 sap.ui.commons.CalloutBase.prototype.focus = function() {
-	if(this.oPopup.isOpen()){
+	if(this.oPopup && this.oPopup.isOpen()){
 		// Focus the first focusable child. If the callout is empty, focus the content container div.
 		// Empty callout should be focused too because the contents may appear at a later time point
 		// and we need input focus to react to the ESC key.
@@ -706,7 +706,10 @@ sap.ui.commons.CalloutBase.prototype.focus = function() {
  */
 sap.ui.commons.CalloutBase.prototype.openPopup = function(oSC) {
 
-	if(this.oPopup.isOpen()){ return; }
+	if(!this.oPopup || this.oPopup.isOpen()){ 
+		return;
+	}
+
 	if (sap.ui.core.TooltipBase.sOpenTimeout) {
 		jQuery.sap.clearDelayedCall(sap.ui.core.TooltipBase.sOpenTimeout);
 		sap.ui.core.TooltipBase.sOpenTimeout = undefined;
@@ -741,7 +744,7 @@ sap.ui.commons.CalloutBase.prototype.openPopup = function(oSC) {
  * @public
  */
 sap.ui.commons.CalloutBase.prototype.close = function() {
-	if(this.oPopup.isOpen() && !this.sCloseNowTimeout){
+	if(this.oPopup && this.oPopup.isOpen() && !this.sCloseNowTimeout){
 		if (sap.ui.core.TooltipBase.sOpenTimeout) {
 			jQuery.sap.clearDelayedCall(sap.ui.core.TooltipBase.sOpenTimeout);
 			sap.ui.core.TooltipBase.sOpenTimeout = undefined;
@@ -756,7 +759,7 @@ sap.ui.commons.CalloutBase.prototype.close = function() {
  * @private
  */
 sap.ui.commons.CalloutBase.prototype.closePopup = function() {
-	var bWasOpen = this._getPopup().isOpen();
+	var bWasOpen = this.oPopup !== undefined && this.oPopup.isOpen();
 
 	if(this.fAnyEventHandlerProxy){
 		jQuery.sap.unbindAnyEvent(this.onAnyEvent);
@@ -776,7 +779,7 @@ sap.ui.commons.CalloutBase.prototype.closePopup = function() {
 	}
 
 	// inform the application
-	this.fireClose({});
+	this.fireClose();
 };
 
 /**
@@ -812,7 +815,7 @@ sap.ui.commons.CalloutBase.prototype.onkeydown = function(oEvent) {
 
 	// do not try to open the same callout twice
 	if (bCtrlI) {
-		if (this.oPopup.isOpen()){
+		if (this.oPopup && this.oPopup.isOpen()){
 			return; // this is already opened
 		}
 		this.bDoFocus = true; // accessibility: request focus
@@ -893,7 +896,7 @@ sap.ui.commons.CalloutBase.prototype.onfocusout = function(oEvent) {
  */
 sap.ui.commons.CalloutBase.prototype.onmouseover = function(oEvent) {
 	// do not close my pop-up if it was opened already
-	if (this.oPopup.isOpen() && this.oPopup.getContent() == this) {
+	if (this.oPopup && (this.oPopup.isOpen() && this.oPopup.getContent() == this)) {
 		if (this.sCloseNowTimeout){
 			jQuery.sap.clearDelayedCall(this.sCloseNowTimeout);
 			this.sCloseNowTimeout = null; }
@@ -911,7 +914,7 @@ sap.ui.commons.CalloutBase.prototype.onmouseover = function(oEvent) {
  */
 sap.ui.commons.CalloutBase.prototype.onmouseout = function(oEvent) {
 	// Do not close callout when the mouse goes to a popup (like menu)
-	if(this.oPopup.isOpen() && this.isPopupElement(oEvent.relatedTarget)){
+	if(this.oPopup && (this.oPopup.isOpen() && this.isPopupElement(oEvent.relatedTarget))) {
 		return;
 	}
 	sap.ui.core.TooltipBase.prototype.onmouseout.call(this, oEvent);
@@ -935,7 +938,7 @@ sap.ui.commons.CalloutBase.prototype.onmousedown = function(oEvent) {
  */
 sap.ui.commons.CalloutBase.prototype.onAnyEvent = function(oEvent){
 
-	if(!this.oPopup.isOpen() || oEvent.type != "mouseover" || this.hasChild(oEvent.target)) {
+	if((this.oPopup && !this.oPopup.isOpen()) || oEvent.type != "mouseover" || this.hasChild(oEvent.target)) {
 		return;
 	}
 

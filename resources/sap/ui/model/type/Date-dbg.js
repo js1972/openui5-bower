@@ -19,7 +19,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.9
+	 * @version 1.20.10
 	 *
 	 * @constructor
 	 * @public

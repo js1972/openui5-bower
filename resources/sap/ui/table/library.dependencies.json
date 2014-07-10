@@ -3,7 +3,7 @@
     {
       "name" : "sap/ui/table/Column.js",
       "description" : "Provides control sap.ui.table.Column.",
-      "size" : 41098,
+      "size" : 41099,
       "compressedSize" : 10588,
       "required" : ["sap/ui/table/library.js", "sap/ui/core/Element.js", "sap/ui/core/RenderManager.js", "sap/ui/model/Type.js", "sap/ui/model/Filter.js", "sap/ui/model/Sorter.js", "sap/ui/commons/Image.js", "sap/ui/commons/Label.js", "sap/ui/commons/TextField.js", "sap/ui/model/type/String.js", "jquery.sap.global.js"],
       "includes" : []
@@ -11,7 +11,7 @@
     {
       "name" : "sap/ui/table/ColumnMenu.js",
       "description" : "Provides control sap.ui.table.ColumnMenu.",
-      "size" : 12728,
+      "size" : 12729,
       "compressedSize" : 5409,
       "required" : ["sap/ui/table/library.js", "sap/ui/commons/Menu.js", "sap/ui/core/RenderManager.js", "sap/ui/commons/MenuItem.js", "sap/ui/commons/TextField.js", "jquery.sap.global.js"],
       "includes" : []
@@ -27,7 +27,7 @@
     {
       "name" : "sap/ui/table/DataTable.js",
       "description" : "Provides control sap.ui.table.DataTable.",
-      "size" : 11197,
+      "size" : 11198,
       "compressedSize" : 2058,
       "required" : ["sap/ui/table/library.js", "sap/ui/table/TreeTable.js", "jquery.sap.global.js"],
       "includes" : []
@@ -43,7 +43,7 @@
     {
       "name" : "sap/ui/table/Row.js",
       "description" : "Provides control sap.ui.table.Row.",
-      "size" : 6262,
+      "size" : 6263,
       "compressedSize" : 705,
       "required" : ["sap/ui/table/library.js", "sap/ui/core/Element.js", "jquery.sap.global.js"],
       "includes" : []
@@ -51,7 +51,7 @@
     {
       "name" : "sap/ui/table/Table.js",
       "description" : "Provides control sap.ui.table.Table.",
-      "size" : 175667,
+      "size" : 175668,
       "compressedSize" : 60910,
       "required" : ["sap/ui/table/library.js", "sap/ui/core/Control.js", "sap/ui/model/SelectionModel.js", "sap/ui/core/delegate/ItemNavigation.js", "sap/ui/core/theming/Parameters.js", "sap/ui/core/ScrollBar.js", "sap/ui/core/IntervalTrigger.js", "sap/ui/commons/TextView.js", "sap/ui/table/Row.js", "jquery.sap.global.js"],
       "includes" : []
@@ -67,7 +67,7 @@
     {
       "name" : "sap/ui/table/TreeTable.js",
       "description" : "Provides control sap.ui.table.TreeTable.",
-      "size" : 23971,
+      "size" : 23972,
       "compressedSize" : 9347,
       "required" : ["sap/ui/table/library.js", "sap/ui/table/Table.js", "jquery.sap.global.js"],
       "includes" : []
@@ -82,15 +82,15 @@
     },
     {
       "name" : "sap/ui/table/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.9)",
-      "size" : 7978,
-      "compressedSize" : 1601,
+      "description" : "Initialization Code and shared classes of library sap.ui.table (1.20.10)",
+      "size" : 7985,
+      "compressedSize" : 1602,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/commons/library.js", "jquery.sap.global.js"],
       "includes" : ["sap/ui/table/NavigationMode.js", "sap/ui/table/SelectionBehavior.js", "sap/ui/table/SelectionMode.js", "sap/ui/table/SortOrder.js", "sap/ui/table/VisibleRowCountMode.js"]
     },
     {
       "name" : "sap/ui/table/library.properties",
-      "size" : 731,
+      "size" : 732,
       "required" : [],
       "includes" : []
     },

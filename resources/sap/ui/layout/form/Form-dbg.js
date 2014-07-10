@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -384,6 +384,8 @@ sap.ui.core.Control.extend("sap.ui.layout.form.Form", { metadata : {
 				this.$().removeClass("sapUiFormEdit").removeClass("sapUiFormEdit-CTX");
 			}
 		}
+
+		return this;
 
 	};
 

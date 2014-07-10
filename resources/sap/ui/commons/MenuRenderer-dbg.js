@@ -12,7 +12,7 @@ jQuery.sap.declare("sap.ui.commons.MenuRenderer");
  * @class Menu renderer.
  * @author SAP - TD Core UI&AM UI Infra
  *
- * @version 1.20.9
+ * @version 1.20.10
  * @static
  */
 sap.ui.commons.MenuRenderer = {

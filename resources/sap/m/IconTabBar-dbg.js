@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -586,10 +586,8 @@ sap.m.IconTabBar.prototype.init = function() {
 		this._oScroller = new sap.ui.core.delegate.ScrollEnablement(this, this.getId() + "-head", {
 			horizontal: true,
 			vertical: false,
-			zynga: false,
-			iscroll: "force",
 			preventDefault: false,
-			nonTouchScrolling: "scrollbar"
+			nonTouchScrolling: true
 		});
 	}
 
@@ -1572,8 +1570,8 @@ sap.m.IconTabBar.prototype.ontouchmove = function(oEvent) {
  * @private
  */
 sap.m.IconTabBar.prototype.ontouchend = function(oEvent) {
-	// suppress selection if there ware a drag (moved more than 20px)
-	if (this._iTouchDragX > 20) {
+	// suppress selection if there was a drag (moved more than 5px)
+	if (this._iTouchDragX > 5 || oEvent.isMarked()) {
 		return;
 	}
 	// 

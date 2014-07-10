@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.commons.TextField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.20.9
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1142,8 +1142,13 @@ sap.ui.commons.DatePicker.prototype.setYyyymmdd = function(sYyyymmdd) {
 		if (this.mobile) {
 			// on mobile devices the date is displayed in native pattern, so it must be
 			// converted into control pattern for value property
-			sValue = this._oFormat.format(oDate);
-			var sOutputValue = this._oFormatMobile.format(oDate);
+			var sOutputValue = "";
+			if (oDate) {
+				sValue = this._oFormat.format(oDate);
+				sOutputValue = this._oFormatMobile.format(oDate);
+			}else{
+				sValue = "";
+			}
 			oSelector.val(sOutputValue);
 		}else{
 			// Building a date object with the fix-format received date:
@@ -1191,8 +1196,11 @@ sap.ui.commons.DatePicker.prototype.setValue = function(sValue) {
 		if (this.mobile) {
 			// on mobile devices the date is displayed in native pattern, so it must be
 			// converted into control pattern fpr value property
+			var sOutputValue = "";
 			oDate = this._oFormat.parse(sValue);
-			var sOutputValue = this._oFormatMobile.format(oDate);
+			if (oDate) {
+				sOutputValue = this._oFormatMobile.format(oDate);
+			}
 			oSelector.val(sOutputValue);
 		}else{
 			// Updating the DatePicker with the raw VALUE:
@@ -1269,8 +1277,10 @@ sap.ui.commons.DatePicker.prototype.setLocale = function(sLocale) {
 		var sValue = this.getValue();
 		oDate = this._oFormat.parse(sValue);
 		this.setLocaleTexts(sLocale);
-		sValue = this._oFormat.format(oDate);
-		this.setProperty("value", sValue, true);
+		if (oDate) {
+			sValue = this._oFormat.format(oDate);
+			this.setProperty("value", sValue, true);
+		}
 	}
 
 	return this;
@@ -1470,7 +1480,7 @@ sap.ui.commons.DatePicker.prototype._checkChange = function(oEvent) {
 	var oInput = this.getInputDomRef(),
 		newVal = oInput && oInput.value;
 
-	if (this.mobile) {
+	if (this.mobile && newVal != "") {
 		// on mobile devices the date is displayed in native pattern, so it must be
 		// converted into control pattern fpr value property
 		var oDate = this._oFormatMobile.parse(newVal);
