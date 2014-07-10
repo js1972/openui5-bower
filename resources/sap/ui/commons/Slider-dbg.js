@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public
@@ -742,14 +742,12 @@ sap.ui.commons.Slider.prototype.onclick = function(oEvent) {
 
 	var oMovingGrip = this.oMovingGrip;
 
-
 	if (this.getEditable() && this.getEnabled()){
 
 		var fMultiplicator;
 
 		// Check for ID where the behavior depends on the clicked area.
 		var sMyTargetId = oEvent.target.getAttribute( 'ID' );
-
 		var fNewValue = this.getValue();
 		var iNewPos   = this.getOffsetLeft(this.oGrip) + this.iShiftGrip;
 
@@ -898,7 +896,8 @@ sap.ui.commons.Slider.prototype.onclick = function(oEvent) {
  * @private
  */
 sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
-	if (this.getEditable() && this.getEnabled()){
+
+	if (this.getEditable() && this.getEnabled() && !this._cancelMousedown){
 
 		// Check for ID. This is only possible on the grip.
 		var sMyTargetId = oEvent.target.getAttribute( 'ID' );
@@ -907,8 +906,14 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
 			this.bGripMousedown = true;
 
 			// Remember start coordinates
-			this.iStartDragX = oEvent.pageX;
-			this.iStartDragY = oEvent.pageY;
+			if (oEvent.targetTouches) {
+				this.iStartDragX = oEvent.targetTouches[0].pageX;
+				this.iStartDragY = oEvent.targetTouches[0].pageY;
+			}else{
+				this.iStartDragX = oEvent.pageX;
+				this.iStartDragY = oEvent.pageY;
+			}
+
 			this.iStartLeft  = this.getOffsetLeft(oEvent.target) + this.iShiftGrip;
 
 			this.oMovingGrip = oEvent.target;
@@ -921,12 +926,24 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
 				return false;
 			};
 
-			jQuery(window.document).bind('mousemove', this.handleMoveCall);
-			jQuery(window.document).bind('selectstart', this.preventSelect);
-			jQuery.sap.bindAnyEvent(jQuery.proxy(this.onAnyEvent, this));
+			if (!oEvent.targetTouches) {
+				jQuery(window.document).bind('mousemove', this.handleMoveCall);
+				jQuery(window.document).bind('selectstart', this.preventSelect);
+				jQuery.sap.bindAnyEvent(jQuery.proxy(this.onAnyEvent, this));
+			}
 		}
 		this.oStartTarget = null;
 	}
+};
+
+sap.ui.commons.Slider.prototype.ontouchstart = function(oEvent) {
+
+	this._cancelMousedown = false;
+
+	this.onmousedown(oEvent);
+
+	this._cancelMousedown = true;
+
 };
 
 /**
@@ -962,6 +979,12 @@ sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
 
 };
 
+sap.ui.commons.Slider.prototype.ontouchend = function(oEvent) {
+
+	this.onmouseup(oEvent);
+
+};
+
 /**
  * Function is called when Slider is moved
  *
@@ -976,11 +999,20 @@ sap.ui.commons.Slider.prototype.handleMove = function(event) {
 
 		// Move is handled on every div, not only on grip
 
+		var iPageX, iPageY;
+		if (event.targetTouches) {
+			iPageX = event.targetTouches[0].pageX;
+			iPageY = event.targetTouches[0].pageY;
+		}else{
+			iPageX = event.pageX;
+			iPageY = event.pageY;
+		}
+
 		var iNewPos;
 		if (this.getVertical()) {
-			iNewPos = this.iStartLeft + event.pageY - this.iStartDragY;
+			iNewPos = this.iStartLeft + iPageY - this.iStartDragY;
 		} else {
-			iNewPos = this.iStartLeft + event.pageX - this.iStartDragX;
+			iNewPos = this.iStartLeft + iPageX - this.iStartDragX;
 		}
 
 		if( iNewPos <= 0 ){
@@ -1024,6 +1056,14 @@ sap.ui.commons.Slider.prototype.handleMove = function(event) {
 	event.cancelBubble = true;
 
 	return false;
+
+};
+
+sap.ui.commons.Slider.prototype.ontouchmove = function(oEvent) {
+
+	this.handleMove(oEvent);
+
+	oEvent.preventDefault();
 
 };
 

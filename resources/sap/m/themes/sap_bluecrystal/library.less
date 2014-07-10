@@ -11784,6 +11784,10 @@ html[data-sap-ui-browser='ie10'] .sapMPersoDialogLI .sapMILILabel {
 	overflow: auto; /* remove scrollbars if not needed */
 	-webkit-transform: none; /* transform is blocking scroll */
 	resize: none;
+}
+
+.sapMTextArea > .sapMTextAreaInner{
+	height: 100%;
 	width: 100%;
 }
 /* ============================================= */
@@ -11805,9 +11809,7 @@ html[data-sap-ui-browser='ie10'] .sapMPersoDialogLI .sapMILILabel {
 
 .sapMTextArea > .sapMInputBaseInner{
 	line-height: 1.4;
-	height: auto;
-	padding: 0.75rem 0.75rem 0.75rem 0.75rem;
-	width: 100%;
+	padding: 0.75rem;
 }
 
 .sapMTextArea > .sapMInputBaseReadonlyInner.sapMInputBaseInner {

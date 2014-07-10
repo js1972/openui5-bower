@@ -52,11 +52,14 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * sap.m.CustomListItem Control
+ * This control with a content aggregation can be used to customize standard list items that we don't provide. List mode and ListItem type are applied to CustomListItems as well.
+ * Note: Even the content aggregation allows any control, complex responsive layout controls (e.g. Table, Form) should not be aggregated as content.
+ * 
+ * 
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public

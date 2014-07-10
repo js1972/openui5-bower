@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.ux3.Overlay");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public

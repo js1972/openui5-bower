@@ -47,7 +47,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.7
+	 * @version 1.20.8
 	 *
 	 * @constructor
 	 * @public
@@ -2782,6 +2782,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			this.oTimeFormat = sap.ui.core.format.DateFormat.getTimeInstance({
 				pattern: "'time'''HH:mm:ss''"
 			});
+		}
+	
+		// null values should return the null literal
+		if (vValue === null || vValue === undefined) {
+			return "null";
 		}
 	
 		// Format according to the given type

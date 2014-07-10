@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public
@@ -453,7 +453,7 @@ sap.m.Text.prototype.canUseNativeLineClamp = function() {
  * @protected
  * @see sap.m.Text#cacheLineHeight
  * @param {HTMLElement} [oDomRef] DOM reference of the text container.
- * @returns {Number}
+ * @returns {Number} returns calculated line-height
  */
 sap.m.Text.prototype.getLineHeight = function(oDomRef) {
 	// return cached value if possible and available
@@ -469,11 +469,19 @@ sap.m.Text.prototype.getLineHeight = function(oDomRef) {
 
 	// check line-height
 	var oStyle = window.getComputedStyle(oDomRef),
-		fLineHeight = parseFloat(oStyle.lineHeight);
+		sLineHeight = oStyle.lineHeight,
+		fLineHeight;
 
-	// we should ignore "normal" line-height so calculate with font-size
-	if (!fLineHeight) {
+	// calculate line-height in px
+	if (/px$/i.test(sLineHeight)) {
+		// we can rely on calculated px line-height value
+		fLineHeight = parseFloat(sLineHeight);
+	} else if (/^normal$/i.test(sLineHeight)) {
+		// use default value to calculate normal line-height
 		fLineHeight = parseFloat(oStyle.fontSize) * this.normalLineHeight;
+	} else {
+		// calculate line-height with using font-size and line-height
+		fLineHeight = parseFloat(oStyle.fontSize) * parseFloat(sLineHeight);
 	}
 
 	// on rasterizing the font, sub pixel line-heights are converted to integer
@@ -482,7 +490,7 @@ sap.m.Text.prototype.getLineHeight = function(oDomRef) {
 	var iLineHeight = Math.floor(fLineHeight);
 
 	// cache line height
-	if (this.cacheLineHeight) {
+	if (this.cacheLineHeight && iLineHeight) {
 		this._iLineHeight = iLineHeight;
 	}
 
@@ -520,7 +528,10 @@ sap.m.Text.prototype.clampHeight = function(oDomRef) {
 
 	// calc the max height and set on dom
 	var iMaxHeight = this.getClampHeight(oDomRef);
-	oDomRef.style.maxHeight = iMaxHeight + "px";
+	if (iMaxHeight) {
+		oDomRef.style.maxHeight = iMaxHeight + "px";
+	}
+
 	return iMaxHeight;
 };
 

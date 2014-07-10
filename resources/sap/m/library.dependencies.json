@@ -130,8 +130,8 @@
     {
       "name" : "sap/m/Carousel.js",
       "description" : "Provides control sap.m.Carousel.",
-      "size" : 41369,
-      "compressedSize" : 9938,
+      "size" : 41526,
+      "compressedSize" : 9977,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/thirdparty/mobify-carousel.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -186,7 +186,7 @@
     {
       "name" : "sap/m/CustomListItem.js",
       "description" : "Provides control sap.m.CustomListItem.",
-      "size" : 6725,
+      "size" : 7032,
       "compressedSize" : 544,
       "required" : ["sap/m/library.js", "sap/m/ListItemBase.js", "jquery.sap.global.js"],
       "includes" : []
@@ -218,8 +218,8 @@
     {
       "name" : "sap/m/DateTimeInput.js",
       "description" : "Provides control sap.m.DateTimeInput.",
-      "size" : 36643,
-      "compressedSize" : 13148,
+      "size" : 36237,
+      "compressedSize" : 13019,
       "required" : ["sap/m/library.js", "sap/m/InputBase.js", "sap/ui/core/theming/Parameters.js", "sap/ui/model/type/Date.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js", "sap/ui/thirdparty/mobiscroll/js/mobiscroll-datetime.js", "sap/ui/core/IconPool.js", "sap/m/InstanceManager.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -383,8 +383,8 @@
     {
       "name" : "sap/m/GrowingEnablement.js",
       "description" : "Provides class sap.m.GrowingEnablement",
-      "size" : 24630,
-      "compressedSize" : 11821,
+      "size" : 24956,
+      "compressedSize" : 11834,
       "required" : ["sap/ui/base/Object.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -423,8 +423,8 @@
     {
       "name" : "sap/m/IconTabBar.js",
       "description" : "Provides control sap.m.IconTabBar.",
-      "size" : 52874,
-      "compressedSize" : 17774,
+      "size" : 53190,
+      "compressedSize" : 17910,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/delegate/ItemNavigation.js", "sap/ui/core/EnabledPropagator.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -566,8 +566,8 @@
     {
       "name" : "sap/m/ListBase.js",
       "description" : "Provides control sap.m.ListBase.",
-      "size" : 92747,
-      "compressedSize" : 21877,
+      "size" : 92829,
+      "compressedSize" : 21943,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "sap/ui/core/theming/Parameters.js", "sap/ui/core/delegate/ItemNavigation.js", "sap/m/GroupHeaderListItem.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -637,16 +637,16 @@
     {
       "name" : "sap/m/ObjectAttribute.js",
       "description" : "Provides control sap.m.ObjectAttribute.",
-      "size" : 8821,
-      "compressedSize" : 997,
+      "size" : 8917,
+      "compressedSize" : 1026,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/m/ObjectAttributeRenderer.js",
       "description" : "@copyright",
-      "size" : 1163,
-      "compressedSize" : 566,
+      "size" : 1190,
+      "compressedSize" : 590,
       "required" : ["jquery.sap.global.js"],
       "includes" : []
     },
@@ -1061,8 +1061,8 @@
     {
       "name" : "sap/m/Table.js",
       "description" : "Provides control sap.m.Table.",
-      "size" : 16748,
-      "compressedSize" : 5831,
+      "size" : 17499,
+      "compressedSize" : 6063,
       "required" : ["sap/m/library.js", "sap/m/ListBase.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1116,22 +1116,22 @@
     {
       "name" : "sap/m/Text.js",
       "description" : "Provides control sap.m.Text.",
-      "size" : 16975,
-      "compressedSize" : 3249,
+      "size" : 17360,
+      "compressedSize" : 3349,
       "required" : ["sap/m/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/m/TextArea.js",
       "description" : "Provides control sap.m.TextArea.",
-      "size" : 15837,
-      "compressedSize" : 4050,
+      "size" : 15799,
+      "compressedSize" : 4025,
       "required" : ["sap/m/library.js", "sap/m/InputBase.js", "jquery.sap.global.js"],
       "includes" : []
     },
     {
       "name" : "sap/m/TextAreaRenderer.js",
-      "size" : 2014,
+      "size" : 2015,
       "compressedSize" : 1230,
       "required" : ["sap/ui/core/Renderer.js", "sap/m/InputBaseRenderer.js", "jquery.sap.global.js"],
       "includes" : []
@@ -1274,7 +1274,7 @@
     },
     {
       "name" : "sap/m/library.js",
-      "description" : "Initialization Code and shared classes of library sap.m (1.20.7)",
+      "description" : "Initialization Code and shared classes of library sap.m (1.20.8)",
       "size" : 68817,
       "compressedSize" : 12540,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "jquery.sap.mobile.js", "sap/m/Support.js", "sap/ui/Device.js", "sap/m/ios7.js", "jquery.sap.global.js"],

@@ -226,7 +226,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/FileUploader.js" size="49129" compressedSize="11155">
+  <module name="sap/ui/commons/FileUploader.js" size="49338" compressedSize="11331">
     <description>Provides control sap.ui.commons.FileUploader.</description>
     <requires>
       <module name="sap/ui/commons/library.js"/>
@@ -778,7 +778,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/commons/Slider.js" size="59632" compressedSize="20760">
+  <module name="sap/ui/commons/Slider.js" size="60426" compressedSize="21318">
     <description>Provides control sap.ui.commons.Slider.</description>
     <requires>
       <module name="sap/ui/commons/library.js"/>
@@ -1239,7 +1239,7 @@
     </requires>
   </module>
   <module name="sap/ui/commons/library.js" size="41162" compressedSize="9137">
-    <description>Initialization Code and shared classes of library sap.ui.commons (1.20.7)</description>
+    <description>Initialization Code and shared classes of library sap.ui.commons (1.20.8)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>

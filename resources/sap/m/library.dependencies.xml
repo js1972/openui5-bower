@@ -127,7 +127,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Carousel.js" size="41369" compressedSize="9938">
+  <module name="sap/m/Carousel.js" size="41526" compressedSize="9977">
     <description>Provides control sap.m.Carousel.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -184,7 +184,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/CustomListItem.js" size="6725" compressedSize="544">
+  <module name="sap/m/CustomListItem.js" size="7032" compressedSize="544">
     <description>Provides control sap.m.CustomListItem.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -215,7 +215,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/DateTimeInput.js" size="36643" compressedSize="13148">
+  <module name="sap/m/DateTimeInput.js" size="36237" compressedSize="13019">
     <description>Provides control sap.m.DateTimeInput.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -392,7 +392,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/GrowingEnablement.js" size="24630" compressedSize="11821">
+  <module name="sap/m/GrowingEnablement.js" size="24956" compressedSize="11834">
     <description>Provides class sap.m.GrowingEnablement</description>
     <requires>
       <module name="sap/ui/base/Object.js"/>
@@ -430,7 +430,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/IconTabBar.js" size="52874" compressedSize="17774">
+  <module name="sap/m/IconTabBar.js" size="53190" compressedSize="17910">
     <description>Provides control sap.m.IconTabBar.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -576,7 +576,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ListBase.js" size="92747" compressedSize="21877">
+  <module name="sap/m/ListBase.js" size="92829" compressedSize="21943">
     <description>Provides control sap.m.ListBase.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -651,7 +651,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectAttribute.js" size="8821" compressedSize="997">
+  <module name="sap/m/ObjectAttribute.js" size="8917" compressedSize="1026">
     <description>Provides control sap.m.ObjectAttribute.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -659,7 +659,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/ObjectAttributeRenderer.js" size="1163" compressedSize="566">
+  <module name="sap/m/ObjectAttributeRenderer.js" size="1190" compressedSize="590">
     <description>@copyright</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1076,7 +1076,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Table.js" size="16748" compressedSize="5831">
+  <module name="sap/m/Table.js" size="17499" compressedSize="6063">
     <description>Provides control sap.m.Table.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1138,7 +1138,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/Text.js" size="16975" compressedSize="3249">
+  <module name="sap/m/Text.js" size="17360" compressedSize="3349">
     <description>Provides control sap.m.Text.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1146,7 +1146,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TextArea.js" size="15837" compressedSize="4050">
+  <module name="sap/m/TextArea.js" size="15799" compressedSize="4025">
     <description>Provides control sap.m.TextArea.</description>
     <requires>
       <module name="sap/m/library.js"/>
@@ -1154,7 +1154,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/m/TextAreaRenderer.js" size="2014" compressedSize="1230">
+  <module name="sap/m/TextAreaRenderer.js" size="2015" compressedSize="1230">
     <requires>
       <module name="sap/ui/core/Renderer.js"/>
       <module name="sap/m/InputBaseRenderer.js"/>
@@ -1296,7 +1296,7 @@
     </requires>
   </module>
   <module name="sap/m/library.js" size="68817" compressedSize="12540">
-    <description>Initialization Code and shared classes of library sap.m (1.20.7)</description>
+    <description>Initialization Code and shared classes of library sap.m (1.20.8)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="sap/ui/core/library.js"/>

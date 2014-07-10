@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public
@@ -827,15 +827,21 @@ sap.m.Carousel.prototype.onAfterRendering = function() {
 	//attach delegate for firing 'PageChanged' events to mobify carousel's
 	//'afterSlide'
 	this.$().on('afterSlide', jQuery.proxy(function(e, iPreviousSlide, iNextSlide) {
+		//the event might bubble up from another carousel inside of this one.
+		//in this case we ignore the event
+		if(e.target !== this.getDomRef()) {
+			return;
+		}
+
 		if(iNextSlide > 0){
 			this._fnAdjustHUDVisibility(iNextSlide);
 			var sOldActivePageId = this.getActivePage();
 			var sNewActivePageId = this.getPages()[iNextSlide -1].getId();
 			this.setAssociation("activePage", sNewActivePageId, true);
-			
+
 			jQuery.sap.log.debug("sap.m.Carousel: firing pageChanged event: old page: " + sOldActivePageId 
 					+ ", new page: " + sNewActivePageId);
-			
+
 			this.firePageChanged( { oldActivePageId: sOldActivePageId,
 				newActivePageId: sNewActivePageId});
 		}

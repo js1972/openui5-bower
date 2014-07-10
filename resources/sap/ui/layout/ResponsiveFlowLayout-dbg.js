@@ -54,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP 
- * @version 1.20.7
+ * @version 1.20.8
  *
  * @constructor   
  * @public

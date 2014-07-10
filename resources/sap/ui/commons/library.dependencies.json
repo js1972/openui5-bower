@@ -227,8 +227,8 @@
     {
       "name" : "sap/ui/commons/FileUploader.js",
       "description" : "Provides control sap.ui.commons.FileUploader.",
-      "size" : 49129,
-      "compressedSize" : 11155,
+      "size" : 49338,
+      "compressedSize" : 11331,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -787,8 +787,8 @@
     {
       "name" : "sap/ui/commons/Slider.js",
       "description" : "Provides control sap.ui.commons.Slider.",
-      "size" : 59632,
-      "compressedSize" : 20760,
+      "size" : 60426,
+      "compressedSize" : 21318,
       "required" : ["sap/ui/commons/library.js", "sap/ui/core/Control.js", "sap/ui/core/ResizeHandler.js", "sap/ui/core/EnabledPropagator.js", "jquery.sap.global.js"],
       "includes" : []
     },
@@ -1242,7 +1242,7 @@
     },
     {
       "name" : "sap/ui/commons/library.js",
-      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.7)",
+      "description" : "Initialization Code and shared classes of library sap.ui.commons (1.20.8)",
       "size" : 41162,
       "compressedSize" : 9137,
       "required" : ["sap/ui/core/Core.js", "sap/ui/core/library.js", "sap/ui/layout/library.js", "sap/ui/base/DataType.js", "jquery.sap.global.js"],

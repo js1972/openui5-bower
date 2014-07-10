@@ -2,7 +2,7 @@
 <library  version="2.0" name="sap.ui.core">
   <module name="jquery-1.7.1.js" size="248235" compressedSize="98709" excludeFromAllInOne="true" raw="true">
   </module>
-  <module name="jquery-sap.js" size="400799" compressedSize="121806" dynamicDependencies="true">
+  <module name="jquery-sap.js" size="401737" compressedSize="122017" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -45,7 +45,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="jquery.sap.events.js" size="48872" compressedSize="17116">
+  <module name="jquery.sap.events.js" size="49194" compressedSize="17239">
     <description>Provides functionality related to eventing.</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -141,7 +141,7 @@
       <module name="sap/ui/Device.js"/>
     </requires>
   </module>
-  <module name="sap-ui-core-lean.js" size="501532" compressedSize="174659" dynamicDependencies="true">
+  <module name="sap-ui-core-lean.js" size="502148" compressedSize="174747" dynamicDependencies="true">
     <requires>
       <module name="sap/ui/core/Core.js"/>
     </requires>
@@ -153,7 +153,7 @@
       <module name="jquery.sap.global.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core-nojQuery.js" size="1087472" compressedSize="291287" dynamicDependencies="true">
+  <module name="sap-ui-core-nojQuery.js" size="1088410" compressedSize="291498" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/Device.js"/>
       <module name="sap/ui/thirdparty/URI.js"/>
@@ -212,7 +212,7 @@
       <module name="jquery.sap.resources.js"/>
     </includes>
   </module>
-  <module name="sap-ui-core.js" size="1376755" compressedSize="397109" dynamicDependencies="true">
+  <module name="sap-ui-core.js" size="1377693" compressedSize="397320" dynamicDependencies="true">
     <includes>
       <module name="sap/ui/thirdparty/jquery/jquery-1.10.2.js"/>
       <module name="sap/ui/thirdparty/jqueryui/jquery-ui-position.js"/>
@@ -308,7 +308,7 @@
       <module name="jquery.sap.strings.js"/>
     </includes>
   </module>
-  <module name="sap/ui/Device.js" size="46433" compressedSize="14240" raw="true">
+  <module name="sap/ui/Device.js" size="47049" compressedSize="14328" raw="true">
   </module>
   <module name="sap/ui/Global.js" size="10503" compressedSize="1885">
     <requires>
@@ -434,7 +434,7 @@
       <module name="sap/ui/thirdparty/URI.js"/>
     </requires>
   </module>
-  <module name="sap/ui/core/BusyIndicator.js" size="7663" compressedSize="2436">
+  <module name="sap/ui/core/BusyIndicator.js" size="9206" compressedSize="3325">
     <description>A static class to show a busy indicator</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1112,7 +1112,7 @@
     </requires>
   </module>
   <module name="sap/ui/core/library.js" size="51070" compressedSize="12079">
-    <description>Initialization Code and shared classes of library sap.ui.core (1.20.7)</description>
+    <description>Initialization Code and shared classes of library sap.ui.core (1.20.8)</description>
     <requires>
       <module name="sap/ui/core/Core.js"/>
       <module name="jquery.sap.global.js"/>
@@ -1120,7 +1120,7 @@
   </module>
   <module name="sap/ui/core/library.properties" size="3502">
   </module>
-  <module name="sap/ui/core/messagebundle.properties" size="620">
+  <module name="sap/ui/core/messagebundle.properties" size="704">
   </module>
   <module name="sap/ui/core/messagebundle_ar.properties" size="729">
   </module>
@@ -1943,7 +1943,7 @@
       <module name="sap/ui/model/ContextBinding.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataListBinding.js" size="31106" compressedSize="11273">
+  <module name="sap/ui/model/odata/ODataListBinding.js" size="31308" compressedSize="11395">
     <description>Provides class sap.ui.model.odata.ODataListBinding</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -1960,7 +1960,7 @@
       <module name="jquery.sap.global.js"/>
     </requires>
   </module>
-  <module name="sap/ui/model/odata/ODataModel.js" size="113251" compressedSize="32138">
+  <module name="sap/ui/model/odata/ODataModel.js" size="113372" compressedSize="32179">
     <description>Provides class sap.ui.model.odata.ODataModel</description>
     <requires>
       <module name="jquery.sap.global.js"/>
@@ -2094,7 +2094,7 @@
     </requires>
   </module>
   <module name="sap/ui/qunit/QUnitUtils.js" size="24837" compressedSize="6675" excludeFromAllInOne="true">
-    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.7 @namespace @name sap.ui.test.qunit @public</description>
+    <description>The &lt;code&gt;sap.ui.test.qunit&lt;/code&gt; namespace contains helper functionality for QUnit tests.  @version 1.20.8 @namespace @name sap.ui.test.qunit @public</description>
     <requires>
       <module name="jquery.sap.global.js"/>
     </requires>
@@ -2401,7 +2401,7 @@
       <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js"/>
     </requires>
   </module>
-  <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js" size="42997" compressedSize="15113" excludeFromAllInOne="true" raw="true">
+  <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-scroller.js" size="43102" compressedSize="15118" excludeFromAllInOne="true" raw="true">
     <requires>
       <module name="sap/ui/thirdparty/jquery/jquery-1.10.2.js"/>
       <module name="sap/ui/thirdparty/mobiscroll/js/mobiscroll-core.js"/>
