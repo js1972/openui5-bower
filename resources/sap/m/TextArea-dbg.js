@@ -61,7 +61,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -355,11 +355,7 @@ sap.m.TextArea.prototype.setCols = function(iCols) {
 
 sap.m.TextArea.prototype.setHeight = function(sHeight) {
 	this.setProperty("height", sHeight, true);
-
-	if (this.getDomRef()) {
-		this._$input.css("height", this.getHeight());
-	}
-
+	this.$().css("height", this.getHeight());
 	return this;
 };
 

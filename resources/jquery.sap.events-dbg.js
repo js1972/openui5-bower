@@ -937,7 +937,8 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 			if(sap.ui.Device.support.touch){
 				var bFingerIsMoved = false,
 					iMoveThreshold = jQuery.vmouse.moveDistanceThreshold,
-					iStartX, iStartY;
+					iStartX, iStartY,
+					iOffsetX, iOffsetY;
 
 				/**
 				 * This function simulates the corresponding mouse event by listening to touch event.
@@ -954,7 +955,9 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 						bFingerIsMoved = false;
 						iStartX = oTouch.pageX;
 						iStartY = oTouch.pageY;
-					}else if(oEvent.type === "touchmove"){
+						iOffsetX = Math.round(oTouch.pageX - jQuery(oEvent.target).offset().left);
+						iOffsetY = Math.round(oTouch.pageY - jQuery(oEvent.target).offset().top);
+					} else if (oEvent.type === "touchmove") {
 						bFingerIsMoved = bFingerIsMoved ||
 									(Math.abs(oTouch.pageX - iStartX) > iMoveThreshold ||
 											Math.abs(oTouch.pageY - iStartY) > iMoveThreshold) ;
@@ -988,6 +991,8 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 					if(oEvent.type === "touchend" && !bFingerIsMoved){
 						oNewEvent.type = "click";
 						oNewEvent.setMark("handledByUIArea", false);
+						oNewEvent.offsetX = iOffsetX; // use offset from touchstart
+						oNewEvent.offsetY = iOffsetY; // use offset from touchstart
 						oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
 					}
 				};

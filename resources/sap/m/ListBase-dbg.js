@@ -87,7 +87,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1730,7 +1730,7 @@ sap.m.ListBase.prototype.exit = function () {
 
 // this gets called only with oData Model when first load or filter/sort
 sap.m.ListBase.prototype.refreshItems = function(sReason) {
-	// show loading mask first
+	// show the loading mask first
 	this._showBusyIndicator();
 
 	if (this._oGrowingDelegate) {
@@ -1855,7 +1855,11 @@ sap.m.ListBase.prototype.setGrowingTriggerText = function(sText) {
 };
 
 sap.m.ListBase.prototype.setEnableBusyIndicator = function(bEnable) {
-	return this.setProperty("enableBusyIndicator", bEnable, true);
+	this.setProperty("enableBusyIndicator", bEnable, true);
+	if (!this.getEnableBusyIndicator()) {
+		this._hideBusyIndicator();
+	}
+	return this;
 };
 
 sap.m.ListBase.prototype.setBackgroundDesign = function(sBgDesign) {

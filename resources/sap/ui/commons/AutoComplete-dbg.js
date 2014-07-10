@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public

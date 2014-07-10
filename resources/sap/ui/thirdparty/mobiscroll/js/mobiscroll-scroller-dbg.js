@@ -718,6 +718,9 @@
                 return;
             }
 
+            // SAP modification: safe active element with API calls too
+            activeElm = elm;
+
             if (s.display == 'top') {
                 anim = 'slidedown';
             }

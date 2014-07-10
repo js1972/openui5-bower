@@ -4463,6 +4463,10 @@ html[data-sap-ui-os=win8] .sapMITBHead{
 	margin-right: 1rem;
 	margin-left: 1rem;
 }
+.sapMITBScrollContainer::-webkit-scrollbar {
+	display: none;
+}
+
 
 .sap-tablet .sapMITBScrollContainer,
 html[data-sap-ui-os=win8] .sapMITBScrollContainer {
@@ -5590,6 +5594,7 @@ html[dir=rtl][data-sap-ui-browser^=ie] .sapUiFormResLayout .sapUiRFLRow:first-ch
 .sapUiRespGridMedia-Std-Tablet.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanM12) > .sapMLabel,
 .sapUiRespGridMedia-Std-Desktop.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanL12) > .sapMLabel {
 	text-align: end !important; /* to overwrite style set on element */
+	float: none; /* as label has 100% width not needed (will bring wrong alignments on iPad) */
 }
 
 html[data-sap-ui-browser^=ie] .sapUiRespGridMedia-Std-Phone.sapUiFormResGridCont > .sapUiFormResGridLbl:not(.sapUiRespGridSpanS12) > .sapMLabel,
@@ -11784,6 +11789,10 @@ html[data-sap-ui-browser='ie10'] .sapMPersoDialogLI .sapMILILabel {
 	overflow: auto; /* remove scrollbars if not needed */
 	-webkit-transform: none; /* transform is blocking scroll */
 	resize: none;
+}
+
+.sapMTextArea > .sapMTextAreaInner{
+	height: 100%;
 	width: 100%;
 }
 /* ============================================= */
@@ -11805,9 +11814,7 @@ html[data-sap-ui-browser='ie10'] .sapMPersoDialogLI .sapMILILabel {
 
 .sapMTextArea > .sapMInputBaseInner{
 	line-height: 1.4;
-	height: auto;
-	padding: 0.75rem 0.75rem 0.75rem 0.75rem;
-	width: 100%;
+	padding: 0.75rem;
 }
 
 .sapMTextArea > .sapMInputBaseReadonlyInner.sapMInputBaseInner {

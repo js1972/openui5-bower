@@ -9,12 +9,10 @@ sap.ui.define(['jquery.sap.global', './Popup'],
 	function(jQuery, Popup) {
 	"use strict";
 
-
-	
 	/**
 	 * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
 	 * @static 
-	 * @version 1.20.7
+	 * @version 1.20.10
 	 * @public
 	 * @name sap.ui.core.BusyIndicator
 	 */
@@ -48,17 +46,59 @@ sap.ui.define(['jquery.sap.global', './Popup'],
 		var root = document.createElement("div");
 		root.id = this.sDOM_ID;
 	
+		this._oResBundle = sap.ui.getCore().getLibraryResourceBundle("sap.ui.core");
+		var sTitle = this._oResBundle.getText("BUSY_TEXT");
+		delete this._oResBundle;
+
 		// Render into invisible area, so the size settings from CSS are applied
 		var oInvisible = sap.ui.getCore().getStaticAreaRef();
 		oInvisible.appendChild(root);
-		jQuery(root).addClass("sapUiBusy").attr("tabindex", 0).attr("role", "progressbar").attr("alt", "").attr("title", "Please Wait");
+		jQuery(root).addClass("sapUiBusy").attr("tabindex", 0).attr("role", "progressbar").attr("alt", "").attr("title", sTitle);
 		this.oDomRef = root;
 	
 		this.oPopup = new Popup(root);
 		this.oPopup.setModal(true, "sapUiBlyBusy");
 		this.oPopup.setShadow(false);
+		
+		// since IE <9 isn't able to use CSS animations a JS-animation is needed
+		if (sap.ui.Device.browser.msie &&  sap.ui.Device.browser.version <= 9) {
+			this._iBusyPageWidth = jQuery(document.body).width();
+			this._iBusyLeft = 0;
+			this._iBusyDelta = 60;
+			this._iBusyTimeStep = 50;
+			this._iBusyWidth = 500;
+
+			this.attachOpen(this._IEAnimation, this)
+		}
 	};
 	
+	/**
+	 * Animates the BusyIndicator for InternetExplorer <=9
+	 * 
+	 * @private
+	 * @name sap.ui.core.BusyIndicator._IEAnimation
+	 * @function
+	 */
+	BusyIndicator._IEAnimation = function(oEvent) {
+		if (!this._$BusyIndicator && oEvent) {
+			// save the DOM-Ref when function is called for the first time to save
+			// the expensive DOM-calls during animation
+			this._$BusyIndicator = oEvent.getParameter("$Busy");
+		}
+		jQuery.sap.clearDelayedCall(this._iAnimationTimeout);
+		
+		this._iBusyLeft += this._iBusyDelta;
+		if (this._iBusyLeft > this._iBusyPageWidth) {
+			this._iBusyLeft = -this._iBusyWidth;
+		}
+		if (!this._$BusyIndicator) {
+			// DOM-Ref is removed when the BusyIndicator was hidden -> stop the animation and delayed calls
+			jQuery.sap.clearDelayedCall(this._iAnimationTimeout);
+		} else {
+			this._$BusyIndicator.css("background-position", this._iBusyLeft + "px 0px");
+			this._iAnimationTimeout = jQuery.sap.delayedCall(this._iBusyTimeStep, this, this._IEAnimation);
+		}
+	};
 	
 	/**
 	 * Displays the BusyIndicator and starts blocking all user input.
@@ -153,6 +193,8 @@ sap.ui.define(['jquery.sap.global', './Popup'],
 	
 			that.oPopup.close(0);
 		}
+		
+		delete this._$BusyIndicator;
 	};
 	
 	

@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -742,14 +742,12 @@ sap.ui.commons.Slider.prototype.onclick = function(oEvent) {
 
 	var oMovingGrip = this.oMovingGrip;
 
-
 	if (this.getEditable() && this.getEnabled()){
 
 		var fMultiplicator;
 
 		// Check for ID where the behavior depends on the clicked area.
 		var sMyTargetId = oEvent.target.getAttribute( 'ID' );
-
 		var fNewValue = this.getValue();
 		var iNewPos   = this.getOffsetLeft(this.oGrip) + this.iShiftGrip;
 
@@ -898,7 +896,8 @@ sap.ui.commons.Slider.prototype.onclick = function(oEvent) {
  * @private
  */
 sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
-	if (this.getEditable() && this.getEnabled()){
+
+	if (this.getEditable() && this.getEnabled() && !this._cancelMousedown){
 
 		// Check for ID. This is only possible on the grip.
 		var sMyTargetId = oEvent.target.getAttribute( 'ID' );
@@ -907,8 +906,14 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
 			this.bGripMousedown = true;
 
 			// Remember start coordinates
-			this.iStartDragX = oEvent.pageX;
-			this.iStartDragY = oEvent.pageY;
+			if (oEvent.targetTouches) {
+				this.iStartDragX = oEvent.targetTouches[0].pageX;
+				this.iStartDragY = oEvent.targetTouches[0].pageY;
+			}else{
+				this.iStartDragX = oEvent.pageX;
+				this.iStartDragY = oEvent.pageY;
+			}
+
 			this.iStartLeft  = this.getOffsetLeft(oEvent.target) + this.iShiftGrip;
 
 			this.oMovingGrip = oEvent.target;
@@ -921,12 +926,30 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
 				return false;
 			};
 
-			jQuery(window.document).bind('mousemove', this.handleMoveCall);
-			jQuery(window.document).bind('selectstart', this.preventSelect);
-			jQuery.sap.bindAnyEvent(jQuery.proxy(this.onAnyEvent, this));
+			if (!oEvent.targetTouches) {
+				jQuery(window.document).bind('mousemove', this.handleMoveCall);
+				jQuery(window.document).bind('selectstart', this.preventSelect);
+				jQuery.sap.bindAnyEvent(jQuery.proxy(this.onAnyEvent, this));
+			}
 		}
 		this.oStartTarget = null;
 	}
+};
+
+sap.ui.commons.Slider.prototype.ontouchstart = function(oEvent) {
+
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
+
+	this._cancelMousedown = false;
+
+	this.onmousedown(oEvent);
+
+	this._cancelMousedown = true;
+
 };
 
 /**
@@ -936,8 +959,8 @@ sap.ui.commons.Slider.prototype.onmousedown = function(oEvent) {
  * @private
  */
 sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
-	if (this.getEditable() && this.getEnabled()){
 
+	if (this.getEditable() && this.getEnabled()){
 		// Mouseup is handled on every div, not only on grip
 
 		this.bGripMousedown = false;
@@ -950,7 +973,7 @@ sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
 			if ( this.iStartLeft != ( this.getOffsetLeft(this.oMovingGrip) + this.iShiftGrip )){
 				// Only if position was changed
 				// only fire change event because liveChange is already fired in handleMove
-				this.handleFireChangeWithoutLive();
+				this.handleFireChange(true); // without liveChange
 			}
 
 			this.handleMoveCall = null;
@@ -959,6 +982,18 @@ sap.ui.commons.Slider.prototype.onmouseup = function(oEvent) {
 			this.iStartLeft     = null;
 		}
 	}
+
+};
+
+sap.ui.commons.Slider.prototype.ontouchend = function(oEvent) {
+
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
+
+	this.onmouseup(oEvent);
 
 };
 
@@ -976,11 +1011,20 @@ sap.ui.commons.Slider.prototype.handleMove = function(event) {
 
 		// Move is handled on every div, not only on grip
 
+		var iPageX, iPageY;
+		if (event.targetTouches) {
+			iPageX = event.targetTouches[0].pageX;
+			iPageY = event.targetTouches[0].pageY;
+		}else{
+			iPageX = event.pageX;
+			iPageY = event.pageY;
+		}
+
 		var iNewPos;
 		if (this.getVertical()) {
-			iNewPos = this.iStartLeft + event.pageY - this.iStartDragY;
+			iNewPos = this.iStartLeft + iPageY - this.iStartDragY;
 		} else {
-			iNewPos = this.iStartLeft + event.pageX - this.iStartDragX;
+			iNewPos = this.iStartLeft + iPageX - this.iStartDragX;
 		}
 
 		if( iNewPos <= 0 ){
@@ -1024,6 +1068,20 @@ sap.ui.commons.Slider.prototype.handleMove = function(event) {
 	event.cancelBubble = true;
 
 	return false;
+
+};
+
+sap.ui.commons.Slider.prototype.ontouchmove = function(oEvent) {
+
+	if ( (oEvent.originalEvent && jQuery.sap.startsWith(oEvent.originalEvent.type, "mouse")) ||
+	     (oEvent.handleObj && jQuery.sap.startsWith(oEvent.handleObj.origType, "mouse"))){
+		// ignore simulated touch events (if mouse events are available use them)
+		return;
+	}
+
+	this.handleMove(oEvent);
+
+	oEvent.preventDefault();
 
 };
 
@@ -1251,7 +1309,12 @@ sap.ui.commons.Slider.prototype.onsapcollapse = function(oEvent) {
 sap.ui.commons.Slider.prototype.onsaphome = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
-		this.setValue(this.getMin());
+		var iNewPos = 0;
+		if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+			iNewPos = this.getBarWidth();
+		}
+
+		this.changeGrip(this.getMin(), iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
@@ -1268,7 +1331,12 @@ sap.ui.commons.Slider.prototype.onsaphome = function(oEvent) {
 sap.ui.commons.Slider.prototype.onsapend = function(oEvent) {
 
 	if (this.getEditable() && this.getEnabled()){
-		this.setValue(this.getMax());
+		var iNewPos = this.getBarWidth();
+		if (this.getVertical() || (this.bRtl && !this.getVertical())) {
+			iNewPos = 0;
+		}
+
+		this.changeGrip(this.getMax(), iNewPos, this.oMovingGrip);
 		this.handleFireChange();
 	}
 
@@ -1742,6 +1810,8 @@ sap.ui.commons.Slider.prototype.setValue = function(fValue) {
 
 	this.setProperty('value', fValue, true); // No re-rendering
 
+	this._lastValue = fValue;
+
 	// Check for number -> if NaN -> no change
 	if( isNaN(fValue) ){
 		return this;
@@ -1772,41 +1842,39 @@ sap.ui.commons.Slider.prototype.setValue = function(fValue) {
 	}else{
 			iNewPos = ( fNewValue - this.getMin() ) / ( this.getMax() - this.getMin() ) * this.getBarWidth() ;
 	}
-	
+
 	if(this.bRtl && !this.getVertical()){
 		iNewPos = this.getBarWidth() - iNewPos;
 	}
 
 	this.changeGrip( fNewValue, iNewPos, this.oGrip );
+	this._lastValue = fNewValue;
 
 	return this;
 
 };
 
-/**
- * fires the change event. The liveEvent is not fired here.
- *
- * @private
- */
-sap.ui.commons.Slider.prototype.handleFireChangeWithoutLive = function() {
-	this.fireChange({value: this.getValue()});
-};
-
-/**
+/*
  * fires the change event. The liveChange event must be fired too if the change event is fired.
  *
+ * @param bNoLiveChange fire no LiveChange event
  * @private
  */
-sap.ui.commons.Slider.prototype.handleFireChange = function() {
+sap.ui.commons.Slider.prototype.handleFireChange = function(bNoLiveChange) {
+
 	var iValue = this.getValue();
+
 	if (iValue !== this._lastValue) {
 		this.fireChange({value: iValue});
-		this.fireLiveChange({value: iValue});
+		if (!bNoLiveChange) {
+			this.fireLiveChange({value: iValue});
+		}
 		this._lastValue = iValue;
 	}
+
 };
 
-/**
+/*
  * Updates the ARIA state initially and in case of changes.
  *
  * @private
@@ -1814,7 +1882,7 @@ sap.ui.commons.Slider.prototype.handleFireChange = function() {
 sap.ui.commons.Slider.prototype.setAriaState = function() {
 
 	var fValue = this.getValue();
-	
+
 	if (this.bTextLabels) {
 		fValue = this.getNearestLabel(fValue);
 	}

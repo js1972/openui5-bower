@@ -305,6 +305,32 @@ Mobify.UI.Carousel = (function($, Utils) {
         this._offset = -(currentOffset - startOffset);
         this.update();
     }
+    
+    Carousel.prototype.touchstart = function(e) {
+    	if(this._fnStart) {
+    		this._fnStart.call(this, e);
+    	} else {
+    		jQuery.sap.log.warning("Mobify's 'start' method not available yet.")
+    	}
+    }
+    
+    Carousel.prototype.touchmove = function(e) {
+    	if(this._fnDrag) {
+    		this._fnDrag.call(this, e);
+    	} else {
+    		jQuery.sap.log.warning("Mobify's 'drag' method not available yet.")
+    	}
+    }
+    
+    Carousel.prototype.touchend = function(e) {
+    	if(this._fnEnd) {
+    		this._fnEnd.call(this, e);
+    	} else {
+    		jQuery.sap.log.warning("Mobify's 'end' method not available yet.")
+    	}
+    }
+    
+   
 
     Carousel.prototype.bind = function() {
         var abs = Math.abs
@@ -323,93 +349,104 @@ Mobify.UI.Carousel = (function($, Utils) {
             , lockLeft = false
             , lockRight = false;
 
-        function start(e) {
-
-            // SAP MODIFICATION BEGIN
-            if (e.isMarked("delayedMouseEvent")) {
-                return;
-            }
-
-            //add event handler flags
-    		var oElement = jQuery(e.target).control(0);
-    		if(oElement instanceof sap.m.Slider || 
-    			oElement instanceof sap.m.Switch ||
-    			oElement instanceof sap.m.IconTabBar) {
-    			//Make sure that swipe is executed for all controls except those that
-    			//themselves require horizontal swiping
-    			canceled = true;
-    			return;
-    		}
-        	//SAP MODIFICATION END
-        	
-            dragging = true;
-            canceled = false;
-
-            xy = Utils.getCursorPosition(e);
-            dx = 0;
-            dy = 0;
-            dragThresholdMet = false;
-
-            // Disable smooth transitions
-            self._disableAnimation();
-
-            lockLeft = self._index == 1;
-            lockRight = self._index == self._length;
-        }
-
-        function drag(e) {
-
-            // SAP MODIFICATION BEGIN
-            if (!dragging || canceled || e.isMarked("delayedMouseEvent")) {
-            	return;
-            }
-            // SAP MODIFICATION END
-
-            var newXY = Utils.getCursorPosition(e);
-            dx = xy.x - newXY.x;
-            dy = xy.y - newXY.y;
-
-            if (dragThresholdMet || abs(dx) > abs(dy) && (abs(dx) > dragRadius)) {
-                dragThresholdMet = true;
-                e.preventDefault();
-                
-                if (lockLeft && (dx < 0)) {
-                    dx = dx * (-dragLimit)/(dx - dragLimit);
-                } else if (lockRight && (dx > 0)) {
-                    dx = dx * (dragLimit)/(dx + dragLimit);
-                }
-                self._offsetDrag = -dx;
-                self.update();
-            } else if ((abs(dy) > abs(dx)) && (abs(dy) > dragRadius)) {
-                canceled = true;
-            }
-        }
-
-        function end(e) {
-
-            // SAP MODIFICATION BEGIN
-            if (!dragging || e.isMarked("delayedMouseEvent")) {
-                return;
-            }
-            // SAP MODIFICATION END
-
-            dragging = false;
-            
-            self._enableAnimation();
-
-            if (!canceled && abs(dx) > opts.moveRadius) {
-                // Move to the next slide if necessary
-                if (dx > 0) {
-                	self.getRTL() ? self.prev() : self.next();
-                } else {
-                	self.getRTL() ? self.next() : self.prev();
-                }
-            } else {
-                // Reset back to regular position
-                self._offsetDrag = 0;
-                self.update();
-            }
-
+        //SAP MODIFICATION
+        //make functions 'start', 'drag' and 'end' available to 
+        //containing carousel control.
+        if(!self._fnStart) {
+        	self._fnStart = function start(e) {
+	
+	            // SAP MODIFICATION BEGIN
+	            if (e.isMarked("delayedMouseEvent")) {
+	                return;
+	            }
+	
+	            //add event handler flags
+	    		var oElement = jQuery(e.target).control(0);
+	    		if(oElement instanceof sap.m.Slider || 
+	    			oElement instanceof sap.m.Switch ||
+	    			oElement instanceof sap.m.IconTabBar) {
+	    			//Make sure that swipe is executed for all controls except those that
+	    			//themselves require horizontal swiping
+	    			canceled = true;
+	    			return;
+	    		}
+	    		// mark the event for components that needs to know if the event was handled by the carousel
+	    		e.setMarked();
+	        	//SAP MODIFICATION END
+	        	
+	            dragging = true;
+	            canceled = false;
+	
+	            xy = Utils.getCursorPosition(e);
+	            dx = 0;
+	            dy = 0;
+	            dragThresholdMet = false;
+	
+	            // Disable smooth transitions
+	            self._disableAnimation();
+	
+	            lockLeft = self._index == 1;
+	            lockRight = self._index == self._length;
+	        };
+	
+        	self._fnDrag = function drag(e) {
+	
+	            // SAP MODIFICATION BEGIN
+	            if (!dragging || canceled || e.isMarked("delayedMouseEvent")) {
+	            	return;
+	            }
+	            // mark the event for components that needs to know if the event was handled by the carousel
+	            e.setMarked();
+	            // SAP MODIFICATION END
+	
+	            var newXY = Utils.getCursorPosition(e);
+	            dx = xy.x - newXY.x;
+	            dy = xy.y - newXY.y;
+	
+	            if (dragThresholdMet || abs(dx) > abs(dy) && (abs(dx) > dragRadius)) {
+	                dragThresholdMet = true;
+	                e.preventDefault();
+	                
+	                if (lockLeft && (dx < 0)) {
+	                    dx = dx * (-dragLimit)/(dx - dragLimit);
+	                } else if (lockRight && (dx > 0)) {
+	                    dx = dx * (dragLimit)/(dx + dragLimit);
+	                }
+	                self._offsetDrag = -dx;
+	                self.update();
+	            } else if ((abs(dy) > abs(dx)) && (abs(dy) > dragRadius)) {
+	                canceled = true;
+	            }
+	        };
+	
+	        self._fnEnd = function end(e) {
+	
+	            // SAP MODIFICATION BEGIN
+	            if (!dragging || e.isMarked("delayedMouseEvent")) {
+	                return;
+	            }
+	            // mark the event for components that needs to know if the event was handled by the carousel
+	            e.setMarked();
+	            // SAP MODIFICATION END
+	
+	            dragging = false;
+	            
+	            self._enableAnimation();
+	
+	            if (!canceled && abs(dx) > opts.moveRadius) {
+	                // Move to the next slide if necessary
+	                if (dx > 0) {
+	                	self.getRTL() ? self.prev() : self.next();
+	                } else {
+	                	self.getRTL() ? self.next() : self.prev();
+	                }
+	            } else {
+	                // Reset back to regular position
+	                self._offsetDrag = 0;
+	                self.update();
+	            }
+	
+	        };
         }
 
         function click(e) {
@@ -425,12 +462,10 @@ Mobify.UI.Carousel = (function($, Utils) {
 
         // SAP MODIFICATION BEGIN
         $inner
-            .on(Utils.events.down, start)
-            .on(Utils.events.move, drag)
-            .on(Utils.events.up, end)
             .on('click.carousel', click)
-            .on('mouseout.carousel', end);
+            .on('mouseout.carousel', self._fnEnd);
         // SAP MODIFICATION END
+        
 
         $element.on('click', '[data-slide]', function(e){
             e.preventDefault();

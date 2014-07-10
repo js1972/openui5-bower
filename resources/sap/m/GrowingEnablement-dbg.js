@@ -471,6 +471,9 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 		}
 
 		// get the context from binding
+		// aContexts.diff ==> undefined : New data we should build from scratch
+		// aContexts.diff ==> [] : There is no diff, means data did not changed but maybe it was already grouped and we need to handle group headers
+		// aContexts.diff ==> [{index : 0, type: "delete"}, ...] : Run the diff logic
 		var aContexts = oBinding ? oBinding.getContexts(0, this._iItemCount) || [] : [];
 
 		// if the binding context is already requested
@@ -482,10 +485,13 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 		// cache dom ref for internal functions not to lookup again and again
 		this._oContainerDomRef = this._oControl.getItemsContainerDomRef();
 
-		// aContexts.diff ==> undefined : New data we should build from scratch
-		// aContexts.diff ==> [] : There is no diff, means data did not changed but maybe it was already grouped and we need to handle group headers
-		// aContexts.diff ==> [{index : 0, type: "delete"}, ...] :Run the diff logic
-		if (oBinding.isGrouped()) {
+		// check control based logic to handle from scratch is required or not
+		var bCheckGrowingFromScratch = this._oControl.checkGrowingFromScratch && this._oControl.checkGrowingFromScratch();
+
+		// when data is grouped we insert the sequential items to the end
+		// but with diff calculation we may need to create GroupHeaders
+		// which can be complicated and we rebuild list from scratch
+		if (oBinding.isGrouped() || bCheckGrowingFromScratch) {
 			var bFromScratch = true;
 			if (aContexts.length > 0) {
 				if (this._oContainerDomRef) {
@@ -619,10 +625,6 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	 * hide or show loading trigger according to list item count.
 	 */
 	_updateTrigger : function() {
-		if (this._oControl.getGrowingScrollToLoad() && this._getHasScrollbars()) {
-			return;
-		}
-
 		// check trigger list DOM first
 		var oTriggerListDomRef = document.getElementById(this._oControl.getId() + "-triggerList");
 		if (!oTriggerListDomRef) {

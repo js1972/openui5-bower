@@ -28,6 +28,11 @@ sap.m.TextAreaRenderer.addOuterClasses = function(oRm, oControl) {
 	oRm.addClass("sapMTextArea");
 };
 
+// Add extra styles to Container
+sap.m.TextAreaRenderer.addOuterStyles = function(oRm, oControl) {
+	oControl.getHeight() && oRm.addStyle("height", oControl.getHeight());
+};
+
 // Write the opening tag name of the TextArea
 sap.m.TextAreaRenderer.openInputTag = function(oRm, oControl) {
 	oRm.write("<textarea");
@@ -59,9 +64,4 @@ sap.m.TextAreaRenderer.writeInnerAttributes = function(oRm, oControl) {
 	}
 	oRm.writeAttribute("rows", oControl.getRows());
 	oRm.writeAttribute("cols", oControl.getCols());
-};
-
-// Add extra styles to TextArea
-sap.m.TextAreaRenderer.addInnerStyles = function(oRm, oControl) {
-	oControl.getHeight() && oRm.addStyle("height", oControl.getHeight());
 };

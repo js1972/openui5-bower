@@ -71,7 +71,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -1138,12 +1138,21 @@ sap.ui.commons.FileUploader.prototype.onkeypress = function(oEvent) {
 	this.onkeydown(oEvent);
 };
 
+sap.ui.commons.FileUploader.prototype.onclick = function(oEvent) {
+	if (this.getSameFilenameAllowed()) {
+			this.setValue("", true);
+	}
+};
+
 //
 //Event Handling
 //
 sap.ui.commons.FileUploader.prototype.onkeydown = function(oEvent) {
 	if (!this.getEnabled()) {
 		return;
+	}
+	if (this.getSameFilenameAllowed()) {
+			this.setValue("", true);
 	}
 	var iKeyCode = oEvent.keyCode,
 		eKC = jQuery.sap.KeyCodes;

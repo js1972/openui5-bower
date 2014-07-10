@@ -58,7 +58,7 @@ jQuery.sap.require("sap.m.ListBase");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -351,6 +351,26 @@ sap.m.Table.prototype.getItemsContainerDomRef = function() {
 };
 
 /*
+ * Determines for growing feature to handle all data from scratch
+ * if column merging and growing feature are active at the same time
+ * it is complicated to remerge or demerge columns when we
+ * insert or delete items from the table with growing diff logic
+ *
+ * @protected
+ */
+sap.m.Table.prototype.checkGrowingFromScratch = function() {
+	// no merging for popin case
+	if (this.hasPopin()) {
+		return false;
+	}
+
+	// check visibility and merge feature of columns
+	return this.getColumns().some(function(oColumn) {
+		return oColumn.getVisible() && oColumn.getMergeDuplicates();
+	});
+};
+
+/*
  * This method is called asynchronously if resize event comes from column
  * @protected
  */
@@ -410,6 +430,9 @@ sap.m.Table.prototype.setTableHeaderVisibility = function(bColVisible) {
 	} else {
 		$firstVisibleCol.width($firstVisibleCol.attr("data-sap-orig-width"));
 	}
+
+	// update GroupHeader colspan according to visible column count
+	$table.find(".sapMGHLICell").attr("colspan", aVisibleColumns.length);
 
 	// remove or show column header row(thead) according to column visibility value
 	if (!bColVisible && bHeaderVisible) {

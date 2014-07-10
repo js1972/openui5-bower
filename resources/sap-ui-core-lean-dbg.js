@@ -10299,7 +10299,7 @@ $.ui.position = {
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.7
+ * @version 1.20.10
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10322,7 +10322,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.7";
+		var apiVersion = "1.20.10";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -10376,7 +10376,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.7";
+		var v = "1.20.10";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -11517,13 +11517,16 @@ if(typeof window.sap.ui !== "object"){
 
 	function isTablet() {
 		var android_phone = (/(?=android)(?=.*mobile)/i.test(navigator.userAgent));
+		// According to google documentation: https://developer.chrome.com/multidevice/webview/overview, the WebView shipped with Android 4.4 (KitKat) is based on the same code as Chrome for Android.
+		// If you're attempting to differentiate between the WebView and Chrome for Android, you should look for the presence of the Version/_X.X_ string in the WebView user-agent string
+		var bChromeWebView = device.os.android && (device.os.version >= 4.4) && /Version\/\d.\d/.test(navigator.userAgent);
 		if (device.os.name === device.os.OS.IOS) {
 			return /ipad/i.test(navigator.userAgent);
 		} else {
 			if(device.support.touch) {
 				//in real mobile device
 				var densityFactor = window.devicePixelRatio ? window.devicePixelRatio : 1; // may be undefined in Windows Phone devices
-				if ((device.os.name === device.os.OS.ANDROID) && device.browser.webkit && (device.browser.webkitVersion > 537.10)) {
+				if (!bChromeWebView && (device.os.name === device.os.OS.ANDROID) && device.browser.webkit && (device.browser.webkitVersion > 537.10)) {
 					// On Android sometimes window.screen.width returns the logical CSS pixels, sometimes the physical device pixels;
 					// Tests on multiple devices suggest this depends on the Webkit version.
 					// The Webkit patch which changed the behavior was done here: https://bugs.webkit.org/show_bug.cgi?id=106460
@@ -11531,6 +11534,8 @@ if(typeof window.sap.ui !== "object"){
 					// Chrome 18 with Webkit 535.19 returns the physical pixels.
 					// The BlackBerry 10 browser with Webkit 537.10+ returns the physical pixels.
 					// So it appears like somewhere above Webkit 537.10 we do not hve to divide by the devicePixelRatio anymore.
+
+					// update: Chrome WebView returns physical pixels therefore it's excluded from this special check
 					densityFactor = 1;
 				}
 
@@ -13871,7 +13876,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.7
+	 * @version 1.20.10
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -14264,7 +14269,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.7
+	 * @version 1.20.10
 	 * @namespace
 	 * @public
 	 * @static

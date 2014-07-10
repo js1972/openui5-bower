@@ -62,12 +62,12 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  *
  * @class
  * Renders a form using a Grid. Internally the Grid is used.
- * On the FormContainers, Labels and Fields GridData can be used to cahnge the default rendering. On FormElements GridDada are not supported.
+ * On the FormContainers, Labels and Fields GridData can be used to change the default rendering. On FormElements GridDada are not supported.
  * If own GridData are used this may be much more complex than the default. So in some cases the calculation for the other content may nor bring the expected result. In this case GridData should be used at all content to disable the default behaviour.
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public

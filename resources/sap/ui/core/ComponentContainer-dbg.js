@@ -58,7 +58,7 @@ sap.ui.define(['./library','./Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public

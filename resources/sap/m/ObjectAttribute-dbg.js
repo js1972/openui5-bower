@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -247,7 +247,8 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
  * @private
  */
 sap.m.ObjectAttribute.prototype.ontap = function(oEvent) {
-	if(!!this.getActive()) {
+	//event should only be fired if the click is on the text
+	if(!!this.getActive() && (oEvent.target.id != this.getId())) {
 		this.firePress({domRef: this.getDomRef()});
 	}
 };

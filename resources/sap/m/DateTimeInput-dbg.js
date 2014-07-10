@@ -60,7 +60,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.7
+ * @version 1.20.10
  *
  * @constructor   
  * @public
@@ -401,6 +401,10 @@ sap.m.DateTimeInput.prototype.setValue = function(sValue) {
 		return this.setDateValue(new Date());
 	}
 
+	if (sValue === this.getValue()) {
+		return this;
+	}
+
 	this.setProperty("value", sValue);
 	this._origin = "value";
 	this._getFormatFromBinding();
@@ -409,7 +413,7 @@ sap.m.DateTimeInput.prototype.setValue = function(sValue) {
 
 // set the dateValue property if oValue parameter is defined
 sap.m.DateTimeInput.prototype.setDateValue = function(oValue) {
-	if (!oValue) {
+	if (!oValue || oValue === this.getDateValue()) {
 		return this;
 	}
 
@@ -447,14 +451,6 @@ sap.m.DateTimeInput.prototype.getDisplayFormat = function() {
 
 sap.m.DateTimeInput.prototype.getValueFormat = function() {
 	return this.getProperty("valueFormat") || this._types[this.getType()].valueFormat;
-};
-
-sap.m.DateTimeInput.prototype.ontap = function(oEvent) {
-	// for desktop, we show picker with tap/click
-	// for mobile, mobiscroll will handle it
-	if (!sap.ui.Device.support.touch) {
-		this.onsapshow(oEvent);
-	}
 };
 
 // Check given is JS Date Object and throw error if not
@@ -529,6 +525,7 @@ sap.m.DateTimeInput.prototype._destroyCustomPicker = function() {
 
 sap.m.DateTimeInput.prototype._setInputValue = function(sValue) {
 	this._$input.val(sValue);
+	this._setLabelVisibility();
 	this._onChange();
 };
 
@@ -787,8 +784,8 @@ sap.m.DateTimeInput.prototype.onsapshow = function(oEvent) {
 				fnKeyDown, $dialogToClean,
 				oConfig = $.extend({}, oSettings, {
 					preset : sType.toLowerCase(),
-					showOnFocus : oDevice.support.touch,	// focus should not show dialog for desktop
-					showOnTap: oDevice.support.touch,		// we handle tab/click for desktop
+					showOnFocus : false,
+					showOnTap: true,
 					disabled : !that.getEnabled() || !that.getEditable(),
 					onShow : function($dialog) {
 						// Special treatment for IE: with jQuery < 1.9 focus is fired twice in IE
@@ -855,13 +852,6 @@ sap.m.DateTimeInput.prototype.onsapshow = function(oEvent) {
 						if ($dialogToClean) {
 							$dialogToClean.unbind('keydown', fnKeyDown);
 							$dialogToClean.unbind('keydown.dw', fnHandleBtnKeyDown);
-						}
-
-						// set focus to input back
-						if (!oDevice.support.touch) {
-							setTimeout(function() {
-								that._$input.is(":focusable") && that._$input.focus();
-							}, 0);
 						}
 					},
 					onMarkupReady : function($dialog, inst) {
