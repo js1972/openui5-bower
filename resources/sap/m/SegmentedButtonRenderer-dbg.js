@@ -35,6 +35,7 @@ sap.m.SegmentedButtonRenderer.render = function(rm, oControl){
 	rm.write("<ul");
 	rm.addClass("sapMSegB");
 	rm.addClass("sapMSegBHide");
+
 	rm.writeClasses();
 	if (oControl.getWidth() && oControl.getWidth() !== '') {
 		rm.addStyle('width', oControl.getWidth());

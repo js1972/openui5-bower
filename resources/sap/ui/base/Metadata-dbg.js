@@ -18,7 +18,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.script'],
 	 *
 	 * @class Metadata for a class.
 	 * @author Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.8.6
 	 * @public
 	 * @name sap.ui.base.Metadata
@@ -264,7 +264,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.script'],
 	 * <b>Note</b>: the newly added method(s) will only be visible in {@link sap.ui.base.Interface interface}
 	 * objects that are created <i>after</i> this method has been called.
 	 *
-	 * @param {string||string[]} sMethod name(s) of the new method(s)
+	 * @param {string|string[]} sMethod name(s) of the new method(s)
 	 * @name sap.ui.base.Metadata#addPublicMethods
 	 * @function
 	 */
@@ -303,7 +303,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.script'],
 		if ( typeof FNMetaImpl.preprocessClassInfo === "function" ) {
 			oClassInfo = FNMetaImpl.preprocessClassInfo(oClassInfo); 
 		}
-	  
+
 		// normalize oClassInfo
 		oClassInfo = oClassInfo || {};
 		oClassInfo.metadata = oClassInfo.metadata || {};
@@ -325,7 +325,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.script'],
 						fnBaseClass.apply(this, arguments); 
 					};
 				} else {
-	        // create default factory 
+					// create default factory 
 					fnClass = function() { 
 						fnBaseClass.apply(this, arguments); 
 					};

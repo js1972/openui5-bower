@@ -83,7 +83,7 @@
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -476,7 +476,7 @@
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @static
@@ -1008,10 +1008,11 @@
 		});
 
 		/**
-		 * Deprecated duplicate of {@link jQuery.sap.log.Level}.
+		 * Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * 
 		 * @deprecated Since 1.1.2. To streamline the Logging API a bit, the separation between Level and LogLevel has been given up.
 		 * Use the (enriched) enumeration {@link jQuery.sap.log.Level} instead.
-		 * @namespace Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * @namespace
 		 * @public
 		 */
 		jQuery.sap.log.LogLevel = jQuery.sap.log.Level;
@@ -1050,7 +1051,7 @@
 		// against all our rules: use side effect of assert to differentiate between optimized and productive code
 		jQuery.sap.assert( !!(mMaxLevel[''] = DEBUG), "will be removed in optimized version");
 		// evaluate configuration
-		oCfgData.loglevel = oCfgData.loglevel || (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}());
+		oCfgData.loglevel = (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}()) || oCfgData.loglevel;
 		if ( oCfgData.loglevel ) {
 			jQuery.sap.log.setLevel(jQuery.sap.log.Level[oCfgData.loglevel.toUpperCase()] || parseInt(oCfgData.loglevel,10));
 		}
@@ -1278,7 +1279,7 @@
 		 * @private
 		 */
 		var log = jQuery.sap.log.getLogger("sap.ui.ModuleSystem",
-				(oCfgData["xx-debugModuleLoading"] || /sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search)) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
+				(/sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search) || oCfgData["xx-debugModuleLoading"]) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
 			),
 
 		/**
@@ -1695,7 +1696,7 @@
 					oModule.state = FAILED;
 					oModule.error = ((err.toString && err.toString()) || err.message) + (err.line ? "(line " + err.line + ")" : "" );
 					oModule.data = undefined;
-					if ( window["sap-ui-debug"] && (oCfgData["xx-showloaderrors"] || /sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search)) ) {
+					if ( window["sap-ui-debug"] && (/sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search) || oCfgData["xx-showloaderrors"]) ) {
 						log.error("error while evaluating " + sModuleName + ", embedding again via script tag to enforce a stack trace (see below)");
 						jQuery.sap.includeScript(oModule.url);
 						return;
@@ -1893,7 +1894,7 @@
 		 * namespace for that object exists (by calling jQuery.sap.getObject).
 		 * If such an object creation is not desired, <code>bCreateNamespace</code> must be set to false.
 		 *
-		 * @param {string || object} sModuleName name of the module to be declared
+		 * @param {string | object}  sModuleName name of the module to be declared
 		 *                           or in case of an object {modName: "...", type: "..."}
 		 *                           where modName is the name of the module and the type
 		 *                           could be a specific dot separated extension e.g.
@@ -1940,7 +1941,7 @@
 		 * Any required and not yet loaded script will be loaded and execute synchronously.
 		 * Already loaded modules will be skipped.
 		 *
-		 * @param {string... || object} sModuleName one or more names of modules to be loaded
+		 * @param {string... | object}  sModuleName one or more names of modules to be loaded
 		 *                              or in case of an object {modName: "...", type: "..."}
 		 *                              where modName is the name of the module and the type
 		 *                              could be a specific dot separated extension e.g.
@@ -2549,7 +2550,11 @@
 				jQuery.support[detectionName] = true;
 				// If one of the flex layout properties is supported without the prefix, set the flexBoxPrefixed to false
 				if(propName === "boxFlex" || propName === "flexOrder" || propName === "flexGrow") {
-					jQuery.support.flexBoxPrefixed = false;
+					// Exception for Chrome up to version 28
+					// because some versions implemented the non-prefixed properties without the functionality
+					if(!sap.ui.Device.browser.chrome || sap.ui.Device.browser.version > 28) {
+						jQuery.support.flexBoxPrefixed = false;
+					}
 				}
 				return;
 				

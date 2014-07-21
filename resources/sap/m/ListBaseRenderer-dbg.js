@@ -64,6 +64,7 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	var oHeaderTBar = oControl.getHeaderToolbar();
 	if (oHeaderTBar) {
 		oHeaderTBar.setDesign(sap.m.ToolbarDesign.Transparent, true);
+		oHeaderTBar.addStyleClass("sapMListHdrTBar");
 		rm.renderControl(oHeaderTBar);
 	} else if (sHeaderText) {
 		rm.write("<div class='sapMListHdr'>");
@@ -75,6 +76,7 @@ sap.m.ListBaseRenderer.render = function(rm, oControl) {
 	var oInfoTBar = oControl.getInfoToolbar();
 	if (oInfoTBar) {
 		oInfoTBar.setDesign(sap.m.ToolbarDesign.Info, true);
+		oInfoTBar.addStyleClass("sapMListInfoTBar");
 		rm.renderControl(oInfoTBar);
 	}
 

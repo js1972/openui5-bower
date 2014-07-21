@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -1275,7 +1275,12 @@ sap.ui.commons.DropdownBox.prototype._doTypeAhead = function(oValue, oNewChar, b
 	this._doSelect(oValue.length + iMove, oText.length);
 
 	oLB.setSelectedIndex(i);
-	oLB.scrollToIndex(i);
+	if(oSHI && i == 2){
+		// special case -> search help item exist and first real item selected -> show search help too
+		oLB.scrollToIndex(0);
+	}else{
+		oLB.scrollToIndex(i);
+	}
 	this._iClosedUpDownIdx = i;
 
 	if (!bValid){

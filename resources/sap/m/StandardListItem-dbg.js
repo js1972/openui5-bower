@@ -64,7 +64,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -344,7 +344,7 @@ sap.m.StandardListItem.prototype.exit = function() {
 	if (this._image) {
 		this._image.destroy();
 	}
-	
+
 	sap.m.ListItemBase.prototype.exit.apply(this, arguments);
 };
 
@@ -354,53 +354,49 @@ sap.m.StandardListItem.prototype.exit = function() {
  */
 sap.m.StandardListItem.prototype._getImage = function(sImgId, sImgStyle, sSrc, bIconDensityAware) {
 	var oImage = this._image;
-	if(oImage)
-	{
+
+	if (oImage) {
 		oImage.setSrc(sSrc);
-		if(oImage instanceof sap.m.Image)
+		if (oImage instanceof sap.m.Image) {
 			oImage.setDensityAware(bIconDensityAware);
-	}
-	else
-	{
+		}
+	} else {
 		oImage = sap.ui.core.IconPool.createControlByURI({
 			id: sImgId,
-      src : sSrc,
-      densityAware : bIconDensityAware
-    }, sap.m.Image).setParent(this, null, true);
+			src : sSrc,
+			densityAware : bIconDensityAware
+		}, sap.m.Image).setParent(this, null, true);
 	}
-	
-	if(oImage instanceof sap.m.Image){
+
+	if (oImage instanceof sap.m.Image) {
 		oImage.addStyleClass(sImgStyle, true);
-	}
-	else{
+	} else {
 		oImage.addStyleClass(sImgStyle + "Icon", true);
 	}
-	
-	return this._image = oImage;
+
+	return (this._image = oImage);
 };
 
 // overwrite base method to hook into the active handling
 sap.m.StandardListItem.prototype._activeHandlingInheritor = function() {
-	var img = sap.ui.getCore().byId(this.getId() + "-img");
-	if(img instanceof sap.ui.core.Icon){
-		img.$().toggleClass('sapMSLIIconActive', this._active);
-		return;
+	var oImage = sap.ui.getCore().byId(this.getId() + "-img");
+	if (oImage instanceof sap.ui.core.Icon) {
+		oImage.$().toggleClass("sapMSLIIconActive", this._active);
 	}
-	
-	if (img && this.getActiveIcon()) {
-			img.setSrc(this.getActiveIcon());
-	}	
+
+	if (oImage && this.getActiveIcon()) {
+		oImage.setSrc(this.getActiveIcon());
+	}
 };
 
 // overwrite base method to hook into the inactive handling
 sap.m.StandardListItem.prototype._inactiveHandlingInheritor = function() {
-	var img = sap.ui.getCore().byId(this.getId() + "-img");
-		if(img instanceof sap.ui.core.Icon){
-		img.$().toggleClass('sapMSLIIconActive', this._active);
-		return;
+	var oImage = sap.ui.getCore().byId(this.getId() + "-img");
+	if (oImage instanceof sap.ui.core.Icon) {
+		oImage.$().toggleClass("sapMSLIIconActive", this._active);
 	}
-	
-	if (img) {
-			img.setSrc(this.getIcon());
+
+	if (oImage) {
+		oImage.setSrc(this.getIcon());
 	}
 };

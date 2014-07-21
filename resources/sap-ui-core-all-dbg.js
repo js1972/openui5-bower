@@ -8,7 +8,7 @@
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -31,7 +31,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.10";
+		var apiVersion = "1.22.4";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -85,7 +85,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.10";
+		var v = "1.22.4";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -16456,7 +16456,7 @@ $.ui.position = {
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -16849,7 +16849,7 @@ $.ui.position = {
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @static
@@ -17381,10 +17381,11 @@ $.ui.position = {
 		});
 
 		/**
-		 * Deprecated duplicate of {@link jQuery.sap.log.Level}.
+		 * Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * 
 		 * @deprecated Since 1.1.2. To streamline the Logging API a bit, the separation between Level and LogLevel has been given up.
 		 * Use the (enriched) enumeration {@link jQuery.sap.log.Level} instead.
-		 * @namespace Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * @namespace
 		 * @public
 		 */
 		jQuery.sap.log.LogLevel = jQuery.sap.log.Level;
@@ -17423,7 +17424,7 @@ $.ui.position = {
 		// against all our rules: use side effect of assert to differentiate between optimized and productive code
 		jQuery.sap.assert( !!(mMaxLevel[''] = DEBUG), "will be removed in optimized version");
 		// evaluate configuration
-		oCfgData.loglevel = oCfgData.loglevel || (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}());
+		oCfgData.loglevel = (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}()) || oCfgData.loglevel;
 		if ( oCfgData.loglevel ) {
 			jQuery.sap.log.setLevel(jQuery.sap.log.Level[oCfgData.loglevel.toUpperCase()] || parseInt(oCfgData.loglevel,10));
 		}
@@ -17651,7 +17652,7 @@ $.ui.position = {
 		 * @private
 		 */
 		var log = jQuery.sap.log.getLogger("sap.ui.ModuleSystem",
-				(oCfgData["xx-debugModuleLoading"] || /sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search)) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
+				(/sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search) || oCfgData["xx-debugModuleLoading"]) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
 			),
 
 		/**
@@ -18068,7 +18069,7 @@ $.ui.position = {
 					oModule.state = FAILED;
 					oModule.error = ((err.toString && err.toString()) || err.message) + (err.line ? "(line " + err.line + ")" : "" );
 					oModule.data = undefined;
-					if ( window["sap-ui-debug"] && (oCfgData["xx-showloaderrors"] || /sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search)) ) {
+					if ( window["sap-ui-debug"] && (/sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search) || oCfgData["xx-showloaderrors"]) ) {
 						log.error("error while evaluating " + sModuleName + ", embedding again via script tag to enforce a stack trace (see below)");
 						jQuery.sap.includeScript(oModule.url);
 						return;
@@ -18266,7 +18267,7 @@ $.ui.position = {
 		 * namespace for that object exists (by calling jQuery.sap.getObject).
 		 * If such an object creation is not desired, <code>bCreateNamespace</code> must be set to false.
 		 *
-		 * @param {string || object} sModuleName name of the module to be declared
+		 * @param {string | object}  sModuleName name of the module to be declared
 		 *                           or in case of an object {modName: "...", type: "..."}
 		 *                           where modName is the name of the module and the type
 		 *                           could be a specific dot separated extension e.g.
@@ -18313,7 +18314,7 @@ $.ui.position = {
 		 * Any required and not yet loaded script will be loaded and execute synchronously.
 		 * Already loaded modules will be skipped.
 		 *
-		 * @param {string... || object} sModuleName one or more names of modules to be loaded
+		 * @param {string... | object}  sModuleName one or more names of modules to be loaded
 		 *                              or in case of an object {modName: "...", type: "..."}
 		 *                              where modName is the name of the module and the type
 		 *                              could be a specific dot separated extension e.g.
@@ -18922,7 +18923,11 @@ $.ui.position = {
 				jQuery.support[detectionName] = true;
 				// If one of the flex layout properties is supported without the prefix, set the flexBoxPrefixed to false
 				if(propName === "boxFlex" || propName === "flexOrder" || propName === "flexGrow") {
-					jQuery.support.flexBoxPrefixed = false;
+					// Exception for Chrome up to version 28
+					// because some versions implemented the non-prefixed properties without the functionality
+					if(!sap.ui.Device.browser.chrome || sap.ui.Device.browser.version > 28) {
+						jQuery.support.flexBoxPrefixed = false;
+					}
 				}
 				return;
 				
@@ -21479,10 +21484,11 @@ if ( eventCaptureSupported ) {
 
 			$this.bind( touchStartEvent, function( event ) {
 				// SAP MODIFICATION: mark touch events, so only the lowest UIArea within the hierarchy will create a swipe event
-				if (event.originalEvent._sapui_swipestartHandled) {
+				if (event.isMarked("swipestartHandled")) {
 					return;
 				}
-				event.originalEvent._sapui_swipestartHandled = true;
+				event.setMarked("swipestartHandled");
+				
 				var start = $.event.special.swipe.start( event ),
 					stop;
 
@@ -21496,7 +21502,7 @@ if ( eventCaptureSupported ) {
 					// prevent scrolling
 					// SAP MODIFICATION: skip this behavior on chrome+desktop, as it prevents text selection on non-input fields (CSN #3696977/2013)
 					// NOTE: other browsers (Firefox, IE, Safari) don't stop the text selection when calling preventDefault, so we only alter the behaviour for Chrome to be as close to the original implementation of jQuery 
-					if(!sap.ui.Device.system.desktop || sap.ui.Device.browser.name !== "cr") {
+					if (!sap.ui.Device.system.desktop || sap.ui.Device.browser.name !== "cr") {
 						if ( Math.abs( start.coords[ 0 ] - stop.coords[ 0 ] ) > $.event.special.swipe.scrollSupressionThreshold ) {
 							event.preventDefault();
 						}
@@ -22309,7 +22315,7 @@ sap.ui.define("jquery.sap.script",['jquery.sap.global'],
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -23315,7 +23321,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -23325,7 +23331,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * 
 	 * Constructor for an instance of jQuery.sap.storage.Storage
 	 *
-	 * @param {jQuery.sap.storage.Type || Storage} [pStorage=jQuery.sap.storage.Type.session] the type this storage should be of or an Object implementing the typical Storage API for direct usage.
+	 * @param {jQuery.sap.storage.Type | Storage} [pStorage=jQuery.sap.storage.Type.session] the type this storage should be of or an Object implementing the typical Storage API for direct usage.
 	 * @param {string} [sStorageKeyPrefix='state.key_'] the prefix to use in this storage.
 	 * 
 	 * @private
@@ -23499,7 +23505,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 
 		/**
 		 * Returns the type of the storage.
-		 * @returns {jQuery.sap.storage.Type || string} the type of the storage or "unknown"
+		 * @returns {jQuery.sap.storage.Type | string} the type of the storage or "unknown"
 		 * @public
 		 */
 		this.getType = function(){
@@ -23531,7 +23537,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -23569,7 +23575,7 @@ sap.ui.define("jquery.sap.storage",['jquery.sap.global'],
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {
@@ -23896,8 +23902,8 @@ sap.ui.define("jquery.sap.strings",['jquery.sap.global'],
 	 *            closing curly brace. Nested placeholdes are not accepted!
 	 * Group 4: captures any remaining curly braces and indicates syntax errors
 	 *
-	 * @private
 	 *                    [-1] [----- quoted string -----] [------ placeholder ------] [--]
+	 * @private
 	 */
 	var rMessageFormat = /('')|'([^']+(?:''[^']*)*)(?:'|$)|\{([0-9]+(?:\s*,[^{}]*)?)\}|[{}]/g;
 
@@ -24747,7 +24753,7 @@ sap.ui.define("sap/ui/base/Interface",['jquery.sap.global'],
 	 *        only the defined functions will be visible, no internals of the class can be accessed.
 	 *
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @param {sap.ui.base.Object}
 	 *            oObject the instance that needs an interface created
 	 * @param {string[]}
@@ -24818,7 +24824,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 	 *
 	 * @class Metadata for a class.
 	 * @author Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.8.6
 	 * @public
 	 * @name sap.ui.base.Metadata
@@ -25064,7 +25070,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 	 * <b>Note</b>: the newly added method(s) will only be visible in {@link sap.ui.base.Interface interface}
 	 * objects that are created <i>after</i> this method has been called.
 	 *
-	 * @param {string||string[]} sMethod name(s) of the new method(s)
+	 * @param {string|string[]} sMethod name(s) of the new method(s)
 	 * @name sap.ui.base.Metadata#addPublicMethods
 	 * @function
 	 */
@@ -25103,7 +25109,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 		if ( typeof FNMetaImpl.preprocessClassInfo === "function" ) {
 			oClassInfo = FNMetaImpl.preprocessClassInfo(oClassInfo); 
 		}
-	  
+
 		// normalize oClassInfo
 		oClassInfo = oClassInfo || {};
 		oClassInfo.metadata = oClassInfo.metadata || {};
@@ -25125,7 +25131,7 @@ sap.ui.define("sap/ui/base/Metadata",['jquery.sap.global', 'jquery.sap.script'],
 						fnBaseClass.apply(this, arguments); 
 					};
 				} else {
-	        // create default factory 
+					// create default factory 
 					fnClass = function() { 
 						fnBaseClass.apply(this, arguments); 
 					};
@@ -25196,7 +25202,7 @@ sap.ui.define("sap/ui/base/Object",['jquery.sap.global', './Interface', './Metad
 	 * @class Base class for all SAPUI5 Objects
 	 * @abstract
 	 * @author Malte Wedel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.base.Object
 	 */
@@ -25400,12 +25406,12 @@ sap.ui.define("sap/ui/base/ObjectPool",['jquery.sap.global', './Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.base.ObjectPool
 	 * @public
 	 */
-	var ObjectPool = BaseObject.extend("sap.ui.base.ObjectPool", /** @lends sap.ui.base.ObjectPool */ {
+	var ObjectPool = BaseObject.extend("sap.ui.base.ObjectPool", /** @lends sap.ui.base.ObjectPool.prototype */ {
 		constructor: function(oObjectClass) {
 		
 			BaseObject.apply(this);
@@ -25470,7 +25476,6 @@ sap.ui.define("sap/ui/base/ObjectPool",['jquery.sap.global', './Object'],
 	 *
 	 * @name sap.ui.base.Poolable
 	 * @interface Contract for objects that can be pooled by ObjectPool
-	 * @constructor
 	 * @public
 	 */
 	
@@ -25599,7 +25604,7 @@ sap.ui.define("sap/ui/core/DeclarativeSupport",['jquery.sap.global'],
 	 * @class Static class for enabling declarative UI support.  
 	 *
 	 * @author Peter Muessig, Tino Butz
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 1.7.0
 	 * @public
 	 * @name sap.ui.core.DeclarativeSupport
@@ -26231,8 +26236,6 @@ sap.ui.define("sap/ui/core/History",['jquery.sap.global', 'sap/ui/base/Object'],
 	function(jQuery, BaseObject) {
 	"use strict";
 
-
-	
 	/**
 	 * Creates an instance of the History.
 	 * 
@@ -26246,10 +26249,10 @@ sap.ui.define("sap/ui/core/History",['jquery.sap.global', 'sap/ui/base/Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.History
-	 * @private
+	 * @protected
 	 */
 	var History = BaseObject.extend("sap.ui.core.History", /** @lends sap.ui.core.History.prototype */ {
 	
@@ -26263,8 +26266,7 @@ sap.ui.define("sap/ui/core/History",['jquery.sap.global', 'sap/ui/base/Object'],
 	
 			this._iMaxHistory = mSettings.max ? mSettings.max : 100;
 			this._sHistoryId = sHistoryPrefix + sId;
-			var that = this;
-	
+
 			jQuery.sap.require("jquery.sap.storage");
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 	
@@ -26320,7 +26322,6 @@ sap.ui.define("sap/ui/core/History",['jquery.sap.global', 'sap/ui/base/Object'],
 		 */
 		remove : function(sValue) {
 			var aHistory = this._initHistory();
-			var aResult = [];
 			for(var i=0; i<aHistory.length; i++){
 				if(aHistory[i] == sValue) {
 					aHistory.splice(i, 1);
@@ -26387,8 +26388,8 @@ sap.ui.define("sap/ui/core/IconPool",['jquery.sap.global', 'sap/ui/thirdparty/UR
 		if(IconPool){
 			return;
 		}
-		var aIconNames = ["accidental-leave","account","wrench","windows-doors","washing-machine","visits","video","travel-expense","temperature","task","synchronize","survey","settings","search","sales-document","retail-store","refresh","product","present","ppt-attachment","pool","pie-chart","picture","photo-voltaic","phone","pending","pdf-attachment","past","outgoing-call","opportunity","opportunities","notes","money-bills","map","log","line-charts","lightbulb","leads","lead","laptop","kpi-managing-my-area","kpi-corporate-performance","incoming-call","inbox","horizontal-bar-chart","history","heating-cooling","gantt-bars","future","fridge","fallback","expense-report","excel-attachment","energy-saving-lightbulb","employee","email","edit","duplicate","download","doc-attachment","dishwasher","delete","decline","complete","competitor","collections-management","chalkboard","cart","card","camera","calendar","begin","basket","bar-chart","attachment","arrow-top","arrow-right","arrow-left","arrow-bottom","approvals","appointment","alphabetical-order","along-stacked-chart","alert","addresses","address-book","add-filter","add-favorite","add","activities","action","accept","hint","group","check-availability","weather-proofing","payment-approval","batch-payments","bed","arobase","family-care","favorite","navigation-right-arrow","navigation-left-arrow","e-care","less","lateness","lab","internet-browser","instance","inspection","image-viewer","home","grid","goalseek","general-leave-request","create-leave-request","flight","filter","favorite-list","factory","endoscopy","employee-pane","employee-approvals","email-read","electrocardiogram","documents","decision","database","customer-history","customer","credit-card","create-entry-time","contacts","compare","clinical-order","chain-link","pull-down","cargo-train","car-rental","business-card","bar-code","folder-blank","passenger-train","question-mark","world","iphone","ipad","warning","sort","course-book","course-program","add-coursebook","print","save","play","pause","record","response","pushpin-on","pushpin-off","unfavorite","learning-assistant","timesheet","time-entry-request","list","action-settings","share","feed","role","flag","post","inspect","inspect-down","appointment-2","target-group","marketing-campaign","notification","comment","shipping-status","collaborate","shortcut","lead-outdated","tools-opportunity","permission","supplier","table-view","table-chart","switch-views","e-learning","manager","switch-classes","simple-payment","signature","sales-order-item","sales-order","request","receipt","puzzle","process","private","popup-window","person-placeholder","per-diem","paper-plane","paid-leave","pdf-reader","overview-chart","overlay","org-chart","number-sign","notification-2","my-sales-order","meal","loan","order-status","customer-order-entry","performance","menu","employee-lookup","education","customer-briefing","customer-and-contacts","my-view","accelerated","to-be-reviewed","warning2","feeder-arrow","quality-issue","workflow-tasks","create","home-share","globe","tags","work-history","x-ray","wounds-doc","web-cam","waiver","vertical-bar-chart","upstacked-chart","trip-report","microphone","unpaid-leave","tree","toaster-up","toaster-top","toaster-down","time-account","theater","taxi","subway-train","study-leave","stethoscope","step","sonography","soccor","physical-activity","pharmacy","official-service","offsite-work","nutrition-activity","newspaper","monitor-payments","map-2","machine","mri-scan","end-user-experience-monitoring","unwired","customer-financial-fact-sheet","retail-store-manager","Netweaver-business-client","electronic-medical-record","eam-work-order","customer-view","crm-service-manager","crm-sales","widgets","commission-check","collections-insight","clinical-tast-tracker","citizen-connect","cart-approval","capital-projects","bo-strategy-management","business-objects-mobile","business-objects-explorer","business-objects-experience","bbyd-dashboard","bbyd-active-sales","business-by-design","business-one","sap-box","manager-insight","accounting-document-verification","hr-approval","idea-wall","Chart-Tree-Map","cart-5","cart-4","wallet","vehicle-repair","upload","unlocked","umbrella","travel-request","travel-expense-report","travel-itinerary","time-overtime","thing-type","technical-object","tag","syringe","syntax","suitcase","simulate","shield","share-2","sales-quote","repost","provision","projector","add-product","pipeline-analysis","add-photo","palette","nurse","sales-notification","mileage","meeting-room","media-forward","media-play","media-pause","media-reverse","media-rewind","measurement-document","measuring-point","measure","map-3","locked","letter","journey-arrive","journey-change","journey-depart","it-system","it-instance","it-host","iphone-2","ipad-2","inventory","insurance-house","insurance-life","insurance-car","initiative","incident","group-2","goal","functional-location","full-screen","form","fob-watch","blank-tag","family-protection","folder","fax-machine","example","eraser","employee-rejections","drop-down-list","draw-rectangle","document","doctor","discussion-2","discussion","dimension","customer-and-supplier","crop","add-contact","compare-2","color-fill","collision","curriculum","chart-axis","full-stacked-chart","full-stacked-column-chart","vertical-bar-chart-2","horizontal-bar-chart-2","horizontal-stacked-chart","vertical-stacked-chart","choropleth-chart","geographic-bubble-chart","multiple-radar-chart","radar-chart","crossed-line-chart","multiple-line-chart","multiple-bar-chart","line-chart","line-chart-dual-axis","bubble-chart","scatter-chart","multiple-pie-chart","column-chart-dual-axis","tag-cloud-chart","area-chart","cause","cart-3","cart-2","bus-public-transport","burglary","building","border","bookmark","badge","attachment-audio","attachment-video","attachment-html","attachment-photo","attachment-e-pub","attachment-zip-file","attachment-text-file","add-equipment","add-activity","activity-individual","activity-2","add-activity-2","activity-items","activity-assigned-to-goal","status-completed","status-error","status-inactive","status-in-process","blank-tag-2","cart-full","locate-me","paging","company-view","document-text","explorer","personnel-view","sorting-ranking","drill-down","drill-up","vds-file","sap-logo-shape","folder-full","system-exit","system-exit-2","close-command-field","open-command-field","sys-enter-2","sys-enter","sys-help-2","sys-help","sys-back","sys-back-2","sys-cancel","sys-cancel-2","open-folder","sys-find-next","sys-find","sys-monitor","sys-prev-page","sys-first-page","sys-next-page","sys-last-page","generate-shortcut","create-session","display-more","enter-more","zoom-in","zoom-out","header","detail-view","collapse","expand","positive","negative","display","menu2","redo","undo","navigation-up-arrow","navigation-down-arrow","down","up","shelf","background","resize","move","show","hide","nav-back","error", "slim-arrow-right", "slim-arrow-left", "slim-arrow-down", "slim-arrow-up", "forward", "overflow", "value-help", "multi-select", "exit-full-screen", "sys-add", "sys-minus", "dropdown", "expand-group", "collapse-group"];
-		var aIconCodes = ["e000","e001","e002","e003","e004","e005","e006","e007","e008","e009","e00a","e00b","e00c","e00d","e00e","e00f","e010","e011","e012","e013","e014","e015","e016","e017","e018","e019","e01a","e01b","e01c","e01d","e01e","e01f","e020","e021","e022","e023","e024","e025","e026","e027","e028","e029","e02a","e02b","e02c","e02d","e02e","e02f","e030","e031","e032","e033","e034","e035","e036","e037","e038","e039","e03a","e03b","e03c","e03d","e03e","e03f","e040","e041","e042","e043","e044","e045","e046","e047","e048","e049","e04a","e04b","e04c","e04d","e04e","e04f","e050","e051","e052","e053","e054","e055","e056","e057","e058","e059","e05a","e05b","e05c","e05d","e05e","e05f","e060","e061","e062","e063","e064","e065","e066","e067","e068","e069","e06a","e06b","e06c","e06d","e06e","e06f","e070","e071","e072","e073","e074","e075","e076","e077","e078","e079","e07a","e07b","e07c","e07d","e07e","e07f","e080","e081","e082","e083","e084","e085","e086","e087","e088","e089","e08a","e08b","e08c","e08d","e08e","e08f","e090","e091","e092","e093","e094","e095","e096","e097","e098","e099","e09a","e09b","e09c","e09d","e09e","e09f","e0a0","e0a1","e0a2","e0a3","e0a4","e0a5","e0a6","e0a7","e0a8","e0a9","e0aa","e0ab","e0ac","e0ad","e0ae","e0af","e0b0","e0b1","e0b2","e0b3","e0b4","e0b5","e0b6","e0b7","e0b8","e0b9","e0ba","e0bb","e0bc","e0bd","e0be","e0bf","e0c0","e0c1","e0c2","e0c3","e0c4","e0c5","e0c6","e0c7","e0c8","e0c9","e0ca","e0cb","e0cc","e0cd","e0ce","e0cf","e0d0","e0d1","e0d2","e0d3","e0d4","e0d5","e0d6","e0d7","e0d8","e0d9","e0da","e0db","e0dc","e0dd","e0de","e0df","e0e0","e0e1","e0e2","e0e3","e0e4","e0e5","e0e6","e0e7","e0e8","e0e9","e0ea","e0eb","e0ec","e0ed","e0ee","e0ef","e0f0","e0f1","e0f2","e0f3","e0f4","e0f5","e0f6","e0f7","e0f8","e0f9","e0fa","e0fb","e0fc","e0fd","e0fe","e0ff","e100","e101","e102","e103","e104","e105","e106","e107","e108","e109","e10a","e10b","e10c","e10d","e10e","e10f","e110","e111","e112","e113","e114","e115","e116","e117","e118","e119","e11a","e11b","e11c","e11d","e11e","e11f","e120","e121","e122","e123","e124","e125","e126","e127","e128","e129","e12a","e12b","e12c","e12d","e12e","e12f","e130","e131","e132","e133","e134","e135","e136","e137","e138","e139","e13a","e13b","e13c","e13d","e13e","e13f","e140","e141","e142","e143","e144","e145","e146","e147","e148","e149","e14a","e14b","e14c","e14d","e14e","e14f","e150","e151","e152","e153","e154","e155","e156","e157","e158","e159","e15a","e15b","e15c","e15d","e15e","e15f","e160","e161","e162","e163","e164","e165","e166","e167","e168","e169","e16a","e16b","e16c","e16d","e16e","e16f","e170","e171","e172","e173","e174","e175","e176","e177","e178","e179","e17a","e17b","e17c","e17d","e17e","e17f","e180","e181","e182","e183","e184","e185","e186","e187","e188","e189","e18a","e18b","e18c","e18d","e18e","e18f","e190","e191","e192","e193","e194","e195","e196","e197","e198","e199","e19a","e19b","e19c","e19d","e19e","e19f","e1a0","e1a1","e1a2","e1a3","e1a4","e1a5","e1a6","e1a7","e1a8","e1a9","e1aa","e1ab","e1ac","e1ad","e1ae","e1af","e1b0","e1b1","e1b2","e1b3","e1b4","e1b5","e1b6","e1b7","e1b8","e1b9","e1ba","e1bb","e1bc","e1bd","e1be","e1bf","e1c0","e1c1","e1c2","e1c3","e1c4","e1c5","e1c6","e1c7","e1c8","e1c9","e1ca","e1cb","e1cc","e1cd","e1ce","e1cf","e1d0","e1d1","e1d2","e1d3","e1d4","e1d5","e1d6","e1d7","e1d8","e1d9","e1da","e1db","e1dc","e1dd","e1de","e1df","e1e0","e1e1","e1e2","e1e3","e1e4","e1e5","e1e6","e1e7","e1e8","e1e9","e1ea","e1eb","e1ec","e1ed", "e1ee", "e1ef", "e1f0", "e1f1", "e1f2", "e1f3", "e1f4", "e1f5", "e1f6", "e1f7", "e1f8", "e1f9", "e200"];
+		var aIconNames = ["accidental-leave","account","wrench","windows-doors","washing-machine","visits","video","travel-expense","temperature","task","synchronize","survey","settings","search","sales-document","retail-store","refresh","product","present","ppt-attachment","pool","pie-chart","picture","photo-voltaic","phone","pending","pdf-attachment","past","outgoing-call","opportunity","opportunities","notes","money-bills","map","log","line-charts","lightbulb","leads","lead","laptop","kpi-managing-my-area","kpi-corporate-performance","incoming-call","inbox","horizontal-bar-chart","history","heating-cooling","gantt-bars","future","fridge","fallback","expense-report","excel-attachment","energy-saving-lightbulb","employee","email","edit","duplicate","download","doc-attachment","dishwasher","delete","decline","complete","competitor","collections-management","chalkboard","cart","card","camera","calendar","begin","basket","bar-chart","attachment","arrow-top","arrow-right","arrow-left","arrow-bottom","approvals","appointment","alphabetical-order","along-stacked-chart","alert","addresses","address-book","add-filter","add-favorite","add","activities","action","accept","hint","group","check-availability","weather-proofing","payment-approval","batch-payments","bed","arobase","family-care","favorite","navigation-right-arrow","navigation-left-arrow","e-care","less","lateness","lab","internet-browser","instance","inspection","image-viewer","home","grid","goalseek","general-leave-request","create-leave-request","flight","filter","favorite-list","factory","endoscopy","employee-pane","employee-approvals","email-read","electrocardiogram","documents","decision","database","customer-history","customer","credit-card","create-entry-time","contacts","compare","clinical-order","chain-link","pull-down","cargo-train","car-rental","business-card","bar-code","folder-blank","passenger-train","question-mark","world","iphone","ipad","warning","sort","course-book","course-program","add-coursebook","print","save","play","pause","record","response","pushpin-on","pushpin-off","unfavorite","learning-assistant","timesheet","time-entry-request","list","action-settings","share","feed","role","flag","post","inspect","inspect-down","appointment-2","target-group","marketing-campaign","notification","comment","shipping-status","collaborate","shortcut","lead-outdated","tools-opportunity","permission","supplier","table-view","table-chart","switch-views","e-learning","manager","switch-classes","simple-payment","signature","sales-order-item","sales-order","request","receipt","puzzle","process","private","popup-window","person-placeholder","per-diem","paper-plane","paid-leave","pdf-reader","overview-chart","overlay","org-chart","number-sign","notification-2","my-sales-order","meal","loan","order-status","customer-order-entry","performance","menu","employee-lookup","education","customer-briefing","customer-and-contacts","my-view","accelerated","to-be-reviewed","warning2","feeder-arrow","quality-issue","workflow-tasks","create","home-share","globe","tags","work-history","x-ray","wounds-doc","web-cam","waiver","vertical-bar-chart","upstacked-chart","trip-report","microphone","unpaid-leave","tree","toaster-up","toaster-top","toaster-down","time-account","theater","taxi","subway-train","study-leave","stethoscope","step","sonography","soccor","physical-activity","pharmacy","official-service","offsite-work","nutrition-activity","newspaper","monitor-payments","map-2","machine","mri-scan","end-user-experience-monitoring","unwired","customer-financial-fact-sheet","retail-store-manager","Netweaver-business-client","electronic-medical-record","eam-work-order","customer-view","crm-service-manager","crm-sales","widgets","commission-check","collections-insight","clinical-tast-tracker","citizen-connect","cart-approval","capital-projects","bo-strategy-management","business-objects-mobile","business-objects-explorer","business-objects-experience","bbyd-dashboard","bbyd-active-sales","business-by-design","business-one","sap-box","manager-insight","accounting-document-verification","hr-approval","idea-wall","Chart-Tree-Map","cart-5","cart-4","wallet","vehicle-repair","upload","unlocked","umbrella","travel-request","travel-expense-report","travel-itinerary","time-overtime","thing-type","technical-object","tag","syringe","syntax","suitcase","simulate","shield","share-2","sales-quote","repost","provision","projector","add-product","pipeline-analysis","add-photo","palette","nurse","sales-notification","mileage","meeting-room","media-forward","media-play","media-pause","media-reverse","media-rewind","measurement-document","measuring-point","measure","map-3","locked","letter","journey-arrive","journey-change","journey-depart","it-system","it-instance","it-host","iphone-2","ipad-2","inventory","insurance-house","insurance-life","insurance-car","initiative","incident","group-2","goal","functional-location","full-screen","form","fob-watch","blank-tag","family-protection","folder","fax-machine","example","eraser","employee-rejections","drop-down-list","draw-rectangle","document","doctor","discussion-2","discussion","dimension","customer-and-supplier","crop","add-contact","compare-2","color-fill","collision","curriculum","chart-axis","full-stacked-chart","full-stacked-column-chart","vertical-bar-chart-2","horizontal-bar-chart-2","horizontal-stacked-chart","vertical-stacked-chart","choropleth-chart","geographic-bubble-chart","multiple-radar-chart","radar-chart","crossed-line-chart","multiple-line-chart","multiple-bar-chart","line-chart","line-chart-dual-axis","bubble-chart","scatter-chart","multiple-pie-chart","column-chart-dual-axis","tag-cloud-chart","area-chart","cause","cart-3","cart-2","bus-public-transport","burglary","building","border","bookmark","badge","attachment-audio","attachment-video","attachment-html","attachment-photo","attachment-e-pub","attachment-zip-file","attachment-text-file","add-equipment","add-activity","activity-individual","activity-2","add-activity-2","activity-items","activity-assigned-to-goal","status-completed","status-error","status-inactive","status-in-process","blank-tag-2","cart-full","locate-me","paging","company-view","document-text","explorer","personnel-view","sorting-ranking","drill-down","drill-up","vds-file","sap-logo-shape","folder-full","system-exit","system-exit-2","close-command-field","open-command-field","sys-enter-2","sys-enter","sys-help-2","sys-help","sys-back","sys-back-2","sys-cancel","sys-cancel-2","open-folder","sys-find-next","sys-find","sys-monitor","sys-prev-page","sys-first-page","sys-next-page","sys-last-page","generate-shortcut","create-session","display-more","enter-more","zoom-in","zoom-out","header","detail-view","collapse","expand","positive","negative","display","menu2","redo","undo","navigation-up-arrow","navigation-down-arrow","down","up","shelf","background","resize","move","show","hide","nav-back","error", "slim-arrow-right", "slim-arrow-left", "slim-arrow-down", "slim-arrow-up", "forward", "overflow", "value-help", "multi-select", "exit-full-screen", "sys-add", "sys-minus", "dropdown", "expand-group", "collapse-group", "vertical-grip", "horizontal-grip", "sort-descending", "sort-ascending"];
+		var aIconCodes = ["e000","e001","e002","e003","e004","e005","e006","e007","e008","e009","e00a","e00b","e00c","e00d","e00e","e00f","e010","e011","e012","e013","e014","e015","e016","e017","e018","e019","e01a","e01b","e01c","e01d","e01e","e01f","e020","e021","e022","e023","e024","e025","e026","e027","e028","e029","e02a","e02b","e02c","e02d","e02e","e02f","e030","e031","e032","e033","e034","e035","e036","e037","e038","e039","e03a","e03b","e03c","e03d","e03e","e03f","e040","e041","e042","e043","e044","e045","e046","e047","e048","e049","e04a","e04b","e04c","e04d","e04e","e04f","e050","e051","e052","e053","e054","e055","e056","e057","e058","e059","e05a","e05b","e05c","e05d","e05e","e05f","e060","e061","e062","e063","e064","e065","e066","e067","e068","e069","e06a","e06b","e06c","e06d","e06e","e06f","e070","e071","e072","e073","e074","e075","e076","e077","e078","e079","e07a","e07b","e07c","e07d","e07e","e07f","e080","e081","e082","e083","e084","e085","e086","e087","e088","e089","e08a","e08b","e08c","e08d","e08e","e08f","e090","e091","e092","e093","e094","e095","e096","e097","e098","e099","e09a","e09b","e09c","e09d","e09e","e09f","e0a0","e0a1","e0a2","e0a3","e0a4","e0a5","e0a6","e0a7","e0a8","e0a9","e0aa","e0ab","e0ac","e0ad","e0ae","e0af","e0b0","e0b1","e0b2","e0b3","e0b4","e0b5","e0b6","e0b7","e0b8","e0b9","e0ba","e0bb","e0bc","e0bd","e0be","e0bf","e0c0","e0c1","e0c2","e0c3","e0c4","e0c5","e0c6","e0c7","e0c8","e0c9","e0ca","e0cb","e0cc","e0cd","e0ce","e0cf","e0d0","e0d1","e0d2","e0d3","e0d4","e0d5","e0d6","e0d7","e0d8","e0d9","e0da","e0db","e0dc","e0dd","e0de","e0df","e0e0","e0e1","e0e2","e0e3","e0e4","e0e5","e0e6","e0e7","e0e8","e0e9","e0ea","e0eb","e0ec","e0ed","e0ee","e0ef","e0f0","e0f1","e0f2","e0f3","e0f4","e0f5","e0f6","e0f7","e0f8","e0f9","e0fa","e0fb","e0fc","e0fd","e0fe","e0ff","e100","e101","e102","e103","e104","e105","e106","e107","e108","e109","e10a","e10b","e10c","e10d","e10e","e10f","e110","e111","e112","e113","e114","e115","e116","e117","e118","e119","e11a","e11b","e11c","e11d","e11e","e11f","e120","e121","e122","e123","e124","e125","e126","e127","e128","e129","e12a","e12b","e12c","e12d","e12e","e12f","e130","e131","e132","e133","e134","e135","e136","e137","e138","e139","e13a","e13b","e13c","e13d","e13e","e13f","e140","e141","e142","e143","e144","e145","e146","e147","e148","e149","e14a","e14b","e14c","e14d","e14e","e14f","e150","e151","e152","e153","e154","e155","e156","e157","e158","e159","e15a","e15b","e15c","e15d","e15e","e15f","e160","e161","e162","e163","e164","e165","e166","e167","e168","e169","e16a","e16b","e16c","e16d","e16e","e16f","e170","e171","e172","e173","e174","e175","e176","e177","e178","e179","e17a","e17b","e17c","e17d","e17e","e17f","e180","e181","e182","e183","e184","e185","e186","e187","e188","e189","e18a","e18b","e18c","e18d","e18e","e18f","e190","e191","e192","e193","e194","e195","e196","e197","e198","e199","e19a","e19b","e19c","e19d","e19e","e19f","e1a0","e1a1","e1a2","e1a3","e1a4","e1a5","e1a6","e1a7","e1a8","e1a9","e1aa","e1ab","e1ac","e1ad","e1ae","e1af","e1b0","e1b1","e1b2","e1b3","e1b4","e1b5","e1b6","e1b7","e1b8","e1b9","e1ba","e1bb","e1bc","e1bd","e1be","e1bf","e1c0","e1c1","e1c2","e1c3","e1c4","e1c5","e1c6","e1c7","e1c8","e1c9","e1ca","e1cb","e1cc","e1cd","e1ce","e1cf","e1d0","e1d1","e1d2","e1d3","e1d4","e1d5","e1d6","e1d7","e1d8","e1d9","e1da","e1db","e1dc","e1dd","e1de","e1df","e1e0","e1e1","e1e2","e1e3","e1e4","e1e5","e1e6","e1e7","e1e8","e1e9","e1ea","e1eb","e1ec","e1ed", "e1ee", "e1ef", "e1f0", "e1f1", "e1f2", "e1f3", "e1f4", "e1f5", "e1f6", "e1f7", "e1f8", "e1f9", "e200", "e1fa", "e1fb", "e1fc", "e1fd"];
 		var mIconSuppressMirroring = {"chalkboard": true, "calendar": true, "alphabetical-order": true, "address-book": true, "hint": true, "payment-approval": true, "batch-payments": true, "arobase": true, "question-mark": true, "lead": true, "lead-outdated": true, "simple-payment": true, "sales-order-item": true, "sales-order": true, "per-diem": true, "paid-leave": true, "pdf-reader": true, "my-sales-order": true, "loan": true, "globe": true, "waiver": true, "unpaid-leave": true, "customer-financial-fact-sheet": true, "crm-sales": true, "commission-check": true, "collections-insight": true, "capital-projects": true, "business-one": true, "travel-expense": true, "travel-expense-report": true, "travel-request": true, "time-overtime": true, "sales-quote": true, "sales-notification": true, "incident": true, "money-bills": true, "sales-document": true, "opportunities": true, "expense-report": true, "monitor-payments": true, "widgets": true, "sys-help-2": true, "sys-help": true, "accept": true, "accounting-document-verification": true, "activities": true, "activity-2": true, "add-activity": true, "add-activity-2": true, "approvals": true, "bbyd-active-sales": true, "business-by-design": true, "cart-approval": true, "complete": true, "customer-order-entry": true, "employee-approvals": true, "hr-approval": true, "kpi-corporate-performance": true, "kpi-managing-my-area": true, "survey": true, "sys-enter": true, "sys-enter-2": true, "task": true};
 		var sapIconFamily = "SAP-icons";
 		var sProtocolName = "sap-icon";
@@ -26585,7 +26586,7 @@ sap.ui.define("sap/ui/core/IconPool",['jquery.sap.global', 'sap/ui/thirdparty/UR
 			}
 			var parts = window.URI.parse(uri);
 			
-			return (parts.protocol === sProtocolName) && parts.hostname;
+			return (parts.protocol === sProtocolName) && !!parts.hostname;
 		};
 		
 		/**
@@ -26695,35 +26696,32 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.IconRenderer') ) {
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare('sap.ui.core.IconRenderer'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/core/IconRenderer",['jquery.sap.global'],
+sap.ui.define("sap/ui/core/IconRenderer",["jquery.sap.global"],
 	function(jQuery) {
 	"use strict";
 
-
 	/**
-	 * @class FontIcon renderer. 
+	 * @class FontIcon renderer.
 	 * @static
 	 * @name sap.ui.core.IconRenderer
 	 */
-	var IconRenderer = {
-	};
-	
-	
+	var IconRenderer = {};
+
 	/**
 	 * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
-	 * 
-	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
-	 * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+	 *
+	 * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
+	 * @param {sap.ui.core.Control} oControl An object representation of the control that should be rendered.
 	 * @name sap.ui.core.IconRenderer.render
 	 * @function
 	 */
-	IconRenderer.render = function(oRm, oControl){ 
-	
+	IconRenderer.render = function(oRm, oControl) {
+
 		// An invisible icon is not rendered
 		if (!oControl.getVisible()) {
 			return;
 		}
-		
+
 		// write the HTML into the render manager
 		var oIconInfo = sap.ui.core.IconPool.getIconInfo(oControl.getSrc()),
 			sWidth = oControl.getWidth(),
@@ -26732,66 +26730,72 @@ sap.ui.define("sap/ui/core/IconRenderer",['jquery.sap.global'],
 			sBackgroundColor = oControl.getBackgroundColor(),
 			sSize = oControl.getSize(),
 			tooltip = oControl.getTooltip_AsString(),
+
 			//in IE8 :before is not supported, text needs to be rendered in span
 			bTextNeeded = (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9);
+
 		oRm.write("<span");
 		oRm.writeControlData(oControl);
-		
-		if(!oControl.getDecorative()){
+
+		if (!oControl.getDecorative()) {
 			oRm.writeAttribute("tabindex", 0);
 		}
-		
+
 		if (tooltip) {
 			oRm.writeAttributeEscaped("title", tooltip);
 		}
-		if(oIconInfo){
-			if(!bTextNeeded){
+
+		if (oIconInfo){
+
+			if (!bTextNeeded) {
 				oRm.writeAttribute("data-sap-ui-icon-content", oIconInfo.content);
 			}
+
 			oRm.addStyle("font-family", "'" + oIconInfo.fontFamily + "'");
 		}
-		if(sWidth){
+
+		if (sWidth) {
 			oRm.addStyle("width", sWidth);
 		}
-		if(sHeight){
+
+		if (sHeight) {
 			oRm.addStyle("height", sHeight);
 			oRm.addStyle("line-height", sHeight);
 		}
-		if(sColor){
+
+		if (sColor) {
 			oRm.addStyle("color", sColor);
 		}
-		if(sBackgroundColor){
+
+		if (sBackgroundColor) {
 			oRm.addStyle("background-color", sBackgroundColor);
 		}
-		if(sSize){
+
+		if (sSize) {
 			oRm.addStyle("font-size", sSize);
 		}
-		oRm.writeStyles();
-		
+
 		oRm.addClass("sapUiIcon");
-		if(oIconInfo && !oIconInfo.suppressMirroring){
+
+		if (oIconInfo && !oIconInfo.suppressMirroring) {
 			oRm.addClass("sapUiIconMirrorInRTL");
 		}
-		
-		if(oControl.hasListeners("press")){
-			//show pointer cursor if icon is active i.e. press or tap is set
-			oRm.addClass("sapUiIconPointer");
-		}
-		
+
 		oRm.writeClasses();
-		
+		oRm.writeStyles();
+
 		oRm.write(">"); // span element
-		if(oIconInfo && bTextNeeded){
+
+		if (oIconInfo && bTextNeeded) {
 			oRm.write(oIconInfo.content);
 		}
+
 		oRm.write("</span>");
 	};
-	
 
 	return IconRenderer;
 
 }, /* bExport= */ true);
-
 }; // end of sap/ui/core/IconRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.LocalBusyIndicatorRenderer') ) {
 /*!
@@ -26911,7 +26915,7 @@ sap.ui.define("sap/ui/core/Locale",['jquery.sap.global', 'sap/ui/base/Object'],
 		 *
 		 * @extends sap.ui.base.Object
 		 * @author SAP AG
-		 * @version 1.20.10
+		 * @version 1.22.4
 		 * @constructor
 		 * @public
 		 * @name sap.ui.core.Locale
@@ -27210,7 +27214,7 @@ sap.ui.define("sap/ui/core/Renderer",['jquery.sap.global'],
 	 * @class Base Class for Renderer.
 	 *
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @static
 	 * @public
 	 * @name sap.ui.core.Renderer
@@ -27497,8 +27501,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.ThemeCheck') ) {
 
 // Provides class sap.ui.core.ThemeCheck
 jQuery.sap.declare('sap.ui.core.ThemeCheck'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
-	function(jQuery, BaseObject/* , jQuerySap */) {
+sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/base/Object', 'jquery.sap.script'],
+	function(jQuery, Device, BaseObject/* , jQuerySap */) {
 	"use strict";
 
 
@@ -27531,6 +27535,7 @@ sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object
 			this._CUSTOMID = "sap-ui-core-customcss";
 			this._customCSSAdded = false;
 			this._themeCheckedForCustom = null;
+			this._mAdditionalLibCss = {};
 		},
 	
 		getInterface : function() {
@@ -27587,6 +27592,7 @@ sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object
 			jQuery.sap.clearDelayedCall(oThemeCheck._sThemeCheckId);
 			oThemeCheck._sThemeCheckId = null;
 			oThemeCheck._iCount = 0;
+			oThemeCheck._mAdditionalLibCss = {};
 		}
 	}
 	
@@ -27601,14 +27607,65 @@ sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object
 			// hence, needs to be checked for successful inclusion, too
 			mLibs["sap-ui-theme-"+oThemeCheck._CUSTOMID] = {};
 		}
-	
-		jQuery.each(mLibs, function(lib) {
+
+		function checkLib(lib) {
 			res = res && ThemeCheck.checkStyle("sap-ui-theme-"+lib, true);
-			if (!!res){
-			/* as soon as css has been loaded, look if there is a flag for custom css inclusion inside, but only
+			if (!!res) {
+
+			// check for css rule count
+				if (Device.browser.msie && Device.browser.version <= 9) {
+					var oStyle = jQuery.sap.domById("sap-ui-theme-"+lib);
+					var iRules = oStyle && oStyle.sheet && oStyle.sheet.rules &&
+									oStyle.sheet.rules.length ? oStyle.sheet.rules.length : 0;
+
+					// IE9 and below can only handle up to 4095 rules and therefore additional
+					// css files have to be included
+					if (iRules === 4095) {
+						var iNumber = parseInt(jQuery(oStyle).attr("sap-ui-css-count"), 10);
+						if (isNaN(iNumber)) {
+							iNumber = 1; // first additional stylesheet
+						} else {
+							iNumber += 1;
+						}
+						var sAdditionalLibSuffix = "ie9_" + iNumber;
+						var sAdditionalLibName = this.name + "-" + sAdditionalLibSuffix;
+						var sLinkId = "sap-ui-theme-" + sAdditionalLibName;
+						if (!oThemeCheck._mAdditionalLibCss[sAdditionalLibName] && !jQuery.sap.domById(sLinkId)) {
+							oThemeCheck._mAdditionalLibCss[sAdditionalLibName] = {
+								name: this.name // remember original libName
+							};
+							var oBaseStyleSheet;
+							if (lib !== this.name) {
+								// use first stylesheet element of theme
+								oBaseStyleSheet = jQuery.sap.domById("sap-ui-theme-" + this.name);
+							} else {
+								oBaseStyleSheet = oStyle;
+							}
+							// create the new link element
+							var oLink = document.createElement("link");
+							oLink.type = "text/css";
+							oLink.rel = "stylesheet";
+							oLink.href = oBaseStyleSheet.getAttribute("href").substr(0, oBaseStyleSheet.getAttribute("href").length - 4 /* length of .css */) +
+								"_" + sAdditionalLibSuffix + ".css";
+							oLink.id = sLinkId;
+
+							jQuery(oLink)
+							.attr("sap-ui-css-count", iNumber)
+							.load(function() {
+								jQuery(oLink).attr("sap-ui-ready", "true");
+							}).error(function() {
+								jQuery(oLink).attr("sap-ui-ready", "false");
+							});
+
+							oStyle.parentNode.insertBefore(oLink, oStyle.nextSibling);
+						}
+					}
+				}
+
+				/* as soon as css has been loaded, look if there is a flag for custom css inclusion inside, but only
 				 * if this has not been checked successfully before for the same theme
 				 */
-			if(oThemeCheck._themeCheckedForCustom != sThemeName){
+				if(oThemeCheck._themeCheckedForCustom != sThemeName){
 					if (checkCustom(oThemeCheck, lib)){
 							//load custom css available at sap/ui/core/themename/library.css
 						jQuery.sap.includeStyleSheet(sPath,  oThemeCheck._CUSTOMID);
@@ -27617,8 +27674,7 @@ sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object
 						oThemeCheck._themeCheckedForCustom = sThemeName;
 						res = false;
 						return false;
-					}
-					else{
+					}	else {
 						// remove stylesheet once the particular class is not available (e.g. after theme switch)
 						/*check for custom theme was not successful, so we need to make sure there are no custom style sheets attached*/
 						var customCssLink = jQuery("LINK[id='"+  oThemeCheck._CUSTOMID + "']");
@@ -27630,7 +27686,11 @@ sap.ui.define("sap/ui/core/ThemeCheck",['jquery.sap.global', 'sap/ui/base/Object
 					}
 				}
 			}
-		});
+		}
+
+		jQuery.each(mLibs, checkLib);
+		jQuery.each(oThemeCheck._mAdditionalLibCss, checkLib);
+
 		if(!res){
 			jQuery.sap.log.warning("ThemeCheck: Theme not yet applied.");
 		}
@@ -28417,7 +28477,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 			 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 			 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 			 *
-			 * @version 1.20.10
+			 * @version 1.22.4
 			 * @constructor
 			 * @protected
 			 */
@@ -29051,7 +29111,17 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 	
 			_onScroll: function(oEvent) {
 				var $Container = this._$Container;
-	
+
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					var dY = Math.abs(this._scrollY - $Container.scrollTop());
+					// check if we are still in momentum scrolling
+					if(dY > 0 && dY < 10 || oEvent.timeStamp - this._oIOSScroll.iTimeStamp > 120){
+						jQuery.sap.log.debug("IOS Momentum Scrolling is OFF");
+						this._oIOSScroll.bMomentum = false;
+					}
+				}
+
 				this._scrollX = $Container.scrollLeft(); // remember position
 				this._scrollY = $Container.scrollTop();
 	
@@ -29060,7 +29130,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 					this._fnScrollLoadCallback(); // close to the bottom
 				}
 
-				// IconTabBar
+				// IconTabHeader
 				if (this._oIconTabBar && this._fnScrollEndCallback) {
 					this._fnScrollEndCallback();
 				}
@@ -29069,7 +29139,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 			_onStart : function(oEvent){
 				var container = this._$Container[0];
 				if(!container) return;
-	
+
 				// vertically scrollable, for rubber page prevention
 				this._bAllowScroll = !sap.ui.Device.os.ios || this._bVertical && (container.scrollHeight > container.clientHeight + 1);
 	
@@ -29082,7 +29152,14 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 						container.scrollTop = delta-1;
 					}
 				}
-	
+
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					jQuery.sap.log.debug("IOS Momentum Scrolling: prevent tap event");
+					oEvent.stopPropagation();
+					this._oIOSScroll.bMomentum = false;
+				}
+
 				// Store initial coordinates for drag scrolling
 				var point = oEvent.touches ? oEvent.touches[0] : oEvent;
 				this._iX = point.pageX;
@@ -29094,6 +29171,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 			_onTouchMove : function(oEvent){
 				var container = this._$Container[0];
 				var point = oEvent.touches[0];
+
 				if(this._iDirection == ""){ // do once at start
 					var dx = point.pageX - this._iX;
 					var dy = point.pageY - this._iY;
@@ -29136,6 +29214,12 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 					return;
 				}
 
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._bAllowScroll && this._iDirection == "v" && Math.abs(oEvent.touches[0].pageY - this._iY) >= 10){
+					this._oIOSScroll.bMomentum = true;
+					this._oIOSScroll.iTimeStamp = oEvent.timeStamp;
+				}
+
 				if(this._bAllowScroll || this._bHorizontal && this._iDirection == "h"){
 					oEvent.setMarked(); // see jQuery.sap.mobile.js
 					if(window.iScroll){ // if both iScroll and native scrolling are used (IconTabBar)
@@ -29145,6 +29229,10 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 			},
 	
 			_onEnd : function(oEvent){
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					this._oIOSScroll.iTimeStamp = oEvent.timeStamp;
+				}
+
 				if (this._oPullDown && this._oPullDown._bTouchMode) {
 					this._oPullDown.doScrollEnd();
 					this._refresh();
@@ -29297,7 +29385,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 						}
 						if( sap.ui.Device.os.android && sap.ui.Device.os.version < 4.1 ||
 							sap.ui.Device.os.blackberry || // BlackBerry: iScroll works smoother, no scroll bars in native scrolling
-							sap.ui.Device.os.ios){ // IOS: use iScroll until the issue with wrong touch event targets during momentum scroll is solved
+							sap.ui.Device.os.ios && sap.ui.Device.os.version < 6){
 							return "i";
 						}
 						if (!sap.ui.Device.support.touch && $.sap.simulateMobileOnDesktop){
@@ -29312,7 +29400,7 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 						return "n";
 					}
 					var sLib = getLibrary();
-	
+
 					// Initialization
 					this._preventTouchMoveDefault = !!oConfig.preventDefault;
 					this._scroller = null;
@@ -29339,6 +29427,12 @@ sap.ui.define("sap/ui/core/delegate/ScrollEnablement",['jquery.sap.global', 'sap
 							}
 							if (sap.ui.getCore().getConfiguration().getRTL()) {
 								this._scrollX = 9999; // in RTL case initially scroll to the very right
+							}
+							if(sap.ui.Device.os.ios){
+								this._oIOSScroll = {
+									iTimeStamp : 0,
+									bMomentum : false
+								};
 							}
 							break;
 					}
@@ -29683,6 +29777,144 @@ sap.ui.define("sap/ui/core/tmpl/TemplateControlRenderer",['jquery.sap.global'],
 }, /* bExport= */ true);
 
 }; // end of sap/ui/core/tmpl/TemplateControlRenderer.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.File') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.File
+jQuery.sap.declare('sap.ui.core.util.File'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/File",['jquery.sap.global', 'sap/ui/Device'],
+	function(jQuery, Device) {
+	'use strict';
+
+	/**
+	 * Utility class to handle files.
+	 *
+	 * @class Utility class to handle files
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @static
+	 *
+	 * @public
+	 * @since 1.22.0
+	 * @name sap.ui.core.util.File
+	 */
+	var File = {
+
+		/**
+		 * <p>Triggers a download / save action of the given file.</p>
+		 *
+		 * <p>There are limitations for this feature in some browsers:<p>
+		 *
+		 * <p><b>Internet Explorer 8 / 9</b><br>
+		 * Some file extensions on some operating systems are not working due to a bug in IE.
+		 * Therefore 'txt' will be used as file extension if the problem is occurring.</p>
+		 *
+		 * <p><b>Safari 6 / 7 (OS X)</b><br>
+		 * A new window/tab will be opened. The user has to manually save the file (CMD + S), choose "page source" and specify a filename.</p>
+		 *
+		 * <p><b>Mobile Safari (iOS)</b><br>
+		 * Not supported</p>
+		 *
+		 * <p><b>Android Browser</b><br>
+		 * Not supported</p>
+		 *
+		 * @param {string} sData file content
+		 * @param {string} sFileName file name
+		 * @param {string} sFileExtension file extension
+		 * @param {string} sMimeType file mime-type
+		 * @param {string} sCharset file charset
+		 *
+		 * @public
+		 * @name sap.ui.core.util.File.save
+		 * @function
+		 */
+		save: function(sData, sFileName, sFileExtension, sMimeType, sCharset) {
+			var sFullFileName = sFileName + '.' + sFileExtension;
+
+			// prepend utf-8 byte-order-mark (BOM) to prevent encoding issues in .csv files
+			if (sCharset === 'utf-8' && sFileExtension === 'csv') {
+				sData = '\ufeff' + sData;
+			}
+
+			if (window.Blob) {
+				var sType = 'data:' + sMimeType;
+				if (sCharset) {
+					sType += ';charset=' + sCharset;
+				}
+				var oBlob = new window.Blob([ sData ], { type: sType });
+
+				// IE 10+ (native saveAs FileAPI)
+				if (window.navigator.msSaveOrOpenBlob) {
+					window.navigator.msSaveOrOpenBlob(oBlob, sFullFileName);
+				} else {
+					var oURL = window.URL || window.webkitURL;
+					var sBlobUrl = oURL.createObjectURL(oBlob);
+
+					var oLink = window.document.createElement('a');
+					if ('download' in oLink) {
+						// use an anchor link with download attribute for download
+						var $body = jQuery(document.body);
+						var $link = jQuery(oLink).attr({
+							download: sFullFileName,
+							href: sBlobUrl,
+							style: 'display:none'
+						});
+						$body.append($link);
+						$link.get(0).click();
+
+						$link.remove();
+					} else {
+						// Safari (user has to save the file manually)
+						window.open(sType + ";base64," + window.btoa(sData));
+					}
+				}
+			} else if (Device.browser.internet_explorer && Device.browser.version <= 9) {
+				// iframe fallback for IE 8/9
+				var $body = jQuery(document.body);
+				var $iframe = jQuery('<iframe/>', {
+					style: 'display:none'
+				});
+				$body.append($iframe);
+				var oDocument = $iframe.get(0).contentWindow.document;
+				// open the document to be able to modify it
+				oDocument.open(sMimeType, 'replace');
+				// set charset (e.g. utf-8) if given
+				if (sCharset) {
+					oDocument.charset = sCharset;
+				}
+				// write content to iframe
+				oDocument.write(sData);
+				oDocument.close();
+
+				// open the file-save dialog
+				// measure the time that the execCommand takes to detect an
+				// IE bug with some file extensions on some OS (e.g. Windows Server 2008 E2 Enterprise SP1) in all IE versions:
+				// http://stackoverflow.com/questions/2515791/execcommandsaveas-null-file-csv-is-not-working-in-ie8
+				var oTime = new Date();
+				var bSuccess = oDocument.execCommand('SaveAs', false, sFullFileName);
+				if (!bSuccess && new Date() - oTime < 10) {
+					// execCommand returns false either when the user clicks on cancel or
+					// when the bug mentioned above is occurring, so the time is measured
+					// to detect the cancel action
+
+					// .txt as file extension will work on all systems
+					oDocument.execCommand('SaveAs', false, sFullFileName + '.txt');
+				}
+
+				// cleanup
+				$iframe.remove();
+			}
+		}
+	};
+
+	return File;
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/File.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.util.LibraryInfo') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -29703,7 +29935,7 @@ sap.ui.define("sap/ui/core/util/LibraryInfo",['jquery.sap.global', 'sap/ui/base/
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @private
 	 * @name sap.ui.core.util.LibraryInfo
@@ -29725,7 +29957,7 @@ sap.ui.define("sap/ui/core/util/LibraryInfo",['jquery.sap.global', 'sap/ui/base/
 	});
 	
 	
-	LibraryInfo.prototype._getLibraryInfo = function(sLibraryName, fnCallback) {
+	LibraryInfo.prototype._loadLibraryMetadata = function(sLibraryName, fnCallback) {
 		sLibraryName = sLibraryName.replace(/\//g, ".");
 		
 		if(this._oLibInfos[sLibraryName]){
@@ -29752,8 +29984,25 @@ sap.ui.define("sap/ui/core/util/LibraryInfo",['jquery.sap.global', 'sap/ui/base/
 	};
 	
 	
+	LibraryInfo.prototype._getLibraryInfo = function(sLibraryName, fnCallback) {
+		this._loadLibraryMetadata(sLibraryName, function(oData){
+			var result = {libs: [], library: oData.name, libraryUrl: oData.url};
+	
+			if(oData.data){
+				var $data = jQuery(oData.data);
+				result.vendor = $data.find("vendor").text();
+				result.copyright = $data.find("copyright").text();
+				result.version = $data.find("version").text();
+				result.documentation = $data.find("documentation").text();
+			}
+			
+			fnCallback(result);
+		});
+	};
+	
+	
 	LibraryInfo.prototype._getThirdPartyInfo = function(sLibraryName, fnCallback) {
-		this._getLibraryInfo(sLibraryName, function(oData){
+		this._loadLibraryMetadata(sLibraryName, function(oData){
 			var result = {libs: [], library: oData.name, libraryUrl: oData.url};
 	
 			if(oData.data){
@@ -29781,7 +30030,7 @@ sap.ui.define("sap/ui/core/util/LibraryInfo",['jquery.sap.global', 'sap/ui/base/
 	
 	
 	LibraryInfo.prototype._getDocuIndex = function(sLibraryName, fnCallback) {
-		this._getLibraryInfo(sLibraryName, function(oData){
+		this._loadLibraryMetadata(sLibraryName, function(oData){
 			var lib = oData.name,
 				libUrl = oData.url,
 				result = {"docu": {}, library: lib, libraryUrl: libUrl};
@@ -29841,7 +30090,7 @@ sap.ui.define("sap/ui/core/ws/ReadyState",['jquery.sap.global'],
 	/**
 	 * @class Defines the different ready states for a WebSocket connection.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @static
 	 * @public
 	 * @name sap.ui.core.ws.ReadyState
@@ -30018,60 +30267,70 @@ sap.ui.define("sap/ui/model/FilterOperator",['jquery.sap.global'],
 	var FilterOperator = {
 			/**
 			 * FilterOperator equals
+			 * @name sap.ui.model.FilterOperator#EQ
 			 * @public
 			 */
 			EQ: "EQ",
 	
 			/**
 			 * FilterOperator not equals
+			 * @name sap.ui.model.FilterOperator#NE
 			 * @public
 			 */
 			NE: "NE",
 	
 			/**
 			 * FilterOperator less than
+			 * @name sap.ui.model.FilterOperator#LT
 			 * @public
 			 */
 			LT: "LT",
 	
 			/**
 			 * FilterOperator less or equals
+			 * @name sap.ui.model.FilterOperator#LE
 			 * @public
 			 */
 			LE: "LE",
 	
 			/**
 			 * FilterOperator greater than
+			 * @name sap.ui.model.FilterOperator#GT
 			 * @public
 			 */
 			GT: "GT",
 	
 			/**
 			 * FilterOperator greater or equals
+			 * @name sap.ui.model.FilterOperator#GE
 			 * @public
 			 */
 			GE: "GE",
 	
 			/**
 			 * FilterOperator between
+			 * @name sap.ui.model.FilterOperator#BT
 			 * @public
 			 */
 			BT: "BT",
 	
 			/**
 			 * FilterOperator contains
+			 * @name sap.ui.model.FilterOperator#Contains
 			 * @public
 			 */
 			Contains: "Contains",
 	
 			/**
 			 * FilterOperator starts with
+			 * @name sap.ui.model.FilterOperator#StartsWith
 			 * @public
 			 */
 			StartsWith: "StartsWith",
 	
 			/**
 			 * FilterOperator ends with
+			 * @name sap.ui.model.FilterOperator#EndsWith
 			 * @public
 			 */
 			EndsWith: "EndsWith"
@@ -30089,7 +30348,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.FilterType') ) {
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides enumeration sap.ui.model.FilterOperator
+// Provides enumeration sap.ui.model.FilterType
 jQuery.sap.declare('sap.ui.model.FilterType'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
 sap.ui.define("sap/ui/model/FilterType",['jquery.sap.global'],
 	function(jQuery) {
@@ -30107,12 +30366,14 @@ sap.ui.define("sap/ui/model/FilterType",['jquery.sap.global'],
 	var FilterType = {
 			/**
 			 * Filters which are changed by the application
+			 * @name sap.ui.model.FilterType#Application
 			 * @public
 			 */
 			Application: "Application",
 	
 			/**
 			 * Filters which are set by the different controls
+			 * @name sap.ui.model.FilterType#Control
 			 * @public
 			 */
 			Control: "Control"
@@ -30220,7 +30481,7 @@ sap.ui.define("sap/ui/model/Sorter",['jquery.sap.global'],
 	 * @public
 	 * @name sap.ui.model.Sorter
 	 */
-	var Sorter = sap.ui.base.Object.extend("sap.ui.model.Sorter", /** @lends sap.ui.model.Sorter */ {
+	var Sorter = sap.ui.base.Object.extend("sap.ui.model.Sorter", /** @lends sap.ui.model.Sorter.prototype */ {
 		
 		constructor : function(sPath, bDescending, vGroup){
 			if (typeof sPath === "object") {
@@ -30298,13 +30559,13 @@ sap.ui.define("sap/ui/model/Type",['jquery.sap.global', 'sap/ui/base/Object'],
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.Type
 	 */
-	var Type = BaseObject.extend("sap.ui.model.Type", /** @lends sap.ui.model.Type */ {
+	var Type = BaseObject.extend("sap.ui.model.Type", /** @lends sap.ui.model.Type.prototype */ {
 		
 		constructor : function () {
 			BaseObject.apply(this, arguments);
@@ -30443,1274 +30704,6 @@ sap.ui.define("sap/ui/model/odata/CountMode",['jquery.sap.global'],
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/odata/CountMode.js
-if ( !jQuery.sap.isDeclared('sap.ui.model.odata.Filter') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-// Provides a filter for list bindings
-jQuery.sap.declare('sap.ui.model.odata.Filter'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/model/odata/Filter",['jquery.sap.global', 'sap/ui/model/FilterOperator'],
-	function(jQuery, FilterOperator) {
-	"use strict";
-
-
-	/**
-	 * Constructor for Filter
-	 *
-	 * @class
-	 * Filter for the list binding
-	 *
-	 * @param {string} sPath the binding path for this filter
-	 * @param {object[]} aValues Array of FilterOperators and their values: [{operator:"GE",value1:"val1"},{operator:"LE",value1:"val1"},{operator:"BT",value1:"val1",value2:"val2"}]
-	 * @param {boolean} [bAND=true] If true the values from aValues will be ANDed; otherwise ORed
-	 * @public
-	 * @name sap.ui.model.odata.Filter
-	 * @deprecated
-	 */
-	var Filter = sap.ui.base.Object.extend("sap.ui.model.odata.Filter", /** @lends sap.ui.model.odata.Filter */ {
-		
-		constructor : function(sPath, aValues, bAND){
-			if (typeof sPath === "object") {
-				var oFilterData = sPath;
-				sPath = oFilterData.path;
-				aValues = oFilterData.values;
-				bAND = oFilterData.and;
-			}
-			this.sPath = sPath;
-			this.aValues = aValues;
-			this.bAND = bAND == undefined ? true : bAND;
-		}
-	
-	});
-	
-
-	return Filter;
-
-}, /* bExport= */ true);
-
-}; // end of sap/ui/model/odata/Filter.js
-if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataAnnotations') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-// Provides class sap.ui.model.odata.ODataAnnotations
-jQuery.sap.declare('sap.ui.model.odata.ODataAnnotations'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/model/odata/ODataAnnotations",['jquery.sap.global'],
-	function(jQuery) {
-	"use strict";
-
-
-	/* global OData */// declare unusual global vars for JSLint/SAPUI5 validation
-	/**
-	 * !!! EXPERIMENTAL !!!
-	 *
-	 * @param {object}
-	 *          oAnnotations
-	 *
-	 * @class Implementation to access oData Annotations
-	 *
-	 * @author SAP AG
-	 * @version
-	 * 1.20.10
-	 *
-	 * @constructor
-	 * @public
-	 * @name sap.ui.model.odata.ODataAnnotations
-	 * @extends sap.ui.base.Object
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 */
-	var ODataAnnotations = sap.ui.base.Object.extend("sap.ui.model.odata.ODataAnnotations", /** @lends sap.ui.model.odata.ODataAnnotations */
-	{
-	
-		constructor : function(oModel, sAnnotationURI, bLoadAsync) {
-			"use strict";
-			this.oModel = oModel;
-			this.oMetadata = null;
-			this.oAnnotations = null;
-			this.bInitialized = false;
-			this.bLoaded = false;
-			this.bLoadAsync = bLoadAsync;
-			this.xPath = null;
-			this.sAnnotationURI = sAnnotationURI;
-			this.oXMLDoc = null;
-			this.error = null;
-			this.oAlias = {};
-			this.bValidXML = true;
-			this.oRequestHandle = null;
-				
-			// Whether the xml document is in MS proprietary
-			this.xmlCompatVersion = false;
-			
-			
-			if (sAnnotationURI) {
-				this.loadXML();
-				
-				if (!bLoadAsync) {
-					// Synchronous loading, we can directly check for errors
-					jQuery.sap.assert(
-						!jQuery.isEmptyObject(oModel.oMetadata), 
-						"Metadata must be available for synchronous annotation loading"
-					);
-					if (this.error) {
-						jQuery.sap.log.error(
-							"OData annotations could not be loaded: " + this.error.message
-						);
-					}
-				}
-				
-			}
-		}
-	});
-	
-	
-	ODataAnnotations.prototype.getAnnotationsData = function() {
-		return this.oAnnotations;
-	};
-	
-	/**
-	 * Parses the alias definitions of the annotation document and fills the internal oAlias object.
-	 * 
-	 * @private
-	 * @name sap.ui.model.odata.ODataAnnotations#_parseAliases
-	 * @function
-	 */
-	ODataAnnotations.prototype._parseAliases = function(oAnnotationReferences) {
-		// Alias nodes
-		var refNodes = this.xPath.selectNodes(this.oXMLDoc, "//edmx:Reference", this.oXMLDoc);
-		
-		for (var i = 0; i < refNodes.length; i += 1) {
-			var refNode = this.xPath.nextNode(refNodes, i);
-			var aliasNodes = this.xPath.selectNodes(this.oXMLDoc, "./edmx:Include", refNode);
-			if (aliasNodes && aliasNodes.length > 0) {
-				var aliasNode = this.xPath.nextNode(aliasNodes, 0);
-				if (aliasNode.getAttribute("Alias")) {
-					this.oAlias[aliasNode.getAttribute("Alias")] = aliasNode.getAttribute("Namespace");
-				} else {
-					this.oAlias[aliasNode.getAttribute("Namespace")] = aliasNode.getAttribute("Namespace");
-				}
-			}
-			var annoNodes = this.xPath.selectNodes(this.oXMLDoc, "./edmx:IncludeAnnotations", refNode);
-			if (annoNodes.length > 0) {
-				for (var j = 0; j < annoNodes.length; j += 1) {
-					var annoNode = this.xPath.nextNode(annoNodes, j);
-					if (annoNode.getAttribute("TargetNamespace")) {
-						var sAnnoNameSpace = annoNode.getAttribute("TargetNamespace");
-						if (!oAnnotationReferences[sAnnoNameSpace]) {
-							oAnnotationReferences[sAnnoNameSpace] = {};
-						}
-						oAnnotationReferences[sAnnoNameSpace][annoNode.getAttribute("TermNamespace")] = refNode.getAttribute("Uri");
-					} else {
-						oAnnotationReferences[annoNode.getAttribute("TermNamespace")] = refNode.getAttribute("Uri");
-					}
-				}
-			}
-		}
-	}
-	
-	ODataAnnotations.prototype.parse = function() {
-		var mappingList = {}, schemaNodes, oSchema = {}, schemaNode,
-		oAnnotationReferences = {},
-		termNodes, oTerms, termNode, sTermType, oMetadataProperties, annotationNodes, annotationNode,
-		annotationTarget, annotationNamespace, annotation, propertyAnnotation, propertyAnnotationNodes,
-		propertyAnnotationNode, sTermValue, targetAnnotation, annotationQualifier, annotationTerm,
-		valueAnnotation, expandNodes, expandNode, path, pathValues, expandNodesApplFunc;
-	
-		this.xPath = this.getXPath();
-		this.oMetadata = this.oModel.getServiceMetadata();
-	
-		if (this.bInitialized) {
-			return this.oAnnotations;
-		}
-		// Set XPath namespace
-		this.oXMLDoc = this.xPath.setNameSpace(this.oXMLDoc);
-		// Schema Alias
-		schemaNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Schema", this.oXMLDoc);
-		for (var i = 0; i < schemaNodes.length; i += 1) {
-			schemaNode = this.xPath.nextNode(schemaNodes, i);
-			oSchema.Alias = schemaNode.getAttribute("Alias");
-			oSchema.Namespace = schemaNode.getAttribute("Namespace");
-		}
-		
-		// Fill local alias object
-		this._parseAliases(oAnnotationReferences);
-		
-		if (oAnnotationReferences) {
-			mappingList.annotationReferences = oAnnotationReferences;
-		}
-		mappingList.aliasDefinitions = this.oAlias;
-		// Term nodes
-		termNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Term", this.oXMLDoc);
-		if (termNodes.length > 0) {
-			oTerms = {};
-			for (var nodeIndex = 0; nodeIndex < termNodes.length; nodeIndex += 1) {
-				termNode = this.xPath.nextNode(termNodes, nodeIndex);
-				sTermType = this.replaceWithAlias(termNode.getAttribute("Type"), this.oAlias);
-				oTerms["@" + oSchema.Alias + "." + termNode.getAttribute("Name")] = sTermType;
-			}
-			mappingList.termDefinitions = oTerms;
-		}
-		// Metadata information of all properties
-		oMetadataProperties = this.getAllPropertiesMetadata(this.oMetadata);
-		if (oMetadataProperties.extensions) {
-			mappingList.propertyExtensions = oMetadataProperties.extensions;
-		}
-		// Annotations
-		annotationNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations ", this.oXMLDoc);
-		for (var nodeIndex = 0; nodeIndex < annotationNodes.length; nodeIndex += 1) {
-			annotationNode = this.xPath.nextNode(annotationNodes, nodeIndex);
-			if (annotationNode.hasChildNodes() === false) {
-				continue;
-			}
-			annotationTarget = annotationNode.getAttribute("Target");
-			annotationNamespace = annotationTarget.split(".")[0];
-			if (annotationNamespace && this.oAlias[annotationNamespace]) {
-				annotationTarget = annotationTarget.replace(new RegExp(annotationNamespace, ""), this.oAlias[annotationNamespace]);
-			}
-			annotation = annotationTarget;
-			propertyAnnotation = null;
-			if (annotationTarget.indexOf("/") > 0) {
-				annotation = annotationTarget.split("/")[0];
-				propertyAnnotation = annotationTarget.replace(annotation + "/", "");
-			}
-			if (!mappingList[annotation]) {
-				mappingList[annotation] = {};
-			}
-			// --- Value annotation of complex types. ---
-			if (propertyAnnotation) {
-				if (!mappingList.propertyAnnotations) {
-					mappingList.propertyAnnotations = {};
-				}
-				if (!mappingList.propertyAnnotations[annotation]) {
-					mappingList.propertyAnnotations[annotation] = {};
-				}
-				mappingList.propertyAnnotations[annotation][propertyAnnotation] = {};
-				propertyAnnotationNodes = this.xPath.selectNodes(this.oXMLDoc, "./d:Annotation", annotationNode);
-				for (var nodeIndexValue = 0; nodeIndexValue < propertyAnnotationNodes.length; nodeIndexValue += 1) {
-					propertyAnnotationNode = this.xPath.nextNode(propertyAnnotationNodes, nodeIndexValue);
-					if (propertyAnnotationNode.hasChildNodes() === false) {
-						sTermValue = this.replaceWithAlias(propertyAnnotationNode.getAttribute("Term"));
-						mappingList.propertyAnnotations[annotation][propertyAnnotation][sTermValue] = this.getPropertyValueAttributes(propertyAnnotationNode);
-					}
-				}
-				// --- Annotations ---
-			} else {
-				targetAnnotation = annotation.replace(this.oAlias[annotationNamespace], annotationNamespace);
-				propertyAnnotationNodes = this.xPath.selectNodes(this.oXMLDoc, "./d:Annotation", annotationNode);
-				for (var nodeIndexAnnotation = 0; nodeIndexAnnotation < propertyAnnotationNodes.length; nodeIndexAnnotation += 1) {
-					propertyAnnotationNode = this.xPath.nextNode(propertyAnnotationNodes, nodeIndexAnnotation);
-					annotationQualifier = propertyAnnotationNode.getAttribute("Qualifier");
-					annotationTerm = this.replaceWithAlias(propertyAnnotationNode.getAttribute("Term"));
-					if (annotationQualifier) {
-						annotationTerm += "#" + annotationQualifier;
-					}
-					valueAnnotation = this.getPropertyValue(this.oXMLDoc, propertyAnnotationNode, targetAnnotation);
-					valueAnnotation = this.setEdmTypes(valueAnnotation, oMetadataProperties.types, annotation, oSchema);
-					mappingList[annotation][annotationTerm] = valueAnnotation;
-				}
-				// --- Setup of Expand nodes. ---
-				expandNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations[contains(@Target, '" + targetAnnotation
-						+ "')]//d:PropertyValue[contains(@Path, '/')]//@Path", this.oXMLDoc);
-				for (i = 0; i < expandNodes.length; i += 1) {
-					expandNode = this.xPath.nextNode(expandNodes, i);
-					path = expandNode.value;
-					if (mappingList.propertyAnnotations) {
-						if (mappingList.propertyAnnotations[annotation]) {
-							if (mappingList.propertyAnnotations[annotation][path]) {
-								continue;
-							}
-						}
-					}
-					pathValues = path.split('/');
-					if (this.isNavProperty(annotation, pathValues[0], this.oMetadata)) {
-						if (!mappingList.expand) {
-							mappingList.expand = {};
-						}
-						if (!mappingList.expand[annotation]) {
-							mappingList.expand[annotation] = {};
-						}
-						mappingList.expand[annotation][pathValues[0]] = pathValues[0];
-					}
-				}
-				expandNodesApplFunc = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations[contains(@Target, '" + targetAnnotation
-						+ "')]//d:Path[contains(., '/')]", this.oXMLDoc);
-				for (i = 0; i < expandNodesApplFunc.length; i += 1) {
-					expandNode = this.xPath.nextNode(expandNodesApplFunc, i);
-					path = this.xPath.getNodeText(expandNode);
-					if (mappingList.propertyAnnotations[annotation]) {
-						if (mappingList.propertyAnnotations[annotation][path]) {
-							continue;
-						}
-					}
-					if (!mappingList.expand) {
-						mappingList.expand = {};
-					}
-					if (!mappingList.expand[annotation]) {
-						mappingList.expand[annotation] = {};
-					}
-					pathValues = path.split('/');
-					if (this.isNavProperty(annotation, pathValues[0], this.oMetadata)) {
-						if (!mappingList.expand) {
-							mappingList.expand = {};
-						}
-						if (!mappingList.expand[annotation]) {
-							mappingList.expand[annotation] = {};
-						}
-						mappingList.expand[annotation][pathValues[0]] = pathValues[0];
-					}
-				}
-			}
-		}
-	
-		// TODO: Check conditions for failed parsing and throw error... this thing seems to never fail.
-		this.oAnnotations = mappingList;
-		this.bInitialized = true;
-		this.oModel.fireAnnotationsLoaded({annotations: this});
-	
-		return this.oAnnotations;
-	};
-	
-	ODataAnnotations.prototype.getXPath = function() {
-		var xPath = {};
-	
-		if (this.xmlCompatVersion) {// old IE
-			xPath = {
-				setNameSpace : function(outNode) {
-					outNode.setProperty("SelectionNamespaces",
-							'xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" xmlns:d="http://docs.oasis-open.org/odata/ns/edm"');
-					outNode.setProperty("SelectionLanguage", "XPath");
-					return outNode;
-				},
-				selectNodes : function(outNode, xPath, inNode) {
-					return inNode.selectNodes(xPath);
-				},
-				nextNode : function(node) {
-					return node.nextNode();
-				},
-				getNodeText : function(node) {
-					return node.text;
-				}
-			};
-		} else {// Chrome, Firefox, Opera, etc.
-			xPath = {
-				setNameSpace : function(outNode) {
-					return outNode;
-				},
-				nsResolver : function(prefix) {
-					var ns = {
-						"edmx" : "http://docs.oasis-open.org/odata/ns/edmx",
-						"d" : "http://docs.oasis-open.org/odata/ns/edm"
-					};
-					return ns[prefix] || null;
-				},
-				selectNodes : function(outNode, sPath, inNode) {
-					var xmlNodes = outNode.evaluate(sPath, inNode, this.nsResolver, /* ORDERED_NODE_SNAPSHOT_TYPE: */ 7, null);
-					xmlNodes.length = xmlNodes.snapshotLength;
-					return xmlNodes;
-				},
-				nextNode : function(node, item) {
-					return node.snapshotItem(item);
-				},
-				getNodeText : function(node) {
-					return node.textContent;
-				}
-			};
-		}
-		return xPath;
-	};
-	
-	
-	/**
-	 * Sets an XML document
-	 * 
-	 * @public
-	 * @name sap.ui.model.odata.ODataAnnotations#setXML
-	 * @function
-	 */
-	ODataAnnotations.prototype.setXML = function(oXMLDocument, sXMLContent) {
-		// TODO: Check for MSXML-DOcument vs. Standards DOM-Document
-		var that = this;
-		
-		if(sap.ui.Device.browser.internet_explorer) {
-			// TODO: Check when IE will support evaluate-method
-			this.oXMLDoc = new ActiveXObject("Microsoft.XMLDOM"); // ??? "Msxml2.DOMDocument.6.0"
-			this.oXMLDoc.loadXML(sXMLContent);
-			this.xmlCompatVersion = true;
-		} else if (oXMLDocument) { 
-			this.oXMLDoc = oXMLDocument;
-		} else {
-			this.oXMLDoc = new DOMParser().parseFromString(sXMLContent, 'application/xml');
-		}
-		
-		if (this.oXMLDoc.getElementsByTagName("parsererror").length > 0) {
-			// Malformed XML, notify application of the problem
-			
-			// This seems to be needed since with some jQuery versions the XML document
-			// is partly parsed and with some it is not parsed at all. We now choose the
-			// "safe" approach and only accept completely valid documents.
-			return false;
-		} else {
-			// Check if Metadata is loaded on the model. We need the Metadata to parse the annotations
-			if (jQuery.isEmptyObject(this.oModel.getServiceMetadata())) {
-				// Metadata is not loaded, wait for it before trying to parse
-				this.oModel.attachInternalMetadataLoaded(function() {
-					that.parse();
-				});
-			} else {
-				this.parse();
-			}
-			return true;
-		}
-	};
-	
-	
-	ODataAnnotations.prototype.loadXML = function() {
-		var that = this;
-	
-		var mAjaxOptions = {
-			url : this.sAnnotationURI,
-			async : this.bLoadAsync
-		};
-		// TODO: Check IE10 XML document for compatibility
-		// mAjaxOptions["xhrFields"] = {responseType : 'msxml-document'};
-	
-		var fnHandleFail = function _handleFail(oJQXHR, sStatusText) {
-	
-			if (that.oRequestHandle && that.oRequestHandle.bSuppressErrorHandlerCall) {
-				return;
-			}
-			that.oRequestHandle = null;
-			that.error = { message : sStatusText, response : oJQXHR.response };
-			that.oModel._handleError(that.error);
-		};
-	
-		var fnHandleSuccess = function(sData, sTextStatus, oJQXHR) {
-			that.oRequestHandle = null;
-			if (!that.setXML(oJQXHR.responseXML, oJQXHR.responseText)) {
-				fnHandleFail(oJQXHR, "Malformed XML document");
-			}
-		};
-	
-		this.oRequestHandle = jQuery.ajax(mAjaxOptions).done(fnHandleSuccess).fail(fnHandleFail);
-	};
-	
-	ODataAnnotations.prototype.getAllPropertiesMetadata = function(oMetadata) {
-		var oMetadataSchema = {},
-		oPropertyTypes = {},
-		oPropertyExtensions = {},
-		bPropertyExtensions = false,
-		sNamespace,
-		aEntityTypes,
-		aComplexTypes,
-		oEntityType = {},
-		oProperties = {},
-		oExtensions = {},
-		bExtensions = false,
-		oProperty,
-		oComplexTypeProp,
-		sPropertyName,
-		sType,
-		oPropExtension,
-		oReturn;
-	
-		for (var i = oMetadata.dataServices.schema.length - 1; i >= 0; i -= 1) {
-			oMetadataSchema = oMetadata.dataServices.schema[i];
-			if (oMetadataSchema.entityType) {
-				sNamespace = oMetadataSchema.namespace;
-				aEntityTypes = oMetadataSchema.entityType;
-				aComplexTypes = oMetadataSchema.complexType;
-				for (var j in aEntityTypes) {
-					oEntityType = aEntityTypes[j];
-					oExtensions = {};
-					if (oEntityType.hasStream && oEntityType.hasStream === "true") {
-						continue;
-					}
-					for (var k in oEntityType.property) {
-						oProperty = oEntityType.property[k];
-						if (oProperty.type.substring(0, sNamespace.length) === sNamespace) {
-							for (var l in aComplexTypes) {
-								if (aComplexTypes[l].name === oProperty.type.substring(sNamespace.length + 1)) {
-									for (k in aComplexTypes[l].property) {
-										oComplexTypeProp = aComplexTypes[l].property[k];
-										oProperties[aComplexTypes[l].name + "/" + oComplexTypeProp.name] = oComplexTypeProp.type;
-									}
-								}
-							}
-						} else {
-							sPropertyName = oProperty.name;
-							sType = oProperty.type;
-							for (var p in oProperty.extensions) {
-								oPropExtension = oProperty.extensions[p];
-								if ((oPropExtension.name === "display-format") && (oPropExtension.value === "Date")) {
-									sType = "Edm.Date";
-								} else {
-									bExtensions = true;
-									if (!oExtensions[sPropertyName]) {
-										oExtensions[sPropertyName] = {};
-									}
-									if (oPropExtension.namespace && !oExtensions[sPropertyName][oPropExtension.namespace]) {
-										oExtensions[sPropertyName][oPropExtension.namespace] = {};
-									}
-									oExtensions[sPropertyName][oPropExtension.namespace][oPropExtension.name] = oPropExtension.value;
-								}
-							}
-							oProperties[sPropertyName] = sType;
-						}
-					}
-					if (!oPropertyTypes[sNamespace + "." + oEntityType.name]) {
-						oPropertyTypes[sNamespace + "." + oEntityType.name] = {};
-					}
-					oPropertyTypes[sNamespace + "." + oEntityType.name] = oProperties;
-					if (bExtensions) {
-						if (!oPropertyExtensions[sNamespace + "." + oEntityType.name]) {
-							bPropertyExtensions = true;
-						}
-						oPropertyExtensions[sNamespace + "." + oEntityType.name] = {};
-						oPropertyExtensions[sNamespace + "." + oEntityType.name] = oExtensions;
-					}
-				}
-			}
-		}
-		if (bPropertyExtensions) {
-			oReturn = {
-				types : oPropertyTypes,
-				extensions : oPropertyExtensions
-			};
-		} else {
-			oReturn = {
-				types : oPropertyTypes
-			};
-		}
-		return oReturn;
-	};
-	
-	ODataAnnotations.prototype.setEdmTypes = function(aPropertyValues, oProperties, sTarget, oSchema) {
-		var oPropertyValue, sEdmType = '';
-		for (var pValueIndex in aPropertyValues) {
-			if (aPropertyValues[pValueIndex]) {
-				oPropertyValue = aPropertyValues[pValueIndex];
-				if (oPropertyValue.Value && oPropertyValue.Value.Path) {
-					sEdmType = this.getEdmType(oPropertyValue.Value.Path, oProperties, sTarget, oSchema);
-					if (sEdmType) {
-						aPropertyValues[pValueIndex].EdmType = sEdmType;
-					}
-					continue;
-				}
-				if (oPropertyValue.Path) {
-					sEdmType = this.getEdmType(oPropertyValue.Path, oProperties, sTarget, oSchema);
-					if (sEdmType) {
-						aPropertyValues[pValueIndex].EdmType = sEdmType;
-					}
-					continue;
-				}
-				if (oPropertyValue.Facets) {
-					aPropertyValues[pValueIndex].Facets = this.setEdmTypes(oPropertyValue.Facets, oProperties, sTarget, oSchema);
-					continue;
-				}
-				if (oPropertyValue.Data) {
-					aPropertyValues[pValueIndex].Data = this.setEdmTypes(oPropertyValue.Data, oProperties, sTarget, oSchema);
-					continue;
-				}
-				if (pValueIndex === "Data") {
-					aPropertyValues.Data = this.setEdmTypes(oPropertyValue, oProperties, sTarget, oSchema);
-					continue;
-				}
-				if (oPropertyValue.Value && oPropertyValue.Value.Apply) {
-					aPropertyValues[pValueIndex].Value.Apply.Parameters = this.setEdmTypes(oPropertyValue.Value.Apply.Parameters,
-							oProperties, sTarget, oSchema);
-					continue;
-				}
-				if (oPropertyValue.Value && oPropertyValue.Type && (oPropertyValue.Type === "Path")) {
-					sEdmType = this.getEdmType(oPropertyValue.Value, oProperties, sTarget, oSchema);
-					if (sEdmType) {
-						aPropertyValues[pValueIndex].EdmType = sEdmType;
-					}
-				}
-			}
-		}
-		return aPropertyValues;
-	};
-	
-	ODataAnnotations.prototype.getEdmType = function(sPath, oProperties, sTarget, oSchema) {
-		if ((sPath.charAt(0) === "@") && (sPath.indexOf(oSchema.Alias) === 1)) {
-			sPath = sPath.slice(oSchema.Alias.length + 2);
-		}
-		if (sPath.indexOf("/") >= 0) {
-			if (oProperties[sPath.slice(0, sPath.indexOf("/"))]) {
-				sTarget = sPath.slice(0, sPath.indexOf("/"));
-				sPath = sPath.slice(sPath.indexOf("/") + 1);
-			}
-		}
-		for (var pIndex in oProperties[sTarget]) {
-			if (sPath === pIndex) {
-				return oProperties[sTarget][pIndex];
-			}
-		}
-	};
-	ODataAnnotations.prototype.getPropertyValueAttributes = function(documentNode) {
-		var attrName = "", attrValue = "", i, propertyValueAttributes = {};
-		for (i = 0; i < documentNode.attributes.length; i += 1) {
-			if ((documentNode.attributes[i].name !== "Property") && (documentNode.attributes[i].name !== "Term")) {
-				attrName = documentNode.attributes[i].name;
-				attrValue = documentNode.attributes[i].value;
-			}
-		}
-		if (attrName.length > 0) {
-			propertyValueAttributes[attrName] = this.replaceWithAlias(attrValue);
-		}
-		return propertyValueAttributes;
-	};
-	
-	ODataAnnotations.prototype.getSimpleNodeValue = function(xmlDoc, documentNode) {
-		var oValue = {}, stringValueNodes, stringValueNode, pathValueNodes, pathValueNode, applyValueNodes, applyValueNode;
-		if (documentNode.hasChildNodes()) {
-			stringValueNodes = this.xPath.selectNodes(xmlDoc, "./d:String", documentNode);
-			if (stringValueNodes.length > 0) {
-				stringValueNode = this.xPath.nextNode(stringValueNodes, 0);
-				oValue["String"] = this.xPath.getNodeText(stringValueNode);
-			} else {
-				pathValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Path", documentNode);
-				if (pathValueNodes.length > 0) {
-					pathValueNode = this.xPath.nextNode(pathValueNodes, 0);
-					oValue["Path"] = this.xPath.getNodeText(pathValueNode);
-				} else {
-					applyValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Apply", documentNode);
-					if (applyValueNodes.length > 0) {
-						applyValueNode = this.xPath.nextNode(applyValueNodes, 0);
-						oValue["Apply"] = this.getApplyFunctions(xmlDoc, applyValueNode, this.xPath);
-					}
-				}
-			}
-		}
-		return oValue;
-	};
-	ODataAnnotations.prototype.getPropertyValue = function(xmlDoc, documentNode, target) {
-		var propertyValue = {}, recordNodes, recordNodeCnt, nodeIndex, recordNode, propertyValues, urlValueNodes, urlValueNode, pathNode, oPath = {}, annotationNodes, annotationNode, nodeIndexValue, termValue, collectionNodes;
-		var xPath = this.getXPath();
-		
-		if (documentNode.hasChildNodes()) {
-			recordNodes = this.xPath.selectNodes(xmlDoc, "./d:Record | ./d:Collection/d:Record | ./d:Collection/d:If/d:Record",
-					documentNode);
-			if (recordNodes.length) {
-				recordNodeCnt = 0;
-				for (nodeIndex = 0; nodeIndex < recordNodes.length; nodeIndex += 1) {
-					recordNode = this.xPath.nextNode(recordNodes, nodeIndex);
-					propertyValues = this.getPropertyValues(xmlDoc, recordNode, target);
-					if (recordNode.getAttribute("Type")) {
-						propertyValues["RecordType"] = this.replaceWithAlias(recordNode.getAttribute("Type"));
-					}
-					if (recordNodeCnt === 0) {
-						if (recordNode.nextElementSibling || (recordNode.parentNode.nodeName === "Collection")
-								|| (recordNode.parentNode.nodeName === "If")) {
-							propertyValue = [];
-							propertyValue.push(propertyValues);
-						} else {
-							propertyValue = propertyValues;
-						}
-					} else {
-						propertyValue.push(propertyValues);
-					}
-					recordNodeCnt += 1;
-				}
-			} else {
-				urlValueNodes = this.xPath.selectNodes(xmlDoc, "./d:UrlRef", documentNode);
-				if (urlValueNodes.length > 0) {
-					for (nodeIndex = 0; nodeIndex < urlValueNodes.length; nodeIndex += 1) {
-						urlValueNode = this.xPath.nextNode(urlValueNodes, nodeIndex);
-						propertyValue["UrlRef"] = this.getSimpleNodeValue(xmlDoc, urlValueNode);
-					}
-				} else {
-					urlValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Url", documentNode);
-					if (urlValueNodes.length > 0) {
-						for (nodeIndex = 0; nodeIndex < urlValueNodes.length; nodeIndex += 1) {
-							urlValueNode = this.xPath.nextNode(urlValueNodes, nodeIndex);
-							propertyValue["Url"] = this.getSimpleNodeValue(xmlDoc, urlValueNode);
-						}
-					} else {
-						collectionNodes = this.xPath.selectNodes(xmlDoc,
-								"./d:Collection/d:AnnotationPath | ./d:Collection/d:PropertyPath", documentNode);
-						if (collectionNodes.length > 0) {
-							propertyValue = [];
-							for (nodeIndex = 0; nodeIndex < collectionNodes.length; nodeIndex += 1) {
-								pathNode = this.xPath.nextNode(collectionNodes, nodeIndex);
-								oPath = {};
-								oPath[pathNode.nodeName] = xPath.getNodeText(pathNode);
-								propertyValue.push(oPath);
-							}
-						} else {
-							propertyValue = this.getPropertyValueAttributes(documentNode);
-							annotationNodes = this.xPath.selectNodes(xmlDoc, "./d:Annotation", documentNode);
-							annotationNode = {};
-							for (nodeIndexValue = 0; nodeIndexValue < annotationNodes.length; nodeIndexValue += 1) {
-								annotationNode = this.xPath.nextNode(annotationNodes, nodeIndexValue);
-								if (annotationNode.hasChildNodes() === false) {
-									termValue = this.replaceWithAlias(annotationNode.getAttribute("Term"));
-									propertyValue[termValue] = this.getPropertyValueAttributes(annotationNode);
-								}
-							}
-						}
-					}
-				}
-			}
-		} else {
-			propertyValue = this.getPropertyValueAttributes(documentNode);
-		}
-		return propertyValue;
-	};
-	ODataAnnotations.prototype.getPropertyValues = function(xmlDoc, documentNode, target) {
-		var properties = {}, annotationNode = {}, annotationNodes, nodeIndexValue, termValue, propertyValueNodes, nodeIndex, propertyValueNode, propertyName, applyNodes, applyNode, applyNodeIndex;
-		annotationNodes = this.xPath.selectNodes(xmlDoc, "./d:Annotation", documentNode);
-		for (nodeIndexValue = 0; nodeIndexValue < annotationNodes.length; nodeIndexValue += 1) {
-			annotationNode = this.xPath.nextNode(annotationNodes, nodeIndexValue);
-			if (annotationNode.hasChildNodes() === false) {
-				termValue = this.replaceWithAlias(annotationNode.getAttribute("Term"));
-				properties[termValue] = this.getPropertyValueAttributes(annotationNode);
-			}
-		}
-		propertyValueNodes = this.xPath.selectNodes(xmlDoc, "./d:PropertyValue", documentNode);
-		if (propertyValueNodes.length > 0) {
-			for (nodeIndex = 0; nodeIndex < propertyValueNodes.length; nodeIndex += 1) {
-				propertyValueNode = this.xPath.nextNode(propertyValueNodes, nodeIndex);
-				propertyName = propertyValueNode.getAttribute("Property");
-				properties[propertyName] = this.getPropertyValue(xmlDoc, propertyValueNode, target);
-				applyNodes = this.xPath.selectNodes(xmlDoc, "./d:Apply", propertyValueNode);
-				applyNode = null;
-				for (applyNodeIndex = 0; applyNodeIndex < applyNodes.length; applyNodeIndex += 1) {
-					applyNode = this.xPath.nextNode(applyNodes, applyNodeIndex);
-					if (applyNode) {
-						properties[propertyName] = {};
-						properties[propertyName]['Apply'] = this.getApplyFunctions(xmlDoc, applyNode);
-					}
-				}
-			}
-		} else {
-			properties = this.getPropertyValue(xmlDoc, documentNode, target);
-		}
-		return properties;
-	};
-	ODataAnnotations.prototype.getApplyFunctions = function(xmlDoc, applyNode) {
-		var apply = {}, parameterNodes, paraNode = null, parameters = [], i;
-		parameterNodes = this.xPath.selectNodes(xmlDoc, "./d:*", applyNode);
-		for (i = 0; i < parameterNodes.length; i += 1) {
-			paraNode = this.xPath.nextNode(parameterNodes, i);
-			switch (paraNode.nodeName) {
-				case "Apply" :
-					parameters.push({
-						"Type" : "Apply",
-						"Value" : this.getApplyFunctions(xmlDoc, paraNode)
-					});
-					break;
-				case "LabeledElement" :
-					parameters.push({
-						"Name" : paraNode.getAttribute("Name"),
-						"Value" : this.getSimpleNodeValue(xmlDoc, paraNode)
-					});
-					break;
-				default :
-					parameters.push({
-						"Type" : paraNode.nodeName,
-						"Value" : this.xPath.getNodeText(paraNode)
-					});
-					break;
-			}
-		}
-		apply['Name'] = applyNode.getAttribute('Function');
-		apply['Parameters'] = parameters;
-		return apply;
-	};
-	ODataAnnotations.prototype.isNavProperty = function(sEntityType, sPathValue, oMetadata) {
-		var oMetadataSchema, i, namespace, aEntityTypes, j, k;
-		for (i = oMetadata.dataServices.schema.length - 1; i >= 0; i -= 1) {
-			oMetadataSchema = oMetadata.dataServices.schema[i];
-			if (oMetadataSchema.entityType) {
-				namespace = oMetadataSchema.namespace + ".";
-				aEntityTypes = oMetadataSchema.entityType;
-				for (k = aEntityTypes.length - 1; k >= 0; k -= 1) {
-					if (namespace + aEntityTypes[k].name === sEntityType && aEntityTypes[k].navigationProperty) {
-						for (j = 0; j < aEntityTypes[k].navigationProperty.length; j += 1) {
-							if (aEntityTypes[k].navigationProperty[j].name === sPathValue) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	};
-	
-	ODataAnnotations.prototype.replaceWithAlias = function(sValue, oAlias) {
-		if (oAlias === undefined) {
-			oAlias = this.oAlias;
-		}
-		
-		for (var sAlias in oAlias) {
-			if (sValue.indexOf(sAlias + ".") >= 0) {
-				sValue = sValue.replace(sAlias + ".", oAlias[sAlias] + ".");
-				return sValue;
-			}
-		}
-		return sValue;
-	};
-	
-	ODataAnnotations.prototype.destroy = function() {
-	
-		// Abort pending xml request
-		if (this.oRequestHandle) {
-			this.oRequestHandle.bSuppressErrorHandlerCall = true;
-			this.oRequestHandle.abort();
-			this.oRequestHandle = null;
-		}
-	
-		sap.ui.base.Object.prototype.destroy.apply(this, arguments);
-	};
-	
-
-	return ODataAnnotations;
-
-}, /* bExport= */ true);
-
-}; // end of sap/ui/model/odata/ODataAnnotations.js
-if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataMetadata') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-
-
-// Provides class sap.ui.model.odata.ODataMetadata
-jQuery.sap.declare('sap.ui.model.odata.ODataMetadata'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/model/odata/ODataMetadata",['jquery.sap.global'],
-	function(jQuery) {
-	"use strict";
-
-
-	/*global OData *///declare unusual global vars for JSLint/SAPUI5 validation
-	
-	/**
-	 * Constructor for a new ODataMetadata.
-	 *
-	 * @param {object} oMetadata the parsed metadata object provided by datajs
-	 *
-	 * @class
-	 * Implementation to access oData metadata
-	 *
-	 * @author SAP AG
-	 * @version 1.20.10
-	 *
-	 * @constructor
-	 * @public
-	 * @name sap.ui.model.odata.ODataMetadata
-	 * @extends sap.ui.base.Object
-	 */
-	var ODataMetadata = sap.ui.base.Object.extend("sap.ui.model.odata.ODataMetadata", /** @lends sap.ui.model.odata.ODataMetadata */ {
-	
-		constructor : function(oModel, bLoadMetadataAsync) {
-	
-			this.oModel = oModel;
-			this.oMetadata = null;
-			this._loadMetadata(bLoadMetadataAsync);
-		},
-	
-		metadata : {
-			publicMethods : ["getServiceMetadata"]
-		}
-	
-	});
-	
-	/**
-	 * Loads the metadata for the service
-	 * @private
-	 * @name sap.ui.model.odata.ODataMetadata#_loadMetadata
-	 * @function
-	 */
-	ODataMetadata.prototype._loadMetadata = function(bAsync) {
-	
-		var sUrl = this.oModel._createRequestUrl("$metadata");
-		var oRequest = this.oModel._createRequest(sUrl, "GET", bAsync);
-	
-		// request the metadata of the service
-		var that = this;
-	
-		function _handleSuccess(oMetadata, oResponse) {
-			if(!oMetadata || !oMetadata.dataServices){
-				var oError = {
-					message: "Invalid metadata document",
-					request: oRequest,
-					response: oResponse
-				};
-				_handleError(oError);
-				return;
-			}
-			that.oMetadata = oMetadata;
-	
-			if (!that.oModel.bUseBatch) {
-				that.oModel.bUseBatch = that._getUseBatchExtensionValue();
-			}
-	
-			// Sets metadata (this) on the model and fires the internal metadataloaded event.
-			that.oModel._setMetadata(that);
-	
-			// trigger loading of data if bindings are already there
-			that.oModel.refresh(true);
-		}
-	
-		function _handleError(oError) {
-			that.oModel.fireMetadataFailed(oError);
-			that.oModel._handleError(oError);
-		}
-	
-		// execute the request
-		this.oModel._request(oRequest, _handleSuccess, _handleError, OData.metadataHandler);
-	};
-	
-	/**
-	 * Creates a new subclass of class sap.ui.model.odata.ODataMetadata with name <code>sClassName</code>
-	 * and enriches it with the information contained in <code>oClassInfo</code>.
-	 *
-	 * For a detailed description of <code>oClassInfo</code> or <code>FNMetaImpl</code>
-	 * see {@link sap.ui.base.Object.extend Object.extend}.
-	 *
-	 * @param {string} sClassName name of the class to be created
-	 * @param {object} [oClassInfo] object literal with informations about the class
-	 * @param {function} [FNMetaImpl] alternative constructor for a metadata object
-	 * @return {function} the created class / constructor function
-	 * @public
-	 * @static
-	 * @name sap.ui.model.odata.ODataMetadata.extend
-	 * @function
-	 */
-	
-	/**
-	 * Return the metadata object
-	 *
-	 * @return {Object} metdata object
-	 * @public
-	 * @name sap.ui.model.odata.ODataMetadata#getServiceMetadata
-	 * @function
-	 */
-	ODataMetadata.prototype.getServiceMetadata = function() {
-		return this.oMetadata;
-	};
-	
-	
-	/**
-	 * Extract the entity type name of a given sPath. Also navigation properties in the path will be followed to get the right entity type for that property.
-	 * eg.
-	 * /Categories(1)/Products(1)/Category --> will get the Categories entity type
-	 * /Products --> will get the Products entity type
-	 * @return {object} the entity type or null if not found
-	 * @name sap.ui.model.odata.ODataMetadata#_getEntityTypeByPath
-	 * @function
-	 */
-	ODataMetadata.prototype._getEntityTypeByPath = function(sPath) {
-		if (!sPath) {
-			jQuery.sap.assert(undefined, "sPath not defined!");
-			return null;
-		}
-		if (!this.oMetadata || jQuery.isEmptyObject(this.oMetadata)) {
-			jQuery.sap.assert(undefined, "No metadata loaded!");
-			return null;
-		}
-		// remove starting and trailing /
-		var sCandidate = sPath.replace(/^\/|\/$/g, ""),
-			aParts = sCandidate.split("/"),
-			iLength = aParts.length,
-			aAssociationName,
-			oAssociation,
-			oParentEntityType,
-			oEnd,
-			aEntityTypeName,
-			oEntityType,
-			oResultEntityType,
-			that = this;
-	
-		// remove key from first path segment if any (e.g. Products(555) --> Products)
-		if (aParts[0].indexOf("(") != -1){
-			aParts[0] = aParts[0].substring(0,aParts[0].indexOf("("));
-		}
-	
-		if (iLength > 1 ) {
-			// check if navigation property is used
-			// e.g. Categories(1)/Products(1)/Category --> Category is a navigation property so we need the collection Categories
-	
-			oParentEntityType = that._getEntityTypeByPath(aParts[0]);
-	
-			for (var i = 1; i < aParts.length; i++ ){
-				if (oParentEntityType) {
-					// remove key from current part if any
-					if (aParts[i].indexOf("(") != -1){
-						aParts[i] = aParts[i].substring(0,aParts[i].indexOf("("));
-					}
-					// check for navigation properties
-					// if no navigation property found we assume that the current part is a normal property so we return the current oParentEntityType
-					// which is the parent entity type of that property
-					if (oParentEntityType.navigationProperty) {
-						oResultEntityType = that._getEntityTypeByNavProperty(oParentEntityType, aParts[i]);
-						if (oResultEntityType) {
-							oParentEntityType = oResultEntityType;
-						}
-					}
-	
-					oEntityType = oParentEntityType;
-	
-				}
-			};
-		} else {
-			// if only one part exists it should be the name of the collection and we can get the entity type for it
-			aEntityTypeName = this._splitName(this._getEntityTypeName(aParts[0]));
-			oEntityType = this._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
-			if (oEntityType) {
-				// store the type name also in the oEntityType
-				oEntityType.entityType = this._getEntityTypeName(aParts[0]);
-			}
-		}
-	
-		// check for function imports
-		if (!oEntityType) {
-			var sFuncCandName = aParts[aParts.length - 1]; // last segment is always a function import
-			var oFuncType = this._getFunctionImportMetadata(sFuncCandName, "GET");
-			if (oFuncType && oFuncType.entitySet) { // only collections supported which have an entitySet
-				oEntityType = this._getEntityTypeByPath(oFuncType.entitySet);
-				if (oEntityType) {
-					// store the type name also in the oEntityType
-					oEntityType.entityType = this._getEntityTypeName(oFuncType.entitySet);
-				}
-			}
-		}
-	
-	
-		//jQuery.sap.assert(oEntityType, "EntityType for path " + sPath + " could not be found!");
-		return oEntityType;
-	};
-	
-	
-	/**
-	 * splits a name e.g. Namespace.Name into [Name, Namespace]
-	 * @name sap.ui.model.odata.ODataMetadata#_splitName
-	 * @function
-	 */
-	ODataMetadata.prototype._splitName = function(sFullName) {
-		var aParts = [];
-		if (sFullName) {
-			var iSepIdx = sFullName.lastIndexOf(".");
-			aParts[0] = sFullName.substr(iSepIdx + 1);
-			aParts[1] = sFullName.substr(0, iSepIdx);
-		}
-		return aParts;
-	};
-	
-	
-	/**
-	*  search metadata for specified collection name (= entity set name)
-	* @name sap.ui.model.odata.ODataMetadata#_getEntityTypeName
-	* @function
-	*/
-	ODataMetadata.prototype._getEntityTypeName = function(sCollection) {
-		var sEntityTypeName;
-		if (sCollection) {
-			jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
-				if (oSchema.entityContainer) {
-					jQuery.each(oSchema.entityContainer, function(k, oEntityContainer) {
-						if (oEntityContainer.entitySet) {
-							jQuery.each(oEntityContainer.entitySet, function(j, oEntitySet) {
-								if (oEntitySet.name === sCollection) {
-									sEntityTypeName = oEntitySet.entityType;
-									return false;
-								}
-							});
-						}
-					});
-				}
-			});
-		}
-		//jQuery.sap.assert(sEntityTypeName, "EntityType name of EntitySet "+ sCollection + " not found!");
-		return sEntityTypeName;
-	};
-	
-	/**
-	 * get the object of a specified type name and namespace
-	 * @name sap.ui.model.odata.ODataMetadata#_getObjectMetadata
-	 * @function
-	 */
-	ODataMetadata.prototype._getObjectMetadata = function(sObjectType, sObjectName, sNamespace) {
-		var oObject;
-		if (sObjectName && sNamespace) {
-			// search in all schemas for the sObjectName
-			jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
-				// check if we found the right schema which will contain the sObjectName
-				if (oSchema[sObjectType] && oSchema.namespace === sNamespace) {
-					jQuery.each(oSchema[sObjectType], function(j, oCurrentObject) {
-						if (oCurrentObject.name === sObjectName) {
-							oObject = oCurrentObject;
-							return false;
-						}
-					});
-					return !oObject;
-				}
-			});
-		}
-		//jQuery.sap.assert(oObject, "ObjectType " + sObjectType + " for name " + sObjectName + " not found!");
-		return oObject;
-	};
-	
-	/**
-	 * get the the use-batch extension value if any
-	 * @name sap.ui.model.odata.ODataMetadata#_getUseBatchExtensionValue
-	 * @function
-	 */
-	ODataMetadata.prototype._getUseBatchExtensionValue = function() {
-		var bUseBatch = false;
-		// search in all schemas for the use batch extension
-		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
-			if (oSchema.entityContainer) {
-				jQuery.each(oSchema.entityContainer, function(k, oEntityContainer) {
-					if (oEntityContainer.extensions) {
-						jQuery.each(oEntityContainer.extensions, function(l, oExtension) {
-							if (oExtension.name === "use-batch" && oExtension.namespace === "http://www.sap.com/Protocols/SAPData") {
-								bUseBatch = (typeof oExtension.value === 'string') ? (oExtension.value.toLowerCase() === 'true') : !!oExtension.value;
-								return false;
-							}
-						});
-					}
-				});
-			}
-		});
-		return bUseBatch;
-	};
-	
-	/**
-	 * Retrieve the function import metadata for a name and a method.
-	 *
-	 * @param {string} sFunctionName The name of the function import to look up
-	 * @param {string} sMethod The HTTP Method for which this function is requested
-	 * @name sap.ui.model.odata.ODataMetadata#_getFunctionImportMetadata
-	 * @function
-	 */
-	ODataMetadata.prototype._getFunctionImportMetadata = function(sFunctionName, sMethod) {
-		var oObject = null;
-		// search in all schemas for the sObjectName
-		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
-			// check if we found the right schema which will contain the sObjectName
-			if (oSchema["entityContainer"]) {
-				jQuery.each(oSchema["entityContainer"], function(j,oEntityContainer) {
-					if (oEntityContainer["functionImport"]) {
-						jQuery.each(oEntityContainer["functionImport"], function(k,oFunctionImport) {
-							if (oFunctionImport.name === sFunctionName && oFunctionImport.httpMethod === sMethod) {
-								oObject = oFunctionImport;
-								return false;
-							}
-						});
-					}
-					return !oObject;
-				});
-			}
-			return !oObject;
-		});
-	//	jQuery.sap.assert(oObject, "FunctionImport for name " + sFunctionName
-	//			+ " and method " + sMethod + " not found!");
-		return oObject;
-	};
-	
-	
-	ODataMetadata.prototype._getEntityTypeByNavProperty = function(oEntityType, sNavPropertyName) {
-		var that = this, aAssociationName, oAssociation, aEntityTypeName, oNavEntityType;
-	
-		jQuery.each(oEntityType.navigationProperty, function(k, oNavigationProperty) {
-			if (oNavigationProperty.name === sNavPropertyName) {
-				// get association for navigation property and then the collection name
-				aAssociationName = that._splitName(oNavigationProperty.relationship);
-			    oAssociation = that._getObjectMetadata("association", aAssociationName[0], aAssociationName[1]);
-				if (oAssociation) {
-					var oEnd = oAssociation.end[0];
-					if (oEnd.role !== oNavigationProperty.toRole) {
-						oEnd = oAssociation.end[1];
-					}
-					aEntityTypeName = that._splitName(oEnd.type);
-					oNavEntityType = that._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
-					if (oNavEntityType) {
-						// store the type name also in the oEntityType
-						oNavEntityType.entityType = oEnd.type;
-					}
-					return false;
-				}
-			}
-		});
-		return oNavEntityType;
-	};
-	
-	/**
-	 * get all navigation property names in an array by the specified entity type
-	 * @name sap.ui.model.odata.ODataMetadata#_getNavigationPropertyNames
-	 * @function
-	 */
-	ODataMetadata.prototype._getNavigationPropertyNames = function(oEntityType) {
-		var aNavProps = [];
-		if (oEntityType.navigationProperty) {
-			jQuery.each(oEntityType.navigationProperty, function(k, oNavigationProperty) {
-				aNavProps.push(oNavigationProperty.name);
-			});
-		}
-		return aNavProps;
-	};
-	
-	/**
-	*  extract the property metadata of a specified property of a entity type out of the metadata document
-	* @name sap.ui.model.odata.ODataMetadata#_getPropertyMetadata
-	* @function
-	*/
-	ODataMetadata.prototype._getPropertyMetadata = function(oEntityType, sProperty) {
-		var oPropertyMetadata, that = this;
-	
-		// remove starting/trailing /
-		sProperty = sProperty.replace(/^\/|\/$/g, "");
-		var aParts = sProperty.split("/"); // path could point to a complex type
-	
-		jQuery.each(oEntityType.property, function(k, oProperty) {
-			if (oProperty.name === aParts[0]){
-				oPropertyMetadata = oProperty;
-				return false;
-			}
-		});
-	
-		// check if complex type
-		if (oPropertyMetadata && aParts.length > 1 && !jQuery.sap.startsWith(oPropertyMetadata.type.toLowerCase(), "edm.")) {
-			var aName = this._splitName(oPropertyMetadata.type);
-			oPropertyMetadata = this._getPropertyMetadata(this._getObjectMetadata("complexType", aName[0], aName[1]), aParts[1]);
-		}
-	
-		// check if navigation property
-		if (!oPropertyMetadata && aParts.length > 1) {
-			var oParentEntityType = this._getEntityTypeByNavProperty(oEntityType, aParts[0]);
-			if (oParentEntityType) {
-				oPropertyMetadata = that._getPropertyMetadata(oParentEntityType, aParts[1]);
-			}
-		}
-	
-		//jQuery.sap.assert(oPropertyMetadata, "PropertyType for property "+ aParts[0]+ " of EntityType " + oEntityType.name + " not found!");
-		return oPropertyMetadata;
-	};
-	
-	ODataMetadata.prototype.destroy = function() {
-		delete this.oModel;
-		delete this.oMetadata;
-	
-		sap.ui.base.Object.prototype.destroy.apply(this, arguments);
-	};
-	
-
-	return ODataMetadata;
-
-}, /* bExport= */ true);
-
-}; // end of sap/ui/model/odata/ODataMetadata.js
 if ( !jQuery.sap.isDeclared('sap.ui.thirdparty.caja-html-sanitizer') ) {
 // This file has been generated by the SAPUI5 CreateModule Ant-Task
 /* Copyright Google Inc.
@@ -35298,6 +34291,4701 @@ if (typeof window !== 'undefined') {
 jQuery.sap.declare('sap.ui.thirdparty.caja-html-sanitizer');
 
 }; // end of sap/ui/thirdparty/caja-html-sanitizer.js
+if ( !jQuery.sap.isDeclared('sap.ui.thirdparty.odata4analytics') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides API for analytical extensions in OData service metadata
+jQuery.sap.declare('sap.ui.thirdparty.odata4analytics'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/thirdparty/odata4analytics",['jquery.sap.global'],
+	function(jQuery) {
+	"use strict";
+
+	/**
+	 * The OData4Analytics API is purely experimental, not yet functionally complete
+	 * and not meant for productive usage. At present, its only purpose is to
+	 * demonstrate how easy analytical extensions of OData4SAP can be consumed. 
+	 * 
+	 * <em>USE OBJECTS VIA METHODS ONLY - DO NOT ACCESS JAVASCRIPT OBJECT PROPERTIES DIRECTLY !</em>
+	 * 
+	 * Lazy initialization of attributes will cause unexpected values when you
+	 * access object attributes directly. 
+	 * 
+	 * @author SAP AG
+	 * @experimental This module is only for experimental use!
+	 * @private
+	 */
+	var odata4analytics = odata4analytics || {};
+	
+	odata4analytics.constants = {};
+	odata4analytics.constants["SAP_NAMESPACE"] = "http://www.sap.com/Protocols/SAPData";
+	odata4analytics.constants["VERSION"] = "0.7";
+	
+	odata4analytics.helper = {
+		renderPropertyKeyValue : function(sKeyValue, sPropertyEDMTypeName) {
+			if (typeof sKeyValue == "string" && sKeyValue.charAt(0) == "'")
+				throw "Illegal property value starting with a quote";
+			switch (sPropertyEDMTypeName) {
+			case 'Edm.String':
+				return "'" + sKeyValue + "'";
+			case 'Edm.DateTime':
+				return "datetime'" + sKeyValue + "'";
+			case 'Edm.Guid':
+				return "guid'" + sKeyValue + "'";
+			case 'Edm.Time':
+				return "time'" + sKeyValue + "'";
+			case 'Edm.DateTimeOffset':
+				return "datetimeoffset'" + sKeyValue + "'";
+			default:
+				return sKeyValue;
+			}
+		},
+		renderPropertyFilterValue : function(sFilterValue, sPropertyEDMTypeName) {
+			if (typeof sFilterValue == "string" && sFilterValue.charAt(0) == "'")
+				throw "Illegal property value starting with a quote";
+			switch (sPropertyEDMTypeName) {
+			case 'Edm.String':
+				return "'" + sFilterValue + "'";
+			case 'Edm.DateTime':
+				return "datetime'" + sFilterValue + "'";
+			case 'Edm.Guid':
+				return "guid'" + sFilterValue + "'";
+			case 'Edm.Time':
+				return "time'" + sFilterValue + "'";
+			case 'Edm.DateTimeOffset':
+				return "datetimeoffset'" + sFilterValue + "'";
+			default:
+				return sFilterValue;
+			}
+		},
+		tokenizeNametoLabelText : function(sName) {
+			var sLabel = "";
+	
+			// remove leading 'P_' often used for parameter properties on HANA
+			sLabel = sName.replace(/^P_(.*)/, "$1");
+			// split UpperCamelCase in words (treat numbers and _ as upper case)
+			sLabel = sLabel.replace(/([^A-Z0-9_]+)([A-Z0-9_])/g, "$1 $2");
+			// split acronyms in words
+			sLabel = sLabel.replace(/([A-Z0-9_]{2,})([A-Z0-9_])([^A-Z0-9_]+)/g, "$1 $2$3");
+			// remove trailing _E
+			sLabel = sLabel.replace(/(.*) _E$/, "$1");
+			// remove underscores that were identified as upper case
+			sLabel = sLabel.replace(/(.*) _(.*)/g, "$1 $2");
+			return sLabel;
+		}
+	};
+	
+	/**
+	 * Create a representation of the analytical semantics of OData service metadata
+	 * 
+	 * @param {object}
+	 *            oModelReference An instance of ReferenceByURI, ReferenceByModel or
+	 *            ReferenceWithWorkaround for locating the OData service.
+	 * @param {string}
+	 *            sAnnotationJSONDoc A JSON document providing extra annotations to
+	 *            the elements of the structure of the given service
+	 * @constructor
+	 * 
+	 * @class Representation of an OData model with analytical annotations defined
+	 *        by OData4SAP.
+	 * @protected
+	 */
+	
+	odata4analytics.Model = function(oModelReference, sAnnotationJSONDoc) {
+		this._init(oModelReference, sAnnotationJSONDoc);
+	};
+	
+	/**
+	 * Create a reference to an OData model by the URI of the related OData service.
+	 * 
+	 * @param {string}
+	 *            sURI holding the URI.
+	 * @constructor
+	 * 
+	 * @class Handle to an OData model by the URI pointing to it.
+	 * @protected
+	 */
+	odata4analytics.Model.ReferenceByURI = function(sURI) {
+		return {
+			sServiceURI : sURI
+		};
+	};
+	
+	/**
+	 * Create a reference to an OData model already loaded elsewhere with the help
+	 * of SAP UI5.
+	 * 
+	 * @param {object}
+	 *            oModel holding the OData model.
+	 * @constructor
+	 * 
+	 * @class Handle to an already instantiated SAP UI5 OData model.
+	 * @protected
+	 */
+	odata4analytics.Model.ReferenceByModel = function(oModel) {
+		return {
+			oModel : oModel
+		};
+	};
+	
+	/**
+	 * Create a reference to an OData model having certain workarounds activated. A
+	 * workaround is an implementation that changes the standard behavior of the API
+	 * to overcome some gap or limitation in the OData provider. The workaround
+	 * implementation can be conditionally activated by passing the identifier in
+	 * the contructor.
+	 * 
+	 * Known workaround identifiers are:
+	 * 
+	 * <li>"CreateLabelsFromTechnicalNames" - If a property has no label text, it
+	 * gets generated from the property name.</li>
+	 * 
+	 * <li>"IdentifyTextPropertiesByName" -If a dimension property has no text and
+	 * another property with the same name and an appended "Name", "Text" etc.
+	 * exists, they are linked via annotation.</li>
+	 * 
+	 * 
+	 * @param {object}
+	 *            oModelReference holding a reference to the OData model, obtained
+	 *            by odata4analytics.Model.ReferenceByModel or by
+	 *            sap.odata4analytics.Model.ReferenceByURI.
+	 * @param {array(string)}
+	 *            aWorkaroundID listing all workarounds to be applied.
+	 * @constructor
+	 * 
+	 * @class Handle to an already instantiated SAP UI5 OData model.
+	 * @protected
+	 */
+	odata4analytics.Model.ReferenceWithWorkaround = function(oModel, aWorkaroundID) {
+		return {
+			oModelReference : oModel,
+			aWorkaroundID : aWorkaroundID
+		};
+	};
+	
+	odata4analytics.Model.prototype = {
+	
+		/**
+		 * initialize a new object
+		 * 
+		 * @private
+		 */
+		_init : function(oModelReference, sAnnotationJSONDoc) {
+	
+			/*
+			 * get access to OData model
+			 */
+	
+			this._oActivatedWorkarounds = new Object();
+	
+			if (oModelReference && oModelReference.aWorkaroundID) {
+				for (var i = -1, sID; sID = oModelReference.aWorkaroundID[++i];) {
+					this._oActivatedWorkarounds[sID] = true;
+				}
+				oModelReference = oModelReference.oModelReference;
+			}
+	
+			// check proper usage
+			if (!oModelReference || (!oModelReference.sServiceURI && !oModelReference.oModel)) {
+				throw "Usage with oModelReference being an instance of Model.ReferenceByURI or Model.ReferenceByModel";
+			}
+	
+			if (oModelReference.oModel)
+				this._oModel = oModelReference.oModel;
+			else
+				this._oModel = new sap.ui.model.odata.ODataModel(oModelReference.sServiceURI);
+	
+			if (this._oModel.getServiceMetadata().dataServices == undefined) {
+				throw "Model could not be loaded";
+			}
+	
+			/*
+			 * add extra annotations if provided
+			 */
+			this.mergeV2Annotations(sAnnotationJSONDoc);
+	
+			/*
+			 * parse OData model for analytic queries
+			 */
+	
+			this._oQueryResultSet = new Object();
+			this._oParameterizationSet = new Object();
+			this._oEntityTypeSet = new Object();
+			this._oEntitySetSet = new Object();
+			this._oEntityTypeNameToEntitySetMap = new Object();
+	
+			// loop over all schemas and entity containers
+			// TODO: extend this implementation to support many schemas
+			var oSchema = this._oModel.getServiceMetadata().dataServices.schema[0];
+	
+			// remember default container
+			for (var i = -1, oContainer; oContainer = oSchema.entityContainer[++i];) {
+				if (oContainer.isDefaultEntityContainer == "true") {
+					this._oDefaultEntityContainer = oContainer;
+					break;
+				}
+			}
+	
+			var aEntityType = oSchema.entityType;
+	
+			// A. preparation
+	
+			// A.1 collect all relevant OData entity types representing query
+			// results, parameters
+			var aQueryResultEntityTypes = [], aParameterEntityTypes = [], aUnsortedEntityTypes = [];
+	
+			for (var i = -1, oType; oType = aEntityType[++i];) {
+				var bProcessed = false;
+	
+				if (oType.extensions != undefined) {
+					for (var j = -1, oExtension; oExtension = oType.extensions[++j];) {
+						if (oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE
+								&& oExtension.name == "semantics") {
+							bProcessed = true;
+							switch (oExtension.value) {
+							case "aggregate":
+								aQueryResultEntityTypes.push(oType);
+								break;
+							case "parameters":
+								aParameterEntityTypes.push(oType);
+								break;
+							default:
+								aUnsortedEntityTypes.push(oType);
+							}
+						}
+						if (bProcessed)
+							continue;
+					}
+					if (!bProcessed)
+						aUnsortedEntityTypes.push(oType);
+				} else
+					aUnsortedEntityTypes.push(oType);
+			}
+			// A.2 create entity type representations for the unsorted types
+			for (var i = -1, oType; oType = aUnsortedEntityTypes[++i];) {
+				var oEntityType = new odata4analytics.EntityType(this._oModel.getServiceMetadata(), oSchema, oType);
+				this._oEntityTypeSet[oEntityType.getQName()] = oEntityType;
+				var aEntitySet = this._getEntitySetsOfType(oSchema, oEntityType.getQName());
+				if (aEntitySet.length == 0)
+					throw "Invalid consumption model: No entity set for entity type " + oEntityType.getQName() + " found";
+				if (aEntitySet.length > 1)
+					throw "Unsupported consumption model: More than one entity set for entity type " + oEntityType.getQName()
+							+ " found";
+				var oEntitySet = new odata4analytics.EntitySet(this._oModel.getServiceMetadata(), oSchema,
+						aEntitySet[0][0], aEntitySet[0][1], oEntityType);
+				this._oEntitySetSet[oEntitySet.getQName()] = oEntitySet;
+				this._oEntityTypeNameToEntitySetMap[oEntityType.getQName()] = oEntitySet;
+			}
+	
+			// B. create objects for the analytical extensions of these entity types
+			// B.1 create parameters
+	
+			// temporary storage for lookup of entity *types* annotated with
+			// parameters semantics
+			var oParameterizationEntityTypeSet = {};
+	
+			for (var i = -1, oType; oType = aParameterEntityTypes[++i];) {
+				// B.1.1 create object for OData entity type
+				var oEntityType = new odata4analytics.EntityType(this._oModel.getServiceMetadata(), oSchema, oType);
+				this._oEntityTypeSet[oEntityType.getQName()] = oEntityType;
+				// B.1.2 get sets with this type
+				var aEntitySet = this._getEntitySetsOfType(oSchema, oEntityType.getQName());
+				if (aEntitySet.length == 0)
+					throw "Invalid consumption model: No entity set for parameter entity type " + oEntityType.getQName() + " found";
+				if (aEntitySet.length > 1)
+					throw "Unsupported consumption model: More than one entity set for parameter entity type "
+							+ oEntityType.getQName() + " found";
+	
+				// B.1.3 create object for OData entity set
+				var oEntitySet = new odata4analytics.EntitySet(this._oModel.getServiceMetadata(), oSchema,
+						aEntitySet[0][0], aEntitySet[0][1], oEntityType);
+				this._oEntitySetSet[oEntitySet.getQName()] = oEntitySet;
+				this._oEntityTypeNameToEntitySetMap[oEntityType.getQName()] = oEntitySet;
+	
+				// B.1.4 create object for parameters and related OData entity
+				var oParameterization = new odata4analytics.Parameterization(oEntityType, oEntitySet);
+				this._oParameterizationSet[oParameterization.getName()] = oParameterization;
+				oParameterizationEntityTypeSet[oEntityType.getQName()] = oParameterization;
+	
+				// B.1.5 recognize all available parameter value helps
+				var sParameterizationEntityTypeQTypeName = oEntityType.getQName();
+	
+				if (oSchema.association != undefined) {
+					for (var j = -1, oAssoc; oAssoc = oSchema.association[++j];) {
+						// value help always established by a referential constraint
+						// on an association
+						if (oAssoc.referentialConstraint == undefined)
+							continue;
+	
+						var sParameterValueHelpEntityTypeQTypeName = null;
+	
+						// B.1.5.1 relevant only if one end has same type as the
+						// given parameterization entity type
+						if (oAssoc.end[0].type == sParameterizationEntityTypeQTypeName && oAssoc.end[0].multiplicity == "*"
+								&& oAssoc.end[1].multiplicity == "1") {
+							sParameterValueHelpEntityTypeQTypeName = oAssoc.end[1].type;
+	
+						} else if (oAssoc.end[1].type == sParameterizationEntityTypeQTypeName && oAssoc.end[1].multiplicity == "*"
+								&& oAssoc.end[0].multiplicity == "1") {
+							sParameterValueHelpEntityTypeQTypeName = oAssoc.end[0].type;
+						}
+						if (!sParameterValueHelpEntityTypeQTypeName)
+							continue;
+	
+						// B.1.5.2 check if the referential constraint declares a
+						// parameter property as dependent
+						if (oAssoc.referentialConstraint.dependent.propertyRef.length != 1)
+							continue;
+						var oParameter = oParameterization
+								.findParameterByName(oAssoc.referentialConstraint.dependent.propertyRef[0].name);
+						if (oParameter == null)
+							continue;
+	
+						// B.1.5.3 Register the recognized parameter value help
+						// entity type and set and link them to the parameter
+						var oValueListEntityType = this._oEntityTypeSet[sParameterValueHelpEntityTypeQTypeName];
+						var oValueListEntitySet = this._oEntityTypeNameToEntitySetMap[sParameterValueHelpEntityTypeQTypeName];
+						oParameter.setValueSetEntity(oValueListEntityType, oValueListEntitySet);
+					}
+				}
+			}
+	
+			// B.2
+			// B.2 create analytic queries
+			for (var i = -1, oType; oType = aQueryResultEntityTypes[++i];) {
+	
+				// B.2.1 create object for OData entity
+				var oEntityType = new odata4analytics.EntityType(this._oModel.getServiceMetadata(), oSchema, oType);
+				this._oEntityTypeSet[oEntityType.getQName()] = oEntityType;
+				var sQueryResultEntityTypeQTypeName = oEntityType.getQName();
+	
+				// B.2.2 find assocs to parameter entity types
+				var oParameterization = null;
+				var oAssocFromParamsToResult = null;
+	
+				if (oSchema.association != undefined) {
+					for (var j = -1, oAssoc; oAssoc = oSchema.association[++j];) {
+						var sParameterEntityTypeQTypeName = null;
+						if (oAssoc.end[0].type == sQueryResultEntityTypeQTypeName)
+							sParameterEntityTypeQTypeName = oAssoc.end[1].type;
+						else if (oAssoc.end[1].type == sQueryResultEntityTypeQTypeName)
+							sParameterEntityTypeQTypeName = oAssoc.end[0].type;
+						else
+							continue;
+	
+						// B.2.2.2 fetch Parameterization object if any
+						var oMatchingParameterization = null;
+	
+						oMatchingParameterization = oParameterizationEntityTypeSet[sParameterEntityTypeQTypeName];
+						if (oMatchingParameterization != null)
+							if (oParameterization != null) {
+								// TODO: extend this implementation to support more
+								// than one related parameter entity type
+								throw "LIMITATION: Unable to handle multiple parameter entity types of query entity "
+										+ oEntityType.name;
+							} else {
+								oParameterization = oMatchingParameterization;
+								oAssocFromParamsToResult = oAssoc;
+							}
+					}
+				}
+	
+				// B.2.3 get sets with this type
+				var aEntitySet = this._getEntitySetsOfType(oSchema, oEntityType.getQName());
+				if (aEntitySet.length != 1)
+					throw "Invalid consumption model: There must be exactly one entity set for an entity type annotated with aggregating semantics";
+	
+				// B.2.4 create object for OData entity set of analytic query result
+				var oEntitySet = new odata4analytics.EntitySet(this._oModel.getServiceMetadata(), oSchema,
+						aEntitySet[0][0], aEntitySet[0][1], oEntityType);
+				this._oEntitySetSet[oEntitySet.getQName()] = oEntitySet;
+				this._oEntityTypeNameToEntitySetMap[oEntityType.getQName()] = oEntitySet;
+	
+				// B.2.5 create object for analytic query result, related OData
+				// entity type and set and (if any) related parameters
+				// object
+				var oQueryResult = new odata4analytics.QueryResult(this, oEntityType, oEntitySet, oParameterization);
+				this._oQueryResultSet[oQueryResult.getName()] = oQueryResult;
+	
+				// B.2.6 set target result for found parameterization
+				if (oParameterization)
+					oParameterization.setTargetQueryResult(oQueryResult, oAssocFromParamsToResult);
+	
+				// B.2.7 recognize all available dimension value helps
+				if (oSchema.association != undefined) {
+					for (var j = -1, oAssoc; oAssoc = oSchema.association[++j];) {
+						// value help always established by a referential constraint
+						// on an association
+						if (oAssoc.referentialConstraint == undefined)
+							continue;
+	
+						var sDimensionValueHelpEntityTypeQTypeName = null;
+	
+						// B.2.7.1 relevant only if one end has same type as the
+						// given query result entity type
+						if (oAssoc.end[0].type == sQueryResultEntityTypeQTypeName && oAssoc.end[0].multiplicity == "*"
+								&& oAssoc.end[1].multiplicity == "1") {
+							sDimensionValueHelpEntityTypeQTypeName = oAssoc.end[1].type;
+	
+						} else if (oAssoc.end[1].type == sQueryResultEntityTypeQTypeName && oAssoc.end[1].multiplicity == "*"
+								&& oAssoc.end[0].multiplicity == "1") {
+							sDimensionValueHelpEntityTypeQTypeName = oAssoc.end[0].type;
+						}
+						if (!sDimensionValueHelpEntityTypeQTypeName)
+							continue;
+	
+						// B.2.7.2 check if the referential constraint declares a
+						// dimension property as dependent
+						if (oAssoc.referentialConstraint.dependent.propertyRef.length != 1)
+							continue;
+						var oDimension = oQueryResult
+								.findDimensionByName(oAssoc.referentialConstraint.dependent.propertyRef[0].name);
+						if (oDimension == null)
+							continue;
+	
+						// B.2.7.3 Register the recognized dimension value help
+						// entity set and link it to the dimension
+						var oDimensionMembersEntitySet = this._oEntityTypeNameToEntitySetMap[sDimensionValueHelpEntityTypeQTypeName];
+						oDimension.setMembersEntitySet(oDimensionMembersEntitySet);
+					}
+				}
+	
+			}
+	
+		},
+	
+		/*
+		 * Control data for adding extra annotations to service metadata
+		 * 
+		 * @private
+		 */
+		oUI5ODataModelAnnotatableObject : {
+			objectName : "schema",
+			keyPropName : "namespace",
+			extensions : true,
+			aSubObject : [ {
+				objectName : "entityType",
+				keyPropName : "name",
+				extensions : true,
+				aSubObject : [ {
+					objectName : "property",
+					keyPropName : "name",
+					aSubObject : [],
+					extensions : true
+				} ]
+			}, {
+				objectName : "entityContainer",
+				keyPropName : "name",
+				extensions : false,
+				aSubObject : [ {
+					objectName : "entitySet",
+					keyPropName : "name",
+					extensions : true,
+					aSubObject : []
+				} ]
+			} ]
+		},
+	
+		/*
+		 * merging extra annotations with provided service metadata
+		 * 
+		 * @private
+		 */
+		mergeV2Annotations : function(sAnnotationJSONDoc) {
+			var oAnnotation = null;
+			try {
+				oAnnotation = JSON.parse(sAnnotationJSONDoc);
+			} catch (exception) {
+				return;
+			}
+	
+			var oMetadata;
+			try {
+				oMetadata = this._oModel.getServiceMetadata().dataServices;
+			} catch (exception) {
+				return;
+			}
+	
+			// find "schema" entry in annotation document
+			for ( var propName in oAnnotation) {
+				if (!(this.oUI5ODataModelAnnotatableObject.objectName == propName))
+					continue;
+				if (!(oAnnotation[propName] instanceof Array)) {
+					continue;
+				}
+				this.mergeV2AnnotationLevel(oMetadata[this.oUI5ODataModelAnnotatableObject.objectName],
+						oAnnotation[this.oUI5ODataModelAnnotatableObject.objectName], this.oUI5ODataModelAnnotatableObject);
+				break;
+			}
+	
+			return;
+		},
+	
+		/*
+		 * merging extra annotations with a given service metadata object
+		 * 
+		 * @private
+		 */
+	
+		mergeV2AnnotationLevel : function(aMetadata, aAnnotation, oUI5ODataModelAnnotatableObject) {
+	
+			for (var i = -1, oAnnotation; oAnnotation = aAnnotation[++i];) {
+				for (var j = -1, oMetadata; oMetadata = aMetadata[++j];) {
+	
+					if (!(oAnnotation[oUI5ODataModelAnnotatableObject.keyPropName] == oMetadata[oUI5ODataModelAnnotatableObject.keyPropName]))
+						continue;
+					// found match: apply extensions from oAnnotation object to
+					// oMetadata object
+					if (oAnnotation["extensions"] != undefined) {
+						if (oMetadata["extensions"] == undefined)
+							oMetadata["extensions"] = new Array();
+	
+						for (var l = -1, oAnnotationExtension; oAnnotationExtension = oAnnotation["extensions"][++l];) {
+							var bFound = false;
+							for (var m = -1, oMetadataExtension; oMetadataExtension = oMetadata["extensions"][++m];) {
+								if (oAnnotationExtension.name == oMetadataExtension.name
+										&& oAnnotationExtension.namespace == oMetadataExtension.namespace) {
+									oMetadataExtension.value = oAnnotationExtension.value;
+									bFound = true;
+									break;
+								}
+							}
+							if (!bFound)
+								oMetadata["extensions"].push(oAnnotationExtension);
+						}
+					}
+					// walk down to sub objects
+					for (var k = -1, oUI5ODataModelAnnotatableSubObject; oUI5ODataModelAnnotatableSubObject = oUI5ODataModelAnnotatableObject.aSubObject[++k];) {
+	
+						for ( var propName in oAnnotation) {
+							if (!(oUI5ODataModelAnnotatableSubObject.objectName == propName))
+								continue;
+							if (!(oAnnotation[oUI5ODataModelAnnotatableSubObject.objectName] instanceof Array))
+								continue;
+							if ((oMetadata[oUI5ODataModelAnnotatableSubObject.objectName] == undefined)
+									|| (!(oMetadata[oUI5ODataModelAnnotatableSubObject.objectName] instanceof Array)))
+								continue;
+							this.mergeV2AnnotationLevel(oMetadata[oUI5ODataModelAnnotatableSubObject.objectName],
+									oAnnotation[oUI5ODataModelAnnotatableSubObject.objectName], oUI5ODataModelAnnotatableSubObject);
+							break;
+						}
+					}
+				}
+			}
+			return;
+		},
+	
+		/**
+		 * Find analytic query result by name
+		 * 
+		 * @param {string}
+		 *            sName Fully qualified name of query result entity set
+		 * @returns {odata4analytics.QueryResult} The query result object
+		 *          with this name or null if it does not exist
+		 */
+		findQueryResultByName : function(sName) {
+			var oQueryResult = this._oQueryResultSet[sName];
+	
+			// Everybody should have a second chance:
+			// If the name was not fully qualified, check if it is in the default
+			// container
+			if (!oQueryResult && this._oDefaultEntityContainer) {
+				var sQName = this._oDefaultEntityContainer.name + "." + sName;
+	
+				oQueryResult = this._oQueryResultSet[sQName];
+			}
+			return oQueryResult;
+		},
+	
+		/**
+		 * Get the names of all query results (entity sets) offered by the model
+		 * 
+		 * @returns {array(string)} List of all query result names
+		 */
+		getAllQueryResultNames : function() {
+			if (this._aQueryResultNames)
+				return this._aQueryResultNames;
+	
+			this._aQueryResultNames = new Array(0);
+	
+			for ( var sName in this._oQueryResultSet)
+				this._aQueryResultNames.push(this._oQueryResultSet[sName].getName());
+	
+			return this._aQueryResultNames;
+		},
+	
+		/**
+		 * Get all query results offered by the model
+		 * 
+		 * @returns {object} An object with individual JS properties for each query
+		 *          result included in the model. The JS object properties all are
+		 *          objects of type odata4analytics.QueryResult. The names
+		 *          of the JS object properties are given by the entity set names
+		 *          representing the query results.
+		 */
+		getAllQueryResults : function() {
+			return this._oQueryResultSet;
+		},
+	
+		/**
+		 * Get underlying OData model provided by SAP UI5
+		 * 
+		 * @returns {object} The SAP UI5 representation of the model.
+		 */
+		getODataModel : function() {
+			return this._oModel;
+		},
+		/**
+		 * Private methods
+		 */
+	
+		/**
+		 * Find entity sets of a given type
+		 * 
+		 * @private
+		 */
+		_getEntitySetsOfType : function(oSchema, sQTypeName) {
+			var aEntitySet = [];
+	
+			for (var i = -1, oEntityContainer; oEntityContainer = oSchema.entityContainer[++i];) {
+				for (var j = -1, oEntitySet; oEntitySet = oEntityContainer.entitySet[++j];) {
+					if (oEntitySet.entityType == sQTypeName)
+						aEntitySet.push([ oEntityContainer, oEntitySet ]);
+				}
+			}
+	
+			return aEntitySet;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oModel : null,
+		_oDefaultEntityContainer : null,
+	
+		_aQueryResultNames : null,
+		_oQueryResultSet : null,
+		_oParameterizationSet : null,
+		_oEntityTypeSet : null,
+		_oEntitySetSet : null,
+		_oEntityTypeNameToEntitySetMap : null,
+	
+		_oActivatedWorkarounds : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of an analytic query
+	 * 
+	 * @param {odata4analytics.Model}
+	 *            oModel The analytical model containing this query result entity
+	 *            set
+	 * @param {odata4analytics.EntityType}
+	 *            oEntityType The OData entity type for this query
+	 * @param {odata4analytics.EntitySet}
+	 *            oEntitySet The OData entity set for this query offered by the
+	 *            OData service
+	 * @param {odata4analytics.Parameterization}
+	 *            oParameterization The parameterization of this query, if any
+	 * 
+	 * @constructor
+	 * @this (QueryResult)
+	 * 
+	 * @class Representation of an entity type annotated with
+	 *        sap:semantics="aggregate".
+	 * @protected
+	 */
+	odata4analytics.QueryResult = function(oModel, oEntityType, oEntitySet, oParameterization) {
+		this._init(oModel, oEntityType, oEntitySet, oParameterization);
+	};
+	
+	odata4analytics.QueryResult.prototype = {
+	
+		/**
+		 * initialize new object
+		 * 
+		 * @private
+		 */
+		_init : function(oModel, oEntityType, oEntitySet, oParameterization, oAssocFromParamsToResult) {
+			this._oModel = oModel;
+			this._oEntityType = oEntityType;
+			this._oEntitySet = oEntitySet;
+			this._oParameterization = oParameterization;
+	
+			this._oDimensionSet = new Object();
+			this._oMeasureSet = new Object();
+	
+			// parse entity type for analytic semantics described by annotations
+			var aProperty = oEntityType.getTypeDescription().property;
+			var oAttributeForPropertySet = {};
+			for (var i = -1, oProperty; oProperty = aProperty[++i];) {
+				if (oProperty.extensions == undefined)
+					continue;
+				for (var j = -1, oExtension; oExtension = oProperty.extensions[++j];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					case "aggregation-role":
+						switch (oExtension.value) {
+						case "dimension":
+							var oDimension = new odata4analytics.Dimension(this, oProperty);
+							this._oDimensionSet[oDimension.getName()] = oDimension;
+							break;
+						case "measure":
+							var oMeasure = new odata4analytics.Measure(this, oProperty);
+							this._oMeasureSet[oMeasure.getName()] = oMeasure;
+							break;
+						case "totaled-properties-list":
+							this._oTotaledPropertyListProperty = oProperty;
+							break;
+						}
+						break;
+					case "attribute-for":
+						var oDimensionAttribute = new odata4analytics.DimensionAttribute(this, oProperty);
+						oAttributeForPropertySet[oDimensionAttribute.getKeyProperty()] = oDimensionAttribute;
+						break;
+					}
+				}
+			}
+	
+			// assign dimension attributes to the respective dimension objects
+			for ( var sDimensionAttributeName in oAttributeForPropertySet) {
+				var oDimensionAttribute = oAttributeForPropertySet[sDimensionAttributeName];
+				oDimensionAttribute.getDimension().addAttribute(oDimensionAttribute);
+			}
+	
+			// apply workaround for missing text properties if requested
+			if (oModel._oActivatedWorkarounds.IdentifyTextPropertiesByName) {
+				var aMatchedTextPropertyName = new Array();
+				for ( var oDimName in this._oDimensionSet) {
+					var oDimension = this._oDimensionSet[oDimName];
+					if (!oDimension.getTextProperty()) {
+						var oTextProperty = null; // order of matching is
+						// significant!
+						oTextProperty = oEntityType.findPropertyByName(oDimName + "Name");
+						if (!oTextProperty)
+							oTextProperty = oEntityType.findPropertyByName(oDimName + "Text");
+						if (!oTextProperty)
+							oTextProperty = oEntityType.findPropertyByName(oDimName + "Desc");
+						if (!oTextProperty)
+							oTextProperty = oEntityType.findPropertyByName(oDimName + "Description");
+						if (oTextProperty) { // any match?
+							oDimension.setTextProperty(oTextProperty); // link
+							// dimension
+							// with text
+							// property
+							aMatchedTextPropertyName.push(oTextProperty.name);
+						}
+					}
+				}
+				// make sure that any matched text property is not exposed as
+				// dimension (according to spec)
+				for (var i = -1, sPropertyName; sPropertyName = aMatchedTextPropertyName[++i];) {
+					delete this._oDimensionSet[sPropertyName];
+				}
+			}
+		},
+	
+		/**
+		 * Get the name of the query result
+		 * 
+		 * @returns {string} The fully qualified name of the query result, which is
+		 *          identical with the name of the entity set representing the query
+		 *          result in the OData service
+		 */
+		getName : function() {
+			return this.getEntitySet().getQName();
+		},
+	
+		/**
+		 * Get the parameterization of this query result
+		 * 
+		 * @returns {odata4analytics.Parameterization} The object for the
+		 *          parameterization or null if the query result is not
+		 *          parameterized
+		 */
+		getParameterization : function() {
+			return this._oParameterization;
+		},
+	
+		/**
+		 * Get the names of all dimensions included in the query result
+		 * 
+		 * @returns {array(string)} List of all dimension names
+		 */
+		getAllDimensionNames : function() {
+			if (this._aDimensionNames)
+				return this._aDimensionNames;
+	
+			this._aDimensionNames = [];
+	
+			for ( var sName in this._oDimensionSet)
+				this._aDimensionNames.push(this._oDimensionSet[sName].getName());
+	
+			return this._aDimensionNames;
+		},
+	
+		/**
+		 * Get all dimensions included in this query result
+		 * 
+		 * @returns {object} An object with individual JS properties for each
+		 *          dimension included in the query result. The JS object properties
+		 *          all are objects of type odata4analytics.Dimension. The
+		 *          names of the JS object properties are given by the OData entity
+		 *          type property names representing the dimension keys.
+		 */
+		getAllDimensions : function() {
+			return this._oDimensionSet;
+		},
+	
+		/**
+		 * Get the names of all measures included in the query result
+		 * 
+		 * @returns {array(string)} List of all measure names
+		 */
+		getAllMeasureNames : function() {
+			if (this._aMeasureNames)
+				return this._aMeasureNames;
+	
+			this._aMeasureNames = [];
+	
+			for ( var sName in this._oMeasureSet)
+				this._aMeasureNames.push(this._oMeasureSet[sName].getName());
+	
+			return this._aMeasureNames;
+		},
+	
+		/**
+		 * Get all measures included in this query result
+		 * 
+		 * @returns {object} An object with individual JS properties for each
+		 *          measure included in the query result. The JS object properties
+		 *          all are objects of type odata4analytics.Measure. The
+		 *          names of the JS object properties are given by the OData entity
+		 *          type property names representing the measure raw values.
+		 */
+		getAllMeasures : function() {
+			return this._oMeasureSet;
+		},
+	
+		/**
+		 * Find dimension by name
+		 * 
+		 * @param {string}
+		 *            sName Dimension name
+		 * @returns {odata4analytics.Dimension} The dimension object with
+		 *          this name or null if it does not exist
+		 */
+		findDimensionByName : function(sName) {
+			return this._oDimensionSet[sName];
+		},
+	
+		/**
+		 * Find dimension by property name
+		 * 
+		 * @param {string}
+		 *            sName Property name
+		 * @returns {odata4analytics.Dimension} The dimension object to
+		 *          which the given property name is related, because the property
+		 *          holds the dimension key, its text, or is an attribute of this
+		 *          dimension. If no such dimension exists, null is returned.
+		 */
+		findDimensionByPropertyName : function(sName) {
+			if (this._oDimensionSet[sName]) // the easy case
+				return this._oDimensionSet[sName];
+	
+			for ( var sDimensionName in this._oDimensionSet) {
+				var oDimension = this._oDimensionSet[sDimensionName];
+				var oTextProperty = oDimension.getTextProperty();
+				if (oTextProperty && oTextProperty.name == sName)
+					return oDimension;
+				if (oDimension.findAttributeByName(sName))
+					return oDimension;
+			}
+			return null;
+		},
+	
+		/**
+		 * Get property holding the totaled property list
+		 * 
+		 * @returns {object} The DataJS object representing this property
+		 */
+		getTotaledPropertiesListProperty : function() {
+			return this._oTotaledPropertyListProperty;
+		},
+	
+		/**
+		 * Find measure by name
+		 * 
+		 * @param {string}
+		 *            sName Measure name
+		 * @returns {odata4analytics.Measure} The measure object with this
+		 *          name or null if it does not exist
+		 */
+		findMeasureByName : function(sName) {
+			return this._oMeasureSet[sName];
+		},
+	
+		/**
+		 * Find measure by property name
+		 * 
+		 * @param {string}
+		 *            sName Property name
+		 * @returns {odata4analytics.Measure} The measure object to which
+		 *          the given property name is related, because the property holds
+		 *          the raw measure value or its formatted value. If no such measure
+		 *          exists, null is returned.
+		 */
+		findMeasureByPropertyName : function(sName) {
+			if (this._oMeasureSet[sName]) // the easy case
+				return this._oMeasureSet[sName];
+	
+			for ( var sMeasureName in this._oMeasureSet) {
+				var oMeasure = this._oMeasureSet[sMeasureName];
+				var oFormattedValueProperty = oMeasure.getFormattedValueProperty();
+				if (oFormattedValueProperty && oFormattedValueProperty.name == sName)
+					return oMeasure;
+			}
+			return null;
+		},
+	
+		/**
+		 * Get the analytical model containing the entity set for this query result
+		 * 
+		 * @returns {object} The analytical representation of the OData model
+		 */
+		getModel : function() {
+			return this._oModel;
+		},
+	
+		/**
+		 * Get the entity type defining the type of this query result in the OData
+		 * model
+		 * 
+		 * @returns {odata4analytics.EntityType} The OData entity type for
+		 *          this query result
+		 */
+		getEntityType : function() {
+			return this._oEntityType;
+		},
+	
+		/**
+		 * Get the entity set representing this query result in the OData model
+		 * 
+		 * @returns {odata4analytics.EntitySet} The OData entity set
+		 *          representing this query result
+		 */
+		getEntitySet : function() {
+			return this._oEntitySet;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+	
+		_oModel : null,
+		_oEntityType : null,
+		_oEntitySet : null,
+		_oParameterization : null,
+		_aDimensionNames : null,
+		_oDimensionSet : null,
+		_aMeasureNames : null,
+		_oMeasureSet : null,
+		_oTotaledPropertyListProperty : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a parameterization for an analytic query
+	 * 
+	 * @param {odata4analytics.EntityType}
+	 *            oEntityType The OData entity type for this parameterization
+	 * @param {odata4analytics.EntitySet}
+	 *            oEntitySet The OData entity set for this parameterization offered
+	 *            by the OData service
+	 * 
+	 * @class Representation of an entity type annotated with
+	 *        sap:semantics="parameters".
+	 * @protected
+	 */
+	odata4analytics.Parameterization = function(oEntityType, oEntitySet) {
+		this._init(oEntityType, oEntitySet);
+	};
+	
+	odata4analytics.Parameterization.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oEntityType, oEntitySet) {
+			this._oEntityType = oEntityType;
+			this._oEntitySet = oEntitySet;
+	
+			this._oParameterSet = new Object();
+	
+			// parse entity type for analytic semantics described by annotations
+			var aProperty = oEntityType.getTypeDescription().property;
+			for (var i = -1, oProperty; oProperty = aProperty[++i];) {
+				if (oProperty.extensions == undefined)
+					continue;
+	
+				for (var j = -1, oExtension; oExtension = oProperty.extensions[++j];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					// process parameter semantics
+					case "parameter":
+						var oParameter = new odata4analytics.Parameter(this, oProperty);
+						this._oParameterSet[oParameter.getName()] = oParameter;
+	
+						break;
+					}
+				}
+			}
+	
+		},
+	
+		// to be called only by Model objects
+		setTargetQueryResult : function(oQueryResult, oAssociation) {
+			this._oQueryResult = oQueryResult;
+			var sQAssocName = this._oEntityType.getSchema().namespace + "." + oAssociation.name;
+			var aNavProp = this._oEntityType.getTypeDescription().navigationProperty;
+			if (!aNavProp)
+				throw "Invalid consumption model: Parameters entity type lacks navigation property for association to query result entity type";
+			for (var i = -1, oNavProp; oNavProp = aNavProp[++i];) {
+				if (oNavProp.relationship == sQAssocName)
+					this._oNavPropToQueryResult = oNavProp.name;
+			}
+			if (!this._oNavPropToQueryResult)
+				throw "Invalid consumption model: Parameters entity type lacks navigation property for association to query result entity type";
+		},
+		
+		getTargetQueryResult : function() {
+			if (! this._oQueryResult) 
+				throw "No target query result set";
+			return this._oQueryResult;
+		},
+	
+		/**
+		 * Get the name of the parameter
+		 * 
+		 * @returns {string} The name of the parameterization, which is identical
+		 *          with the name of the entity set representing the
+		 *          parameterization in the OData service
+		 */
+		getName : function() {
+			return this.getEntitySet().getQName();
+		},
+	
+		/**
+		 * Get the names of all parameters part of the parameterization
+		 * 
+		 * @returns {array(string)} List of all parameter names
+		 */
+		getAllParameterNames : function() {
+			if (this._aParameterNames)
+				return this._aParameterNames;
+	
+			this._aParameterNames = [];
+	
+			for ( var sName in this._oParameterSet)
+				this._aParameterNames.push(this._oParameterSet[sName].getName());
+	
+			return this._aParameterNames;
+		},
+	
+		/**
+		 * Get all parameters included in this parameterization
+		 * 
+		 * @returns {object} An object with individual JS properties for each
+		 *          parameter included in the query result. The JS object properties
+		 *          all are objects of type odata4analytics.Parameter. The
+		 *          names of the JS object properties are given by the OData entity
+		 *          type property names representing the parameter keys.
+		 */
+		getAllParameters : function() {
+			return this._oParameterSet;
+		},
+	
+		/**
+		 * Find parameter by name
+		 * 
+		 * @param {string}
+		 *            sName Parameter name
+		 * @returns {odata4analytics.Parameter} The parameter object with
+		 *          this name or null if it does not exist
+		 */
+		findParameterByName : function(sName) {
+			return this._oParameterSet[sName];
+		},
+	
+		/**
+		 * Get navigation property to query result
+		 * 
+		 * @returns {odata4analytics.QueryResult} The parameter object with
+		 *          this name or null if it does not exist
+		 */
+		getNavigationPropertyToQueryResult : function() {
+			return this._oNavPropToQueryResult;
+		},
+	
+		/**
+		 * Get the entity type defining the type of this query result in the OData
+		 * model
+		 * 
+		 * @returns {odata4analytics.EntityType} The OData entity type for
+		 *          this query result
+		 */
+		getEntityType : function() {
+			return this._oEntityType;
+		},
+	
+		/**
+		 * Get the entity set representing this query result in the OData model
+		 * 
+		 * @returns {odata4analytics.EntitySet} The OData entity set
+		 *          representing this query result
+		 */
+		getEntitySet : function() {
+			return this._oEntitySet;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oEntityType : null,
+		_oEntitySet : null,
+		_oQueryResult : null,
+		_oNavPropToQueryResult : null,
+		_aParameterNames : null,
+		_oParameterSet : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a single parameter contained in a parameterization
+	 * 
+	 * @param {odata4analytics.Parameterization}
+	 *            oParameterization The parameterization containing this parameter
+	 * @param {object}
+	 *            oProperty The DataJS object object representing the text property
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a property annotated with sap:parameter.
+	 * @protected
+	 */
+	odata4analytics.Parameter = function(oParameterization, oProperty) {
+		this._init(oParameterization, oProperty);
+	};
+	
+	odata4analytics.Parameter.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oParameterization, oProperty) {
+			this._oParameterization = oParameterization;
+			this._oProperty = oProperty;
+	
+			var oEntityType = oParameterization.getEntityType();
+	
+			if (oProperty.extensions != undefined) {
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					case "parameter":
+						switch (oExtension.value) {
+						case "mandatory":
+							this._bRequired = true;
+							break;
+						case "optional":
+							this._bRequired = false;
+							break;
+						default:
+							throw "Invalid annotation value for parameter property";
+						}
+						break;
+					case "label":
+						this._sLabelText = oExtension.value;
+						break;
+					case "text":
+						this._oTextProperty = oEntityType.findPropertyByName(oExtension.value);
+						break;
+					case "upper-boundary":
+						this._bIntervalBoundaryParameter = true;
+						this._oUpperIntervalBoundaryParameterProperty = oEntityType.findPropertyByName(oExtension.value);
+						break;
+					case "lower-boundary":
+						this._bIntervalBoundaryParameter = true;
+						this._oLowerIntervalBoundaryParameterProperty = oEntityType.findPropertyByName(oExtension.value);
+						break;
+					}
+				}
+			}
+			if (!this._sLabelText)
+				this._sLabelText = "";
+		},
+	
+		// to be called only by Model objects
+		setValueSetEntity : function(oEntityType, oEntitySet) {
+			this._oValueSetEntityType = oEntityType;
+			this._oValueSetEntitySet = oEntitySet;
+		},
+	
+		/**
+		 * Get text property related to this parameter
+		 * 
+		 * @returns {object} The DataJS object representing the text property or
+		 *          null if it does not exist
+		 */
+		getTextProperty : function() {
+			return this._oTextProperty;
+		},
+	
+		/**
+		 * Get label
+		 * 
+		 * @returns {string} The (possibly language-dependent) label text for this
+		 *          parameter
+		 */
+		getLabelText : function() {
+			if (!this._sLabelText
+					&& this._oParameterization._oQueryResult._oModel._oActivatedWorkarounds.CreateLabelsFromTechnicalNames)
+				this._sLabelText = odata4analytics.helper.tokenizeNametoLabelText(this.getName());
+			return this._sLabelText;
+		},
+	
+		/**
+		 * Get indicator whether or not the parameter is optional
+		 * 
+		 * @returns {boolean} True iff the parameter is optional
+		 */
+		isOptional : function() {
+			return (!this._bRequired);
+		},
+	
+		/**
+		 * Get indicator if the parameter represents an interval boundary
+		 * 
+		 * @returns {boolean} True iff it represents an interval boundary, otherwise
+		 *          false
+		 */
+		isIntervalBoundary : function() {
+			return this._bIntervalBoundaryParameter;
+		},
+	
+		/**
+		 * Get indicator if the parameter represents the lower boundary of an
+		 * interval
+		 * 
+		 * @returns {boolean} True iff it represents the lower boundary of an
+		 *          interval, otherwise false
+		 */
+		isLowerIntervalBoundary : function() {
+			return (this._oUpperIntervalBoundaryParameterProperty ? true : false);
+		},
+	
+		/**
+		 * Get property for the parameter representing the peer boundary of the same
+		 * interval
+		 * 
+		 * @returns {odata4analytics.Parameter} The parameter representing
+		 *          the peer boundary of the same interval. This means that if
+		 *          *this* parameter is a lower boundary, the returned object
+		 */
+		getPeerIntervalBoundaryParameter : function() {
+			var sPeerParamPropName = null;
+			if (this._oLowerIntervalBoundaryParameterProperty)
+				sPeerParamPropName = this._oLowerIntervalBoundaryParameterProperty.name;
+			else
+				sPeerParamPropName = this._oUpperIntervalBoundaryParameterProperty.name;
+			if (!sPeerParamPropName)
+				throw "Parameter is not an interval boundary";
+			return this._oParameterization.findParameterByName(sPeerParamPropName);
+		},
+	
+		/**
+		 * Get indicator if a set of values is available for this parameter.
+		 * Typically, this is true for parameters with a finite set of known values
+		 * such as products, business partners in different roles, organization
+		 * units, and false for integer or date parameters
+		 * 
+		 * @returns {boolean} True iff a value set is available, otherwise false
+		 */
+		isValueSetAvailable : function() {
+			return (this._oValueSetEntityType ? true : false);
+		},
+	
+		/**
+		 * Get the name of the parameter
+		 * 
+		 * @returns {string} The name of the parameter, which is identical with the
+		 *          name of the property representing the parameter in the
+		 *          parameterization entity type
+		 */
+		getName : function() {
+			return this._oProperty.name;
+		},
+	
+		/**
+		 * Get property
+		 * 
+		 * @returns {object} The DataJS object representing the property of this
+		 *          parameter
+		 */
+		getProperty : function() {
+			return this._oProperty;
+		},
+	
+		/**
+		 * Get parameterization containing this parameter
+		 * 
+		 * @return {odata4analytics.Parameterization} The parameterization
+		 *         object
+		 */
+		getContainingParameterization : function() {
+			return this._oParameterization;
+		},
+	
+		/**
+		 * Get the URI to locate the entity set holding the value set, if it is
+		 * available.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns The resource path of the URI pointing to the entity set. It is a
+		 *          relative URI unless a service root is given, which would then
+		 *          prefixed in order to return a complete URL.
+		 */
+		getURIToValueEntitySet : function(sServiceRootURI) {
+			var sURI = null;
+			sURI = (sServiceRootURI ? sServiceRootURI : "") + "/" + this._oValueSetEntitySet.getQName();
+			return sURI;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oParameterization : null,
+		_oProperty : null,
+		_sLabelText : null,
+		_oTextProperty : null,
+		_bRequired : false,
+		_bIntervalBoundaryParameter : false,
+		_oLowerIntervalBoundaryParameterProperty : null,
+		_oUpperIntervalBoundaryParameterProperty : null,
+	
+		_oValueSetEntityType : null,
+		_oValueSetEntitySet : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a dimension provided by an analytic query
+	 * 
+	 * @param {odata4analytics.QueryResult}
+	 *            oQueryResult The query result containing this dimension
+	 * @param {object}
+	 *            oProperty The DataJS object object representing the dimension
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a property annotated with
+	 *        sap:aggregation-role="dimension".
+	 * @protected
+	 */
+	odata4analytics.Dimension = function(oQueryResult, oProperty) {
+		this._init(oQueryResult, oProperty);
+	};
+	
+	odata4analytics.Dimension.prototype = {
+		_init : function(oQueryResult, oProperty) {
+			this._oQueryResult = oQueryResult;
+			this._oProperty = oProperty;
+	
+			this._oAttributeSet = new Object();
+		},
+	
+		// to be called only by Model objects
+		setMembersEntitySet : function(oEntitySet) {
+			this._oMembersEntitySet = oEntitySet;
+		},
+	
+		/**
+		 * Get the name of the dimension
+		 * 
+		 * @returns {string} The name of this dimension, which is identical to the
+		 *          name of the dimension key property in the entity type
+		 */
+		getName : function() {
+			return this._oProperty.name;
+		},
+	
+		/**
+		 * Get the key property
+		 * 
+		 * @returns {object} The DataJS object representing the property for the
+		 *          dimension key
+		 */
+		getKeyProperty : function() {
+			return this._oProperty;
+		},
+	
+		/**
+		 * Get text property related to this dimension
+		 * 
+		 * @returns {object} The DataJS object representing the text property or
+		 *          null if it does not exist
+		 */
+		getTextProperty : function() {
+			if (!this._oTextProperty)
+				this._oTextProperty = this._oQueryResult.getEntityType().getTextPropertyOfProperty(this.getName());
+			return this._oTextProperty;
+		},
+	
+		/**
+		 * Set text property Relevant for workaround w/ID
+		 * IdentifyTextPropertiesByName
+		 * 
+		 * @private
+		 */
+		setTextProperty : function(oTextProperty) {
+			this._oTextProperty = oTextProperty;
+		},
+	
+		/**
+		 * Get label
+		 * 
+		 * @returns {string} The (possibly language-dependent) label text for this
+		 *          dimension
+		 */
+		getLabelText : function() {
+			if (!this._sLabelText)
+				this._sLabelText = this._oQueryResult.getEntityType().getLabelOfProperty(this.getName());
+			if (!this._sLabelText && this._oQueryResult._oModel._oActivatedWorkarounds.CreateLabelsFromTechnicalNames)
+				this._sLabelText = odata4analytics.helper.tokenizeNametoLabelText(this.getName());
+			return (this._sLabelText == null ? "" : this._sLabelText);
+		},
+	
+		/**
+		 * Get super-ordinate dimension
+		 * 
+		 * @returns {object} The super-ordinate dimension or null if there is none
+		 */
+		getSuperOrdinateDimension : function() {
+			if (!this._sSuperOrdinateDimension) {
+				var sSuperOrdPropName = this._oQueryResult.getEntityType().getSuperOrdinatePropertyOfProperty(this.getName()).name;
+				this._sSuperOrdinateDimension = this._oQueryResult.findDimensionByName(sSuperOrdPropName);
+			}
+			return this._sSuperOrdinateDimension;
+		},
+	
+		/**
+		 * Get associated hierarchy
+		 * 
+		 * @returns {object} The hierarchy object or null if there is none. It can
+		 *          be an instance of class
+		 *          odata4analytics.RecursiveHierarchy (TODO later: or a
+		 *          leveled hierarchy). Use methods isLeveledHierarchy and
+		 *          isRecursiveHierarchy to determine object type.
+		 */
+		getHierarchy : function() {
+			// set associated hierarchy if any
+			if (!this._oHierarchy)
+				this._oHierarchy = this._oQueryResult.getEntityType().getHierarchy(this._oProperty.name);
+	
+			return this._oHierarchy;
+		},
+	
+		/**
+		 * Get the names of all attributes included in this dimension
+		 * 
+		 * @returns {array(string)} List of all attribute names
+		 */
+		getAllAttributeNames : function() {
+			if (this._aAttributeNames)
+				return this._aAttributeNames;
+	
+			this._aAttributeNames = [];
+	
+			for ( var sName in this._oAttributeSet)
+				this._aAttributeNames.push(this._oAttributeSet[sName].getName());
+	
+			return this._aAttributeNames;
+		},
+	
+		/**
+		 * Get all attributes of this dimension
+		 * 
+		 * @returns {object} An object with individual JS properties for each
+		 *          attribute of this dimension. The JS object properties all are
+		 *          objects of type odata4analytics.DimensionAttribute. The
+		 *          names of the JS object properties are given by the OData entity
+		 *          type property names representing the dimension attribute keys.
+		 */
+		getAllAttributes : function() {
+			return this._oAttributeSet;
+		},
+	
+		/**
+		 * Find attribute by name
+		 * 
+		 * @param {string}
+		 *            sName Attribute name
+		 * @returns {odata4analytics.Dimension} The dimension attribute
+		 *          object with this name or null if it does not exist
+		 */
+		findAttributeByName : function(sName) {
+			return this._oAttributeSet[sName];
+		},
+	
+		// to be called only by QueryResult objects
+		addAttribute : function(oDimensionAttribute) {
+			this._oAttributeSet[oDimensionAttribute.getName()] = oDimensionAttribute;
+		},
+	
+		/**
+		 * Get query result containing this dimension
+		 * 
+		 * @return {odata4analytics.QueryResult} The query result object
+		 */
+		getContainingQueryResult : function() {
+			return this._oQueryResult;
+		},
+	
+		/**
+		 * Get indicator whether or not master data is available for this dimension
+		 * 
+		 * @returns {boolean} True iff master data is available
+		 */
+		hasMasterData : function() {
+			return this._oMembersEntitySet != null ? true : false;
+		},
+	
+		/**
+		 * Get master data entity set for this dimension
+		 * 
+		 * @return {odata4analytics.EntitySet} The master data entity set
+		 *         for this dimension, or null, if it does not exist
+		 */
+		getMasterDataEntitySet : function() {
+			return this._oMembersEntitySet;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oQueryResult : null,
+		_oProperty : null,
+	
+		_oTextProperty : null,
+		_sLabelText : null,
+		_sSuperOrdinateDimension : null,
+		_aAttributeNames : null,
+		_oAttributeSet : null,
+	
+		_oMembersEntitySet : null,
+	
+		_oHierarchy : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a dimension attribute provided by an analytic
+	 * query
+	 * 
+	 * @param {odata4analytics.QueryResult}
+	 *            oQueryResult The query result containing this dimension attribute
+	 * @param {object}
+	 *            oProperty The DataJS object object representing the dimension
+	 *            attribute
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a dimension attribute.
+	 * @protected
+	 */
+	odata4analytics.DimensionAttribute = function(oQueryResult, oProperty) {
+		this._init(oQueryResult, oProperty);
+	};
+	
+	odata4analytics.DimensionAttribute.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oQueryResult, oProperty) {
+			this._oQueryResult = oQueryResult;
+			this._oProperty = oProperty;
+	
+			if (oProperty.extensions != undefined) {
+	
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					case "attribute-for":
+						this._sDimensionName = oExtension.value;
+						break;
+					case "label":
+						this._sLabelText = oExtension.value;
+						break;
+					case "text":
+						this._oTextProperty = oQueryResult.getEntityType().findPropertyByName(oExtension.value);
+						break;
+					}
+				}
+			}
+		},
+	
+		/**
+		 * Get the name of the dimension attribute
+		 * 
+		 * @returns {string} The name of the dimension attribute, which is identical
+		 *          to the name of the property in the entity type holding the
+		 *          attribute value
+		 */
+		getName : function() {
+			return this._oProperty.name;
+		},
+	
+		/**
+		 * Get the key property
+		 * 
+		 * @returns {object} The DataJS object representing the property for the key
+		 *          of this dimension attribute
+		 */
+		getKeyProperty : function() {
+			return this._oProperty;
+		},
+	
+		/**
+		 * Get text property related to this dimension attribute
+		 * 
+		 * @returns {object} The DataJS object representing the text property or
+		 *          null if it does not exist
+		 */
+		getTextProperty : function() {
+			return this._oTextProperty;
+		},
+	
+		/**
+		 * Get label
+		 * 
+		 * @returns {string} The (possibly language-dependent) label text for this
+		 *          dimension attribute
+		 */
+		getLabelText : function() {
+			if (!this._sLabelText && this._oQueryResult._oModel._oActivatedWorkarounds.CreateLabelsFromTechnicalNames)
+				this._sLabelText = odata4analytics.helper.tokenizeNametoLabelText(this.getName());
+			return this._sLabelText;
+		},
+	
+		/**
+		 * Get dimension
+		 * 
+		 * @returns {odata4analytics.Dimension} The dimension object
+		 *          containing this attribute
+		 */
+		getDimension : function() {
+			return this._oQueryResult.findDimensionByName(this._sDimensionName);
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oQueryResult : null,
+		_oProperty : null,
+	
+		_oTextProperty : null,
+		_sLabelText : null,
+		_sDimensionName : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a measure provided by an analytic query
+	 * 
+	 * @param {odata4analytics.QueryResult}
+	 *            oQueryResult The query result containing this measure
+	 * @param {object}
+	 *            oProperty The DataJS object object representing the measure
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a property annotated with
+	 *        sap:aggregation-role="measure".
+	 * @protected
+	 */
+	odata4analytics.Measure = function(oQueryResult, oProperty) {
+		this._init(oQueryResult, oProperty);
+	};
+	
+	odata4analytics.Measure.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oQueryResult, oProperty) {
+			this._oQueryResult = oQueryResult;
+			this._oProperty = oProperty;
+	
+			if (oProperty.extensions != undefined) {
+	
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					case "label":
+						this._sLabelText = oExtension.value;
+						break;
+					case "text":
+						this._oTextProperty = oQueryResult.getEntityType().findPropertyByName(oExtension.value);
+						break;
+					case "unit":
+						this._oUnitProperty = oQueryResult.getEntityType().findPropertyByName(oExtension.value);
+						break;
+					}
+				}
+			}
+			if (!this._sLabelText)
+				this._sLabelText = "";
+		},
+	
+		/**
+		 * Get the name of the measure
+		 * 
+		 * @returns {string} The name of the measure, which is identical to the name
+		 *          of the measure raw value property in the entity type
+		 */
+		getName : function() {
+			return this._oProperty.name;
+		},
+	
+		/**
+		 * Get the raw value property
+		 * 
+		 * @returns {object} The DataJS object representing the property holding the
+		 *          raw value of this measure
+		 */
+		getRawValueProperty : function() {
+			return this._oProperty;
+		},
+	
+		/**
+		 * Get the text property associated to the raw value property holding the
+		 * formatted value related to this measure
+		 * 
+		 * @returns {object} The DataJS object representing the property holding the
+		 *          formatted value text of this measure or null if this measure
+		 *          does not have a unit
+		 */
+		getFormattedValueProperty : function() {
+			return this._oTextProperty;
+		},
+	
+		/**
+		 * Get the unit property related to this measure
+		 * 
+		 * @returns {object} The DataJS object representing the unit property or
+		 *          null if this measure does not have a unit
+		 */
+		getUnitProperty : function() {
+			return this._oUnitProperty;
+		},
+	
+		/**
+		 * Get label
+		 * 
+		 * @returns {string} The (possibly language-dependent) label text for this
+		 *          measure
+		 */
+		getLabelText : function() {
+			if (!this._sLabelText && this._oQueryResult._oModel._oActivatedWorkarounds.CreateLabelsFromTechnicalNames)
+				this._sLabelText = odata4analytics.helper.tokenizeNametoLabelText(this.getName());
+			return this._sLabelText;
+		},
+	
+		/**
+		 * Get indicator whether or not the measure is updatable
+		 * 
+		 * @returns {boolean} True iff the measure is updatable
+		 */
+		isUpdatable : function() {
+			if (this._bIsUpdatable != null)
+				return this._bIsUpdatable;
+			var oUpdatablePropertyNameSet = this._oQueryResult.getEntitySet().getUpdatablePropertyNameSet();
+	
+			return (oUpdatablePropertyNameSet[this.getName()] != undefined);
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oQueryResult : null,
+		_oProperty : null,
+	
+		_oTextProperty : null,
+		_sLabelText : null,
+		_oUnitProperty : null,
+	
+		_bIsUpdatable : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of an OData entity set in the context of an analytic
+	 * query
+	 * 
+	 * @param {object}
+	 *            oModel DataJS object for the OData model containing this entity
+	 *            set
+	 * @param {object}
+	 *            oSchema DataJS object for the schema surrounding the container of
+	 *            this entity set
+	 * @param {object}
+	 *            oContainer DataJS object for the container holding this entity set
+	 * @param {object}
+	 *            oEntitySet DataJS object for the entity set
+	 * @param {object}
+	 *            oEntityType DataJS object for the entity type
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a OData entity set.
+	 * @protected
+	 */
+	odata4analytics.EntitySet = function(oModel, oSchema, oContainer, oEntitySet, oEntityType) {
+		this._init(oModel, oSchema, oContainer, oEntitySet, oEntityType);
+	};
+	
+	odata4analytics.EntitySet.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oModel, oSchema, oContainer, oEntitySet, oEntityType) {
+			this._oEntityType = oEntityType;
+			this._oEntitySet = oEntitySet;
+			this._oContainer = oContainer;
+			this._oSchema = oSchema;
+			this._oModel = oModel;
+	
+			if (oSchema.entityContainer.length > 1)
+				this._sQName = oContainer.name + "." + oEntitySet.name;
+			else
+				// no need to disambiguate this for the simple case
+				this._sQName = oEntitySet.name;
+		},
+	
+		/**
+		 * Get the fully qualified name for this entity type
+		 * 
+		 * @returns {string} The fully qualified name
+		 */
+		getQName : function() {
+			return this._sQName;
+		},
+	
+		/**
+		 * Get full description for this entity set
+		 * 
+		 * @returns {object} The DataJS object representing the entity set
+		 */
+		getSetDescription : function() {
+			return this._oEntitySet;
+		},
+	
+		/**
+		 * Get entity type used for this entity set
+		 * 
+		 * @returns {object} The DataJS object representing the entity type
+		 */
+		getEntityType : function() {
+			return this._oEntityType;
+		},
+	
+		getSchema : function() {
+			return this._oSchema;
+		},
+	
+		getModel : function() {
+			return this._oModel;
+		},
+	
+		/**
+		 * Get names of properties in this entity set that can be updated
+		 * 
+		 * @returns {object} An object with individual JS properties for each
+		 *          updatable property. For testing whether propertyName is the name
+		 *          of an updatable property, use
+		 *          <code>getUpdatablePropertyNameSet()[propertyName]</code>. The
+		 *          included JS object properties are all set to true.
+		 */
+		getUpdatablePropertyNameSet : function() {
+			if (this._oUpdatablePropertyNames)
+				return this._oUpdatablePropertyNames;
+	
+			this._oUpdatablePropertyNames = new Object();
+			var bSetIsUpdatable = true;
+			if (this._oEntitySet.extensions != undefined) {
+				for (var j = -1, oExtension; oExtension = this._oEntitySet.extensions[++j];) {
+					if (oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE && oExtension.name == "updatable") {
+						if (oExtension.value == "false") {
+							bSetIsUpdatable = false;
+							break;
+						}
+					}
+				}
+			}
+			if (!bSetIsUpdatable) { // set not updatable cascades to all properties
+				return this._oUpdatablePropertyNames;
+			}
+	
+			var aProperty = this._oEntityType.getTypeDescription().property;
+			for (var i = -1, oProperty; oProperty = aProperty[++i];) {
+				var bPropertyIsUpdatable = true;
+	
+				if (oProperty.extensions == undefined)
+					continue;
+				for (var j = -1, oExtension; oExtension = oProperty.extensions[++j];) {
+					if (oExtension.namespace != odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					if (oExtension.name == "updatable") {
+						if (oExtension.value == "false") {
+							bPropertyIsUpdatable = false;
+							break;
+						}
+					}
+				}
+				if (bPropertyIsUpdatable)
+					this._oUpdatablePropertyNames[oProperty.name] = true;
+			}
+			return this._oUpdatablePropertyNames;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+	
+		_oEntityType : null,
+		_oEntitySet : null,
+		_oContainer : null,
+		_oSchema : null,
+		_oModel : null,
+		_sQName : null,
+		_oUpdatablePropertyNames : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of an OData entity type in the context of an analytic
+	 * query
+	 * 
+	 * @param {object}
+	 *            oModel DataJS object for the OData model containing this entity
+	 *            type
+	 * @param {object}
+	 *            oSchema DataJS object for the schema containing this entity type
+	 * @param {object}
+	 *            oEntityType DataJS object for the entity type
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a OData entity type.
+	 * @protected
+	 */
+	odata4analytics.EntityType = function(oModel, oSchema, oEntityType) {
+		this._init(oModel, oSchema, oEntityType);
+	};
+	
+	odata4analytics.EntityType.propertyFilterRestriction = {
+		SINGLE_VALUE : "single-value",
+		MULTI_VALUE : "multi-value",
+		INTERVAL : "interval"
+	};
+	
+	odata4analytics.EntityType.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oModel, oSchema, oEntityType) {
+			this._oEntityType = oEntityType;
+			this._oSchema = oSchema;
+			this._oModel = oModel;
+	
+			this._aKeyProperties = [];
+			this._oPropertySet = new Object();
+			this._aFilterablePropertyNames = [];
+			this._aSortablePropertyNames = [];
+			this._aRequiredFilterPropertyNames = [];
+			this._oPropertyFilterRestrictionSet = new Object();
+	
+			this._sQName = oSchema.namespace + "." + oEntityType.name;
+	
+			/*
+			 * collect all hierarchies defined in this entity type
+			 */
+			var oRecursiveHierarchies = {}; // temp for collecting all properties
+			// participating in hierarchies
+			var oRecursiveHierarchy = null;
+	
+			for (var i = -1, oPropertyRef; oPropertyRef = oEntityType.key.propertyRef[++i];) {
+				this._aKeyProperties.push(oPropertyRef.name);
+			}
+	
+			for (var i = -1, oProperty; oProperty = oEntityType.property[++i];) {
+	
+				// store property references for faster lookup
+				this._oPropertySet[oProperty.name] = oProperty;
+
+				// by default, every property can be filtered
+				this._aFilterablePropertyNames.push(oProperty.name);
+	
+				// by default, every property can be sorted
+				this._aSortablePropertyNames.push(oProperty.name);
+	
+				if (oProperty.extensions == undefined)
+					continue;
+				for (var j = -1, oExtension; oExtension = oProperty.extensions[++j];) {
+	
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+	
+					switch (oExtension.name) {
+					case "filterable":
+						if (oExtension.value == "false")
+							this._aFilterablePropertyNames.pop(oProperty.name);
+						break;
+					case "sortable":
+						if (oExtension.value == "false")
+							this._aSortablePropertyNames.pop(oProperty.name);
+						break;
+					case "required-in-filter":
+						if (oExtension.value == "true")
+							this._aRequiredFilterPropertyNames.push(oProperty.name);
+						break;
+					case "filter-restriction":
+						if (oExtension.value == odata4analytics.EntityType.propertyFilterRestriction.SINGLE_VALUE
+								|| oExtension.value == odata4analytics.EntityType.propertyFilterRestriction.MULTI_VALUE
+								|| oExtension.value == odata4analytics.EntityType.propertyFilterRestriction.INTERVAL)
+							this._oPropertyFilterRestrictionSet[oProperty.name] = oExtension.value;
+						break;
+	
+					// hierarchy annotations: build temporary set of
+					// hierarchy-node-id properties with relevant attributes
+					case "hierarchy-node-for":
+						if (!(oRecursiveHierarchy = oRecursiveHierarchies[oProperty.name]))
+							oRecursiveHierarchy = oRecursiveHierarchies[oProperty.name] = new Object();
+						oRecursiveHierarchy.dimensionName = oExtension.value;
+						break;
+					case "hierarchy-parent-node-for":
+					case "hierarchy-parent-nod": // TODO workaround for GW bug
+						if (!(oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value]))
+							oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value] = new Object();
+						oRecursiveHierarchy.parentNodeIDProperty = oProperty;
+						break;
+					case "hierarchy-level-for":
+						if (!(oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value]))
+							oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value] = new Object();
+						oRecursiveHierarchy.levelProperty = oProperty;
+						break;
+					case "hierarchy-drill-state-for":
+					case "hierarchy-drill-stat": // TODO workaround for GW bug
+						if (!(oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value]))
+							oRecursiveHierarchy = oRecursiveHierarchies[oExtension.value] = new Object();
+						oRecursiveHierarchy.drillStateProperty = oProperty;
+						break;
+	
+					}
+				}
+			}
+	
+			// post processing: set up hierarchy objects
+			this._oRecursiveHierarchySet = new Object();
+			for ( var hierNodeIDPropertyName in oRecursiveHierarchies) {
+				var oHierarchy = oRecursiveHierarchies[hierNodeIDPropertyName];
+				var oHierarchyNodeIDProperty = this._oPropertySet[hierNodeIDPropertyName];
+				var oDimensionProperty = this._oPropertySet[oHierarchy.dimensionName];
+				if (oDimensionProperty == null) {
+					// TODO temporary workaround for BW provider, which does not
+					// return it: let dimension coincide with hierarchy
+					// node ID
+					oDimensionProperty = oHierarchyNodeIDProperty;
+				}
+				this._oRecursiveHierarchySet[oDimensionProperty.name] = new odata4analytics.RecursiveHierarchy(oEntityType,
+						oHierarchyNodeIDProperty, oHierarchy.parentNodeIDProperty, oHierarchy.levelProperty, oDimensionProperty);
+			}
+	
+		},
+	
+		/**
+		 * Get all properties
+		 * 
+		 * @return {object} Object with (JavaScript) properties, one for each (OData
+		 *         entity type) property. These (JavaScript) properties hold the
+		 *         DataJS object representing the property
+		 */
+		getProperties : function() {
+			return this._oPropertySet;
+		},
+	
+		/**
+		 * Find property by name
+		 * 
+		 * @param {string}
+		 *            sPropertyName Property name
+		 * @returns {object} The DataJS object representing the property or null if
+		 *          it does not exist
+		 */
+		findPropertyByName : function(sPropertyName) {
+			return this._oPropertySet[sPropertyName];
+		},
+	
+		/**
+		 * Get key properties of this type
+		 * 
+		 * @returns {array(string)} The list of key property names
+		 */
+		getKeyProperties : function() {
+			return this._aKeyProperties;
+		},
+	
+		/**
+		 * Get label of the property with specified name (identified by property
+		 * metadata annotation sap:label)
+		 * 
+		 * @param {string}
+		 *            sPropertyName Property name
+		 * @returns {string} The label string
+		 */
+		getLabelOfProperty : function(sPropertyName) {
+			var oProperty = this._oPropertySet[sPropertyName];
+			if (oProperty == null)
+				throw "no such property with name " + sPropertyName;
+	
+			if (oProperty.extensions != undefined) {
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+					if (!oExtension.namespace == odata4analytics.constants.SAP_NAMESPACE)
+						continue;
+					if (oExtension.name == "label")
+						return oExtension.value;
+				}
+			}
+			return null;
+		},
+	
+		/**
+		 * Get the text property related to the property with specified name
+		 * (identified by property metadata annotation sap:text)
+		 * 
+		 * @param {string}
+		 *            sPropertyName Property name
+		 * @returns {object} The DataJS object representing the text property or
+		 *          null if it does not exist
+		 */
+		getTextPropertyOfProperty : function(sPropertyName) {
+			var oProperty = this._oPropertySet[sPropertyName];
+			if (oProperty == null)
+				throw "no such property with name " + sPropertyName;
+	
+			if (oProperty.extensions != undefined) {
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+					if (oExtension.name == "text")
+						return this.findPropertyByName(oExtension.value);
+				}
+			}
+			return null;
+		},
+	
+		/**
+		 * Get the super-ordinate property related to the property with specified
+		 * name (identified by property metadata annotation sap:super-ordinate)
+		 * 
+		 * @param {string}
+		 *            sPropertyName Property name
+		 * @returns {object} The DataJS object representing the super-ordinate
+		 *          property or null if it does not exist
+		 */
+		getSuperOrdinatePropertyOfProperty : function(sPropertyName) {
+			var oProperty = this._oPropertySet[sPropertyName];
+			if (oProperty == null)
+				throw "no such property with name " + sPropertyName;
+	
+			if (oProperty.extensions != undefined) {
+				for (var i = -1, oExtension; oExtension = oProperty.extensions[++i];) {
+					if (oExtension.name == "super-ordinate")
+						return this.findPropertyByName(oExtension.value);
+				}
+			}
+			return null;
+		},
+	
+		/**
+		 * Get names of properties that can be filtered, that is they can be used in
+		 * $filter expressions
+		 * 
+		 * @returns {array(string)} Array with names of properties that can be
+		 *          filtered.
+		 */
+		getFilterablePropertyNames : function() {
+			return this._aFilterablePropertyNames;
+		},
+	
+		/**
+		 * Get names of properties that can be sorted, that is they can be used in
+		 * $orderby expressions
+		 * 
+		 * @returns {array(string)} Array with names of properties that can be
+		 *          sorted.
+		 */
+		getSortablePropertyNames : function() {
+			return this._aSortablePropertyNames;
+		},
+	
+		/**
+		 * Get names of properties that must be filtered, that is they must appear
+		 * in every $filter expression
+		 * 
+		 * @returns {array(string)} Array with names of properties that must be
+		 *          filtered.
+		 */
+		getRequiredFilterPropertyNames : function() {
+			return this._aRequiredFilterPropertyNames;
+		},
+	
+		/**
+		 * Get properties for which filter restrictions have been specified
+		 * 
+		 * @returns {object} Object with (JavaScript) properties, one for each
+		 *          (OData entity type) property. The property value is from
+		 *          odata4analytics.EntityType.propertyFilterRestriction and
+		 *          indicates the filter restriction for this property.
+		 */
+		getPropertiesWithFilterRestrictions : function() {
+			return this._oPropertyFilterRestrictionSet;
+		},
+	
+		/**
+		 * Get the names of all properties with an associated hierarchy
+		 * 
+		 * @returns {array(string)} List of all property names
+		 */
+		getAllHierarchyPropertyNames : function() {
+			if (this._aHierarchyPropertyNames)
+				return this._aHierarchyPropertyNames;
+	
+			this._aHierarchyPropertyNames = [];
+	
+			for ( var sName in this._oRecursiveHierarchySet)
+				this._aHierarchyPropertyNames.push(this._oRecursiveHierarchySet[sName].getNodeValueProperty().name);
+	
+			return this._aHierarchyPropertyNames;
+		},
+	
+		/**
+		 * Get the hierarchy associated to a given property Based on the current
+		 * specification, hierarchies are always recursive. TODO: Extend behavior
+		 * when leveled hierarchies get in scope
+		 * 
+		 * @param {string}
+		 *            sName Parameter name
+		 * @returns {odata4analytics.RecursiveHierarchy} The hierarchy
+		 *          object or null if it does not exist
+		 */
+		getHierarchy : function(sName) {
+			if (this._oRecursiveHierarchySet[sName] == undefined)
+				return null;
+			return this._oRecursiveHierarchySet[sName];
+		},
+	
+		/**
+		 * Get the fully qualified name for this entity type
+		 * 
+		 * @returns {string} The fully qualified name
+		 */
+		getQName : function() {
+			return this._sQName;
+		},
+	
+		/**
+		 * Get full description for this entity type
+		 * 
+		 * @returns {object} The DataJS object representing the entity type
+		 */
+		getTypeDescription : function() {
+			return this._oEntityType;
+		},
+	
+		getSchema : function() {
+			return this._oSchema;
+		},
+	
+		getModel : function() {
+			return this._oModel;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+	
+		_oEntityType : null,
+		_oSchema : null,
+		_oModel : null,
+		_sQName : null,
+	
+		_aKeyProperties : null,
+	
+		_oPropertySet : null,
+		_aFilterablePropertyNames : null,
+		_aRequiredFilterPropertyNames : null,
+		_oPropertyFilterRestrictionSet : null,
+	
+		_aHierarchyPropertyNames : null,
+		_oRecursiveHierarchySet : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a recursive hierarchy defined on one multiple
+	 * properties in an OData entity type query
+	 * 
+	 * @param {EntityType}
+	 *            oEntityType object for the entity type
+	 * @param {object}
+	 *            oNodeIDProperty DataJS object for the property holding the
+	 *            hierarchy node ID identifying the hierarchy node to which the
+	 *            OData entry belongs
+	 * @param {object}
+	 *            oParentNodeIDProperty DataJS object for the property holding the
+	 *            node ID of the parent of the hierarchy node pointed to by the
+	 *            value of oNodeIDProperty
+	 * @param {object}
+	 *            oNodeLevelProperty DataJS object for the property holding the
+	 *            level number for the of the hierarchy node pointed to by the value
+	 *            of oNodeIDProperty
+	 * @param {object}
+	 *            oNodeValueProperty DataJS object for the property holding the data
+	 *            value for the of the hierarchy node pointed to by the value of
+	 *            oNodeIDProperty
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a recursive hierarchy.
+	 * @protected
+	 */
+	odata4analytics.RecursiveHierarchy = function(oEntityType, oNodeIDProperty, oParentNodeIDProperty, oNodeLevelProperty,
+			oNodeValueProperty) {
+		this._init(oEntityType, oNodeIDProperty, oParentNodeIDProperty, oNodeLevelProperty, oNodeValueProperty);
+	};
+	
+	odata4analytics.RecursiveHierarchy.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oEntityType, oNodeIDProperty, oParentNodeIDProperty, oNodeLevelProperty, oNodeValueProperty) {
+			this._oEntityType = oEntityType;
+	
+			this._oNodeIDProperty = oNodeIDProperty;
+			this._oParentNodeIDProperty = oParentNodeIDProperty;
+			this._oNodeLevelProperty = oNodeLevelProperty;
+			this._oNodeValueProperty = oNodeValueProperty;
+	
+		},
+	
+		/**
+		 * Get indicator if this is a recursive hierarchy
+		 * 
+		 * @returns {boolean} True
+		 */
+		isRecursiveHierarchy : function() {
+			return true;
+		},
+	
+		/**
+		 * Get indicator if this is a leveled hierarchy
+		 * 
+		 * @returns {boolean} False
+		 */
+		isLeveledHierarchy : function() {
+			return false;
+		},
+	
+		/**
+		 * Get the property holding the node ID of the hierarchy node
+		 * 
+		 * @returns {object} The DataJS object representing this property
+		 */
+		getNodeIDProperty : function() {
+			return this._oNodeIDProperty;
+		},
+	
+		/**
+		 * Get the property holding the parent node ID of the hierarchy node
+		 * 
+		 * @returns {object} The DataJS object representing this property
+		 */
+		getParentNodeIDProperty : function() {
+			return this._oParentNodeIDProperty;
+		},
+	
+		/**
+		 * Get the property holding the level of the hierarchy node
+		 * 
+		 * @returns {object} The DataJS object representing this property
+		 */
+		getNodeLevelProperty : function() {
+			return this._oNodeLevelProperty;
+		},
+	
+		/**
+		 * Get the property holding the value that is structurally organized by the
+		 * hierarchy
+		 * 
+		 * @returns {object} The DataJS object representing this property
+		 */
+		getNodeValueProperty : function() {
+			return this._oNodeValueProperty;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+	
+		_oNodeIDProperty : null,
+		_oParentNodeIDProperty : null,
+		_oNodeLevelProperty : null,
+		_oNodeValueProperty : null
+	
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of a filter expression for a given entity type. It can be rendered as value for the $filter system
+	 * query option.
+	 * 
+	 * @param {object}
+	 *            oModel DataJS object for the OData model containing this entity type
+	 * @param {object}
+	 *            oSchema DataJS object for the schema containing this entity type
+	 * @param {com.sap.odata4analytics.EntityType}
+	 *            oEntityType object for the entity type
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a $filter expression for an OData entity type.
+	 */
+	odata4analytics.FilterExpression = function(oModel, oSchema, oEntityType) {
+	    this._init(oModel, oSchema, oEntityType);
+	};
+
+	odata4analytics.FilterExpression.prototype = {
+	    /**
+	     * @private
+	     */
+	    _init : function(oModel, oSchema, oEntityType) {
+	        this._oEntityType = oEntityType;
+	        this._oSchema = oSchema;
+	        this._oModel = oModel;
+
+	        this._aConditionUI5Filter = new Array();
+	        this._aUI5FilterArray = new Array();
+	    },
+
+	    /**
+	     * @private
+	     */
+		_renderPropertyFilterValue : function(sFilterValue, sPropertyEDMTypeName) {
+			// initial implementation called odata4analytics.helper.renderPropertyFilterValue, which had problems with locale-specific input values
+			// this is handled in the ODataModel
+			return this._oModel.getODataModel().formatValue(sFilterValue, sPropertyEDMTypeName);
+		},
+
+	    /**
+	     * Clear expression from any conditions that may have been set previously
+	     * 
+	     */
+	    clear : function() {
+	        this._aConditionUI5Filter = new Array();
+	        this._aUI5FilterArray = new Array();
+	    },
+
+	    /**
+	     * @private
+	     */
+	    _addCondition : function(sProperty, sOperator, oValue1, oValue2) {
+	        // make sure that the condition is new
+	        for ( var i = -1, oUI5Filter; oUI5Filter = this._aConditionUI5Filter[++i];) {
+	            if (oUI5Filter.sPath == sProperty && oUI5Filter.sOperator == sOperator && oUI5Filter.oValue1 == oValue1
+	                    && oUI5Filter.oValue2 == oValue2)
+	                return;
+	        }
+	        this._aConditionUI5Filter.push(new sap.ui.model.Filter(sProperty, sOperator, oValue1, oValue2));
+	    },
+
+	    /**
+	     * @private
+	     */
+	    _addUI5FilterArray : function(aUI5Filter) {
+	        this._aUI5FilterArray.push(aUI5Filter);
+	    },
+
+	    /**
+	     * Add a condition to the filter expression.
+	     * 
+	     * Multiple conditions on the same property are combined with a logical OR first, and in a second step conditions for
+	     * different properties are combined with a logical AND.
+	     * 
+	     * @param {string}
+	     *            sPropertyName The name of the property bound in the condition
+	     * @param {sap.ui.model.FilterOperator}
+	     *            sOperator operator used for the condition
+	     * @param {object}
+	     *            oValue value to be used for this condition
+	     * @param {object}
+	     *            oValue2 (optional) as second value to be used for this condition
+	     * @throws Exception
+	     *             if the property is unknown or not filterable
+	     * @returns {com.sap.odata4analytics.FilterExpression} This object for method chaining
+	     */
+	    addCondition : function(sPropertyName, sOperator, oValue, oValue2) {
+	        var oProperty = this._oEntityType.findPropertyByName(sPropertyName);
+	        if (oProperty == null) {
+	            throw "Cannot add filter condition for unknown property name " + sPropertyName; // TODO
+	        }
+	        var aFilterablePropertyNames = this._oEntityType.getFilterablePropertyNames();
+	        if (aFilterablePropertyNames.indexOf(sPropertyName) === -1) {
+	            throw "Cannot add filter condition for not filterable property name " + sPropertyName; // TODO
+	        }
+	        this._addCondition(sPropertyName, sOperator, oValue, oValue2);
+	        return this;
+	    },
+
+	    /**
+	     * Add a set condition to the filter expression.
+	     * 
+	     * A set condition tests if the value of a property is included in a set of given values. It is a convenience method for
+	     * this particular use case eliminating the need for multiple API calls.
+	     * 
+	     * @param {string}
+	     *            sPropertyName The name of the property bound in the condition
+	     * @param {array}
+	     *            aValues values defining the set
+	     * @throws Exception
+	     *             if the property is unknown or not filterable
+	     * @returns {com.sap.odata4analytics.FilterExpression} This object for method chaining
+	     */
+	    addSetCondition : function(sPropertyName, aValues) {
+	        var oProperty = this._oEntityType.findPropertyByName(sPropertyName);
+	        if (oProperty == null) {
+	            throw "Cannot add filter condition for unknown property name " + sPropertyName; // TODO
+	        }
+	        var aFilterablePropertyNames = this._oEntityType.getFilterablePropertyNames();
+	        if (aFilterablePropertyNames.indexOf(sPropertyName) === -1) {
+	            throw "Cannot add filter condition for not filterable property name " + sPropertyName; // TODO
+	        }
+	        for ( var i = -1, oValue; oValue = aValues[++i];)
+	            this._addCondition(sPropertyName, sap.ui.model.FilterOperator.EQ, oValue);
+	        return this;
+	    },
+
+	    /**
+	     * Add an array of UI5 filter conditions to the filter expression.
+	     * 
+	     * The UI5 filter condition is combined with the other given conditions using a logical AND. This method
+	     * is particularly useful for passing forward already created UI5 filter arrays.  
+	     * 
+	     * @param {array(sap.ui.model.Filter)}
+	     *            aUI5Filter Array of UI5 filter objects
+	     * @returns {com.sap.odata4analytics.FilterExpression} This object for method chaining
+	     */
+	    addUI5FilterConditions : function(aUI5Filter) {
+	        if (! Array.isArray(aUI5Filter))
+	            throw "Argument is not an array";
+	        if (aUI5Filter.length > 0)
+	        	this._addUI5FilterArray(aUI5Filter);
+	        return this;
+	    },
+
+	        
+	    /**
+	     * Get an array of SAPUI5 Filter objects corresponding to this expression.
+	     * 
+	     * @returns {array(sap.ui.model.Filter)} List of filter objects representing this expression
+	     */
+	    getExpressionAsUI5FilterArray : function() {
+	        var aFilterObjects = this._aConditionUI5Filter.concat([]);
+
+	        for ( var i = -1, aFilter; aFilter = this._aUI5FilterArray[++i];) {
+	            for ( var j = -1, oFilter; oFilter = aFilter[++j];) {
+	                aFilterObjects.push(oFilter);
+	            }
+	        }
+	        return aFilterObjects;
+	    },
+
+
+	    /*
+	     * @private
+	     */
+	    getPropertiesReferencedByUI5FilterArray : function(aUI5Filter, oReferencedProperties) {
+	        for ( var i = -1, oUI5Filter; oUI5Filter = aUI5Filter[++i];) {
+	            if (oUI5Filter.aFilters != undefined) 
+	                this.getPropertiesReferencedByUI5FilterArray(oUI5Filter.aFilters, oReferencedProperties);
+	            else { 
+	                if (oReferencedProperties[oUI5Filter.sPath] == undefined)
+	                    oReferencedProperties[oUI5Filter.sPath] = [];
+	                oReferencedProperties[oUI5Filter.sPath].push(oUI5Filter);
+	            }                    
+	        }
+	    },
+	    
+
+	    /**
+	     * @private
+	     * 
+	     * Get the properties referenced by the filter expression.
+	     * 
+	     * @returns {object} Object containing (JavaScript) properties for all (OData entity type)
+	     *          properties referenced in the filter expression. The value for each of these properties is an array holding all used UI5 filters referencing them. 
+	     */
+	    getReferencedProperties : function() {
+	        var oReferencedProperties = new Object();
+
+	        for ( var i = -1, oUI5Filter; oUI5Filter = this._aConditionUI5Filter[++i];) {
+	            if (oReferencedProperties[oUI5Filter.sPath] == undefined)
+	                oReferencedProperties[oUI5Filter.sPath] = [];
+	            oReferencedProperties[oUI5Filter.sPath].push(oUI5Filter);
+	        }
+	        
+	        for ( var i = -1, aUI5Filter; aUI5Filter = this._aUI5FilterArray[++i];) {
+	            this.getPropertiesReferencedByUI5FilterArray(aUI5Filter, oReferencedProperties);
+	        }
+	        return oReferencedProperties;
+	    },
+
+	    /**
+	     * @private
+	     *
+	     * Render a UI5 Filter as OData condition.
+	     * 
+	     * @param {string} oUI5Filter The filter object to render (must not be a multi filter)
+	     * @returns {string} The $filter value for the given UI5 filter 
+	     */
+	    renderUI5Filter : function(oUI5Filter) {
+	        var oProperty = this._oEntityType.findPropertyByName(oUI5Filter.sPath);
+	        if (oProperty == null) {
+	            throw "Cannot add filter condition for unknown property name " + sPropertyName; // TODO
+	        }
+	        
+	        var sFilterExpression = null;
+	        switch (oUI5Filter.sOperator) {
+	        case sap.ui.model.FilterOperator.BT:
+	            sFilterExpression = "(" + oUI5Filter.sPath + " "
+	                    + sap.ui.model.FilterOperator.GE.toLowerCase() + " "
+	                    + this._renderPropertyFilterValue(oUI5Filter.oValue1, oProperty.type)
+	                    + " and " + oUI5Filter.sPath + " " + sap.ui.model.FilterOperator.LE.toLowerCase() + " "
+	                    + this._renderPropertyFilterValue(oUI5Filter.oValue2, oProperty.type)
+	                    + ")";
+	            break;
+	        case sap.ui.model.FilterOperator.Contains:
+	            sFilterExpression = "substringof('" + oUI5Filter.oValue1 + "'," +  oUI5Filter.sPath + ")";
+	            break;
+	        case sap.ui.model.FilterOperator.StartsWith:
+	        case sap.ui.model.FilterOperator.EndsWith:
+	            sFilterExpression = oUI5Filter.sOperator.toLowerCase() + "("
+	                    + oUI5Filter.sPath + ",'" + oUI5Filter.oValue1 + "')";
+	            break;
+	        default:
+	            sFilterExpression = oUI5Filter.sPath + " " + oUI5Filter.sOperator.toLowerCase() + " "
+	                    + this._renderPropertyFilterValue(oUI5Filter.oValue1, oProperty.type);
+	        }
+	        
+	        return sFilterExpression;
+	    },
+	    
+	    /*
+	     * @private
+	     */
+	    renderUI5MultiFilter : function(oUI5MultiFilter) {
+	        var aUI5MultiFilter = new Array();
+
+	        var sOptionString = "";
+	        var sLogicalMultiOperator = oUI5MultiFilter.bAnd == true ? " and " : " or ";
+	        
+	        for (var i = -1, oUI5Filter; oUI5Filter = oUI5MultiFilter.aFilters[++i];) {
+	            if (oUI5Filter.aFilters != undefined) { // defer processing to the end 
+	                aUI5MultiFilter.push(oUI5Filter);
+	                continue;
+	            }
+
+	            sOptionString += (sOptionString == "" ? "" : sLogicalMultiOperator) + "(" + this.renderUI5Filter(oUI5Filter) + ")";
+	        }
+	        // process multi filters if any
+	        if (aUI5MultiFilter.length > 0) {
+	            for (var i = -1, oMultiFilter; oMultiFilter = aUI5MultiFilter[++i];) {
+	                sOptionString += (sOptionString == "" ? "" : sLogicalMultiOperator) + "(" + this.renderUI5MultiFilter(oMultiFilter) + ")";      
+	            }
+	        }
+	        return sOptionString;
+	    },
+	    
+	    /*
+	     * @private
+	     */
+	    renderUI5FilterArray : function(aUI5Filter) {
+	        if (aUI5Filter.length == 0)
+	            return "";
+
+	        var sOptionString = "";
+	        // 1. Process conditions
+	        aUI5Filter.sort(function(a, b) {
+	            if (a.sPath == b.sPath)
+	                return 0;
+	            if (a.sPath > b.sPath)
+	                return 1;
+	            else
+	                return -1;
+	        });
+
+	        var sPropertyName = aUI5Filter[0].sPath;
+	        var sSubExpression = "";
+	        var aNEFilter = new Array(), aUI5MultiFilter = new Array();
+	        for ( var i = -1, oUI5Filter; oUI5Filter = aUI5Filter[++i];) {
+	            if (oUI5Filter.aFilters != undefined) { // defer processing to the end
+	                aUI5MultiFilter.push(oUI5Filter);
+	                continue;
+	            }
+	            if (sPropertyName != oUI5Filter.sPath) {
+	            	if (sSubExpression != "") sOptionString += (sOptionString == "" ? "" : " and ") + "(" + sSubExpression + ")";
+	                sSubExpression = "";
+	                if (aNEFilter.length > 0) { // handle negated comparisons
+	                    for (var j = -1, oNEFilter; oNEFilter = aNEFilter[++j];) {
+	                        sSubExpression += (sSubExpression == "" ? "" : " and ") + this.renderUI5Filter(oNEFilter);                        
+	                    }
+	                    sOptionString += (sOptionString == "" ? "" : " and ") + "(" + sSubExpression + ")";
+	                    sSubExpression = "";
+	                }
+	                sPropertyName = oUI5Filter.sPath;
+	                aNEFilter = new Array();
+	            }
+	            if (oUI5Filter.sOperator == sap.ui.model.FilterOperator.NE) {
+	                aNEFilter.push(oUI5Filter);
+	                continue;
+	            }
+	            sSubExpression += (sSubExpression == "" ? "" : " or ") + this.renderUI5Filter(oUI5Filter);
+	        }
+	        
+	        // add last sub expression
+	        if (sSubExpression != "") sOptionString += (sOptionString == "" ? "" : " and ") + "(" + sSubExpression + ")";
+	        if (aNEFilter.length > 0) { // handle negated comparisons
+                sSubExpression = "";
+	            for (var j = -1, oNEFilter; oNEFilter = aNEFilter[++j];) {
+	                sSubExpression += (sSubExpression == "" ? "" : " and ") + this.renderUI5Filter(oNEFilter);                        
+	            }
+	            sOptionString += (sOptionString == "" ? "" : " and ") + "(" + sSubExpression + ")";
+	        }
+	        
+	        // process multi filters if any
+	        if (aUI5MultiFilter.length > 0) {
+	            for (var j = -1, oMultiFilter; oMultiFilter = aUI5MultiFilter[++j];) {
+	                sOptionString += (sOptionString == "" ? "" : " and ") + "(" + this.renderUI5MultiFilter(oMultiFilter) + ")";      
+	            }
+	        }
+	        return sOptionString;
+	    },
+
+	    /**
+	     * Get the value for the OData system query option $filter corresponding to this expression.
+	     * 
+	     * @returns {string} The $filter value for the filter expression
+	     */
+	    getURIFilterOptionValue : function() {
+	        var sOptionString = this.renderUI5FilterArray(this._aConditionUI5Filter);
+	        for(var i = -1, aUI5Filter; aUI5Filter = this._aUI5FilterArray[++i]; ) {
+	            sOptionString += (sOptionString == "" ? "" : " and ") + "(" + this.renderUI5FilterArray(aUI5Filter) + ")";
+	        }
+	        return sOptionString;
+	    },
+
+	    /**
+	     * Check if request is compliant with basic filter constraints expressed in metadata:
+	     * 
+	     * (a) all properties required in the filter expression have been referenced (b) the single-value filter restrictions have been obeyed
+	     * 
+	     * @returns {boolean} The value true. In case the expression violates some of the rules, an exception with some explanatory
+	     *          message is thrown
+	     */
+
+	    isValid : function() {
+	        // (a) all properties required in the filter expression have been referenced
+	        var aRequiredFilterPropertyNames = this._oEntityType.getRequiredFilterPropertyNames();
+	        var oPropertiesInFilterExpression = this.getReferencedProperties();
+	        for ( var i = -1, sPropertyName; sPropertyName = aRequiredFilterPropertyNames[++i];) {
+	            if (oPropertiesInFilterExpression[sPropertyName] == undefined)
+	                throw "filter expression does not contain required property " + sPropertyName; // TODO
+	        }
+	        // (b) basic filter restrictions have been obeyed
+	        var oPropertyFilterRestrictionSet = this._oEntityType.getPropertiesWithFilterRestrictions();
+	        for ( var sPropertyName in oPropertyFilterRestrictionSet) {
+	            var sFilterRestriction = oPropertyFilterRestrictionSet[sPropertyName];
+	            var iConditionCount = 0;
+
+	            if (sFilterRestriction == odata4analytics.EntityType.propertyFilterRestriction.SINGLE_VALUE) {
+	                if (oPropertiesInFilterExpression[sPropertyName] != undefined) {
+	                    if (oPropertiesInFilterExpression[sPropertyName].length > 1 
+	                            || oPropertiesInFilterExpression[sPropertyName][0].sOperator != sap.ui.model.FilterOperator.EQ)
+	                        throw "filter expression may use " + sPropertyName + " only with a single EQ condition"; // TODO
+	                }
+	            }
+	        }
+	        return true;
+	    },
+
+	    /**
+	     * Get description for this entity type
+	     * 
+	     * @returns {com.sap.odata4analytics.EntityType} The object representing the entity type
+	     */
+	    getEntityType : function() {
+	        return this._oEntityType;
+	    },
+
+	    getSchema : function() {
+	        return this._oSchema;
+	    },
+
+	    getModel : function() {
+	        return this._oModel;
+	    },
+
+	    /**
+	     * Private member attributes
+	     */
+
+	    _oEntityType : null,
+	    _oSchema : null,
+	    _oModel : null,
+
+	    _aFilterCondition : null
+	};
+
+	/** ******************************************************************** */
+	
+	/**
+	 * @class Sort order of a property
+	 * 
+	 * @static
+	 * @protected
+	 */
+	odata4analytics.SortOrder = {
+	
+		/**
+		 * Sort Order: ascending.
+		 * 
+		 * @protected
+		 */
+		Ascending : "asc",
+	
+		/**
+		 * Sort Order: descending.
+		 * 
+		 * @protected
+		 */
+		Descending : "desc"
+	
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a representation of an order by expression for a given entity type. It
+	 * can be rendered as value for the $orderby system query option.
+	 * 
+	 * @param {object}
+	 *            oModel DataJS object for the OData model containing this entity
+	 *            type
+	 * @param {object}
+	 *            oSchema DataJS object for the schema containing this entity type
+	 * @param {odata4analytics.EntityType}
+	 *            oEntityType object for the entity type
+	 * 
+	 * @constructor
+	 * 
+	 * @class Representation of a $orderby expression for an OData entity type.
+	 * @protected
+	 */
+	odata4analytics.SortExpression = function(oModel, oSchema, oEntityType) {
+		this._init(oModel, oSchema, oEntityType);
+	};
+	
+	odata4analytics.SortExpression.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oModel, oSchema, oEntityType) {
+			this._oEntityType = oEntityType;
+			this._oSchema = oSchema;
+			this._oModel = oModel;
+	
+			this._aSortCondition = [];
+		},
+	
+		/**
+		 * Checks if an order by expression for the given property is already
+		 * defined and returns a reference to an object with property sorter and
+		 * index of the object or null if the property is not yet defined in an
+		 * order by expression.
+		 * 
+		 * @private
+		 */
+		_containsSorter : function(sPropertyName) {
+			var oResult = null;
+			for (var i = -1, oCurrentSorter; oCurrentSorter = this._aSortCondition[++i];) {
+				if (oCurrentSorter.property.name === sPropertyName) {
+					oResult = {
+						sorter : oCurrentSorter,
+						index : i
+					};
+					break;
+				}
+			}
+			return oResult;
+		},
+	
+		/**
+		 * TODO helper method to remove elements from array
+		 * 
+		 * @private
+		 */
+		_removeFromArray : function(array, from, to) {
+			var rest = array.slice((to || from) + 1 || array.length);
+			array.length = from < 0 ? array.length + from : from;
+			return array.push.apply(array, rest);
+		},
+	
+		/**
+		 * Clear expression from any sort conditions that may have been set
+		 * previously
+		 */
+		clear : function() {
+			this._aSortCondition = [];
+		},
+	
+		/**
+		 * Add a condition to the order by expression. Multiple conditions on the
+		 * same property will throw an exception, e.g. you cannot order by ascending
+		 * and descending at the same time on the same property.
+		 * 
+		 * @param {string}
+		 *            sPropertyName The name of the property bound in the condition
+		 * @param {odata4analytics.SortOrder}
+		 *            sSortOrder sorting order used for the condition
+		 * @throws Exception
+		 *             if the property is unknown, not sortable or already added as
+		 *             sorter
+		 * @returns {odata4analytics.SortExpression} This object for method
+		 *          chaining
+		 */
+		addSorter : function(sPropertyName, sSortOrder) {
+			var oProperty = this._oEntityType.findPropertyByName(sPropertyName);
+			if (oProperty == null) {
+				throw "Cannot add sort condition for unknown property name " + sPropertyName; // TODO
+			}
+			var oExistingSorterEntry = this._containsSorter(sPropertyName);
+			if (oExistingSorterEntry != null) {
+				oExistingSorterEntry.sorter.order = sSortOrder;
+				return this;
+			}
+			var aSortablePropertyNames = this._oEntityType.getSortablePropertyNames();
+			if (aSortablePropertyNames.indexOf(sPropertyName) === -1) {
+				throw "Cannot add sort condition for not sortable property name " + sPropertyName; // TODO
+			}
+	
+			this._aSortCondition.push({
+				property : oProperty,
+				order : sSortOrder
+			});
+			return this;
+		},
+	
+		/**
+		 * Removes the order by expression for the given property name from the list
+		 * of order by expression. If no order by expression with this property name
+		 * exists the method does nothing.
+		 * 
+		 * @param {string}
+		 *            sPropertyName The name of the property to be removed from the
+		 *            condition
+		 */
+		removeSorter : function(sPropertyName) {
+			if (!sPropertyName)
+				return;
+	
+			var oSorter = this._containsSorter(sPropertyName);
+			if (oSorter) {
+				this._removeFromArray(this._aSortCondition, oSorter.index);
+			}
+		},
+	
+		/**
+		 * Get an array of SAPUI5 Sorter objects corresponding to this expression.
+		 * 
+		 * @returns {array(sap.ui.model.Sorter)} List of sorter objects representing
+		 *          this expression
+		 */
+		getExpressionsAsUI5SorterArray : function() {
+			var aSorterObjects = [];
+	
+			for (var i = -1, oCondition; oCondition = this._aSortCondition[++i];) {
+				aSorterObjects.push(new sap.ui.model.Sorter(oCondition.property.name,
+						oCondition.order == odata4analytics.SortOrder.Descending));
+			}
+	
+			return aSorterObjects;
+		},
+	
+		/**
+		 * Get the first SAPUI5 Sorter object.
+		 * 
+		 * @returns {sap.ui.model.Sorter} first sorter object or null if empty
+		 */
+		getExpressionAsUI5Sorter : function() {
+			var aSortArray = this.getExpressionsAsUI5SorterArray();
+			if (aSortArray.length == 0) {
+				return null;
+			} else {
+				return aSortArray[0];
+			}
+		},
+	
+		/**
+		 * Get the value for the OData system query option $orderby corresponding to
+		 * this expression.
+		 * 
+		 * @param {object} oSelectedPropertyNames Object with properties requested for $select 
+		 * 
+		 * @returns {string} The $orderby value for the sort expressions
+		 */
+		getURIOrderByOptionValue : function(oSelectedPropertyNames) {
+			if (this._aSortCondition.length == 0)
+				return "";
+	
+			var sOrderByOptionString = "";
+			for (var i = -1, oCondition; oCondition = this._aSortCondition[++i];) {
+				if (! oSelectedPropertyNames[oCondition.property.name]) 
+					continue; // sorting of aggregated entities is meaningful only if the sorted property is also selected
+				sOrderByOptionString += (sOrderByOptionString == "" ? "" : ",") + oCondition.property.name + " " + oCondition.order;
+			}
+	
+			return sOrderByOptionString;
+		},
+	
+		/**
+		 * Get description for this entity type
+		 * 
+		 * @returns {odata4analytics.EntityType} The object representing the
+		 *          entity type
+		 */
+		getEntityType : function() {
+			return this._oEntityType;
+		},
+	
+		getSchema : function() {
+			return this._oSchema;
+		},
+	
+		getModel : function() {
+			return this._oModel;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+	
+		_oEntityType : null,
+		_oSchema : null,
+		_oModel : null,
+	
+		_aSortCondition : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a request object for interaction with a query parameterization.
+	 * 
+	 * @param {odata4analytics.Parameterization}
+	 *            oParameterization Description of a query parameterization
+	 * 
+	 * @constructor
+	 * 
+	 * @class Creation of URIs for query parameterizations.
+	 * @protected
+	 */
+	odata4analytics.ParameterizationRequest = function(oParameterization) {
+		this._init(oParameterization);
+	};
+	
+	odata4analytics.ParameterizationRequest.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oParameterization) {
+			if (!oParameterization)
+				throw "No parameterization given"; // TODO
+			this._oParameterization = oParameterization;
+			this._oParameterValueAssignment = new Array();
+		},
+	
+		/**
+		 * Get the description of the parameterization on which this request
+		 * operates on
+		 * 
+		 * @returns {odata4analytics.Parameterization} Description of a
+		 *          query parameterization
+		 */
+		getParameterization : function() {
+			return this._oParameterization;
+		},
+	
+		/**
+		 * Assign a value to a parameter
+		 * 
+		 * @param {String}
+		 *            sParameterName Name of the parameter. In case of a range
+		 *            value, provide the name of the lower boundary parameter.
+		 * @param {String}
+		 *            sValue Assigned value. Pass null to remove a value assignment.
+		 * @param {String}
+		 *            sToValue Omit it or set it to null for single values. If set,
+		 *            it will be assigned to the upper boundary parameter
+		 */
+		setParameterValue : function(sParameterName, sValue, sToValue) {
+			var oParameter = this._oParameterization.findParameterByName(sParameterName);
+			if (!oParameter)
+				throw "Invalid parameter name " + sParameterName; // TODO improve
+			// error handling
+			if (sToValue != null) {
+				if (!oParameter.isIntervalBoundary())
+					// TODO improve error handling
+					throw "Range value cannot be applied to parameter " + sParameterName + " accepting only single values"; // TODO
+				if (!oParameter.isLowerIntervalBoundary())
+					// TODO improve error handling
+					throw "Range value given, but parameter " + sParameterName + " does not hold the lower boundary"; // TODO
+			}
+			if (!oParameter.isIntervalBoundary()) {
+				if (sValue == null)
+					delete this._oParameterValueAssignment[sParameterName];
+				else
+					this._oParameterValueAssignment[sParameterName] = sValue;
+			} else {
+				if (sValue == null && sToValue != null)
+					throw "Parameter " + sParameterName + ": An upper boundary cannot be given without the lower boundary"; // TODO
+				if (sValue == null) {
+					delete this._oParameterValueAssignment[sParameterName];
+					sToValue = null;
+				} else
+					this._oParameterValueAssignment[sParameterName] = sValue;
+				var oUpperBoundaryParameter = oParameter.getPeerIntervalBoundaryParameter();
+				if (sToValue == null)
+					sToValue = sValue;
+				if (sValue == null)
+					delete this._oParameterValueAssignment[oUpperBoundaryParameter.getName()];
+				else
+					this._oParameterValueAssignment[oUpperBoundaryParameter.getName()] = sToValue;
+			}
+			return;
+		},
+	
+		/**
+		 * Get the URI to locate the entity set for the query parameterization.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns The resource path of the URI pointing to the entity set. It is a
+		 *          relative URI unless a service root is given, which would then
+		 *          prefixed in order to return a complete URL.
+		 */
+		getURIToParameterizationEntitySet : function(sServiceRootURI) {
+			return (sServiceRootURI ? sServiceRootURI : "") + "/" + this._oParameterization.getEntitySet().getQName();
+		},
+	
+		/**
+		 * Get the URI to locate the parameterization entity for the values assigned
+		 * to all parameters beforehand. Notice that a value must be supplied for
+		 * every parameter including those marked as optional. For optional
+		 * parameters, assign the special value that the service provider uses as an
+		 * "omitted" value. For example, for services based on BW Easy Queries, this
+		 * would be an empty string.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns The resource path of the URI pointing to the entity set. It is a
+		 *          relative URI unless a service root is given, which would then
+		 *          prefixed in order to return a complete URL.
+		 */
+		getURIToParameterizationEntry : function(sServiceRootURI) {
+			var oDefinedParameters = this._oParameterization.getAllParameters();
+			for ( var sDefinedParameterName in oDefinedParameters) {
+				// check that all parameters have a value assigned. This is also
+				// true for those marked as optional, because the
+				// omitted value is conveyed by some default value, e.g. as empty
+				// string.
+				if (this._oParameterValueAssignment[sDefinedParameterName] == undefined)
+					throw "Parameter " + sDefinedParameterName + " has no value assigned"; // TODO
+			}
+			var sKeyIdentification = "", bFirst = true;
+			for ( var sParameterName in this._oParameterValueAssignment) {
+				sKeyIdentification += (bFirst ? "" : ",")
+						+ sParameterName
+						+ "="
+						+ odata4analytics.helper.renderPropertyKeyValue(this._oParameterValueAssignment[sParameterName],
+								oDefinedParameters[sParameterName].getProperty().type);
+				bFirst = false;
+			}
+	
+			return (sServiceRootURI ? sServiceRootURI : "") + "/" + this._oParameterization.getEntitySet().getQName() + "("
+					+ sKeyIdentification + ")";
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oParameterization : null,
+		_oParameterValueAssignment : null
+	
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a request object for interaction with a query result.
+	 * 
+	 * @param {odata4analytics.QueryResult}
+	 *            oParameterization Description of a query parameterization
+	 * @param {odata4analytics.ParameterizationRequest}
+	 *            oParameterizationRequest (optional) Request object for
+	 *            interactions with the parameterization of this query. Only
+	 *            required if the query service includes parameters.
+	 * 
+	 * @constructor
+	 * 
+	 * @class Creation of URIs for fetching query results.
+	 * @protected
+	 */
+	odata4analytics.QueryResultRequest = function(oQueryResult, oParameterizationRequest) {
+		this._init(oQueryResult);
+	};
+	
+	odata4analytics.QueryResultRequest.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oQueryResult, oParameterizationRequest) {
+			this._oQueryResult = oQueryResult;
+			this._oParameterizationRequest = oParameterizationRequest;
+			this._oAggregationLevel = new Object();
+			this._oMeasures = new Object();
+			this._bIncludeEntityKey = false;
+			this._oFilterExpression = null;
+			this._oSortExpression = null;
+			this._oSelectedPropertyNames = null;
+		},
+	
+		/**
+		 * Set the parameterization request required for interactions with the query
+		 * result of parameterized queries. This method provides an alternative way
+		 * to assign a parameterization request to a query result request.
+		 * 
+		 * @param oParameterizationRequest
+		 *            Request object for interactions with the parameterization of
+		 *            this query
+		 */
+		setParameterizationRequest : function(oParameterizationRequest) {
+			this._oParameterizationRequest = oParameterizationRequest;
+		},
+	
+		/**
+		 * Set the resource path to be considered for the OData request URI of this
+		 * query request object. This method provides an alternative way to assign a
+		 * path comprising a parameterization. If a path is provided, it overwrites
+		 * any parameterization object that might have been specified separately.
+		 * 
+		 * @param sResourcePath
+		 *            Resource path pointing to the entity set of the query result.
+		 *            Must include a valid parameterization if query contains
+		 *            parameters.
+		 */
+		setResourcePath : function(sResourcePath) {
+			this._sResourcePath = sResourcePath;
+			if (this._sResourcePath.indexOf("/") != 0)
+				throw "Missing leading / (slash) for resource path";
+			if (this._oQueryResult.getParameterization()) {
+				var iLastPathSep = sResourcePath.lastIndexOf("/");
+				if (iLastPathSep == -1)
+					throw "Missing navigation from parameter entity set to query result in resource path";
+				var sNavPropName = sResourcePath.substring(iLastPathSep + 1);
+				if (sNavPropName != this._oQueryResult.getParameterization().getNavigationPropertyToQueryResult())
+					throw "Invalid navigation property from parameter entity set to query result in resource path";
+			}
+		},
+	
+		/**
+		 * Retrieves the current parametrization request
+		 * 
+		 * @returns {odata4analytics.ParametrizationRequest}
+		 */
+		getParameterizationRequest : function() {
+			return this._oParameterizationRequest;
+		},
+	
+		/**
+		 * Get the description of the query result on which this request operates on
+		 * 
+		 * @returns {odata4analytics.QueryResult} Description of a query
+		 *          result
+		 */
+		getQueryResult : function() {
+			return this._oQueryResult;
+		},
+	
+		/**
+		 * Set the aggregation level for the query result request. By default, the
+		 * query result will include the properties holding the keys of the given
+		 * dimensions. This setting can be changed using
+		 * includeDimensionKeyTextAttributes.
+		 * 
+		 * @param aDimensionName
+		 *            Array of dimension names to be part of the aggregation level.
+		 *            If null, the aggregation level includes all dimensions, if
+		 *            empty, no dimension is included.
+		 * 
+		 */
+		setAggregationLevel : function(aDimensionName) {
+			this._oAggregationLevel = new Object();
+			if (!aDimensionName) {
+				aDimensionName = this._oQueryResult.getAllDimensionNames();
+			}
+			this.addToAggregationLevel(aDimensionName);
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+		},
+	
+		/**
+		 * Add one or more dimensions to the aggregation level
+		 * 
+		 * @param aDimensionName
+		 *            Array of dimension names to be added to the already defined
+		 *            aggregation level.
+		 * 
+		 */
+		addToAggregationLevel : function(aDimensionName) {
+			if (!aDimensionName)
+				return;
+	
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+			
+			for (var i = -1, sDimName; sDimName = aDimensionName[++i];) {
+				if (!this._oQueryResult.findDimensionByName(sDimName))
+					throw sDimName + " is not a valid dimension name"; // TODO
+				this._oAggregationLevel[sDimName] = {
+					key : true,
+					text : false,
+					attributes : null
+				};
+			}
+		},
+	
+		/**
+		 * Remove one or more dimensions from the aggregation level. The method also
+		 * removed a potential sort expression on the dimension.
+		 * 
+		 * @param aDimensionName
+		 *            Array of dimension names to be removed from the already
+		 *            defined aggregation level.
+		 */
+		removeFromAggregationLevel : function(aDimensionName) {
+			if (!aDimensionName) {
+				return;
+			}
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+			
+			for (var i = -1, sDimName; sDimName = aDimensionName[++i];) {
+				if (!this._oQueryResult.findDimensionByName(sDimName)) {
+					throw sDimName + " is not a valid dimension name"; // TODO
+				}
+				if (this._oAggregationLevel[sDimName] != undefined) {
+					delete this._oAggregationLevel[sDimName];
+	
+					// remove potential sort expression on this dimension
+					this.getSortExpression().removeSorter(sDimName);
+				}
+			}
+		},
+	
+		/**
+		 * Get the names of the dimensions included in the aggregation level
+		 * 
+		 * @returns {Array} The dimension names included in the aggregation level
+		 */
+		getAggregationLevel : function() {
+			var aDimName = new Array();
+			for ( var sDimName in this._oAggregationLevel) {
+				aDimName.push(sDimName);
+			}
+			return aDimName;
+		},
+	
+		/**
+		 * Get details about a dimensions included in the aggregation level
+		 * 
+		 * @param sDImensionName
+		 *            Name of a dimension included in the aggregation level of this
+		 *            request, for which details shall be returned
+		 * 
+		 * @returns {object} An object with three properties named key and text,
+		 *          both with Boolean values indicating whether the key and text of
+		 *          this dimension are included in this request. The third property
+		 *          named attributes is an array of attribute names of this
+		 *          dimension included in this request, or null, if there are none.
+		 */
+		getAggregationLevelDetails : function(sDimensionName) {
+			if (this._oAggregationLevel[sDimensionName] == undefined)
+				throw "Aggregation level does not include dimension " + sDimensionName;
+			return this._oAggregationLevel[sDimensionName];
+		},
+	
+		/**
+		 * Set the measures to be included in the query result request. By default,
+		 * the query result will include the properties holding the raw values of
+		 * the given measures. This setting can be changed using
+		 * includeMeasureRawFormattedValueUnit.
+		 * 
+		 * @param aMeasureName
+		 *            Array of measure names to be part of the query result request.
+		 *            If null, the request includes all measures, if empty, no
+		 *            measure is included.
+		 */
+		setMeasures : function(aMeasureName) {
+			if (!aMeasureName) {
+				aMeasureName = this._oQueryResult.getAllMeasureNames();
+			}
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+			
+			this._oMeasures = new Object();
+			for (var i = -1, sMeasName; sMeasName = aMeasureName[++i];) {
+				if (!this._oQueryResult.findMeasureByName(sMeasName))
+					throw sMeasName + " is not a valid measure name"; // TODO
+	
+				this._oMeasures[sMeasName] = {
+					value : true,
+					text : false,
+					unit : false
+				};
+			}
+		},
+	
+		/**
+		 * Get the names of the measures included in the query result request
+		 * 
+		 * @returns {Array} The measure names included in the query result request
+		 */
+		getMeasureNames : function() {
+			var aMeasName = new Array();
+			for ( var sMeasName in this._oMeasures) {
+				aMeasName.push(sMeasName);
+			}
+			return aMeasName;
+		},
+	
+		/**
+		 * Specify which dimension components shall be included in the query result.
+		 * The settings get applied to the currently defined aggregation level.
+		 * 
+		 * @param sDimensionName
+		 *            Name of the dimension for which the settings get applied.
+		 *            Specify null to apply the settings to all dimensions in the
+		 *            aggregation level.
+		 * @param bIncludeKey
+		 *            Indicator whether or not to include the dimension key in the
+		 *            query result. Pass null to keep current setting.
+		 * @param bIncludeText
+		 *            Indicator whether or not to include the dimension text (if
+		 *            available) in the query result. Pass null to keep current
+		 *            setting.
+		 * @param aAttributeName
+		 *            Array of dimension attribute names to be included in the
+		 *            result. Pass null to keep current setting. This argument is
+		 *            ignored if sDimensionName is null.
+		 */
+		includeDimensionKeyTextAttributes : function(sDimensionName, bIncludeKey, bIncludeText, aAttributeName) {
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+	
+			var aDimName = new Array();
+			if (sDimensionName) {
+				if (this._oAggregationLevel[sDimensionName] == undefined)
+					throw sDimensionName + " is not included in the aggregation level";
+				aDimName.push(sDimensionName);
+			} else {
+				for ( var sName in this._oAggregationLevel) {
+					aDimName.push(sName);
+				}
+				aAttributeName = null;
+			}
+			for (var i = -1, sDimName; sDimName = aDimName[++i];) {
+				if (bIncludeKey != null)
+					this._oAggregationLevel[sDimName].key = bIncludeKey;
+				if (bIncludeText != null)
+					this._oAggregationLevel[sDimName].text = bIncludeText;
+				if (aAttributeName != null)
+					this._oAggregationLevel[sDimName].attributes = aAttributeName;
+			}
+		},
+	
+		/**
+		 * Specify which measure components shall be included in the query result.
+		 * The settings get applied to the currently set measures.
+		 * 
+		 * @param sMeasureName
+		 *            Name of the measure for which the settings get applied.
+		 *            Specify null to apply the settings to all currently set
+		 *            measures.
+		 * @param bIncludeRawValue
+		 *            Indicator whether or not to include the raw value in the query
+		 *            result. Pass null to keep current setting.
+		 * @param bIncludeFormattedValue
+		 *            Indicator whether or not to include the formatted value (if
+		 *            available) in the query result. Pass null to keep current
+		 *            setting.
+		 * @param bIncludeUnit
+		 *            Indicator whether or not to include the unit (if available) in
+		 *            the query result. Pass null to keep current setting.
+		 */
+		includeMeasureRawFormattedValueUnit : function(sMeasureName, bIncludeRawValue, bIncludeFormattedValue, bIncludeUnit) {
+			this._oSelectedPropertyNames = null; // reset previously compiled list of selected properties
+	
+			var aMeasName = new Array();
+			if (sMeasureName) {
+				if (this._oMeasures[sMeasureName] == undefined)
+					throw sMeasureName + " is not part of the query result";
+				aMeasName.push(sMeasureName);
+			} else {
+				for ( var sName in this._oMeasures) {
+					aMeasName.push(sName);
+				}
+			}
+			for (var i = -1, sMeasName; sMeasName = aMeasName[++i];) {
+				if (bIncludeRawValue != null)
+					this._oMeasures[sMeasName].value = bIncludeRawValue;
+				if (bIncludeFormattedValue != null)
+					this._oMeasures[sMeasName].text = bIncludeFormattedValue;
+				if (bIncludeUnit != null)
+					this._oMeasures[sMeasName].unit = bIncludeUnit;
+			}
+		},
+	
+		/**
+		 * Get the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.FilterExpression} The filter object
+		 *          associated to this request.
+		 */
+		getFilterExpression : function() {
+			if (this._oFilterExpression == null) {
+				var oEntityType = this._oQueryResult.getEntityType();
+				this._oFilterExpression = new odata4analytics.FilterExpression(this._oQueryResult.getModel(), oEntityType
+						.getSchema(), oEntityType);
+			}
+			return this._oFilterExpression;
+		},
+	
+		/**
+		 * Set the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the filter object maintained by this request.
+		 * 
+		 * @param {odata4analytics.FilterExpression}
+		 *            oFilter The filter object to be associated with this request.
+		 */
+		setFilterExpression : function(oFilter) {
+			this._oFilterExpression = oFilter;
+		},
+	
+		/**
+		 * Get the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.SortExpression} The sort object
+		 *          associated to this request.
+		 */
+		getSortExpression : function() {
+			if (this._oSortExpression == null) {
+				var oEntityType = this._oQueryResult.getEntityType();
+				this._oSortExpression = new odata4analytics.SortExpression(oEntityType.getModel(), oEntityType.getSchema(),
+						oEntityType);
+			}
+			return this._oSortExpression;
+		},
+	
+		/**
+		 * Set the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the sort object maintained by this request.
+		 * 
+		 * @param {odata4analytics.SortExpression}
+		 *            oSorter The sort object to be associated with this request.
+		 */
+		setSortExpression : function(oSorter) {
+			this._oSortExpression = oSorter;
+		},
+	
+		/**
+		 * Set further options to be applied for the OData request to fetch the
+		 * query result
+		 * 
+		 * @param {Boolean}
+		 *            bIncludeEntityKey Indicates whether or not the entity key
+		 *            should be returned for every entry in the query result.
+		 *            Default is not to include it. Pass null to keep current
+		 *            setting.
+		 * @param {Boolean}
+		 *            bIncludeCount Indicates whether or not the result shall
+		 *            include a count for the returned entities. Default is not to
+		 *            include it. Pass null to keep current setting.
+		 */
+		setRequestOptions : function(bIncludeEntityKey, bIncludeCount) {
+			if (bIncludeEntityKey != null)
+				this._bIncludeEntityKey = bIncludeEntityKey;
+			if (bIncludeCount != null)
+				this._bIncludeCount = bIncludeCount;
+		},
+	
+		/**
+		 * Specify that only a page of the query result shall be returned. A page is
+		 * described by its boundaries, that are row numbers for the first and last
+		 * rows in the query result to be returned.
+		 * 
+		 * @param {Number}
+		 *            start The first row of the query result to be returned.
+		 *            Numbering starts at 1. Passing null is equivalent to start
+		 *            with the first row.
+		 * @param {Number}
+		 *            end The last row of the query result to be returned. Passing
+		 *            null is equivalent to get all rows up to the end of the query
+		 *            result.
+		 */
+		setResultPageBoundaries : function(start, end) {
+			if (start != null && typeof start !== "number") {
+				throw "Start value must be null or numeric"; // TODO
+			}
+			if (end !== null && typeof end !== "number") {
+				throw "End value must be null or numeric"; // TODO
+			}
+	
+			if (start == null)
+				start = 1;
+	
+			if (start < 1 || start > (end == null ? start : end)) {
+				throw "Invalid values for requested page boundaries"; // TODO
+			}
+	
+			this._iSkipRequestOption = (start > 1) ? start - 1 : null;
+			this._iTopRequestOption = (end != null) ? (end - start + 1) : null;
+		},
+	
+		/**
+		 * Returns the current page boundaries as object with properties
+		 * <code>start</code> and <code>end</code>. If the end of the page is
+		 * unbounded, <code>end</code> is null.
+		 * 
+		 * @returns {Object} the current page boundaries as object
+		 */
+		getResultPageBoundaries : function() {
+			return {
+				start : (this._iSkipRequestOption == null) ? 1 : this._iSkipRequestOption,
+				end : (this._iTopRequestOption != null) ? (this._iSkipRequestOption == null) ? 1 : this._iSkipRequestOption
+						+ this._iTopRequestOption : null
+			};
+		},
+	
+		/**
+		 * Get the URI to locate the entity set for the query result.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * 
+		 * @returns {String} The resource path of the URI pointing to the entity
+		 *          set. It is a relative URI unless a service root is given, which
+		 *          would then prefixed in order to return a complete URL.
+		 */
+		getURIToQueryResultEntitySet : function(sServiceRootURI) {
+			var sURI = null;
+			if (this._sResourcePath != null) {
+				sURI = (sServiceRootURI ? sServiceRootURI : "") + this._sResourcePath;
+			} else {
+				if (this._oQueryResult.getParameterization()) {
+					if (!this._oParameterizationRequest)
+						throw "Missing parameterization request";
+					else
+						sURI = this._oParameterizationRequest.getURIToParameterizationEntry(sServiceRootURI) + "/"
+								+ this._oQueryResult.getParameterization().getNavigationPropertyToQueryResult();
+				} else
+					sURI = (sServiceRootURI ? sServiceRootURI : "") + "/" + this._oQueryResult.getEntitySet().getQName();
+			}
+			return sURI;
+		},
+	
+		/**
+		 * Get the value of an query option for the OData request URI corresponding
+		 * to this request.
+		 * 
+		 * @param {String}
+		 *            sQueryOptionName Identifies the query option: $select,
+		 *            $filter,$orderby ... or any custom query option
+		 * 
+		 * @returns {String} The value of the requested query option or null, if
+		 *          this option is not used for the OData request.
+		 */
+		getURIQueryOptionValue : function(sQueryOptionName) {
+			var sQueryOptionValue = null;
+	
+			switch (sQueryOptionName) {
+			case "$select": {
+				var sSelectOption = "";
+				this._oSelectedPropertyNames = new Object();
+				var sDimensionPropertyName = null;
+				for ( var sDimName in this._oAggregationLevel) {
+					var oDim = this._oQueryResult.findDimensionByName(sDimName);
+					var oDimSelect = this._oAggregationLevel[sDimName];
+					if (oDimSelect.key == true) {
+						sDimensionPropertyName = oDim.getKeyProperty().name;
+						if (this._oSelectedPropertyNames[sDimensionPropertyName] == undefined) {
+							sSelectOption += (sSelectOption == "" ? "" : ",") + sDimensionPropertyName;
+							this._oSelectedPropertyNames[sDimensionPropertyName] = true;
+						}
+					}
+					if (oDimSelect.text == true && oDim.getTextProperty()) {
+						sDimensionPropertyName = oDim.getTextProperty().name;
+						if (this._oSelectedPropertyNames[sDimensionPropertyName] == undefined) {
+							sSelectOption += (sSelectOption == "" ? "" : ",") + sDimensionPropertyName;
+							this._oSelectedPropertyNames[sDimensionPropertyName] = true;
+						}
+					}
+					if (oDimSelect.attributes) {
+						for (var i = -1, sAttrName; sAttrName = oDimSelect.attributes[++i];) {
+							sDimensionPropertyName = oDim.findAttributeByName(sAttrName).getName();
+							if (this._oSelectedPropertyNames[sDimensionPropertyName] == undefined) {
+								sSelectOption += (sSelectOption == "" ? "" : ",") + sDimensionPropertyName;
+								this._oSelectedPropertyNames[sDimensionPropertyName] = true;
+							}
+						}
+					}
+				}
+	
+				var sMeasurePropertyName;
+				for ( var sMeasName in this._oMeasures) {
+					var oMeas = this._oQueryResult.findMeasureByName(sMeasName);
+					var oMeasSelect = this._oMeasures[sMeasName];
+					if (oMeasSelect.value == true) {
+						sMeasurePropertyName = oMeas.getRawValueProperty().name;
+						if (this._oSelectedPropertyNames[sMeasurePropertyName] == undefined) {
+							sSelectOption += (sSelectOption == "" ? "" : ",") + sMeasurePropertyName;
+							this._oSelectedPropertyNames[sMeasurePropertyName] = true;
+						}
+					}
+					if (oMeasSelect.text == true && oMeas.getFormattedValueProperty()) {
+						sMeasurePropertyName = oMeas.getFormattedValueProperty().name;
+						if (this._oSelectedPropertyNames[sMeasurePropertyName] == undefined) {
+							sSelectOption += (sSelectOption == "" ? "" : ",") + sMeasurePropertyName;
+							this._oSelectedPropertyNames[sMeasurePropertyName] = true;
+						}
+					}
+					if (oMeasSelect.unit == true && oMeas.getUnitProperty()) {
+						sMeasurePropertyName = oMeas.getUnitProperty().name;
+						if (this._oSelectedPropertyNames[sMeasurePropertyName] == undefined) {
+							sSelectOption += (sSelectOption == "" ? "" : ",") + sMeasurePropertyName;
+							this._oSelectedPropertyNames[sMeasurePropertyName] = true;
+						}
+					}
+				}
+	
+				if (this._bIncludeEntityKey) {
+					var aKeyPropRef = this._oQueryResult.getEntityType().getTypeDescription().key.propertyRef;
+					for (var i = -1, oKeyProp; oKeyProp = aKeyPropRef[++i];) {
+						sSelectOption += (sSelectOption == "" ? "" : ",") + oKeyProp.name;
+					}
+				}
+				sQueryOptionValue = (sSelectOption ? sSelectOption : null);
+				break;
+			}
+			case "$filter": {
+				var sFilterOption = null;
+				if (this._oFilterExpression)
+					sFilterOption = this._oFilterExpression.getURIFilterOptionValue();
+				sQueryOptionValue = (sFilterOption ? sFilterOption : null);
+				break;
+			}
+			case "$orderby": {
+				var sSortOption = null;
+				if (this._oSortExpression)
+					sSortOption = this._oSortExpression.getURIOrderByOptionValue(this._oSelectedPropertyNames);
+				sQueryOptionValue = (sSortOption ? sSortOption : null);
+				break;
+			}
+			case "$top": {
+				if (this._iTopRequestOption !== null) {
+					sQueryOptionValue = this._iTopRequestOption;
+				}
+				break;
+			}
+			case "$skip": {
+				sQueryOptionValue = this._iSkipRequestOption;
+				break;
+			}
+			case "$inlinecount": {
+				sQueryOptionValue = (this._bIncludeCount == true ? "allpages" : null);
+				break;
+			}
+			default:
+				break;
+			}
+			return sQueryOptionValue;
+		},
+	
+		/**
+		 * Get the unescaped URI to fetch the query result.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @param {String}
+		 *            sResourcePath (optional) OData resource path to be considered.
+		 *            If provided, it overwrites any parameterization object that
+		 *            might have been specified separately.
+		 * 
+		 * @returns {String} The unescaped URI that contains the OData resource path
+		 *          and OData system query options to express the aggregation level,
+		 *          filter expression and further options.
+		 */
+		getURIToQueryResultEntries : function(sServiceRootURI, sResourcePath) {
+	
+			// construct resource path
+			var sResourcePath = this.getURIToQueryResultEntitySet(sServiceRootURI);
+	
+			// check if request is compliant with filter constraints expressed in
+			// metadata
+			this.getFilterExpression().isValid();
+	
+			// construct query options
+			var sSelectOption = this.getURIQueryOptionValue("$select");
+			var sFilterOption = this.getURIQueryOptionValue("$filter");
+			var sSortOption = this.getURIQueryOptionValue("$orderby");
+			var sTopOption = this.getURIQueryOptionValue("$top");
+			var sSkipOption = this.getURIQueryOptionValue("$skip");
+			var sInlineCountOption = this.getURIQueryOptionValue("$inlinecount");
+	
+			var sURI = sResourcePath;
+			var bQuestionmark = false;
+	
+			if (sSelectOption) {
+				sURI += "?$select=" + sSelectOption;
+				bQuestionmark = true;
+			}
+			if (this._oFilterExpression && sFilterOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$filter=" + sFilterOption;
+			}
+			if (this._oSortExpression && sSortOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$orderby=" + sSortOption;
+			}
+	
+			if (this._iTopRequestOption && sTopOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$top=" + sTopOption;
+			}
+			if (this._iSkipRequestOption && sSkipOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$skip=" + sSkipOption;
+			}
+			if (this._bIncludeCount && sInlineCountOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$inlinecount=" + sInlineCountOption;
+			}
+			return sURI;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oQueryResult : null,
+		_oParameterizationRequest : null,
+		_sResourcePath : null,
+		_oAggregationLevel : null,
+		_oMeasures : null,
+		_bIncludeEntityKey : null,
+		_bIncludeCount : null,
+		_oFilterExpression : null,
+		_oSortExpression : null,
+		_iSkipRequestOption : 0,
+		_iTopRequestOption : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a request object for interaction with a query parameter value help.
+	 * 
+	 * @param {odata4analytics.Parameter}
+	 *            oParameter Description of a query parameter
+	 * 
+	 * @constructor
+	 * 
+	 * @class Creation of URIs for fetching a query parameter value set.
+	 * @protected
+	 */
+	odata4analytics.ParameterValueSetRequest = function(oParameter) {
+		this._init(oParameter);
+	};
+	
+	odata4analytics.ParameterValueSetRequest.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oParameter) {
+			this._oParameter = oParameter;
+			this._oValueSetResult = new Object();
+			this._oFilterExpression = null;
+			this._oSortExpression = null;
+		},
+	
+		/**
+		 * Specify which components of the parameter shall be included in the value
+		 * set.
+		 * 
+		 * @param bIncludeText
+		 *            Indicator whether or not to include the parameter text (if
+		 *            available) in the value set. Pass null to keep current
+		 *            setting.
+		 */
+		includeParameterText : function(bIncludeText) {
+			if (bIncludeText != null)
+				this._oValueSetResult.text = bIncludeText;
+		},
+	
+		/**
+		 * Get the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.FilterExpression} The filter object
+		 *          associated to this request.
+		 */
+		getFilterExpression : function() {
+			if (this._oFilterExpression == null) {
+				var oEntityType = this._oParameter.getContainingParameterization().getEntityType();
+				var oModel = this._oParameter.getContainingParameterization().getTargetQueryResult().getModel();
+				this._oFilterExpression = new odata4analytics.FilterExpression(oModel, oEntityType
+						.getSchema(), oEntityType);
+			}
+			return this._oFilterExpression;
+		},
+	
+		/**
+		 * Set the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the filter object maintained by this request.
+		 * 
+		 * @param {odata4analytics.FilterExpression}
+		 *            oFilter The filter object to be associated with this request.
+		 */
+		setFilterExpression : function(oFilter) {
+			this._oFilterExpression = oFilter;
+		},
+	
+		/**
+		 * Get the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.SortExpression} The sort object
+		 *          associated to this request.
+		 */
+		getSortExpression : function() {
+			if (this._oSortExpression == null) {
+				var oEntityType = this._oParameter.getContainingParameterization().getEntityType();
+				this._oSortExpression = new odata4analytics.SortExpression(oEntityType.getModel(), oEntityType.getSchema(),
+						oEntityType);
+			}
+			return this._oSortExpression;
+		},
+	
+		/**
+		 * Set the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the sort object maintained by this request.
+		 * 
+		 * @param {odata4analytics.SortExpression}
+		 *            oSorter The sort object to be associated with this request.
+		 */
+		setSortExpression : function(oSorter) {
+			this._oSortExpression = oSorter;
+		},
+	
+		/**
+		 * Get the value of an query option for the OData request URI corresponding
+		 * to this request.
+		 * 
+		 * @param {String}
+		 *            sQueryOptionName Identifies the query option: $select,
+		 *            $filter,... or any custom query option
+		 * 
+		 * @returns {String} The value of the requested query option or null, if
+		 *          this option is not used for the OData request.
+		 */
+		getURIQueryOptionValue : function(sQueryOptionName) {
+			var sQueryOptionValue = null;
+	
+			switch (sQueryOptionName) {
+			case "$select": {
+				var sSelectOption = "";
+				sSelectOption += (sSelectOption == "" ? "" : ",") + this._oParameter.getProperty().name;
+				if (this._oValueSetResult.text == true && this._oParameter.getTextProperty())
+					sSelectOption += (sSelectOption == "" ? "" : ",") + this._oParameter.getTextProperty().name;
+				sQueryOptionValue = (sSelectOption ? sSelectOption : null);
+				break;
+			}
+			case "$filter": {
+				var sFilterOption = null;
+				if (this._oFilterExpression)
+					sFilterOption = this._oFilterExpression.getURIFilterOptionValue();
+				sQueryOptionValue = (sFilterOption ? sFilterOption : null);
+				break;
+			}
+			case "$orderby": {
+				var sSortOption = null;
+				if (this._oSortExpression)
+					sSortOption = this._oSortExpression.getURIOrderByOptionValue();
+				sQueryOptionValue = (sSortOption ? sSortOption : null);
+				break;
+			}
+			default:
+				break;
+			}
+	
+			return sQueryOptionValue;
+		},
+	
+		/**
+		 * Get the unescaped URI to fetch the parameter value set.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns {String} The unescaped URI that contains the OData resource path
+		 *          and OData system query options to express the request for the
+		 *          parameter value set..
+		 */
+		getURIToParameterValueSetEntries : function(sServiceRootURI) {
+	
+			// construct resource path
+			var sResourcePath = null;
+	
+			sResourcePath = (sServiceRootURI ? sServiceRootURI : "") + "/"
+					+ this._oParameter.getContainingParameterization().getEntitySet().getQName();
+	
+			// check if request is compliant with filter constraints expressed in
+			// metadata
+			this.getFilterExpression().isValid();
+	
+			// construct query options
+			var sSelectOption = this.getURIQueryOptionValue("$select");
+			var sFilterOption = this.getURIQueryOptionValue("$filter");
+			var sSortOption = this.getURIQueryOptionValue("$orderby");
+	
+			var sURI = sResourcePath;
+			var bQuestionmark = false;
+	
+			if (sSelectOption) {
+				sURI += "?$select=" + sSelectOption;
+				bQuestionmark = true;
+			}
+			if (this._oFilterExpression && sFilterOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else
+					sURI += "&";
+				sURI += "$filter=" + sFilterOption;
+			}
+			if (this._oSortExpression && sSortOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else
+					sURI += "&";
+				sURI += "$orderby=" + sSortOption;
+			}
+			return sURI;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oParameter : null,
+		_oFilterExpression : null,
+		_oSortExpression : null,
+		_oValueSetResult : null
+	};
+	
+	/** ******************************************************************** */
+	
+	/**
+	 * Create a request object for interaction with a dimension value help. Such a
+	 * value help is served by either the query result entity set, in which case the
+	 * returned dimension members are limited to those also used in the query result
+	 * data. Or, the value help is populated by a master data entity set, if made
+	 * available by the service. In this case, the result will include all valid
+	 * members for that dimension.
+	 * 
+	 * @param {odata4analytics.Dimension}
+	 *            oDimension Description of a dimension
+	 * @param {odata4analytics.ParameterizationRequest}
+	 *            oParameterizationRequest (optional) Request object for
+	 *            interactions with the parameterization of the query result or (not
+	 *            yet supported) master data entity set Such an object is required
+	 *            if the entity set holding the dimension members includes
+	 *            parameters.
+	 * @param {boolean}
+	 *            bUseMasterData (optional) Indicates use of master data for
+	 *            determining the dimension members.
+	 * 
+	 * @constructor
+	 * 
+	 * @class Creation of URIs for fetching a query dimension value set.
+	 * @protected
+	 */
+	odata4analytics.DimensionMemberSetRequest = function(oDimension, oParameterizationRequest, bUseMasterData) {
+		this._init(oDimension, oParameterizationRequest, bUseMasterData);
+	};
+	
+	odata4analytics.DimensionMemberSetRequest.prototype = {
+		/**
+		 * @private
+		 */
+		_init : function(oDimension, oParameterizationRequest, bUseMasterData) {
+			this._oDimension = oDimension;
+			this._oParameterizationRequest = oParameterizationRequest;
+			this._bUseMasterData = bUseMasterData;
+			this._oValueSetResult = new Object();
+			this._oFilterExpression = null;
+			this._oSortExpression = null;
+	
+			if (this._oParameterizationRequest != null && this._bUseMasterData == true)
+				throw "LIMITATION: parameterized master data entity sets are not yet implemented";
+			if (this._bUseMasterData) {
+				this._oEntitySet = this._oDimension.getMasterDataEntitySet();
+			} else {
+				this._oEntitySet = this._oDimension.getContainingQueryResult().getEntitySet();
+				if (this._oDimension.getContainingQueryResult().getParameterization() && !this._oParameterizationRequest)
+					throw "Missing parameterization request";
+			}
+		},
+	
+		/**
+		 * Set the parameterization request required for retrieving dimension
+		 * members directly from the query result, if it is parameterized.
+		 * 
+		 * @param oParameterizationRequest
+		 *            Request object for interactions with the parameterization of
+		 *            this query result
+		 */
+		setParameterizationRequest : function(oParameterizationRequest) {
+			this._oParameterizationRequest = oParameterizationRequest;
+		},
+	
+		/**
+		 * Specify which components of the dimension shall be included in the value
+		 * set.
+		 * 
+		 * @param bIncludeText
+		 *            Indicator whether or not to include the dimension text (if
+		 *            available) in the value set.
+		 * @param bIncludeAttributes
+		 *            Indicator whether or not to include all dimension attributes
+		 *            (if available) in the value set.
+		 */
+		includeDimensionTextAttributes : function(bIncludeText, bIncludeAttributes) {
+			this._oValueSetResult.text = {
+				text : false,
+				attributes : false
+			};
+			if (bIncludeText == true)
+				this._oValueSetResult.text = true;
+			if (bIncludeAttributes == true)
+				this._oValueSetResult.attributes = true;
+		},
+	
+		/**
+		 * Get the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.FilterExpression} The filter object
+		 *          associated to this request.
+		 */
+		getFilterExpression : function() {
+			if (this._oFilterExpression == null) {
+				var oEntityType = this._oEntitySet.getEntityType();
+				var oModel = this._oDimension.getContainingQueryResult().getModel();
+				this._oFilterExpression = new odata4analytics.FilterExpression(oModel, oEntityType
+						.getSchema(), oEntityType);
+			}
+			return this._oFilterExpression;
+		},
+	
+		/**
+		 * Set the filter expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the filter object maintained by this request.
+		 * 
+		 * @param {odata4analytics.FilterExpression}
+		 *            oFilter The filter object to be associated with this request.
+		 */
+		setFilterExpression : function(oFilter) {
+			this._oFilterExpression = oFilter;
+		},
+	
+		/**
+		 * Get the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. If none exists so far, a
+		 * new expression object gets created.
+		 * 
+		 * @returns {odata4analytics.SortExpression} The sort object
+		 *          associated to this request.
+		 */
+		getSortExpression : function() {
+			if (this._oSortExpression == null) {
+				this._oSortExpression = new odata4analytics.SortExpression(this._oEntityType.getModel(), this._oEntityType
+						.getSchema(), this._oEntityType);
+			}
+			return this._oSortExpression;
+		},
+	
+		/**
+		 * Set the sort expression for this request.
+		 * 
+		 * Expressions are represented by separate objects. Calling this method
+		 * replaces the sort object maintained by this request.
+		 * 
+		 * @param {odata4analytics.SortExpression}
+		 *            oSorter The sort object to be associated with this request.
+		 */
+		setSortExpression : function(oSorter) {
+			this._oSortExpression = oSorter;
+		},
+	
+		/**
+		 * Set further options to be applied for the OData request
+		 * 
+		 * @param {Boolean}
+		 *            bIncludeCount Indicates whether or not the result shall
+		 *            include a count for the returned entities. Default is not to
+		 *            include it. Pass null to keep current setting.
+		 */
+		setRequestOptions : function(bIncludeCount) {
+			if (bIncludeCount != null)
+				this._bIncludeCount = bIncludeCount;
+		},
+	
+		/**
+		 * Specify that only a page of the query result shall be returned. A page is
+		 * described by its boundaries, that are row numbers for the first and last
+		 * rows in the query result to be returned.
+		 * 
+		 * @param {Number}
+		 *            start The first row of the query result to be returned.
+		 *            Numbering starts at 1. Passing null is equivalent to start
+		 *            with the first row.
+		 * @param {Number}
+		 *            end The last row of the query result to be returned. Passing
+		 *            null is equivalent to get all rows up to the end of the query
+		 *            result.
+		 */
+		setResultPageBoundaries : function(start, end) {
+			if (start != null && typeof start !== "number") {
+				throw "Start value must be null or numeric"; // TODO
+			}
+			if (end !== null && typeof end !== "number") {
+				throw "End value must be null or numeric"; // TODO
+			}
+	
+			if (start == null)
+				start = 1;
+	
+			if (start < 1 || start > (end == null ? start : end)) {
+				throw "Invalid values for requested page boundaries"; // TODO
+			}
+	
+			this._iSkipRequestOption = (start > 1) ? start - 1 : null;
+			this._iTopRequestOption = (end != null) ? (end - start + 1) : null;
+		},
+	
+		/**
+		 * Returns the current page boundaries as object with properties
+		 * <code>start</code> and <code>end</code>. If the end of the page is
+		 * unbounded, <code>end</code> is null.
+		 * 
+		 * @returns {Object} the current page boundaries as object
+		 */
+		getResultPageBoundaries : function() {
+			return {
+				start : (this._iSkipRequestOption == null) ? 1 : this._iSkipRequestOption,
+				end : (this._iTopRequestOption != null) ? (this._iSkipRequestOption == null) ? 1 : this._iSkipRequestOption
+						+ this._iTopRequestOption : null
+			};
+		},
+		
+		/**
+		 * Get the value of an query option for the OData request URI corresponding
+		 * to this request.
+		 * 
+		 * @param {String}
+		 *            sQueryOptionName Identifies the query option: $select,
+		 *            $filter,... or any custom query option
+		 * 
+		 * @returns {String} The value of the requested query option or null, if
+		 *          this option is not used for the OData request.
+		 */
+		getURIQueryOptionValue : function(sQueryOptionName) {
+			var sQueryOptionValue = null;
+	
+			switch (sQueryOptionName) {
+			case "$select": {
+				var sSelectOption = "";
+				var oEntityType = this._oEntitySet.getEntityType();
+				var aKeyPropName = oEntityType.getKeyProperties();
+				var aKeyTextPropName = [];
+				// add key properties and, if requested, their text properties
+				if (this._bUseMasterData) {
+					for (var i = -1, sKeyPropName; sKeyPropName = aKeyPropName[++i];) {
+						sSelectOption += (sSelectOption == "" ? "" : ",") + sKeyPropName;
+						var oKeyTextProperty = oEntityType.getTextPropertyOfProperty(sKeyPropName);
+						if (oKeyTextProperty) {
+							if (this._oValueSetResult.text == true)
+								sSelectOption += "," + oKeyTextProperty.name;
+							aKeyTextPropName.push(oKeyTextProperty.name);
+						}
+					}
+				} else { // use query result
+					sSelectOption += (sSelectOption == "" ? "" : ",") + this._oDimension.getKeyProperty().name;
+					if (this._oValueSetResult.text == true && this._oDimension.getTextProperty())
+						sSelectOption += (sSelectOption == "" ? "" : ",") + this._oDimension.getTextProperty().name;
+				}
+				// add further attributes, if requested
+				if (this._oValueSetResult.attributes) {
+					if (this._bUseMasterData) {
+						// do not require sap:attribute-for annotations, but simply
+						// add all further
+						// properties
+						var oAllPropertiesSet = oEntityType.getProperties();
+						for ( var sPropName in oAllPropertiesSet) {
+							var bIsKeyOrKeyText = false;
+							for (var i = -1, sKeyPropName; sKeyPropName = aKeyPropName[++i];) {
+								if (sPropName == sKeyPropName) {
+									bIsKeyOrKeyText = true;
+									break;
+								}
+							}
+							if (bIsKeyOrKeyText)
+								continue;
+							for (var i = -1, sKeyTextPropName; sKeyTextPropName = aKeyTextPropName[++i];) {
+								if (sPropName == sKeyTextPropName) {
+									bIsKeyOrKeyText = true;
+									break;
+								}
+							}
+							if (!bIsKeyOrKeyText)
+								sSelectOption += "," + sPropName;
+						}
+					} else { // use query result, hence include known dimension
+						// attributes
+						var aAttributeName = this._oDimension.getAllAttributeNames();
+						for (var i = -1, sAttrName; sAttrName = aAttributeName[++i];) {
+							sSelectOption += (sSelectOption == "" ? "" : ",")
+									+ this._oDimension.findAttributeByName(sAttrName).getName();
+						}
+					}
+				}
+	
+				sQueryOptionValue = (sSelectOption ? sSelectOption : null);
+				break;
+			}
+			case "$filter": {
+				var sFilterOption = null;
+				if (this._oFilterExpression)
+					sFilterOption = this._oFilterExpression.getURIFilterOptionValue();
+				sQueryOptionValue = (sFilterOption ? sFilterOption : null);
+				break;
+			}
+			case "$orderby": {
+				var sSortOption = null;
+				if (this._oSortExpression)
+					sSortOption = this._oSortExpression.getURIOrderByOptionValue();
+				sQueryOptionValue = (sSortOption ? sSortOption : null);
+				break;
+			}
+			case "$top": {
+				if (this._iTopRequestOption !== null) {
+					sQueryOptionValue = this._iTopRequestOption;
+				}
+				break;
+			}
+			case "$skip": {
+				sQueryOptionValue = this._iSkipRequestOption;
+				break;
+			}
+			case "$inlinecount": {
+				sQueryOptionValue = (this._bIncludeCount == true ? "allpages" : null);
+				break;
+			}
+			default:
+				break;
+			}
+	
+			return sQueryOptionValue;
+		},
+	
+		/**
+		 * Get the URI to locate the entity set for the dimension memebers.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns {String} The resource path of the URI pointing to the entity
+		 *          set. It is a relative URI unless a service root is given, which
+		 *          would then prefixed in order to return a complete URL.
+		 */
+		getURIToDimensionMemberEntitySet : function(sServiceRootURI) {
+			var sResourcePath = null;
+			if (!this._bUseMasterData && this._oParameterizationRequest) {
+				sResourcePath = this._oParameterizationRequest.getURIToParameterizationEntry(sServiceRootURI) + "/"
+						+ this._oDimension.getContainingQueryResult().getParameterization().getNavigationPropertyToQueryResult();
+			} else {
+				sResourcePath = (sServiceRootURI ? sServiceRootURI : "") + "/" + this._oEntitySet.getQName();
+			}
+			return sResourcePath;
+		},
+	
+		/**
+		 * Get the unescaped URI to fetch the dimension members, optionally
+		 * augmented by text and attributes.
+		 * 
+		 * @param {String}
+		 *            sServiceRootURI (optional) Identifies the root of the OData
+		 *            service
+		 * @returns {String} The unescaped URI that contains the OData resource path
+		 *          and OData system query options to express the request for the
+		 *          parameter value set..
+		 */
+		getURIToDimensionMemberEntries : function(sServiceRootURI) {
+	
+			// construct resource path
+			var sResourcePath = this.getURIToDimensionMemberEntitySet(sServiceRootURI);
+	
+			// check if request is compliant with filter constraints expressed in
+			// metadata
+			this.getFilterExpression().isValid();
+	
+			// construct query options
+			var sSelectOption = this.getURIQueryOptionValue("$select");
+			var sFilterOption = this.getURIQueryOptionValue("$filter");
+			var sSortOption = this.getURIQueryOptionValue("$orderby");
+			var sTopOption = this.getURIQueryOptionValue("$top");
+			var sSkipOption = this.getURIQueryOptionValue("$skip");
+			var sInlineCountOption = this.getURIQueryOptionValue("$inlinecount");
+	
+			var sURI = sResourcePath;
+			var bQuestionmark = false;
+	
+			if (sSelectOption) {
+				sURI += "?$select=" + sSelectOption;
+				bQuestionmark = true;
+			}
+			if (this._oFilterExpression && sFilterOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else
+					sURI += "&";
+				sURI += "$filter=" + sFilterOption;
+			}
+			if (this._oSortExpression && sSortOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else
+					sURI += "&";
+				sURI += "$orderby=" + sSortOption;
+			}
+			if (this._iTopRequestOption && sTopOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$top=" + sTopOption;
+			}
+			if (this._iSkipRequestOption && sSkipOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$skip=" + sSkipOption;
+			}
+			if (this._bIncludeCount && sInlineCountOption) {
+				if (!bQuestionmark) {
+					sURI += "?";
+					bQuestionmark = true;
+				} else {
+					sURI += "&";
+				}
+				sURI += "$inlinecount=" + sInlineCountOption;
+			}
+			return sURI;
+		},
+	
+		/**
+		 * Private member attributes
+		 */
+		_oDimension : null,
+		_oParameterizationRequest : null,
+		_oEntitySet : null, // points to query result entity set or master data
+		// entity set
+		_bUseMasterData : false,
+	
+		_oFilterExpression : null,
+		_oSortExpression : null,
+		_oValueSetResult : null,
+		
+		_bIncludeCount : null,
+		_iSkipRequestOption : 0,
+		_iTopRequestOption : null
+		
+	};
+	
+	//
+	// Desirable extensions:
+	//
+	// OBSOLETE due to DimensionMemberSetRequest against master data - Another class
+	// for representing value help entities to
+	// specifiy text properties, attribute properties (with association to
+	// odata4analytics.Parameter and odata4analytics.Dimension)
+	// 
+	// - ParameterValueSetRequest: Add option to read values from separate entity
+	// set (odata4analytics.ParameterValueSetRequest)
+	// 
+	// DONE - DimensionMemberSetRequest: Add option to read values from separate
+	// master
+	// data entity
+	// set (odata4analytics.DimensionMemberSetRequest)
+	//
+	// DONE - value rendering: Add support for types other than string
+	// (odata4analytics.helper.renderPropertyKeyValue)
+	//
+	// DONE - filter expressions are validated against filter restriction
+	// annotations
+	// (odata4analytics.FilterExpression)
+	//
+	// DONE workaround - Implemenentation of filter expressions shall use SAPUI5
+	// class
+	// sap.ui.model.Filter. Problem:
+	// This class does not provide accessor methods for object attributes.
+	// (odata4analytics.FilterExpression)
+	//
+	// - Shield API implementation from direct access to object properties.
+	// Introduce closures for this purpose.
+	/*
+	 * Pattern: odata4analytics.QueryResult = (function ($){ var _init =
+	 * func
+	 * 
+	 * var class = function(oEntityType, oEntitySet, oParameterization) {
+	 * _init(oEntityType, oEntitySet, oParameterization); }; }; return class;
+	 * })(jQuery);
+	 * 
+	 */
+	
+	return odata4analytics;
+	
+}, /* bExport= */ true);	
+}; // end of sap/ui/thirdparty/odata4analytics.js
 if ( !jQuery.sap.isDeclared('jquery.sap.act') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -35592,8 +39280,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iPos The cursor position to set (or no parameter to retrieve the cursor position)
 	 * @return {int | jQuery} The cursor position (or the jQuery collection if the position has been set)
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name cursorPos
+	 * @name jQuery#cursorPos
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35699,8 +39386,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iEnd End position of the selection (exclusive)
 	 * @return {jQuery} The jQuery collection
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name selectText
+	 * @name jQuery#selectText
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35708,19 +39394,27 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	jQuery.fn.selectText = function selectText(iStart, iEnd) {
 		var oDomRef = this.get(0);
 
-		if (oDomRef) {
-			if (typeof(oDomRef.selectionStart) == "number") { // Firefox and IE9+
+		if (!oDomRef) {
+			return this;
+		}
+
+		try {
+			if (typeof(oDomRef.selectionStart) === "number") { // Firefox and IE9+
+
 				// sanity checks
 				if (iStart < 0) {
 					iStart = 0;
 				}
+
 				if (iEnd > oDomRef.value.length) {
 					iEnd = oDomRef.value.length;
 				}
+
 				if (!iEnd || iStart > iEnd) {
 					iStart = 0;
 					iEnd = 0;
 				}
+
 				oDomRef.selectionStart = iStart; // TODO: maybe need to decouple via setTimeout?
 				oDomRef.selectionEnd = iEnd;
 			} else if(oDomRef.createTextRange) { // IE
@@ -35730,7 +39424,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 				oTextEditRange.moveEnd('character', iEnd - iStart);
 				oTextEditRange.select();
 			}
-		}
+		} catch (e) {}	// note: some browsers fail to read the "selectionStart" and "selectionEnd" properties from HTMLInputElement: The input element's type "number" does not support selection.
 
 		return this;
 	};
@@ -35741,8 +39435,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {string} outer HTML
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name outerHTML
+	 * @name jQuery#outerHTML
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35792,8 +39485,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {object} An object with left, top, width and height
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rect
+	 * @name jQuery#rect
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35829,10 +39521,9 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @param {int} iPosX
 	 * @param {int} iPosY
-	 * @return Whether X and Y are inside this Rectangle's boundaries
+	 * @return {boolean} Whether X and Y are inside this Rectangle's boundaries
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rectContains
+	 * @name jQuery#rectContains
 	 * @author SAP AG
 	 * @since 0.18.0
 	 * @function
@@ -35860,8 +39551,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {boolean} If the first element has a set tabindex
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name hasTabIndex
+	 * @name jQuery#hasTabIndex
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35877,8 +39567,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name firstFocusableDomRef
+	 * @name jQuery#firstFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35919,8 +39608,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The last domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name lastFocusableDomRef
+	 * @name jQuery#lastFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -35968,8 +39656,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {jQuery | int} The jQuery collection if iPos is given, otherwise the scroll position, counted from the leftmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollLeftRTL
+	 * @name jQuery#scrollLeftRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -36012,8 +39699,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {int} The scroll position, counted from the rightmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollRightRTL
+	 * @name jQuery#scrollRightRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -36246,8 +39932,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {string} sValue Value of the attribute (optional)
 	 * @return {Element} null or the DOM reference
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name parentByAttribute
+	 * @name jQuery#parentByAttribute
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -36341,11 +40026,49 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 
 		return _oScrollbarSize[sKey];
 	};
+	
+	/**
+	 * Search ancestors of the given source DOM element for the specified CSS class name.
+	 * If the class name is found, set it to the root DOM element of the target control.
+	 * If the class name is not found, it is also removed from the target DOM element.
+	 *
+	 * @param {string} sStyleClass CSS class name
+	 * @param {jQuery|Control|string} vSource jQuery object, control or an id of the source element.
+	 * @param {jQuery|Control} vDestination target jQuery object or a control.
+	 * @return {jQuery|Element} Target element
+	 * @name jQuery.sap.syncStyleClass
+	 * @public
+	 * @since 1.22
+	 */
+	jQuery.sap.syncStyleClass = function(sStyleClass, vSource, vDestination) {
+
+		if(!sStyleClass) return vDestination;
+
+		if (vSource instanceof sap.ui.core.Control) {
+			vSource = vSource.$();
+		} else if (typeof vSource === "string") {
+			vSource = jQuery.sap.byId(vSource);
+		} else if (!(vSource instanceof jQuery)) {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vSource must be a jQuery object or a Control or a string');
+			return vDestination;
+		}
+
+		var bClassFound = !!vSource.closest("." + sStyleClass).length;
+
+		if (vDestination instanceof jQuery) {
+			vDestination.toggleClass(sStyleClass, bClassFound);
+		} else if (vDestination instanceof sap.ui.core.Control) {
+			vDestination.toggleStyleClass(sStyleClass, bClassFound);
+		} else {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vDestination must be a jQuery object or a Control');
+		}
+
+		return vDestination;
+	};
 
 	return jQuery;
 
 }, /* bExport= */ false);
-
 }; // end of jquery.sap.dom.js
 if ( !jQuery.sap.isDeclared('jquery.sap.encoder') ) {
 /*!
@@ -36532,6 +40255,29 @@ sap.ui.define("jquery.sap.encoder",['jquery.sap.global'],
 	jQuery.sap.encodeURL = function(sString) {
 		return sString.replace(rURL, fURL);
 	};
+	
+	/**
+	 * Encode a map of parameters into a combined URL parameter string
+	 * 
+	 * @param {object} mParams The map of parameters to encode
+	 * @return The URL encoded parameters
+	 * @type {string}
+	 * @public
+	 * @SecValidate {0|return|XSS} validates the given string for a CSS context
+	 */
+	jQuery.sap.encodeURLParameters = function(mParams) {
+		if (!mParams) {
+			return "";
+		}
+		var aUrlParams = [];
+		jQuery.each(mParams, function (sName, oValue) {
+			if (jQuery.type(oValue) === "string") {
+				oValue = jQuery.sap.encodeURL(oValue);
+			}
+			aUrlParams.push(jQuery.sap.encodeURL(sName) + "=" + oValue);
+		});
+		return aUrlParams.join("&");
+	};
 
 	/**
 	 * RegExp and escape function for CSS escaping
@@ -36560,7 +40306,7 @@ sap.ui.define("jquery.sap.encoder",['jquery.sap.global'],
 	jQuery.sap.encodeCSS = function(sString) {
 		return sString.replace(rCSS, fCSS);
 	};
-
+	
 	/**
 	 * WhitelistEntry object
 	 * @param {string} protocol The protocol of the URL
@@ -37040,6 +40786,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	jQuery.sap.ControlEvents = [  // IMPORTANT: update the public documentation when extending this list
 		"click",
 		"dblclick",
+		"contextmenu",
 		"focusin",
 		"focusout",
 		"keydown",
@@ -37058,7 +40805,11 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 		"dragend",
 		"drop",
 		"paste",
-		"cut"
+		"cut",
+		
+		/* input event is fired synchronously on IE9+ when the value of an <input> or <textarea> element is changed */
+		/* for more details please see : https://developer.mozilla.org/en-US/docs/Web/Reference/Events/input */
+		"input"
 	];
 
 	// touch events natively supported
@@ -37609,7 +41360,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 						fnHandler(oEvent, oAdditionalConfig);
 					};
 
-					$this.data(sHandlerKey + oHandle.guid, fnHandlerWrapper);
+					oHandle.__sapSimulatedEventHandler = fnHandlerWrapper;
 					for(var i=0; i<aOrigEvents.length; i++){
 						$this.on(aOrigEvents[i], fnHandlerWrapper);
 					}
@@ -37619,7 +41370,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 				// to the original events.
 				remove: function(oHandle) {
 					var $this = jQuery(this);
-					var fnHandler = $this.data(sHandlerKey + oHandle.guid);
+					var fnHandler = oHandle.__sapSimulatedEventHandler;
 					$this.removeData(sHandlerKey + oHandle.guid);
 					for(var i=0; i<aOrigEvents.length; i++){
 						jQuery.event.remove(this, aOrigEvents[i], fnHandler);
@@ -37779,8 +41530,10 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 				 * @param {object} oConfig Additional configuration passed from createSimulatedEvent function
 				 */
 				var fnTouchToMouseHandler = function(oEvent, oConfig) {
-					var oTouch = oEvent.originalEvent.touches[0];
-					if(oEvent.type === "touchstart"){
+					var oTouch = oEvent.originalEvent.touches[0],
+						bEventHandledByUIArea;
+
+					if (oEvent.type === "touchstart") {
 						bFingerIsMoved = false;
 						iStartX = oTouch.pageX;
 						iStartY = oTouch.pageY;
@@ -37814,10 +41567,12 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 					oNewEvent.altKey = oMappedEvent.altKey;
 					oNewEvent.shiftKey = oMappedEvent.shiftKey;
 
+					bEventHandledByUIArea = oNewEvent.isMarked("handledByUIArea");
+
 					oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
 
 					// also call the onclick event handler when touchend event is received and the movement is within threshold
-					if(oEvent.type === "touchend" && !bFingerIsMoved){
+					if(oEvent.type === "touchend" && !bEventHandledByUIArea && !bFingerIsMoved){
 						oNewEvent.type = "click";
 						oNewEvent.setMark("handledByUIArea", false);
 						oNewEvent.offsetX = iOffsetX; // use offset from touchstart
@@ -38071,7 +41826,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetX of Event. In jQuery there is a bug. In IE the value is in offsetX, in FF in layerX
 	 *
-	 * @returns offsetX
+	 * @returns {int} offsetX
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetX = function() {
@@ -38094,7 +41849,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY.
 	 *
-	 * @returns offsetY
+	 * @returns {int} offsetY
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetY = function() {
@@ -38182,7 +41937,6 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	return jQuery;
 
 }, /* bExport= */ false);
-
 }; // end of jquery.sap.events.js
 if ( !jQuery.sap.isDeclared('jquery.sap.history') ) {
 /*!
@@ -39262,8 +43016,11 @@ sap.ui.define("jquery.sap.mobile",['jquery.sap.global', 'sap/ui/Device', 'jquery
 					if (bIsIOS7Safari && Device.system.phone) {
 						//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
 						//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
-						//the important part seems to be setting the device height.
+						//the important part seems to be removing the device width
 						sMeta = 'minimal-ui, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+					} else if(bIsIOS7Safari && Device.system.tablet){
+						//remove the width = device width since it will not work correctly if the webside is embedded in a webview
+						sMeta = 'initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 					} else if ($.device.is.iphone && (Math.max(window.screen.height, window.screen.width) === 568)) {
 						// iPhone 5
 						sMeta = "user-scalable=0, initial-scale=1.0";
@@ -39272,7 +43029,6 @@ sap.ui.define("jquery.sap.mobile",['jquery.sap.global', 'sap/ui/Device', 'jquery
 					} else if (Device.os.winphone){
 						sMeta = "width=320, user-scalable=no";
 					} else {
-	
 						// all other devices
 						sMeta = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 					}
@@ -39456,7 +43212,7 @@ sap.ui.define("jquery.sap.properties",['jquery.sap.global', 'jquery.sap.sjax'],
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -39748,7 +43504,7 @@ sap.ui.define("jquery.sap.resources",['jquery.sap.global', 'jquery.sap.propertie
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -40168,7 +43924,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.Global') ) {
  * sap.ui.lazyRequire("sap.ui.core.Control");
  * sap.ui.lazyRequire("sap.ui.commons.Button");
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -40191,7 +43947,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap</code> namespace is automatically registered with the
 	 * OpenAjax hub if it exists.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @name sap
@@ -40204,7 +43960,7 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
 	 * point for UI related JavaScript functionality provided by SAP.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @name sap.ui
 	 * @public
@@ -40217,9 +43973,40 @@ sap.ui.define("sap/ui/Global",['jquery.sap.global', 'jquery.sap.dom'],
 			 * The version of the SAP UI Library
 			 * @type string
 			 */
-			version: "1.20.10",
-			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201407091311" }
+			version: "1.22.4",
+			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201407151731" }
 		});
+
+	/**
+	 * Loads the version info file (resources/sap-ui-version.json) and returns 
+	 * it or if a library name is specified then the version info of the individual 
+	 * library will be returned.
+	 * 
+	 * In case of the version info file is not available an error will occur when
+	 * calling this function.
+	 * 
+	 * @param {string} [sLibName] name of the library (e.g. "sap.ui.core")
+	 * @return {object} either the full version info or the library specific one
+	 * @public
+	 * @static
+	 */
+	sap.ui.getVersionInfo = function(sLibName) {
+		if (!sap.ui.versioninfo) {
+			sap.ui.versioninfo = jQuery.sap.loadResource("sap-ui-version.json");
+		}
+		if (sLibName !== undefined) {
+			// find the version of the individual library 
+			var aLibs = sap.ui.versioninfo.libraries;
+			for (var i = 0, l = aLibs.length; i < l; i++) {
+				if (aLibs[i].name === sLibName) {
+					return aLibs[i];
+				}
+			}
+		} else {
+			// returns the full version info
+			return sap.ui.versioninfo;
+		}
+	};
 	
 	/**
 	 * Ensures that a given a namespace or hierarchy of nested namespaces exists in the
@@ -40443,11 +44230,11 @@ sap.ui.define("sap/ui/base/Event",['jquery.sap.global', './Object'],
 	 * @extends sap.ui.base.Object
 	 * @implements sap.ui.base.Poolable
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.base.Event
 	 * @public
 	 */
-	var Event = BaseObject.extend("sap.ui.base.Event", /** @lends sap.ui.base.Event */ {
+	var Event = BaseObject.extend("sap.ui.base.Event", /** @lends sap.ui.base.Event.prototype */ {
 		constructor : function(sId, oSource, mParameters) {
 		
 			BaseObject.apply(this);
@@ -40609,7 +44396,7 @@ sap.ui.define("sap/ui/base/EventProvider",['jquery.sap.global', './Event', './Ob
 	 * @abstract
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @name sap.ui.base.EventProvider
@@ -40948,7 +44735,7 @@ sap.ui.define("sap/ui/base/ManagedObjectMetadata",['jquery.sap.global', './DataT
 	 *
 	 * @class
 	 * @author Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.8.6
 	 * @name sap.ui.base.ManagedObjectMetadata
 	 */
@@ -41686,8 +45473,8 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 	 *
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 1.9.2
 	 * @name sap.ui.core.ComponentMetadata
 	 */
@@ -41714,26 +45501,35 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 	};
 	
 	ComponentMetadata.prototype.applySettings = function(oClassInfo) {
-	
+		
 		var oStaticInfo = oClassInfo.metadata;
 	
-		ManagedObjectMetadata.prototype.applySettings.call(this, oClassInfo);
-	
-		// if the component specifies the metadata property: loadFromFile then
+		// if the component metadata loadFromFile feature is active then
 		// the component metadata will be loaded from the specified file 
 		// which needs to be located next to the Component.js file.
 		var sName = this.getName(),
-		    sPackage = sName.replace(/\.\w+?$/, "");
+	    sPackage = sName.replace(/\.\w+?$/, "");
 		if (oStaticInfo._src) {
-			jQuery.sap.log.warning("The metadata of the component " + sName + " is loaded from file " + oStaticInfo._src + ". This is a design time feature and not for productive usage!");
-			var sUrl = jQuery.sap.getModulePath(sPackage, "/" + oStaticInfo._src);
-			var oResponse = jQuery.sap.syncGetJSON(sUrl);
-			if (oResponse.success) {
-				jQuery.extend(oStaticInfo, oResponse.data);
-			} else {
-				jQuery.sap.log.error("Failed to load component metadata from \"" + oStaticInfo._src + "\"! Reason: " + oResponse.error);
+			if(oStaticInfo._src == "component.json"){
+				jQuery.sap.log.warning("Usage of declacation \"metadata: 'component.json'\" is deprecated (component " + sName + "). Use \"metadata: 'json'\" instead.");
+			}else if(oStaticInfo._src != "json"){
+				throw new Error("Invalid metadata declaration for component " + sName + ": \"" + oStaticInfo._src + "\"! Use \"metadata: 'json'\" to load metadata from component.json.");
+			}
+			
+			var sResource = sPackage.replace(/\./g, "/") + "/component.json";
+			jQuery.sap.log.info("The metadata of the component " + sName + " is loaded from file " + sResource + ".");
+			try{
+				var oResponse = jQuery.sap.loadResource(sResource, {
+					dataType: "json",
+					failOnError : false
+				});
+				jQuery.extend(oStaticInfo, oResponse);
+			}catch(err){
+				jQuery.sap.log.error("Failed to load component metadata from \"" + sResource + "\" (component " + sName + ")! Reason: " + err);
 			}
 		}
+		
+		ManagedObjectMetadata.prototype.applySettings.call(this, oClassInfo);
 		
 		// keep the infor about the component name (for customizing)
 		this._sComponentName = sPackage;
@@ -41765,6 +45561,9 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 			this._mModels = jQuery.extend(true, {}, oParent._mModels, this._mModels);
 			this._mServices = jQuery.extend(true, {}, oParent._mServices, this._mServices);
 		}
+		
+		// Store the static metadata for later usage (see getCustomConfiguration)
+		this._oStaticInfo = oStaticInfo;
 		
 	};
 	
@@ -41847,6 +45646,51 @@ sap.ui.define("sap/ui/core/ComponentMetadata",['jquery.sap.global', 'sap/ui/base
 				sap.ui.core.CustomizingConfiguration.deactivateForComponent(this._sComponentName);
 			}
 		}
+	};
+	
+	/**
+	 * Returns the custom Component configuration entry with the specified key (Must be a JSON object).
+	 * If no key is specified, the return value is null.
+	 * 
+	 * Example:
+	 * <code>
+	 *   sap.ui.core.Component.extend("sample.Component", {
+	 *       metadata: {
+	 *           "my.custom.config" : {
+	 *               "property1" : true,
+	 *               "property2" : "Something else"
+	 *           }
+	 *       }
+	 *   });
+	 * </code>
+	 * 
+	 * The configuration above can be accessed via <code>sample.Component.getMetadata().getCustomEntry("my.custom.config")</code>.
+	 * 
+	 * @param {string} sKey key of the custom configuration (must be prefixed with a namespace)
+	 * @param {boolean} bMerged whether the custom configuration should be merged with components parent custom configuration.
+	 * @return {Object} custom Component configuration with the specified key. 
+	 * @public
+	 * @name sap.ui.core.ComponentMetadata#getCustomEntry
+	 * @function
+	 */
+	ComponentMetadata.prototype.getCustomEntry = function(sKey, bMerged){
+		if(!sKey || sKey.indexOf(".") <= 0){
+			jQuery.sap.log.warning("Component Metadata entries with keys without namespace prefix can not be read via getCustomEntry. Key: " + sKey + ", Component: " + this.getName());
+			return null;
+		}
+		
+		var oData = this._oStaticInfo[sKey] || {};
+		
+		if(!jQuery.isPlainObject(oData)){
+			jQuery.sap.log.warning("Custom Component Metadata entry with key '"+sKey+"' must be an object. Component: " + this.getName());
+			return null;
+		}
+		
+		var oParent = this.getParent();
+		if (bMerged && oParent instanceof ComponentMetadata) {
+			return jQuery.extend(true, {}, oParent.getCustomEntry(sKey, bMerged), oData);
+		}
+		return jQuery.extend(true, {}, oData);
 	};
 	
 	/**
@@ -43285,8 +47129,8 @@ sap.ui.define("sap/ui/core/ElementMetadata",['jquery.sap.global', 'sap/ui/base/M
 	 * @param {object} oStaticInfo static info to construct the metadata from
 	 *
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 0.8.6
 	 * @name sap.ui.core.ElementMetadata
 	 */
@@ -43430,7 +47274,7 @@ sap.ui.define("sap/ui/core/EventBus",['jquery.sap.global', 'sap/ui/base/EventPro
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @since 1.8.0
@@ -43666,7 +47510,7 @@ sap.ui.define("sap/ui/core/FocusHandler",['jquery.sap.global', 'sap/ui/Device', 
 		 * @param {sap.ui.core.Core} oCore Reference to the Core implementation
 		 * @name sap.ui.core.FocusHandler
 		 */
-		var FocusHandler = BaseObject.extend("sap.ui.core.FocusHandler", /** @lends sap.ui.core.FocusHandler */ {
+		var FocusHandler = BaseObject.extend("sap.ui.core.FocusHandler", /** @lends sap.ui.core.FocusHandler.prototype */ {
 			constructor : function(oRootRef, oCore) {
 				BaseObject.apply(this);
 		
@@ -43946,7 +47790,7 @@ sap.ui.define("sap/ui/core/IntervalTrigger",['jquery.sap.global', './EventBus'],
 		 * 
 		 * @extends sap.ui.base.Object
 		 * @author SAP AG
-		 * @version 1.20.10
+		 * @version 1.22.4
 		 * @constructor
 		 * @public
 		 * @since 1.11.0
@@ -44095,7 +47939,7 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData
@@ -44270,6 +48114,36 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 			jQuery.sap.assert(sType == "decimal" || sType == "group" || sType == "plusSign" || sType == "minusSign", "sType must be decimal, group, plusSign or minusSign");
 			return this._get("symbols-latn-" + sType);
 		},
+		
+		/**
+		 * Get decimal format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getDecimalPattern : function() {
+			return this._get("decimalFormat").standard;
+		},
+		
+		/**
+		 * Get currency format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getCurrencyPattern : function() {
+			return this._get("currencyFormat").standard;
+		},
+		
+		/**
+		 * Get percent format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getPercentPattern : function() {
+			return this._get("percentFormat").standard;
+		},
 
 		/**
 		 * Returns the day that usually is regarded as the first day 
@@ -44336,6 +48210,40 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 		 */
 		getIntervalPattern : function(sId) {
 			return (sId && this._get("intervalFormat-" + sId)) || this._get("intervalFormatFallback"); 
+		},
+		
+		/**
+		 * Returns the number of digits of the specified currency
+		 *
+		 * @param {string} sCurrency ISO 4217 currency code
+		 * @returns {int} digits of the currency
+		 * @public
+		 * @since 1.21.1
+		 */
+		getCurrencyDigits : function(sCurrency) {
+			var oCurrencyDigits = this._get("currencyDigits");
+			var iDigits = 2;
+			if (oCurrencyDigits) {
+				if (oCurrencyDigits[sCurrency] != undefined) {
+					iDigits = oCurrencyDigits[sCurrency];
+				} else {
+					iDigits = oCurrencyDigits["DEFAULT"];
+				}
+			}
+			return iDigits;
+		},
+		
+		/**
+		 * Returns the currency symbol for the specified currency, if no symbol is found the ISO 4217 currency code is returned
+		 *
+		 * @param {string} sCurrency ISO 4217 currency code
+		 * @returns {string} the currency symbol
+		 * @public
+		 * @since 1.21.1
+		 */
+		getCurrencySymbol : function(sCurrency) {
+			var oCurrencySymbols = this._get("currencySymbols");
+			return (oCurrencySymbols && oCurrencySymbols[sCurrency]) || sCurrency;
 		}
 		
 	});
@@ -44362,6 +48270,9 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 			"dateTimeFormat-long":"{1} 'at' {0}",
 			"dateTimeFormat-medium":"{1}, {0}",
 			"dateTimeFormat-short":"{1}, {0}",
+			"decimalFormat": { "standard": "#,##0.###" },
+			"currencyFormat": { "standard": "¤#,##0.00"},
+			"percentFormat": { "standard": "#,##0%"},
 			"months-format-abbreviated":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
 			"months-format-wide":["January","February","March","April","May","June","July","August","September","October","November","December"],
 			"months-format-narrow":["1","2","3","4","5","6","7","8","9","10","11","12"],
@@ -44413,7 +48324,7 @@ sap.ui.define("sap/ui/core/LocaleData",['jquery.sap.global', 'sap/ui/base/Object
 		var LOCALES = "ar,ar_AE,ar_EG,ar_SA,bg,bg_BG,br,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_BE,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_HK,en_IE,en_IN,en_NZ,en_PG,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_ES,es_MX,es_PE,es_UY,es_VE,et,et_EE,fa,fa_IR,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,he,he_IL,hi,hi_IN,hr,hr_HR,hu,hu_HU,id,id_ID,it,it_CH,it_IT,ja,ja_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,nb,nb_NO,nl,nl_BE,nl_NL,nn,nn_NO,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_KZ,ru_RU,ru_UA,sk_SK,sl,sl_SI,sr,sv,sv_SE,th,th_TH,tr,tr_CY,tr_TR,uk,uk_UA,vi,vi_VN,zh_CN,zh_HK,zh_SG,zh_TW".split(","), 
 			i,result;
 		
-		if ( LOCALES.length != 1 || LOCALES[0].indexOf("@") < 0) { // check that list has been substituted 
+		if ( LOCALES.length != 1 || (LOCALES[0] && LOCALES[0].indexOf("@") < 0) ) { // check that list has been substituted 
 			result = {};
 			for(i=0; i<LOCALES.length; i++) {
 				result[LOCALES[i]] = true;
@@ -44545,12 +48456,12 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
 	 */
-	var RenderManager = BaseObject.extend("sap.ui.core.RenderManager", /** @lends sap.ui.core.RenderManager */ {
+	var RenderManager = BaseObject.extend("sap.ui.core.RenderManager", /** @lends sap.ui.core.RenderManager.prototype */ {
 
 		constructor : function() {
 			BaseObject.apply(this, arguments);
@@ -44698,7 +48609,13 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	
 		//Remember the rendered control
 		this.aRenderedControls.push(oControl);
-	
+
+		// let the UIArea know that this control has been rendered
+		// FIXME: RenderManager (RM) should not need to know about UIArea. Maybe UIArea should delegate rendering to RM
+		if ( oControl.getUIArea && oControl.getUIArea() ) {
+			oControl.getUIArea()._onControlRendered(oControl);
+		}
+		
 		//Check whether the control has produced HTML
 		oControl.bOutput = this.aBuffer.length != iBufferLength;
 	
@@ -45119,9 +49036,11 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	
 	(function() {
 	
-		var ID_PRESERVE_AREA = "sap-ui-preserve";
-		var ATTR_PRESERVE_MARKER = "data-sap-ui-preserve";
-	
+		var ID_PRESERVE_AREA = "sap-ui-preserve",
+			ID_STATIC_AREA = "sap-ui-static", // to be kept in sync with Core!
+			ATTR_PRESERVE_MARKER = "data-sap-ui-preserve",
+			ATTR_UI_AREA_MARKER = "data-sap-ui-area";
+			
 		function getPreserveArea() {
 			var $preserve = jQuery("#"+ID_PRESERVE_AREA);
 			if ($preserve.length === 0){
@@ -45131,7 +49050,14 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 			}
 			return $preserve;
 		}
-	
+
+		/**
+		 * Create a placeholder node for the given node (which must have an ID) and insert it before the node
+		 */
+		function makePlaceholder(node) {
+			jQuery("<DIV/>", { id: "sap-ui-dummy-" + node.id}).addClass("sapUiHidden").insertBefore(node);
+		}
+		
 		/**
 		 * Collects descendants of the given root node that need to be preserved before the root node
 		 * is wiped out. The "to-be-preserved" nodes are moved to a special, hidden 'preserve' area.
@@ -45160,39 +49086,49 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	
 			var $preserve = getPreserveArea();
 	
-			function check($candidates) {
-	
-				$candidates.each(function(i,candidate) {
-	
-					// don't process the preserve area or the static area
-					if ( candidate.id === ID_PRESERVE_AREA || sap.ui.getCore().isStaticAreaRef(candidate)) {
-						return;
+			function check(candidate) {
+				
+				// don't process the preserve area or the static area
+				if ( candidate.id === ID_PRESERVE_AREA || candidate.id === ID_STATIC_AREA ) {
+					return;
+				}
+
+				if ( candidate.hasAttribute(ATTR_PRESERVE_MARKER) )  { // node is marked with the preserve marker
+					// when the current node is the root node then we're doing a single control rerendering
+					if ( candidate === oRootNode ) {
+						makePlaceholder(candidate);
 					}
-	
-					var $candidate = jQuery(candidate);
-	
-					if ( $candidate.attr(ATTR_PRESERVE_MARKER) )  { // node is marked with the preserve marker
-						// when the current node is the root node then we're doing a single control rerendering
-						if ( candidate === oRootNode ) {
-							var $placeholder = jQuery("<DIV/>", { id: "sap-ui-dummy-" + candidate.id}).addClass("sapUiHidden");
-							$placeholder.insertBefore($candidate);
+					$preserve.append(candidate);
+				} else if ( bPreserveNodesWithId && candidate.id ) {
+					RenderManager.markPreservableContent(jQuery(candidate), candidate.id);
+					$preserve.append(candidate);
+					return;
+				}
+				
+				// don't dive into nested UIAreas. They are preserved together with any preserved parent (e.g. HTML control)
+				if ( !candidate.hasAttribute(ATTR_UI_AREA_MARKER) ) {
+					var next = candidate.firstChild;
+					while ( next ) {
+						// determine nextSibiling before checking the candidate because
+						// a move to the preserveArea will modify the sibling relationship!
+						candidate = next;
+						next = next.nextSibling;
+						if ( candidate.nodeType === 1 /* Node.ELEMENT */ ) {
+							check(candidate);
 						}
-						$preserve.append($candidate);
-					} else if ( bPreserveNodesWithId && candidate.id ) {
-						RenderManager.markPreservableContent($candidate, candidate.id);
-						$preserve.append($candidate);
-						return;
 					}
-	
-					// don't dive into nested UIAreas. They are preserved together with any preserved parent (e.g. HTML control)
-					if ( !$candidate.attr("data-sap-ui-area") ) {
-						check($candidate.children());
-					}
-				});
+				}
+				
 			}
 	
 			jQuery.sap.measure.start(oRootNode.id+"---preserveContent","preserveContent for "+oRootNode.id);
-			check(bPreserveRoot? jQuery(oRootNode) : jQuery(oRootNode).children());
+			if ( bPreserveRoot ) {
+				check(oRootNode);
+			} else {
+				jQuery(oRootNode).children().each(function(i,oNode) {
+					check(oNode);
+				});
+			}
 			jQuery.sap.measure.end(oRootNode.id+"---preserveContent");
 		};
 	
@@ -45293,7 +49229,7 @@ sap.ui.define("sap/ui/core/RenderManager",['jquery.sap.global', 'sap/ui/base/Int
 	
 	/**
 	 * Write the given texts to the buffer
-	 * @param {string|number ...} sText (can be a number too)
+	 * @param {...string|number} sText (can be a number too)
 	 * @return {sap.ui.core.RenderManager} this render manager instance to allow chaining
 	 * @public
 	 * @SecSink {*|XSS}
@@ -45803,7 +49739,7 @@ sap.ui.define("sap/ui/core/ResizeHandler",['jquery.sap.global', 'sap/ui/Global',
 		 * @public
 		 */
 		
-		var ResizeHandler = BaseObject.extend("sap.ui.core.ResizeHandler", /** @lends sap.ui.core.ResizeHandler */ {
+		var ResizeHandler = BaseObject.extend("sap.ui.core.ResizeHandler", /** @lends sap.ui.core.ResizeHandler.prototype */ {
 	
 			constructor : function(oCore) {
 				BaseObject.apply(this);
@@ -45964,6 +49900,9 @@ sap.ui.define("sap/ui/core/ResizeHandler",['jquery.sap.global', 'sap/ui/Global',
 		/**
 		 * Registers the given handler for resize events on the given
 		 * DOM reference or Control.
+		 * In case the core is not initialized yet, the timer cannot be registered and this method
+		 * will return null. Please use sap.ui.getCore().attachInit() with a callback as parameter 
+		 * that calls ResizeHandler.register().
 		 *
 		 * @param {Element|sap.ui.core.Control} oRef the Control or the DOM reference for which the given handler should be registered (beside the window)
 		 * @param {function} fHandler the handler which should be called on a resize event
@@ -46048,8 +49987,8 @@ sap.ui.define("sap/ui/core/UIComponentMetadata",['jquery.sap.global', './Compone
 	 *
 	 * @experimental Since 1.15.1. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 1.15.1
 	 * @name sap.ui.core.UIComponentMetadata
 	 */
@@ -46168,15 +50107,13 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	function(jQuery, EventProvider) {
 	"use strict";
 
-
-	
 	/**
 	 * Creates an ItemNavigation delegate that can be attached to Controls requiring
 	 * capabilities for keyboard navigation between items.
 	 *
 	 * @class Delegate for the ItemNavigation with the keyboard.
 	 *
-	 * @author SAP
+	 * @author SAP AG
 	 *
 	 * Delegate for the ItemNavigation with
 	 * arrow keys over a one dimensional list of items.
@@ -46235,59 +50172,66 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * The control can register to this event and react on the focus change.
 	 * The index of the focused Item and the triggering event are returned.
 	 *
+	 * The <code>BorderReached</code> event is fired if the border of the items is reached and
+	 * no cycling is used. So an application can react on this.
+	 * For example if the first item is focused and the LEFT key is pressed.
+	 *
+	 * The <code>FocusAgain</code> event is fired if the current focused item is focused again
+	 * (e.G. click again on focused item)
+	 *
 	 * @extends sap.ui.base.EventProvider
 	 *
 	 * @param {Element} oDomRef the DOM element that is focused if the item navigation is started
 	 * @param {Element[]} aItemDomRefs Array of DOM elements representing the items for the navigation
 	 * @param {boolean} [bNotInTabChain=false] Whether the selected element should be in the tab chain or not
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.delegate.ItemNavigation
 	 * @public
 	 */
-	var ItemNavigation = EventProvider.extend("sap.ui.core.delegate.ItemNavigation", /** @lends sap.ui.core.delegate.ItemNavigation */ {
+	var ItemNavigation = EventProvider.extend("sap.ui.core.delegate.ItemNavigation", /** @lends sap.ui.core.delegate.ItemNavigation.prototype */ {
 		constructor: function(oDomRef, aItemDomRefs, bNotInTabChain) {
-	
+
 			EventProvider.apply(this);
-	
+
 			// the surrounding dom ref that is focused initially
 			this.oDomRef = null;
-	
+
 			if (oDomRef) {
 				this.setRootDomRef(oDomRef);
 			}
-	
+
 			// the array of dom refs representing the items
 			this.aItemDomRefs = [];
 			if (aItemDomRefs) {
 				this.setItemDomRefs(aItemDomRefs);
 			}
-	
+
 			// initialize Tabindex
 			this.iTabIndex = -1;
-	
+
 			// whether the active element should get a tabindex of 0 or -1
 			this.iActiveTabIndex = !!bNotInTabChain ? -1 : 0;
-		
+
 			// the initial focusedindex
 			this.iFocusedIndex = -1;
-	
+
 			// the initial selected index (if any)
 			this.iSelectedIndex = -1;
-	
+
 			// default for cycling
 			this.bCycling = true;
-	
+
 			// default for table mode
 			this.bTableMode = false;
-	
+
 			// the pagesize for pageup and down events
 			this.iPageSize = -1;
-	
+
 			// a marker to enable focusin to decide HOW the focus arrived
 			this._bMouseDownHappened = false;
-			
+
 			// default disabled modifiers these modifiers will not be handled by ItemNavigation
 			this.oDisabledModifiers = {
 				sapend : ["alt", "shift"],
@@ -46295,12 +50239,14 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 			};
 		}
 	});
-	
+
 	ItemNavigation.Events = {
 		BeforeFocus: "BeforeFocus",
-		AfterFocus: "AfterFocus"
+		AfterFocus: "AfterFocus",
+		BorderReached: "BorderReached",
+		FocusAgain: "FocusAgain"
 	};
-	
+
 	/**
 	 * Sets the disabled modifiers 
 	 * These modifiers will not be handled by ItemNavigation
@@ -46326,7 +50272,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.oDisabledModifiers = oDisabledModifiers;
 		return this;
 	};
-	
+
 	/**
 	 * Returns disabled modifiers 
 	 * These modifiers will not be handled by ItemNavigation
@@ -46339,7 +50285,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	ItemNavigation.prototype.getDisabledModifiers = function(oDisabledModifiers) {
 		return this.oDisabledModifiers;
 	};
-	
+
 	/**
 	 * Check whether given event has disabled modifier or not
 	 * 
@@ -46358,10 +50304,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				}
 			}
 		}
-		
+
 		return false;
 	};
-	
+
 	/**
 	 * Sets the root reference surrounding the items
 	 *
@@ -46372,7 +50318,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 */
 	ItemNavigation.prototype.setRootDomRef = function(oDomRef) {
 		this.oDomRef = oDomRef;
-	
+
 		// in nested ItemNavigation the tabindex must only be set at the root DOM from the parent ItemNavigation
 		if (!jQuery(this.oDomRef).data("sap.INItem")) {
 			if (this.iFocusedIndex >= 0) {
@@ -46381,12 +50327,12 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				jQuery(this.oDomRef).attr("tabIndex", this.iActiveTabIndex);
 			}
 		}
-	
+
 		jQuery(this.oDomRef).data("sap.INRoot", this);
-	
+
 		return this;
 	};
-	
+
 	/**
 	 * returns the root dom reference surrounding the items
 	 *
@@ -46398,7 +50344,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	ItemNavigation.prototype.getRootDomRef = function() {
 		return this.oDomRef;
 	};
-	
+
 	/**
 	 * returns the array of item dom refs
 	 *
@@ -46410,7 +50356,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	ItemNavigation.prototype.getItemDomRefs = function() {
 		return this.aItemDomRefs;
 	};
-	
+
 	/**
 	 * Sets the item dom refs as an array the items
 	 *
@@ -46421,12 +50367,12 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 */
 	ItemNavigation.prototype.setItemDomRefs = function(aItemDomRefs) {
 		this.aItemDomRefs = aItemDomRefs;
-	
+
 		// in nested ItemNavigation the tabindex must only be set if it's the focused item of the parent ItemNavigation
 		for (var i = 0; i < this.aItemDomRefs.length; i++) {
 			if (this.aItemDomRefs[i]) { // separators return null here
 				var $Item = jQuery(this.aItemDomRefs[i]);
-	
+
 				// as this code can be executed even if the items are not visible (e.g. Popup is closed)
 				// no focusable check can be performed. So only for the currently focused item
 				// the tabindex is set to 0. For all items with tabindex 0 the tabindex is set to -1
@@ -46436,21 +50382,21 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				} else if ($Item.attr("tabindex") == "0"){ // set tabindex to -1 only if already set to 0
 					$Item.attr("tabIndex", -1);
 				}
-	
+
 				$Item.data("sap.INItem", true);
 				$Item.data("sap.InNavArea", true); //Item is in navigation area - allow navigation mode and edit mode
-	
+
 				if ($Item.data("sap.INRoot") && i != this.iFocusedIndex) {
-	
+
 					// item is root of an nested ItemNavigation -> set tabindexes from its items to -1
 					$Item.data("sap.INRoot").setNestedItemsTabindex();
 				}
 			}
 		}
-	
+
 		return this;
 	};
-	
+
 	/**
 	 * Sets the tabindex of the items.
 	 *
@@ -46464,12 +50410,12 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.setItemsTabindex = function() {
-	
+
 		for (var i = 0; i < this.aItemDomRefs.length; i++) {
 			if (this.aItemDomRefs[i]) { // separators return null here
 				var $Item = jQuery(this.aItemDomRefs[i]);
 				if ($Item.is(":sapFocusable")) {
-	
+
 					// not focusable items (like labels) must not get a tabindex attribute
 					if (i == this.iFocusedIndex && !$Item.data("sap.INRoot")) {
 						$Item.attr("tabIndex", this.iActiveTabIndex);
@@ -46479,10 +50425,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				}
 			}
 		}
-	
+
 		return this;
 	};
-	
+
 	/**
 	 * Sets tabindex if item to -1
 	 * called from parent ItemNavigation if ItemNavigation is nested
@@ -46502,10 +50448,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				}
 			}
 		}
-	
+
 		return this;
 	};
-	
+
 	/**
 	 * Destroys the delegate and releases all dom references.
 	 *
@@ -46513,12 +50459,12 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.destroy = function() {
-	
+
 		if (this.oDomRef) {
 			jQuery(this.oDomRef).removeData("sap.INRoot");
 			this.oDomRef = null;
 		}
-	
+
 		if (this.aItemDomRefs) {
 			for (var i=0; i<this.aItemDomRefs.length; i++) {
 				if (this.aItemDomRefs[i]) { // separators return null here
@@ -46526,13 +50472,13 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 					jQuery(this.aItemDomRefs[i]).removeData("sap.InNavArea");
 				}
 			}
-	
+
 			this.aItemDomRefs = null;
 		}
-	
+
 		this._bItemTabIndex = undefined;
 	};
-	
+
 	/**
 	 * Sets whether the ItemNavigation should cycle through the items.
 	 *
@@ -46546,7 +50492,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.bCycling = bCycling;
 		return this;
 	};
-	
+
 	/**
 	 * Sets whether the ItemNavigation should use the table mode to navigate through
 	 * the items (navigation in a grid).
@@ -46567,7 +50513,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.bTableList = bTableMode ? bTableList : false;
 		return this;
 	};
-	
+
 	/**
 	 * Sets the page size of the item navigation to allow pageup and down keys.
 	 *
@@ -46581,7 +50527,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.iPageSize = iPageSize;
 		return this;
 	};
-	
+
 	/**
 	 * Sets the selected index if the used control supports selection.
 	 *
@@ -46595,21 +50541,40 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.iSelectedIndex = iIndex;
 		return this;
 	};
-	
+
 	/**
 	 * Sets whether the items are displayed in columns
 	 *
 	 * @param {int} iColumns count of columns for the table mode or cycling mode
+	 * @param {boolean} bNoColumnChange forbid to jump to an other column with up and down keys
 	 * @return {sap.ui.core.delegate.ItemNavigation} <code>this</code> to allow method chaining
 	 * @public
 	 * @name sap.ui.core.delegate.ItemNavigation#setColumns
 	 * @function
 	 */
-	ItemNavigation.prototype.setColumns = function(iColumns) {
+	ItemNavigation.prototype.setColumns = function(iColumns, bNoColumnChange) {
 		this.iColumns = iColumns;
+		this.bNoColumnChange = bNoColumnChange;
 		return this;
 	};
-	
+
+	/**
+	 * Sets behaviour of HOME and END if columns are used
+	 *
+	 * @param {boolean} bStayInRow HOME -> got to first item in row; END -> go to last item in row
+	 * @param {boolean} bCtrlEnabled HOME/END with CTRL -> go to first/last item of all
+	 * @return {sap.ui.core.delegate.ItemNavigation} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.delegate.ItemNavigation#setColumns
+	 * @function
+	 */
+	ItemNavigation.prototype.setHomeEndColumnMode = function(bStayInRow, bCtrlEnabled) {
+
+			this._bStayInRow = bStayInRow;
+			this._bCtrlEnabled = bCtrlEnabled;
+
+	};
+
 	/**
 	 * Sets the focus to the item with the given index.
 	 *
@@ -46619,42 +50584,46 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.focusItem = function(iIndex, oEvent) {
-	
+
 		jQuery.sap.log.info("FocusItem: " + iIndex + " iFocusedIndex: " + this.iFocusedIndex, "focusItem", "ItemNavigation");
-	
+
 		if (iIndex == this.iFocusedIndex && this.aItemDomRefs[this.iFocusedIndex] == document.activeElement) {
+			this.fireEvent(ItemNavigation.Events.FocusAgain, {
+				index: iIndex,
+				event: oEvent
+			});
 			return; // item already focused -> nothing to do
 		}
-	
+
 		// if there is no item to put the focus on, we don't even try it
 		if (!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
 			return;
 		}
-	
+
 		this.fireEvent(ItemNavigation.Events.BeforeFocus, {
 			index: iIndex,
 			event: oEvent
 		});
-	
+
 		this.setFocusedIndex(iIndex);
 		this.bISetFocus = true;
-	
+
 		if (jQuery(this.aItemDomRefs[this.iFocusedIndex]).data("sap.INRoot") && oEvent) {
-	
+
 			// store event type for nested ItemNavigations
 			var oItemItemNavigation = jQuery(this.aItemDomRefs[this.iFocusedIndex]).data("sap.INRoot");
 			oItemItemNavigation._sFocusEvent = oEvent.type;
 		}
-	
+
 		jQuery.sap.log.info("Set Focus on ID: " + this.aItemDomRefs[this.iFocusedIndex].id, "focusItem", "ItemNavigation");
 		jQuery.sap.focus(this.aItemDomRefs[this.iFocusedIndex]);
-	
+
 		this.fireEvent(ItemNavigation.Events.AfterFocus, {
 			index: iIndex,
 			event: oEvent
 		});
 	};
-	
+
 	/**
 	 * Sets the focused index to the given index.
 	 *
@@ -46666,40 +50635,40 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 */
 	ItemNavigation.prototype.setFocusedIndex = function(iIndex) {
 		var $Item;
-	
+
 		if (iIndex < 0) {
 			iIndex = 0;
 		}
-	
+
 		if (iIndex > this.aItemDomRefs.length - 1) {
 			iIndex = this.aItemDomRefs.length - 1;
 		}
-	
+
 		jQuery(this.oDomRef).attr("tabIndex", this.iTabIndex);
-	
+
 		if (this.iFocusedIndex !== -1 && this.aItemDomRefs.length > this.iFocusedIndex) {
 			jQuery(this.aItemDomRefs[this.iFocusedIndex]).attr("tabIndex", -1);
-	
+
 			// if focus is in nested ItemNavigation but is moved to an other item, remove tabindex from nested item
 			$Item = jQuery(this.aItemDomRefs[this.iFocusedIndex]);
 			if ($Item.data("sap.INRoot") && iIndex != this.iFocusedIndex) {
 				jQuery($Item.data("sap.INRoot").aItemDomRefs[$Item.data("sap.INRoot").iFocusedIndex]).attr("tabIndex", -1);
 			}
 		}
-	
+
 		this.iFocusedIndex = iIndex;
 		var oFocusItem = this.aItemDomRefs[this.iFocusedIndex];
-	
+
 		$Item = jQuery(this.aItemDomRefs[this.iFocusedIndex]);
 		if (!$Item.data("sap.INRoot")) {
-	
+
 			// in nested ItemNavigation the nested item gets the tabindex
 			jQuery(oFocusItem).attr("tabIndex", this.iActiveTabIndex);
 		}
-	
+
 		return this;
 	};
-	
+
 	/**
 	 * Returns the focused dom ref.
 	 *
@@ -46711,8 +50680,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	ItemNavigation.prototype.getFocusedDomRef = function() {
 		return this.aItemDomRefs[this.iFocusedIndex];
 	};
-	
-	
+
 	/**
 	 * Returns the focused index.
 	 *
@@ -46724,7 +50692,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	ItemNavigation.prototype.getFocusedIndex = function() {
 		return this.iFocusedIndex;
 	};
-	
+
 	/**
 	 * Handles the onfocusin event.
 	 *
@@ -46734,52 +50702,52 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onfocusin = function(oEvent) {
-	
+
 		var oSource = oEvent.target;
-	
+
 		if (oSource == this.oDomRef) {
-	
+
 			// focus occured on the main dom ref
 			// on first focus - set tabindex for items
 			if (!this._bItemTabIndex) {
 				this.setItemsTabindex();
 				this._bItemTabIndex = true;
 			}
-	
+
 			// if the focus came by clicking AND it did not target one of the elements, but the root element, do nothing
 			// (otherwise clicking the scrollbar re-focuses the previously focused element, which causes the browser to scroll it into view)
 			if (this._bMouseDownHappened) {
 				return;
 			}
-	
+
 			var iIndex;
-	
+
 			if (jQuery(this.oDomRef).data("sap.INItem") && this._sFocusEvent && !jQuery(this.oDomRef).data("sap.InNavArea")) {
-	
+
 				// if nested ItemNavigation need to know if focused by parent ItemNavigation (not in Navigation mode)
 				switch (this._sFocusEvent) {
 					case "sapnext":
 						iIndex = 0;
 						break;
-	
+
 					case "sapprevious":
 						iIndex = this.aItemDomRefs.length-1;
 						break;
-	
+
 					default:
 						iIndex = this.iSelectedIndex != -1 ?  this.iSelectedIndex : (this.iFocusedIndex != -1 ? this.iFocusedIndex : 0);
 						break;
 				}
-	
+
 				this._sFocusEvent = undefined;
 			} else {
 				iIndex = this.iSelectedIndex != -1 ?  this.iSelectedIndex : (this.iFocusedIndex != -1 ? this.iFocusedIndex : 0);
 			}
-	
+
 			this.focusItem(iIndex, oEvent);
-	
+
 			if (this.iFocusedIndex == -1) {
-	
+
 				// no item focused, maybe not focusable -> try the next one
 				for (var i = iIndex + 1; i < this.aItemDomRefs.length; i++) {
 					this.focusItem(i, oEvent);
@@ -46787,9 +50755,9 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 						break;
 					}
 				}
-	
+
 				if (this.iFocusedIndex == -1 && iIndex > 0) {
-	
+
 					// still no item selected, try to find a previous one
 					for (var i=iIndex-1; i>=0; i--) {
 						this.focusItem(i, oEvent);
@@ -46799,12 +50767,12 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 					}
 				}
 			}
-	
+
 			// cancel the bubbling of event in this case
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		} else if (!this.bISetFocus) {
-	
+
 			// check if this is really the already focused item
 			// in case of a click on a label this could be an other item
 			if (this.aItemDomRefs && oEvent.target != this.aItemDomRefs[this.iFocusedIndex]) {
@@ -46815,15 +50783,15 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 					}
 				}
 			} else {
-	
+
 				// give focused item to registered application
 				this.fireEvent(ItemNavigation.Events.AfterFocus,{index:this.iFocusedIndex, event:oEvent});
 			}
 		}
-	
+
 		this.bISetFocus = false;
 	};
-	
+
 	/**
 	 * Handles the onsapfocusleave event
 	 *
@@ -46834,37 +50802,37 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 */
 	ItemNavigation.prototype.onsapfocusleave = function(oEvent) {
 		if (!oEvent.relatedControlId || !jQuery.sap.containsOrEquals(this.oDomRef, sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())) {
-	
+
 			// entirely leaving the control handled by this ItemNavigation instance
 			this.setFocusedIndex(this.iSelectedIndex != -1 ?  this.iSelectedIndex : (this.iFocusedIndex != -1 ? this.iFocusedIndex : 0));
-	
+
 			if (jQuery(this.oDomRef).data("sap.INItem")) {
-	
+
 				// if in nested ItemNavigation and focus moves to item of parent ItemNavigation -> do not set Tabindex
 				var oParentDomRef,
 					$DomRef = jQuery(this.oDomRef);
-	
+
 				while (!oParentDomRef) {
 					$DomRef = $DomRef.parent();
 					if ($DomRef.data("sap.INRoot")) {
 						oParentDomRef = $DomRef.get(0);
 					}
 				}
-	
+
 				if (!oEvent.relatedControlId || jQuery.sap.containsOrEquals(oParentDomRef, sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())) {
 					jQuery(this.aItemDomRefs[this.iFocusedIndex]).attr("tabIndex", -1);
 				}
 			}
-	
+
 			var $DomRef = jQuery(this.oDomRef);
 			if ($DomRef.data("sap.InNavArea") === false) { // check for false to avoid undefinded
-	
+
 				// if in action mode switch back to navigation mode
 				$DomRef.data("sap.InNavArea", true);
 			}
 		}
 	};
-	
+
 	/**
 	 * Handles the onmousedown event
 	 * Sets the focus to the item if it occured on an item
@@ -46875,30 +50843,30 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onmousedown = function(oEvent) {
-	
+
 		// set the focus to the clicked element or back to the last
 		var oSource = oEvent.target;
-	
+
 		if (jQuery.sap.containsOrEquals(this.oDomRef, oSource)) {
-	
+
 			// the mouse down occured inside the main dom ref
 			for (var i = 0; i < this.aItemDomRefs.length;i++) {
 				var oItem = this.aItemDomRefs[i];
 				if (jQuery.sap.containsOrEquals(oItem,oSource)) {
 					if (!this.bTableMode) {
-	
+
 						// the mousedown occured inside of an item
 						this.focusItem(i, oEvent);
-	
+
 						// no oEvent.preventDefault(); because cursor will not be set in Textfield
 						// no oEvent.stopPropagation(); because e.g. DatePicker can not close popup
 					} else {
-	
+
 						// only focus the items if the click did not happen on a
 						// focusable element!
 						if (oItem === oSource || !jQuery(oSource).is(":sapFocusable")) {
 							this.focusItem(i, oEvent);
-	
+
 							// the table mode requires not to prevent the default
 							// behavior on click since we want to allow text selection
 							// click into the control, ...
@@ -46907,9 +50875,9 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 					return;
 				}
 			}
-	
+
 			if (oSource == this.oDomRef) {
-	
+
 				// root DomRef of item navigation has been clicked
 				// focus will also come in a moment - let it know that it was the mouse who caused the focus
 				this._bMouseDownHappened = true;
@@ -46922,7 +50890,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 			}
 		}
 	};
-	
+
 	/**
 	 * Handles the onsapnext event
 	 * Sets the focus to the next item
@@ -46933,35 +50901,36 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsapnext = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			return;
 		}
-	
+
 		if (jQuery(this.oDomRef).data("sap.InNavArea")) {
-	
+
 			// control is in navigation mode -> no ItemNavigation
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
 		// focus the next item
 		var iIndex = this.iFocusedIndex,
-			bFirstTime = true;
-	
+			bFirstTime = true,
+			bBorderReached = false;
+
 		if (iIndex > -1) {
 			if (this.bTableMode) {
-	
+
 				var iRowCount = this.aItemDomRefs.length / this.iColumns,
 					iRow = Math.floor(iIndex / this.iColumns),
 					iCol = iIndex % this.iColumns;
-	
+
 				if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_DOWN) {
 					if (iRow  < iRowCount - 1) {
 						iIndex += this.iColumns;
@@ -46975,38 +50944,44 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				do {
 					if (this.iColumns > 1 && oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_DOWN) {
 						if ((iIndex + this.iColumns) >= this.aItemDomRefs.length) {
-	
-							// on bottom -> begin on top of next column
-							if ((iIndex % this.iColumns) < (this.iColumns -1)) {
-								iIndex = (iIndex % this.iColumns) + 1;
-							} else if(this.bCycling) {
-								iIndex = 0;
+							if (!this.bNoColumnChange) {
+								// on bottom -> begin on top of next column
+								if ((iIndex % this.iColumns) < (this.iColumns -1)) {
+									iIndex = (iIndex % this.iColumns) + 1;
+								} else if(this.bCycling) {
+									iIndex = 0;
+								}
+							} else {
+								// do not go to an other item;
+								iIndex = this.iFocusedIndex;
+								bBorderReached = true;
 							}
 						} else {
 							iIndex = iIndex + this.iColumns;
 						}
 					} else {
 						if (iIndex == this.aItemDomRefs.length - 1) {
-	
+
 							// last item
 							if (jQuery(this.oDomRef).data("sap.INItem")) {
-	
+
 								// if nested ItemNavigations leave here to ItemNavigation of parent
 								return;
 							} else if (this.bCycling) {
-	
+
 								// in cycling case focus first one, if not - don't change
 								iIndex = 0;
 							} else {
-	
+
 								// last one, no next item, so leave focus on already focused item (to prevent endless loops)
 								iIndex = this.iFocusedIndex;
+								bBorderReached = true;
 							}
 						} else {
 							iIndex++;
 						}
 					}
-	
+
 					if (iIndex === this.iFocusedIndex) {
 						if (bFirstTime) {
 							bFirstTime = false;
@@ -47014,20 +50989,27 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 							throw new Error("ItemNavigation has no visible/existing items and is hence unable to select the next one");
 						}
 					}
-	
+
 				// if item is not visible or a dummy item go to the next one
 				} while (!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") === "hidden"
 					|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable"));
 			}
-	
+
 			this.focusItem(iIndex, oEvent);
-	
+
+			if (bBorderReached) {
+				this.fireEvent(ItemNavigation.Events.BorderReached, {
+					index: iIndex,
+					event: oEvent
+				});
+			}
+
 			// cancel the event otherwise the browser will scroll
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}
 	};
-	
+
 	/**
 	 * Ensure the sapnext event with modifiers is also handled
 	 * 
@@ -47040,10 +51022,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		if (this.hasDisabledModifier(oEvent)) {
 			return;
 		}
-		
+
 		this.onsapnext(oEvent);
 	};
-	
+
 	/**
 	 * Handles the onsapprevious event
 	 * Sets the focus to the previous item
@@ -47054,35 +51036,35 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsapprevious = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			return;
 		}
-	
-	
+
 		if (jQuery(this.oDomRef).data("sap.InNavArea")) {
-	
+
 			// control is in navigation mode -> no ItemNavigation
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
 		// focus the previous item
 		var iIndex = this.iFocusedIndex,
-			bFirstTime = true;
-	
+			bFirstTime = true,
+			bBorderReached = false;
+
 		if (iIndex > -1) {
 			if (this.bTableMode) {
 				var iRowCount = this.aItemDomRefs.length / this.iColumns,
 					iRow = Math.floor(iIndex / this.iColumns),
 					iCol = iIndex % this.iColumns;
-	
+
 				if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_UP) {
 					if (iRow  > 0) {
 						iIndex -= this.iColumns;
@@ -47096,51 +51078,57 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 				do {
 					if (this.iColumns > 1 && oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_UP) {
 						if ((iIndex - this.iColumns) < 0) {
-	
-							// on top -> begin on end of previous column
-							var iCol = 0;
-	
-							if ((iIndex % this.iColumns) > 0) {
-								iCol = (iIndex % this.iColumns) - 1;
-							} else if (this.bCycling) {
-								iCol = this.iColumns - 1;
-							}
-	
-							if (iIndex === 0 && iCol === 0) {
-								iIndex = 0;
-							} else {
-								var iRows = Math.ceil(this.aItemDomRefs.length / this.iColumns);
-								iIndex = iCol + ((iRows-1) * this.iColumns);
-	
-								if (iIndex >= this.aItemDomRefs.length) {
-									iIndex = iIndex - this.iColumns;
+							if (!this.bNoColumnChange) {
+								// on top -> begin on end of previous column
+								var iCol = 0;
+
+								if ((iIndex % this.iColumns) > 0) {
+									iCol = (iIndex % this.iColumns) - 1;
+								} else if (this.bCycling) {
+									iCol = this.iColumns - 1;
 								}
+
+								if (iIndex === 0 && iCol === 0) {
+									iIndex = 0;
+								} else {
+									var iRows = Math.ceil(this.aItemDomRefs.length / this.iColumns);
+									iIndex = iCol + ((iRows-1) * this.iColumns);
+
+									if (iIndex >= this.aItemDomRefs.length) {
+										iIndex = iIndex - this.iColumns;
+									}
+								}
+							} else {
+								// do not go to an other item;
+								iIndex = this.iFocusedIndex;
+								bBorderReached = true;
 							}
 						} else {
 							iIndex = iIndex - this.iColumns;
 						}
 					} else {
 						if (iIndex == 0) {
-	
+
 							// first item
 							if (jQuery(this.oDomRef).data("sap.INItem")) {
-	
+
 								// if nested ItemNavigations leave here to ItemNavigation of parent
 								return;
 							} else if (this.bCycling) {
-	
+
 								// in cycling case focus last one, if not - don't change
 								iIndex = this.aItemDomRefs.length - 1;
 							} else {
-	
+
 								// first one, no next item, so leave focus on already focused item (to prevent endless loops)
 								iIndex = this.iFocusedIndex;
+								bBorderReached = true;
 							}
 						} else {
 							iIndex--;
 						}
 					}
-	
+
 					if (iIndex == this.iFocusedIndex) {
 						if (bFirstTime) {
 							bFirstTime = false;
@@ -47148,20 +51136,27 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 							throw new Error("ItemNavigation has no visible/existing items and is hence unable to select the previous one");
 						}
 					}
-	
+
 				// if item is not visible or a dummy item go to the next one
 				} while(!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") === "hidden"
 					|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable"));
 			}
-	
+
 			this.focusItem(iIndex, oEvent);
-	
+
+			if (bBorderReached) {
+				this.fireEvent(ItemNavigation.Events.BorderReached, {
+					index: iIndex,
+					event: oEvent
+				});
+			}
+
 			// cancel the event otherwise the browser will scroll
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}
 	};
-	
+
 	/**
 	 * Ensure the sapprevious event with modifiers is also handled
 	 *
@@ -47174,10 +51169,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		if (this.hasDisabledModifier(oEvent)) {
 			return;
 		}
-		
+
 		this.onsapprevious(oEvent);
 	};
-	
+
 	/**
 	 * Handles the onsappageup event
 	 * Sets the focus to the previous page item of iPageSize>0
@@ -47187,45 +51182,60 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsappageup = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
+		var iIndex = 0;
+		var bBorderReached = false;
+
 		if (this.iPageSize > 0) {
-			var iIndex = this.iFocusedIndex;
-	
+			iIndex = this.iFocusedIndex;
+
 			if (iIndex > -1) {
 				iIndex = iIndex - this.iPageSize;
-	
+
 				while (iIndex > 0 && !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
 					iIndex--;
 				}
-	
+
 				if (iIndex < 0) {
-					iIndex = 0;
+					if (!this.bNoColumnChange) {
+						iIndex = 0;
+					} else {
+						iIndex = this.iFocusedIndex;
+						bBorderReached = true;
+					}
 				}
-	
+
 				this.focusItem(iIndex, oEvent);
 			}
 		} else if (this.bTableMode) {
-			var iIndex = this.iFocusedIndex % this.iColumns;
+			iIndex = this.iFocusedIndex % this.iColumns;
 			this.focusItem(iIndex, oEvent);
 		}
-	
+
+		if (bBorderReached) {
+			this.fireEvent(ItemNavigation.Events.BorderReached, {
+				index: iIndex,
+				event: oEvent
+			});
+		}
+
 		// cancel the event otherwise the browser will scroll
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
-	
+
 	};
-	
+
 	/**
 	 * Handles the onsappagedown event.
 	 *
@@ -47237,47 +51247,62 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsappagedown = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
+		var iIndex = 0;
+		var bBorderReached = false;
+
 		if (this.iPageSize > 0) {
-			var iIndex = this.iFocusedIndex;
-	
+			iIndex = this.iFocusedIndex;
+
 			if (iIndex > -1) {
 				iIndex = iIndex + this.iPageSize;
-	
+
 				while (iIndex < this.aItemDomRefs.length - 1 && !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
 					iIndex++;
 				}
-	
+
 				if (iIndex > this.aItemDomRefs.length - 1) {
-					iIndex = this.aItemDomRefs.length - 1;
+					if (!this.bNoColumnChange) {
+						iIndex = this.aItemDomRefs.length - 1;
+					} else {
+						iIndex = this.iFocusedIndex;
+						bBorderReached = true;
+					}
 				}
-	
+
 				this.focusItem(iIndex, oEvent);
 			}
 		} else if (this.bTableMode) {
 			var iRowCount = this.aItemDomRefs.length / this.iColumns,
 				iCol = this.iFocusedIndex % this.iColumns;
-	
+
 			iIndex = (iRowCount - 1) * this.iColumns + iCol;
 			this.focusItem(iIndex, oEvent);
 		}
-	
+
+		if (bBorderReached) {
+			this.fireEvent(ItemNavigation.Events.BorderReached, {
+				index: iIndex,
+				event: oEvent
+			});
+		}
+
 		// cancel the event otherwise the browser will scroll
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
 	};
-	
+
 	/**
 	 * Handles the onsaphome event
 	 *
@@ -47288,52 +51313,57 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsaphome = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			// or shift or alt key is pressed
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
 		var iIndex = 0;
 		if (this.bTableMode) {
-	
+
 			if (!this.bTableList && !(oEvent.metaKey || oEvent.ctrlKey)) {
 				var iRow = Math.floor(this.iFocusedIndex / this.iColumns);
 				iIndex = iRow * this.iColumns;
 			}
 		} else {
-			if (!!(oEvent.metaKey || oEvent.ctrlKey)) {
-	
+			if (!!(oEvent.metaKey || oEvent.ctrlKey) && !this._bCtrlEnabled) {
+
 				// do not handle ctrl
 				return;
 			}
-	
-			while(!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") === "hidden"
-				|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
-				iIndex++;
-	
-				if (iIndex == this.aItemDomRefs.length) {
-	
-					// no visible item -> no new focus
-					return;
+
+			if (this._bStayInRow && !(this._bCtrlEnabled && (oEvent.metaKey || oEvent.ctrlKey)) && this.iColumns > 0) {
+				var iRow = Math.floor(this.iFocusedIndex / this.iColumns);
+				iIndex = iRow * this.iColumns;
+			}else {
+				while(!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") === "hidden"
+					|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
+					iIndex++;
+
+					if (iIndex == this.aItemDomRefs.length) {
+
+						// no visible item -> no new focus
+						return;
+					}
 				}
 			}
 		}
-	
+
 		this.focusItem(iIndex, oEvent);
-	
+
 		// cancel the event otherwise the browser will scroll
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
 	};
-	
+
 	/**
 	 * Ensure the sapprevious event with modifiers is also handled
 	 *
@@ -47346,10 +51376,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		if (this.hasDisabledModifier(oEvent)) {
 			return;
 		}
-		
+
 		this.onsaphome(oEvent);
 	};
-	
+
 	/**
 	 * Handles the onsapend event
 	 *
@@ -47360,53 +51390,62 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onsapend = function(oEvent) {
-	
+
 		if (!jQuery.sap.containsOrEquals(this.oDomRef, oEvent.target)) {
-	
+
 			// current element is not part of the navigation content
 			// or shift or alt key is pressed
 			return;
 		}
-	
+
 		// in the table mode we only react on events of the domrefs
 		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
 			return;
 		}
-	
+
 		var iIndex = this.aItemDomRefs.length-1;
-	
+
 		if (this.bTableMode) {
 			if (!this.bTableList && !(oEvent.metaKey || oEvent.ctrlKey)) {
 				var iRow = Math.floor(this.iFocusedIndex / this.iColumns);
 				iIndex = iRow * this.iColumns + this.iColumns - 1;
 			}
 		} else {
-	
-			if (!!(oEvent.metaKey || oEvent.ctrlKey)) {
-	
+
+			if (!!(oEvent.metaKey || oEvent.ctrlKey) && !this._bCtrlEnabled) {
+
 				// do not handle ctrl
 				return;
 			}
-	
-			while (!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") == "hidden"
-				|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
-				iIndex--;
-	
-				if (iIndex < 0) {
-	
-					// no visible item -> no new focus
-					return;
+
+			if (this._bStayInRow && !(this._bCtrlEnabled && (oEvent.metaKey || oEvent.ctrlKey)) && this.iColumns > 0) {
+				var iRow = Math.floor(this.iFocusedIndex / this.iColumns);
+				iIndex = (iRow + 1) * this.iColumns - 1;
+				if (iIndex >= this.aItemDomRefs.length) {
+					// item not exist -> use last one
+					iIndex = this.aItemDomRefs.length - 1;
+				}
+			}else {
+				while (!this.aItemDomRefs[iIndex] || !jQuery(this.aItemDomRefs[iIndex]).is(":visible") || jQuery(this.aItemDomRefs[iIndex]).css("visibility") == "hidden"
+					|| !jQuery(this.aItemDomRefs[iIndex]).is(":sapFocusable")) {
+					iIndex--;
+
+					if (iIndex < 0) {
+
+						// no visible item -> no new focus
+						return;
+					}
 				}
 			}
 		}
-	
+
 		this.focusItem(iIndex, oEvent);
-	
+
 		// cancel the event otherwise the browser will scroll
 		oEvent.preventDefault();
 		oEvent.stopPropagation();
 	};
-	
+
 	/**
 	 * Ensure the sapprevious event with modifiers is also handled.
 	 *
@@ -47419,11 +51458,10 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		if (this.hasDisabledModifier(oEvent)) {
 			return;
 		}
-		
+
 		this.onsapend(oEvent);
 	};
-	
-	
+
 	/**
 	 * Sets tabIndex of the RootElement to 0. Is used, for example in image map for IE browser in order to avoid tabIndex -1 on image with what it would not be tabable at all.
 	 *
@@ -47435,7 +51473,7 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 		this.iTabIndex = 0;
 		this.iActiveTabIndex = 0;
 	};
-	
+
 	/**
 	 * toggle navigation/action mode on F2
 	 *
@@ -47444,22 +51482,21 @@ sap.ui.define("sap/ui/core/delegate/ItemNavigation",['jquery.sap.global', 'sap/u
 	 * @function
 	 */
 	ItemNavigation.prototype.onkeyup = function(oEvent) {
-	
+
 		if (oEvent.keyCode == jQuery.sap.KeyCodes.F2) {
-	
+
 			var $DomRef = jQuery(this.oDomRef);
-	
+
 			if ($DomRef.data("sap.InNavArea")) {
 				$DomRef.data("sap.InNavArea", false);
 			} else if($DomRef.data("sap.InNavArea") === false) { // check for false to avoid undefined
 				$DomRef.data("sap.InNavArea", true);
 			}
-	
+
 			oEvent.preventDefault();
 			oEvent.stopPropagation();
 		}
 	};
-	
 
 	return ItemNavigation;
 
@@ -47857,7 +51894,7 @@ sap.ui.define("sap/ui/core/format/DateFormat",['jquery.sap.global', 'sap/ui/core
 					aBuffer.push(jQuery.sap.padLeft(String(iSeconds), "0", oPart.iDigits));
 					break;
 				case "millisecond":
-					aBuffer.push(jQuery.sap.padLeft(String(iMilliseconds), "0", oPart.iDigits));
+					aBuffer.push(jQuery.sap.padRight(jQuery.sap.padLeft(String(iMilliseconds), "0", Math.min(3, oPart.iDigits)), "0", oPart.iDigits));
 					break;
 				case "amPmMarker":
 					var iDayPeriod = iHours < 12 ? 0 : 1;
@@ -48381,23 +52418,30 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	 * <li>maxIntegerDigits: maximum number of non-fraction digits</li>
 	 * <li>minFractionDigits: minimal number of fraction digits</li>
 	 * <li>maxFractionDigits: maximum number of fraction digits</li>
+	 * <li>pattern: CLDR number pattern</li>
 	 * <li>groupingEnabled: enable grouping (show the grouping separators</li>
 	 * <li>groupingSeparator: the used grouping separator</li>
 	 * <li>decimalSeparator: the used decimal separator</li>
 	 * <li>plusSign: the used plus symbol</li>
 	 * <li>minusSign: the used minus symbol</li>
+	 * <li>showMeasure: Show the measure according to the format in the formatted string</li>
 	 * </ul>
 	 * For format options which are not specified default values according to the type and locale settings are used.
 	 *
 	 * @public
 	 * @name sap.ui.core.format.NumberFormat
 	 */
-	var NumberFormat = sap.ui.base.Object.extend("sap.ui.core.format.NumberFormat", /** @lends sap.ui.core.format.NumberFormat */ {
+	var NumberFormat = sap.ui.base.Object.extend("sap.ui.core.format.NumberFormat", /** @lends sap.ui.core.format.NumberFormat.prototype */ {
 		constructor : function(oFormatOptions) {
 			// Do not use the constructor
 			throw new Error();
 		}
 	});
+	
+	NumberFormat.INTEGER = 0;
+	NumberFormat.FLOAT = 1;
+	NumberFormat.CURRENCY = 2;
+	NumberFormat.PERCENT = 3;
 	
 	/*
 	 * Default format options for Integer
@@ -48413,7 +52457,9 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 		decimalSeparator: ".",
 		plusSign: "+",
 		minusSign: "-",
-		isInteger: true
+		isInteger: true,
+		type: NumberFormat.INTEGER,
+		showMeasure: false
 	};
 	
 	/*
@@ -48430,7 +52476,28 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 		decimalSeparator: ".",
 		plusSign: "+",
 		minusSign: "-",
-		isInteger: false
+		isInteger: false,
+		type: NumberFormat.FLOAT,
+		showMeasure: false
+	};
+	
+	/*
+	 * Default format options for Currency
+	 * @name sap.ui.core.format.NumberFormat.oDefaultCurrencyFormat
+	 */
+	NumberFormat.oDefaultCurrencyFormat = {
+		minIntegerDigits: 1,
+		maxIntegerDigits: 99,
+		minFractionDigits: 2,
+		maxFractionDigits: 2,
+		groupingEnabled: true,
+		groupingSeparator: ",",
+		decimalSeparator: ".",
+		plusSign: "+",
+		minusSign: "-",
+		isInteger: false,
+		type: NumberFormat.CURRENCY,
+		showMeasure: true
 	};
 	
 	/**
@@ -48462,8 +52529,13 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	 * @function
 	 */
 	NumberFormat.getFloatInstance = function(oFormatOptions, oLocale) {
-		var oFormat = this.createInstance(oFormatOptions, oLocale);
-		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultFloatFormat, this.getLocaleFormatOptions(oFormat.oLocaleData), oFormatOptions);
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.FLOAT);
+		
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultFloatFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
 		return oFormat;
 	};
 	
@@ -48482,8 +52554,38 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	 * @function
 	 */
 	NumberFormat.getIntegerInstance = function(oFormatOptions, oLocale) {
-		var oFormat = this.createInstance(oFormatOptions, oLocale);
-		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultIntegerFormat, this.getLocaleFormatOptions(oFormat.oLocaleData), oFormatOptions);
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.INTEGER);
+		
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultIntegerFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
+		return oFormat;
+	};
+	
+	/**
+	 * Get an currency instance of the NumberFormat, which can be used for formatting.
+	 *
+	 * If no locale is given, the currently configured 
+	 * {@link sap.ui.core.Configuration.FormatSettings#getFormatLocale formatLocale} will be used. 
+	 *
+	 * @param {object} [oFormatOptions] Object which defines the format options
+	 * @param {sap.ui.core.Locale} [oLocale] Locale to get the formatter for
+	 * @return {sap.ui.core.format.NumberFormat} integer instance of the NumberFormat
+	 * @static
+	 * @public
+	 * @name sap.ui.core.format.NumberFormat.getIntegerInstance
+	 * @function
+	 */
+	NumberFormat.getCurrencyInstance = function(oFormatOptions, oLocale) {
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.CURRENCY);
+
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultCurrencyFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
 		return oFormat;
 	};
 	
@@ -48519,12 +52621,66 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	 * @name sap.ui.core.format.NumberFormat.getLocaleFormatOptions
 	 * @function
 	 */
-	NumberFormat.getLocaleFormatOptions = function(oLocaleData) {
+	NumberFormat.getLocaleFormatOptions = function(oLocaleData, iType) {
+		var oLocaleFormatOptions = {},
+			sNumberPattern;
+		
+		if (iType == NumberFormat.CURRENCY) {
+			sNumberPattern = oLocaleData.getCurrencyPattern();
+			oLocaleFormatOptions = this.parseNumberPattern(sNumberPattern);
+		}
+		
+		oLocaleFormatOptions.plusSign = oLocaleData.getNumberSymbol("plusSign");
+		oLocaleFormatOptions.minusSign = oLocaleData.getNumberSymbol("minusSign");
+		oLocaleFormatOptions.decimalSeparator = oLocaleData.getNumberSymbol("decimal");
+		oLocaleFormatOptions.groupingSeparator = oLocaleData.getNumberSymbol("group");
+		oLocaleFormatOptions.pattern = sNumberPattern;
+		
+		return oLocaleFormatOptions;
+	};
+	
+	/**
+	 * Get digit information from number format.
+	 *
+	 * @static
+	 * @name sap.ui.core.format.NumberFormat.parseNumberFormat
+	 * @function
+	 */
+	NumberFormat.parseNumberPattern = function(sFormatString) {
+		var iMinIntegerDigits = 0;
+		var iMinFractionDigits = 0;
+		var iMaxFractionDigits = 0;
+		var bGroupingEnabled = false;
+		
+		var iSection = 0;
+
+		for (var i=0; i < sFormatString.length; i++) {
+			var sCharacter = sFormatString[i];
+			
+			if (sCharacter === ",") {
+				bGroupingEnabled = true;
+				continue;
+			} else if (sCharacter === ".") {
+				iSection = 1;
+				continue;
+			} else if (iSection == 0 && sCharacter === "0") {
+				iMinIntegerDigits++;
+			} else if (iSection == 1) {
+				if (sCharacter === "0") {
+					iMinFractionDigits++;
+					iMaxFractionDigits++;
+				} else if (sCharacter === "#") {
+					iMaxFractionDigits++;
+				}
+			}
+			
+		}
+		
 		return {
-			plusSign: oLocaleData.getNumberSymbol("plusSign"),
-			minusSign: oLocaleData.getNumberSymbol("minusSign"),
-			decimalSeparator: oLocaleData.getNumberSymbol("decimal"),
-			groupingSeparator: oLocaleData.getNumberSymbol("group")
+			minIntegerDigits: iMinIntegerDigits,
+			minFractionDigits: iMinFractionDigits,
+			maxFractionDigits: iMaxFractionDigits,
+			groupingEnabled: bGroupingEnabled
 		}
 	};
 	
@@ -48532,12 +52688,13 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	 * Format a number according to the given format options.
 	 *
 	 * @param {number} oValue the number to format
+	 * @param {string} sMeasure a measure which has an impact on the formatting
 	 * @return {string} the formatted output value
 	 * @public
 	 * @name sap.ui.core.format.NumberFormat#format
 	 * @function
 	 */
-	NumberFormat.prototype.format = function(oValue) {
+	NumberFormat.prototype.format = function(oValue, sMeasure) {
 		var sNumber = this.convertToDecimal(oValue),
 			sIntegerPart = "",
 			sFractionPart = "",
@@ -48551,7 +52708,14 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 	
 		if (sNumber == "NaN") {
 			return sNumber;
-		}	
+		}
+		
+		//handle measure
+		if (oOptions.type == NumberFormat.CURRENCY) {
+			var iDigits = this.oLocaleData.getCurrencyDigits(sMeasure);
+			oOptions.maxFractionDigits = iDigits;
+			oOptions.minFractionDigits = iDigits;
+		}
 		
 		// if number is negative remove minus
 		if (bNegative) {
@@ -48604,6 +52768,18 @@ sap.ui.define("sap/ui/core/format/NumberFormat",['jquery.sap.global', 'sap/ui/co
 		sResult += sIntegerPart;
 		if (sFractionPart) {
 			sResult += oOptions.decimalSeparator + sFractionPart;
+		}
+		
+		if (sMeasure && oOptions.showMeasure) {
+			if (oOptions.type == NumberFormat.CURRENCY) {
+				var sCurrencyPlaceholder = '\u00a4';
+				var sPattern = oOptions.pattern;
+				
+				sPattern = sPattern.replace(/\u00a4/, this.oLocaleData.getCurrencySymbol(sMeasure));
+				sPattern = sPattern.replace(/[0#.,]+/, sResult);
+				
+				sResult = sPattern;
+			}
 		}
 	
 		if (sap.ui.getCore().getConfiguration().getOriginInfo()) {
@@ -48749,7 +52925,7 @@ sap.ui.define("sap/ui/core/mvc/Controller",['jquery.sap.global', 'sap/ui/base/Ev
 		 * @public
 		 * @name sap.ui.core.mvc.Controller
 		 */
-		var Controller = EventProvider.extend("sap.ui.core.mvc.Controller", /** @lends sap.ui.core.mvc.Controller */ {
+		var Controller = EventProvider.extend("sap.ui.core.mvc.Controller", /** @lends sap.ui.core.mvc.Controller.prototype */ {
 			
 			constructor : function(sName) {
 				var oToExtend = null;
@@ -49321,7 +53497,6 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	function(jQuery, EventProvider, signals, hasher1) {
 	"use strict";
 
-
 	/**
 	 * Class for manipulating and receiving changes of the browserhash with the hasher framework.
 	 * Fires a "hashChanged" event if the browser hash changes.
@@ -49341,7 +53516,7 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 		}
 	
 	});
-	
+
 	/**
 	 * Will start listening to hashChanges with the parseHash function.
 	 * This will also fire a hashchanged event with the initial hash.
@@ -49356,21 +53531,20 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 			jQuery.sap.log.info("this HashChanger instance has already been initialized.");
 			return false;
 		}
-	
+
 		hasher.changed.add(this.fireHashChanged, this); //parse hash changes
-	
+
 		if(!hasher.isActive()) {
 			hasher.initialized.addOnce(this.fireHashChanged, this); //parse initial hash
 			hasher.init(); //start listening for history change
 		} else {
 			this.fireHashChanged(hasher.getHash());
 		}
-	
-		this._initialized = true
+
+		this._initialized = true;
 		return this._initialized;
 	};
-	
-	
+
 	/**
 	 * Fires the hashchanged event, may be extended to modify the hash before fireing the event
 	 * @param {string} newHash the new hash of the browser
@@ -49382,8 +53556,7 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	HashChanger.prototype.fireHashChanged = function(newHash, oldHash) {
 		this.fireEvent("hashChanged",{ newHash : newHash, oldHash : oldHash });
 	};
-	
-	
+
 	/**
 	 * Sets the hash to a certain value. When using the set function a browser history  entry is written. 
 	 * If you do not want to have an entry in the browser history, please use set replaceHash function.
@@ -49393,10 +53566,10 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	 * @function
 	 */
 	HashChanger.prototype.setHash = function(sHash) {
-		this.fireEvent("hashSet",{ sHash : sHash });
+		this.fireEvent("hashSet", { sHash : sHash });
 		hasher.setHash(sHash);
 	};
-	
+
 	/**
 	 * Replaces the hash to a certain value. When using the replace function no browser history is written. 
 	 * If you want to have an entry in the browser history, please use set setHash function.
@@ -49406,11 +53579,10 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	 * @function
 	 */
 	HashChanger.prototype.replaceHash = function(sHash) {
-		this.fireEvent("hashReplaced",{ sHash : sHash });
+		this.fireEvent("hashReplaced", { sHash : sHash });
 		hasher.replaceHash(sHash);
 	};
-	
-	
+
 	/**
 	 * Gets the current hash
 	 * 
@@ -49422,8 +53594,7 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	HashChanger.prototype.getHash = function() {
 		return hasher.getHash();
 	};
-	
-	
+
 	/**
 	 * Cleans the event registration
 	 * @see sap.ui.base.Object.prototype.destroy
@@ -49437,16 +53608,24 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 	};
 	
 	(function() {
-	
-		var _oHashChanger;
-		
+
+		var _oHashChanger = null;
+
+		/**
+		 * Gets a global singleton of the HashChanger. The singleton will get created when this function is invoked for the first time.
+		 * @param oHashChanger {sap.ui.core.routing.HashChanger} The instance for the global singleton.
+		 * @public
+		 * @static
+		 * @name sap.ui.core.routing.HashChanger.getInstance
+		 * @function
+		 */
 		HashChanger.getInstance = function() {
 			if (!_oHashChanger) {
 				_oHashChanger = new HashChanger();
 			}
 			return _oHashChanger;
 		};
-	
+
 		/**
 		 * Sets the hashChanger to a new instance, destroys the old one and copies all its event listeners to the new one
 		 * @param oHashChanger {sap.ui.core.routing.HashChanger} the new instance for the global singleton
@@ -49459,12 +53638,11 @@ sap.ui.define("sap/ui/core/routing/HashChanger",['jquery.sap.global', 'sap/ui/ba
 				jQuery.extend(oHashChanger.mEventRegistry, _oHashChanger.mEventRegistry);
 				_oHashChanger.destroy();
 			}
-			
+
 			_oHashChanger = oHashChanger;
 		};
 		
 	}());
-	
 
 	return HashChanger;
 
@@ -49497,7 +53675,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	 */
 	var History = function(oHashChanger) {
 		this._iHistoryLength = window.history.length;
-		this._aHistory = [];
+		this.aHistory = [];
 		this._bIsInitial = true;
 	
 		if (!oHashChanger) {
@@ -49511,8 +53689,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	
 		this._reset();
 	};
-	
-	
+
 	/**
 	 * Detaches all events and cleans up this instance
 	 * @name sap.ui.core.routing.History#destroy
@@ -49558,7 +53735,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	 * @function
 	 */
 	History.prototype.getPreviousHash = function() {
-		return this._aHistory[this._iHistoryPosition - 1];
+		return this.aHistory[this.iHistoryPosition - 1];
 	};
 	
 	/**
@@ -49568,8 +53745,8 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	 * @function
 	 */
 	History.prototype._reset = function() {	
-		this._aHistory.length = 0;
-		this._iHistoryPosition = 0;
+		this.aHistory.length = 0;
+		this.iHistoryPosition = 0;
 		this._bUnknown = true;
 	
 		/*
@@ -49577,7 +53754,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 		 * if you go from the Unknown to a defined state and then back is pressed we can be sure that the direction is backwards.
 		 * Because the only way from unknown to known state is a new entry in the history.
 		 */
-		this._aHistory[0] = this._oHashChanger.getHash();
+		this.aHistory[0] = this._oHashChanger.getHash();
 	};
 	
 	/**
@@ -49590,46 +53767,46 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	 */
 	History.prototype._getDirection = function(sNewHash, bHistoryLengthIncreased) {	
 		var oDirection = sap.ui.core.routing.HistoryDirection;
-	
+
 		//Next hash was set by the router - it has to be a new entry
 		if (this._oNextHash && this._oNextHash.sHash === sNewHash) {
 			return oDirection.NewEntry;
 		}
-	
+
 		//we have not had a direction yet and the application did not trigger navigation + the browser history does not increase
 		//the user is navigating in his history but we cannot determine the direction
 		if (this._bUnknown) {
 			return oDirection.Unknown;
 		}
-	
+
 		//increasing the history length will add entries but we cannot rely on this as only criteria, since the history length is capped
 		if (bHistoryLengthIncreased) {
 			return oDirection.NewEntry;
 		}
-	
+
 		//At this point we know the user pressed a native browser navigation button
-	
+
 		//both directions contain the same hash we don't know the direction
-		if (this._aHistory[this._iHistoryPosition + 1] === sNewHash && this._aHistory[this._iHistoryPosition - 1] === sNewHash) {
+		if (this.aHistory[this.iHistoryPosition + 1] === sNewHash && this.aHistory[this.iHistoryPosition - 1] === sNewHash) {
 			return oDirection.Unknown;
 		}
-	
-		if (this._aHistory[this._iHistoryPosition - 1] === sNewHash) {
+
+		if (this.aHistory[this.iHistoryPosition - 1] === sNewHash) {
 			return oDirection.Backwards;
 		}
-	
-		if (this._aHistory[this._iHistoryPosition + 1] === sNewHash) {
+
+		if (this.aHistory[this.iHistoryPosition + 1] === sNewHash) {
 			return oDirection.Forwards;
 		}
-	
+
 		//Nothing hit, return unknown since we cannot determine what happened
 		return oDirection.Unknown;
 	};
-	
+
 	History.prototype._onHashChange = function(oEvent) {
 		this._hashChange(oEvent.getParameter("newHash"));
 	};
-	
+
 	/**
 	 * Handles a hash change and cleans up the History
 	 * @private
@@ -49638,62 +53815,61 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	 */
 	History.prototype._hashChange = function(sNewHash) {
 		var oDirection = sap.ui.core.routing.HistoryDirection,
-			iHistoryIndex = jQuery.inArray(sNewHash, this._aHistory),
 			actualHistoryLength = window.history.length,
 			sDirection;
-	
+
 		//We don't want to record replaced hashes
 		if (this._oNextHash && this._oNextHash.bWasReplaced && this._oNextHash.sHash === sNewHash) {
 			//Since a replace has taken place, the current history entry is also replaced
-			this._aHistory[this._iHistoryPosition] = sNewHash;
+			this.aHistory[this.iHistoryPosition] = sNewHash;
 			this._oNextHash = null;
 			return;
 		}
-	
+
 		//a navigation has taken place so the history is not initial anymore.
 		this._bIsInitial = false;
-	
+
 		sDirection = this._sCurrentDirection = this._getDirection(sNewHash, this._iHistoryLength < window.history.length);
-	
+
 		if (this._oNextHash && !this._oNextHash.bWasReplaced) {
 			this._iHistoryLength = actualHistoryLength + 1;
 		} else {
 			this._iHistoryLength = actualHistoryLength;
 		}
-	
+
 		//the next hash direction was determined - set it back
 		if (this._oNextHash) {
 			this._oNextHash = null;
 		}
-	
+
 		//We don't know the state of the history, don't record it set it back to unknown, since we can't say what comes up until the app navigates again
 		if (sDirection === oDirection.Unknown) {
 			this._reset();
 			return;
 		}
-	
+
 		//We are at a known state of the history now, since we have a new entry / forwards or backwards
 		this._bUnknown = false;
-	
+
 		//new history entry
 		if (sDirection === oDirection.NewEntry) {
 			//new item and there where x back navigations before - remove all the forward items from the history
-			if (this._iHistoryPosition + 1 < this._aHistory.length) {
-				this._aHistory = this._aHistory.slice(0, this._iHistoryPosition + 1);
+			if (this.iHistoryPosition + 1 < this.aHistory.length) {
+				this.aHistory = this.aHistory.slice(0, this.iHistoryPosition + 1);
 			}
-			
-			this._aHistory.push(sNewHash);
-			this._iHistoryPosition += 1;
-			return;
-		} 
-	
-		if (sDirection === oDirection.Forwards) {
-			this._iHistoryPosition++;
+
+			this.aHistory.push(sNewHash);
+			this.iHistoryPosition += 1;
 			return;
 		}
-	
+
+		if (sDirection === oDirection.Forwards) {
+			this.iHistoryPosition++;
+			return;
+		}
+
 		if (sDirection === oDirection.Backwards) {
-			this._iHistoryPosition--;
+			this.iHistoryPosition--;
 		}
 	};
 	
@@ -49706,7 +53882,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	History.prototype._hashSet = function(oEvent) {
 		this._hashChangedByApp(oEvent.getParameter("sHash"), false);
 	};
-	
+
 	/**
 	 * Handles a hash change and cleans up the History
 	 * @private
@@ -49716,7 +53892,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	History.prototype._hashReplaced = function(oEvent) {
 		this._hashChangedByApp(oEvent.getParameter("sHash"), true);
 	};
-	
+
 	/**
 	 * Sets the next hash that is going to happen in the hashChange function - used to determine if the app or the browserHistory/links triggered this navigation
 	 * @param {string} sNewHash 
@@ -49727,7 +53903,7 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 	History.prototype._hashChangedByApp = function(sNewHash, bWasReplaced) {
 		this._oNextHash = { sHash : sNewHash, bWasReplaced : bWasReplaced };
 	};
-	
+
 	(function() {
 		var instance = new History(HashChanger.getInstance());
 	
@@ -49741,7 +53917,6 @@ sap.ui.define("sap/ui/core/routing/History",['jquery.sap.global', './HashChanger
 			return instance;
 		};
 	}());
-	
 
 	return History;
 
@@ -49789,7 +53964,7 @@ sap.ui.define("sap/ui/core/routing/Route",['jquery.sap.global', 'sap/ui/base/Eve
 		 * @public
 		 * @name sap.ui.core.routing.Route
 		 */
-		var Route = EventProvider.extend("sap.ui.core.routing.Route", /** @lends sap.ui.core.routing.Route */ {
+		var Route = EventProvider.extend("sap.ui.core.routing.Route", /** @lends sap.ui.core.routing.Route.prototype */ {
 	
 			constructor : function(oRouter, oConfig, oParent) {
 				if (!oConfig.name) {
@@ -50001,12 +54176,12 @@ sap.ui.define("sap/ui/core/util/serializer/Serializer",['jquery.sap.global', 'sa
 	 * @public
 	 * @class Serializer class.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.Serializer
 	 * @experimental Since 1.15.1. The Serializer is still under construction, so some implementation details can be changed in future.
 	 */
-	var Serializer = EventProvider.extend("sap.ui.core.util.serializer.Serializer", /** @lends sap.ui.core.util.serializer.Serializer */
+	var Serializer = EventProvider.extend("sap.ui.core.util.serializer.Serializer", /** @lends sap.ui.core.util.serializer.Serializer.prototype */
 	{
 		constructor : function (oRootControl, serializeDelegate, bSkipRoot, oWindow, fnSkipAggregations) {
 			EventProvider.apply(this);
@@ -50148,12 +54323,12 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/Delegate",['jquery.sap.globa
 	 * @abstract
 	 * @class Abstract serializer delegate class.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.delegate.Delegate
 	 * @experimental Since 1.15.1. The abstract serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
-	var Delegate = EventProvider.extend("sap.ui.core.util.serializer.delegate.Delegate", /** @lends sap.ui.core.util.serializer.delegate.Delegate */
+	var Delegate = EventProvider.extend("sap.ui.core.util.serializer.delegate.Delegate", /** @lends sap.ui.core.util.serializer.delegate.Delegate.prototype */
 	{
 		constructor : function () {
 			EventProvider.apply(this);
@@ -50266,12 +54441,12 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/HTML",['jquery.sap.global', 
 	 * @public
 	 * @class HTML serializer delegate class.
 	 * @extends sap.ui.core.util.serializer.delegate.Delegate
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.delegate.HTML
 	 * @experimental Since 1.15.1. The HTML serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
-	var HTML = Delegate.extend("sap.ui.core.util.serializer.delegate.HTML", /** @lends sap.ui.core.util.serializer.delegate.HTML */
+	var HTML = Delegate.extend("sap.ui.core.util.serializer.delegate.HTML", /** @lends sap.ui.core.util.serializer.delegate.HTML.prototype */
 	{
 		constructor : function (fnGetControlId, fnGetEventHandlerName) {
 			Delegate.apply(this);
@@ -50559,12 +54734,12 @@ sap.ui.define("sap/ui/core/util/serializer/delegate/XML",['jquery.sap.global', '
 	 * @public
 	 * @class XML serializer delegate class.
 	 * @extends sap.ui.core.util.serializer.delegate.Delegate
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.delegate.XML
 	 * @experimental Since 1.15.1. The XML serializer delegate is still under construction, so some implementation details can be changed in future.
 	 */
-	var XML = Delegate.extend("sap.ui.core.util.serializer.delegate.XML", /** @lends sap.ui.core.util.serializer.delegate.XML */
+	var XML = Delegate.extend("sap.ui.core.util.serializer.delegate.XML", /** @lends sap.ui.core.util.serializer.delegate.XML.prototype */
 	{
 		constructor : function (sDefaultNamespace, fnGetControlId, fnGetEventHandlerName, fnMemorizePackage) {
 			Delegate.apply(this);
@@ -50905,11 +55080,11 @@ sap.ui.define("sap/ui/core/ws/WebSocket",['jquery.sap.global', 'sap/ui/Device', 
 	 *
 	 * @class Basic WebSocket class
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.ws.WebSocket
 	 */
-	var WebSocket = EventProvider.extend("sap.ui.core.ws.WebSocket", /** @lends sap.ui.core.ws.WebSocket */ {
+	var WebSocket = EventProvider.extend("sap.ui.core.ws.WebSocket", /** @lends sap.ui.core.ws.WebSocket.prototype */ {
 
 		constructor: function(sUrl, aProtocols) {
 			EventProvider.apply(this);
@@ -51507,7 +55682,7 @@ sap.ui.define("sap/ui/model/Binding",['jquery.sap.global', 'sap/ui/base/EventPro
 	 * @public
 	 * @name sap.ui.model.Binding
 	 */
-	var Binding = EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model.Binding */ {
+	var Binding = EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model.Binding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters){
 			EventProvider.apply(this);
@@ -51912,7 +56087,7 @@ sap.ui.define("sap/ui/model/Context",['jquery.sap.global', 'sap/ui/base/EventPro
 	 * @public
 	 * @name sap.ui.model.Context
 	 */
-	var Context = sap.ui.base.Object.extend("sap.ui.model.Context", /** @lends sap.ui.model.Context */ {
+	var Context = sap.ui.base.Object.extend("sap.ui.model.Context", /** @lends sap.ui.model.Context.prototype */ {
 		
 		constructor : function(oModel, sPath){
 	
@@ -52039,7 +56214,7 @@ sap.ui.define("sap/ui/model/ContextBinding",['jquery.sap.global', './Binding'],
 	 * @public
 	 * @name sap.ui.model.ContextBinding
 	 */
-	var ContextBinding = Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding */ {
+	var ContextBinding = Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters, oEvents){
 			Binding.call(this, oModel, sPath, oContext, mParameters, oEvents);
@@ -52128,12 +56303,16 @@ sap.ui.define("sap/ui/model/Filter",['jquery.sap.global', './FilterOperator'],
 	 * 
 	 * Using object:
 	 * new sap.ui.model.Filter({
-	 *   sPath: ...,
-	 *   sOperator: ...,
-	 *   oValue1: ...,
-	 *   oValue2: ...,
-	 *   aFilters: ...,
-	 *   bAnd: ...
+	 *   path: "...",
+	 *   operator: "...",
+	 *   value1: "...",
+	 *   value2: "..."
+	 * })
+	 * 
+	 * OR:
+	 * new sap.ui.model.Filter({
+	 *   filters: [...],
+	 *   and: true|false
 	 * })
 	 * 
 	 * You can only pass sPath, sOperator and their values OR aFilters and bAnd. You will get an error if you define an invalid combination of filters parameters.
@@ -52155,7 +56334,7 @@ sap.ui.define("sap/ui/model/Filter",['jquery.sap.global', './FilterOperator'],
 	 * @public
 	 * @name sap.ui.model.Filter
 	 */
-	var Filter = sap.ui.base.Object.extend("sap.ui.model.Filter", /** @lends sap.ui.model.Filter */ {
+	var Filter = sap.ui.base.Object.extend("sap.ui.model.Filter", /** @lends sap.ui.model.Filter.prototype */ {
 		constructor : function(sPath, sOperator, oValue1, oValue2){
 			//There are two different ways of specifying a filter
 			//If can be passed in only one object or defined with parameters
@@ -52165,8 +56344,8 @@ sap.ui.define("sap/ui/model/Filter",['jquery.sap.global', './FilterOperator'],
 				this.sOperator = oFilterData.operator;
 				this.oValue1 = oFilterData.value1;
 				this.oValue2 = oFilterData.value2;
-				this.aFilters = oFilterData.aFilters;
-				this.bAnd = oFilterData.bAnd;
+				this.aFilters = oFilterData.filters || oFilterData.aFilters;
+				this.bAnd = oFilterData.and || oFilterData.bAnd;
 			} else {
 				//If parameters are used we have to check weather a regular or a multi filter is speficied
 				if (jQuery.isArray(sPath)) {
@@ -52182,14 +56361,14 @@ sap.ui.define("sap/ui/model/Filter",['jquery.sap.global', './FilterOperator'],
 				this.oValue1 = oValue1;
 				this.oValue2 = oValue2;
 			}
-			if (jQuery.isArray(this.aFilters) && this.bAnd != undefined && !this.sPath && !this.sOperator && !this.oValue1 && !this.oValue2) {
+			if (jQuery.isArray(this.aFilters) && !this.sPath && !this.sOperator && !this.oValue1 && !this.oValue2) {
 				this._bMultiFilter = true;
 				jQuery.each(this.aFilters, function(iIndex, oFilter) {
 					if (!(oFilter instanceof Filter)) {
 						jQuery.sap.log.error("Filter in Aggregation of Multi filter has to be instance of sap.ui.model.Filter");
 					}
 				});
-			} else if (!this.aFilters && !this.bAnd && this.sPath !== undefined && this.sOperator && this.oValue1 !== undefined) {
+			} else if (!this.aFilters && this.sPath !== undefined && this.sOperator && this.oValue1 !== undefined) {
 				this._bMultiFilter = false;
 			} else {
 				jQuery.sap.log.error("Wrong parameters defined for filter.");
@@ -52253,7 +56432,7 @@ sap.ui.define("sap/ui/model/ListBinding",['jquery.sap.global', './Binding', './F
 	 * @public
 	 * @name sap.ui.model.ListBinding
 	 */
-	var ListBinding = Binding.extend("sap.ui.model.ListBinding", /** @lends sap.ui.model.ListBinding */ {
+	var ListBinding = Binding.extend("sap.ui.model.ListBinding", /** @lends sap.ui.model.ListBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters){
 			Binding.call(this, oModel, sPath, oContext, mParameters);
@@ -52320,6 +56499,7 @@ sap.ui.define("sap/ui/model/ListBinding",['jquery.sap.global', './Binding', './F
 	 * @function
 	 * @name sap.ui.model.ListBinding.prototype.filter
 	 * @param {object[]} aFilters Array of filter objects
+	 * @param {sap.ui.model.FilterType} sFilterType Type of the filter which should be adjusted, if it is not given, the standard behaviour applies
 	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
 	 *
 	 * @public
@@ -52331,7 +56511,6 @@ sap.ui.define("sap/ui/model/ListBinding",['jquery.sap.global', './Binding', './F
 	 * @function
 	 * @name sap.ui.model.ListBinding.prototype.sort
 	 * @param {sap.ui.model.Sorter|Array} aSorters the Sorter object or an array of sorters which defines the sort order
-	 * @param {sap.ui.model.FilterType} sFilterType Type of the filter which should be adjusted, if it is not given, the standard behaviour applies
 	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
 	 * @public
 	 */
@@ -52494,13 +56673,13 @@ sap.ui.define("sap/ui/model/Model",['jquery.sap.global', 'sap/ui/base/EventProvi
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.Model
 	 */
-	var Model = EventProvider.extend("sap.ui.model.Model", /** @lends sap.ui.model.Model */ {
+	var Model = EventProvider.extend("sap.ui.model.Model", /** @lends sap.ui.model.Model.prototype */ {
 		
 		constructor : function () {
 			EventProvider.apply(this, arguments);
@@ -53319,7 +57498,7 @@ sap.ui.define("sap/ui/model/SelectionModel",['jquery.sap.global', 'sap/ui/base/E
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {int} iSelectionMode <code>sap.ui.model.SelectionModel.SINGLE_SELECTION</code> or <code>sap.ui.model.SelectionModel.MULTI_SELECTION</code>
 	 *
@@ -53327,7 +57506,7 @@ sap.ui.define("sap/ui/model/SelectionModel",['jquery.sap.global', 'sap/ui/base/E
 	 * @public
 	 * @name sap.ui.model.SelectionModel
 	 */
-	var SelectionModel = EventProvider.extend("sap.ui.model.SelectionModel", /** @lends sap.ui.model.SelectionModel */ {
+	var SelectionModel = EventProvider.extend("sap.ui.model.SelectionModel", /** @lends sap.ui.model.SelectionModel.prototype */ {
 	
 		constructor : function(iSelectionMode) {
 			EventProvider.apply(this);
@@ -53613,6 +57792,82 @@ sap.ui.define("sap/ui/model/SelectionModel",['jquery.sap.global', 'sap/ui/base/E
 		return this;
 	};
 	
+	/**
+	 * Slices a the indices between the two indices from the selection.
+	 * If <code>iFromIndex</code> is smaller than <code>iToIndex</code>, both parameters are swapped.
+	 *
+	 * If the range of removed selection indices includes the current lead selection,
+	 * then the lead selection will be unset (set to -1).
+	 *
+	 * If this call results in a change to the current selection or lead selection, then a
+	 * <code>SelectionChanged</code> event is fired.
+	 *
+	 * @param {int} iFromIndex one end of the interval.
+	 * @param {int} iToIndex other end of the interval
+	 * @return {sap.ui.model.SelectionModel} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.model.SelectionModel#sliceSelectionInterval
+	 * @function
+	 */
+	SelectionModel.prototype.sliceSelectionInterval = function(iFromIndex, iToIndex) {
+		jQuery.sap.assert(typeof iFromIndex === "number", "iFromIndex must be an integer");
+		jQuery.sap.assert(typeof iToIndex === "number", "iToIndex must be an integer");
+	
+		var iFrom = Math.min(iFromIndex, iToIndex);
+		var iTo = Math.max(iFromIndex, iToIndex);
+
+		var aChangedRowIndices = [];
+		var aRemovedIndices = [];
+		var aOldSelectedIndices = this.aSelectedIndices.slice(0);
+		var aSelectedIndices = this.aSelectedIndices;
+		var iLeadIndex = this.iLeadIndex;
+		var iRange = iTo - iFrom + 1;
+		
+		//Check for each item in the range if is selected, if this is the case remove it from the list
+		for (var iIndex = iTo; iIndex >= iFrom; iIndex--) {
+			var iIndexToRemove = jQuery.inArray(iIndex, aSelectedIndices);
+			if (iIndexToRemove > -1) {
+				aSelectedIndices.splice(iIndexToRemove, 1);
+				//Store removed indices to calculate changed indices later
+				aRemovedIndices.push(iIndex);
+			}
+			//if the lead index is removed it is reset
+			if (iIndex === this.iLeadIndex) {
+				iLeadIndex = -1;
+			}
+		}
+
+		//For all entries in the selected indices list, that are behind the removed section decrease the index by the number of removed items
+		for (var iIndex = 0; iIndex < aSelectedIndices.length; iIndex++) {
+			var iOldIndex = aSelectedIndices[iIndex];
+			if (iOldIndex >= iFrom) {
+				var iNewIndex = aSelectedIndices[iIndex] - iRange;
+				if (iOldIndex === iLeadIndex) {
+					iLeadIndex = iNewIndex;
+				}
+				aSelectedIndices[iIndex] = iNewIndex;
+				if (jQuery.inArray(iNewIndex, aOldSelectedIndices) === -1) {
+					aChangedRowIndices.push(iNewIndex);
+				}
+			}
+		}
+		
+		//Get the last x indices from the old list and remove them, because this amount of indices was sliced
+		for (var i = 0; i < aRemovedIndices.length; i++) {
+			var iIndex = aOldSelectedIndices[aOldSelectedIndices.length - 1 - i];
+			if (jQuery.inArray(iIndex, aChangedRowIndices) === -1) {
+				aChangedRowIndices.push(iIndex);
+			}
+		}
+		for (var i = 0; i < aRemovedIndices.length; i++) {
+			if (jQuery.inArray(aRemovedIndices[i], aSelectedIndices) === -1 && jQuery.inArray(aRemovedIndices[i], aChangedRowIndices) === -1) {
+				aChangedRowIndices.push(aRemovedIndices[i]);
+			}
+		}
+
+		this._update(aSelectedIndices, iLeadIndex, aChangedRowIndices);
+		return this;
+	};
 	
 	/**
 	 * Change the selection to the empty set and clears the lead selection.
@@ -53763,7 +58018,7 @@ sap.ui.define("sap/ui/model/SimpleType",['jquery.sap.global', './FormatException
 	 * @extends sap.ui.model.Type
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -53771,7 +58026,7 @@ sap.ui.define("sap/ui/model/SimpleType",['jquery.sap.global', './FormatException
 	 * @public
 	 * @name sap.ui.model.SimpleType
 	 */
-	var SimpleType = Type.extend("sap.ui.model.SimpleType", /** @lends sap.ui.model.SimpleType */ {
+	var SimpleType = Type.extend("sap.ui.model.SimpleType", /** @lends sap.ui.model.SimpleType.prototype */ {
 	
 		constructor : function(oFormatOptions, oConstraints) {
 			Type.apply(this, arguments);
@@ -53906,7 +58161,7 @@ sap.ui.define("sap/ui/model/TreeBinding",['jquery.sap.global', './Binding'],
 	 * @public
 	 * @name sap.ui.model.TreeBinding
 	 */
-	var TreeBinding = Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.TreeBinding */ {
+	var TreeBinding = Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.TreeBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			Binding.call(this, oModel, sPath, oContext, mParameters);
@@ -54028,6 +58283,3426 @@ sap.ui.define("sap/ui/model/TreeBinding",['jquery.sap.global', './Binding'],
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/TreeBinding.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.analytics.AnalyticalBinding') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.model.odata.ODataListBinding
+jQuery.sap.declare('sap.ui.model.analytics.AnalyticalBinding'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/analytics/AnalyticalBinding",['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/ChangeReason', 'sap/ui/model/Sorter', 'sap/ui/model/FilterOperator', 'sap/ui/thirdparty/odata4analytics'],
+	function(jQuery, TreeBinding, ChangeReason, Sorter, FilterOperator, odata4analytics) {
+	"use strict";
+	
+	/**
+	 * @class 
+	 * Tree binding implementation for client models
+	 *
+	 * @param {sap.ui.model.Model} oModel
+	 * @param {string} sPath the path pointing to the tree / array that should be bound
+	 * @param {object} [oContext=null] the context object for this databinding (optional)
+	 * @param {array} [aFilters=null] predefined filter/s contained in an array (optional)
+	 * @param {object} [mParameters=null] additional model specific parameters (optional) 
+	 * 
+	 * @name sap.ui.model.analytics.AnalyticalBinding
+	 * @extends sap.ui.model.TreeBinding
+	 * @experimental This module is only for experimental use!
+	 * @protected
+	 */
+	var AnalyticalBinding = TreeBinding.extend("sap.ui.model.analytics.AnalyticalBinding", /** @lends sap.ui.model.analytics.AnalyticalBinding.prototype */ {
+
+			constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters) {
+				TreeBinding.call(this, oModel, sPath, oContext, aFilters, mParameters);
+
+				// attribute members for maintaining aggregated OData requests
+				this.aGlobalFilter = aFilters;
+				this.aGlobalSorter = aSorters;
+				this.aMaxAggregationLevel = [];
+				this.aAggregationLevel = [];
+				this.oPendingRequests = {};
+				this.oGroupedRequests = {};
+				this.bUseBatchRequests = (mParameters && mParameters.useBatchRequests === true) ? true : false;
+				this.bProvideTotalSize = (mParameters && mParameters.provideTotalResultSize === false) ? false : true;
+				this.bProvideGrandTotals = (mParameters && mParameters.provideGrandTotals === false) ? false : true;
+				this.aRequestQueue = [];
+
+				// attribute members for maintaining loaded data; mapping from groupId to related information
+				this.iTotalSize = -1;
+				this.mKey = {}; // keys of loaded entities belonging to group with given ID
+				this.mFinalLength = {}; // true iff all entities of group with given ID have been loaded (keys in mKey) 
+				this.mLength = {}; // number of currently loaded entities 
+				this.bNeedsUpdate = false;
+
+				// attribute members for maintaining structure details requested by the binding consumer
+				this.oAnalyticalQueryResult = this.oModel.getAnalyticalExtensions().findQueryResultByName(
+						this._getEntitySetFromPath());
+				this.aAnalyticalInfo = [];
+				this.mAnalyticalInfoByProperty = {};
+
+				this.updateAnalyticalInfo(mParameters == undefined ? [] : mParameters.analyticalInfo);
+			}
+
+		});
+
+	/* *******************************
+	 *** Public methods
+	 ********************************/
+
+	// called for initial population and on every subsequent change of grouping structure or filter conditions
+	AnalyticalBinding.prototype.getRootContexts = function(mParameters) {
+		var iAutoExpandGroupsToLevel = (mParameters && mParameters.numberOfExpandedLevels ? mParameters.numberOfExpandedLevels + 1 : 1);
+		var aRootContext = null;
+		if (iAutoExpandGroupsToLevel <= 1) {
+			aRootContext = this._getContextsForParentContext(null);
+			if (iAutoExpandGroupsToLevel == 1) {
+				this._considerRequestGrouping([ this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: null}), 
+				                                this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: "/"}) ]);
+				this.getNodeContexts(this.getModel().getContext("/"), {
+					startIndex : mParameters.startIndex,
+					length : mParameters.length,
+					threshold : mParameters.threshold,
+					level : 0,
+					numberOfExpandedLevels : 0
+				});
+			}
+		}
+		else {
+			aRootContext = this._getContextsForParentContext(null);
+			var aRequestId = this._prepareGroupMembersAutoExpansionRequestIds();
+			aRequestId.push(this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: null}));
+			this._considerRequestGrouping(aRequestId);
+			this.getNodeContexts(this.getModel().getContext("/"), {
+				startIndex : mParameters.startIndex,
+				length : mParameters.length,
+				threshold : mParameters.threshold,
+				level : 0,
+				numberOfExpandedLevels : mParameters.numberOfExpandedLevels
+			});
+/*			jQuery.sap.log.fatal("not yet implemented: number of initially expanded levels may be 0 or 1, but not "
+					+ mParameters.numberOfExpandedLevels);
+*/								
+		}
+		if (aRootContext.length > 1)
+			jQuery.sap.log.fatal("assertion failed: grand total represented by a single entry");
+		return aRootContext;		
+	};
+	
+	AnalyticalBinding.prototype.getNodeContexts = function(oContext, mParameters) {
+		var iStartIndex, iLength, iThreshold, iLevel, iNumberOfExpandedLevels;
+		if (typeof mParameters == "object") {
+			iStartIndex = mParameters.startIndex;
+			iLength = mParameters.length;
+			iThreshold = mParameters.threshold;
+			iLevel = mParameters.level;
+			iNumberOfExpandedLevels = mParameters.numberOfExpandedLevels;
+		} else { // due to compatibility; can be removed if table is adapted
+			iStartIndex = arguments[1];
+			iLength = arguments[2];
+			iThreshold = arguments[3];
+			iLevel = arguments[4];
+			iNumberOfExpandedLevels = arguments[5];
+		}
+	
+		return this._getContextsForParentContext(oContext, iStartIndex, iLength, iThreshold, iLevel, iNumberOfExpandedLevels);
+	};
+	
+	AnalyticalBinding.prototype.ContextsAvailabilityStatus = { ALL: 2, SOME: 1, NONE: 0 };
+	AnalyticalBinding.prototype.hasAvailableNodeContexts = function(oContext, iLevel) {
+		var sGroupId = this._getGroupIdFromContext(oContext, iLevel);
+		if (this.mKey[sGroupId] != undefined)
+			if (this.mFinalLength[sGroupId] == true) 
+				return AnalyticalBinding.prototype.ContextsAvailabilityStatus.ALL;
+			else
+				return AnalyticalBinding.prototype.ContextsAvailabilityStatus.SOME;
+		else
+			return AnalyticalBinding.prototype.ContextsAvailabilityStatus.NONE;
+	};
+	
+	AnalyticalBinding.prototype.getGroupSize = function(oContext, iLevel) {
+		if (oContext === undefined) return 0; // API robustness
+		var sGroupId = this._getGroupIdFromContext(oContext, iLevel);
+	
+		return this.mFinalLength[sGroupId] ? this.mLength[sGroupId] : -1;
+	};
+	
+	AnalyticalBinding.prototype.getTotalSize = function() {
+		if (! this.bProvideTotalSize)
+			jQuery.sap.log.fatal("total size of result explicitly turned off, but getter invoked");
+		return this.iTotalSize;
+	};
+	
+	AnalyticalBinding.prototype.hasChildren = function(oContext, mParameters) {
+	
+		if (oContext === undefined) return false; // API robustness
+		if (oContext == null) return true;
+		var iContextLevel = mParameters.level;
+		if (iContextLevel == 0) return true;
+	
+		if (this.aAggregationLevel.length < iContextLevel) return false;
+		// children exist if it is not the rightmost grouped column or there is at least one further level with an ungrouped groupable columns.
+		return this.aMaxAggregationLevel.indexOf(this.aAggregationLevel[iContextLevel - 1]) < this.aMaxAggregationLevel.length - 1;
+	};
+	
+	AnalyticalBinding.prototype.hasMeasures = function() {
+		var bHasMeasures = false;
+		for(var p in this.oMeasureDetailsSet) {
+			bHasMeasures = true;
+			break;
+		}
+		return bHasMeasures;
+	};
+	
+	/**
+	 * @public
+	 * @function
+	 * @name AnalyticalBinding.prototype.getFilterablePropertyNames
+	 * @returns {Array} The names of the filterable properties in the given entity set.
+	 */
+	AnalyticalBinding.prototype.getFilterablePropertyNames = function() {
+		return this.oAnalyticalQueryResult.getEntityType().getFilterablePropertyNames();
+	};
+	
+	/**
+	 * @public
+	 * @function
+	 * @name AnalyticalBinding.prototype.getPropertyLabel
+	 * @returns {string} The label maintained for the given property.
+	 */
+	AnalyticalBinding.prototype.getPropertyLabel = function(sPropertyName) {
+		return this.oAnalyticalQueryResult.getEntityType().getLabelOfProperty(sPropertyName);
+	};
+	
+	/**
+	 * Filters the tree according to the filter definitions.
+	 * 
+	 * @public
+	 * @function
+	 * @name AnalyticalBinding.prototype.filter
+	 * @param {sap.ui.model.Filter[]}
+	 *            aFilter Array of sap.ui.model.Filter objects
+	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining
+	 */
+	AnalyticalBinding.prototype.filter = function(aFilter) {
+		
+		this.aPropertyFilter = aFilter && aFilter.length > 0 ? aFilter : null;
+	
+		this.iTotalSize = -1; // invalidate last row counter
+
+		this.resetData();
+		this._fireRefresh({
+			reason : ChangeReason.Filter
+		});		
+		
+		return this;
+	};
+	
+	/**
+	 * Sorts the tree.
+	 * 
+	 * @public
+	 * @function
+	 * @name AnalyticalBinding.prototype.sort
+	 * @param {sap.ui.model.Sorter|sap.ui.model.Sorter[]}
+	 *            aSorter the Sorter or an array of sorter objects object which define the sort order
+	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining
+	 */
+	AnalyticalBinding.prototype.sort = function(aSorter) {
+	
+		if (aSorter instanceof Sorter) {
+			aSorter = [ aSorter ];
+		}
+	
+		this.aPropertySorter = aSorter;
+
+		this._fireRefresh({
+			reason : ChangeReason.Sort
+		});
+
+		return this;
+	};
+	
+	AnalyticalBinding.prototype.getGroupName = function(oContext, iLevel) {
+		if (oContext === undefined) return ""; // API robustness
+	
+		var sGroupProperty = this.aAggregationLevel[iLevel - 1],
+			oDimension = this.oAnalyticalQueryResult.findDimensionByPropertyName(sGroupProperty),
+			fValueFormatter = this.mAnalyticalInfoByProperty[sGroupProperty].formatter,
+			sPropertyValue = oContext.getProperty(sGroupProperty),
+			sFormattedPropertyValue = fValueFormatter ? fValueFormatter(sPropertyValue) : sPropertyValue,
+			sGroupName = ((oDimension.getLabelText()) ? oDimension.getLabelText() + ': ' : '') + sFormattedPropertyValue,
+			oTextProperty = null;
+	
+		if (oDimension) {
+			oTextProperty = oDimension.getTextProperty();
+		}
+		if (oTextProperty) {
+			var sTextProperty = oDimension.getTextProperty().name,
+				fTextValueFormatter = this.mAnalyticalInfoByProperty[sGroupProperty].formatter,
+				sTextPropertyValue = oContext.getProperty(sTextProperty),
+				sFormattedTextPropertyValue = fTextValueFormatter ? fTextValueFormatter(sTextPropertyValue) : sTextPropertyValue;
+			if (sFormattedTextPropertyValue) {
+				sGroupName += ' - ' + sFormattedTextPropertyValue;
+			}
+		}
+		// include size information in the group name
+		/*var iGroupSize = this.getGroupSize(oContext, iLevel);
+		if (iGroupSize > -1) {
+			sGroupName += ' (' + iGroupSize + ')';
+		}*/
+		return sGroupName;
+	};
+	
+	AnalyticalBinding.prototype.updateAnalyticalInfo = function(aColumns) {
+		// parameter is an array with elements whose structure is defined by sap.ui.analytics.model.AnalyticalTable.prototype._getColumnInformation()
+		var oPreviousDimensionDetailsSet = this.oDimensionDetailsSet;
+		this.mAnalyticalInfoByProperty = new Object(); // enable associative access to analytical update information
+		this.aMaxAggregationLevel = new Array(); // names of all dimensions referenced by any column
+		this.aAggregationLevel = new Array(); // names of all currently grouped dimensions
+		this.aMeasureName = new Array(); // names of all measures referenced by any column
+		this.iAnalyticalInfoVersionNumber = (this.iAnalyticalInfoVersionNumber === undefined ? 1
+				: (this.iAnalyticalInfoVersionNumber > 999 ? 1 : this.iAnalyticalInfoVersionNumber + 1));
+
+		this.oMeasureDetailsSet = new Object(); // properties with structure {rawValueProperty,unitProperty,formattedValueProperty}
+		this.oDimensionDetailsSet = new Object(); // properties with structure {name,keyProperty,textProperty,aAttributeName}
+	
+		// process column settings for dimensions and measures part of the result or visible
+		for (var i = 0; i < aColumns.length; i++) {
+			// determine requested aggregation level from columns representing dimension-related properties
+			var oDimension = this.oAnalyticalQueryResult.findDimensionByPropertyName(aColumns[i].name);
+			if (oDimension && (aColumns[i].inResult == true || aColumns[i].visible == true)) {
+				aColumns[i].dimensionPropertyName = oDimension.getName();
+				var oDimensionDetails = this.oDimensionDetailsSet[oDimension.getName()];
+				if (!oDimensionDetails) {
+					oDimensionDetails = new Object();
+					oDimensionDetails.name = oDimension.getName();
+					oDimensionDetails.aAttributeName = new Array();
+					oDimensionDetails.grouped = false;
+					this.oDimensionDetailsSet[oDimension.getName()] = oDimensionDetails;
+					this.aMaxAggregationLevel.push(oDimensionDetails.name);
+					if (aColumns[i].grouped == true) this.aAggregationLevel.push(oDimensionDetails.name);
+				}
+				if (aColumns[i].grouped == true) oDimensionDetails.grouped = true;
+				
+				if (oDimension.getName() == aColumns[i].name) {
+					oDimensionDetails.keyPropertyName = aColumns[i].name;
+				}
+				var oTextProperty = oDimension.getTextProperty();
+				if (oTextProperty && oTextProperty.name == aColumns[i].name) {
+					oDimensionDetails.textPropertyName = aColumns[i].name;
+				}
+				if (oDimension.findAttributeByName(aColumns[i].name)) {
+					oDimensionDetails.aAttributeName.push(aColumns[i].name);
+				}				
+			}
+	
+			// determine necessary measure details from columns visualizing measure-related properties
+			var oMeasure = this.oAnalyticalQueryResult.findMeasureByPropertyName(aColumns[i].name);
+			if (oMeasure && (aColumns[i].inResult == true || aColumns[i].visible == true)) {
+				aColumns[i].measurePropertyName = oMeasure.getName();
+				var oMeasureDetails = this.oMeasureDetailsSet[oMeasure.getName()];
+				if (!oMeasureDetails) {
+					oMeasureDetails = new Object();
+					oMeasureDetails.name = oMeasure.getName();
+					this.oMeasureDetailsSet[oMeasure.getName()] = oMeasureDetails;
+					this.aMeasureName.push(oMeasureDetails.name);
+				}
+				if (oMeasure.getRawValueProperty().name == aColumns[i].name) {
+					oMeasureDetails.rawValuePropertyName = aColumns[i].name;
+				}
+				var oFormattedValueProperty = oMeasure.getFormattedValueProperty();
+				if (oFormattedValueProperty && oFormattedValueProperty.name == aColumns[i].name) {
+					oMeasureDetails.formattedValuePropertyName = aColumns[i].name;
+				}
+			}
+			this.mAnalyticalInfoByProperty[aColumns[i].name] = aColumns[i];
+		}
+		// finalize measure information with unit properties also being part of the table
+		var oMeasureDetails;
+		for ( var measureName in this.oMeasureDetailsSet) {
+			var oUnitProperty = this.oAnalyticalQueryResult.findMeasureByName(measureName).getUnitProperty();
+			if (oUnitProperty)
+				this.oMeasureDetailsSet[measureName].unitPropertyName = oUnitProperty.name;
+		}
+
+		// check if any dimension has been added or removed. If so, invalidate the total size
+		var compileDimensionNames = function (oDimensionDetailsSet) {
+			var aName = [];
+			for (var oDimDetails in oDimensionDetailsSet)
+				aName.push(oDimDetails.name);
+			return aName.sort().join(";");
+		};
+		if (compileDimensionNames(oPreviousDimensionDetailsSet) != compileDimensionNames(this.oDimensionDetailsSet))
+			this.iTotalSize = -1;
+		
+		// remember column settings for later reference
+		this.aAnalyticalInfo = aColumns; 
+		
+		// reset attributes holding previously loaded data
+		this.mFinalLength = {};
+		this.mLength = {};
+		this.mKey = {};
+		this.mContexts = {};
+		this.bNeedsUpdate = false;
+	};
+
+	AnalyticalBinding.prototype.getAnalyticalInfoForColumn = function(sColumnName) {
+		return this.mAnalyticalInfoByProperty[sColumnName];
+	};
+	
+	/**
+	 * @public
+	 * @function
+	 * @name AnalyticalBinding.prototype.loadGroups
+	 * @param {Object}
+	 *            oGroupIdRanges Property names are group IDs to be loaded via the model. Property values are arrays of { startIndex, length,
+	 *            threshold } describing the index ranges to be fetched.
+	 */
+	AnalyticalBinding.prototype.loadGroups = function(oGroupIdRanges) {
+		var aGroupId = new Array();
+		for ( var sGroupId in oGroupIdRanges) {
+			aGroupId.push(sGroupId);
+	
+			// clean up existing loaded data for the given group ID
+			delete this.mKey[sGroupId];
+			delete this.mLength[sGroupId];
+			delete this.mFinalLength[sGroupId];
+			
+			var aGroupIdRange = oGroupIdRanges[sGroupId];
+	
+			for (var i = 0; i < aGroupIdRange.length; i++) {
+				var oGroupIdRange = aGroupIdRange[i];
+				// force reload of every requested index range for the given group ID
+				this._getContextsForParentGroupId(sGroupId, oGroupIdRange.startIndex, oGroupIdRange.length,
+						oGroupIdRange.threshold);
+			}
+	
+			var aRequestId = new Array();
+			for (var i = -1, sGroupId; sGroupId = aGroupId[++i]; ) {
+				aRequestId.push(this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sGroupId}));
+			}
+			this._considerRequestGrouping(aRequestId);
+		}
+	};
+	
+	/**
+	 * @function
+	 * @name AnalyticalBinding.prototype.getAnalyticalQueryResult()
+	 */
+	AnalyticalBinding.prototype.getAnalyticalQueryResult = function() {
+		return this.oAnalyticalQueryResult;
+	};
+	
+	
+	/********************************
+	 *** Private section follows
+	 ********************************/
+
+	
+	/**
+	 * Enumeration of request types implemented for the analytical binding.
+	 * Every type <T> is implemented with the two methods prepare<T>Request and process<T>Response, names in proper upper camel case notation.
+	 * @private
+	 */
+	AnalyticalBinding._requestType = { 
+			groupMembersQuery : 1, // members of a named group G identified by its path /G1/G2/G3/.../G/  
+			totalSizeQuery : 2, // total number of entities in result matching all specified filter conditions 
+			groupMembersAutoExpansionQuery : 3, // all members residing in a group or sub group w.r.t. a given group ID  
+			levelMembersQuery : 4, // members of a given level 
+			};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getContextsForParentContext
+	 */
+	AnalyticalBinding.prototype._getContextsForParentContext = function(oParentContext, iStartIndex, iLength,
+			iThreshold, iLevel, iNumberOfExpandedLevels) {
+		if (oParentContext === undefined) return []; // API robustness
+		if (oParentContext && oParentContext.getPath() == "/artificialRootContent") {
+			// special case for artificial root contexts: adjust context to point to the real path
+			oParentContext = this.getModel().getContext("/");
+		}
+		var sParentGroupId = this._getGroupIdFromContext(oParentContext, iLevel);
+		return this._getContextsForParentGroupId(sParentGroupId, iStartIndex, iLength, iThreshold, iNumberOfExpandedLevels);
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getContextsForParentContext
+	 */
+	AnalyticalBinding.prototype._getContextsForParentGroupId = function(sParentGroupId, iStartIndex, iLength,
+			iThreshold, iNumberOfExpandedLevels) {
+		if (sParentGroupId === undefined) return []; // API robustness
+	
+		//	Set default values if start index, threshold, length or number of expanded levels are not defined
+		if (!iStartIndex) iStartIndex = 0;
+	
+		if (!iLength) iLength = this.oModel.iSizeLimit;
+	
+		if (this.mFinalLength[sParentGroupId] && this.mLength[sParentGroupId] < iLength)
+			iLength = this.mLength[sParentGroupId];
+	
+		if (!iThreshold) iThreshold = 0;
+
+		if (!iNumberOfExpandedLevels) iNumberOfExpandedLevels = 0;
+	
+		var aContext, bLoadContexts, oGroupSection, aAutoExpansionGroupHeaderPath, missingMemberCount;
+		
+		var bGroupLevelAutoExpansionIsActive = iNumberOfExpandedLevels > 0 && sParentGroupId != null;
+		if (bGroupLevelAutoExpansionIsActive) {
+			// reduced scope for initial delivery
+			// TODO cleanup by checking data availability
+			/* var iLevel = this._getGroupIdLevel(sParentGroupId);
+			 * oGroupExpansionFirstMember = this._calculateRequiredGroupExpansion(sParentGroupId, iLevel, iStartIndex, iLength + iThreshold);
+			 */
+			aAutoExpansionGroupHeaderPath = []; // TODO not yet supported
+			missingMemberCount = iLength + iThreshold;
+			bLoadContexts = true;
+			aContext = [];
+		}
+		else { // no automatic expansion of group levels
+			aContext = this._getLoadedContextsForGroup(sParentGroupId, iStartIndex, iLength);
+			oGroupSection = this._calculateRequiredGroupSection(sParentGroupId, iStartIndex, iLength, iThreshold, aContext);
+			bLoadContexts = aContext.length != iLength
+					&& !(this.mFinalLength[sParentGroupId] && aContext.length >= this.mLength[sParentGroupId] - iStartIndex);			
+		}
+	
+		if (!bLoadContexts)
+			// all data available so no request will be issued that might be related to some group of requests
+			this._cleanupGroupingForCompletedRequest(this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sParentGroupId}));
+	
+		// check if metadata are already available
+		if (this.oModel.getServiceMetadata()) {
+			// If rows are missing send a request
+			if (bLoadContexts && !this._isRequestPending(this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sParentGroupId}))) {
+				var bNeedTotalSize = this.bProvideTotalSize && this.iTotalSize == -1 && !this._isRequestPending(this._getRequestId(AnalyticalBinding._requestType.totalSizeQuery));
+				if (this.bUseBatchRequests) {
+					var aMembersRequestId;
+					if (bGroupLevelAutoExpansionIsActive) {
+						this.aRequestQueue.push([ AnalyticalBinding._requestType.groupMembersAutoExpansionQuery, sParentGroupId, aAutoExpansionGroupHeaderPath, missingMemberCount, iNumberOfExpandedLevels ]);
+						aMembersRequestId = this._prepareGroupMembersAutoExpansionRequestIds();
+					}
+					else {
+						this.aRequestQueue.push([ AnalyticalBinding._requestType.groupMembersQuery, sParentGroupId, oGroupSection.startIndex, oGroupSection.length ]);
+						aMembersRequestId = [ this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sParentGroupId}) ];
+					}
+					if (bNeedTotalSize) {
+						aMembersRequestId.push(this._getRequestId(AnalyticalBinding._requestType.totalSizeQuery));
+						this._considerRequestGrouping(aMembersRequestId);						
+						this.aRequestQueue.push([ AnalyticalBinding._requestType.totalSizeQuery ]);
+					}
+					jQuery.sap.delayedCall(0, this, AnalyticalBinding.prototype._processRequestQueue);
+				}
+				else {
+					var oMemberRequestDetails;
+					var aMembersRequestId;
+					if (bGroupLevelAutoExpansionIsActive) {
+						oMemberRequestDetails = this._prepareGroupMembersAutoExpansionQueryRequest(AnalyticalBinding._requestType.groupMembersAutoExpansionQuery, sParentGroupId, aAutoExpansionGroupHeaderPath, missingMemberCount, iNumberOfExpandedLevels);
+						aMembersRequestId = oMemberRequestDetails.aRequestId;
+					}
+					else {
+						oMemberRequestDetails = this._prepareGroupMembersQueryRequest(AnalyticalBinding._requestType.groupMembersQuery, sParentGroupId, oGroupSection.startIndex, oGroupSection.length);
+						aMembersRequestId = [ oMemberRequestDetails.sRequestId ];
+					}
+					this._executeQueryRequest(oMemberRequestDetails);
+					if (bNeedTotalSize && !oMemberRequestDetails.bIsFlatListRequest) {
+						aMembersRequestId.push(this._getRequestId(AnalyticalBinding._requestType.totalSizeQuery));						
+						this._considerRequestGrouping(aMembersRequestId);						
+						this._executeQueryRequest(this._prepareTotalSizeQueryRequest(AnalyticalBinding._requestType.totalSizeQuery));
+					}
+				}
+			}
+		}
+	
+		return aContext;
+	
+	};
+	
+	AnalyticalBinding.prototype._processRequestQueue = function() {
+		if (this.aRequestQueue.length == 0) return;
+	
+		var aRequestDetails = [];
+		var bFoundFlatListRequest = false;
+
+		// create request objects: process group member requests first to detect flat list requests 
+		for (var i = -1, aRequestQueueEntry; aRequestQueueEntry = this.aRequestQueue[++i];) {
+			if (aRequestQueueEntry[0] == AnalyticalBinding._requestType.groupMembersQuery) { // request type is at array index 0
+				var oRequestDetails = AnalyticalBinding.prototype._prepareGroupMembersQueryRequest.apply(this, aRequestQueueEntry);
+				bFoundFlatListRequest = bFoundFlatListRequest || oRequestDetails.bIsFlatListRequest;
+				aRequestDetails.push(oRequestDetails);
+			}
+		}
+
+		// create request objects for all other request types 
+		for (var i = -1, aRequestQueueEntry; aRequestQueueEntry = this.aRequestQueue[++i];) {
+			var oRequestDetails = null;
+			switch (aRequestQueueEntry[0]) { // different request types
+			case AnalyticalBinding._requestType.groupMembersQuery:
+				continue;
+			case AnalyticalBinding._requestType.totalSizeQuery:
+				if (!bFoundFlatListRequest)
+					oRequestDetails = AnalyticalBinding.prototype._prepareTotalSizeQueryRequest.apply(this, aRequestQueueEntry);
+				break;
+			default: 
+				jQuery.sap.log.fatal("unhandled request type " + this.aRequestQueue[i][0]);
+				continue;
+			}
+			if (oRequestDetails) aRequestDetails.push(oRequestDetails);
+		}
+	
+		// execute them either directly in case of a single request or via a batch request
+	
+		if (aRequestDetails.length > 1) this._executeBatchRequest(aRequestDetails);
+		else this._executeQueryRequest(aRequestDetails[0]);
+	
+		// clear queue
+		this.aRequestQueue = [];
+	};
+	
+	/** *************************************************************** */
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._prepareGroupMembersQueryRequest
+	 */
+	AnalyticalBinding.prototype._prepareGroupMembersQueryRequest = function(iRequestType, sGroupId, iStartIndex, iLength) {
+		var aGroupId = [];
+		var iCurrentAnalyticalInfoVersion = this.iAnalyticalInfoVersionNumber;
+	
+		// (0) set up analytical OData request object
+		var oAnalyticalQueryRequest = new odata4analytics.QueryResultRequest(this.oAnalyticalQueryResult);
+		oAnalyticalQueryRequest.setResourcePath(this.sPath);
+	
+		// (1) analyze aggregation level of sGroupId
+	
+		// indexes to elements of this.aMaxAggregationLevel marking begin and end of the requested child level
+		var iChildGroupFromLevel = 0, iChildGroupToLevel = -1;
+		if (sGroupId) {
+			aGroupId = this._getGroupIdComponents(sGroupId);
+			iChildGroupFromLevel = iChildGroupToLevel = aGroupId.length;
+	
+			var iUngroupedParentLevelCount = 0;
+			// determine offset for child level (depends on grouped column property of higher aggregation levels)
+			// Ex: Assume aMaxAggregationLevel with (G=grouped,U=ungrouped): [ G1 U1 U2 G2 U3 U4 G3 F5 F6 ... ]
+			// For sGroupId = "G1/G2", initial iChildGroupFromLevel is 2. The following loop will increment it to 4
+			// and consequently point to U3
+			for (var i = 0, iLevel = 0; i < iChildGroupFromLevel; iLevel++) {
+				if (this.oDimensionDetailsSet[this.aMaxAggregationLevel[iLevel]].grouped == false)
+					++iUngroupedParentLevelCount;
+				else
+					++i;
+			}
+			// adjust child levels by number of ungrouped parent levels!
+			iChildGroupFromLevel = iChildGroupToLevel = iChildGroupFromLevel + iUngroupedParentLevelCount;
+	
+			// determine index range for aggregation levels included in child level
+			// (rule: take all lower levels up to and including the first grouped level; G3 in above example
+			if (this.aMaxAggregationLevel.length > 0) {
+				while (this.oDimensionDetailsSet[this.aMaxAggregationLevel[iChildGroupToLevel]].grouped == false)
+					if (++iChildGroupToLevel == this.aMaxAggregationLevel.length) break;
+			}
+		}
+	
+		// (2) set aggregation level for child nodes
+		var aAggregationLevel = this.aMaxAggregationLevel.slice(0, iChildGroupToLevel + 1);
+		oAnalyticalQueryRequest.setAggregationLevel(aAggregationLevel);
+		for (var i = 0; i < aAggregationLevel.length; i++) {
+			var oDimensionDetails = this.oDimensionDetailsSet[aAggregationLevel[i]];
+			var bIncludeKey = (oDimensionDetails.keyPropertyName != undefined);
+			// as we combine the key and text in the group header we also need the text! 
+			var bIncludeText = true; // (oDimensionDetails.textPropertyName != undefined);
+			oAnalyticalQueryRequest.includeDimensionKeyTextAttributes(oDimensionDetails.name, // bIncludeKey: No, always needed!
+			true, bIncludeText, oDimensionDetails.aAttributeName);
+		}
+	
+		// (3) set filter
+		var oFilterExpression = oAnalyticalQueryRequest.getFilterExpression();
+		oFilterExpression.clear();
+		if (this.aGlobalFilter) oFilterExpression.addUI5FilterConditions(this.aGlobalFilter);
+		if (this.aPropertyFilter) oFilterExpression.addUI5FilterConditions(this.aPropertyFilter);
+	
+		if (iChildGroupFromLevel >= 1) {
+			for (var i = 0, l = aGroupId.length; i < l; i++) {
+				oFilterExpression.addCondition(this.aAggregationLevel[i], FilterOperator.EQ, aGroupId[i]);
+			}
+		}
+	
+		// (4) determine if the sub groups will effectively represent leafs (relevant for un-"total"ed columns, see below)
+		var bIsLeafGroupsRequest = !(this.aMaxAggregationLevel.length - iChildGroupToLevel - 1 > 0);
+	
+		// (5) set measures as requested per column
+		var bIncludeRawValue;
+		var bIncludeFormattedValue;
+		var bIncludeUnitProperty;
+		var oMeasureDetails;
+	
+		var aSelectedUnitPropertyName = new Array();
+	
+		if (sGroupId != null || this.bProvideGrandTotals) {
+			// select measures if the requested group is not the root context i.e. the grand totals row, or grand totals shall be determined 
+			oAnalyticalQueryRequest.setMeasures(this.aMeasureName);
+	
+			for ( var sMeasureName in this.oMeasureDetailsSet) {
+				oMeasureDetails = this.oMeasureDetailsSet[sMeasureName];
+				if (!bIsLeafGroupsRequest && this.mAnalyticalInfoByProperty[sMeasureName].total == false) {
+					bIncludeRawValue = false;
+					bIncludeFormattedValue = false;
+					bIncludeUnitProperty = false;
+				} else {
+					bIncludeRawValue = (oMeasureDetails.rawValuePropertyName != undefined);
+					bIncludeFormattedValue = (oMeasureDetails.formattedValuePropertyName != undefined);
+					bIncludeUnitProperty = (oMeasureDetails.unitPropertyName != undefined);
+					if (bIncludeUnitProperty) {
+						// remember unit property together with using measure raw value property for response analysis in success handler
+						if (aSelectedUnitPropertyName.indexOf(oMeasureDetails.unitPropertyName) == -1) {
+							aSelectedUnitPropertyName.push(oMeasureDetails.unitPropertyName);
+						}
+					}
+				}
+				oAnalyticalQueryRequest.includeMeasureRawFormattedValueUnit(oMeasureDetails.name, bIncludeRawValue,
+						bIncludeFormattedValue, bIncludeUnitProperty);
+			}
+			// exclude those unit properties from the selected that are included in the current aggregation level
+			for ( var i in aAggregationLevel) {
+				var iMatchingIndex;
+				if ((iMatchingIndex = aSelectedUnitPropertyName.indexOf(aAggregationLevel[i])) != -1)
+					aSelectedUnitPropertyName.splice(iMatchingIndex, 1);
+			}
+		}
+	
+		// (6) set sort order (for all levels but leafs)
+		var oSorter = oAnalyticalQueryRequest.getSortExpression();
+		oSorter.clear();
+		if (!bIsLeafGroupsRequest) {
+			for ( var i in aAggregationLevel) {
+				var sSortOrder = odata4analytics.SortOrder.Ascending;
+				if (this.mAnalyticalInfoByProperty[aAggregationLevel[i]].sorted)
+					switch (this.mAnalyticalInfoByProperty[aAggregationLevel[i]].sortOrder) {
+					case sap.ui.table.SortOrder.Ascending:
+						sSortOrder = odata4analytics.SortOrder.Ascending;
+						break;
+					case sap.ui.table.SortOrder.Descending:
+						sSortOrder = odata4analytics.SortOrder.Descending;
+						break;
+					}
+				oSorter.addSorter(aAggregationLevel[i], sSortOrder);
+			}
+		}
+		// additionally apply sorters that have been specified external
+		if (this.aGlobalSorter) this._applyUI5SorterToSortExpression(this.aGlobalSorter, oSorter);
+		if (this.aPropertySorter) this._applyUI5SorterToSortExpression(this.aPropertySorter, oSorter);		
+	
+		// (7) set result page boundaries
+		if (iLength == 0) 
+			jQuery.sap.log.fatal("unhandled case: load 0 entities of sub group");
+		oAnalyticalQueryRequest.setResultPageBoundaries(iStartIndex + 1, iStartIndex + iLength);
+	
+		// (8) request result entity count
+		oAnalyticalQueryRequest.setRequestOptions(null, !this.mFinalLength[sGroupId]);
+	
+		return {
+			iRequestType : iRequestType,
+			sRequestId : this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sGroupId}),
+			oAnalyticalQueryRequest : oAnalyticalQueryRequest,
+			sGroupId : sGroupId,
+			aSelectedUnitPropertyName : aSelectedUnitPropertyName,
+			aAggregationLevel : aAggregationLevel,
+			bIsFlatListRequest : bIsLeafGroupsRequest && iChildGroupFromLevel == 0,
+			iStartIndex : iStartIndex,
+			iLength : iLength
+		};
+	};
+
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._prepareTotalSizeQueryRequest
+	 */
+	AnalyticalBinding.prototype._prepareTotalSizeQueryRequest = function(iRequestType) {
+		var iCurrentAnalyticalInfoVersion = this.iAnalyticalInfoVersionNumber;
+	
+		// (0) set up analytical OData request object
+		var oAnalyticalQueryRequest = new odata4analytics.QueryResultRequest(this.oAnalyticalQueryResult);
+		oAnalyticalQueryRequest.setResourcePath(this.sPath);
+	
+		// (1) set aggregation level
+		oAnalyticalQueryRequest.setAggregationLevel(this.aMaxAggregationLevel);
+		oAnalyticalQueryRequest.setMeasures([]);
+
+		// (2) set filter
+		var oFilterExpression = oAnalyticalQueryRequest.getFilterExpression();
+		oFilterExpression.clear();
+		if (this.aGlobalFilter) oFilterExpression.addUI5FilterConditions(this.aGlobalFilter);
+		if (this.aPropertyFilter) oFilterExpression.addUI5FilterConditions(this.aPropertyFilter);
+
+		// (2) fetch almost no data
+		oAnalyticalQueryRequest.setResultPageBoundaries(1, 1);
+
+		// (3) request result entity count
+		oAnalyticalQueryRequest.setRequestOptions(null, true);
+		
+		return {
+			iRequestType : iRequestType,
+			sRequestId : this._getRequestId(AnalyticalBinding._requestType.totalSizeQuery),
+			oAnalyticalQueryRequest : oAnalyticalQueryRequest
+		};		
+	};
+
+
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._prepareGroupMembersAutoExpansionQueryRequest
+	 */
+	AnalyticalBinding.prototype._prepareGroupMembersAutoExpansionQueryRequest = function(iRequestType, sGroupId, aAutoExpansionGroupHeaderPath, iLength, iNumberOfExpandedLevels) {
+		// local helper function for requesting members of a given level (across groups) - copied from _prepareGroupMembersQueryRequest & adapted  
+		var prepareLevelMembersQueryRequest = function(iRequestType, iLevel, aGroupContextFilter, iLength) {
+			var aGroupId = [];
+			var iCurrentAnalyticalInfoVersion = that.iAnalyticalInfoVersionNumber;
+		
+			// (0) set up analytical OData request object
+			var oAnalyticalQueryRequest = new odata4analytics.QueryResultRequest(that.oAnalyticalQueryResult);
+			oAnalyticalQueryRequest.setResourcePath(that.sPath);
+		
+			// (1) set aggregation level for child nodes
+			var aAggregationLevel = that.aAggregationLevel.slice(0, iLevel);
+			oAnalyticalQueryRequest.setAggregationLevel(aAggregationLevel);
+			for (var i = 0; i < aAggregationLevel.length; i++) {
+				var oDimensionDetails = that.oDimensionDetailsSet[aAggregationLevel[i]];
+				var bIncludeKey = (oDimensionDetails.keyPropertyName != undefined);
+				var bIncludeText = (oDimensionDetails.textPropertyName != undefined);
+				oAnalyticalQueryRequest.includeDimensionKeyTextAttributes(oDimensionDetails.name, // bIncludeKey: No, always needed!
+				true, bIncludeText, oDimensionDetails.aAttributeName);
+			}
+		
+			// (3) set filter
+			var oFilterExpression = oAnalyticalQueryRequest.getFilterExpression();
+			oFilterExpression.clear();
+			if (that.aGlobalFilter) oFilterExpression.addUI5FilterConditions(that.aGlobalFilter);
+			if (that.aPropertyFilter) oFilterExpression.addUI5FilterConditions(that.aPropertyFilter);
+			if (that.aPropertyFilter) oFilterExpression.addUI5FilterConditions(that.aPropertyFilter);
+			oFilterExpression.addUI5FilterConditions(aGroupContextFilter);
+
+			var iStartIndex = 0;
+			
+			// (4) determine if the sub groups will effectively represent leafs (relevant for un-"total"ed columns, see below)
+			var bIsLeafGroupsRequest = iLevel - 1 == that.aAggregationLevel.length;
+		
+			// (5) set measures as requested per column
+			var bIncludeRawValue;
+			var bIncludeFormattedValue;
+			var bIncludeUnitProperty;
+			var oMeasureDetails;
+		
+			var aSelectedUnitPropertyName = new Array();
+		
+			// select measures if the requested group is not the root context i.e. the grand totals row, or grand totals shall be determined 
+			oAnalyticalQueryRequest.setMeasures(that.aMeasureName);
+		
+			for ( var sMeasureName in that.oMeasureDetailsSet) {
+				oMeasureDetails = that.oMeasureDetailsSet[sMeasureName];
+				if (!bIsLeafGroupsRequest && that.mAnalyticalInfoByProperty[sMeasureName].total == false) {
+					bIncludeRawValue = false;
+					bIncludeFormattedValue = false;
+					bIncludeUnitProperty = false;
+				} else {
+					bIncludeRawValue = (oMeasureDetails.rawValuePropertyName != undefined);
+					bIncludeFormattedValue = (oMeasureDetails.formattedValuePropertyName != undefined);
+					bIncludeUnitProperty = (oMeasureDetails.unitPropertyName != undefined);
+					if (bIncludeUnitProperty) {
+						// remember unit property together with using measure raw value property for response analysis in success handler
+						if (aSelectedUnitPropertyName.indexOf(oMeasureDetails.unitPropertyName) == -1) {
+							aSelectedUnitPropertyName.push(oMeasureDetails.unitPropertyName);
+						}
+					}
+				}
+				oAnalyticalQueryRequest.includeMeasureRawFormattedValueUnit(oMeasureDetails.name, bIncludeRawValue,
+						bIncludeFormattedValue, bIncludeUnitProperty);
+			}
+			// exclude those unit properties from the selected that are included in the current aggregation level
+			for ( var i in aAggregationLevel) {
+				var iMatchingIndex;
+				if ((iMatchingIndex = aSelectedUnitPropertyName.indexOf(aAggregationLevel[i])) != -1)
+					aSelectedUnitPropertyName.splice(iMatchingIndex, 1);
+			}
+		
+			// (6) set sort order (for all levels but leafs)
+			var oSorter = oAnalyticalQueryRequest.getSortExpression();
+			oSorter.clear();
+			if (!bIsLeafGroupsRequest) {
+				for ( var i in aAggregationLevel) {
+					var sSortOrder = odata4analytics.SortOrder.Ascending;
+					if (that.mAnalyticalInfoByProperty[aAggregationLevel[i]].sorted)
+						switch (that.mAnalyticalInfoByProperty[aAggregationLevel[i]].sortOrder) {
+						case sap.ui.table.SortOrder.Ascending:
+							sSortOrder = odata4analytics.SortOrder.Ascending;
+							break;
+						case sap.ui.table.SortOrder.Descending:
+							sSortOrder = odata4analytics.SortOrder.Descending;
+							break;
+						}
+					oSorter.addSorter(aAggregationLevel[i], sSortOrder);
+				}
+			}
+			// additionally apply sorters that have been specified external
+			if (that.aGlobalSorter) that._applyUI5SorterToSortExpression(that.aGlobalSorter, oSorter);
+			if (that.aPropertySorter) that._applyUI5SorterToSortExpression(that.aPropertySorter, oSorter);		
+		
+			// (7) set result page boundaries
+			if (iLength == 0) 
+				jQuery.sap.log.fatal("unhandled case: load 0 entities of sub group");
+			oAnalyticalQueryRequest.setResultPageBoundaries(iStartIndex + 1, iStartIndex + iLength);
+		
+			return {
+				iRequestType : iRequestType,
+				sRequestId : that._getRequestId(AnalyticalBinding._requestType.levelMembersQuery, { level: iLevel }),
+				oAnalyticalQueryRequest : oAnalyticalQueryRequest,
+				iLevel : iLevel,
+				aSelectedUnitPropertyName : aSelectedUnitPropertyName,
+				aAggregationLevel : aAggregationLevel,
+				bIsFlatListRequest : bIsLeafGroupsRequest,
+				iStartIndex : iStartIndex,
+				iLength : iLength
+			};
+		};
+
+		// function implementation starts here
+		if (aAutoExpansionGroupHeaderPath.length != 0) { // TODO
+			jQuery.sap.log.fatal("group header paths not supported yet");
+			return;
+		}
+		var iMinRequiredLevel = this._getGroupIdLevel(sGroupId) + 1;
+		var iAutoExpandGroupsToLevel = iMinRequiredLevel + iNumberOfExpandedLevels;
+		var aGroupMembersAutoExpansionRequestDetails = [];
+		var aRequestId = [];
+		var that = this;
+		
+		// construct filter condition for addressing the selected group
+		var aFilter = [];
+		var aGroupIdComponent = this._getGroupIdComponents(sGroupId);
+		for (var i = 0; i < aGroupIdComponent.length; i++)
+			aFilter.push(new sap.ui.model.Filter(this.aAggregationLevel[i], sap.ui.model.FilterOperator.EQ, aGroupIdComponent[i]));
+		
+		for (var iLevel = iMinRequiredLevel; iLevel <= iAutoExpandGroupsToLevel; iLevel++) {
+			var iLengthForLevel = Math.ceil((iLength - iLevel)/(iAutoExpandGroupsToLevel - iLevel + 1));
+			var oLevelMembersRequestDetails = prepareLevelMembersQueryRequest(AnalyticalBinding._requestType.levelMembersQuery, iLevel, aFilter, iLengthForLevel);
+			aGroupMembersAutoExpansionRequestDetails.push(oLevelMembersRequestDetails);
+			aRequestId.push(this._getRequestId(AnalyticalBinding._requestType.levelMembersQuery, { level: iLevel }))
+		}
+		
+		return {
+			iRequestType : iRequestType,
+			aRequestId : aRequestId,
+			aGroupMembersAutoExpansionRequestDetails : aGroupMembersAutoExpansionRequestDetails,
+			sGroupId : sGroupId,
+			iLength : iLength
+		};		
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._prepareGroupMembersAutoExpansionQueryRequest
+	 */
+	AnalyticalBinding.prototype._prepareGroupMembersAutoExpansionRequestIds = function(sGroupId, iNumberOfExpandedLevels) {
+		// intention of this function is to encapsulate the knowledge about steps to be taken
+		// for creating request IDs for all relevant requests
+		var iMinRequiredLevel = this._getGroupIdLevel(sGroupId) + 1;
+		var iAutoExpandGroupsToLevel = iMinRequiredLevel + iNumberOfExpandedLevels;
+		var aRequestId = [];
+		for (var iLevel = 1; iLevel <= iAutoExpandGroupsToLevel; iLevel++) {
+			aRequestId.push(this._getRequestId(AnalyticalBinding._requestType.levelMembersQuery, { level: iLevel }))
+		}
+		return aRequestId;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getQueryODataRequestOptions
+	 */
+	AnalyticalBinding.prototype._getQueryODataRequestOptions = function(oAnalyticalQueryRequest) {
+		var sSelect = oAnalyticalQueryRequest.getURIQueryOptionValue("$select");
+		var sFilter = oAnalyticalQueryRequest.getURIQueryOptionValue("$filter");
+		var sOrderBy = oAnalyticalQueryRequest.getURIQueryOptionValue("$orderby");
+		var sSkip = oAnalyticalQueryRequest.getURIQueryOptionValue("$skip");
+		var sTop = oAnalyticalQueryRequest.getURIQueryOptionValue("$top");
+		var sInlineCount = oAnalyticalQueryRequest.getURIQueryOptionValue("$inlinecount");
+	
+		if (this.mParameters["filter"]) sFilter += "and (" + this.mParameters["filter"] + ")";
+	
+		// construct OData request option parameters
+		var aParam = [];
+		if (sSelect) aParam.push("$select=" + sSelect);
+		if (sFilter) aParam.push("$filter=" + sFilter);
+		if (sOrderBy) aParam.push("$orderby=" + sOrderBy);
+		if (sSkip) aParam.push("$skip=" + sSkip);
+		if (sTop) aParam.push("$top=" + sTop);
+		if (sInlineCount) aParam.push("$inlinecount=" + sInlineCount);
+	
+		return aParam;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._executeBatchRequest
+	 */
+	AnalyticalBinding.prototype._executeBatchRequest = function(aRequestDetails) {
+		var iCurrentAnalyticalInfoVersion = this.iAnalyticalInfoVersionNumber;
+	
+		var that = this;
+	
+		var aBatchQueryRequest = [], aExecutedRequestDetails = [];
+		for(var i = -1, oRequestDetails; oRequestDetails = aRequestDetails[++i];) {
+			var oAnalyticalQueryRequest = oRequestDetails.oAnalyticalQueryRequest, sGroupId = oRequestDetails.sGroupId;
+			
+			if (oAnalyticalQueryRequest.getURIQueryOptionValue("$select") == null) {
+				// no dimensions and no measures requested, so create an artificial empty root context (synonym for the regular "/")
+				this.fireDataRequested(); // simulate the async behavior
+				var oEmptyRootContext = this.getModel().getContext("/artificialRootContent");
+	
+				// perform all steps of fct fnSuccess (w/o calling it, b/c its argument is some data object and not a context
+				sGroupId = null;
+				this.mLength[sGroupId] = 1;
+				this.mFinalLength[sGroupId] = true;
+				this.mKey[sGroupId] = [ "artificialRootContent" ];
+				this.bNeedsUpdate = true;
+				// simulate the async behavior for the root context in case of having no sums (TODO: reconsider!)
+				var that = this;
+				setTimeout(function() {
+					that.fireDataReceived();
+				});
+				this.bArtificalRootContext = true;
+				// return immediately - no need to load data...
+				continue;
+			}
+			var sPath = oAnalyticalQueryRequest.getURIToQueryResultEntries();
+			if (sPath.indexOf("/") == 0) sPath = sPath.substring(1);
+			if (! this._isRequestPending(oRequestDetails.sRequestId)) {
+				/* side note: the check for a pending request is repeated at this point (first check occurs in _getContextsForParentGroupId),
+				   because the logic executed for a call to the binding API may yield to identical OData requests in a single batch. 
+				   Since _processRequestQueue, and hence also _executeBatchRequest are executed asynchronously, this method is the first place 
+				   where the set of all operations included in the batch request becomes known and this condition can be checked. */  
+				this._registerNewRequest(oRequestDetails.sRequestId);
+				aBatchQueryRequest.push(this.oModel.createBatchOperation(sPath.replace(/\ /g, "%20"), "GET"));
+				aExecutedRequestDetails.push(oRequestDetails);
+			}
+		}
+
+		jQuery.sap.log.debug("AnalyticalBinding: executing batch request with " + aExecutedRequestDetails.length + " operations");
+		
+		
+		this.oModel.addBatchReadOperations(aBatchQueryRequest);
+		this.fireDataRequested();
+		var res = this.oModel.submitBatch(fnSuccess, fnError, true, true);
+		
+		function fnSuccess(oData, response) {
+			if (aExecutedRequestDetails.length != oData.__batchResponses.length)
+				jQuery.sap.log.fatal("assertion failed: received " + oData.__batchResponses.length 
+						+ " responses for " + aExecutedRequestDetails.length + " read operations in the batch request");
+	
+			if (iCurrentAnalyticalInfoVersion != that.iAnalyticalInfoVersionNumber) {
+				// discard responses for outdated analytical infos
+				that.oRequestHandle = null;
+				for(var i = -1, sRequestId; sRequestId = aExecutedRequestDetails[++i].sRequestId;) {
+					that._deregisterCompletedRequest(sRequestId);
+					that._cleanupGroupingForCompletedRequest(sRequestId);
+				}
+				return;
+			}
+			
+			for (var i = 0; i < oData.__batchResponses.length; i++) {
+				if (oData.__batchResponses[i].data != undefined) {
+					switch (aExecutedRequestDetails[i].iRequestType) {
+						case AnalyticalBinding._requestType.groupMembersQuery:
+							that._processGroupMembersQueryResponse(aExecutedRequestDetails[i], oData.__batchResponses[i].data);
+							break;
+						case AnalyticalBinding._requestType.totalSizeQuery:
+							that._processTotalSizeQueryResponse(aExecutedRequestDetails[i], oData.__batchResponses[i].data);
+							break;
+						default:
+							jQuery.sap.log.fatal("invalid request type " + aExecutedRequestDetails[i].iRequestType);
+						    continue;	
+					}
+				}
+	
+				that.oRequestHandle = null;
+				that._deregisterCompletedRequest(aExecutedRequestDetails[i].sRequestId);
+				that._cleanupGroupingForCompletedRequest(aExecutedRequestDetails[i].sRequestId);
+			}
+
+			// determine the logical success status: true iff all operations succeeded
+			var bOverallSuccess = true;
+			var aBatchErrors = that.oModel._getBatchErrors(oData);
+			if (aBatchErrors.length > 0) bOverallSuccess = false;
+
+			// fire event to indicate completion of request
+			that.oModel.fireRequestCompleted({url : response.requestUri, type : "POST", async : true, 
+				info: "", 
+				infoObject : {}, 
+				success: bOverallSuccess, 
+				errorobject: bOverallSuccess ? {} : that.oModel._handleError(aBatchErrors[0])});
+
+			// fire changes only if all operations succeeded
+			if (bOverallSuccess) that._fireChange({ reason: ChangeReason.Change});
+			
+			that.fireDataReceived(); // raise event here since there is no separate fnCompleted handler for batch requests
+		}	
+		
+		function fnError (oError) {
+			that.oRequestHandle = null;
+			for(var i = -1, oExecutedRequestDetails; oExecutedRequestDetails = aExecutedRequestDetails[++i];) {
+				that._deregisterCompletedRequest(oExecutedRequestDetails.sRequestId);
+				that._cleanupGroupingForCompletedRequest(oExecutedRequestDetails.sRequestId);
+			}
+			if (iCurrentAnalyticalInfoVersion != that.iAnalyticalInfoVersionNumber) {
+				// discard responses for outdated analytical infos
+				return;
+			}
+
+			// fire event to indicate completion of request
+			that.oModel.fireRequestCompleted({url : "", type : "POST", async : true, 
+				info: "", 
+				infoObject : {}, 
+				success: false, 
+				errorobject: that.oModel._handleError(oError)});
+			// fire event to indicate request failure
+			that.fireRequestFailed(that.oModel._handleError(oError));
+
+			that.fireDataReceived();
+		}
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._executeQueryRequest
+	 */
+	AnalyticalBinding.prototype._executeQueryRequest = function(oRequestDetails) {
+		if (oRequestDetails.iRequestType == AnalyticalBinding._requestType.groupMembersAutoExpansionQuery) {
+			// handle auto-expanding requests that are actually a bundle of multiple requests, one per level  
+			for (var i = -1, oAnalyticalQueryRequest; oAnalyticalQueryRequest = oRequestDetails.aGroupMembersAutoExpansionRequestDetails[++i]; ) {
+				this._executeQueryRequest(oAnalyticalQueryRequest);
+			}
+			return;
+		}
+		
+		var iCurrentAnalyticalInfoVersion = this.iAnalyticalInfoVersionNumber;
+	
+		var oAnalyticalQueryRequest = oRequestDetails.oAnalyticalQueryRequest, sGroupId = oRequestDetails.sGroupId;
+	
+		// determine relevant request query options  
+		var sPath = oAnalyticalQueryRequest.getURIToQueryResultEntitySet();
+		var aParam = this._getQueryODataRequestOptions(oAnalyticalQueryRequest);
+	
+		var that = this;
+	
+		if (oAnalyticalQueryRequest.getURIQueryOptionValue("$select") == null) {
+			// no dimensions and no measures requested, so create an artificial empty root context (synonym for the regular "/")
+			this.fireDataRequested(); // simulate the async behavior
+			var oEmptyRootContext = this.getModel().getContext("/artificialRootContent");
+	
+			// perform all steps of fct fnSuccess (w/o calling it, b/c its argument is some data object and not a context
+			sGroupId = null;
+			this.mLength[sGroupId] = 1;
+			this.mFinalLength[sGroupId] = true;
+			this.mKey[sGroupId] = [ "artificialRootContent" ];
+			this.bNeedsUpdate = true;
+			// simulate the async behavior for the root context in case of having no sums (TODO: reconsider!)
+			var that = this;
+			setTimeout(function() {
+				if (that._cleanupGroupingForCompletedRequest(oRequestDetails.sRequestId)) that.fireDataReceived();
+			});
+			this.bArtificalRootContext = true;
+			// return immediately - no need to load data...
+			return;
+		}
+		this._registerNewRequest(oRequestDetails.sRequestId);
+		// execute the request and use the metadata if available
+		this.fireDataRequested();
+		for (var i = 0; i < aParam.length; i++) 
+			aParam[i] = aParam[i].replace(/\ /g, "%20");
+		jQuery.sap.log.debug("AnalyticalBinding: executing query request");		
+		this.oModel._loadData(sPath, aParam, fnSuccess, fnError, false, fnUpdateHandle, fnCompleted);
+	
+		function fnSuccess(oData) {
+			if (iCurrentAnalyticalInfoVersion != that.iAnalyticalInfoVersionNumber) {
+				// discard responses for outdated analytical infos
+				that.oRequestHandle = null;
+				that._deregisterCompletedRequest(oRequestDetails.sRequestId);
+				return;
+			}
+			switch (oRequestDetails.iRequestType) {
+				case AnalyticalBinding._requestType.groupMembersQuery:
+					that._processGroupMembersQueryResponse(oRequestDetails, oData);
+					break;
+				case AnalyticalBinding._requestType.totalSizeQuery:
+					that._processTotalSizeQueryResponse(oRequestDetails, oData);
+					break;
+				case AnalyticalBinding._requestType.levelMembersQuery:
+					that._processLevelMembersQueryResponse(oRequestDetails, oData);
+					break;
+				default:
+					jQuery.sap.log.fatal("invalid request type " + oRequestDetails.iRequestType);
+			    	break;	
+			}
+			that.oRequestHandle = null;
+			that._deregisterCompletedRequest(oRequestDetails.sRequestId);
+		}
+	
+		function fnCompleted() {
+			if (iCurrentAnalyticalInfoVersion != that.iAnalyticalInfoVersionNumber) {
+				// discard responses for outdated analytical infos
+				return;
+			}
+			if (that._cleanupGroupingForCompletedRequest(oRequestDetails.sRequestId)) 
+				that.fireDataReceived();
+		}
+	
+		function fnError(oData) {
+	
+			that.oRequestHandle = null;
+			that._deregisterCompletedRequest(oRequestDetails.sRequestId);
+			that._cleanupGroupingForCompletedRequest(oRequestDetails.sRequestId);
+			if (iCurrentAnalyticalInfoVersion != that.iAnalyticalInfoVersionNumber) {
+				// discard responses for outdated analytical infos
+				return;
+			}
+			that.fireDataReceived();
+		}
+	
+		function fnUpdateHandle(oHandle) {
+			that.oRequestHandle = oHandle;
+		}
+	
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._processGroupMembersQueryResponse
+	 */
+	AnalyticalBinding.prototype._processGroupMembersQueryResponse = function(oRequestDetails, oData) {
+		var sGroupId = oRequestDetails.sGroupId, aSelectedUnitPropertyName = oRequestDetails.aSelectedUnitPropertyName, 
+		aAggregationLevel = oRequestDetails.aAggregationLevel, 
+		iStartIndex = oRequestDetails.iStartIndex, iLength = oRequestDetails.iLength;
+	
+		
+		if (!this.mKey[sGroupId]) this.mKey[sGroupId] = [];
+	
+		var aKey = this.mKey[sGroupId];
+		var iKeyIndex = iStartIndex;
+		var bUnitCheckRequired = (aSelectedUnitPropertyName.length > 0);
+		var sPreviousEntryDimensionKeyString = null, sDimensionKeyString = null;
+		var iFirstMatchingEntryIndex = -1;
+		var iDiscardedEntriesCount = 0;
+		var aAllDimensionSortedByName = null;
+	
+		// Collecting contexts
+		for (var i = 0; i < oData.results.length; i++) {
+			var oEntry = oData.results[i];
+	
+			if (bUnitCheckRequired) {
+				// perform check to detect multiple returned entries for a single group level instance; duplicates are detected by having the same dimension keys  
+				sDimensionKeyString = "";
+				for (var j = 0; j < aAggregationLevel.length; j++) {
+					sDimensionKeyString += oEntry[aAggregationLevel[j]] + "|";
+				}
+				if (sPreviousEntryDimensionKeyString == sDimensionKeyString) {
+					if (iFirstMatchingEntryIndex == -1) iFirstMatchingEntryIndex = i - 1;
+					var iDeviatingUnitPropertyNameIndex = -1, oPreviousEntry = oData.results[i - 1];
+					for (var k = 0; k < aSelectedUnitPropertyName.length; k++) {
+						if (oPreviousEntry[aSelectedUnitPropertyName[k]] != oEntry[aSelectedUnitPropertyName[k]]) {
+							iDeviatingUnitPropertyNameIndex = k; // aggregating dimensions are all the same, entries only differ in currency
+							break;
+						}
+					}
+					if (iDeviatingUnitPropertyNameIndex == -1)
+						jQuery.sap.log.fatal("assertion failed: no deviating units found for result entries " + (i - 1)
+								+ " and " + i);
+				}
+				if ((sPreviousEntryDimensionKeyString != sDimensionKeyString || i == oData.results.length - 1)
+						&& iFirstMatchingEntryIndex != -1) { // after sequence of identical records or if processing the last result entry
+					// pick  first entry with same key combination, create a copy of it and modify that: clear all unit properties that are not part of the aggregation level, and all measures
+					var oMultiUnitEntry = jQuery.extend(true, {}, oData.results[iFirstMatchingEntryIndex]);
+					var oModelEntryObject = this.oModel._getObject("/"
+							+ this.oModel._getKey(oData.results[iFirstMatchingEntryIndex]));
+					for (var k = 0; k < aSelectedUnitPropertyName.length; k++)
+						oMultiUnitEntry[aSelectedUnitPropertyName[k]] = "*";
+					for ( var sMeasureName in this.oMeasureDetailsSet) {
+						var oMeasureDetails = this.oMeasureDetailsSet[sMeasureName];
+						// if (oMeasureDetails.unitPropertyName == undefined) continue;
+						if (oMeasureDetails.rawValuePropertyName != undefined)
+							oMultiUnitEntry[oMeasureDetails.rawValuePropertyName] = "*";
+						if (oMeasureDetails.formattedValuePropertyName != undefined)
+							oMultiUnitEntry[oMeasureDetails.formattedValuePropertyName] = "*";
+					}
+					/*
+					 * assign a key to this new entry that allows to import it into the OData model that is guaranteed to be stable when used for multiple
+					 * bindings 1) Take all(!) grouping dimensions in alphabetical order of their names 2) Concatenate the values of these dimenensions in this
+					 * order separated by "," 3) append some indicator such as "-multiunit-not-dereferencable" to mark this special entry
+					 */
+					var sMultiUnitEntryKey = "";
+					if (aAllDimensionSortedByName == null)
+						// a complete set of sorted dimension names are the basis for stable key values; create array lazily
+						aAllDimensionSortedByName = this.oAnalyticalQueryResult.getAllDimensionNames().concat([]).sort();
+	
+					for (var k = 0; k < aAllDimensionSortedByName.length; k++) {
+						var sDimVal = oMultiUnitEntry[aAllDimensionSortedByName[k]];
+						sMultiUnitEntryKey += (sDimVal === undefined ? "" : sDimVal) + ",";
+					}
+					// this modified copy must be imported to the OData model as a new entry with a modified key and OData metadata
+					oMultiUnitEntry.__metadata.uri = sMultiUnitEntryKey + "-multiple-units-not-dereferencable";
+					delete oMultiUnitEntry.__metadata["self"]; 
+					delete oMultiUnitEntry.__metadata["self_link_extensions"];
+					oMultiUnitEntry["^~volatile"] = true; // mark entry to distinguish it from others contained in the regular OData result
+					this.oModel._importData(oMultiUnitEntry, {});
+					// mark the context for this entry as volatile to facilitate special treatment by consumers
+					this.oModel.getContext('/' + oMultiUnitEntry.__metadata.uri)["_volatile"] = true;
+	
+					// finally, get the entry from the OData model and adjust array aKey to point to the modified key
+					aKey[iKeyIndex - 1] = this.oModel._getKey(oMultiUnitEntry);
+	
+					// calculate how many entries have now been discarded from the result
+					if (i == oData.results.length - 1 && sPreviousEntryDimensionKeyString == sDimensionKeyString) // last row same as previous
+					    iDiscardedEntriesCount += i - iFirstMatchingEntryIndex;
+					else // last row is different from second to last
+					    iDiscardedEntriesCount += i - iFirstMatchingEntryIndex - 1;
+					iFirstMatchingEntryIndex = -1;
+	
+					// add current entry if it has different key combination
+					if (sPreviousEntryDimensionKeyString != sDimensionKeyString)
+						aKey[iKeyIndex++] = this.oModel._getKey(oEntry);
+				} else if (sPreviousEntryDimensionKeyString != sDimensionKeyString)
+					aKey[iKeyIndex++] = this.oModel._getKey(oEntry);
+				sPreviousEntryDimensionKeyString = sDimensionKeyString;
+			} else
+				aKey[iKeyIndex++] = this.oModel._getKey(oEntry);
+		}
+	
+		// update iLength (only when the inline count is available)
+		if (oData.__count) {
+			this.mLength[sGroupId] = parseInt(oData.__count, 10) - iDiscardedEntriesCount;
+			this.mFinalLength[sGroupId] = true;
+			
+			if (oRequestDetails.bIsFlatListRequest)
+				this.iTotalSize = oData.__count;
+		}
+	
+		// if we got data and the results + startindex is larger than the
+		// length we just apply this value to the length
+		if (this.mLength[sGroupId] < iStartIndex + oData.results.length) {
+			this.mLength[sGroupId] = iStartIndex + (oData.results.length - iDiscardedEntriesCount);
+			this.mFinalLength[sGroupId] = false;
+		}
+	
+		// if less entries are returned than have been requested
+		// set length accordingly
+		if ((oData.results.length - iDiscardedEntriesCount) < iLength || iLength === undefined) {
+			this.mLength[sGroupId] = iStartIndex + (oData.results.length - iDiscardedEntriesCount);
+			this.mFinalLength[sGroupId] = true;
+		}
+	
+		// check if there are any results at all...
+		if (oData.results.length == 0) {
+			this.mLength[sGroupId] = 0;
+			this.mFinalLength[sGroupId] = true;
+		}
+	
+		this.bNeedsUpdate = true;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._processGroupMembersQueryResponse
+	 */
+	AnalyticalBinding.prototype._processTotalSizeQueryResponse = function(oRequestDetails, oData) {
+		var oAnalyticalQueryRequest = oRequestDetails.oAnalyticalQueryRequest;
+		
+		if (oData.__count == undefined) {
+			jQuery.sap.log.fatal("missing entity count in query result");
+			return;
+		}
+		this.iTotalSize = oData.__count;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._processGroupMembersQueryResponse
+	 */
+	AnalyticalBinding.prototype._processLevelMembersQueryResponse = function(oRequestDetails, oData) {
+		var oAnalyticalQueryRequest = oRequestDetails.oAnalyticalQueryRequest;
+		
+		if (oData.results.length == 0) return;
+		// Collecting contexts
+		var sPreviousParentGroupId = this._getGroupIdFromContext(
+				this.oModel.getContext("/" + this.oModel._getKey(oData.results[0])), oRequestDetails.iLevel - 1);
+		var aParentGroupODataResult = [];
+		for (var i = 0; i < oData.results.length; i++) {
+			// partition the result into several subsets each of which has a common parent group Id
+			var oEntry = oData.results[i];
+			var oContext = this.oModel.getContext("/" + this.oModel._getKey(oData.results[i]));
+			var sParentGroupId = this._getGroupIdFromContext(oContext, oRequestDetails.iLevel - 1);
+			if (sPreviousParentGroupId == sParentGroupId) {
+				aParentGroupODataResult.push (oEntry);
+				if ( i < oData.results.length - 1) continue;
+			}
+			// transform the subset for processing as group members query response
+			var oGroupMembersRequestDetails = {
+				iRequestType : AnalyticalBinding._requestType.groupMembersQuery,
+				sRequestId : this._getRequestId(AnalyticalBinding._requestType.groupMembersQuery, {groupId: sPreviousParentGroupId}),
+				oAnalyticalQueryRequest : oRequestDetails.oAnalyticalQueryRequest,
+				sGroupId : sPreviousParentGroupId,
+				aSelectedUnitPropertyName : oRequestDetails.aSelectedUnitPropertyName,
+				aAggregationLevel : oRequestDetails.aAggregationLevel,
+				bIsFlatListRequest : false,
+				iStartIndex : oRequestDetails.iStartIndex,
+				iLength : oRequestDetails.iLength
+			};
+			var oParentGroupOData = jQuery.extend(true, {}, oData);
+			oParentGroupOData.results = aParentGroupODataResult;
+			this._processGroupMembersQueryResponse(oGroupMembersRequestDetails, oParentGroupOData)
+			
+			if ( i < oData.results.length - 1) { // setup for processing next parent group 
+				sPreviousParentGroupId = sParentGroupId;
+				aParentGroupODataResult = [ oEntry ];
+			}
+		}
+	};
+	
+	/** *************************************************************** */
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getLoadedContextsForGroup
+	 */
+	AnalyticalBinding.prototype._getLoadedContextsForGroup = function(sGroupId, iStartIndex, iLength) {
+		var aContext = [], oContext, aKey = this.mKey[sGroupId], sKey;
+	
+		if (!aKey) return aContext;
+	
+		if (!iStartIndex) iStartIndex = 0;
+	
+		if (!iLength) {
+			iLength = this.oModel.iSizeLimit;
+			if (this.mFinalLength[sGroupId] && this.mLength[sGroupId] < iLength) iLength = this.mLength[sGroupId];
+		}
+	
+		//	Loop through known data and check whether we already have all rows loaded
+		for (var i = iStartIndex; i < iStartIndex + iLength; i++) {
+			sKey = aKey[i];
+			if (!sKey) {
+				break;
+			}
+			oContext = this.oModel.getContext('/' + sKey);
+			aContext.push(oContext);
+		}
+	
+		return aContext;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._calculateRequiredGroupSection
+	 */
+	AnalyticalBinding.prototype._calculateRequiredGroupSection = function(sGroupId, iStartIndex, iLength, iThreshold, aContext) {
+		// implementation copied from ODataListBinding; name changed here, because analytical binding comprises more calculations 
+		var bLoadNegativeEntries = false, iSectionLength, iSectionStartIndex, iPreloadedSubsequentIndex, iPreloadedPreviousIndex, iRemainingEntries, oSection = {}, aKey = this.mKey[sGroupId], sKey;
+	
+		iSectionStartIndex = iStartIndex;
+		iSectionLength = 0;
+	
+		// check which data exists before startindex; If all necessary data is loaded iPreloadedPreviousIndex stays undefined
+		if (!aKey) {
+			iPreloadedPreviousIndex = iStartIndex;
+			iPreloadedSubsequentIndex = iStartIndex + iLength;
+		} else {
+			for (var i = iStartIndex - 1; i >= Math.max(iStartIndex - iThreshold, 0); i--) {
+				sKey = aKey[i];
+				if (!sKey) {
+					iPreloadedPreviousIndex = i + 1;
+					break;
+				}
+			}
+			// check which data is already loaded after startindex; If all necessary data is loaded iPreloadedSubsequentIndex stays undefined
+			for (var j = iStartIndex + iLength; j < iStartIndex + iLength + iThreshold; j++) {
+				sKey = aKey[j];
+				if (!sKey) {
+					iPreloadedSubsequentIndex = j;
+					break;
+				}
+			}
+		}
+		// calculate previous remaining entries
+		iRemainingEntries = iStartIndex - iPreloadedPreviousIndex;
+		if (iPreloadedPreviousIndex && iStartIndex > iThreshold && iRemainingEntries < iThreshold) {
+			if (aContext.length != iLength)
+				iSectionStartIndex = iStartIndex - iThreshold;
+			else
+				iSectionStartIndex = iPreloadedPreviousIndex - iThreshold;
+	
+			iSectionLength = iThreshold;
+		}
+	
+		// No negative preload needed; move startindex if we already have some data
+		if (iSectionStartIndex == iStartIndex) iSectionStartIndex += aContext.length;
+	
+		//read the rest of the requested data
+		if (aContext.length != iLength) iSectionLength += iLength - aContext.length;
+	
+		//calculate subsequent remaining entries
+		iRemainingEntries = iPreloadedSubsequentIndex - iStartIndex - iLength;
+	
+		if (iRemainingEntries == 0) iSectionLength += iThreshold;
+	
+		if (iPreloadedSubsequentIndex && iRemainingEntries < iThreshold && iRemainingEntries > 0) {
+			//check if we need to load previous entries; If not we can move the startindex
+			if (iSectionStartIndex >= iStartIndex) {
+				iSectionStartIndex = iPreloadedSubsequentIndex;
+				iSectionLength += iThreshold;
+			}
+	
+		}
+	
+		//check final length and adapt sectionLength if needed.
+		if (this.mFinalLength[sGroupId] && this.mLength[sGroupId] < (iSectionLength + iSectionStartIndex))
+			iSectionLength = this.mLength[sGroupId] - iSectionStartIndex;
+	
+		oSection.startIndex = iSectionStartIndex;
+		oSection.length = iSectionLength;
+	
+		return oSection;
+	};
+
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._calculateRequiredGroupSection
+	 * @returns {Object} Either { groupId_Missing, startIndex_Missing, length_Missing } 
+	 * expressing the number (length_Missing) of missing contexts starting in group (groupId_Missing) 
+	 * at position (startIndex_Missing) using depth-first traversal of loaded data, 
+	 * or { null, length_Missing } if the group with given ID (sGroupId) is completely loaded
+	 * and still (length_Missing) further members (of other groups) are missing.
+	 * Special case: { null, 0 } denotes that everything is loaded.
+	 */
+	AnalyticalBinding.prototype._calculateRequiredGroupExpansion = function(sGroupId, iLevel, iStartIndex, iLength) {
+		if (iLevel == /* TODO */ this.iAutoExpandGroupsToLevel) {
+			var aContext = this._getLoadedContextsForGroup(sGroupId, iStartIndex, iLength);
+			var iLastLoadedIndex = iStartIndex + aContext.length - 1;
+			
+			if (!this.mFinalLength[sGroupId]) {
+				if (aContext.length < iLength)
+					return { groupId_Missing: sGroupId, startIndex_Missing: iLastLoadedIndex + 1, length_Missing: iLength - aContext.length }; // loading must start here
+				else
+					return { groupId_Missing: null, length_Missing: 0 }; // finished - everything is loaded	
+			}
+			else {
+				if (aContext.length < iLength)
+					return { groupId_Missing: null, length_Missing: iLength - aContext.length }; // group completely loaded, but some members are still missing
+				else
+					return { groupId_Missing: null, length_Missing: 0 }; // finished - everything is loaded				
+			}
+		}
+		// deepest expansion level not yet reached, so traverse groups in depth-first order
+		var aContext = this._getLoadedContextsForGroup(sGroupId, iStartIndex, iLength);
+		var iLength_Missing = iLength, iLastLoadedIndex = iStartIndex + aContext.length - 1;
+		for (var i = -1, oContext; oContext = aContext[++i]; ) {
+			iLength_Missing--; // count the current context			
+			var oGroupExpansionFirstMember = this._calculateRequiredGroupExpansion(this._getGroupIdFromContext(oContext, iLevel), iLevel + 1, 0, iLength_Missing);
+			if (oGroupExpansionFirstMember.groupId_Missing == null) {
+				if (oGroupExpansionFirstMember.startIndex_Missing == 0)
+					return oGroupExpansionFirstMember; // finished - everything is loaded
+				else
+					iLength_Missing = oGroupExpansionFirstMember.length_Missing;
+			}
+			else {
+				return oGroupExpansionFirstMember; // loading must start here
+			}
+			if (iLength_Missing == 0) break;
+		}
+		
+		if (this.mFinalLength[sGroupId] || iLength_Missing == 0)
+			return { groupId_Missing: null, length_Missing: iLength_Missing }; // group completely; maybe some members are still missing
+		else
+			return { groupId_Missing: sGroupId, startIndex_Missing: iLastLoadedIndex + 1, length_Missing: iLength_Missing }; // loading must start here
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getEntitySetFromPath
+	 */
+	AnalyticalBinding.prototype._getEntitySetFromPath = function() {
+	
+		var sEntityset = this.sPath.split("/")[1];
+	
+		if (sEntityset.indexOf("(") != -1) {
+			sEntityset = sEntityset.split("(")[0] + "Results";
+		}
+	
+		return sEntityset;
+	
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._applyUI5SorterToSortExpression
+	 */
+	AnalyticalBinding.prototype._applyUI5SorterToSortExpression = function(aSorter, oSortExpression) {
+		if (aSorter) {
+			for ( var i in aSorter) {
+				var oPropertyAnalyticalInfo = this.mAnalyticalInfoByProperty[aSorter[i].sPath];
+				if (oPropertyAnalyticalInfo === undefined || oPropertyAnalyticalInfo == null)
+					jQuery.sap.log.fatal("assertion failed: sorting property " + aSorter[i].sPath + " not found in analytical info");
+				// add the to be sorted property only if it is not related to one of the dimensions used in the current aggregation level
+				oSortExpression.addSorter(aSorter[i].sPath, aSorter[i].bDescending ? odata4analytics.SortOrder.Descending
+						: odata4analytics.SortOrder.Ascending);
+			}
+		}
+	};
+
+	/********************************
+	 *** Processing Group IDs 
+	 ********************************/
+
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getGroupIdFromContext
+	 */
+	AnalyticalBinding.prototype._getGroupIdFromContext = function(oContext, iLevel) {
+	
+		if (!oContext) { return null; }
+		var sGroupId = "/";
+		var sDimensionMember = null;
+		if (iLevel > this.aAggregationLevel.length)
+			jQuery.sap.log.fatal("assertion failed: aggregation level deeper than number of current aggregation levels");
+		for (var i = 0; i < iLevel; i++) {
+			sDimensionMember = oContext.getProperty(this.aAggregationLevel[i]);
+			if (sDimensionMember != null) {
+				sGroupId += encodeURIComponent(sDimensionMember) + "/"; // encode to escape slashes and at signs in the value
+			} else {
+				sGroupId += "@/";
+			}
+		}
+	
+		return sGroupId;
+	};
+
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getGroupIdLevel
+	 */
+	AnalyticalBinding.prototype._getGroupIdLevel = function(sGroupId) {
+		if (sGroupId == null) {
+			jQuery.sap.log.fatal("assertion failed: no need to determine level of group ID = null");
+			return -1;
+		}
+		return sGroupId.split("/").length - 2;
+	};
+
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getGroupIdComponents
+	 */
+	AnalyticalBinding.prototype._getGroupIdComponents = function(sGroupId) {
+		if (sGroupId == null) return null;
+		var aGroupId = sGroupId.split("/");
+		var aDecodedComponent = new Array();
+		for (var i = 1; i < aGroupId.length - 1; i++) { // skip leading and trailing "" array elements
+			if (aGroupId[i] == "@")
+				aDecodedComponent[i - 1] = null;
+			else
+				aDecodedComponent[i - 1] = decodeURIComponent(aGroupId[i]);
+		}
+		return aDecodedComponent;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getGroupIdAncestors
+	 * @param {integer} iNumLevels anchestors starting at the root if greater than 0, or starting at the parent of sGroupId if less than 0.
+	 */
+	AnalyticalBinding.prototype._getGroupIdAncestors = function(sGroupId, iNumLevels) {
+		if (!iNumLevels) return [];
+		if (sGroupId == null) {
+			jQuery.sap.log.fatal("group ID null does not have ancestors");
+			return [];
+		}
+		if (sGroupId == "/")
+			if (Math.abs(iNumLevels) == 1) return [ null ];
+			else {
+				jQuery.sap.log.fatal("invalid level count " + iNumLevels + " for ancestors of groupId " + sGroupId);
+				return [];
+			}
+		var aGroupId = sGroupId.split("/");
+		var aAncestorGroupId = new Array(), sAncestorGroupId = "";
+		var iFromLevel = 0, iToLevel = aGroupId.length - 3;
+		if (iNumLevels > 0)
+			if (iNumLevels - 1 > iToLevel)
+				jQuery.sap.log.fatal("invalid level count " + iNumLevels + " for ancestors of groupId " + sGroupId);
+			else iToLevel = iNumLevels - 1;
+		else if (-(iNumLevels + 1) > iToLevel) jQuery.sap.log.fatal("invalid level count " + iNumLevels + " for ancestors of groupId " + sGroupId);
+			else {
+				iFromLevel = iToLevel + 1 + iNumLevels;
+				for (var i = 0; i < iFromLevel; i++) {
+					sAncestorGroupId += aGroupId[i] + "/";
+				}
+			}
+		for (var i = iFromLevel; i <= iToLevel; i++) {
+			sAncestorGroupId += aGroupId[i] + "/";
+			aAncestorGroupId.push(sAncestorGroupId);
+		}
+		return aAncestorGroupId;
+	};
+	
+	/**
+	 * @private
+	 * @function
+	 * @name AnalyticalBinding.prototype._getParentGroupId
+	 */
+	AnalyticalBinding.prototype._getParentGroupId = function(sGroupId) {
+		return this._getGroupIdAncestors(sGroupId, -1)[0];
+	};
+	
+	AnalyticalBinding.prototype._removeDuplicatesFromStringArray = function(aString) {
+		var oTemp = {};
+		for (var i = 0; i < aString.length; i++)
+			oTemp[aString[i]] = true;
+		var aUniqueString = [];
+		for (var s in oTemp)
+			aUniqueString.push(s);
+		return aUniqueString;
+	};
+	
+	/********************************
+	 *** Maintaining pending requests
+	 ********************************/
+	
+	/*
+	 * Construction of request Ids for the various types of requests
+	 */
+
+	/**
+	 * Construct a request ID for a query request of the specified type
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype._getRequestId = function(iRequestType, mParameters) {
+		switch (iRequestType) {
+		case AnalyticalBinding._requestType.groupMembersQuery:
+			if (mParameters.groupId === undefined) 
+				jQuery.sap.log.fatal("missing group ID");
+			var sGroupId = mParameters.groupId;
+			return AnalyticalBinding._requestType.groupMembersQuery + (sGroupId == null ? "" : sGroupId);
+		case AnalyticalBinding._requestType.levelMembersQuery:
+			if (mParameters.level === undefined) 
+				jQuery.sap.log.fatal("missing level");
+			var iLevel = mParameters.level;
+			return "" + AnalyticalBinding._requestType.levelMembersQuery + iLevel;
+		case AnalyticalBinding._requestType.totalSizeQuery:
+			return AnalyticalBinding._requestType.totalSizeQuery;
+		default:
+			jQuery.sap.log.fatal("invalid request type " + iRequestType);
+			return -1;
+		}
+	};
+	
+	/**
+	 * Register another request to maintain its lifecycle (pending, comppleted)
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype._registerNewRequest = function(sRequestId) {
+		if (sRequestId == undefined || sRequestId == "") { 
+			jQuery.sap.log.fatal("missing request ID");
+			return;
+		}
+		if (!this.oPendingRequests[sRequestId])
+			this.oPendingRequests[sRequestId] = 1;
+		else
+			++this.oPendingRequests[sRequestId];
+	};
+	
+	/**
+	 * Declare a group of related (pending) requests
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype._considerRequestGrouping = function(aRequestId) {
+		for (var i = -1, sRequestId; sRequestId = aRequestId[++i]; ) {
+			if (this.oGroupedRequests[sRequestId] === undefined) this.oGroupedRequests[sRequestId] = {};
+			var oGroup = this.oGroupedRequests[sRequestId];
+			for (var j = 0; j < aRequestId.length; j++)
+				oGroup[aRequestId[j]] = true;
+		}
+	};
+	
+	/**
+	 * Is a request pending for a given group ID?
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype._isRequestPending = function(sRequestId) {
+		return this.oPendingRequests[sRequestId] != undefined && this.oPendingRequests[sRequestId] > 0;
+	};
+	
+	/**
+	 * Deregister a request, because its data have been received and processed. A call to this method must be followed 
+	 * (not immediately, but logically) by this._cleanupGroupingForCompletedRequest to cleanup grouping information.
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype._deregisterCompletedRequest = function(sRequestId) {
+		if (!this.oPendingRequests[sRequestId])
+			jQuery.sap.log.fatal("assertion failed: there is no pending request ID " + sRequestId);
+		if (this.oPendingRequests[sRequestId] == 1)
+			delete this.oPendingRequests[sRequestId];
+		else
+			--this.oPendingRequests[sRequestId];
+	};
+	
+	/**
+	 * Cleanup request grouping, because its data have been received and processed. This method allows a caller to determine if it is possible
+	 * to raise the "all data received" event for a group of related OData requests.
+	 * 
+	 * A call to this method must be preceded by this._deregisterCompletedRequest to mark the received response.
+	 * 
+	 * @private
+	 * @function
+	 * @return a Boolean whether or not all requests grouped together with this request have now been completed
+	 */
+	AnalyticalBinding.prototype._cleanupGroupingForCompletedRequest = function(sRequestId) {
+		if (this._isRequestPending(sRequestId)) return false;
+		var bGroupCompleted = true;
+		if (this.oGroupedRequests[sRequestId] != undefined) {
+			for ( var sOtherRequestId in this.oGroupedRequests[sRequestId]) {
+				if (this.oPendingRequests[sOtherRequestId]) {
+					bGroupCompleted = false;
+					break;
+				}
+			}
+		}
+		if (bGroupCompleted) {
+			var oRelatedGroup = this.oGroupedRequests[sRequestId];
+			delete this.oGroupedRequests[sRequestId];
+			for ( var sOtherRequestId in oRelatedGroup) {
+				if (sOtherRequestId != sRequestId) this._cleanupGroupingForCompletedRequest(sOtherRequestId);
+			}
+		}
+		return bGroupCompleted;
+	};
+	
+	/**
+	 * Resets the current list data and length
+	 * 
+	 * @private
+	 * @function
+	 */
+	AnalyticalBinding.prototype.resetData = function(oContext) {
+		if (oContext) {
+			//Only reset specific content
+			var sPath = oContext.getPath();
+	
+			delete this.mKey[sPath];
+			delete this.mLength[sPath];
+			delete this.mFinalLength[sPath];
+		} else {
+			this.mKey = {};
+			this.mLength = {};
+			this.mFinalLength = {};
+		}
+	};
+	
+	/**
+	 * Refreshes the binding, check whether the model data has been changed and fire change event if this is the case. For server side models this should refetch
+	 * the data from the server. To update a control, even if no data has been changed, e.g. to reset a control after failed validation, please use the parameter
+	 * bForceUpdate.
+	 * 
+	 * @public
+	 * @function
+	 * @param {boolean}
+	 *            [bForceUpdate] Update the bound control even if no data has been changed
+	 * @param {object}
+	 *            [mChangedEntities]
+	 * @param {string]
+	 *            [mEntityTypes]
+	 */
+	AnalyticalBinding.prototype.refresh = function(bForceUpdate, mChangedEntities, mEntityTypes) {
+		var bChangeDetected = false;
+		if (!bForceUpdate) {
+			if (mEntityTypes) {
+				var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
+				var oEntityType = this.oModel.oMetadata._getEntityTypeByPath(sResolvedPath);
+				if (oEntityType && (oEntityType.entityType in mEntityTypes)) bChangeDetected = true;
+			}
+			if (mChangedEntities && !bChangeDetected) {
+				jQuery.each(this.mKey, function(i, aNodeKeys) {
+					jQuery.each(aNodeKeys, function(i, sKey) {
+						if (sKey in mChangedEntities) {
+							bChangeDetected = true;
+							return false;
+						}
+					});
+					if (bChangeDetected) return false;
+				});
+			}
+			if (!mChangedEntities && !mEntityTypes) { // default
+				bChangeDetected = true;
+			}
+		}
+		if (bForceUpdate || bChangeDetected) {
+			this.resetData();
+			this.bNeedsUpdate = false;
+			this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+		}
+	};
+	
+	/**
+	 * Check whether this Binding would provide new values and in case it changed, inform interested parties about this.
+	 * 
+	 * @public
+	 * @function
+	 * @param {boolean}
+	 *            bForceUpdate
+	 */
+	AnalyticalBinding.prototype.checkUpdate = function(bForceUpdate, mChangedEntities) {
+		var bChangeDetected = false;
+		if (!bForceUpdate) {
+			if (this.bNeedsUpdate || !mChangedEntities) {
+				bChangeDetected = true;
+			} else {
+				jQuery.each(this.mKey, function(i, aNodeKeys) {
+					jQuery.each(aNodeKeys, function(i, sKey) {
+						if (sKey in mChangedEntities) {
+							bChangeDetected = true;
+							return false;
+						}
+					});
+					if (bChangeDetected) return false;
+				});
+			}
+		}
+		if (bForceUpdate || bChangeDetected) {
+			this.bNeedsUpdate = false;
+			this._fireChange();
+		}
+	};
+	
+	return AnalyticalBinding;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/analytics/AnalyticalBinding.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.analytics.TreeBindingAdapter') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.model.odata.ODataAnnotations
+jQuery.sap.declare('sap.ui.model.analytics.TreeBindingAdapter'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/analytics/TreeBindingAdapter",['jquery.sap.global', 'sap/ui/model/TreeBinding', './AnalyticalBinding'],
+	function(jQuery, TreeBinding, AnalyticalBinding) {
+	"use strict";
+
+	/**
+	 * Adapter for TreeBindings to add the ListBinding functionality and use the 
+	 * tree structure in list based controls.
+	 *
+	 * @name sap.ui.model.analytics.TreeBindingAdapter
+	 * @function
+	 * @experimental This module is only for experimental use!
+	 * @protected
+	 */
+	var TreeBindingAdapter = function() {
+	
+		// ensure only TreeBindings are enhanced which have not been enhanced yet
+		if(!(this instanceof TreeBinding && this.getContexts === undefined)) {
+			return;
+		}
+	
+		// apply the methods of the adapters prototype to the TreeBinding instance
+		for (var fn in TreeBindingAdapter.prototype) {
+			if (TreeBindingAdapter.prototype.hasOwnProperty(fn)) {
+				this[fn] = TreeBindingAdapter.prototype[fn];
+			}
+		}
+		
+		// initialize the contexts
+		this._aContexts = [];
+		this._aContextInfos = [];
+		this._aExpanding = [];
+		this._bInitial = true;
+		
+		//store all contexts that are currently expanded to enable automatic reopening of groups
+		this._oExpanded = {};
+		this._oOpenGroups = {};
+		this._bTriggeredOpenGroupsLoad = false;
+	};
+	
+	TreeBindingAdapter.prototype._updateContexts = function(iPosition, aContexts, aContextInfos, bReplace) {
+		for ( var i = 0; i < aContexts.length; i++) {
+			var oContext = aContexts[i];
+			var oContextInfo = aContextInfos[i];
+			this._aContexts.splice(iPosition, bReplace ? 1 : 0, oContext);
+			this._aContextInfos.splice(iPosition, bReplace ? 1 : 0, oContextInfo);
+			iPosition++;
+		}
+	
+		return aContextInfos;
+	};
+	
+	TreeBindingAdapter.prototype.getLength = function() {
+		return this._aContexts.length;
+	};
+	
+	TreeBindingAdapter.prototype.getContextInfo = function(iIndex) {
+		return this._aContextInfos.slice(iIndex, iIndex + 1)[0];
+	};
+	
+	TreeBindingAdapter.prototype._createContextInfos = function(aContexts, oParent, iPosition, iLevel, bSum, iIndexOffset) {
+		if (!iIndexOffset) {
+			iIndexOffset = 0;
+		}
+		var aContextInfos = [];
+		for ( var i = 0; i < aContexts.length; i++) {
+			var oChildContext = aContexts[i];
+			aContextInfos.push({
+				context: oChildContext,
+				level: iLevel,
+				expanded: false,
+				childCount: 0,
+				parent: oParent,
+				sum: bSum,
+				position: iPosition,
+				index: i + iIndexOffset
+			});
+			iPosition++;
+		}
+		return aContextInfos;
+	};
+	
+	TreeBindingAdapter.prototype.getContexts = function(iStartIndex, iLength, iThreshold) {
+	
+		var that = this;
+	
+		// by default the length is like the sizelimit of the model
+		if (!iLength) {
+			iLength = this.oModel.iSizeLimit;
+		}
+	
+		if (this._bInitial) {
+			var aRootContexts = this.getRootContexts({
+				startIndex: iStartIndex,
+				length: iLength,
+				threshold: iThreshold,
+				numberOfExpandedLevels: this.mParameters.numberOfExpandedLevels
+			});
+			if (aRootContexts && aRootContexts.length > 0) {
+				this._bInitial = false;
+				var aNewContextInfos = this._createContextInfos(aRootContexts, null, 0, 0, true);
+				if (this.bProvideGrandTotals) {
+					this._updateContexts(0, aRootContexts, aNewContextInfos);
+				}
+				this._aExpanding = aNewContextInfos;
+			}
+		}
+	
+		if (this._oOpenGroups != {} && this._bTriggeredOpenGroupsLoad == false) {
+			this.loadGroups(this._oOpenGroups);
+			this._bTriggeredOpenGroupsLoad = true;
+		} else {
+			this._processExpand(iLength, iThreshold);
+		}
+	
+		// returns the context from the start index with the specified length 
+		var aContexts = this._aContexts.slice(iStartIndex, iStartIndex + iLength);
+		var oMissingSections = {};
+	
+		jQuery.each(aContexts, function(iIndex, oContext) {
+			if (!oContext) {
+				var oContextInfo = that._aContextInfos[iStartIndex + iIndex];
+				var oParent = oContextInfo.parent;
+				var oSection = oMissingSections[oParent.getPath()];
+				if (oSection) {
+					oSection.startIndex = Math.min(oSection.startIndex, oContextInfo.index);
+					oSection.position = Math.min(oSection.position, oContextInfo.position);
+					oSection.endIndex = Math.max(oSection.endIndex, oContextInfo.index);
+				} else {
+					oMissingSections[oParent.getPath()] = {
+						startIndex: oContextInfo.index,
+						endIndex: oContextInfo.index,
+						parent: oContextInfo.parent,
+						level: oContextInfo.level - 1,
+						position: oContextInfo.position
+					};
+				}
+			}
+		});
+	
+		//Load contexts from missing sections
+		var that = this,
+			bUpdatedMissingSection = false;
+		jQuery.each(oMissingSections, function(iIndex, oSection) {
+			var aMissingContexts = that.getNodeContexts(oSection.parent, {
+				startIndex: oSection.startIndex, 
+				length: oSection.endIndex - oSection.startIndex + 1,
+				threshold: iThreshold,
+				level: oSection.level,
+				numberOfExpandedLevels: Math.max(that.mParameters.numberOfExpandedLevels - oSection.level, 0)
+			});
+			if (aMissingContexts.length > 0) {
+				// integrate the contexts into the local context cache
+				that._updateContexts(oSection.position, aMissingContexts, that._createContextInfos(aMissingContexts, oSection.parent, oSection.position, oSection.level + 1, false), true);
+				that._updateExpandedInfo(oSection.parent, oSection.level, oSection.startIndex, oSection.endIndex - oSection.startIndex + 1, iThreshold);
+				bUpdatedMissingSection = true;
+			}
+		});
+		
+		if (bUpdatedMissingSection) {
+			aContexts = this._aContexts.slice(iStartIndex, iStartIndex + iLength);
+		}
+	
+		return aContexts;
+	};
+	
+	TreeBindingAdapter.prototype._processExpand = function(iLength, iThreshold) {
+		var that = this,
+			iStartLength = this._aExpanding.length,
+			bAddedExpand = false,
+			bHasMeasures = this.hasMeasures();
+	
+		for(var i = this._aExpanding.length - 1; i >= 0; i--) {
+			var oContextInfo = this._aExpanding[i];
+			var oContext = oContextInfo.context;
+
+			var bNoGrandTotalRoot = !this.bProvideGrandTotals && oContext.getPath() === "/artificialRootContent";
+			if (jQuery.inArray(oContext, this._aContexts) == -1 && !bNoGrandTotalRoot) {
+				continue;
+			}
+
+			var aContexts = this.getNodeContexts(oContext, {
+				startIndex: 0,
+				length: iLength,
+				threshold: iThreshold,
+				level: oContextInfo.level
+			});
+			if (aContexts && aContexts.length > 0) {
+				var iRealLength = this.getGroupSize(oContext, oContextInfo.level),
+					iInitialPosition = oContextInfo.parent ? oContextInfo.position + 1 : 0,
+					iPosition = iInitialPosition,
+					iLevel = oContextInfo.level + 1,
+					aContextInfos = this._createContextInfos(aContexts, oContext, iPosition, iLevel, false);
+				
+				var bAddedExpand = false;
+				for (var j=0; j<aContexts.length; j++) {
+					if (iLevel < this.aAggregationLevel.length && this._oOpenGroups[this._getGroupIdFromContext(aContexts[j], iLevel)]) {
+						this._aExpanding.push(aContextInfos[j]);
+						delete this._oOpenGroups[this._getGroupIdFromContext(aContexts[j], iLevel)];
+						bAddedExpand = true;
+					}
+				}
+
+				iPosition += aContextInfos.length;
+				var iIndexOffset = aContextInfos.length;
+	
+				if (iRealLength > -1) {
+					for (var j=aContexts.length; j<iRealLength; j++) {
+						aContexts.push(undefined);
+						aContextInfos.push(this._createContextInfos([undefined], oContext, iPosition, iLevel, false, iIndexOffset)[0]);
+						iPosition++;
+						iIndexOffset++;
+					}
+				}
+	
+				// add parent context as sum context
+				if (oContext && oContextInfo.parent != null && iRealLength > 1 && !this.mParameters.sumOnTop && bHasMeasures) {
+					aContexts.push(oContext);
+					aContextInfos.push(this._createContextInfos([oContext], oContext, iPosition, iLevel - 1, true, iIndexOffset)[0]);
+				}
+	
+				var iContextLength = aContexts.length;
+				this._updateContexts(iInitialPosition, aContexts, aContextInfos);
+				
+				var iLastInsertPosition = iInitialPosition + iContextLength;
+	
+				// iterate through the parent contexts to increase the child count
+				var oParentContextInfo;
+				iLevel--;
+				var iIteratePosition = iInitialPosition;
+				while (oParentContextInfo = this._aContextInfos[iIteratePosition]) {
+					if (oParentContextInfo.level == iLevel) {
+						oParentContextInfo.childCount = oParentContextInfo.childCount + iContextLength;
+						iLevel--;
+					}
+					iIteratePosition--;
+					if (iLevel < 0) break;
+				}
+				
+				var oLastInsertPositionContexInfo = this._aContextInfos[iLastInsertPosition];
+				if (oLastInsertPositionContexInfo) {
+					var iIncrease = this._aContextInfos[iLastInsertPosition - 1].position - oLastInsertPositionContexInfo.position + 1;
+					
+					for (var j=iLastInsertPosition; j<this._aContextInfos.length; j++) {
+						this._aContextInfos[j].position += iIncrease;
+					}
+				}
+	
+				if (oContextInfo) { //not defined for root
+					oContextInfo.expanded = true;
+				}
+				this._updateExpandedInfo(oContextInfo.context, oContextInfo.level, 0, iLength, iThreshold);
+				this._aExpanding.splice(i, 1);
+			}
+		}
+		
+		if ((iStartLength != this._aExpanding.length && this._aExpanding.length > 0) || bAddedExpand) {
+			this._processExpand(iLength, iThreshold);
+		}
+	};
+	
+	TreeBindingAdapter.prototype._updateExpandedInfo = function(oContext, iLevel, iStartIndex, iLength, iThreshold) {
+		var sAbsolutePath = this._getGroupIdFromContext(oContext, iLevel);
+		var aPath = sAbsolutePath.substr(0, sAbsolutePath.length - 1).split("/");
+		var oExpanded = this._oExpanded;
+		for (var j=0; j<aPath.length; j++) {
+			var sPath = aPath[j];
+			if (j == 0) {
+				sPath = "root";
+			}
+			oExpanded[sPath] = oExpanded[sPath] || {};
+			oExpanded = oExpanded[sPath];
+			if (j == aPath.length - 1) {
+				oExpanded["sections"] = oExpanded["sections"] || [];
+				if (oExpanded["sections"].length == 0) {
+					oExpanded["sections"].push({
+						startIndex: iStartIndex,
+						length: iLength,
+						threshold: iThreshold
+					});
+				}
+				var bEditedSection = false;
+				for (var k=0; k<oExpanded["sections"].length; k++) {
+					var oSection = oExpanded["sections"][k];
+					var iSectionEndIndex = oSection.startIndex + oSection.length + oSection.threshold;
+					var iEndIndex = iStartIndex + iLength + iThreshold;
+					if (oSection.startIndex <= iStartIndex && iSectionEndIndex >= iEndIndex) {
+						//Sections is already part of another section
+						return
+					} else if (oSection.startIndex <= iStartIndex && iSectionEndIndex >= iStartIndex) {
+						//Section starts within current section -> enlarge
+						oSection.threshold = Math.max(oSection.threshold, iThreshold);
+						oSection.length = iEndIndex - oSection.startIndex - oSection.threshold;
+						bEditedSection = true;
+					} else if (oSection.startIndex > iStartIndex && iSectionEndIndex > iEndIndex) {
+						//Sections ends in existing section
+						oSection.length = oSection.length + (oSection.startIndex - iStartIndex);
+						oSection.startIndex = iStartIndex;
+						oSection.threshold = Math.max(oSection.threshold, iThreshold);
+						bEditedSection = true;
+					} else if (oSection.startIndex > iStartIndex && oSection.endIndex < iEndIndex) {
+						//Replace section
+						oSection.startIndex = iStartIndex;
+						oSection.length = iLength;
+						oSection.threshold = iThreshold;
+						bEditedSection = true;
+					}
+				}
+				if (!bEditedSection) {
+					oExpanded["sections"].push({
+						startIndex: iStartIndex,
+						length: iLength,
+						threshold: iThreshold
+					});
+				}
+			} else {
+				oExpanded["children"] = oExpanded["children"] || {};
+				oExpanded["childProperty"] = this.aAggregationLevel[j];
+				oExpanded = oExpanded["children"];
+			}
+		}
+	};
+
+	
+	TreeBindingAdapter.prototype.expand = function(iIndex) {
+		var oContextInfo = this._aContextInfos[iIndex];
+		// if the context is already expanded => return
+		if (oContextInfo.expanded) {
+			return;
+		}
+		
+		this._aExpanding.push(oContextInfo);
+	};
+	
+	TreeBindingAdapter.prototype.collapse = function(iIndex) {
+	
+		var oContextInfo = this._aContextInfos[iIndex];
+		var oContext = this._aContexts[iIndex];
+
+		// if the context is already collapsed => return
+		// the root node cannot be collapsed => return
+		if (!oContextInfo.expanded) {
+			return;
+		}
+	
+		// determine the position of the context incl. length and level
+		var iPosition = oContextInfo.position + 1,
+			iLength = oContextInfo.childCount,
+			iLevel = oContextInfo.level;
+		
+		var oExpanded = this._oExpanded["root"];
+		var sAbsolutePath = this._getGroupIdFromContext(oContext, iLevel);
+		var aPath = sAbsolutePath.substr(0, sAbsolutePath.length - 1).split("/");
+		for (var i=1; i<iLevel; i++) {
+			oExpanded = oExpanded["children"][aPath[i]];
+		}
+		delete oExpanded["children"][aPath[aPath.length - 1]];
+	
+		// remove the child nodes
+		var iRemovePosition = iPosition;
+		this._aContexts.splice(iPosition, iLength);
+		this._aContextInfos.splice(iPosition, iLength);
+		
+		iPosition--;
+		
+	
+		// update the parent nodes with the new length/child count
+		var oParentContextInfo;
+		while (oParentContextInfo = this._aContextInfos[iPosition]) {
+			if (oParentContextInfo.level == iLevel) {
+				oParentContextInfo.childCount = oParentContextInfo.childCount - iLength;
+				iLevel--;
+			}
+			iPosition--;
+			if (iLevel < 0) break;
+		}
+		
+		if (iRemovePosition < this._aContextInfos.length) {
+			var iDecrease = this._aContextInfos[iRemovePosition - 1].position - this._aContextInfos[iRemovePosition].position + 1;
+			
+			for (var j=iRemovePosition; j<this._aContextInfos.length; j++) {
+				this._aContextInfos[j].position += iDecrease;
+			}
+		}
+	
+		// node is collapse now => notifiy control
+		oContextInfo.expanded = false;
+	};
+	
+	TreeBindingAdapter.prototype.collapseAll = function(iLevel) {
+		if (!iLevel || iLevel < 1) {
+			iLevel = 1;
+		}
+		for (var i=0, j=this._aContextInfos.length; i < j; i++) {
+			if (this._aContextInfos[i].level == iLevel) {
+				this.collapse(i);
+				j = this._aContextInfos.length;
+			}
+		}
+	};
+	
+	TreeBindingAdapter.prototype.toggleIndex = function(iIndex) {
+		//length attribute contains how many rows could be potentially displayed below the expanded context
+		if (!this._aContextInfos[iIndex].expanded) {
+			this.expand(iIndex);
+		} else {
+			this.collapse(iIndex);
+		}
+	};
+	
+	TreeBindingAdapter.prototype.indexHasChildren = function(iIndex) {
+		var oContextInfo = this._aContextInfos[iIndex];
+		if (!oContextInfo.parent || oContextInfo.sum) {
+			return false;
+		} else {
+			return AnalyticalBinding.prototype.hasChildren.call(this, oContextInfo.context, { level: oContextInfo.level });
+		}
+	};
+	
+	TreeBindingAdapter.prototype.resetData = function(oContext) {
+		var vReturn = AnalyticalBinding.prototype.resetData.call(this, oContext);
+		this._aContexts = [];
+		this._aContextInfos = [];
+		this._aExpanding = [];
+		this._oOpenGroups = {};
+		this._removeGroups(this._oExpanded["root"], 0, '');
+		this._oExpanded = {};
+		this._bInitial = true;
+		this._bTriggeredOpenGroupsLoad = false;
+		return vReturn;
+	};
+	
+	TreeBindingAdapter.prototype.updateAnalyticalInfo = function(aColumns) {
+		var vReturn = AnalyticalBinding.prototype.updateAnalyticalInfo.call(this, aColumns);
+		this._aContexts = [];
+		this._aContextInfos = [];
+		this._aExpanding = [];
+		this._oOpenGroups = {};
+		this._removeGroups(this._oExpanded["root"], 0, '');
+		this._oExpanded = {};
+		this._bInitial = true;
+		this._bTriggeredOpenGroupsLoad = false;
+		return vReturn;
+	};
+
+	TreeBindingAdapter.prototype._removeGroups = function(oGroup, iLevel, sPrefix) {
+		if (!oGroup) {
+			return;
+		}
+
+		this._oOpenGroups[sPrefix + '/'] = oGroup.sections;
+
+		if (!oGroup.childProperty) {
+			return;
+		}
+
+		if (oGroup.childProperty != this.aAggregationLevel[iLevel]) {
+			delete oGroup.children;
+			delete oGroup.childProperty;
+		} else {
+			for(var child in oGroup.children) {
+				this._removeGroups(oGroup.children[child], iLevel + 1, sPrefix + '/' + child);
+			}
+		}
+
+	};
+
+	return TreeBindingAdapter;
+	
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/analytics/TreeBindingAdapter.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.odata.Filter') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides a filter for list bindings
+jQuery.sap.declare('sap.ui.model.odata.Filter'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/odata/Filter",['jquery.sap.global', 'sap/ui/model/Filter', 'sap/ui/model/FilterOperator'],
+	function(jQuery, Filter, FilterOperator) {
+	"use strict";
+
+
+	/**
+	 * Constructor for Filter
+	 *
+	 * @class
+	 * Filter for the list binding
+	 *
+	 * @param {string} sPath the binding path for this filter
+	 * @param {object[]} aValues Array of FilterOperators and their values: [{operator:"GE",value1:"val1"},{operator:"LE",value1:"val1"},{operator:"BT",value1:"val1",value2:"val2"}]
+	 * @param {boolean} [bAND=true] If true the values from aValues will be ANDed; otherwise ORed
+	 * @public
+	 * @name sap.ui.model.odata.Filter
+	 * @deprecated Since 1.22. Please use the sap.ui.model.Filter instead (@link: sap.ui.model.Filter).
+	 */
+	var ODataFilter = sap.ui.base.Object.extend("sap.ui.model.odata.Filter", /** @lends sap.ui.model.odata.Filter.prototype */ {
+		
+		constructor : function(sPath, aValues, bAND){
+			if (typeof sPath === "object") {
+				var oFilterData = sPath;
+				sPath = oFilterData.path;
+				aValues = oFilterData.values;
+				bAND = oFilterData.and;
+			}
+			this.sPath = sPath;
+			this.aValues = aValues;
+			this.bAND = bAND == undefined ? true : bAND;
+		},
+		
+		
+		/**
+		 * Converts the <code>sap.ui.model.odata.Filter</code> into a 
+		 * <code>sap.ui.model.Filter</code>. 
+		 * 
+		 * @return {sap.ui.model.Filter} a <code>sap.ui.model.Filter</code> object
+		 * @public
+		 */
+		convert: function() {
+			
+			// covert the values array into an array of filter objects
+			var aFilters = [];
+			for (var i = 0, l = this.aValues && this.aValues.length || 0; i < l; i++) {
+				aFilters.push(new Filter({
+					path: this.sPath,
+					operator: this.aValues[i].operator,
+					value1: this.aValues[i].value1,
+					value2: this.aValues[i].value2
+				}));
+			}
+			
+			// create the new filter object based on the filters
+			if (aFilters.length > 1) {
+				var oFilter = new Filter({
+					filters: aFilters,
+					and: this.bAND
+				});
+				
+				return oFilter;
+			} else {
+				return aFilters[0];
+			}
+			
+		}
+	
+	});
+	
+
+	return ODataFilter;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/odata/Filter.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataAnnotations') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.model.odata.ODataAnnotations
+jQuery.sap.declare('sap.ui.model.odata.ODataAnnotations'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/odata/ODataAnnotations",['jquery.sap.global', 'sap/ui/base/EventProvider'],
+	function(jQuery, EventProvider) {
+	"use strict";
+
+	/* global OData */// declare unusual global vars for JSLint/SAPUI5 validation
+	/**
+	 * !!! EXPERIMENTAL !!!
+	 *
+	 * @param {string} sAnnotationURI
+	 * @param {sap.ui.model.odata.ODataMetadata} oMetadata
+	 * @param {object} mParams
+	 *
+	 * @class Implementation to access oData Annotations
+	 *
+	 * @author SAP AG
+	 * @version
+	 * 1.22.4
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.model.odata.ODataAnnotations
+	 * @extends sap.ui.base.Object
+	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
+	 */
+	var ODataAnnotations = sap.ui.base.EventProvider.extend("sap.ui.model.odata.ODataAnnotations", /** @lends sap.ui.model.odata.ODataAnnotations.prototype */
+	{
+
+		constructor : function(sAnnotationURI, oMetadata, mParams) {
+			"use strict";
+			EventProvider.apply(this, arguments);
+			this.oMetadata = oMetadata;
+			this.oAnnotations = null;
+			this.bInitialized = false;
+			this.bLoaded = false;
+			this.bAsync = mParams.async;
+			this.xPath = null;
+			this.sAnnotationURI = sAnnotationURI;
+			this.oXMLDoc = null;
+			this.error = null;
+			this.oAlias = {};
+			this.bValidXML = true;
+			this.oRequestHandle = null;
+			this.oLoadEvent = null;
+			this.oFailedEvent = null;
+
+			// Whether the xml document is in MS proprietary
+			this.xmlCompatVersion = false;
+
+
+			if (sAnnotationURI) {
+				this.loadXML();
+
+				if (!this.bAsync) {
+					// Synchronous loading, we can directly check for errors
+					jQuery.sap.assert(
+						!jQuery.isEmptyObject(this.oMetadata), 
+						"Metadata must be available for synchronous annotation loading"
+					);
+					if (this.error) {
+						jQuery.sap.log.error(
+							"OData annotations could not be loaded: " + this.error.message
+						);
+					}
+				}
+			}
+		},
+		metadata : {
+			publicMethods : ["parse", "getAnnotationsData", "attachFailed", "detachAnnoationsFailed", "attachLoaded", "detachLoaded"]
+		}
+
+	});
+
+	/**
+	 * returns the raw annotation data
+	 * 
+	 * @public
+	 * @returns {object} returns annotations data 
+	 */
+	ODataAnnotations.prototype.getAnnotationsData = function() {
+		return this.oAnnotations;
+	};
+	
+	/**
+	 * Checks whether annotations is available
+	 * 
+	 * @public
+	 * @returns {boolean} returns whether annotations is already loaded
+	 */
+	ODataAnnotations.prototype.isLoaded = function() {
+		return this.bLoaded;
+	};
+
+	/**
+	 * Fire event loaded to attached listeners.
+	 *
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @protected
+	 */
+	ODataAnnotations.prototype.fireLoaded = function() {
+		this.fireEvent("loaded");
+		return this;
+	};
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'loaded' event of this <code>sap.ui.model.odata.ODataAnnotations</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataAnnotations.prototype.attachLoaded = function(oData, fnFunction, oListener) {
+		this.attachEvent("loaded", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'loaded' event of this <code>sap.ui.model.odata.ODataAnnotations</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataAnnotations.prototype.detachLoaded = function(fnFunction, oListener) {
+		this.detachEvent("loaded", fnFunction, oListener);
+		return this;
+	};
+
+
+	/**
+	 * Fire event failed to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {string} [mArguments.message]  A text that describes the failure.
+	 * @param {string} [mArguments.statusCode]  HTTP status code returned by the request (if available)
+	 * @param {string} [mArguments.statusText] The status as a text, details not specified, intended only for diagnosis output
+	 * @param {string} [mArguments.responseText] Response that has been received for the request ,as a text string
+	 *
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @protected
+	 */
+	ODataAnnotations.prototype.fireFailed = function(mArguments) {
+		this.fireEvent("failed", mArguments);
+		return this;
+	};
+
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'failed' event of this <code>sap.ui.model.odata.ODataAnnotations</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataAnnotations.prototype.attachFailed = function(oData, fnFunction, oListener) {
+		this.attachEvent("failed", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'failed' event of this <code>sap.ui.model.odata.ODataAnnotations</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataAnnotations} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataAnnotations.prototype.detachFailed = function(fnFunction, oListener) {
+		this.detachEvent("failed", fnFunction, oListener);
+		return this;
+	};
+
+
+	/**
+	 * Parses the alias definitions of the annotation document and fills the internal oAlias object.
+	 * 
+	 * @private
+	 * @name sap.ui.model.odata.ODataAnnotations#_parseAliases
+	 * @function
+	 */
+	ODataAnnotations.prototype._parseAliases = function(oAnnotationReferences) {
+		// Alias nodes
+		var refNodes = this.xPath.selectNodes(this.oXMLDoc, "//edmx:Reference", this.oXMLDoc);
+		
+		for (var i = 0; i < refNodes.length; i += 1) {
+			var refNode = this.xPath.nextNode(refNodes, i);
+			var aliasNodes = this.xPath.selectNodes(this.oXMLDoc, "./edmx:Include", refNode);
+			if (aliasNodes && aliasNodes.length > 0) {
+				var aliasNode = this.xPath.nextNode(aliasNodes, 0);
+				if (aliasNode.getAttribute("Alias")) {
+					this.oAlias[aliasNode.getAttribute("Alias")] = aliasNode.getAttribute("Namespace");
+				} else {
+					this.oAlias[aliasNode.getAttribute("Namespace")] = aliasNode.getAttribute("Namespace");
+				}
+			}
+			var annoNodes = this.xPath.selectNodes(this.oXMLDoc, "./edmx:IncludeAnnotations", refNode);
+			if (annoNodes.length > 0) {
+				for (var j = 0; j < annoNodes.length; j += 1) {
+					var annoNode = this.xPath.nextNode(annoNodes, j);
+					if (annoNode.getAttribute("TargetNamespace")) {
+						var sAnnoNameSpace = annoNode.getAttribute("TargetNamespace");
+						if (!oAnnotationReferences[sAnnoNameSpace]) {
+							oAnnotationReferences[sAnnoNameSpace] = {};
+						}
+						oAnnotationReferences[sAnnoNameSpace][annoNode.getAttribute("TermNamespace")] = refNode.getAttribute("Uri");
+					} else {
+						oAnnotationReferences[annoNode.getAttribute("TermNamespace")] = refNode.getAttribute("Uri");
+					}
+				}
+			}
+		}
+	}
+
+	ODataAnnotations.prototype.parse = function() {
+		var mappingList = {}, schemaNodes, oSchema = {}, schemaNode,
+		oAnnotationReferences = {},
+		that = this,
+		termNodes, oTerms, termNode, sTermType, oMetadataProperties, annotationNodes, annotationNode,
+		annotationTarget, annotationNamespace, annotation, propertyAnnotation, propertyAnnotationNodes,
+		propertyAnnotationNode, sTermValue, targetAnnotation, annotationQualifier, annotationTerm,
+		valueAnnotation, expandNodes, expandNode, path, pathValues, expandNodesApplFunc;
+
+		this.xPath = this.getXPath();
+		this.oServiceMetadata = this.oMetadata.getServiceMetadata();
+
+		if (this.bInitialized) {
+			return this.oAnnotations;
+		}
+		// Set XPath namespace
+		this.oXMLDoc = this.xPath.setNameSpace(this.oXMLDoc);
+		// Schema Alias
+		schemaNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Schema", this.oXMLDoc);
+		for (var i = 0; i < schemaNodes.length; i += 1) {
+			schemaNode = this.xPath.nextNode(schemaNodes, i);
+			oSchema.Alias = schemaNode.getAttribute("Alias");
+			oSchema.Namespace = schemaNode.getAttribute("Namespace");
+		}
+
+		// Fill local alias object
+		this._parseAliases(oAnnotationReferences);
+		
+		if (oAnnotationReferences) {
+			mappingList.annotationReferences = oAnnotationReferences;
+		}
+		mappingList.aliasDefinitions = this.oAlias;
+		// Term nodes
+		termNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Term", this.oXMLDoc);
+		if (termNodes.length > 0) {
+			oTerms = {};
+			for (var nodeIndex = 0; nodeIndex < termNodes.length; nodeIndex += 1) {
+				termNode = this.xPath.nextNode(termNodes, nodeIndex);
+				sTermType = this.replaceWithAlias(termNode.getAttribute("Type"), this.oAlias);
+				oTerms["@" + oSchema.Alias + "." + termNode.getAttribute("Name")] = sTermType;
+			}
+			mappingList.termDefinitions = oTerms;
+		}
+		// Metadata information of all properties
+		oMetadataProperties = this.getAllPropertiesMetadata(this.oServiceMetadata);
+		if (oMetadataProperties.extensions) {
+			mappingList.propertyExtensions = oMetadataProperties.extensions;
+		}
+		// Annotations
+		annotationNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations ", this.oXMLDoc);
+		for (var nodeIndex = 0; nodeIndex < annotationNodes.length; nodeIndex += 1) {
+			annotationNode = this.xPath.nextNode(annotationNodes, nodeIndex);
+			if (annotationNode.hasChildNodes() === false) {
+				continue;
+			}
+			annotationTarget = annotationNode.getAttribute("Target");
+			annotationNamespace = annotationTarget.split(".")[0];
+			if (annotationNamespace && this.oAlias[annotationNamespace]) {
+				annotationTarget = annotationTarget.replace(new RegExp(annotationNamespace, ""), this.oAlias[annotationNamespace]);
+			}
+			annotation = annotationTarget;
+			propertyAnnotation = null;
+			if (annotationTarget.indexOf("/") > 0) {
+				annotation = annotationTarget.split("/")[0];
+				propertyAnnotation = annotationTarget.replace(annotation + "/", "");
+			}
+			if (!mappingList[annotation]) {
+				mappingList[annotation] = {};
+			}
+			// --- Value annotation of complex types. ---
+			if (propertyAnnotation) {
+				if (!mappingList.propertyAnnotations) {
+					mappingList.propertyAnnotations = {};
+				}
+				if (!mappingList.propertyAnnotations[annotation]) {
+					mappingList.propertyAnnotations[annotation] = {};
+				}
+				mappingList.propertyAnnotations[annotation][propertyAnnotation] = {};
+				propertyAnnotationNodes = this.xPath.selectNodes(this.oXMLDoc, "./d:Annotation", annotationNode);
+				for (var nodeIndexValue = 0; nodeIndexValue < propertyAnnotationNodes.length; nodeIndexValue += 1) {
+					propertyAnnotationNode = this.xPath.nextNode(propertyAnnotationNodes, nodeIndexValue);
+					if (propertyAnnotationNode.hasChildNodes() === false) {
+						sTermValue = this.replaceWithAlias(propertyAnnotationNode.getAttribute("Term"));
+						mappingList.propertyAnnotations[annotation][propertyAnnotation][sTermValue] = this.getPropertyValueAttributes(propertyAnnotationNode);
+					}
+				}
+				// --- Annotations ---
+			} else {
+				targetAnnotation = annotation.replace(this.oAlias[annotationNamespace], annotationNamespace);
+				propertyAnnotationNodes = this.xPath.selectNodes(this.oXMLDoc, "./d:Annotation", annotationNode);
+				for (var nodeIndexAnnotation = 0; nodeIndexAnnotation < propertyAnnotationNodes.length; nodeIndexAnnotation += 1) {
+					propertyAnnotationNode = this.xPath.nextNode(propertyAnnotationNodes, nodeIndexAnnotation);
+					annotationQualifier = propertyAnnotationNode.getAttribute("Qualifier");
+					annotationTerm = this.replaceWithAlias(propertyAnnotationNode.getAttribute("Term"));
+					if (annotationQualifier) {
+						annotationTerm += "#" + annotationQualifier;
+					}
+					valueAnnotation = this.getPropertyValue(this.oXMLDoc, propertyAnnotationNode, targetAnnotation);
+					valueAnnotation = this.setEdmTypes(valueAnnotation, oMetadataProperties.types, annotation, oSchema);
+					mappingList[annotation][annotationTerm] = valueAnnotation;
+				}
+				// --- Setup of Expand nodes. ---
+				expandNodes = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations[contains(@Target, '" + targetAnnotation
+						+ "')]//d:PropertyValue[contains(@Path, '/')]//@Path", this.oXMLDoc);
+				for (i = 0; i < expandNodes.length; i += 1) {
+					expandNode = this.xPath.nextNode(expandNodes, i);
+					path = expandNode.value;
+					if (mappingList.propertyAnnotations) {
+						if (mappingList.propertyAnnotations[annotation]) {
+							if (mappingList.propertyAnnotations[annotation][path]) {
+								continue;
+							}
+						}
+					}
+					pathValues = path.split('/');
+					if (this.isNavProperty(annotation, pathValues[0], this.oServiceMetadata)) {
+						if (!mappingList.expand) {
+							mappingList.expand = {};
+						}
+						if (!mappingList.expand[annotation]) {
+							mappingList.expand[annotation] = {};
+						}
+						mappingList.expand[annotation][pathValues[0]] = pathValues[0];
+					}
+				}
+				expandNodesApplFunc = this.xPath.selectNodes(this.oXMLDoc, "//d:Annotations[contains(@Target, '" + targetAnnotation
+						+ "')]//d:Path[contains(., '/')]", this.oXMLDoc);
+				for (i = 0; i < expandNodesApplFunc.length; i += 1) {
+					expandNode = this.xPath.nextNode(expandNodesApplFunc, i);
+					path = this.xPath.getNodeText(expandNode);
+					if (mappingList.propertyAnnotations[annotation]) {
+						if (mappingList.propertyAnnotations[annotation][path]) {
+							continue;
+						}
+					}
+					if (!mappingList.expand) {
+						mappingList.expand = {};
+					}
+					if (!mappingList.expand[annotation]) {
+						mappingList.expand[annotation] = {};
+					}
+					pathValues = path.split('/');
+					if (this.isNavProperty(annotation, pathValues[0], this.oServiceMetadata)) {
+						if (!mappingList.expand) {
+							mappingList.expand = {};
+						}
+						if (!mappingList.expand[annotation]) {
+							mappingList.expand[annotation] = {};
+						}
+						mappingList.expand[annotation][pathValues[0]] = pathValues[0];
+					}
+				}
+			}
+		}
+	
+		// TODO: Check conditions for failed parsing and throw error... this thing seems to never fail.
+		this.oAnnotations = mappingList;
+		this.bInitialized = true;
+		
+		if(this.bAsync){
+			this.fireLoaded({annotations: this});
+		} else {
+				this.oLoadEvent = jQuery.sap.delayedCall(0, this, this.fireLoaded, [that]);
+		}
+		return this.oAnnotations;
+	};
+
+	ODataAnnotations.prototype.getXPath = function() {
+		var xPath = {};
+
+		if (this.xmlCompatVersion) {// old IE
+			xPath = {
+				setNameSpace : function(outNode) {
+					outNode.setProperty("SelectionNamespaces",
+							'xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" xmlns:d="http://docs.oasis-open.org/odata/ns/edm"');
+					outNode.setProperty("SelectionLanguage", "XPath");
+					return outNode;
+				},
+				selectNodes : function(outNode, xPath, inNode) {
+					return inNode.selectNodes(xPath);
+				},
+				nextNode : function(node) {
+					return node.nextNode();
+				},
+				getNodeText : function(node) {
+					return node.text;
+				}
+			};
+		} else {// Chrome, Firefox, Opera, etc.
+			xPath = {
+				setNameSpace : function(outNode) {
+					return outNode;
+				},
+				nsResolver : function(prefix) {
+					var ns = {
+						"edmx" : "http://docs.oasis-open.org/odata/ns/edmx",
+						"d" : "http://docs.oasis-open.org/odata/ns/edm"
+					};
+					return ns[prefix] || null;
+				},
+				selectNodes : function(outNode, sPath, inNode) {
+					var xmlNodes = outNode.evaluate(sPath, inNode, this.nsResolver, /* ORDERED_NODE_SNAPSHOT_TYPE: */ 7, null);
+					xmlNodes.length = xmlNodes.snapshotLength;
+					return xmlNodes;
+				},
+				nextNode : function(node, item) {
+					return node.snapshotItem(item);
+				},
+				getNodeText : function(node) {
+					return node.textContent;
+				}
+			};
+		}
+		return xPath;
+	};
+	
+	
+	/**
+	 * Sets an XML document
+	 * 
+	 * @public
+	 * @name sap.ui.model.odata.ODataAnnotations#setXML
+	 * @function
+	 */
+	ODataAnnotations.prototype.setXML = function(oXMLDocument, sXMLContent) {
+		// TODO: Check for MSXML-DOcument vs. Standards DOM-Document
+		var that = this;
+		
+		if(sap.ui.Device.browser.internet_explorer) {
+			// TODO: Check when IE will support evaluate-method
+			this.oXMLDoc = new ActiveXObject("Microsoft.XMLDOM"); // ??? "Msxml2.DOMDocument.6.0"
+			this.oXMLDoc.loadXML(sXMLContent);
+			this.xmlCompatVersion = true;
+		} else if (oXMLDocument) { 
+			this.oXMLDoc = oXMLDocument;
+		} else {
+			this.oXMLDoc = new DOMParser().parseFromString(sXMLContent, 'application/xml');
+		}
+		
+		if (this.oXMLDoc.getElementsByTagName("parsererror").length > 0) {
+			// Malformed XML, notify application of the problem
+			
+			// This seems to be needed since with some jQuery versions the XML document
+			// is partly parsed and with some it is not parsed at all. We now choose the
+			// "safe" approach and only accept completely valid documents.
+			return false;
+		} else {
+			// Check if Metadata is loaded on the model. We need the Metadata to parse the annotations
+			if (jQuery.isEmptyObject(this.oMetadata.getServiceMetadata())) {
+				// Metadata is not loaded, wait for it before trying to parse
+				this.oMetadata.attachLoaded(function() {
+					that.parse();
+				});
+			} else {
+				this.parse();
+			}
+			return true;
+		}
+	};
+	
+	
+	ODataAnnotations.prototype.loadXML = function() {
+		var that = this;
+
+		var mAjaxOptions = {
+			url : this.sAnnotationURI,
+			async : this.bAsync
+		};
+		// TODO: Check IE10 XML document for compatibility
+		// mAjaxOptions["xhrFields"] = {responseType : 'msxml-document'};
+
+		var fnHandleFail = function _handleFail(oJQXHR, sStatusText) {
+			if (that.oRequestHandle && that.oRequestHandle.bSuppressErrorHandlerCall) {
+				return;
+			}
+			that.oRequestHandle = null;
+			that.error = { message : sStatusText, statusCode : oJQXHR.statusCode, statusText : oJQXHR.statusText, responseText : oJQXHR.responseText };
+
+			if (!this.bAsync) {
+				this.oFailedEvent = jQuery.sap.delayedCall(0, that, that.fireFailed, [that.error])
+			} else {
+				that.fireFailed(that.error);
+			}
+			that.bInitialized = false;
+		};
+
+		var fnHandleSuccess = function(sData, sTextStatus, oJQXHR) {
+			that.oRequestHandle = null;
+			if (!that.setXML(oJQXHR.responseXML, oJQXHR.responseText)) {
+				fnHandleFail(oJQXHR, "Malformed XML document");
+			} else {
+				that.bLoaded = true;
+			}
+		};
+
+		this.oRequestHandle = jQuery.ajax(mAjaxOptions).done(fnHandleSuccess).fail(fnHandleFail);
+	};
+
+	ODataAnnotations.prototype.getAllPropertiesMetadata = function(oMetadata) {
+		var oMetadataSchema = {},
+		oPropertyTypes = {},
+		oPropertyExtensions = {},
+		bPropertyExtensions = false,
+		sNamespace,
+		aEntityTypes,
+		aComplexTypes,
+		oEntityType = {},
+		oProperties = {},
+		oExtensions = {},
+		bExtensions = false,
+		oProperty,
+		oComplexTypeProp,
+		sPropertyName,
+		sType,
+		oPropExtension,
+		oReturn;
+	
+		for (var i = oMetadata.dataServices.schema.length - 1; i >= 0; i -= 1) {
+			oMetadataSchema = oMetadata.dataServices.schema[i];
+			if (oMetadataSchema.entityType) {
+				sNamespace = oMetadataSchema.namespace;
+				aEntityTypes = oMetadataSchema.entityType;
+				aComplexTypes = oMetadataSchema.complexType;
+				for (var j in aEntityTypes) {
+					oEntityType = aEntityTypes[j];
+					oExtensions = {};
+					if (oEntityType.hasStream && oEntityType.hasStream === "true") {
+						continue;
+					}
+					for (var k in oEntityType.property) {
+						oProperty = oEntityType.property[k];
+						if (oProperty.type.substring(0, sNamespace.length) === sNamespace) {
+							for (var l in aComplexTypes) {
+								if (aComplexTypes[l].name === oProperty.type.substring(sNamespace.length + 1)) {
+									for (k in aComplexTypes[l].property) {
+										oComplexTypeProp = aComplexTypes[l].property[k];
+										oProperties[aComplexTypes[l].name + "/" + oComplexTypeProp.name] = oComplexTypeProp.type;
+									}
+								}
+							}
+						} else {
+							sPropertyName = oProperty.name;
+							sType = oProperty.type;
+							for (var p in oProperty.extensions) {
+								oPropExtension = oProperty.extensions[p];
+								if ((oPropExtension.name === "display-format") && (oPropExtension.value === "Date")) {
+									sType = "Edm.Date";
+								} else {
+									bExtensions = true;
+									if (!oExtensions[sPropertyName]) {
+										oExtensions[sPropertyName] = {};
+									}
+									if (oPropExtension.namespace && !oExtensions[sPropertyName][oPropExtension.namespace]) {
+										oExtensions[sPropertyName][oPropExtension.namespace] = {};
+									}
+									oExtensions[sPropertyName][oPropExtension.namespace][oPropExtension.name] = oPropExtension.value;
+								}
+							}
+							oProperties[sPropertyName] = sType;
+						}
+					}
+					if (!oPropertyTypes[sNamespace + "." + oEntityType.name]) {
+						oPropertyTypes[sNamespace + "." + oEntityType.name] = {};
+					}
+					oPropertyTypes[sNamespace + "." + oEntityType.name] = oProperties;
+					if (bExtensions) {
+						if (!oPropertyExtensions[sNamespace + "." + oEntityType.name]) {
+							bPropertyExtensions = true;
+						}
+						oPropertyExtensions[sNamespace + "." + oEntityType.name] = {};
+						oPropertyExtensions[sNamespace + "." + oEntityType.name] = oExtensions;
+					}
+				}
+			}
+		}
+		if (bPropertyExtensions) {
+			oReturn = {
+				types : oPropertyTypes,
+				extensions : oPropertyExtensions
+			};
+		} else {
+			oReturn = {
+				types : oPropertyTypes
+			};
+		}
+		return oReturn;
+	};
+	
+	ODataAnnotations.prototype.setEdmTypes = function(aPropertyValues, oProperties, sTarget, oSchema) {
+		var oPropertyValue, sEdmType = '';
+		for (var pValueIndex in aPropertyValues) {
+			if (aPropertyValues[pValueIndex]) {
+				oPropertyValue = aPropertyValues[pValueIndex];
+				if (oPropertyValue.Value && oPropertyValue.Value.Path) {
+					sEdmType = this.getEdmType(oPropertyValue.Value.Path, oProperties, sTarget, oSchema);
+					if (sEdmType) {
+						aPropertyValues[pValueIndex].EdmType = sEdmType;
+					}
+					continue;
+				}
+				if (oPropertyValue.Path) {
+					sEdmType = this.getEdmType(oPropertyValue.Path, oProperties, sTarget, oSchema);
+					if (sEdmType) {
+						aPropertyValues[pValueIndex].EdmType = sEdmType;
+					}
+					continue;
+				}
+				if (oPropertyValue.Facets) {
+					aPropertyValues[pValueIndex].Facets = this.setEdmTypes(oPropertyValue.Facets, oProperties, sTarget, oSchema);
+					continue;
+				}
+				if (oPropertyValue.Data) {
+					aPropertyValues[pValueIndex].Data = this.setEdmTypes(oPropertyValue.Data, oProperties, sTarget, oSchema);
+					continue;
+				}
+				if (pValueIndex === "Data") {
+					aPropertyValues.Data = this.setEdmTypes(oPropertyValue, oProperties, sTarget, oSchema);
+					continue;
+				}
+				if (oPropertyValue.Value && oPropertyValue.Value.Apply) {
+					aPropertyValues[pValueIndex].Value.Apply.Parameters = this.setEdmTypes(oPropertyValue.Value.Apply.Parameters,
+							oProperties, sTarget, oSchema);
+					continue;
+				}
+				if (oPropertyValue.Value && oPropertyValue.Type && (oPropertyValue.Type === "Path")) {
+					sEdmType = this.getEdmType(oPropertyValue.Value, oProperties, sTarget, oSchema);
+					if (sEdmType) {
+						aPropertyValues[pValueIndex].EdmType = sEdmType;
+					}
+				}
+			}
+		}
+		return aPropertyValues;
+	};
+	
+	ODataAnnotations.prototype.getEdmType = function(sPath, oProperties, sTarget, oSchema) {
+		if ((sPath.charAt(0) === "@") && (sPath.indexOf(oSchema.Alias) === 1)) {
+			sPath = sPath.slice(oSchema.Alias.length + 2);
+		}
+		if (sPath.indexOf("/") >= 0) {
+			if (oProperties[sPath.slice(0, sPath.indexOf("/"))]) {
+				sTarget = sPath.slice(0, sPath.indexOf("/"));
+				sPath = sPath.slice(sPath.indexOf("/") + 1);
+			}
+		}
+		for (var pIndex in oProperties[sTarget]) {
+			if (sPath === pIndex) {
+				return oProperties[sTarget][pIndex];
+			}
+		}
+	};
+	ODataAnnotations.prototype.getPropertyValueAttributes = function(documentNode) {
+		var attrName = "", attrValue = "", i, propertyValueAttributes = {};
+		for (i = 0; i < documentNode.attributes.length; i += 1) {
+			if ((documentNode.attributes[i].name !== "Property") && (documentNode.attributes[i].name !== "Term")) {
+				attrName = documentNode.attributes[i].name;
+				attrValue = documentNode.attributes[i].value;
+			}
+		}
+		if (attrName.length > 0) {
+			propertyValueAttributes[attrName] = this.replaceWithAlias(attrValue);
+		}
+		return propertyValueAttributes;
+	};
+	
+	ODataAnnotations.prototype.getSimpleNodeValue = function(xmlDoc, documentNode) {
+		var oValue = {}, stringValueNodes, stringValueNode, pathValueNodes, pathValueNode, applyValueNodes, applyValueNode;
+		if (documentNode.hasChildNodes()) {
+			stringValueNodes = this.xPath.selectNodes(xmlDoc, "./d:String", documentNode);
+			if (stringValueNodes.length > 0) {
+				stringValueNode = this.xPath.nextNode(stringValueNodes, 0);
+				oValue["String"] = this.xPath.getNodeText(stringValueNode);
+			} else {
+				pathValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Path", documentNode);
+				if (pathValueNodes.length > 0) {
+					pathValueNode = this.xPath.nextNode(pathValueNodes, 0);
+					oValue["Path"] = this.xPath.getNodeText(pathValueNode);
+				} else {
+					applyValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Apply", documentNode);
+					if (applyValueNodes.length > 0) {
+						applyValueNode = this.xPath.nextNode(applyValueNodes, 0);
+						oValue["Apply"] = this.getApplyFunctions(xmlDoc, applyValueNode, this.xPath);
+					}
+				}
+			}
+		}
+		return oValue;
+	};
+	ODataAnnotations.prototype.getPropertyValue = function(xmlDoc, documentNode, target) {
+		var propertyValue = {}, recordNodes, recordNodeCnt, nodeIndex, recordNode, propertyValues, urlValueNodes, urlValueNode, pathNode, oPath = {}, annotationNodes, annotationNode, nodeIndexValue, termValue, collectionNodes;
+		var xPath = this.getXPath();
+		
+		if (documentNode.hasChildNodes()) {
+			recordNodes = this.xPath.selectNodes(xmlDoc, "./d:Record | ./d:Collection/d:Record | ./d:Collection/d:If/d:Record",
+					documentNode);
+			if (recordNodes.length) {
+				recordNodeCnt = 0;
+				for (nodeIndex = 0; nodeIndex < recordNodes.length; nodeIndex += 1) {
+					recordNode = this.xPath.nextNode(recordNodes, nodeIndex);
+					propertyValues = this.getPropertyValues(xmlDoc, recordNode, target);
+					if (recordNode.getAttribute("Type")) {
+						propertyValues["RecordType"] = this.replaceWithAlias(recordNode.getAttribute("Type"));
+					}
+					if (recordNodeCnt === 0) {
+						if (recordNode.nextElementSibling || (recordNode.parentNode.nodeName === "Collection")
+								|| (recordNode.parentNode.nodeName === "If")) {
+							propertyValue = [];
+							propertyValue.push(propertyValues);
+						} else {
+							propertyValue = propertyValues;
+						}
+					} else {
+						propertyValue.push(propertyValues);
+					}
+					recordNodeCnt += 1;
+				}
+			} else {
+				urlValueNodes = this.xPath.selectNodes(xmlDoc, "./d:UrlRef", documentNode);
+				if (urlValueNodes.length > 0) {
+					for (nodeIndex = 0; nodeIndex < urlValueNodes.length; nodeIndex += 1) {
+						urlValueNode = this.xPath.nextNode(urlValueNodes, nodeIndex);
+						propertyValue["UrlRef"] = this.getSimpleNodeValue(xmlDoc, urlValueNode);
+					}
+				} else {
+					urlValueNodes = this.xPath.selectNodes(xmlDoc, "./d:Url", documentNode);
+					if (urlValueNodes.length > 0) {
+						for (nodeIndex = 0; nodeIndex < urlValueNodes.length; nodeIndex += 1) {
+							urlValueNode = this.xPath.nextNode(urlValueNodes, nodeIndex);
+							propertyValue["Url"] = this.getSimpleNodeValue(xmlDoc, urlValueNode);
+						}
+					} else {
+						collectionNodes = this.xPath.selectNodes(xmlDoc,
+								"./d:Collection/d:AnnotationPath | ./d:Collection/d:PropertyPath", documentNode);
+						if (collectionNodes.length > 0) {
+							propertyValue = [];
+							for (nodeIndex = 0; nodeIndex < collectionNodes.length; nodeIndex += 1) {
+								pathNode = this.xPath.nextNode(collectionNodes, nodeIndex);
+								oPath = {};
+								oPath[pathNode.nodeName] = xPath.getNodeText(pathNode);
+								propertyValue.push(oPath);
+							}
+						} else {
+							propertyValue = this.getPropertyValueAttributes(documentNode);
+							annotationNodes = this.xPath.selectNodes(xmlDoc, "./d:Annotation", documentNode);
+							annotationNode = {};
+							for (nodeIndexValue = 0; nodeIndexValue < annotationNodes.length; nodeIndexValue += 1) {
+								annotationNode = this.xPath.nextNode(annotationNodes, nodeIndexValue);
+								if (annotationNode.hasChildNodes() === false) {
+									termValue = this.replaceWithAlias(annotationNode.getAttribute("Term"));
+									propertyValue[termValue] = this.getPropertyValueAttributes(annotationNode);
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			propertyValue = this.getPropertyValueAttributes(documentNode);
+		}
+		return propertyValue;
+	};
+	ODataAnnotations.prototype.getPropertyValues = function(xmlDoc, documentNode, target) {
+		var properties = {}, annotationNode = {}, annotationNodes, nodeIndexValue, termValue, propertyValueNodes, nodeIndex, propertyValueNode, propertyName, applyNodes, applyNode, applyNodeIndex;
+		annotationNodes = this.xPath.selectNodes(xmlDoc, "./d:Annotation", documentNode);
+		for (nodeIndexValue = 0; nodeIndexValue < annotationNodes.length; nodeIndexValue += 1) {
+			annotationNode = this.xPath.nextNode(annotationNodes, nodeIndexValue);
+			if (annotationNode.hasChildNodes() === false) {
+				termValue = this.replaceWithAlias(annotationNode.getAttribute("Term"));
+				properties[termValue] = this.getPropertyValueAttributes(annotationNode);
+			}
+		}
+		propertyValueNodes = this.xPath.selectNodes(xmlDoc, "./d:PropertyValue", documentNode);
+		if (propertyValueNodes.length > 0) {
+			for (nodeIndex = 0; nodeIndex < propertyValueNodes.length; nodeIndex += 1) {
+				propertyValueNode = this.xPath.nextNode(propertyValueNodes, nodeIndex);
+				propertyName = propertyValueNode.getAttribute("Property");
+				properties[propertyName] = this.getPropertyValue(xmlDoc, propertyValueNode, target);
+				applyNodes = this.xPath.selectNodes(xmlDoc, "./d:Apply", propertyValueNode);
+				applyNode = null;
+				for (applyNodeIndex = 0; applyNodeIndex < applyNodes.length; applyNodeIndex += 1) {
+					applyNode = this.xPath.nextNode(applyNodes, applyNodeIndex);
+					if (applyNode) {
+						properties[propertyName] = {};
+						properties[propertyName]['Apply'] = this.getApplyFunctions(xmlDoc, applyNode);
+					}
+				}
+			}
+		} else {
+			properties = this.getPropertyValue(xmlDoc, documentNode, target);
+		}
+		return properties;
+	};
+	ODataAnnotations.prototype.getApplyFunctions = function(xmlDoc, applyNode) {
+		var apply = {}, parameterNodes, paraNode = null, parameters = [], i;
+		parameterNodes = this.xPath.selectNodes(xmlDoc, "./d:*", applyNode);
+		for (i = 0; i < parameterNodes.length; i += 1) {
+			paraNode = this.xPath.nextNode(parameterNodes, i);
+			switch (paraNode.nodeName) {
+				case "Apply" :
+					parameters.push({
+						"Type" : "Apply",
+						"Value" : this.getApplyFunctions(xmlDoc, paraNode)
+					});
+					break;
+				case "LabeledElement" :
+					parameters.push({
+						"Name" : paraNode.getAttribute("Name"),
+						"Value" : this.getSimpleNodeValue(xmlDoc, paraNode)
+					});
+					break;
+				default :
+					parameters.push({
+						"Type" : paraNode.nodeName,
+						"Value" : this.xPath.getNodeText(paraNode)
+					});
+					break;
+			}
+		}
+		apply['Name'] = applyNode.getAttribute('Function');
+		apply['Parameters'] = parameters;
+		return apply;
+	};
+	ODataAnnotations.prototype.isNavProperty = function(sEntityType, sPathValue, oMetadata) {
+		var oMetadataSchema, i, namespace, aEntityTypes, j, k;
+		for (i = oMetadata.dataServices.schema.length - 1; i >= 0; i -= 1) {
+			oMetadataSchema = oMetadata.dataServices.schema[i];
+			if (oMetadataSchema.entityType) {
+				namespace = oMetadataSchema.namespace + ".";
+				aEntityTypes = oMetadataSchema.entityType;
+				for (k = aEntityTypes.length - 1; k >= 0; k -= 1) {
+					if (namespace + aEntityTypes[k].name === sEntityType && aEntityTypes[k].navigationProperty) {
+						for (j = 0; j < aEntityTypes[k].navigationProperty.length; j += 1) {
+							if (aEntityTypes[k].navigationProperty[j].name === sPathValue) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	};
+	
+	ODataAnnotations.prototype.replaceWithAlias = function(sValue, oAlias) {
+		if (oAlias === undefined) {
+			oAlias = this.oAlias;
+		}
+		
+		for (var sAlias in oAlias) {
+			if (sValue.indexOf(sAlias + ".") >= 0) {
+				sValue = sValue.replace(sAlias + ".", oAlias[sAlias] + ".");
+				return sValue;
+			}
+		}
+		return sValue;
+	};
+
+	ODataAnnotations.prototype.destroy = function() {
+
+		// Abort pending xml request
+		if (this.oRequestHandle) {
+			this.oRequestHandle.bSuppressErrorHandlerCall = true;
+			this.oRequestHandle.abort();
+			this.oRequestHandle = null;
+		}
+
+		sap.ui.base.Object.prototype.destroy.apply(this, arguments);
+		if(!!this.oLoadEvent){
+			jQuery.sap.clearDelayedCall(this.oLoadEvent);
+		}
+		if(!!this.oFailedEvent){
+			jQuery.sap.clearDelayedCall(this.oFailedEvent);
+		}
+	};
+
+
+	return ODataAnnotations;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/odata/ODataAnnotations.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataContextBinding') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -54056,7 +61731,7 @@ sap.ui.define("sap/ui/model/odata/ODataContextBinding",['jquery.sap.global', 'sa
 	 * @public
 	 * @name sap.ui.model.odata.ODataContextBinding
 	 */
-	var ODataContextBinding = ContextBinding.extend("sap.ui.model.odata.ODataContextBinding", /** @lends sap.ui.model.odata.ODataContextBinding */ {
+	var ODataContextBinding = ContextBinding.extend("sap.ui.model.odata.ODataContextBinding", /** @lends sap.ui.model.odata.ODataContextBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, mParameters, oEvents){
 			ContextBinding.call(this, oModel, sPath, oContext, mParameters, oEvents);
@@ -54081,6 +61756,9 @@ sap.ui.define("sap/ui/model/odata/ODataContextBinding",['jquery.sap.global', 'sa
 	 */
 	
 	/**
+	 * Initializes the binding, will create the binding context.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
 	 * @see sap.ui.model.Binding.prototype.initialize
 	 * @name sap.ui.model.odata.ODataContextBinding#initialize
 	 * @function
@@ -54090,17 +61768,21 @@ sap.ui.define("sap/ui/model/odata/ODataContextBinding",['jquery.sap.global', 'sa
 			sResolvedPath = this.oModel.resolve(this.sPath, this.oContext),
 			oData = this.oModel._getObject(this.sPath, this.oContext),
 			bReloadNeeded = this.oModel._isReloadNeeded(sResolvedPath, oData, this.mParameters);
-	
-		if (bReloadNeeded) {
-			this.fireDataRequested();
-		}
-		this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-			that.oElementContext = oContext;
-			that._fireChange(); 
+		
+		// don't fire any requests if metadata is not loaded yet.
+		if (this.oModel.oMetadata.isLoaded()) {
 			if (bReloadNeeded) {
-				that.fireDataReceived();
+				this.fireDataRequested();
 			}
-		}, bReloadNeeded);
+			this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
+				that.oElementContext = oContext;
+				that._fireChange(); 
+				if (bReloadNeeded) {
+					that.fireDataReceived();
+				}
+			}, bReloadNeeded);
+		}
+		
 	};
 	
 	/**
@@ -54178,1014 +61860,830 @@ sap.ui.define("sap/ui/model/odata/ODataContextBinding",['jquery.sap.global', 'sa
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/odata/ODataContextBinding.js
-if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataListBinding') ) {
+if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataMetadata') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides class sap.ui.model.odata.ODataListBinding
-jQuery.sap.declare('sap.ui.model.odata.ODataListBinding'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/model/odata/ODataListBinding",['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/model/FilterType', 'sap/ui/model/ListBinding', './CountMode', './Filter'],
-	function(jQuery, DateFormat, FilterType, ListBinding, CountMode, Filter) {
+
+
+// Provides class sap.ui.model.odata.ODataMetadata
+jQuery.sap.declare('sap.ui.model.odata.ODataMetadata'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/odata/ODataMetadata",['jquery.sap.global', 'sap/ui/base/EventProvider'],
+	function(jQuery, EventProvider) {
 	"use strict";
 
-
 	/*global OData *///declare unusual global vars for JSLint/SAPUI5 validation
-	
+
 	/**
+	 * Constructor for a new ODataMetadata.
 	 *
+	 * @param {string} sMetadataURI
+	 * @param {object} mParams
+	 * @param {boolean} mParams.async
+	 * @param {boolean} mParams.user
+	 * @param {boolean} mParams.password
+	 * 
 	 * @class
-	 * List binding implementation for oData format
+	 * Implementation to access oData metadata
 	 *
-	 * @param {sap.ui.model.Model} oModel
-	 * @param {string} sPath
-	 * @param {sap.ui.model.Context} oContext
-	 * @param {array} [aSorters] initial sort order (can be either a sorter or an array of sorters)
-	 * @param {array} [aFilters] predefined filter/s (can be either a filter or an array of filters)
-	 * @param {object} [mParameters]
-	 * 
-	 * @name sap.ui.model.odata.ODataListBinding
-	 * @extends sap.ui.model.ListBinding
+	 * @author SAP AG
+	 * @version 1.22.4
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.model.odata.ODataMetadata
+	 * @extends sap.ui.base.EventProvider
 	 */
-	var ODataListBinding = ListBinding.extend("sap.ui.model.odata.ODataListBinding", /** @lends sap.ui.model.odata.ODataListBinding */ {
-	
-		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters) {
-			ListBinding.apply(this, arguments);
-			this.sFilterParams = null;
-			this.sSortParams = null;
-			this.sRangeParams = null;
-			this.sCustomParams = this.oModel.createCustomParams(this.mParameters);
-			this.iStartIndex = 0;
-			this.bPendingChange = false;
-			this.aKeys = [];
-			this.bInitialized = false;
-			this.sCountMode = (mParameters && mParameters.countMode) || this.oModel.sDefaultCountMode;
-			this.bRefresh = false;
-			this.bNeedsUpdate = false;
-			this.bDataAvailable = false;
-			
-			// load the entity type for the collection only once and not e.g. every time when filtering
-			if (!this.oModel.getServiceMetadata()) {
-				var that = this,
-				fnCallback = function(oEvent) {
-					that._initSortersFilters();
-					that.oModel.detachMetadataLoaded(fnCallback);
-				}
-				this.oModel.attachMetadataLoaded(this, fnCallback);
-			} else {
-				this._initSortersFilters();
-			}
-	
-			// if nested list is already available and no filters or sorters are set, 
-			// use the data and don't send additional requests
-			// TODO: what if nested list is not complete, because it was too large?
-			var oRef = this.oModel._getObject(this.sPath, this.oContext);
-			if (jQuery.isArray(oRef) && !aSorters && !aFilters) {
-				this.aKeys = oRef;
-				this.iLength = oRef.length;
-				this.bLengthFinal = true;
-				this.bDataAvailable = true;
-			}
-			else {
-				// call getLength when metadata is already loaded or don't do anything
-				// if the the metadata gets loaded it will call a refresh on all bindings
-				if (this.oModel.getServiceMetadata()) {
-					this.resetData();
-				}
-			}
-	
+	var ODataMetadata = sap.ui.base.EventProvider.extend("sap.ui.model.odata.ODataMetadata", /** @lends sap.ui.model.odata.ODataMetadata.prototype */ {
+
+		constructor : function(sMetadataURI, mParams) {
+			EventProvider.apply(this, arguments);
+			this.bLoaded = false;
+			this.bFailed = false;
+			this.mEntityTypes = {};
+			this.oRequestHandle = null;
+			this.sUrl = sMetadataURI;
+			this.bAsync = mParams.async;
+			this.sUser = mParams.user;
+			this.sPassword = mParams.password;
+			this.oLoadEvent = null;
+			this.oFailedEvent = null;
+			this.oMetadata = null;
+			this.mNamespaces = mParams.namespaces || {
+				sap:"http://www.sap.com/Protocols/SAPData",
+				m:"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+				"":"http://schemas.microsoft.com/ado/2007/06/edmx"
+			};
+			this._loadMetadata();
 		},
-	
+
 		metadata : {
-			publicMethods : [
-				"getLength"
-			]
+			publicMethods : ["getServiceMetadata", "attachFailed", "detachFailed", "attachLoaded", "detachLoaded"]
 		}
-	
+
 	});
-	
+
+	ODataMetadata.prototype._setNamespaces = function(mNamespaces) {
+		this.mNamespaces = mNamespaces;
+	}
 	/**
-	 * Creates a new subclass of class sap.ui.model.odata.ODataListBinding with name <code>sClassName</code> 
+	 * Loads the metadata for the service
+	 * @private
+	 * @name sap.ui.model.odata.ODataMetadata#_loadMetadata
+	 * @function
+	 */
+	ODataMetadata.prototype._loadMetadata = function() {
+
+		// request the metadata of the service
+		var that = this;
+		var oRequest = this._createRequest(this.sUrl);
+
+		function _handleSuccess(oMetadata, oResponse) {
+			if(!oMetadata || !oMetadata.dataServices){
+				var mParameters = {
+						message: "Invalid metadata document",
+						request: oRequest,
+						response: oResponse
+				};
+				_handleError(mParameters);
+				return;
+			}
+			that.oMetadata = oMetadata;
+			that.oRequestHandle = null;
+			if(that.bAsync){
+				that.fireLoaded(that);
+			} else {
+				//delay the event so anyone can attach to this _before_ it is fired, but make
+				//sure that bLoaded is already set properly
+				that.bLoaded = true;
+				that.oLoadEvent = jQuery.sap.delayedCall(0, that, that.fireLoaded, [that]);
+			}
+		}
+
+		function _handleError(oError) {
+			var mParams = { message: oError.message };
+			if (oError.response) {
+					mParams.statusCode = oError.response.statusCode;
+					mParams.statusText = oError.response.statusText;
+					mParams.responseText = oError.response.body;
+			}
+
+			if (that.oRequestHandle && that.oRequestHandle.bSuppressErrorHandlerCall) {
+				return;
+			}
+			that.oRequestHandle = null;
+			if(that.bAsync){
+				that.fireFailed(mParams);
+			} else {
+				that.oFailedEvent = jQuery.sap.delayedCall(0, that, that.fireFailed, [mParams]);
+			}
+		}
+
+		// execute the request
+		this.oRequestHandle = OData.request(oRequest, _handleSuccess, _handleError, OData.metadataHandler);
+	};
+
+	/**
+	 * Creates a new subclass of class sap.ui.model.odata.ODataMetadata with name <code>sClassName</code>
 	 * and enriches it with the information contained in <code>oClassInfo</code>.
-	 * 
-	 * For a detailed description of <code>oClassInfo</code> or <code>FNMetaImpl</code> 
+	 *
+	 * For a detailed description of <code>oClassInfo</code> or <code>FNMetaImpl</code>
 	 * see {@link sap.ui.base.Object.extend Object.extend}.
-	 *   
+	 *
 	 * @param {string} sClassName name of the class to be created
-	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {object} [oClassInfo] object literal with informations about the class
 	 * @param {function} [FNMetaImpl] alternative constructor for a metadata object
 	 * @return {function} the created class / constructor function
 	 * @public
 	 * @static
-	 * @name sap.ui.model.odata.ODataListBinding.extend
+	 * @name sap.ui.model.odata.ODataMetadata.extend
 	 * @function
 	 */
 	
 	/**
-	 * Return contexts for the list
+	 * Return the metadata object
 	 *
-	 * @param {int} [iStartIndex=0] the start index of the requested contexts
-	 * @param {int} [iLength] the requested amount of contexts
-	 *
-	 * @return {Array} the contexts array
-	 * @protected
-	 * @name sap.ui.model.odata.ODataListBinding#getContexts
-	 * @function
-	 */
-	ODataListBinding.prototype.getContexts = function(iStartIndex, iLength, iThreshold) {	
-	
-		this.bInitialized = true;
-		this.iLastLength = iLength;
-		this.iLastStartIndex = iStartIndex;
-		this.iLastThreshold = iThreshold;
-		
-		//	Set default values if startindex, threshold or length are not defined
-		if (!iStartIndex) {
-			iStartIndex = 0;
-		}
-		if (!iLength) {
-			iLength = this.oModel.iSizeLimit;
-			if (this.bLengthFinal && this.iLength < iLength) {
-				iLength = this.iLength;
-			}
-		}
-		if (!iThreshold) {
-			iThreshold = 0;
-		}
-	
-		var bLoadContexts = true, 
-			aContexts = this._getContexts(iStartIndex, iLength),
-			oContextData = {},
-			oSection;
-	
-		oSection = this.calculateSection(iStartIndex, iLength, iThreshold, aContexts);
-		bLoadContexts = aContexts.length != iLength && !(this.bLengthFinal && aContexts.length >= this.iLength - iStartIndex);
-		
-		// check if metadata are already available
-		if (this.oModel.getServiceMetadata()) {
-			// If rows are missing send a request
-			if (!this.bPendingRequest && oSection.length > 0 && (bLoadContexts || iLength < oSection.length)) {
-				this.loadData(oSection.startIndex, oSection.length);
-				aContexts.dataRequested = true;
-			} 	
-		}
-		
-		if (this.bRefresh) {
-			// if refreshing and length is 0, pretend a request to be fired to make a refresh with
-			// with preceding $count request look like a request with $inlinecount=allpages
-			if (this.bLengthFinal && this.iLength == 0) {
-				this.loadData(oSection.startIndex, oSection.length, true);
-				aContexts.dataRequested = true;
-			}
-			this.bRefresh = false;
-		} else {
-			// Do not create context data and diff in case of refresh, only if real data has been received
-			// The current behaviour is wrong and makes diff detection useless for OData in case of refresh
-		 	for (var i = 0; i < aContexts.length; i++) {
-				oContextData[aContexts[i].getPath()] = aContexts[i].getObject();
-			}
-		
-			if (this.bUseExtendedChangeDetection) {
-				//Check diff
-				if (this.aLastContexts&& iStartIndex < this.iLastEndIndex) {
-					var that = this;
-					var aDiff = jQuery.sap.arrayDiff(this.aLastContexts, aContexts, function(oOldContext, oNewContext) {
-						return jQuery.sap.equal(
-								oOldContext && that.oLastContextData && that.oLastContextData[oOldContext.getPath()],
-								oNewContext && oContextData && oContextData[oNewContext.getPath()]
-							);
-					});
-					aContexts.diff = aDiff;
-				}
-			}
-		
-			this.iLastEndIndex = iStartIndex + iLength;
-			this.aLastContexts = aContexts.slice(0);
-			this.oLastContextData = jQuery.extend(true, {}, oContextData);
-		}
-		
-		return aContexts;
-	};
-	
-	/**
-	 * Return contexts for the list
-	 *
-	 * @param {int} [iStartIndex=0] the start index of the requested contexts
-	 * @param {int} [iLength] the requested amount of contexts
-	 *
-	 * @return {Array} the contexts array
-	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#_getContexts
-	 * @function
-	 */
-	ODataListBinding.prototype._getContexts = function(iStartIndex, iLength) {
-		var aContexts = [],
-			oContext,
-			sKey;
-		
-		if (!iStartIndex) {
-			iStartIndex = 0;
-		}
-		if (!iLength) {
-			iLength = this.oModel.iSizeLimit;
-			if (this.bLengthFinal && this.iLength < iLength) {
-				iLength = this.iLength;
-			}
-		}
-		
-		//	Loop through known data and check whether we already have all rows loaded
-		for (var i = iStartIndex; i < iStartIndex + iLength; i++) {
-			sKey = this.aKeys[i];
-			if (!sKey) {
-				break;
-			}
-			oContext = this.oModel.getContext('/'+sKey);
-			aContexts.push(oContext);
-		}
-	
-		return aContexts;
-	};
-	
-	/*
-	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#calculateSection
-	 * @function
-	 */
-	ODataListBinding.prototype.calculateSection = function(iStartIndex, iLength, iThreshold, aContexts) {
-		var bLoadNegativeEntries = false,
-			iSectionLength,
-			iSectionStartIndex,
-			iPreloadedSubsequentIndex,
-			iPreloadedPreviousIndex,
-			iRemainingEntries,
-			oSection = {},
-			sKey;
-	
-		iSectionStartIndex = iStartIndex;
-		iSectionLength = 0;
-	
-		// check which data exists before startindex; If all necessary data is loaded iPreloadedPreviousIndex stays undefined
-		for (var i = iStartIndex; i >= Math.max(iStartIndex-iThreshold,0); i--) {
-			sKey = this.aKeys[i];
-			if (!sKey) {
-				iPreloadedPreviousIndex = i+1;
-				break;
-			}
-		}
-		// check which data is already loaded after startindex; If all necessary data is loaded iPreloadedSubsequentIndex stays undefined
-		for (var j = iStartIndex + iLength; j < iStartIndex + iLength + iThreshold; j++) {
-			sKey = this.aKeys[j];
-			if (!sKey) {
-				iPreloadedSubsequentIndex = j;
-				break;
-			}
-		}
-		
-		// calculate previous remaining entries
-		iRemainingEntries = iStartIndex - iPreloadedPreviousIndex;
-		if (iPreloadedPreviousIndex && iStartIndex > iThreshold && iRemainingEntries < iThreshold) {
-			if (aContexts.length != iLength) {
-				iSectionStartIndex = iStartIndex - iThreshold;
-			} else {
-				iSectionStartIndex = iPreloadedPreviousIndex - iThreshold;
-			} 
-			iSectionLength = iThreshold;
-		}
-		
-		// No negative preload needed; move startindex if we already have some data
-		if (iSectionStartIndex == iStartIndex) {
-			iSectionStartIndex += aContexts.length;
-		}
-		
-		//read the rest of the requested data
-		if (aContexts.length != iLength) {
-			iSectionLength += iLength - aContexts.length;
-		}
-		
-		//calculate subsequent remaining entries
-		iRemainingEntries = iPreloadedSubsequentIndex - iStartIndex - iLength;
-		
-		if (iRemainingEntries == 0) {
-			iSectionLength += iThreshold;
-		}
-		
-		if (iPreloadedSubsequentIndex && iRemainingEntries < iThreshold && iRemainingEntries > 0) {
-				//check if we need to load previous entries; If not we can move the startindex
-				if (iSectionStartIndex > iStartIndex) {
-					iSectionStartIndex = iPreloadedSubsequentIndex;
-					iSectionLength += iThreshold;
-				}
-				
-		}
-		
-		//check final length and adapt sectionLength if needed.
-		if (this.bLengthFinal && this.iLength < (iSectionLength + iSectionStartIndex)) {
-			iSectionLength = this.iLength - iSectionStartIndex;
-		}
-		
-		oSection.startIndex = iSectionStartIndex;
-		oSection.length = iSectionLength;
-		
-		return oSection;
-	};
-	
-	/**
-	 * Setter for context
-	 * @param {Object} oContext the new context object
-	 * @name sap.ui.model.odata.ODataListBinding#setContext
-	 * @function
-	 */
-	ODataListBinding.prototype.setContext = function(oContext) {
-		if (this.oContext != oContext) {
-			this.oContext = oContext;
-			if (this.isRelative()) {
-				// get new entity type with new context
-				this.oEntityType = this._getEntityType();
-	
-				if (this.bInitialized){
-					// if nested list is already available, use the data and don't send additional requests
-					// TODO: what if nested list is not complete, because it was too large?
-					var oRef = this.oModel._getObject(this.sPath, this.oContext);
-					if (jQuery.isArray(oRef)) {
-						this.aKeys = oRef;
-						this.iLength = oRef.length;
-						this.bLengthFinal = true;
-						this._fireChange();
-					}
-					else {
-						this.refresh();
-					}
-				} 
-			}
-		}
-	};
-	
-	/**
-	 * Load list data from the server
-	 * @name sap.ui.model.odata.ODataListBinding#loadData
-	 * @function
-	 */
-	ODataListBinding.prototype.loadData = function(iStartIndex, iLength, bPretend) {
-	
-		var that = this,
-			bInlineCountRequested = false;
-	
-		// create range parameters and store start index for sort/filter requests
-		if (iStartIndex || iLength) {
-			this.sRangeParams = "$skip=" + iStartIndex + "&$top=" + iLength;
-			this.iStartIndex = iStartIndex;
-		}
-		else {
-			iStartIndex = this.iStartIndex;
-		}
-	
-		// create the request url
-		var aParams = [];
-		if (this.sRangeParams) { 
-			aParams.push(this.sRangeParams);
-		}
-		if (this.sSortParams) {
-			aParams.push(this.sSortParams);
-		}
-		if (this.sFilterParams) {
-			aParams.push(this.sFilterParams);
-		}
-		if (this.sCustomParams) {
-			aParams.push(this.sCustomParams);
-		}
-		if (!this.bLengthFinal &&
-			(this.sCountMode == CountMode.Inline ||
-			this.sCountMode == CountMode.Both)) {
-			aParams.push("$inlinecount=allpages");
-			bInlineCountRequested = true;
-		}
-		
-		function fnSuccess(oData) {
-	
-			// Collecting contexts
-			jQuery.each(oData.results, function(i, entry) {
-				that.aKeys[iStartIndex + i] = that.oModel._getKey(entry);
-			});
-	
-			// update iLength (only when the inline count was requested and is available)
-			if (bInlineCountRequested && oData.__count) {
-				that.iLength = parseInt(oData.__count, 10);
-				that.bLengthFinal = true;
-			}
-	
-			// if we got data and the results + startindex is larger than the
-			// length we just apply this value to the length
-			if (that.iLength < iStartIndex + oData.results.length) {
-				that.iLength = iStartIndex + oData.results.length;
-				that.bLengthFinal = false;
-			}
-	
-			// if less entries are returned than have been requested
-			// set length accordingly
-			if (oData.results.length < iLength || iLength === undefined) {
-				that.iLength = iStartIndex + oData.results.length;
-				that.bLengthFinal = true;
-			}
-	
-			// check if there are any results at all...
-			if (iStartIndex == 0 && oData.results.length == 0) {
-				that.iLength = 0;
-				that.bLengthFinal = true;
-			}
-			
-			that.oRequestHandle = null;
-			that.bPendingRequest = false;
-			
-			// If request is originating from this binding, change must be fired afterwards
-			that.bNeedsUpdate = true;
-		}
-		
-		function fnCompleted() {
-			that.fireDataReceived();
-		}
-		
-		function fnError(oError) {
-			that.oRequestHandle = null;
-			that.bPendingRequest = false;
-			that.fireDataReceived();
-		}
-		
-		function fnUpdateHandle(oHandle) {
-			that.oRequestHandle = oHandle;
-		}
-		
-		var sPath = this.sPath,
-			oContext = this.oContext;
-			
-		if (this.isRelative()) {
-			sPath = this.oModel.resolve(sPath,oContext);
-		}
-		if (sPath) {
-			if (bPretend) {
-				// Pretend to send a request by firing the appropriate events
-				var sUrl = this.oModel._createRequestUrl(sPath, aParams);
-				this.fireDataRequested();
-				this.oModel.fireRequestSent({url: sUrl, method: "GET", async: true});
-				setTimeout(function() {
-					// If request is originating from this binding, change must be fired afterwards
-					that.bNeedsUpdate = true;
-					that.checkUpdate();
-					that.oModel.fireRequestCompleted({url: sUrl, method: "GET", async: true, success: true});
-					that.fireDataReceived();
-				}, 0);
-			} else {
-				// Execute the request and use the metadata if available
-				this.bPendingRequest = true;
-				this.fireDataRequested();
-				this.oModel._loadData(sPath, aParams, fnSuccess, fnError, false, fnUpdateHandle, fnCompleted);
-			}
-		}
-	
-	};
-	
-	/**
-	 * Return the length of the list
-	 *
-	 * @return {number} the length
-	 * @protected
-	 * @name sap.ui.model.odata.ODataListBinding#getLength
-	 * @function
-	 */
-	ODataListBinding.prototype.getLength = function() {
-		return this.iLength;
-	};
-	
-	/**
-	 * Return the length of the list
-	 *
-	 * @return {number} the length
-	 * @name sap.ui.model.odata.ODataListBinding#_getLength
-	 * @function
-	 */
-	ODataListBinding.prototype._getLength = function() {
-	
-		var that = this;
-	
-		// create a request object for the data request
-		var aParams = [];
-		if (this.sFilterParams) {
-			aParams.push(this.sFilterParams);
-		}
-		
-		// use only custom params for count and not expand,select params
-		if (this.mParameters && this.mParameters.custom) {
-			var oCust = { custom: {}};
-			jQuery.each(this.mParameters.custom, function (sParam, oValue){
-				oCust.custom[sParam] = oValue;
-			});
-			aParams.push(this.oModel.createCustomParams(oCust));
-		}
-		
-		function _handleSuccess(oData) {
-			that.iLength = parseInt(oData, 10);
-			that.bLengthFinal = true;
-		}
-	
-		function _handleError(oError) {
-			var sErrorMsg = "Request for $count failed: " + oError.message;
-			if (oError.response){
-				sErrorMsg += ", " + oError.response.statusCode + ", " + oError.response.statusText + ", " + oError.response.body;
-			}
-			jQuery.sap.log.warning(sErrorMsg);
-		}
-		
-		// Use context and check for relative binding
-		var sPath = this.oModel.resolve(this.sPath, this.oContext);
-	
-		// Only send request, if path is defined
-		if (sPath) {
-			var sUrl = this.oModel._createRequestUrl(sPath + "/$count", null, aParams);
-			var oRequest = this.oModel._createRequest(sUrl, "GET", false);
-			// count needs other accept header
-			oRequest.headers["Accept"] = "text/plain, */*;q=0.5";
-		
-			// execute the request and use the metadata if available
-			// (since $count requests are synchronous we skip the withCredentials here)
-			this.oModel._request(oRequest, _handleSuccess, _handleError, undefined, undefined, this.oModel.getServiceMetadata());
-		}
-	};
-	
-	/**
-	 * Refreshes the binding, check whether the model data has been changed and fire change event
-	 * if this is the case. For server side models this should refetch the data from the server.
-	 * To update a control, even if no data has been changed, e.g. to reset a control after failed
-	 * validation, please use the parameter bForceUpdate.
-	 * 
-	 * @param {boolean} [bForceUpdate] Update the bound control even if no data has been changed
-	 * @param {object} [mChangedEntities]
-	 * @param {string] [mEntityTypes]
+	 * @return {Object} metdata object
 	 * @public
-	 * @name sap.ui.model.odata.ODataListBinding#refresh
-	 * @function
+	 * @name sap.ui.model.odata.ODataMetadata#getServiceMetadata
 	 */
-	ODataListBinding.prototype.refresh = function(bForceUpdate, mChangedEntities, mEntityTypes) {
-		var bChangeDetected = false;
-		
-		if (!bForceUpdate) {
-			if (mEntityTypes){
-				var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
-				var oEntityType = this.oModel.oMetadata._getEntityTypeByPath(sResolvedPath);
-				if (oEntityType && (oEntityType.entityType in mEntityTypes)) {
-					bChangeDetected = true;
-				}
-			}
-			if (mChangedEntities && !bChangeDetected) {
-				jQuery.each(this.aKeys, function(i, sKey) {
-					if (sKey in mChangedEntities) {
-						bChangeDetected = true;
-						return false;
-					}
-				});
-			} 
-			if (!mChangedEntities && !mEntityTypes) { // default
-				bChangeDetected = true;
-			}
-		}
-		if (bForceUpdate || bChangeDetected) {
-			this.abortPendingRequest();
-			this.resetData();
-			this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
-		}
+	ODataMetadata.prototype.getServiceMetadata = function() {
+		return this.oMetadata;
 	};
 	
 	/**
-	 * fireRefresh
-	 * @name sap.ui.model.odata.ODataListBinding#_fireRefresh
-	 * @function
-	 */
-	ODataListBinding.prototype._fireRefresh = function(mArguments) {
-		this.bRefresh = true;
-		this.fireEvent("refresh", mArguments);
-	};
-	
-	/**
-	 * Initialize binding. Fires a refresh 
+	 * Checks whether metadata is available
 	 * 
 	 * @public
-	 * @name sap.ui.model.odata.ODataListBinding#initialize
-	 * @function
+	 * @returns {boolean} returns whether metadata is already loaded
 	 */
-	ODataListBinding.prototype.initialize = function() {
-		if (this.bDataAvailable) {
-			this._fireChange({reason: sap.ui.model.ChangeReason.Change});
-		} else {
-			this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
-		}
+	ODataMetadata.prototype.isLoaded = function() {
+		return this.bLoaded;
 	};
-	
+
 	/**
-	 * Check whether this Binding would provide new values and in case it changed,
-	 * inform interested parties about this.
+	 * Fire event loaded to attached listeners.
 	 *
-	 * @param {boolean} bForceUpdate
-	 * @param {object} mChangedEntities
-	 * @name sap.ui.model.odata.ODataListBinding#checkUpdate
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @protected
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.fireLoaded = function() {
+		this.bLoaded = true;
+		this.fireEvent("loaded");
+		jQuery.sap.log.debug('loaded on Metadata object was fired');
+		return this;
+	};
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'loaded' event of this <code>sap.ui.model.odata.ODataMetadata</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.attachLoaded = function(oData, fnFunction, oListener) {
+		this.attachEvent("loaded", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'loaded' event of this <code>sap.ui.model.odata.ODataMetadata</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.detachLoaded = function(fnFunction, oListener) {
+		this.detachEvent("loaded", fnFunction, oListener);
+		return this;
+	};
+
+
+	/**
+	 * Fire event failed to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {string} [mArguments.message]  A text that describes the failure.
+	 * @param {string} [mArguments.statusCode]  HTTP status code returned by the request (if available)
+	 * @param {string} [mArguments.statusText] The status as a text, details not specified, intended only for diagnosis output
+	 * @param {string} [mArguments.responseText] Response that has been received for the request ,as a text string
+	 *
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @protected
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.fireFailed = function(mArguments) {
+		this.fireEvent("failed", mArguments);
+		return this;
+	};
+
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'failed' event of this <code>sap.ui.model.odata.ODataMetadata</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.attachFailed = function(oData, fnFunction, oListener) {
+		this.attachEvent("failed", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'failed' event of this <code>sap.ui.model.odata.ODataMetadata</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataMetadata} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype.detachFailed = function(fnFunction, oListener) {
+		this.detachEvent("failed", fnFunction, oListener);
+		return this;
+	};
+
+
+	/**
+	 * Extract the entity type name of a given sPath. Also navigation properties in the path will be followed to get the right entity type for that property.
+	 * eg.
+	 * /Categories(1)/Products(1)/Category --> will get the Categories entity type
+	 * /Products --> will get the Products entity type
+	 * @return {object} the entity type or null if not found
+	 * @name sap.ui.model.odata.ODataMetadata#_getEntityTypeByPath
 	 * @function
 	 */
-	ODataListBinding.prototype.checkUpdate = function(bForceUpdate, mChangedEntities) {
-		var bChangeReason = this.sChangeReason ? this.sChangeReason : sap.ui.model.ChangeReason.Change,
-			bChangeDetected = false, 
-			oLastData, oCurrentData,
+	ODataMetadata.prototype._getEntityTypeByPath = function(sPath) {
+		if (!sPath) {
+			jQuery.sap.assert(undefined, "sPath not defined!");
+			return null;
+		}
+		if (!this.oMetadata || jQuery.isEmptyObject(this.oMetadata)) {
+			jQuery.sap.assert(undefined, "No metadata loaded!");
+			return null;
+		}
+		// remove starting and trailing /
+		var sCandidate = sPath.replace(/^\/|\/$/g, ""),
+			aParts = sCandidate.split("/"),
+			iLength = aParts.length,
+			aAssociationName,
+			oAssociation,
+			oParentEntityType,
+			oEnd,
+			aEntityTypeName,
+			oEntityType,
+			oResultEntityType,
 			that = this;
-		
-		if (!bForceUpdate && !this.bNeedsUpdate) {
-			//TODO: check if we can loop only the last requested contexts
-			if (mChangedEntities) {
-				jQuery.each(this.aKeys, function(i, sKey) {
-					if (sKey in mChangedEntities) {
-						bChangeDetected = true;
-						return false;
+	
+		// remove key from first path segment if any (e.g. Products(555) --> Products)
+		if (aParts[0].indexOf("(") != -1){
+			aParts[0] = aParts[0].substring(0,aParts[0].indexOf("("));
+		}
+	
+		if (iLength > 1 ) {
+			// check if navigation property is used
+			// e.g. Categories(1)/Products(1)/Category --> Category is a navigation property so we need the collection Categories
+	
+			oParentEntityType = that._getEntityTypeByPath(aParts[0]);
+	
+			for (var i = 1; i < aParts.length; i++ ){
+				if (oParentEntityType) {
+					// remove key from current part if any
+					if (aParts[i].indexOf("(") != -1){
+						aParts[i] = aParts[i].substring(0,aParts[i].indexOf("("));
 					}
-				});
-			} else {
-				bChangeDetected = true;
+					// check for navigation properties
+					// if no navigation property found we assume that the current part is a normal property so we return the current oParentEntityType
+					// which is the parent entity type of that property
+					if (oParentEntityType.navigationProperty) {
+						oResultEntityType = that._getEntityTypeByNavProperty(oParentEntityType, aParts[i]);
+						if (oResultEntityType) {
+							oParentEntityType = oResultEntityType;
+						}
+					}
+
+					oEntityType = oParentEntityType;
+
+				}
+			};
+		} else {
+			// if only one part exists it should be the name of the collection and we can get the entity type for it
+			aEntityTypeName = this._splitName(this._getEntityTypeName(aParts[0]));
+			oEntityType = this._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
+			if (oEntityType) {
+				// store the type name also in the oEntityType
+				oEntityType.entityType = this._getEntityTypeName(aParts[0]);
 			}
-			if (bChangeDetected && this.aLastContexts) {
-				// Reset bChangeDetected and compare actual data of entries
-				bChangeDetected = false;
-				//Get contexts for visible area and compare with stored contexts
-				var aContexts = this._getContexts(this.iLastStartIndex, this.iLastLength, this.iLastThreshold);
-				if (this.aLastContexts.length != aContexts.length) {
-					bChangeDetected = true;
-				} else {
-					jQuery.each(this.aLastContexts, function(iIndex, oContext) {
-						oLastData = that.oLastContextData[oContext.getPath()];
-						oCurrentData = aContexts[iIndex].getObject();
-						// Compare whether last data is completely contained in current data (so broader $select
-						// or $expand doesn't trigger a change) and to a maximum depth of 3, to cover complex types.
-						if (!jQuery.sap.equal(oLastData, oCurrentData, 3, true)) {
-							bChangeDetected = true;
+		}
+	
+		// check for function imports
+		if (!oEntityType) {
+			var sFuncCandName = aParts[aParts.length - 1]; // last segment is always a function import
+			var oFuncType = this._getFunctionImportMetadata(sFuncCandName, "GET");
+			if (oFuncType && oFuncType.entitySet) { // only collections supported which have an entitySet
+				oEntityType = this._getEntityTypeByPath(oFuncType.entitySet);
+				if (oEntityType) {
+					// store the type name also in the oEntityType
+					oEntityType.entityType = this._getEntityTypeName(oFuncType.entitySet);
+				}
+			}
+		}
+	
+	
+		//jQuery.sap.assert(oEntityType, "EntityType for path " + sPath + " could not be found!");
+		return oEntityType;
+	};
+	
+	/**
+	 * Extract the entity type from a given sName. Retrieved types will be cached   
+	 * so further calls must not iterate the metadata structure again.
+	 * 
+	 * #/Category/CategoryName --> will get the Category entity type
+	 * @return {object} the entity type or null if not found
+	 * @name sap.ui.model.odata.ODataMetadata#_getEntityTypeByName
+	 * @function
+	 */
+	ODataMetadata.prototype._getEntityTypeByName = function(sName) {
+		var oEntityType, that = this;
+		
+		if (!sName) {
+			jQuery.sap.assert(undefined, "sName not defined!");
+			return null;
+		}
+		if (!this.oMetadata || jQuery.isEmptyObject(this.oMetadata)) {
+			jQuery.sap.assert(undefined, "No metadata loaded!");
+			return null;
+		}
+		if (this.mEntityTypes[sName]) {
+			oEntityType = this.mEntityTypes[sName];
+		} else {
+			jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+				if (oSchema.entityType) {
+					jQuery.each(oSchema.entityType, function(k, oEntity) {
+						if (oEntity.name === sName) {
+							oEntityType = oEntity;
+							that.mEntityTypes[sName] = oEntityType;
+							oEntityType.namespace = oSchema.namespace;
 							return false;
 						}
 					});
 				}
-			}
+			});
 		}
-		if (bForceUpdate || bChangeDetected || this.bNeedsUpdate) {
-			this.bNeedsUpdate = false;
-			this._fireChange({reason: bChangeReason});
-		}
-		this.sChangeReason = undefined;
+		return oEntityType;
 	};
 	
 	/**
-	 * Resets the current list data and length
-	 * 
+	 * Extracts an Annotation from given path parts 
+	 * @param {array} aMetaParts
+	 * @returns {any}
+	 * @name sap.ui.model.odata.ODataMetadata#_getAnnotation
 	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#resetData
 	 * @function
 	 */
-	ODataListBinding.prototype.resetData = function() {	
-		this.aKeys = [];
-		this.iLength = 0;
-		this.bLengthFinal = false;
-		this.sChangeReason = undefined;
-		this.bDataAvailable = false;
-		if (this.oModel.isCountSupported() && 
-			(this.sCountMode == CountMode.Request || 
-			this.sCountMode == CountMode.Both)) {
-			this._getLength();
-		}
-	};
-	
-	/**
-	 * Aborts the current pending request (if any)
-	 * 
-	 * This can be called if we are sure that the data from the current request is no longer relevant,
-	 * e.g. when filtering/sorting is triggered or the context is changed.
-	 * 
-	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#abortPendingRequest
-	 * @function
-	 */
-	ODataListBinding.prototype.abortPendingRequest = function() {	
-		if (this.oRequestHandle) {
-			this.oRequestHandle.abort();
-	 		this.oRequestHandle = null;
-			this.bPendingRequest = false;
-		}
-	};
-	
-	/**
-	 * Sorts the list.
-	 *
-	 * @param {sap.ui.model.Sorter|Array} aSorters the Sorter or an array of sorter objects object which define the sort order
-	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
-	 * @public
-	 * @name sap.ui.model.odata.ODataListBinding#sort
-	 * @function
-	 */
-	ODataListBinding.prototype.sort = function(aSorters) {
-	
-		if (aSorters instanceof sap.ui.model.Sorter) {
-			aSorters = [aSorters];
+	ODataMetadata.prototype._getAnnotation = function(sPath) {
+		var oNode, sKey, aParts, sMetaPath, aMetaParts, oEntityType, sPropertyPath, oProperty, aPathParts, sPath;
+		
+		aParts = sPath.split('/#');
+		aMetaParts = aParts[1].split('/');  
+		
+		//check if we have an absolute meta binding
+		if (!aParts[0]) {
+			// first part must be the entityType
+			oEntityType = this._getEntityTypeByName(aMetaParts[0]);		
+			
+			jQuery.sap.assert(oEntityType, aMetaParts[0] + " is not a valid EnityType");
+			
+			if (!oEntityType) return;
+			
+			//extract property
+			sPropertyPath = aParts[1].substr(aParts[1].indexOf('/')+1);
+			oProperty = this._getPropertyMetadata(oEntityType,sPropertyPath);
+			
+			jQuery.sap.assert(oProperty, sPropertyPath + " is not a valid property path");
+			if(!oProperty) return;
+			
+			sMetaPath = sPropertyPath.substr(sPropertyPath.indexOf(oProperty.name));
+			sMetaPath = sMetaPath.substr(sMetaPath.indexOf('/')+1);
+		} else {
+			//getentityType from data Path
+			oEntityType = this._getEntityTypeByPath(aParts[0]);
+			
+			jQuery.sap.assert(oEntityType, aParts[0] + " is not a valid path");
+			
+			if (!oEntityType) return;
+			
+			//extract property
+			sPath = aParts[0].replace(/^\/|\/$/g, "");
+			sPropertyPath = sPath.substr(sPath.indexOf('/')+1);
+			oProperty = this._getPropertyMetadata(oEntityType,sPropertyPath);
+			
+			jQuery.sap.assert(oProperty, sPropertyPath + " is not a valid property path");
+			if(!oProperty) return;
+			
+			sMetaPath = aMetaParts.join('/');
 		}
 		
-		this.aSorters = aSorters;
-		this.createSortParams(aSorters);
-	
-		// Only reset the keys, length usually doesn't change when sorting
-		this.abortPendingRequest();
-		this.aKeys = [];
-	
-		if (this.bInitialized) {
-			if (this.oRequestHandle) {
-				this.oRequestHandle.abort();
-				this.oRequestHandle = null;
-				this.bPendingRequest = false;
-			}
-			this.sChangeReason = sap.ui.model.ChangeReason.Sort;
-			this._fireRefresh({reason : this.sChangeReason});
-			// TODO remove this if the sort event gets removed which is now deprecated
-			this._fireSort({sorter: aSorters});
-		}
-		return this;
+		
+		
+		oNode = this._getAnnotationObject(oEntityType, oProperty, sMetaPath);
+		
+		return oNode;
 	};
-	
+
 	/**
-	 * Create URL parameters for sorting
-	 * @name sap.ui.model.odata.ODataListBinding#createSortParams
+	 * Extract the Annotation Object from a given oProperty and a metadata path  
+	 * 
+	 * @return {object} the annotation object/value
+	 * @name sap.ui.model.odata.ODataMetadata#_getEntityTypeByName
 	 * @function
 	 */
-	ODataListBinding.prototype.createSortParams = function(aSorters) {
-		if (!aSorters || aSorters.length == 0) {
+	ODataMetadata.prototype._getAnnotationObject = function(oEntityType, oObject, sMetaDataPath) {
+		var that = this, aAnnotationParts, aParts, oAnnotation, oNode, sAnnotation;
+		
+		if (!oObject) return;
+		
+		oNode = oObject;
+		aParts = sMetaDataPath.split('/');
+		
+		//V4 annotation
+		if (aParts[0].indexOf('.') > -1) {
+			return this._getV4AnnotationObject(oEntityType, oObject, aParts);
+		}else { 
+			if (aParts.length > 1) {
+				//TODO:namespace handling
+				oNode = oNode[aParts[0]];
+				if (!oNode && oObject.extensions) {
+					for (var i = 0; i < oObject.extensions.length; i++) {
+						var oExtension = oObject.extensions[i];
+						if (oExtension.name == aParts[0]) {
+							oNode = oExtension;
+							break;
+						}
+					}
+				}
+				sMetaDataPath = aParts.splice(0,1)
+				oAnnotation = this._getAnnotationObject(oEntityType, oNode, aParts.join('/'));
+			} else {
+				//handle attributes
+				if (aParts[0].indexOf('@') > -1) {
+					sAnnotation = aParts[0].substr(1);
+					aAnnotationParts = sAnnotation.split(':');
+					oAnnotation = oNode[aAnnotationParts[0]];
+					if (!oAnnotation && oNode.extensions) {
+						for (var i = 0; i < oNode.extensions.length; i++) {
+							var oExtension = oNode.extensions[i];
+							if (oExtension.name === aAnnotationParts[1] && oExtension.namespace === this.mNamespaces[aAnnotationParts[0]]) {
+								oAnnotation = oExtension.value;
+								break;
+							} 
+						}
+					}
+				} else { // handle nodes
+					aAnnotationParts = aParts[0].split(':');
+					oAnnotation = oNode[aAnnotationParts[0]];
+					oAnnotation = oNode[aParts[0]];
+					if (!oAnnotation && oNode.extensions) {
+						for (var i = 0; i < oNode.extensions.length; i++) {
+							var oExtension = oNode.extensions[i];
+							if (oExtension.name === aAnnotationParts[1] && oExtension.namespace === this.mNamespaces[aAnnotationParts[0]]) {
+								oAnnotation = oExtension;
+								break;
+							} 
+						}
+					}
+				}
+			}
+		}
+		return oAnnotation;
+	};
+	
+	/*
+	 * @private
+	 */
+	ODataMetadata.prototype._getV4AnnotationObject = function(oEntityType, oObject, aParts) {
+		var oAnnotationNode, aAnnotations = [];
+		
+		if (aParts.length > 1) {
+			jQuery.sap.assert(aParts.length == 1, "'" + aParts.join('/') + "' is not a valid annotation path");
 			return;
 		}
-		this.sSortParams = "$orderby=";
-		for (var i=0; i < aSorters.length; i++) {
-			var oSorter = aSorters[i];
-			if(oSorter instanceof sap.ui.model.Sorter){
-				this.sSortParams += oSorter.sPath;
-				this.sSortParams += oSorter.bDescending ? "%20desc" : "%20asc";
-				this.sSortParams += ",";
-			}
-		}
-		//remove trailing comma
-		this.sSortParams = this.sSortParams.slice(0,-1);
-	
-	};
-	
-	
-	/**
-	 * 
-	 * Filters the list.
-	 * 
-	 * When using sap.ui.model.Filter the filters are first grouped according to their binding path.
-	 * All filters belonging to a group are ORed and after that the
-	 * results of all groups are ANDed.
-	 * Usually this means, all filters applied to a single table column
-	 * are ORed, while filters on different table columns are ANDed.
-	 * 
-	 * When using the specific sap.ui.model.odata.Filter it is possible to specify to AND or OR the filters with the same binding path:
-	 * Syntax: new sap.ui.model.odata.Filter(sPath, [{operator:sap.ui.model.FilterOperator, value1: oValue},
-	 *				                                 {operator: sap.ui.model.FilterOperator, value1: oValue}], bAND); // [bAND] = true
-	 * 
-	 * @param {sap.ui.model.Filter[]|sap.ui.model.odata.Filter[]} aFilters Array of filter objects
-	 * @param {sap.ui.model.FilterType} sFilterType Type of the filter which should be adjusted, if it is not given, the standard behaviour applies
-	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
-	 * 
-	 * @public
-	 * @name sap.ui.model.odata.ODataListBinding#filter
-	 * @function
-	 */
-	ODataListBinding.prototype.filter = function(aFilters, sFilterType) {
-	
-		if (!aFilters) {
-			aFilters = [];
-		}
 		
-		if (aFilters instanceof sap.ui.model.Filter) {
-			aFilters = [aFilters];
-		}
-	
-		if (sFilterType == FilterType.Application) {
-			this.aApplicationFilters = aFilters;
-		} else {
-			this.aFilters = aFilters;
-		}
+		var sTargetName = oEntityType.namespace ? oEntityType.namespace+"." : "";
+		sTargetName += oEntityType.name+"/"+oObject.name;
 		
-		aFilters = this.aFilters.concat(this.aApplicationFilters);
-		
-		if (!aFilters || !jQuery.isArray(aFilters) || aFilters.length == 0) {
-			this.aFilters = [];
-			this.aApplicationFilters = [];
-		}
-	
-		this.createFilterParams(aFilters);
-		this.abortPendingRequest();
-		this.resetData();
-		
-		if (this.bInitialized) {
-			if (this.oRequestHandle) {
-				this.oRequestHandle.abort();
-				this.oRequestHandle = null;
-				this.bPendingRequest = false;
-			}
-			this.sChangeReason = sap.ui.model.ChangeReason.Filter;
-			this._fireRefresh({reason : this.sChangeReason});
-			// TODO remove this if the filter event gets removed which is now deprecated
-			if (sFilterType == FilterType.Application) {
-				this._fireFilter({filters: this.aApplicationFilters});
-			} else {
-				this._fireFilter({filters: this.aFilters});
-			}
-		}
-		
-		return this;
-	};
-	
-	/**
-	 * Create URL parameters for filtering
-	 * @name sap.ui.model.odata.ODataListBinding#createFilterParams
-	 * @function
-	 */
-	ODataListBinding.prototype.createFilterParams = function(aFilters) {
-		
-		if(aFilters && aFilters.length > 0){
-			var oFilterGroups = {},
-				iFilterGroupLength = 0,
-				aFilterGroup,
-				sFilterParam = "$filter=",
-				iFilterGroupCount = 0,
-				that = this;
-			//group filters by path
-			jQuery.each(aFilters, function(j, oFilter) {
-				if (oFilter.sPath) {
-					aFilterGroup = oFilterGroups[oFilter.sPath];
-					if (!aFilterGroup) {
-						aFilterGroup = oFilterGroups[oFilter.sPath] = [];
-						iFilterGroupLength++;
-					}
-				} else {
-					aFilterGroup = oFilterGroups["__multiFilter"];
-					if (!aFilterGroup) {
-						aFilterGroup = oFilterGroups["__multiFilter"] = [];
-						iFilterGroupLength++;
-					}
-				}
-				aFilterGroup.push(oFilter);
-			});
-			jQuery.each(oFilterGroups, function(sPath, aFilterGroup) {
-				if (aFilterGroup.length > 1) {
-					sFilterParam += '(';
-				}
-				jQuery.each(aFilterGroup, function(i,oFilter) {
-					if (oFilter instanceof Filter) {
-						if (oFilter.aValues.length > 1) {
-							sFilterParam += '(';
-						}
-						jQuery.each(oFilter.aValues, function(i, oFilterSegment) {
-							if (i > 0) {
-								if(oFilter.bAND) {
-									sFilterParam += "%20and%20";
-								} else {
-									sFilterParam += "%20or%20";
-								}
-							}
-							sFilterParam = that._createFilterSegment(oFilter.sPath, oFilterSegment.operator, oFilterSegment.value1, oFilterSegment.value2, sFilterParam);
-						});
-						if (oFilter.aValues.length > 1) {
-							sFilterParam += ')';
-						}
-					} else if (oFilter._bMultiFilter) {
-						sFilterParam += that._resolveMultiFilter(oFilter);
-					} else {
-						sFilterParam = that._createFilterSegment(oFilter.sPath, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, sFilterParam);
-					}
-					if (i < aFilterGroup.length-1) {
-						sFilterParam += "%20or%20";
+		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+			if (oSchema.annotations) {
+				jQuery.each(oSchema.annotations, function(k, oObject) {
+					//we do not support qualifiers on target level
+					if (oObject.target === sTargetName && !oObject.qualifier) {
+						aAnnotations.push(oObject.annotation);
+						return false;
 					}
 				});
-				if (aFilterGroup.length > 1) {
-					sFilterParam += ')';
-				}
-				if (iFilterGroupCount < iFilterGroupLength-1) {
-					sFilterParam += "%20and%20";
-				}
-				iFilterGroupCount++;
+			}
+		});
+		if (aAnnotations) {
+			jQuery.each(aAnnotations, function(i, aAnnotation) {
+				jQuery.each(aAnnotation, function(j, oAnnotation) {
+					if (oAnnotation.term === aParts[0]) {
+						oAnnotationNode = oAnnotation;
+					}
+				});
 			});
-			this.sFilterParams = sFilterParam;
-		}else{
-			this.sFilterParams = null;
 		}
+		return oAnnotationNode
+	}
+	
+	/**
+	 * splits a name e.g. Namespace.Name into [Name, Namespace]
+	 * @name sap.ui.model.odata.ODataMetadata#_splitName
+	 * @function
+	 */
+	ODataMetadata.prototype._splitName = function(sFullName) {
+		var aParts = [];
+		if (sFullName) {
+			var iSepIdx = sFullName.lastIndexOf(".");
+			aParts[0] = sFullName.substr(iSepIdx + 1);
+			aParts[1] = sFullName.substr(0, iSepIdx);
+		}
+		return aParts;
+	};
+	
+	
+	/**
+	*  search metadata for specified collection name (= entity set name)
+	* @name sap.ui.model.odata.ODataMetadata#_getEntityTypeName
+	* @function
+	*/
+	ODataMetadata.prototype._getEntityTypeName = function(sCollection) {
+		var sEntityTypeName;
+		if (sCollection) {
+			jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+				if (oSchema.entityContainer) {
+					jQuery.each(oSchema.entityContainer, function(k, oEntityContainer) {
+						if (oEntityContainer.entitySet) {
+							jQuery.each(oEntityContainer.entitySet, function(j, oEntitySet) {
+								if (oEntitySet.name === sCollection) {
+									sEntityTypeName = oEntitySet.entityType;
+									return false;
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+		//jQuery.sap.assert(sEntityTypeName, "EntityType name of EntitySet "+ sCollection + " not found!");
+		return sEntityTypeName;
 	};
 	
 	/**
-	 * convert multi filter to filter string
-	 *
-	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#_resolveMultiFilter
+	 * get the object of a specified type name and namespace
+	 * @name sap.ui.model.odata.ODataMetadata#_getObjectMetadata
 	 * @function
 	 */
-	ODataListBinding.prototype._resolveMultiFilter = function(oMultiFilter){
-		var that = this,
-			aFilters = oMultiFilter.aFilters,
-			sFilterParam = "";
-		
-		if (aFilters) {
-			sFilterParam += "(";
-			jQuery.each(aFilters, function(i, oFilter) {
-				var bLocalMatch = false;
-				if (oFilter._bMultiFilter) {
-					sFilterParam += that._resolveMultiFilter(oFilter)
-				} else if (oFilter.sPath) {
-					sFilterParam += that._createFilterSegment(oFilter.sPath, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, "");
-				}
-				if (i < (aFilters.length - 1)) {
-					if (oMultiFilter.bAnd) {
-						sFilterParam += "%20and%20";
-					} else {
-						sFilterParam += "%20or%20";
-					}
+	ODataMetadata.prototype._getObjectMetadata = function(sObjectType, sObjectName, sNamespace) {
+		var oObject;
+		if (sObjectName && sNamespace) {
+			// search in all schemas for the sObjectName
+			jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+				// check if we found the right schema which will contain the sObjectName
+				if (oSchema[sObjectType] && oSchema.namespace === sNamespace) {
+					jQuery.each(oSchema[sObjectType], function(j, oCurrentObject) {
+						if (oCurrentObject.name === sObjectName) {
+							oObject = oCurrentObject;
+							oObject.namespace = oSchema.namespace;
+							return false;
+						}
+					});
+					return !oObject;
 				}
 			});
-			sFilterParam += ")";
 		}
-		
-		return sFilterParam;
+		//jQuery.sap.assert(oObject, "ObjectType " + sObjectType + " for name " + sObjectName + " not found!");
+		return oObject;
 	};
 	
-	ODataListBinding.prototype._createFilterSegment = function(sPath, sOperator, oValue1, oValue2, sFilterParam) {
-		
-		var oProperty;
-		if (this.oEntityType) {
-			oProperty = this.oModel.oMetadata._getPropertyMetadata(this.oEntityType, sPath);
-			jQuery.sap.assert(oProperty, "PropertyType for property "+ sPath + " of EntityType " + this.oEntityType.name + " not found!");
-		}
-		
-		if (oProperty) {
-			oValue1 = this.oModel.formatValue(oValue1, oProperty.type);
-			oValue2 = (oValue2 != null) ? this.oModel.formatValue(oValue2, oProperty.type) : null;
-		} else {
-			jQuery.sap.assert(null, "Type for filter property could not be found in metadata!");
-		}
-		
-		if (oValue1) {
-			oValue1 = jQuery.sap.encodeURL(String(oValue1));
-		}
-		if (oValue2) {
-			oValue2 = jQuery.sap.encodeURL(String(oValue2));
-		}
-		
-		// TODO embed 2nd value
-		switch(sOperator) {
-			case "EQ":
-			case "NE":
-			case "GT":
-			case "GE":
-			case "LT":
-			case "LE":
-				sFilterParam += sPath + "%20" + sOperator.toLowerCase() + "%20" + oValue1;
-				break;
-			case "BT":
-				sFilterParam += "(" + sPath + "%20ge%20" + oValue1 + "%20and%20" + sPath + "%20le%20" + oValue2 + ")";
-				break;
-			case "Contains":
-				sFilterParam += "substringof(" + oValue1 + "," + sPath + ")";
-				break;
-			case "StartsWith":
-				sFilterParam += "startswith(" + sPath + "," + oValue1 + ")";
-				break;
-			case "EndsWith":
-				sFilterParam += "endswith(" + sPath + "," + oValue1 + ")";
-				break;
-			default:
-				sFilterParam += "true";
-		}
-		return sFilterParam;
+	/**
+	 * Get the the use-batch extension value if any
+	 * @name sap.ui.model.odata.ODataMetadata#getUseBatch;
+	 * @public
+	 * @function
+	 */
+	ODataMetadata.prototype.getUseBatch = function() {
+		var bUseBatch = false;
+		// search in all schemas for the use batch extension
+		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+			if (oSchema.entityContainer) {
+				jQuery.each(oSchema.entityContainer, function(k, oEntityContainer) {
+					if (oEntityContainer.extensions) {
+						jQuery.each(oEntityContainer.extensions, function(l, oExtension) {
+							if (oExtension.name === "use-batch" && oExtension.namespace === "http://www.sap.com/Protocols/SAPData") {
+								bUseBatch = (typeof oExtension.value === 'string') ? (oExtension.value.toLowerCase() === 'true') : !!oExtension.value;
+								return false;
+							}
+						});
+					}
+				});
+			}
+		});
+		return bUseBatch;
 	};
 	
-	ODataListBinding.prototype._initSortersFilters = function(){
-		this.oEntityType = this._getEntityType();	
-		this.createSortParams(this.aSorters);
-		this.createFilterParams(this.aFilters.concat(this.aApplicationFilters));
+	/**
+	 * Retrieve the function import metadata for a name and a method.
+	 *
+	 * @param {string} sFunctionName The name of the function import to look up
+	 * @param {string} sMethod The HTTP Method for which this function is requested
+	 * @name sap.ui.model.odata.ODataMetadata#_getFunctionImportMetadata
+	 * @function
+	 */
+	ODataMetadata.prototype._getFunctionImportMetadata = function(sFunctionName, sMethod) {
+		var oObject = null;
+		// search in all schemas for the sObjectName
+		jQuery.each(this.oMetadata.dataServices.schema, function(i, oSchema) {
+			// check if we found the right schema which will contain the sObjectName
+			if (oSchema["entityContainer"]) {
+				jQuery.each(oSchema["entityContainer"], function(j,oEntityContainer) {
+					if (oEntityContainer["functionImport"]) {
+						jQuery.each(oEntityContainer["functionImport"], function(k,oFunctionImport) {
+							if (oFunctionImport.name === sFunctionName && oFunctionImport.httpMethod === sMethod) {
+								oObject = oFunctionImport;
+								return false;
+							}
+						});
+					}
+					return !oObject;
+				});
+			}
+			return !oObject;
+		});
+	//	jQuery.sap.assert(oObject, "FunctionImport for name " + sFunctionName
+	//			+ " and method " + sMethod + " not found!");
+		return oObject;
 	};
 	
-	ODataListBinding.prototype._getEntityType = function(){
-		var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
-		
-		if (sResolvedPath) {
-			var oEntityType = this.oModel.oMetadata._getEntityTypeByPath(sResolvedPath);
-			jQuery.sap.assert(oEntityType, "EntityType for path " + sResolvedPath + " could not be found!");
-			return oEntityType;
-			
+	
+	ODataMetadata.prototype._getEntityTypeByNavProperty = function(oEntityType, sNavPropertyName) {
+		var that = this, aAssociationName, oAssociation, aEntityTypeName, oNavEntityType;
+	
+		jQuery.each(oEntityType.navigationProperty, function(k, oNavigationProperty) {
+			if (oNavigationProperty.name === sNavPropertyName) {
+				// get association for navigation property and then the collection name
+				aAssociationName = that._splitName(oNavigationProperty.relationship);
+			    oAssociation = that._getObjectMetadata("association", aAssociationName[0], aAssociationName[1]);
+				if (oAssociation) {
+					var oEnd = oAssociation.end[0];
+					if (oEnd.role !== oNavigationProperty.toRole) {
+						oEnd = oAssociation.end[1];
+					}
+					aEntityTypeName = that._splitName(oEnd.type);
+					oNavEntityType = that._getObjectMetadata("entityType", aEntityTypeName[0], aEntityTypeName[1]);
+					if (oNavEntityType) {
+						// store the type name also in the oEntityType
+						oNavEntityType.entityType = oEnd.type;
+					}
+					return false;
+				}
+			}
+		});
+		return oNavEntityType;
+	};
+	
+	/**
+	 * get all navigation property names in an array by the specified entity type
+	 * @name sap.ui.model.odata.ODataMetadata#_getNavigationPropertyNames
+	 * @function
+	 */
+	ODataMetadata.prototype._getNavigationPropertyNames = function(oEntityType) {
+		var aNavProps = [];
+		if (oEntityType.navigationProperty) {
+			jQuery.each(oEntityType.navigationProperty, function(k, oNavigationProperty) {
+				aNavProps.push(oNavigationProperty.name);
+			});
 		}
-		return undefined;
+		return aNavProps;
 	};
 	
+	/**
+	*  extract the property metadata of a specified property of a entity type out of the metadata document
+	* @name sap.ui.model.odata.ODataMetadata#_getPropertyMetadata
+	* @function
+	*/
+	ODataMetadata.prototype._getPropertyMetadata = function(oEntityType, sProperty) {
+		var oPropertyMetadata, that = this;
+		
+		if (!oEntityType) return;
+		
+		// remove starting/trailing /
+		sProperty = sProperty.replace(/^\/|\/$/g, "");
+		var aParts = sProperty.split("/"); // path could point to a complex type
+	
+		jQuery.each(oEntityType.property, function(k, oProperty) {
+			if (oProperty.name === aParts[0]){
+				oPropertyMetadata = oProperty;
+				return false;
+			}
+		});
+	
+		// check if complex type
+		if (oPropertyMetadata && aParts.length > 1 && !jQuery.sap.startsWith(oPropertyMetadata.type.toLowerCase(), "edm.")) {
+			var aName = this._splitName(oPropertyMetadata.type);
+			oPropertyMetadata = this._getPropertyMetadata(this._getObjectMetadata("complexType", aName[0], aName[1]), aParts[1]);
+		}
+	
+		// check if navigation property
+		if (!oPropertyMetadata && aParts.length > 1) {
+			var oParentEntityType = this._getEntityTypeByNavProperty(oEntityType, aParts[0]);
+			if (oParentEntityType) {
+				oPropertyMetadata = that._getPropertyMetadata(oParentEntityType, aParts[1]);
+			}
+		}
+	
+		//jQuery.sap.assert(oPropertyMetadata, "PropertyType for property "+ aParts[0]+ " of EntityType " + oEntityType.name + " not found!");
+		return oPropertyMetadata;
+	};
+	
+	
+	ODataMetadata.prototype.destroy = function() {
+		delete this.oMetadata;
 
-	return ODataListBinding;
+		// Abort pending xml request
+		if (this.oRequestHandle) {
+			this.oRequestHandle.bSuppressErrorHandlerCall = true;
+			this.oRequestHandle.abort();
+			this.oRequestHandle = null;
+		}
+		if(!!this.oLoadEvent){
+			jQuery.sap.clearDelayedCall(this.oLoadEvent);
+		}
+		if(!!this.oFailedEvent){
+			jQuery.sap.clearDelayedCall(this.oFailedEvent);
+		}
+
+		sap.ui.base.Object.prototype.destroy.apply(this, arguments);
+	};
+
+	/**
+	 * creation of a request object for changes
+	 *
+	 * @return {object} request object
+	 * @private
+	 */
+	sap.ui.model.odata.ODataMetadata.prototype._createRequest = function(sUrl) {
+
+		var oLangHeader = {"Accept-Language" : sap.ui.getCore().getConfiguration().getLanguage()};
+		
+		var oRequest = {
+				headers : oLangHeader,
+				requestUri : sUrl,
+				method : 'GET',
+				user: this.sUser,
+				password: this.sPassword,
+				async: !!this.bAsync
+		};
+
+		if (!!this.bAsync) {
+			oRequest.withCredentials = this.bWithCredentials;
+		}
+
+		return oRequest;
+	};
+
+
+	return ODataMetadata;
 
 }, /* bExport= */ true);
 
-}; // end of sap/ui/model/odata/ODataListBinding.js
+}; // end of sap/ui/model/odata/ODataMetadata.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataTreeBinding') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -55214,7 +62712,7 @@ sap.ui.define("sap/ui/model/odata/ODataTreeBinding",['jquery.sap.global', 'sap/u
 	* @name sap.ui.model.odata.ODataTreeBinding
 	* @extends sap.ui.model.TreeBinding
 	*/
-	var ODataTreeBinding = TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lends sap.ui.model.odata.ODataTreeBinding */ {
+	var ODataTreeBinding = TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lends sap.ui.model.odata.ODataTreeBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			TreeBinding.apply(this, arguments);
@@ -55274,7 +62772,7 @@ sap.ui.define("sap/ui/model/odata/ODataTreeBinding",['jquery.sap.global', 'sap/u
 			//An context is bound
 			if (this.bDisplayRootNode) {
 				//Get the binding context for the root element, it is created if it doesn't exist yet
-				this.oModel.createBindingContext(this.sPath, this.getContext(), { expand: sNavPath }, function(oNewContext) {
+				this.oModel.createBindingContext(sAbsolutePath, null, { expand: sNavPath }, function(oNewContext) {
 					oContext = oNewContext;
 					if (that.oRootContext !== oNewContext) {
 						that.oRootContext = oNewContext;
@@ -55603,6 +63101,329 @@ sap.ui.define("sap/ui/model/odata/ODataTreeBinding",['jquery.sap.global', 'sap/u
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/odata/ODataTreeBinding.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataUtils') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/**
+ * OData-based DataBinding Utility Class
+ *
+ * @namespace
+ * @name sap.ui.model.odata
+ * @public
+ */
+
+// Provides class sap.ui.model.odata.ODataUtils
+jQuery.sap.declare('sap.ui.model.odata.ODataUtils'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/odata/ODataUtils",['jquery.sap.global', './Filter', 'sap/ui/model/Sorter', 'sap/ui/model/Filter', 'sap/ui/core/format/DateFormat'],
+	function(jQuery, ODataFilter, Sorter, Filter, DateFormat) {
+	"use strict";
+	
+	// Static class
+	var ODataUtils = function() {};
+	
+	/**
+	 * Create URL parameters for sorting
+	 * @name sap.ui.model.odata.ODataUtils#createSortParams
+	 * @param {array} aSorters an array of sap.ui.model.Sorter
+	 * @return {string} the URL encoded sorter parameters
+	 * @private
+	 * @function
+	 */
+	ODataUtils.createSortParams = function(aSorters) {
+		var sSortParam;
+		if (!aSorters || aSorters.length == 0) {
+			return;
+		}
+		sSortParam = "$orderby=";
+		for (var i=0; i < aSorters.length; i++) {
+			var oSorter = aSorters[i];
+			if (oSorter instanceof Sorter) {
+				sSortParam += oSorter.sPath;
+				sSortParam += oSorter.bDescending ? "%20desc" : "%20asc";
+				sSortParam += ",";
+			}
+		}
+		//remove trailing comma
+		sSortParam = sSortParam.slice(0,-1);
+		return sSortParam;
+	};
+	
+	/**
+	 * Create URL parameters for filtering
+
+	 * @param {array} aFilters an array of sap.ui.model.Filter
+	 * @param {object} oEntityType the entity metadata object
+	 * @return {string} the URL encoded filter parameters
+	 * @name sap.ui.model.odata.ODataUtils#createFilterParams
+	 * @private
+	 * @function
+	 */
+	ODataUtils.createFilterParams = function(aFilters, oMetadata, oEntityType) {
+		var sFilterParam;
+		if(!aFilters || aFilters.length == 0) {
+			return;
+		}
+		var oFilterGroups = {},
+			iFilterGroupLength = 0,
+			aFilterGroup,
+			sFilterParam = "$filter=",
+			iFilterGroupCount = 0,
+			that = this;
+		//group filters by path
+		jQuery.each(aFilters, function(j, oFilter) {
+			if (oFilter.sPath) {
+				aFilterGroup = oFilterGroups[oFilter.sPath];
+				if (!aFilterGroup) {
+					aFilterGroup = oFilterGroups[oFilter.sPath] = [];
+					iFilterGroupLength++;
+				}
+			} else {
+				aFilterGroup = oFilterGroups["__multiFilter"];
+				if (!aFilterGroup) {
+					aFilterGroup = oFilterGroups["__multiFilter"] = [];
+					iFilterGroupLength++;
+				}
+			}
+			aFilterGroup.push(oFilter);
+		});
+		jQuery.each(oFilterGroups, function(sPath, aFilterGroup) {
+			if (aFilterGroup.length > 1) {
+				sFilterParam += '(';
+			}
+			jQuery.each(aFilterGroup, function(i,oFilter) {
+				if (oFilter instanceof ODataFilter) {
+					if (oFilter.aValues.length > 1) {
+						sFilterParam += '(';
+					}
+					jQuery.each(oFilter.aValues, function(i, oFilterSegment) {
+						if (i > 0) {
+							if(oFilter.bAND) {
+								sFilterParam += "%20and%20";
+							} else {
+								sFilterParam += "%20or%20";
+							}
+						}
+						sFilterParam = that._createFilterSegment(oFilter.sPath, oMetadata, oEntityType, oFilterSegment.operator, oFilterSegment.value1, oFilterSegment.value2, sFilterParam);
+					});
+					if (oFilter.aValues.length > 1) {
+						sFilterParam += ')';
+					}
+				} else if (oFilter._bMultiFilter) {
+					sFilterParam += that._resolveMultiFilter(oFilter, oMetadata, oEntityType);
+				} else {
+					sFilterParam = that._createFilterSegment(oFilter.sPath, oMetadata, oEntityType, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, sFilterParam);
+				}
+				if (i < aFilterGroup.length-1) {
+					sFilterParam += "%20or%20";
+				}
+			});
+			if (aFilterGroup.length > 1) {
+				sFilterParam += ')';
+			}
+			if (iFilterGroupCount < iFilterGroupLength-1) {
+				sFilterParam += "%20and%20";
+			}
+			iFilterGroupCount++;
+		});
+		return sFilterParam;
+	};
+
+	/**
+	 * Converts a string or object-map with URL Parameters into an array.
+	 * If vParams is an object map, it will be also encoded properly.
+	 *
+	 * @private
+	 * @param {string|object|array} vParams
+	 * @name sap.ui.model.odata.ODataUtils#_createUrlParamsArray
+	 * @function
+	 */
+	ODataUtils._createUrlParamsArray = function(vParams) {
+		var aUrlParams, sType = jQuery.type(vParams);
+		if (sType === "array") {
+			return vParams;
+		}
+
+		aUrlParams = [];
+		if (sType === "object") {
+			aUrlParams.push(jQuery.sap.encodeURLParameters(vParams));
+		} else if (sType === "string") {
+			aUrlParams.push(vParams);
+		}
+
+		return aUrlParams;
+	}
+
+	/**
+	 * convert multi filter to filter string
+	 *
+	 * @private
+	 * @name sap.ui.model.odata.ODataUtils#_resolveMultiFilter
+	 * @function
+	 */
+	ODataUtils._resolveMultiFilter = function(oMultiFilter, oMetadata, oEntityType){
+		var that = this,
+			aFilters = oMultiFilter.aFilters,
+			sFilterParam = "";
+		
+		if (aFilters) {
+			sFilterParam += "(";
+			jQuery.each(aFilters, function(i, oFilter) {
+				var bLocalMatch = false;
+				if (oFilter._bMultiFilter) {
+					sFilterParam += that._resolveMultiFilter(oFilter, oMetadata, oEntityType)
+				} else if (oFilter.sPath) {
+					sFilterParam += that._createFilterSegment(oFilter.sPath, oMetadata, oEntityType, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, "");
+				}
+				if (i < (aFilters.length - 1)) {
+					if (oMultiFilter.bAnd) {
+						sFilterParam += "%20and%20";
+					} else {
+						sFilterParam += "%20or%20";
+					}
+				}
+			});
+			sFilterParam += ")";
+		}
+		
+		return sFilterParam;
+	};
+	
+	/**
+	 * Create a single filter segment of the OData filter parameters
+	 *
+	 * @private
+	 * @name sap.ui.model.odata.ODataUtils#_createFilterSegment
+	 * @function
+	 */
+	ODataUtils._createFilterSegment = function(sPath, oMetadata, oEntityType, sOperator, oValue1, oValue2, sFilterParam) {
+		
+		var oPropertyMetadata, sType;
+		if (oEntityType) {
+			oPropertyMetadata = oMetadata._getPropertyMetadata(oEntityType, sPath);
+			sType = oPropertyMetadata && oPropertyMetadata.type;
+			jQuery.sap.assert(oPropertyMetadata, "PropertyType for property "+ sPath + " of EntityType " + oEntityType.name + " not found!");
+		}
+
+		if (sType) {
+			oValue1 = this.formatValue(oValue1, sType);
+			oValue2 = (oValue2 != null) ? this.formatValue(oValue2, sType) : null;
+		} else {
+			jQuery.sap.assert(null, "Type for filter property could not be found in metadata!");
+		}
+		
+		if (oValue1) {
+			oValue1 = jQuery.sap.encodeURL(String(oValue1));
+		}
+		if (oValue2) {
+			oValue2 = jQuery.sap.encodeURL(String(oValue2));
+		}
+		
+		// TODO embed 2nd value
+		switch(sOperator) {
+			case "EQ":
+			case "NE":
+			case "GT":
+			case "GE":
+			case "LT":
+			case "LE":
+				sFilterParam += sPath + "%20" + sOperator.toLowerCase() + "%20" + oValue1;
+				break;
+			case "BT":
+				sFilterParam += "(" + sPath + "%20ge%20" + oValue1 + "%20and%20" + sPath + "%20le%20" + oValue2 + ")";
+				break;
+			case "Contains":
+				sFilterParam += "substringof(" + oValue1 + "," + sPath + ")";
+				break;
+			case "StartsWith":
+				sFilterParam += "startswith(" + sPath + "," + oValue1 + ")";
+				break;
+			case "EndsWith":
+				sFilterParam += "endswith(" + sPath + "," + oValue1 + ")";
+				break;
+			default:
+				sFilterParam += "true";
+		}
+		return sFilterParam;
+	};
+	
+	/**
+	 * Format a JavaScript value according to the given EDM type
+	 * http://www.odata.org/documentation/overview#AbstractTypeSystem
+	 *
+	 * @param {any} vValue the value to format
+	 * @param {string} sType the EDM type (e.g. Edm.Decimal)
+	 * @return {string} the formatted value
+	 * @name sap.ui.model.odata.ODataUtils#formatValue
+	 * @public
+	 * @function
+	 */
+	ODataUtils.formatValue = function(vValue, sType) {
+		// Lazy creation of format objects
+		if (!this.oDateTimeFormat) {
+			this.oDateTimeFormat = DateFormat.getDateInstance({
+				pattern: "'datetime'''yyyy-MM-dd'T'HH:mm:ss''"
+			});
+			this.oDateTimeOffsetFormat = DateFormat.getDateInstance({
+				pattern: "'datetimeoffset'''yyyy-MM-dd'T'HH:mm:ss'Z'''"
+			});
+			this.oTimeFormat = DateFormat.getTimeInstance({
+				pattern: "'time'''HH:mm:ss''"
+			});
+		}
+		
+		// null values should return the null literal
+		if (vValue === null || vValue === undefined) {
+			return "null";
+		}
+	
+		// Format according to the given type
+		var sValue;
+		switch(sType) {
+			case "Edm.String":
+				// quote
+				sValue = "'" + String(vValue).replace(/'/g, "''") + "'";
+				break;
+			case "Edm.Time":
+				sValue = "time'" + vValue + "'";
+				break;
+			case "Edm.DateTime":
+				sValue = this.oDateTimeFormat.format(new Date(vValue), true);
+				break;
+			case "Edm.DateTimeOffset":
+				sValue = this.oDateTimeOffsetFormat.format(new Date(vValue), true);
+				break;
+			case "Edm.Guid":
+				sValue = "guid'" + vValue + "'";
+				break;
+			case "Edm.Decimal":
+				sValue = vValue + "M";
+				break;
+			case "Edm.Int64":
+				sValue = vValue + "L";
+				break;
+			case "Edm.Single":
+				sValue = vValue + "f";
+				break;
+			case "Edm.Binary":
+				sValue = "binary'" + vValue + "'";
+				break;
+			default:
+				sValue = new String(vValue);
+				break;
+		}
+		return sValue;
+	};
+	
+	return ODataUtils;
+
+}, /* bExport= */ true);
+
+
+}; // end of sap/ui/model/odata/ODataUtils.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.type.Boolean') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -55626,7 +63447,7 @@ sap.ui.define("sap/ui/model/type/Boolean",['jquery.sap.global', 'sap/ui/core/for
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -55634,7 +63455,7 @@ sap.ui.define("sap/ui/model/type/Boolean",['jquery.sap.global', 'sap/ui/core/for
 	 * @param {object} [oConstraints] value constraints. Boolean doesn't support additional constraints
 	 * @name sap.ui.model.type.Boolean
 	 */
-	var Boolean = SimpleType.extend("sap.ui.model.type.Boolean", /** @lends sap.ui.model.type.Boolean */ {
+	var Boolean = SimpleType.extend("sap.ui.model.type.Boolean", /** @lends sap.ui.model.type.Boolean.prototype */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);
@@ -55745,7 +63566,7 @@ sap.ui.define("sap/ui/model/type/Date",['jquery.sap.global', 'sap/ui/core/format
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -55760,7 +63581,7 @@ sap.ui.define("sap/ui/model/type/Date",['jquery.sap.global', 'sap/ui/core/format
 	 * @param {Date|string} [oConstraints.maximum] largest value allowed for this type. Values for constraints must use the same type as configured via <code>oFormatOptions.source</code>  
 	 * @name sap.ui.model.type.Date
 	 */
-	var Date1 = SimpleType.extend("sap.ui.model.type.Date", /** @lends sap.ui.model.type.Date */ {
+	var Date1 = SimpleType.extend("sap.ui.model.type.Date", /** @lends sap.ui.model.type.Date.prototype */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);
@@ -55954,7 +63775,7 @@ sap.ui.define("sap/ui/model/type/DateTime",['jquery.sap.global', './Date'],
 	 * @extends sap.ui.model.type.Date
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -55965,7 +63786,7 @@ sap.ui.define("sap/ui/model/type/DateTime",['jquery.sap.global', './Date'],
 	 * @param {object} [oConstraints] value constraints. Supports the same kind of constraints as its base type Date, but note the different format options (Date vs. DateTime) 
 	 * @name sap.ui.model.type.DateTime
 	 */
-	var DateTime = Date.extend("sap.ui.model.type.DateTime", /** @lends sap.ui.model.type.DateTime */ {
+	var DateTime = Date.extend("sap.ui.model.type.DateTime", /** @lends sap.ui.model.type.DateTime.prototype */ {
 		
 		constructor : function () {
 			Date.apply(this, arguments);
@@ -56035,7 +63856,7 @@ sap.ui.define("sap/ui/model/type/Float",['jquery.sap.global', 'sap/ui/core/forma
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -56045,7 +63866,7 @@ sap.ui.define("sap/ui/model/type/Float",['jquery.sap.global', 'sap/ui/core/forma
 	 * @param {float} [oConstraints.maximum] largest value allowed for this type  
 	 * @name sap.ui.model.type.Float 
 	 */
-	var Float = SimpleType.extend("sap.ui.model.type.Float", /** @lends sap.ui.model.type.Float  */ {
+	var Float = SimpleType.extend("sap.ui.model.type.Float", /** @lends sap.ui.model.type.Float.prototype  */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);
@@ -56190,7 +64011,7 @@ sap.ui.define("sap/ui/model/type/Integer",['jquery.sap.global', 'sap/ui/core/for
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -56200,7 +64021,7 @@ sap.ui.define("sap/ui/model/type/Integer",['jquery.sap.global', 'sap/ui/core/for
 	 * @param {int} [oConstraints.maximum] largest value allowed for this type  
 	 * @name sap.ui.model.type.Integer
 	 */
-	var Integer = SimpleType.extend("sap.ui.model.type.Integer", /** @lends sap.ui.model.type.Integer */ {
+	var Integer = SimpleType.extend("sap.ui.model.type.Integer", /** @lends sap.ui.model.type.Integer.prototype */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);
@@ -56344,7 +64165,7 @@ sap.ui.define("sap/ui/model/type/String",['jquery.sap.global', 'sap/ui/core/form
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -56360,7 +64181,7 @@ sap.ui.define("sap/ui/model/type/String",['jquery.sap.global', 'sap/ui/core/form
 	 * @param {RegExp} [oConstraints.search] a regular expression that the value must match  
 	 * @name sap.ui.model.type.String
 	 */
-	var String = SimpleType.extend("sap.ui.model.type.String", /** @lends sap.ui.model.type.String */ {
+	var String = SimpleType.extend("sap.ui.model.type.String", /** @lends sap.ui.model.type.String.prototype */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);
@@ -56538,7 +64359,7 @@ sap.ui.define("sap/ui/model/type/Time",['jquery.sap.global', './Date'],
 	 * @extends sap.ui.model.type.Date
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -56549,7 +64370,7 @@ sap.ui.define("sap/ui/model/type/Time",['jquery.sap.global', './Date'],
 	 * @param {object} [oConstraints] value constraints. Supports the same kind of constraints as its base type Date, but note the different format options (Date vs. Time) 
 	 * @name sap.ui.model.type.Time
 	 */
-	var Time = Date.extend("sap.ui.model.type.Time", /** @lends sap.ui.model.type.Time */ {
+	var Time = Date.extend("sap.ui.model.type.Time", /** @lends sap.ui.model.type.Time.prototype */ {
 		
 		constructor : function () {
 			Date.apply(this, arguments);
@@ -56631,7 +64452,7 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.20.10
+//	 * @version 1.22.4
 //	 * @namespace
 //	 * @public
 //	 */
@@ -56648,8 +64469,9 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 	}
 
 	/**
+	 * @name jQuery#root
+	 * @function
 	 * @public
-	 * @author SAP AG
 	 */
 	jQuery.fn.root = function(oRootControl) {
 		var tmp;
@@ -56679,6 +64501,8 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 	};
 
 	/**
+	 * @name jQuery#uiarea
+	 * @function
 	 * @public
 	 */
 	jQuery.fn.uiarea = function(iIdx) {
@@ -56712,8 +64536,9 @@ sap.ui.define("jquery.sap.ui",['jquery.sap.global', 'sap/ui/Global'],
 	 * Extension function to the jQuery.fn which identifies SAPUI5 controls in the given jQuery context.
 	 *
 	 * @param {int} [idx] optional parameter to return the control instance at the given idx's position in the array.
-	 * @methodOf jQuery.prototype
 	 * @returns {sap.ui.core.Control[] | sap.ui.core.Control | null} depending on the given context and idx parameter an array of controls, an instance or null.
+	 * @name jQuery#control
+	 * @function
 	 * @public
 	 */
 	jQuery.fn.control = function(idx) {
@@ -56798,8 +64623,8 @@ sap.ui.define("sap/ui/app/ApplicationMetadata",['jquery.sap.global', 'sap/ui/cor
 	 * @experimental Since 1.13.2. The Application class is still under construction, so some implementation details can be changed in future.
 	 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 1.13.2
 	 * @name sap.ui.app.ApplicationMetadata
 	 */
@@ -56893,12 +64718,12 @@ sap.ui.define("sap/ui/core/util/serializer/HTMLViewSerializer",['jquery.sap.glob
 	 * @public
 	 * @class HTMLViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.HTMLViewSerializer
 	 * @experimental Since 1.15.1. The HTMLViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
-	var HTMLViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.HTMLViewSerializer", /** @lends sap.ui.core.util.serializer.HTMLViewSerializer */
+	var HTMLViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.HTMLViewSerializer", /** @lends sap.ui.core.util.serializer.HTMLViewSerializer.prototype */
 	{
 		constructor : function (oView, oWindow, fnGetControlId, fnGetEventHandlerName) {
 			EventProvider.apply(this);
@@ -56985,12 +64810,12 @@ sap.ui.define("sap/ui/core/util/serializer/XMLViewSerializer",['jquery.sap.globa
 	 * @public
 	 * @class XMLViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.XMLViewSerializer
 	 * @experimental Since 1.15.1. The XMLViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
-	var XMLViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.XMLViewSerializer", /** @lends sap.ui.core.util.serializer.XMLViewSerializer */ 
+	var XMLViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.XMLViewSerializer", /** @lends sap.ui.core.util.serializer.XMLViewSerializer.prototype */ 
 	{
 		constructor : function (oView, oWindow, sDefaultNamespace, fnGetControlId, fnGetEventHandlerName) {
 			EventProvider.apply(this);
@@ -57101,11 +64926,11 @@ sap.ui.define("sap/ui/core/ws/SapPcpWebSocket",['jquery.sap.global', './WebSocke
 	 *
 	 * @class WebSocket class implementing the pcp-protocol
 	 * @extends sap.ui.core.ws.WebSocket
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.ws.SapPcpWebSocket
 	 */
-	var SapPcpWebSocket = WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket */ {
+	var SapPcpWebSocket = WebSocket.extend("sap.ui.core.ws.SapPcpWebSocket", /** @lends sap.ui.core.ws.SapPcpWebSocket.prototype */ {
 
 		constructor: function(sUrl, aProtocols) {
 			WebSocket.apply(this, arguments);
@@ -57408,7 +65233,7 @@ sap.ui.define("sap/ui/model/ClientContextBinding",['jquery.sap.global', './Conte
 	 * @public
 	 * @name sap.ui.model.ClientContextBinding
 	 */
-	var ClientContextBinding = ContextBinding.extend("sap.ui.model.ClientContextBinding", /** @lends sap.ui.model.ClientContextBinding */ {
+	var ClientContextBinding = ContextBinding.extend("sap.ui.model.ClientContextBinding", /** @lends sap.ui.model.ClientContextBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, mParameters, oEvents){
 			ContextBinding.call(this, oModel, sPath, oContext, mParameters, oEvents);
@@ -57521,7 +65346,7 @@ sap.ui.define("sap/ui/model/ClientListBinding",['jquery.sap.global', './FilterTy
 	 * @name sap.ui.model.ClientListBinding
 	 * @extends sap.ui.model.ListBinding
 	 */
-	var ClientListBinding = ListBinding.extend("sap.ui.model.ClientListBinding", /** @lends sap.ui.model.ClientListBinding */ {
+	var ClientListBinding = ListBinding.extend("sap.ui.model.ClientListBinding", /** @lends sap.ui.model.ClientListBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters){
 			ListBinding.apply(this, arguments);
@@ -57957,7 +65782,7 @@ sap.ui.define("sap/ui/model/ClientListBinding",['jquery.sap.global', './FilterTy
 					if (typeof value != "string") {
 						throw new Error("Only \"String\" values are supported for the FilterOperator: \"EndsWith\".");
 					}
-					var iPos = value.indexOf(oValue1);
+					var iPos = value.lastIndexOf(oValue1);
 					if (iPos == -1){
 						return false;					
 					}
@@ -58027,7 +65852,7 @@ sap.ui.define("sap/ui/model/ClientTreeBinding",['jquery.sap.global', './TreeBind
 	 * @name sap.ui.model.ClientTreeBinding
 	 * @extends sap.ui.model.TreeBinding
 	 */
-	var ClientTreeBinding = TreeBinding.extend("sap.ui.model.ClientTreeBinding", /** @lends sap.ui.model.ClientTreeBinding */ {
+	var ClientTreeBinding = TreeBinding.extend("sap.ui.model.ClientTreeBinding", /** @lends sap.ui.model.ClientTreeBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			TreeBinding.apply(this, arguments);
@@ -58445,7 +66270,7 @@ sap.ui.define("sap/ui/model/PropertyBinding",['jquery.sap.global', './Binding', 
 	 * @name sap.ui.model.PropertyBinding
 	 */
 	
-	var PropertyBinding = Binding.extend("sap.ui.model.PropertyBinding", /** @lends sap.ui.model.PropertyBinding */ {
+	var PropertyBinding = Binding.extend("sap.ui.model.PropertyBinding", /** @lends sap.ui.model.PropertyBinding.prototype */ {
 	
 		constructor : function (oModel, sPath, oContext, mParameters) {
 			Binding.apply(this, arguments);
@@ -58652,7 +66477,7 @@ sap.ui.define("sap/ui/model/control/ControlPropertyBinding",['jquery.sap.global'
 	 * @name sap.ui.model.control.ControlPropertyBinding
 	 * @extends sap.ui.model.PropertyBinding
 	 */
-	var ControlPropertyBinding = PropertyBinding.extend("sap.ui.model.control.ControlPropertyBinding", /** @lends sap.ui.model.control.ControlPropertyBinding */ {
+	var ControlPropertyBinding = PropertyBinding.extend("sap.ui.model.control.ControlPropertyBinding", /** @lends sap.ui.model.control.ControlPropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext){
 			PropertyBinding.apply(this, arguments);
@@ -59031,6 +66856,851 @@ sap.ui.define("sap/ui/model/json/JSONTreeBinding",['jquery.sap.global', 'sap/ui/
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/json/JSONTreeBinding.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataListBinding') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.model.odata.ODataListBinding
+jQuery.sap.declare('sap.ui.model.odata.ODataListBinding'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/odata/ODataListBinding",['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/model/FilterType', 'sap/ui/model/ListBinding', './ODataUtils', './CountMode', './Filter'],
+	function(jQuery, DateFormat, FilterType, ListBinding, ODataUtils, CountMode, Filter) {
+	"use strict";
+
+
+	/*global OData *///declare unusual global vars for JSLint/SAPUI5 validation
+	
+	/**
+	 *
+	 * @class
+	 * List binding implementation for oData format
+	 *
+	 * @param {sap.ui.model.Model} oModel
+	 * @param {string} sPath
+	 * @param {sap.ui.model.Context} oContext
+	 * @param {array} [aSorters] initial sort order (can be either a sorter or an array of sorters)
+	 * @param {array} [aFilters] predefined filter/s (can be either a filter or an array of filters)
+	 * @param {object} [mParameters]
+	 * 
+	 * @name sap.ui.model.odata.ODataListBinding
+	 * @extends sap.ui.model.ListBinding
+	 */
+	var ODataListBinding = ListBinding.extend("sap.ui.model.odata.ODataListBinding", /** @lends sap.ui.model.odata.ODataListBinding.prototype */ {
+	
+		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters) {
+			ListBinding.apply(this, arguments);
+			this.sFilterParams = null;
+			this.sSortParams = null;
+			this.sRangeParams = null;
+			this.sCustomParams = this.oModel.createCustomParams(this.mParameters);
+			this.iStartIndex = 0;
+			this.bPendingChange = false;
+			this.aKeys = [];
+			this.bInitialized = false;
+			this.sCountMode = (mParameters && mParameters.countMode) || this.oModel.sDefaultCountMode;
+			this.bRefresh = false;
+			this.bNeedsUpdate = false;
+			this.bDataAvailable = false;
+			
+			// load the entity type for the collection only once and not e.g. every time when filtering
+			if (!this.oModel.getServiceMetadata()) {
+				var that = this,
+				fnCallback = function(oEvent) {
+					that._initSortersFilters();
+					that.oModel.detachMetadataLoaded(fnCallback);
+				}
+				this.oModel.attachMetadataLoaded(this, fnCallback);
+			} else {
+				this._initSortersFilters();
+			}
+	
+			// if nested list is already available and no filters or sorters are set, 
+			// use the data and don't send additional requests
+			// TODO: what if nested list is not complete, because it was too large?
+			var oRef = this.oModel._getObject(this.sPath, this.oContext);
+			if (jQuery.isArray(oRef) && !aSorters && !aFilters) {
+				this.aKeys = oRef;
+				this.iLength = oRef.length;
+				this.bLengthFinal = true;
+				this.bDataAvailable = true;
+			}
+			else {
+				// call getLength when metadata is already loaded or don't do anything
+				// if the the metadata gets loaded it will call a refresh on all bindings
+				if (this.oModel.getServiceMetadata()) {
+					this.resetData();
+				}
+			}
+	
+		},
+	
+		metadata : {
+			publicMethods : [
+				"getLength"
+			]
+		}
+	
+	});
+	
+	/**
+	 * Creates a new subclass of class sap.ui.model.odata.ODataListBinding with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * For a detailed description of <code>oClassInfo</code> or <code>FNMetaImpl</code> 
+	 * see {@link sap.ui.base.Object.extend Object.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] alternative constructor for a metadata object
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.model.odata.ODataListBinding.extend
+	 * @function
+	 */
+	
+	/**
+	 * Return contexts for the list
+	 *
+	 * @param {int} [iStartIndex=0] the start index of the requested contexts
+	 * @param {int} [iLength] the requested amount of contexts
+	 *
+	 * @return {Array} the contexts array
+	 * @protected
+	 * @name sap.ui.model.odata.ODataListBinding#getContexts
+	 * @function
+	 */
+	ODataListBinding.prototype.getContexts = function(iStartIndex, iLength, iThreshold) {	
+	
+		this.bInitialized = true;
+		this.iLastLength = iLength;
+		this.iLastStartIndex = iStartIndex;
+		this.iLastThreshold = iThreshold;
+		
+		//	Set default values if startindex, threshold or length are not defined
+		if (!iStartIndex) {
+			iStartIndex = 0;
+		}
+		if (!iLength) {
+			iLength = this.oModel.iSizeLimit;
+			if (this.bLengthFinal && this.iLength < iLength) {
+				iLength = this.iLength;
+			}
+		}
+		if (!iThreshold) {
+			iThreshold = 0;
+		}
+	
+		var bLoadContexts = true, 
+			aContexts = this._getContexts(iStartIndex, iLength),
+			oContextData = {},
+			oSection;
+	
+		oSection = this.calculateSection(iStartIndex, iLength, iThreshold, aContexts);
+		bLoadContexts = aContexts.length != iLength && !(this.bLengthFinal && aContexts.length >= this.iLength - iStartIndex);
+		
+		// check if metadata are already available
+		if (this.oModel.getServiceMetadata()) {
+			// If rows are missing send a request
+			if (!this.bPendingRequest && oSection.length > 0 && (bLoadContexts || iLength < oSection.length)) {
+				this.loadData(oSection.startIndex, oSection.length);
+				aContexts.dataRequested = true;
+			} 	
+		}
+		
+		if (this.bRefresh) {
+			// if refreshing and length is 0, pretend a request to be fired to make a refresh with
+			// with preceding $count request look like a request with $inlinecount=allpages
+			if (this.bLengthFinal && this.iLength == 0) {
+				this.loadData(oSection.startIndex, oSection.length, true);
+				aContexts.dataRequested = true;
+			}
+			this.bRefresh = false;
+		} else {
+			// Do not create context data and diff in case of refresh, only if real data has been received
+			// The current behaviour is wrong and makes diff detection useless for OData in case of refresh
+		 	for (var i = 0; i < aContexts.length; i++) {
+				oContextData[aContexts[i].getPath()] = aContexts[i].getObject();
+			}
+		
+			if (this.bUseExtendedChangeDetection) {
+				//Check diff
+				if (this.aLastContexts&& iStartIndex < this.iLastEndIndex) {
+					var that = this;
+					var aDiff = jQuery.sap.arrayDiff(this.aLastContexts, aContexts, function(oOldContext, oNewContext) {
+						return jQuery.sap.equal(
+								oOldContext && that.oLastContextData && that.oLastContextData[oOldContext.getPath()],
+								oNewContext && oContextData && oContextData[oNewContext.getPath()]
+							);
+					});
+					aContexts.diff = aDiff;
+				}
+			}
+		
+			this.iLastEndIndex = iStartIndex + iLength;
+			this.aLastContexts = aContexts.slice(0);
+			this.oLastContextData = jQuery.extend(true, {}, oContextData);
+		}
+		
+		return aContexts;
+	};
+	
+	/**
+	 * Return contexts for the list
+	 *
+	 * @param {int} [iStartIndex=0] the start index of the requested contexts
+	 * @param {int} [iLength] the requested amount of contexts
+	 *
+	 * @return {Array} the contexts array
+	 * @private
+	 * @name sap.ui.model.odata.ODataListBinding#_getContexts
+	 * @function
+	 */
+	ODataListBinding.prototype._getContexts = function(iStartIndex, iLength) {
+		var aContexts = [],
+			oContext,
+			sKey;
+		
+		if (!iStartIndex) {
+			iStartIndex = 0;
+		}
+		if (!iLength) {
+			iLength = this.oModel.iSizeLimit;
+			if (this.bLengthFinal && this.iLength < iLength) {
+				iLength = this.iLength;
+			}
+		}
+		
+		//	Loop through known data and check whether we already have all rows loaded
+		for (var i = iStartIndex; i < iStartIndex + iLength; i++) {
+			sKey = this.aKeys[i];
+			if (!sKey) {
+				break;
+			}
+			oContext = this.oModel.getContext('/'+sKey);
+			aContexts.push(oContext);
+		}
+	
+		return aContexts;
+	};
+	
+	/*
+	 * @private
+	 * @name sap.ui.model.odata.ODataListBinding#calculateSection
+	 * @function
+	 */
+	ODataListBinding.prototype.calculateSection = function(iStartIndex, iLength, iThreshold, aContexts) {
+		var bLoadNegativeEntries = false,
+			iSectionLength,
+			iSectionStartIndex,
+			iPreloadedSubsequentIndex,
+			iPreloadedPreviousIndex,
+			iRemainingEntries,
+			oSection = {},
+			sKey;
+	
+		iSectionStartIndex = iStartIndex;
+		iSectionLength = 0;
+	
+		// check which data exists before startindex; If all necessary data is loaded iPreloadedPreviousIndex stays undefined
+		for (var i = iStartIndex; i >= Math.max(iStartIndex-iThreshold,0); i--) {
+			sKey = this.aKeys[i];
+			if (!sKey) {
+				iPreloadedPreviousIndex = i+1;
+				break;
+			}
+		}
+		// check which data is already loaded after startindex; If all necessary data is loaded iPreloadedSubsequentIndex stays undefined
+		for (var j = iStartIndex + iLength; j < iStartIndex + iLength + iThreshold; j++) {
+			sKey = this.aKeys[j];
+			if (!sKey) {
+				iPreloadedSubsequentIndex = j;
+				break;
+			}
+		}
+		
+		// calculate previous remaining entries
+		iRemainingEntries = iStartIndex - iPreloadedPreviousIndex;
+		if (iPreloadedPreviousIndex && iStartIndex > iThreshold && iRemainingEntries < iThreshold) {
+			if (aContexts.length != iLength) {
+				iSectionStartIndex = iStartIndex - iThreshold;
+			} else {
+				iSectionStartIndex = iPreloadedPreviousIndex - iThreshold;
+			} 
+			iSectionLength = iThreshold;
+		}
+		
+		// No negative preload needed; move startindex if we already have some data
+		if (iSectionStartIndex == iStartIndex) {
+			iSectionStartIndex += aContexts.length;
+		}
+		
+		//read the rest of the requested data
+		if (aContexts.length != iLength) {
+			iSectionLength += iLength - aContexts.length;
+		}
+		
+		//calculate subsequent remaining entries
+		iRemainingEntries = iPreloadedSubsequentIndex - iStartIndex - iLength;
+		
+		if (iRemainingEntries == 0) {
+			iSectionLength += iThreshold;
+		}
+		
+		if (iPreloadedSubsequentIndex && iRemainingEntries < iThreshold && iRemainingEntries > 0) {
+				//check if we need to load previous entries; If not we can move the startindex
+				if (iSectionStartIndex > iStartIndex) {
+					iSectionStartIndex = iPreloadedSubsequentIndex;
+					iSectionLength += iThreshold;
+				}
+				
+		}
+		
+		//check final length and adapt sectionLength if needed.
+		if (this.bLengthFinal && this.iLength < (iSectionLength + iSectionStartIndex)) {
+			iSectionLength = this.iLength - iSectionStartIndex;
+		}
+		
+		oSection.startIndex = iSectionStartIndex;
+		oSection.length = iSectionLength;
+		
+		return oSection;
+	};
+	
+	/**
+	 * Setter for context
+	 * @param {Object} oContext the new context object
+	 * @name sap.ui.model.odata.ODataListBinding#setContext
+	 * @function
+	 */
+	ODataListBinding.prototype.setContext = function(oContext) {
+		if (this.oContext != oContext) {
+			this.oContext = oContext;
+			if (this.isRelative()) {
+				// get new entity type with new context and init filters now correctly
+				this._initSortersFilters();
+	
+				if (this.bInitialized){
+					// if nested list is already available, use the data and don't send additional requests
+					// TODO: what if nested list is not complete, because it was too large?
+					var oRef = this.oModel._getObject(this.sPath, this.oContext);
+					if (jQuery.isArray(oRef)) {
+						this.aKeys = oRef;
+						this.iLength = oRef.length;
+						this.bLengthFinal = true;
+						this._fireChange();
+					}
+					else {
+						this.refresh();
+					}
+				} 
+			}
+		}
+	};
+	
+	/**
+	 * Load list data from the server
+	 * @name sap.ui.model.odata.ODataListBinding#loadData
+	 * @function
+	 */
+	ODataListBinding.prototype.loadData = function(iStartIndex, iLength, bPretend) {
+	
+		var that = this,
+			bInlineCountRequested = false;
+	
+		// create range parameters and store start index for sort/filter requests
+		if (iStartIndex || iLength) {
+			this.sRangeParams = "$skip=" + iStartIndex + "&$top=" + iLength;
+			this.iStartIndex = iStartIndex;
+		}
+		else {
+			iStartIndex = this.iStartIndex;
+		}
+	
+		// create the request url
+		var aParams = [];
+		if (this.sRangeParams) { 
+			aParams.push(this.sRangeParams);
+		}
+		if (this.sSortParams) {
+			aParams.push(this.sSortParams);
+		}
+		if (this.sFilterParams) {
+			aParams.push(this.sFilterParams);
+		}
+		if (this.sCustomParams) {
+			aParams.push(this.sCustomParams);
+		}
+		if (!this.bLengthFinal &&
+			(this.sCountMode == CountMode.Inline ||
+			this.sCountMode == CountMode.Both)) {
+			aParams.push("$inlinecount=allpages");
+			bInlineCountRequested = true;
+		}
+		
+		function fnSuccess(oData) {
+	
+			// Collecting contexts
+			jQuery.each(oData.results, function(i, entry) {
+				that.aKeys[iStartIndex + i] = that.oModel._getKey(entry);
+			});
+	
+			// update iLength (only when the inline count was requested and is available)
+			if (bInlineCountRequested && oData.__count) {
+				that.iLength = parseInt(oData.__count, 10);
+				that.bLengthFinal = true;
+			}
+	
+			// if we got data and the results + startindex is larger than the
+			// length we just apply this value to the length
+			if (that.iLength < iStartIndex + oData.results.length) {
+				that.iLength = iStartIndex + oData.results.length;
+				that.bLengthFinal = false;
+			}
+	
+			// if less entries are returned than have been requested
+			// set length accordingly
+			if (oData.results.length < iLength || iLength === undefined) {
+				that.iLength = iStartIndex + oData.results.length;
+				that.bLengthFinal = true;
+			}
+	
+			// check if there are any results at all...
+			if (iStartIndex == 0 && oData.results.length == 0) {
+				that.iLength = 0;
+				that.bLengthFinal = true;
+			}
+			
+			that.oRequestHandle = null;
+			that.bPendingRequest = false;
+			
+			// If request is originating from this binding, change must be fired afterwards
+			that.bNeedsUpdate = true;
+		}
+		
+		function fnCompleted() {
+			that.fireDataReceived();
+		}
+		
+		function fnError(oError, bAborted) {
+			that.oRequestHandle = null;
+			that.bPendingRequest = false;
+			if (!bAborted) {
+				// reset data and trigger update
+				that.aKeys = [];
+				that.iLength = 0;
+				that.bLengthFinal = true;
+				that.bDataAvailable = true;
+				that._fireChange({reason: sap.ui.model.ChangeReason.Change});
+			}
+			that.fireDataReceived();
+		}
+		
+		function fnUpdateHandle(oHandle) {
+			that.oRequestHandle = oHandle;
+		}
+		
+		var sPath = this.sPath,
+			oContext = this.oContext;
+			
+		if (this.isRelative()) {
+			sPath = this.oModel.resolve(sPath,oContext);
+		}
+		if (sPath) {
+			if (bPretend) {
+				// Pretend to send a request by firing the appropriate events
+				var sUrl = this.oModel._createRequestUrl(sPath, aParams);
+				this.fireDataRequested();
+				this.oModel.fireRequestSent({url: sUrl, method: "GET", async: true});
+				setTimeout(function() {
+					// If request is originating from this binding, change must be fired afterwards
+					that.bNeedsUpdate = true;
+					that.checkUpdate();
+					that.oModel.fireRequestCompleted({url: sUrl, method: "GET", async: true, success: true});
+					that.fireDataReceived();
+				}, 0);
+			} else {
+				// Execute the request and use the metadata if available
+				this.bPendingRequest = true;
+				this.fireDataRequested();
+				this.oModel._loadData(sPath, aParams, fnSuccess, fnError, false, fnUpdateHandle, fnCompleted);
+			}
+		}
+	
+	};
+	
+	/**
+	 * Return the length of the list
+	 *
+	 * @return {number} the length
+	 * @protected
+	 * @name sap.ui.model.odata.ODataListBinding#getLength
+	 * @function
+	 */
+	ODataListBinding.prototype.getLength = function() {
+		return this.iLength;
+	};
+	
+	/**
+	 * Return the length of the list
+	 *
+	 * @return {number} the length
+	 * @name sap.ui.model.odata.ODataListBinding#_getLength
+	 * @function
+	 */
+	ODataListBinding.prototype._getLength = function() {
+	
+		var that = this;
+	
+		// create a request object for the data request
+		var aParams = [];
+		if (this.sFilterParams) {
+			aParams.push(this.sFilterParams);
+		}
+		
+		// use only custom params for count and not expand,select params
+		if (this.mParameters && this.mParameters.custom) {
+			var oCust = { custom: {}};
+			jQuery.each(this.mParameters.custom, function (sParam, oValue){
+				oCust.custom[sParam] = oValue;
+			});
+			aParams.push(this.oModel.createCustomParams(oCust));
+		}
+		
+		function _handleSuccess(oData) {
+			that.iLength = parseInt(oData, 10);
+			that.bLengthFinal = true;
+		}
+	
+		function _handleError(oError) {
+			var sErrorMsg = "Request for $count failed: " + oError.message;
+			if (oError.response){
+				sErrorMsg += ", " + oError.response.statusCode + ", " + oError.response.statusText + ", " + oError.response.body;
+			}
+			jQuery.sap.log.warning(sErrorMsg);
+		}
+		
+		// Use context and check for relative binding
+		var sPath = this.oModel.resolve(this.sPath, this.oContext);
+	
+		// Only send request, if path is defined
+		if (sPath) {
+			var sUrl = this.oModel._createRequestUrl(sPath + "/$count", null, aParams);
+			var oRequest = this.oModel._createRequest(sUrl, "GET", false);
+			// count needs other accept header
+			oRequest.headers["Accept"] = "text/plain, */*;q=0.5";
+		
+			// execute the request and use the metadata if available
+			// (since $count requests are synchronous we skip the withCredentials here)
+			this.oModel._request(oRequest, _handleSuccess, _handleError, undefined, undefined, this.oModel.getServiceMetadata());
+		}
+	};
+	
+	/**
+	 * Refreshes the binding, check whether the model data has been changed and fire change event
+	 * if this is the case. For server side models this should refetch the data from the server.
+	 * To update a control, even if no data has been changed, e.g. to reset a control after failed
+	 * validation, please use the parameter bForceUpdate.
+	 * 
+	 * @param {boolean} [bForceUpdate] Update the bound control even if no data has been changed
+	 * @param {object} [mChangedEntities]
+	 * @param {string] [mEntityTypes]
+	 * @public
+	 * @name sap.ui.model.odata.ODataListBinding#refresh
+	 * @function
+	 */
+	ODataListBinding.prototype.refresh = function(bForceUpdate, mChangedEntities, mEntityTypes) {
+		var bChangeDetected = false;
+		
+		if (!bForceUpdate) {
+			if (mEntityTypes){
+				var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
+				var oEntityType = this.oModel.oMetadata._getEntityTypeByPath(sResolvedPath);
+				if (oEntityType && (oEntityType.entityType in mEntityTypes)) {
+					bChangeDetected = true;
+				}
+			}
+			if (mChangedEntities && !bChangeDetected) {
+				jQuery.each(this.aKeys, function(i, sKey) {
+					if (sKey in mChangedEntities) {
+						bChangeDetected = true;
+						return false;
+					}
+				});
+			} 
+			if (!mChangedEntities && !mEntityTypes) { // default
+				bChangeDetected = true;
+			}
+		}
+		if (bForceUpdate || bChangeDetected) {
+			this.abortPendingRequest();
+			this.resetData();
+			this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+		}
+	};
+	
+	/**
+	 * fireRefresh
+	 * @name sap.ui.model.odata.ODataListBinding#_fireRefresh
+	 * @function
+	 */
+	ODataListBinding.prototype._fireRefresh = function(mArguments) {
+		this.bRefresh = true;
+		this.fireEvent("refresh", mArguments);
+	};
+	
+	/**
+	 * Initialize binding. Fires a change if data is already available ($expand) or a refresh.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
+	 *  
+	 * @public
+	 * @name sap.ui.model.odata.ODataListBinding#initialize
+	 * @function
+	 */
+	ODataListBinding.prototype.initialize = function() {
+		if (this.oModel.oMetadata.isLoaded()) {
+			if (this.bDataAvailable) {
+				this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+			} else {
+				this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+			}
+		}
+	};
+	
+	/**
+	 * Check whether this Binding would provide new values and in case it changed,
+	 * inform interested parties about this.
+	 *
+	 * @param {boolean} bForceUpdate
+	 * @param {object} mChangedEntities
+	 * @name sap.ui.model.odata.ODataListBinding#checkUpdate
+	 * @function
+	 */
+	ODataListBinding.prototype.checkUpdate = function(bForceUpdate, mChangedEntities) {
+		var bChangeReason = this.sChangeReason ? this.sChangeReason : sap.ui.model.ChangeReason.Change,
+			bChangeDetected = false, 
+			oLastData, oCurrentData,
+			that = this;
+		
+		if (!bForceUpdate && !this.bNeedsUpdate) {
+			//TODO: check if we can loop only the last requested contexts
+			if (mChangedEntities) {
+				jQuery.each(this.aKeys, function(i, sKey) {
+					if (sKey in mChangedEntities) {
+						bChangeDetected = true;
+						return false;
+					}
+				});
+			} else {
+				bChangeDetected = true;
+			}
+			if (bChangeDetected && this.aLastContexts) {
+				// Reset bChangeDetected and compare actual data of entries
+				bChangeDetected = false;
+				//Get contexts for visible area and compare with stored contexts
+				var aContexts = this._getContexts(this.iLastStartIndex, this.iLastLength, this.iLastThreshold);
+				if (this.aLastContexts.length != aContexts.length) {
+					bChangeDetected = true;
+				} else {
+					jQuery.each(this.aLastContexts, function(iIndex, oContext) {
+						oLastData = that.oLastContextData[oContext.getPath()];
+						oCurrentData = aContexts[iIndex].getObject();
+						// Compare whether last data is completely contained in current data (so broader $select
+						// or $expand doesn't trigger a change) and to a maximum depth of 3, to cover complex types.
+						if (!jQuery.sap.equal(oLastData, oCurrentData, 3, true)) {
+							bChangeDetected = true;
+							return false;
+						}
+					});
+				}
+			}
+		}
+		if (bForceUpdate || bChangeDetected || this.bNeedsUpdate) {
+			this.bNeedsUpdate = false;
+			this._fireChange({reason: bChangeReason});
+		}
+		this.sChangeReason = undefined;
+	};
+	
+	/**
+	 * Resets the current list data and length
+	 * 
+	 * @private
+	 * @name sap.ui.model.odata.ODataListBinding#resetData
+	 * @function
+	 */
+	ODataListBinding.prototype.resetData = function() {	
+		this.aKeys = [];
+		this.iLength = 0;
+		this.bLengthFinal = false;
+		this.sChangeReason = undefined;
+		this.bDataAvailable = false;
+		if (this.oModel.isCountSupported() && 
+			(this.sCountMode == CountMode.Request || 
+			this.sCountMode == CountMode.Both)) {
+			this._getLength();
+		}
+	};
+	
+	/**
+	 * Aborts the current pending request (if any)
+	 * 
+	 * This can be called if we are sure that the data from the current request is no longer relevant,
+	 * e.g. when filtering/sorting is triggered or the context is changed.
+	 * 
+	 * @private
+	 * @name sap.ui.model.odata.ODataListBinding#abortPendingRequest
+	 * @function
+	 */
+	ODataListBinding.prototype.abortPendingRequest = function() {	
+		if (this.oRequestHandle) {
+			this.oRequestHandle.abort();
+	 		this.oRequestHandle = null;
+			this.bPendingRequest = false;
+		}
+	};
+	
+	/**
+	 * Sorts the list.
+	 *
+	 * @param {sap.ui.model.Sorter|Array} aSorters the Sorter or an array of sorter objects object which define the sort order
+	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
+	 * @public
+	 * @name sap.ui.model.odata.ODataListBinding#sort
+	 * @function
+	 */
+	ODataListBinding.prototype.sort = function(aSorters) {
+	
+		if (aSorters instanceof sap.ui.model.Sorter) {
+			aSorters = [aSorters];
+		}
+		
+		this.aSorters = aSorters;
+		this.createSortParams(aSorters);
+	
+		// Only reset the keys, length usually doesn't change when sorting
+		this.abortPendingRequest();
+		this.aKeys = [];
+	
+		if (this.bInitialized) {
+			if (this.oRequestHandle) {
+				this.oRequestHandle.abort();
+				this.oRequestHandle = null;
+				this.bPendingRequest = false;
+			}
+			this.sChangeReason = sap.ui.model.ChangeReason.Sort;
+			this._fireRefresh({reason : this.sChangeReason});
+			// TODO remove this if the sort event gets removed which is now deprecated
+			this._fireSort({sorter: aSorters});
+		}
+		return this;
+	};
+	
+	ODataListBinding.prototype.createSortParams = function(aSorters) {
+		this.sSortParams = ODataUtils.createSortParams(aSorters)
+	}
+	
+	/**
+	 * 
+	 * Filters the list.
+	 * 
+	 * When using sap.ui.model.Filter the filters are first grouped according to their binding path.
+	 * All filters belonging to a group are ORed and after that the
+	 * results of all groups are ANDed.
+	 * Usually this means, all filters applied to a single table column
+	 * are ORed, while filters on different table columns are ANDed.
+	 * 
+	 * @param {sap.ui.model.Filter[]|sap.ui.model.odata.Filter[]} aFilters Array of filter objects
+	 * @param {sap.ui.model.FilterType} sFilterType Type of the filter which should be adjusted, if it is not given, the standard behaviour applies
+	 * @return {sap.ui.model.ListBinding} returns <code>this</code> to facilitate method chaining 
+	 * 
+	 * @public
+	 * @name sap.ui.model.odata.ODataListBinding#filter
+	 * @function
+	 */
+	ODataListBinding.prototype.filter = function(aFilters, sFilterType) {
+	
+		if (!aFilters) {
+			aFilters = [];
+		}
+		
+		if (aFilters instanceof sap.ui.model.Filter) {
+			aFilters = [aFilters];
+		}
+	
+		if (sFilterType == FilterType.Application) {
+			this.aApplicationFilters = aFilters;
+		} else {
+			this.aFilters = aFilters;
+		}
+		
+		aFilters = this.aFilters.concat(this.aApplicationFilters);
+		
+		if (!aFilters || !jQuery.isArray(aFilters) || aFilters.length == 0) {
+			this.aFilters = [];
+			this.aApplicationFilters = [];
+		}
+	
+		this.createFilterParams(aFilters);
+		this.abortPendingRequest();
+		this.resetData();
+		
+		if (this.bInitialized) {
+			if (this.oRequestHandle) {
+				this.oRequestHandle.abort();
+				this.oRequestHandle = null;
+				this.bPendingRequest = false;
+			}
+			this.sChangeReason = sap.ui.model.ChangeReason.Filter;
+			this._fireRefresh({reason : this.sChangeReason});
+			// TODO remove this if the filter event gets removed which is now deprecated
+			if (sFilterType == FilterType.Application) {
+				this._fireFilter({filters: this.aApplicationFilters});
+			} else {
+				this._fireFilter({filters: this.aFilters});
+			}
+		}
+		
+		return this;
+	};
+
+	ODataListBinding.prototype.createFilterParams = function(aFilters) {
+		this.sFilterParams = ODataUtils.createFilterParams(aFilters, this.oModel.oMetadata, this.oEntityType);
+	};
+	
+	ODataListBinding.prototype._initSortersFilters = function(){
+		// if path could not be resolved entity type cannot be retrieved and
+		// also filters/sorters don't need to be set
+		var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
+		if (!sResolvedPath) {
+			return;
+		}
+		this.oEntityType = this._getEntityType();	
+		this.createSortParams(this.aSorters);
+		this.createFilterParams(this.aFilters.concat(this.aApplicationFilters));
+	};
+	
+	ODataListBinding.prototype._getEntityType = function(){
+		var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
+		
+		if (sResolvedPath) {
+			var oEntityType = this.oModel.oMetadata._getEntityTypeByPath(sResolvedPath);
+			jQuery.sap.assert(oEntityType, "EntityType for path " + sResolvedPath + " could not be found!");
+			return oEntityType;
+			
+		}
+		return undefined;
+	};
+	
+
+	return ODataListBinding;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/odata/ODataListBinding.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataPropertyBinding') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -59058,7 +67728,7 @@ sap.ui.define("sap/ui/model/odata/ODataPropertyBinding",['jquery.sap.global', 's
 	 * @name sap.ui.model.odata.ODataPropertyBinding
 	 * @extends sap.ui.model.PropertyBinding
 	 */
-	var ODataPropertyBinding = PropertyBinding.extend("sap.ui.model.odata.ODataPropertyBinding", /** @lends sap.ui.model.odata.ODataPropertyBinding */ {
+	var ODataPropertyBinding = PropertyBinding.extend("sap.ui.model.odata.ODataPropertyBinding", /** @lends sap.ui.model.odata.ODataPropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters){
 			PropertyBinding.apply(this, arguments);
@@ -59084,6 +67754,21 @@ sap.ui.define("sap/ui/model/odata/ODataPropertyBinding",['jquery.sap.global', 's
 	 * @name sap.ui.model.odata.ODataPropertyBinding.extend
 	 * @function
 	 */
+	
+	/**
+	 * Initialize the binding. The message should be called when creating a binding.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
+	 * 
+	 * @protected
+	 * @name sap.ui.model.Binding#initialize
+	 * @function
+	 */
+	ODataPropertyBinding.prototype.initialize = function() {
+		if (this.oModel.oMetadata.isLoaded()) {
+			this.checkUpdate(true);
+		}
+	};
 	
 	/**
 	 * Returns the current value of the bound target
@@ -59180,7 +67865,7 @@ sap.ui.define("sap/ui/model/resource/ResourcePropertyBinding",['jquery.sap.globa
 	 * @param {object} [mParameters]
 	 * @name sap.ui.model.resource.ResourcePropertyBinding
 	 */
-	var ResourcePropertyBinding = PropertyBinding.extend("sap.ui.model.resource.ResourcePropertyBinding", /** @lends sap.ui.model.resource.ResourcePropertyBinding */ {
+	var ResourcePropertyBinding = PropertyBinding.extend("sap.ui.model.resource.ResourcePropertyBinding", /** @lends sap.ui.model.resource.ResourcePropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath){
 			PropertyBinding.apply(this, arguments);
@@ -59502,12 +68187,12 @@ sap.ui.define("sap/ui/core/util/serializer/ViewSerializer",['jquery.sap.global',
 	 * @public
 	 * @class ViewSerializer class.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.util.serializer.ViewSerializer
 	 * @experimental Since 1.15.1. The ViewSerializer is still under construction, so some implementation details can be changed in future.
 	 */
-	var ViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.ViewSerializer", /** @lends sap.ui.core.util.serializer.ViewSerializer */
+	var ViewSerializer = EventProvider.extend("sap.ui.core.util.serializer.ViewSerializer", /** @lends sap.ui.core.util.serializer.ViewSerializer.prototype */
 	{
 		constructor : function (oRootControl, oWindow, sDefaultXmlNamespace) {
 			EventProvider.apply(this);
@@ -59718,7 +68403,7 @@ sap.ui.define("sap/ui/model/ClientPropertyBinding",['jquery.sap.global', './Prop
 	 * @name sap.ui.model.ClientPropertyBinding
 	 * @extends sap.ui.model.PropertyBinding
 	 */
-	var ClientPropertyBinding = PropertyBinding.extend("sap.ui.model.ClientPropertyBinding", /** @lends sap.ui.model.ClientPropertyBinding */ {
+	var ClientPropertyBinding = PropertyBinding.extend("sap.ui.model.ClientPropertyBinding", /** @lends sap.ui.model.ClientPropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters){
 			PropertyBinding.apply(this, arguments);
@@ -59796,7 +68481,7 @@ sap.ui.define("sap/ui/model/CompositeBinding",['jquery.sap.global', './PropertyB
 	 * @name sap.ui.model.CompositeBinding
 	 */
 	
-	var CompositeBinding = PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding */ {
+	var CompositeBinding = PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding.prototype */ {
 	
 		constructor : function (aBindings, bRawValues) {
 			PropertyBinding.apply(this, [null,""]);
@@ -60060,12 +68745,12 @@ sap.ui.define("sap/ui/model/control/ControlModel",['jquery.sap.global', 'sap/ui/
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @name sap.ui.model.control.ControlModel
 	 */
-	var ControlModel = Model.extend("sap.ui.model.control.ControlModel", /** @lends sap.ui.model.control.ControlModel */ {
+	var ControlModel = Model.extend("sap.ui.model.control.ControlModel", /** @lends sap.ui.model.control.ControlModel.prototype */ {
 		
 		constructor : function (oControl) {
 			Model.apply(this, arguments);
@@ -60240,8 +68925,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.model.odata.ODataModel') ) {
 // Provides class sap.ui.model.odata.ODataModel
 jQuery.sap.declare('sap.ui.model.odata.ODataModel'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
 jQuery.sap.require('sap.ui.thirdparty.datajs'); // unlisted dependency retained
-sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODataContextBinding', './ODataListBinding', './ODataMetadata', './ODataPropertyBinding', './ODataTreeBinding', 'sap/ui/thirdparty/URI', 'sap/ui/thirdparty/datajs'],
-	function(jQuery, Model, CountMode, ODataContextBinding, ODataListBinding, ODataMetadata, ODataPropertyBinding, ODataTreeBinding, URI1, datajs) {
+sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/model/Model', './ODataUtils', './CountMode', './ODataContextBinding', './ODataListBinding', './ODataMetadata', './ODataPropertyBinding', './ODataTreeBinding', 'sap/ui/thirdparty/URI', 'sap/ui/thirdparty/datajs'],
+	function(jQuery, Model, ODataUtils, CountMode, ODataContextBinding, ODataListBinding, ODataMetadata, ODataPropertyBinding, ODataTreeBinding, URI1, datajs) {
 	"use strict";
 
 
@@ -60270,29 +68955,32 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 *
 	 * @class
 	 * Model implementation for oData format
-	 *
+	 * Binding to V4 metadata annotations is experimental!
+	 * 
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.odata.ODataModel
 	 */
-	var ODataModel = Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.model.odata.ODataModel */ {
-	
+	var ODataModel = Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.model.odata.ODataModel.prototype */ {
+
 		constructor : function(sServiceUrl, bJSON, sUser, sPassword, mHeaders, bTokenHandling, bWithCredentials, bLoadMetadataAsync) {
 			Model.apply(this, arguments);
-	
+
 			var bUseBatch,
 				bRefreshAfterChange,
 				sMaxDataServiceVersion,
 				sAnnotationURI = null,
 				bLoadAnnotationsJoined,
 				bCountSupported,
-				sDefaultCountMode;
-	
+				mMetadataNamespaces,
+				sDefaultCountMode,
+				that = this;
+
 			if (typeof bJSON === "object") {
 				sUser = bJSON.user;
 				sPassword = bJSON.password;
@@ -60306,9 +68994,10 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 				sAnnotationURI = bJSON.annotationURI;
 				bLoadAnnotationsJoined = bJSON.loadAnnotationsJoined;
 				sDefaultCountMode = bJSON.defaultCountMode;
+				mMetadataNamespaces = bJSON.metadataNamespaces;
 				bJSON = bJSON.json;
 			}
-	
+			
 			this.sDefaultBindingMode = sap.ui.model.BindingMode.OneWay;
 			this.mSupportedBindingModes = {"OneWay": true, "OneTime": true, "TwoWay":true};
 			this.bCountSupported = true;
@@ -60327,20 +69016,21 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			this.bLoadAnnotationsJoined = bLoadAnnotationsJoined === undefined ? true : bLoadAnnotationsJoined ;
 			this.sAnnotationURI = sAnnotationURI;
 			this.sDefaultCountMode = sDefaultCountMode || CountMode.Both;
-	
+			this.oMetadataLoadEvent = null;
+			this.oMetadataFailedEvent = null;
 			// Load annotations support on demand
 			if (this.sAnnotationURI) {
 				jQuery.sap.require("sap.ui.model.odata.ODataAnnotations");
 			}
-	
-	
+
+
 			// prepare variables for request headers, data and metadata
 			this.oHeaders = {};
 			this.setHeaders(mHeaders);
 			this.oData = {};
 			this.oMetadata = null;
 			this.oAnnotations = null;
-	
+
 			// determine the service base url and the url parameters
 			if (sServiceUrl.indexOf("?") == -1) {
 				this.sServiceUrl = sServiceUrl;
@@ -60349,7 +69039,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 				this.sServiceUrl = aUrlParts[0];
 				this.sUrlParams = aUrlParts[1];
 			}
-	
+
 			if (sap.ui.getCore().getConfiguration().getStatistics()) {
 				// add statistics parameter to every request (supported only on Gateway servers)
 				if (this.sUrlParams) {
@@ -60358,7 +69048,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 					this.sUrlParams = "sap-statistics=true";
 				}
 			}
-	
+
 			// Remove trailing slash (if any)
 			this.sServiceUrl = this.sServiceUrl.replace(/\/$/, "");
 			
@@ -60368,42 +69058,45 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 				ODataModel.mServiceData[this.sServiceUrl] = {};
 				this.oServiceData = ODataModel.mServiceData[this.sServiceUrl];
 			}
-	
+
 			// Get CSRF token, if already available
 			if (this.bTokenHandling && this.oServiceData.securityToken) {
 				this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
 			}
-			
+
 			// store user and password
 			this.sUser = sUser;
 			this.sPassword = sPassword;
-	
+
 			this.oHeaders["Accept-Language"] = sap.ui.getCore().getConfiguration().getLanguage();
-	
-			// load the metadata before setting accept headers because metadata is only available as XML
-			if (this.sAnnotationURI && !this.bLoadMetadataAsync) {
-				// In case we need to load annotations synchronously, we need to first load the metadata
-				// and then load the annotations which need that metadata...
-				this.oMetadata = new ODataMetadata(this, /* async: */ false);
-				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this, this.sAnnotationURI, /* async: */ false);
-			} else if(this.sAnnotationURI) {
-				// In case we load metadata and annotations (which depend on metadata) asynchronously,
-				// we need to first load the metadata and then parse the annotations when that is
-				// available.
-	
-				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this, this.sAnnotationURI, /* async: */ true);
-				this.oMetadata = new ODataMetadata(this, /* async: */ true);
-	
-				// In case bLoadAnnotationsJoined is true, we also need to delay the firing of the
-				// metadataLoaded-event until after both are loaded.
-				// If the annotations are malformed or do not load, the metadataloaded event is
-				// never fired in this case.
+
+			if (!this.oServiceData.oMetadata) {
+				//create Metadata object
+				this.oMetadata = new sap.ui.model.odata.ODataMetadata(this._createRequestUrl("$metadata"), { async: this.bLoadMetadataAsync, user: this.sUser, password: this.sPassword, namespaces: mMetadataNamespaces});
+				that.oServiceData.oMetadata = that.oMetadata;
 			} else {
-				// We do not need annotations, load metadata according to bLoadMetadataAsync
-				this.oMetadata = new ODataMetadata(this, this.bLoadMetadataAsync);
+				this.oMetadata = this.oServiceData.oMetadata;
 			}
-	
-			// set the the header for the accepted content types
+			
+			if(!this.oMetadata.isLoaded()) {
+				this.oMetadata.attachLoaded(function(oEvent){
+					that._initializeMetadata();
+				}, this);
+				this.oMetadata.attachFailed(this.fireMetadataFailed, this);
+			}
+
+			if (this.sAnnotationURI) {
+				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this.sAnnotationURI, this.oMetadata, { async: this.bLoadMetadataAsync });
+				this.oAnnotations.attachFailed(this.fireAnnotationsFailed, this);
+				this.oAnnotations.attachLoaded(this.fireAnnotationsLoaded, this);
+			}
+
+			if (this.oMetadata.isLoaded()) {
+				this._initializeMetadata(true);
+			}
+
+
+			// set the header for the accepted content types
 			if (this.bJSON) {
 				if (this.sMaxDataServiceVersion === "3.0") {
 					this.oHeaders["Accept"] = "application/json;odata=fullmetadata";
@@ -60432,7 +69125,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	
 			publicMethods : ["create", "remove", "update", "submitChanges", "getServiceMetadata", "read", "hasPendingChanges", "refresh", "resetChanges",
 			                 "isCountSupported", "setCountSupported", "setDefaultCountMode", "getDefaultCountMode", "forceNoCache", "setProperty", "refreshSecurityToken", "setHeaders", "getHeaders",
-			                 "formatValue, setUseBatch"]
+			                 "setUseBatch"]
 		}
 	});
 	
@@ -60452,7 +69145,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @name sap.ui.model.odata.ODataModel.extend
 	 * @function
 	 */
-	
+
 	//
 	ODataModel.M_EVENTS = {
 			RejectChange: "rejectChange",
@@ -60460,18 +69153,30 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			 * Event is fired if the metadata document was successfully loaded
 			 */
 			MetadataLoaded: "metadataLoaded",
-	
+
 			/**
-			 * Event is fired if the metadata document was not successfully loaded
+			 * Event is fired if the metadata document has failed to load
 			 */
-			MetadataFailed: "metadataFailed"
+			MetadataFailed: "metadataFailed",
+
+			/**
+			 * Event is fired if the annotations document was successfully loaded
+			 */
+			AnnotationsLoaded: "annotationsLoaded",
+
+			/**
+			 * Event is fired if the annotations document has failed to load
+			 */
+			AnnotationsFailed: "annotationsFailed"
+
 	};
-	
+
+
 	// Keep a map of service specific data, which can be shared across different model instances
 	// on the same OData service
 	ODataModel.mServiceData = {
 	};
-	
+
 	ODataModel.prototype.fireRejectChange = function(mArguments) {
 		this.fireEvent("rejectChange", mArguments);
 		return this;
@@ -60486,69 +69191,55 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.detachEvent("rejectChange", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * Allows the metadata to set itself onto the model. This is needed so the Metadata is available
-	 * on the model in case of synchronous loading when the event is fired from the constructor
-	 * of the metadata object.
-	 *
 	 * @private
-	 * @name sap.ui.model.odata.ODataModel#_setMetadata
+	 * @name sap.ui.model.odata.ODataModel#_initializeMetadata
 	 * @function
 	 */
-	ODataModel.prototype._setMetadata = function(oMetadata) {
-		this.oMetadata = oMetadata;
-		this.fireInternalMetadataLoaded();
-	};
-	
-	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
-	 * @name sap.ui.model.odata.ODataModel#attachInternalMetadataLoaded
-	 * @function
-	 */
-	ODataModel.prototype.attachInternalMetadataLoaded = function(oData, fnFunction, oListener) {
-		this.attachEvent("internalMetadataLoaded", oData, fnFunction, oListener);
-		return this;
-	};
-	
-	/**
-	 * Internal metadata loaded event, so the model can update itself before annotations are loaded
-	 * and parsed.
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
-	 * @name sap.ui.model.odata.ODataModel#fireInternalMetadataLoaded
-	 * @function
-	 */
-	ODataModel.prototype.fireInternalMetadataLoaded = function(mArguments) {
-		this.fireEvent("internalMetadataLoaded", mArguments);
-	
+	ODataModel.prototype._initializeMetadata = function(bDelayEvent) {
+		var that = this;
+		this.bUseBatch = this.bUseBatch || this.oMetadata.getUseBatch();
+		var doFire = function(bInitialize, bDelay){
+			if(!!bDelay){
+				that.metadataLoadEvent = jQuery.sap.delayedCall(0, that, doFire, [that.bLoadMetadataAsync]);
+			} else {
+				that.fireMetadataLoaded({metadata: that.oMetadata});
+				jQuery.sap.log.debug("ODataModel fired metadataloaded");
+				if(bInitialize){
+					that.initialize();
+				}
+			}
+		};
+
 		if (this.bLoadMetadataAsync && this.sAnnotationURI && this.bLoadAnnotationsJoined) {
 			// In case of joined loading, wait for the annotations before firing the event
 			// This is also tested in the fireMetadataLoaded-method and no event is fired in case
 			// of joined loading.
-			var that = this;
-	
 			if (this.oAnnotations && this.oAnnotations.bInitialized) {
-				this.fireMetadataLoaded(mArguments);
+				doFire(true);
 			} else {
-				this.attachAnnotationsLoaded(function() {
+				this.oAnnotations.attachLoaded(function() {
 					// Now metadata was loaded and the annotations have been parsed
-					this.fireMetadataLoaded(mArguments);
-				});
+					doFire(true);
+				}, this);
 			}
 		} else {
 			// In case of synchronous or asynchronous non-joined loading, or if no annotations are
 			// loaded at all, the events are fired individually
-			this.fireMetadataLoaded(mArguments);
+				doFire(this.bLoadMetadataAsync, bDelayEvent);
 		}
-	
-		return this;
 	};
-	
+
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
+	 * Fire event annotationsLoaded to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {sap.ui.model.odata.ODataAnnotations} [mArguments.annotations]  the annotations object.
+	 * 
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @protected
 	 * @name sap.ui.model.odata.ODataModel#fireAnnotationsLoaded
 	 * @function
 	 */
@@ -60556,9 +69247,21 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.fireEvent("annotationsLoaded", mArguments);
 		return this;
 	};
-	
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
+	 * Attach event-handler <code>fnFunction</code> to the 'annotationsLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 * @experimental The API is NOT stable yet. Use at your own risk.
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
 	 * @name sap.ui.model.odata.ODataModel#attachAnnotationsLoaded
 	 * @function
 	 */
@@ -60566,9 +69269,17 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.attachEvent("annotationsLoaded", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
+	 * Detach event-handler <code>fnFunction</code> from the 'annotationsLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 * @experimental The API is NOT stable yet. Use at your own risk.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
 	 * @name sap.ui.model.odata.ODataModel#detachAnnotationsLoaded
 	 * @function
 	 */
@@ -60576,9 +69287,9 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.detachEvent("annotationsLoaded", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * Fire event metadataLoaded to attached listeners.
+	 * Fire event annotationsFailed to attached listeners.
 	 *
 	 * @param {object} [mArguments] the arguments to pass along with the event.
 	 * @param {string} [mArguments.message]  A text that describes the failure.
@@ -60588,6 +69299,60 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 *
 	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
 	 * @protected
+	 * @name sap.ui.model.odata.ODataModel#fireAnnotationsFailed
+	 * @function
+	 */
+	ODataModel.prototype.fireAnnotationsFailed = function(mArguments) {
+		this.fireEvent("annotationsFailed", mArguments);
+		jQuery.sap.log.debug("ODataModel fired annotationsfailed");
+		return this;
+	};
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'annotationsFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataModel.prototype.attachAnnotationsFailed = function(oData, fnFunction, oListener) {
+		this.attachEvent("annotationsFailed", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'annotationsFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataModel.prototype.detachAnnotationsFailed = function(fnFunction, oListener) {
+		this.detachEvent("annotationsFailed", fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Fire event metadataLoaded to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {sap.ui.model.odata.ODataMetadata} [mArguments.metadata]  the metadata object.
+	 * 
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @protected
 	 * @name sap.ui.model.odata.ODataModel#fireMetadataLoaded
 	 * @function
 	 */
@@ -60595,7 +69360,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.fireEvent("metadataLoaded", mArguments);
 		return this;
 	};
-	
+
 	/**
 	 * Attach event-handler <code>fnFunction</code> to the 'metadataLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -60617,7 +69382,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.attachEvent("metadataLoaded", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Detach event-handler <code>fnFunction</code> from the 'metadataLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -60636,7 +69401,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.detachEvent("metadataLoaded", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Fire event metadataFailed to attached listeners.
 	 *
@@ -60655,7 +69420,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.fireEvent("metadataFailed", mArguments);
 		return this;
 	};
-	
+
 	/**
 	 * Attach event-handler <code>fnFunction</code> to the 'metadataFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -60677,7 +69442,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.attachEvent("metadataFailed", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Detach event-handler <code>fnFunction</code> from the 'metadataFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -60696,6 +69461,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		this.detachEvent("metadataFailed", fnFunction, oListener);
 		return this;
 	};
+
 	/**
 	 * creates a request url
 	 * @private
@@ -60703,15 +69469,15 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @function
 	 */
 	ODataModel.prototype._createRequestUrl = function(sPath, oContext, oUrlParams, bBatch, bCache) {
-	
+
 		// create the url for the service
-		var aUrlParams = [],
+		var aUrlParams,
 			sResolvedPath,
 			sUrlParams,
 			sUrl = "";
 		
 		//we need to handle url params that can be passed from the manual CRUD methods due to compatibility
-		if (sPath.indexOf('?') != -1 ) {
+		if (sPath && sPath.indexOf('?') != -1 ) {
 			sUrlParams = sPath.substr(sPath.indexOf('?')+1);
 			sPath = sPath.substr(0, sPath.indexOf('?'));
 		}
@@ -60723,22 +69489,9 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		} else {
 			sUrl = sResolvedPath.substr(sResolvedPath.indexOf('/')+1);
 		}
-	
-		if (jQuery.type(oUrlParams) === "string") {
-			aUrlParams.push(oUrlParams);
-		} else if (jQuery.isArray(oUrlParams)) {
-			// compatibility with old aUrlParams array
-			aUrlParams = oUrlParams;
-		} else if (oUrlParams) {
-			// convert parameter map into parameter array as needed by read function
-			jQuery.each(oUrlParams, function (sParameterName, oParameterValue) {
-				if (jQuery.type(oParameterValue) === "string") {
-					oParameterValue = jQuery.sap.encodeURL(oParameterValue);
-				}
-				aUrlParams.push(jQuery.sap.encodeURL(sParameterName) + "=" + oParameterValue);
-			});
-		}
-	
+
+		aUrlParams = ODataUtils._createUrlParamsArray(oUrlParams);
+
 		if (this.sUrlParams) {
 			aUrlParams.push(this.sUrlParams);
 		}
@@ -60843,7 +69596,8 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 				if (that.sChangeKey && mChangedEntities) {
 					var sEntry = that.sChangeKey.substr(that.sChangeKey.lastIndexOf('/') + 1);
 					if (mChangedEntities[sEntry]) {
-						that.sChangeKey = null;						
+						delete that.oRequestQueue[that.sChangeKey];
+						that.sChangeKey = null;
 					}
 				}
 				
@@ -60874,7 +69628,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			var mParameters = that._handleError(oError);
 	
 			if (fnError) {
-				fnError(oError);
+				fnError(oError, oRequestHandle && oRequestHandle.bAborted);
 			}
 	
 			that.fireRequestCompleted({url : oRequest.requestUri, type : "GET", async : oRequest.async, 
@@ -61049,15 +69803,31 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	ODataModel.prototype.removeData = function(){
 		this.oData = {};
 	};
+
+	/**
+	 * Initialize the model.
+	 * This will call initialize on all bindings. This is done if metadata is loaded asynchronously.
+	 *
+	 * @private
+	 * @name sap.ui.model.odata.ODataModel#initialize
+	 * @function
+	 */
+	ODataModel.prototype.initialize = function() {
+		// Call initialize on all bindings in case metadata was not available when they were created
+		var aBindings = this.aBindings.slice(0);
+		jQuery.each(aBindings, function(iIndex, oBinding) {
+			oBinding.initialize();
+		});
+	};
 	
 	/**
 	 * Refresh the model.
 	 * This will check all bindings for updated data and update the controls if data has been changed.
 	 *
-	 * @param {boolean} bForceUpdate Update controls even if data has not been changed
+	 * @param {boolean} bForceUpdate Update controlsODataModelanged
 	 * @param {object} mChangedEntities
 	 * @param {string} [sEntityType]
-	 * 
+	 *
 	 * @public
 	 * @name sap.ui.model.odata.ODataModel#refresh
 	 * @function
@@ -61413,38 +70183,47 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @function
 	 */
 	ODataModel.prototype._getObject = function(sPath, oContext) {
-		var oNode = this.isLegacySyntax() ? this.oData : null,
+		var oNode = this.isLegacySyntax() ? this.oData : null, sResolvedPath,
 			sKey;
-		if (oContext) {
-			sKey = oContext.getPath();
-			// remove starting slash
-			sKey = sKey.substr(1);
-			oNode = this.oData[sKey];
-		}
-		if (!sPath) {
-			return oNode;
-		}
-		var aParts = sPath.split("/"),
-			iIndex = 0;
-		if (!aParts[0]) {
-			// absolute path starting with slash
-			oNode = this.oData;
-			iIndex++;
-		}
-		while(oNode && aParts[iIndex]) {
-			oNode = oNode[aParts[iIndex]];
-			if (oNode) {
-				if (oNode.__ref) {
-					oNode = this.oData[oNode.__ref];
-				}
-				else if (oNode.__list) {
-					oNode = oNode.__list;
-				}
-				else if (oNode.__deferred) {
-					oNode = null;
-				}
+		
+		//check for metadata path
+		if (this.oMetadata && sPath && sPath.indexOf('#') > -1)  {
+			sResolvedPath = this.resolve(sPath, oContext);
+			if (sResolvedPath) {
+				oNode = this.oMetadata._getAnnotation(sResolvedPath);
 			}
-			iIndex++;
+		} else {
+			if (oContext) {
+				sKey = oContext.getPath();
+				// remove starting slash
+				sKey = sKey.substr(1);
+				oNode = this.oData[sKey];
+			}
+			if (!sPath) {
+				return oNode;
+			}
+			var aParts = sPath.split("/"),
+				iIndex = 0;
+			if (!aParts[0]) {
+				// absolute path starting with slash
+				oNode = this.oData;
+				iIndex++;
+			}
+			while(oNode && aParts[iIndex]) {
+				oNode = oNode[aParts[iIndex]];
+				if (oNode) {
+					if (oNode.__ref) {
+						oNode = this.oData[oNode.__ref];
+					}
+					else if (oNode.__list) {
+						oNode = oNode.__list;
+					}
+					else if (oNode.__deferred) {
+						oNode = null;
+					}
+				}
+				iIndex++;
+			}
 		}
 		return oNode;
 	};
@@ -61546,8 +70325,8 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @name sap.ui.model.odata.ODataModel#_submitRequest
 	 * @function
 	 */
-	ODataModel.prototype._submitRequest = function(oRequest, bBatch, fnSuccess, fnError, bHandleBatchErrors){
-		var that = this, oResponseData;
+	ODataModel.prototype._submitRequest = function(oRequest, bBatch, fnSuccess, fnError, bHandleBatchErrors, bImportData){
+		var that = this, oResponseData, mChangedEntities = {};
 	
 		function _handleSuccess(oData, oResponse) {
 			// check if embedded errors occurred in success request. We don't do that for manual batch requests
@@ -61570,7 +70349,17 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 				}
 				oData = oResponseData;
 			}
-	
+			
+			if (bImportData) {
+				if (oData && oData.__batchResponses) {
+					jQuery.each(oData.__batchResponses, function(iIndex, oResponse) {
+						if (oResponse && oResponse.data) {
+							that._importData(oResponse.data, mChangedEntities);
+						}
+					});
+				}
+			}
+			
 			that._handleETag(oRequest, oResponse, bBatch);
 	
 			that._updateRequestQueue(oRequest, bBatch)
@@ -61870,8 +70659,8 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			else if(sPath){
 				sEntry = sPath.replace(this.sServiceUrl+'/','');
 				iIndex = sEntry.indexOf("?");
-				if (iIndex > -1) {
-					sEntry = sEntry.substr(0,iIndex);
+				if (iIndex > -1){
+					sEntry = sEntry.substr(0, iIndex);
 				}
 				if (this.oData.hasOwnProperty(sEntry)){
 					sETagHeader = this.getProperty('/' + sEntry +'/__metadata/etag');
@@ -61891,18 +70680,19 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	ODataModel.prototype._createRequest = function(sUrl, sMethod, bAsync, oPayload, sETag) {
 		var oChangeHeader = {}, sETagHeader;
 		jQuery.extend(oChangeHeader, this.mCustomHeaders, this.oHeaders);
-	
+
 		sETagHeader = this._getETag(sUrl, oPayload, sETag);
-	
-		if(sETagHeader  && sMethod != "GET"){
+
+		if(sETagHeader && sMethod != "GET"){
 			oChangeHeader["If-Match"] = sETagHeader;
 		}
+
 		// make sure to set content type header for POST/PUT requests when using JSON format to prevent datajs to add "odata=verbose" to the content-type header
 		// may be removed as later gateway versions support this
 		if (this.bJSON && sMethod != "DELETE" && this.sMaxDataServiceVersion === "2.0") {
 			oChangeHeader["Content-Type"] = "application/json";
 		}
-	
+
 		if (sMethod == "MERGE" && !this.bUseBatch) {
 			oChangeHeader["x-http-method"] = "MERGE";
 			sMethod = "POST";
@@ -62049,7 +70839,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		} else {
 			oRequest = this._createRequest(sUrl, "PUT", bAsync, oData, sETag);
 		}
-		
+
 		sPath = this._normalizePath(sPath, oContext);
 		oStoredEntry = this._getObject(sPath);
 		oRequest.keys = {};
@@ -62057,7 +70847,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			sKey = this._getKey(oStoredEntry);
 			oRequest.keys[sKey] = true;
 		}
-		
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -62066,7 +70856,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		}
 		return oRequestHandle;
 	};
-	
+
 	/**
 	 * Trigger a POST request to the odata service that was specified in the model constructor. Please note that deep creates are not supported
 	 * and may not work.
@@ -62111,17 +70901,17 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			fnSuccess	= arguments[3];
 			fnError		= arguments[4];
 		}
-		
+
 		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "POST", bAsync, oData);
-		
+
 		sPath = this._normalizePath(sPath, oContext);
 		oEntityMetadata = this.oMetadata._getEntityTypeByPath(sPath);
 		oRequest.entityTypes = {};
 		if (oEntityMetadata) {
 			oRequest.entityTypes[oEntityMetadata.entityType] = true;
 		}
-			
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -62198,7 +70988,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	
 		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "DELETE", bAsync, oPayload, sETag);
-	
+
 		sPath = this._normalizePath(sPath, oContext);
 		oStoredEntry = this._getObject(sPath);
 		oRequest.keys = {};
@@ -62206,7 +70996,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			sKey = this._getKey(oStoredEntry);
 			oRequest.keys[sKey] = true;
 		}
-		
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, _fnSuccess, fnError, true);
@@ -62214,9 +71004,9 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			oRequestHandle = this._submitRequest(oRequest, this.bUseBatch, _fnSuccess, fnError);
 		}
 		return oRequestHandle;
-	
+
 	};
-	
+
 	/**
 	 * Trigger a request to the function import odata service that was specified in the model constructor.
 	 *
@@ -62281,7 +71071,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 					});
 					if (matchingParameters != null && matchingParameters.length > 0) {
 						var matchingParameter = matchingParameters[0];
-						oUrlParams[sParameterName] = that.formatValue(oParameterValue, matchingParameter.type);
+						oUrlParams[sParameterName] = ODataUtils.formatValue(oParameterValue, matchingParameter.type);
 					}
 					else {
 						jQuery.sap.log.warning("Parameter " + sParameterName + " is not defined for function call " + sFunctionName + "!");
@@ -62309,7 +71099,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			}
 		}
 	};
-	
+
 	/**
 	 * Trigger a GET request to the odata service that was specified in the model constructor.
 	 * The data will not be stored in the model. The requested data is returned with the response.
@@ -62322,6 +71112,8 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * 		given with the context.
 	 * @param {map} [mParameters.urlParameters] A map containing the parameters that will be passed as query strings 
 	 * @param {boolean} [mParameters.async=true] true for asynchronous requests.
+	 * @param {array} [mParameter.filters] an array of sap.ui.model.Filter to be included in the request URL
+	 * @param {array} [mParameter.sorters] an array of sap.ui.model.Sorter to be included in the request URL
 	 * @param {function} [mParameters.success] a callback function which is called when the data has
 	 *		been successfully retrieved. The handler can have the
 	 *		following parameters: oData and response.
@@ -62338,6 +71130,9 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	ODataModel.prototype.read = function(sPath, mParameters) {
 		var oRequest, sUrl, oRequestHandle, oBatchRequest,
 			oContext, mUrlParams, bAsync, fnSuccess, fnError,
+			aFilters, aSorters, sFilterParams, sSorterParams,
+			oEntityType, sResolvedPath,
+			aUrlParams,
 			that = this;
 		
 		if (mParameters && typeof(mParameters) == "object" && !(mParameters instanceof sap.ui.model.Context)) {
@@ -62347,6 +71142,8 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			bAsync     = mParameters.async !== false; // Defaults to true...
 			fnSuccess  = mParameters.success;
 			fnError    = mParameters.error;
+			aFilters   = mParameters.filters;
+			aSorters   = mParameters.sorters;
 		} else {
 			// Legacy parameter syntax is used
 			oContext   = mParameters;
@@ -62354,15 +71151,29 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			bAsync     = arguments[3] !== false; // Defaults to true...
 			fnSuccess  = arguments[4];
 			fnError    = arguments[5];
-			
 		}
-	
+
 		// bAsync default is true ?!
 		bAsync = bAsync !== false;
-	
-		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
+
+		aUrlParams = ODataUtils._createUrlParamsArray(mUrlParams);
+
+		// Add filter/sorter to URL parameters
+		sSorterParams = ODataUtils.createSortParams(aSorters);
+		if (sSorterParams) { aUrlParams.push(sSorterParams) };
+
+		if (aFilters && !this.oMetadata) {
+			jQuery.sap.log.fatal("Tried to use filters in read method before metadata is available.")
+		} else {
+			sResolvedPath = this._normalizePath(sPath, oContext);
+			oEntityType = this.oMetadata && this.oMetadata._getEntityTypeByPath(sResolvedPath);
+			sFilterParams = ODataUtils.createFilterParams(aFilters, this.oMetadata, oEntityType);
+			if (sFilterParams) { aUrlParams.push(sFilterParams) };
+		}
+		
+		sUrl = this._createRequestUrl(sPath, oContext, aUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "GET", bAsync);
-	
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([oRequest], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -62371,7 +71182,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		}
 		return oRequestHandle;
 	};
-	
+
 	/**
 	 * Creates a single batch operation (read or change operation) which can be used in a batch request.
 	 *
@@ -62429,7 +71240,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 		}
 		
 		if (sMethod != "GET" && sMethod != "POST"){
-			if (sPath.indexOf("/") != 0) {
+			if (sPath && sPath.indexOf("/") != 0) {
 				sPath = '/' + sPath;
 			}
 			oStoredEntry = this._getObject(sPath);
@@ -62528,7 +71339,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @name sap.ui.model.odata.ODataModel#submitBatch
 	 * @function
 	 */
-	ODataModel.prototype.submitBatch = function(fnSuccess, fnError, bAsync) {
+	ODataModel.prototype.submitBatch = function(fnSuccess, fnError, bAsync, bImportData) {
 		var oRequest, sUrl, oRequestHandle, that = this;
 	
 		function _handleSuccess(oData, oResponse) {
@@ -62554,7 +71365,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			return false;
 		}
 		oRequest = this._createBatchRequest(this.aBatchOperations, bAsync);
-		oRequestHandle = this._submitRequest(oRequest, true, _handleSuccess, fnError, false);
+		oRequestHandle = this._submitRequest(oRequest, true, _handleSuccess, fnError, false, bImportData);
 		this.clearBatch();
 		return oRequestHandle;
 	};
@@ -62570,7 +71381,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @function
 	 */
 	ODataModel.prototype.getServiceMetadata = function() {
-		if (this.oMetadata && this.oMetadata.getServiceMetadata) {
+		if (this.oMetadata && this.oMetadata.isLoaded()) {
 			return this.oMetadata.getServiceMetadata();
 		}
 	};
@@ -62998,60 +71809,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	 * @function
 	 */
 	ODataModel.prototype.formatValue = function(vValue, sType) {
-		// Lazy creation of format objects
-		if (!this.oDateTimeFormat) {
-			this.oDateTimeFormat = sap.ui.core.format.DateFormat.getDateInstance({
-				pattern: "'datetime'''yyyy-MM-dd'T'HH:mm:ss''"
-			});
-			this.oDateTimeOffsetFormat = sap.ui.core.format.DateFormat.getDateInstance({
-				pattern: "'datetimeoffset'''yyyy-MM-dd'T'HH:mm:ss'Z'''"
-			});
-			this.oTimeFormat = sap.ui.core.format.DateFormat.getTimeInstance({
-				pattern: "'time'''HH:mm:ss''"
-			});
-		}
-	
-		// null values should return the null literal
-		if (vValue === null || vValue === undefined) {
-			return "null";
-		}
-	
-		// Format according to the given type
-		var sValue;
-		switch(sType) {
-			case "Edm.String":
-				// quote
-				sValue = "'" + String(vValue).replace(/'/g, "''") + "'";
-				break;
-			case "Edm.Time":
-				sValue = "time'" + vValue + "'";
-				break;
-			case "Edm.DateTime":
-				sValue = this.oDateTimeFormat.format(new Date(vValue), true);
-				break;
-			case "Edm.DateTimeOffset":
-				sValue = this.oDateTimeOffsetFormat.format(new Date(vValue), true);
-				break;
-			case "Edm.Guid":
-				sValue = "guid'" + vValue + "'";
-				break;
-			case "Edm.Decimal":
-				sValue = vValue + "M";
-				break;
-			case "Edm.Int64":
-				sValue = vValue + "L";
-				break;
-			case "Edm.Single":
-				sValue = vValue + "f";
-				break;
-			case "Edm.Binary":
-				sValue = "binary'" + vValue + "'";
-				break;
-			default:
-				sValue = new String(vValue);
-				break;
-		}
-		return sValue;
+		return ODataUtils.formatValue(vValue, sType);
 	};
 	
 	/**
@@ -63205,7 +71963,7 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 	ODataModel.prototype._normalizePath = function(sPath, oContext) {
 		
 		// remove query params from path if any
-		if (sPath.indexOf('?') != -1 ) {
+		if (sPath && sPath.indexOf('?') != -1 ) {
 			sPath = sPath.substr(0, sPath.indexOf('?'));
 		}
 	
@@ -63305,13 +72063,19 @@ sap.ui.define("sap/ui/model/odata/ODataModel",['jquery.sap.global', 'sap/ui/mode
 			}
 			delete this.aPendingRequestHandles;
 		}
-	
+		if(!!this.oMetadataLoadEvent){
+			jQuery.sap.clearDelayedCall(this.oMetadataLoadEvent);
+		}
+		if(!!this.oMetadataFailedEvent){
+			jQuery.sap.clearDelayedCall(this.oMetadataFailedEvent);
+		}
+
 		if (this.oMetadata) {
 			this.oMetadata.destroy();
 			delete this.oMetadata;
 		}
-	
-	
+
+
 		if (this.oAnnotations) {
 			this.oAnnotations.destroy();
 			delete this.oAnnotations;
@@ -63356,7 +72120,7 @@ sap.ui.define("sap/ui/model/resource/ResourceModel",['jquery.sap.global', 'sap/u
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData parameters used to initialize the ResourceModel; at least either bundleUrl or bundleName must be set on this object; if both are set, bundleName wins
 	 * @param {string} [oData.bundleUrl] the URL to the base .properties file of a bundle (.properties file without any locale information, e.g. "mybundle.properties")
@@ -63366,7 +72130,7 @@ sap.ui.define("sap/ui/model/resource/ResourceModel",['jquery.sap.global', 'sap/u
 	 * @public
 	 * @name sap.ui.model.resource.ResourceModel
 	 */
-	var ResourceModel = Model.extend("sap.ui.model.resource.ResourceModel", /** @lends sap.ui.model.resource.ResourceModel */ {
+	var ResourceModel = Model.extend("sap.ui.model.resource.ResourceModel", /** @lends sap.ui.model.resource.ResourceModel.prototype */ {
 	
 		constructor : function(oData) {
 			Model.apply(this, arguments);
@@ -63623,11 +72387,12 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 	 *
 	 * @class Base Class for managed objects.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.base.ManagedObject
-	 * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
+	 * @experimental Since 1.11.2. ManagedObject as such is public and usable. Only the support for the optional parameter 
+	 * oScope in the constructor is still experimental and might change in future versions. Applications should not rely on it.
 	 */
 	var ManagedObject = EventProvider.extend("sap.ui.base.ManagedObject", {
 	
@@ -63879,9 +72644,8 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 	 * @param {object} [oScope] Scope object to resolve types and formatters
 	 * @return {sap.ui.base.ManagedObject} Returns <code>this</code> to allow method chaining
 	 * @public
-	 * @experimental Since 1.11.2. support for complex string binding syntax as well as the 
-	 * 				scope object for resolving string based type and formatter references 
-	 * 				in bindings is still experimental
+	 * @experimental Since 1.11.2 support for the scope object for resolving string based type 
+	 * and formatter references in bindings is still experimental
 	 * @name sap.ui.base.ManagedObject#applySettings
 	 * @function
 	 */
@@ -65509,26 +74273,8 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 			oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
 			that = this,
 			aBindings = [],
-			fModelChangeHandler = function() {
-				try {			
-					var oValue = oBinding.getExternalValue();
-					oBindingInfo.skipModelUpdate = true;
-					that[oPropertyInfo._sMutator](oValue);
-					oBindingInfo.skipModelUpdate = false;
-				}catch (oException) {
-					if (oException instanceof sap.ui.model.FormatException) {
-						that.fireFormatError({
-							element : that,
-							property : sName,
-							type : oBinding.getType(),
-							newValue : oBinding.getValue(),
-							oldValue : that.getProperty(sName),
-							exception: oException
-						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}else {
-						throw oException;
-					}
-				}
+			fModelChangeHandler = function(oEvent){
+				that.updateProperty(sName);
 			};
 	
 		// Only use context for bindings on the primary model
@@ -65580,7 +74326,6 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 		oBinding.setFormatter(jQuery.proxy(oBindingInfo.formatter, this));  
 		
 		// Set additional information on the binding info
-		oBindingInfo.skipModelUpdate = false;
 		oBindingInfo.binding = oBinding;
 		oBindingInfo.modelChangeHandler = fModelChangeHandler;
 		
@@ -65619,6 +74364,44 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 		}
 		return this;
 	};
+
+	/**
+	 * Generic method which is called, whenever an property binding is changed.
+	 * This method gets the external format from the property binding and applies
+	 * it to the setter.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#updateProperty
+	 * @function
+	 */
+	ManagedObject.prototype.updateProperty = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding,
+			oPropertyInfo = this.getMetadata().getJSONKeys()[sName];
+		
+		// If model change was triggered by the property itself, don't call the setter again
+		if (oBindingInfo.skipPropertyUpdate) return;
+		
+		try {			
+			var oValue = oBinding.getExternalValue();
+			oBindingInfo.skipModelUpdate = true;
+			this[oPropertyInfo._sMutator](oValue);
+			oBindingInfo.skipModelUpdate = false;
+		} catch (oException) {
+			if (oException instanceof sap.ui.model.FormatException) {
+				this.fireFormatError({
+					element : this,
+					property : sName,
+					type : oBinding.getType(),
+					newValue : oBinding.getValue(),
+					oldValue : this.getProperty(sName),
+					exception: oException
+				}, false, true); // bAllowPreventDefault, bEnableEventBubbling
+			} else {
+				throw oException;
+			}
+		}
+	};
 	
 	/**
 	 * Update the property in the model if two way data binding mode is enabled
@@ -65633,11 +74416,25 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 		if (this.isBound(sName)){
 			var oBindingInfo = this.mBindingInfos[sName],
 				oBinding = oBindingInfo.binding;
+			
+			// If property change was triggered by the model, don't update the model again
+			if (oBindingInfo.skipModelUpdate) return;
+			
 			// only one property binding should work with two way mode...composite binding does not work with two way binding 
-			if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay
-					&& !oBindingInfo.skipModelUpdate) {
+			if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay) {
 				try {
+					// Set flag to avoid originating propery to be updated from the model
+					oBindingInfo.skipPropertyUpdate = true;
 					oBinding.setExternalValue(oValue);
+					oBindingInfo.skipPropertyUpdate = false;
+					
+					// If external value differs from own value after model update,
+					// update property again
+					var oExternalValue = oBinding.getExternalValue();
+					if (oValue != oExternalValue) {
+						this.updateProperty(sName);
+					}
+					
 					// Only fire validation success, if a type is used
 					if (oBinding.getType()) {
 						this.fireValidationSuccess({
@@ -65648,8 +74445,7 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 							oldValue : oOldValue
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 					}
-				}
-				catch (oException) {
+				} catch (oException) {
 					if (oException instanceof sap.ui.model.ParseException) {
 						this.fireParseError({
 							element : this,
@@ -65659,7 +74455,7 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 							oldValue : oOldValue,
 							exception: oException
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}else if (oException instanceof sap.ui.model.ValidateException) {
+					} else if (oException instanceof sap.ui.model.ValidateException) {
 						this.fireValidationError({
 							element : this,
 							property : sName,
@@ -65668,8 +74464,7 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 							oldValue : oOldValue,
 							exception: oException
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}
-					else {
+					} else {
 						throw oException;
 					}
 				}
@@ -65845,6 +74640,87 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 		}
 		return this;
 	};
+
+	/**
+	 * Generic method which is called, whenever an aggregation binding is changed.
+	 * This method deletes all elements in this aggregation and recreates them
+	 * according to the data model.
+	 * In case a managed object needs special handling for a aggregation binding, it can create
+	 * a typed update-method (e.g. "updateRows") which will be used instead of the
+	 * default behaviour.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#updateAggregation
+	 * @function
+	 */
+	ManagedObject.prototype.updateAggregation = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding,
+			fnFactory = oBindingInfo.factory,
+			oAggregationInfo = this.getMetadata().getJSONKeys()[sName],  // TODO fix handling of hidden aggregations
+			oClone,
+			oNewGroup = null,
+			sGroupFunction = null,
+			bGrouped = null,
+			sGroup = null,
+			that = this;
+		this[oAggregationInfo._sDestructor]();
+		if (this.isTreeBinding(sName)) {
+			var iNodeIndex = 0,
+				update = function(aContexts, fnFactory, oBinding, oParent){
+					jQuery.each(aContexts, function(iIndex, oContext) {
+						var sId = that.getId() + "-" + iNodeIndex++;
+						oClone = fnFactory(sId, oContext);
+						oClone.setBindingContext(oContext, oBindingInfo.model);
+						oParent[oAggregationInfo._sMutator](oClone); // also sets the Parent
+						update(oBinding.getNodeContexts(oContext), fnFactory, oBinding, oClone);
+					});
+				};
+			update(oBinding.getRootContexts(), fnFactory, oBinding, this);
+		} 
+		else {
+			sGroupFunction = oAggregationInfo._sMutator + "Group";
+			bGrouped = oBinding.isGrouped() && this[sGroupFunction];
+			jQuery.each(oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length), function(iIndex, oContext) {
+				if (bGrouped && oBinding.aSorters.length > 0) {
+					oNewGroup = oBinding.aSorters[0].fnGroup(oContext);
+					if (typeof oNewGroup == "string") {
+						oNewGroup = {
+							key: oNewGroup
+						};
+					} 
+					if (oNewGroup.key !== sGroup) {
+						var oGroupHeader;
+						//If factory is defined use it
+						if (oBindingInfo.groupHeaderFactory) {
+							oGroupHeader = oBindingInfo.groupHeaderFactory(oNewGroup);
+						}
+						that[sGroupFunction](oNewGroup, oGroupHeader);
+						sGroup = oNewGroup.key;
+					}
+				}
+				var sId = that.getId() + "-" + iIndex;
+				oClone = fnFactory(sId, oContext);
+				oClone.setBindingContext(oContext, oBindingInfo.model);
+				that[oAggregationInfo._sMutator](oClone);
+			});
+		}
+	};
+	
+	/**
+	 * Generic method which can be called, when an aggregation needs to be refreshed.
+	 * This method does not make any change on the aggregtaion, but just calls the
+	 * getContexts method to trigger fetching of new data.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#refreshAggregation
+	 * @function
+	 */
+	ManagedObject.prototype.refreshAggregation = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding;
+		oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length);
+	};
 	
 	/**
 	 *  This method is used internally and should only be overridden by a tree managed object which utilizes the tree binding.
@@ -65958,71 +74834,6 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 		
 	};
 	
-	/**
-	 * Generic method which is called, whenever an aggregation binding is changed.
-	 * This method deletes all elements in this aggregation and recreates them
-	 * according to the data model.
-	 * In case a managed object needs special handling for a aggregation binding, it can create
-	 * a typed update-method (e.g. "updateRows") which will be used instead of the
-	 * default behaviour.
-	 *
-	 * @private
-	 * @name sap.ui.base.ManagedObject#updateAggregation
-	 * @function
-	 */
-	ManagedObject.prototype.updateAggregation = function(sName) {
-		var oBindingInfo = this.mBindingInfos[sName],
-			oBinding = oBindingInfo.binding,
-			fnFactory = oBindingInfo.factory,
-			oAggregationInfo = this.getMetadata().getJSONKeys()[sName],  // TODO fix handling of hidden aggregations
-			oClone,
-			oNewGroup = null,
-			sGroupFunction = null,
-			bGrouped = null,
-			sGroup = null,
-			that = this;
-		this[oAggregationInfo._sDestructor]();
-		if (this.isTreeBinding(sName)) {
-			var iNodeIndex = 0,
-				update = function(aContexts, fnFactory, oBinding, oParent){
-					jQuery.each(aContexts, function(iIndex, oContext) {
-						var sId = that.getId() + "-" + iNodeIndex++;
-						oClone = fnFactory(sId, oContext);
-						oClone.setBindingContext(oContext, oBindingInfo.model);
-						oParent[oAggregationInfo._sMutator](oClone); // also sets the Parent
-						update(oBinding.getNodeContexts(oContext), fnFactory, oBinding, oClone);
-					});
-				};
-			update(oBinding.getRootContexts(), fnFactory, oBinding, this);
-		} 
-		else {
-			sGroupFunction = oAggregationInfo._sMutator + "Group";
-			bGrouped = oBinding.isGrouped() && this[sGroupFunction];
-			jQuery.each(oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length), function(iIndex, oContext) {
-				if (bGrouped && oBinding.aSorters.length > 0) {
-					oNewGroup = oBinding.aSorters[0].fnGroup(oContext);
-					if (typeof oNewGroup == "string") {
-						oNewGroup = {
-							key: oNewGroup
-						};
-					} 
-					if (oNewGroup.key !== sGroup) {
-						var oGroupHeader;
-						//If factory is defined use it
-						if (oBindingInfo.groupHeaderFactory) {
-							oGroupHeader = oBindingInfo.groupHeaderFactory(oNewGroup);
-						}
-						that[sGroupFunction](oNewGroup, oGroupHeader);
-						sGroup = oNewGroup.key;
-					}
-				}
-				var sId = that.getId() + "-" + iIndex;
-				oClone = fnFactory(sId, oContext);
-				oClone.setBindingContext(oContext, oBindingInfo.model);
-				that[oAggregationInfo._sMutator](oClone);
-			});
-		}
-	};
 	
 	/**
 	 * Find out whether a property or aggregation is bound
@@ -66157,10 +74968,10 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 				if (oModel && oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
 					if(!oBoundObject.binding) {
 						this._bindObject(sModelName, oBoundObject);
-					} else {
+					} else { 
 						oParentContext = null;
 						if (this.oParent && oModel == this.oParent.getModel(sModelName)) {
-							oParentContext= this.oParent.getBindingContext(sModelName); 
+							oParentContext = this.oParent.getBindingContext(sModelName); 
 						}
 						if (oParentContext !== oBoundObject.binding.getContext()) {
 							oBoundObject.binding.setContext(oParentContext);
@@ -66482,13 +75293,19 @@ sap.ui.define("sap/ui/base/ManagedObject",['jquery.sap.global', './BindingParser
 			mSettings = {},
 			mProps = this.mProperties,
 			sKey,
-			oClone;
+			oClone,
+			escape = ManagedObject.bindingParser.escape;
 		
 		// Clone properties (only those with non-default value)
 		for(sKey in mProps) {
 			//do not clone properties if property is bound and bindings are cloned; Property is set on update
 			if ( mProps.hasOwnProperty(sKey) && !(this.isBound(sKey) && bCloneBindings)){
-				mSettings[sKey] = mProps[sKey];
+				// Note: to avoid double resolution of binding expressions, we have to escape string values once again 
+				if (typeof mProps[sKey] === "string") {
+					mSettings[sKey] = escape(mProps[sKey]);	
+				} else {
+					mSettings[sKey] = mProps[sKey];
+				}
 			}
 		}
 		
@@ -66759,8 +75576,8 @@ sap.ui.define("sap/ui/core/Fragment",['jquery.sap.global', 'sap/ui/base/ManagedO
 		 *
 		 * @class Fragment
 		 * @extends sap.ui.base.ManagedObject
-		 * @author SAP
-		 * @version 1.20.10
+		 * @author SAP AG
+		 * @version 1.22.4
 		 * @public
 		 * @name sap.ui.core.Fragment
 		 */
@@ -67363,7 +76180,7 @@ sap.ui.define("sap/ui/core/routing/Router",['jquery.sap.global', 'sap/ui/base/Ev
 		 * @public
 		 * @name sap.ui.core.routing.Router
 		 */
-		var Router = EventProvider.extend("sap.ui.core.routing.Router", /** @lends sap.ui.core.routing.Router */ {
+		var Router = EventProvider.extend("sap.ui.core.routing.Router", /** @lends sap.ui.core.routing.Router.prototype */ {
 	
 			constructor : function(oRoutes, oConfig, oOwner) {
 				EventProvider.apply(this);
@@ -67484,12 +76301,12 @@ sap.ui.define("sap/ui/core/routing/Router",['jquery.sap.global', 'sap/ui/base/Ev
 		};
 		
 		/**
-		 * @public
 		 * Stops to listen to the hashChange of the browser.</br>
 		 * If you want the router to start again, call initialize again.
 		 * @returns { sap.ui.core.routing.Router } this for chaining.
 		 * @name sap.ui.core.routing.Router#stop
 		 * @function
+		 * @public
 		 */
 		Router.prototype.stop = function () {
 	
@@ -67574,7 +76391,7 @@ sap.ui.define("sap/ui/core/routing/Router",['jquery.sap.global', 'sap/ui/base/Ev
 			if (!sViewName) {
 				jQuery.sap.log.error("A name for the view has to be defined");
 			}
-			
+
 			if (!this._oViews[sViewName]) {
 				var fnCreateView = function() {
 					var oViewOptions = { 
@@ -67601,6 +76418,24 @@ sap.ui.define("sap/ui/core/routing/Router",['jquery.sap.global', 'sap/ui/base/Ev
 				});
 			}
 			return this._oViews[sViewName];
+		};
+
+		/**
+		 * Adds or overwrites a view in the viewcache of the router, the viewname serves as a key
+		 * 
+		 * @param {string} sViewName Name of the view
+		 * @param {sap.ui.core.mvc.View} oView the view instance
+		 * @since 1.22
+		 * @public
+		 * @name sap.ui.core.routing.Router#setView
+		 * @function
+		 */
+		Router.prototype.setView = function (sViewName, oView) {
+			if (!sViewName) {
+				jQuery.sap.log.error("A name for the view has to be defined");
+			}
+
+			this._oViews[sViewName] = oView;
 		};
 		
 		/**
@@ -67861,12 +76696,12 @@ sap.ui.define("sap/ui/core/tmpl/Template",['jquery.sap.global', 'sap/ui/base/Man
 	 * @class Base Class for Template.
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.tmpl.Template
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
-	var Template = ManagedObject.extend("sap.ui.core.tmpl.Template", /** @lends sap.ui.core.tmpl.Template */
+	var Template = ManagedObject.extend("sap.ui.core.tmpl.Template", /** @lends sap.ui.core.tmpl.Template.prototype */
 	{
 		
 		constructor : function(sId, mSettings) {
@@ -68462,6 +77297,639 @@ sap.ui.define("sap/ui/core/tmpl/Template",['jquery.sap.global', 'sap/ui/base/Man
 }, /* bExport= */ true);
 
 }; // end of sap/ui/core/tmpl/Template.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.ExportType') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.ExportType
+jQuery.sap.declare('sap.ui.core.util.ExportType'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/ExportType",['jquery.sap.global', 'sap/ui/base/ManagedObject'],
+	function(jQuery, ManagedObject) {
+	'use strict';
+
+	/**
+	 * Constructor for a new ExportType.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getFileExtension fileExtension} : string</li>
+	 * <li>{@link #getMimeType mimeType} : string</li>
+	 * <li>{@link #getCharset charset} : string</li></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * Base export type. Subclasses can be used for {@link sap.ui.core.util.Export Export}.
+	 * @extends sap.ui.base.ManagedObject
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.ExportType
+	 */
+	var ExportType = ManagedObject.extend('sap.ui.core.util.ExportType', {
+
+		metadata: {
+			properties: {
+				fileExtension: 'string',
+				mimeType: 'string',
+				charset: 'string'
+			}
+		}
+
+	});
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.ExportType with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.ExportType.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>fileExtension</code>.
+	 * File extension
+	 *
+	 * Default value is empty/<code>undefined</code>
+	 *
+	 * @return {string} the value of property <code>fileExtension</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportType#getFileExtension
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>fileExtension</code>.
+	 *
+	 * Default value is empty/<code>undefined</code> 
+	 *
+	 * @param {string} sFileExtension  new value for property <code>fileExtension</code>
+	 * @return {sap.ui.core.util.ExportType} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportType#setFileExtension
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>mimeType</code>.
+	 * MIME type
+	 *
+	 * Default value is empty/<code>undefined</code>
+	 *
+	 * @return {string} the value of property <code>mimeType</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportType#getMimeType
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>mimeType</code>.
+	 *
+	 * Default value is empty/<code>undefined</code> 
+	 *
+	 * @param {string} sMimeType  new value for property <code>mimeType</code>
+	 * @return {sap.ui.core.util.ExportType} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportType#setMimeType
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>charset</code>.
+	 * Charset
+	 *
+	 * Default value is empty/<code>undefined</code>
+	 *
+	 * @return {string} the value of property <code>charset</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportType#getCharset
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>charset</code>.
+	 *
+	 * Default value is empty/<code>undefined</code> 
+	 *
+	 * @param {string} sCharset  new value for property <code>charset</code>
+	 * @return {sap.ui.core.util.ExportType} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportType#setCharset
+	 * @function
+	 */
+
+	/**
+	 * @private
+	 * @name sap.ui.core.util.ExportType#init
+	 * @function
+	 */
+	ExportType.prototype.init = function() {
+		this._oExport = null;
+	};
+
+	/**
+	 * Handles the generation process of the file.<br>
+	 *
+	 * @param {sap.ui.core.util.Export} oExport export instance
+	 * @return {string} content
+	 *
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#_generate
+	 * @function
+	 */
+	ExportType.prototype._generate = function(oExport) {
+		this._oExport = oExport;
+		var sContent = this.generate();
+		this._oExport = null;
+		return sContent;
+	};
+
+	/**
+	 * Generates the file content.<br>
+	 * Should be implemented by the individual types!
+	 *
+	 * @return {string} content
+	 *
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#generate
+	 * @function
+	 */
+	ExportType.prototype.generate = function() {
+		return '';
+	};
+
+	/**
+	 * Returns the number of columns.
+	 *
+	 * @return {int} count
+	 *
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#getColumnCount
+	 * @function
+	 */
+	ExportType.prototype.getColumnCount = function() {
+		if (this._oExport) {
+			return this._oExport.getColumns().length;
+		}
+		return 0;
+	};
+
+	/**
+	 * Returns the number of rows.
+	 *
+	 * @return {int} count
+	 *
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#getRowCount
+	 * @function
+	 */
+	ExportType.prototype.getRowCount = function() {
+		if (this._oExport && this._oExport.getBinding("rows")) {
+			return this._oExport.getBinding("rows").getLength();
+		}
+		return 0;
+	};
+
+	/**
+	 * Creates a column "generator" (inspired by ES6 Generators)
+	 *
+	 * @return {Generator} generator
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#columnGenerator
+	 * @function
+	 */
+	ExportType.prototype.columnGenerator = function() {
+		/*
+		// Implementation using ES6 Generator
+		function* cellGenerator() {
+			var aColumns = this._oExport.getColumns(),
+				iColumns = aColumns.length;
+
+			for (var i = 0; i < iColumns; i++) {
+				yield {
+					index: i,
+					name: aColumns[i].getName()
+				};
+			}
+		}
+		*/
+
+		var i = 0,
+			aColumns = this._oExport.getColumns(),
+			iColumns = aColumns.length;
+
+		return {
+			next: function() {
+				if (i < iColumns) {
+					var iIndex = i;
+					i++;
+					return {
+						value: {
+							index: iIndex,
+							name: aColumns[iIndex].getName()
+						},
+						done: false
+					};
+				} else {
+					return {
+						value: undefined,
+						done: true
+					};
+				}
+			}
+		};
+	};
+
+	/**
+	 * Creates a cell "generator" (inspired by ES6 Generators)
+	 *
+	 * @return {Generator} generator
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#cellGenerator
+	 * @function
+	 */
+	ExportType.prototype.cellGenerator = function() {
+		/*
+		// Implementation using ES6 Generator
+		function* cellGenerator() {
+			var oRowTemplate = this._oExport.getAggregation('_template'),
+				aCells = oRowTemplate.getCells(),
+				iCells = aCells.length;
+
+			for (var i = 0; i < iCells; i++) {
+				yield {
+					index: i,
+					content: aCells[i].getContent()
+				};
+			}
+		}
+		*/
+
+		var i = 0,
+			oRowTemplate = this._oExport.getAggregation('_template'),
+			aCells = oRowTemplate.getCells(),
+			iCells = aCells.length;
+
+		return {
+			next: function() {
+				if (i < iCells) {
+					var iIndex = i;
+					i++;
+
+					// convert customData object array to key-value map
+					var mCustomData = {};
+					jQuery.each(aCells[iIndex].getCustomData(), function() {
+						mCustomData[this.getKey()] = this.getValue();
+					});
+
+					return {
+						value: {
+							index: iIndex,
+							content: aCells[iIndex].getContent(),
+							customData: mCustomData
+						},
+						done: false
+					};
+				} else {
+					return {
+						value: undefined,
+						done: true
+					};
+				}
+			}
+		};
+	};
+
+	/**
+	 * Creates a row "generator" (inspired by ES6 Generators)
+	 *
+	 * @return {Generator} generator
+	 * @protected
+	 * @name sap.ui.core.util.ExportType#rowGenerator
+	 * @function
+	 */
+	ExportType.prototype.rowGenerator = function() {
+		/*
+		// Implementation using ES6 Generator
+		function* rowGenerator() {
+			var oExport = this._oExport,
+				oBinding = oExport.getBinding("rows"),
+				mBindingInfos = oExport.getBindingInfo("rows"),
+				aContexts = oBinding.getContexts(0, oBinding.getLength()),
+				iContexts = aContexts.length,
+				oRowTemplate = oExport.getAggregation('_template');
+
+			for (var i = 0; i < iCells; i++) {
+				oRowTemplate.setBindingContext(aContexts[i], mBindingInfos.model);
+				yield {
+					index: i,
+					cells: this.cellGenerator()
+				};
+			}
+		}
+		*/
+
+		var that = this,
+			i = 0,
+			oExport = this._oExport,
+			oBinding = oExport.getBinding("rows"),
+			mBindingInfos = oExport.getBindingInfo("rows"),
+			aContexts = oBinding.getContexts(0, oBinding.getLength()),
+			iContexts = aContexts.length,
+			oRowTemplate = oExport.getAggregation('_template');
+
+		return {
+			next: function() {
+				if (i < iContexts) {
+					var iIndex = i;
+					i++;
+
+					oRowTemplate.setBindingContext(aContexts[iIndex], mBindingInfos.model);
+					return {
+						value: {
+							index: iIndex,
+							cells: that.cellGenerator()
+						},
+						done: false
+					};
+				} else {
+					return {
+						value: undefined,
+						done: true
+					};
+				}
+			}
+		};
+	};
+
+	return ExportType;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/ExportType.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.ExportTypeCSV') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.ExportTypeCSV
+jQuery.sap.declare('sap.ui.core.util.ExportTypeCSV'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/ExportTypeCSV",['jquery.sap.global', './ExportType'],
+	function(jQuery, ExportType) {
+	'use strict';
+
+	/**
+	 * Constructor for a new ExportTypeCSV.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getSeparatorChar separatorChar} : string</li></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * CSV export type. Can be used for {@link sap.ui.core.util.Export Export}.<br>
+	 * <br>
+	 * Please note that there could issues with the separator char depending on the user's system language in some programs such as Microsoft Excel.<br>
+	 * To prevent those issues use the data-import functionality which enables the possibility to explicitly set the separator char that should be used.<br>
+	 * This way the content will be displayed correctly.
+	 *
+	 * @extends sap.ui.core.util.ExportType
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.ExportTypeCSV
+	 */
+	var CSV = ExportType.extend('sap.ui.core.util.ExportTypeCSV', {
+
+		metadata: {
+
+			properties: {
+				separatorChar: {
+					type: 'string',
+					defaultValue: ','
+				}
+			}
+
+		}
+
+	});
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.ExportTypeCSV with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.ExportTypeCSV.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>separatorChar</code>.
+	 * Separator char.
+	 * Value needs to be exactly one character or empty for default.
+	 *
+	 * Default value is ','
+	 *
+	 * @return {string} the value of property <code>separatorChar</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportTypeCSV#getSeparatorChar
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>separatorChar</code>.
+	 *
+	 * Value needs to be exactly one character or empty for default. Default value is ','.
+	 *
+	 * @param {string} sSeparatorChar  new value for property <code>separatorChar</code>
+	 * @return {sap.ui.core.util.ExportTypeCSV} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportTypeCSV#setSeparatorChar
+	 * @function
+	 */
+	CSV.prototype.setSeparatorChar = function(sSeparatorChar) {
+		var sSeparatorChar = this.validateProperty('separatorChar', sSeparatorChar);
+		if (sSeparatorChar.length > 1) {
+			throw new Error("Value of property \"separatorChar\" needs to be exactly one character or empty. " +
+				"\"" + sSeparatorChar + "\" is " + sSeparatorChar.length + " characters long.");
+		}
+		return this.setProperty('separatorChar', sSeparatorChar);
+	};
+
+	/**
+	 * @private
+	 * @name sap.ui.core.util.ExportTypeCSV#init
+	 * @function
+	 */
+	CSV.prototype.init = function() {
+		// Set default values
+		this.setProperty('fileExtension', 'csv', true);
+		this.setProperty('mimeType', 'text/csv', true);
+		this.setProperty('charset', 'utf-8', true);
+	};
+
+	/**
+	 * Escapes the value if needed to prevent issues with separator-char and new-line.
+	 *
+	 * @private
+	 * @name sap.ui.core.util.ExportTypeCSV#escapeContent
+	 * @function
+	 */
+	CSV.prototype.escapeContent = function(sVal) {
+		if (sVal && sVal.indexOf(this.getSeparatorChar()) > -1 || sVal.indexOf('\r\n') > -1) {
+			sVal = sVal.replace(/"/g, '""');
+			sVal = '"' + sVal + '"';
+		}
+		return sVal;
+	};
+
+	/**
+	 * Generates the file content.
+	 *
+	 * @return {string} content
+	 * @protected
+	 * @name sap.ui.core.util.ExportTypeCSV#generate
+	 * @function
+	 */
+	CSV.prototype.generate = function() {
+		var aBuffer = [];
+
+		this.generateColumns(aBuffer);
+		this.generateRows(aBuffer);
+
+		return aBuffer.join('\r\n');
+	};
+
+	/**
+	 * Generates the columns.
+	 *
+	 * @param {string[]} aBuffer export buffer array
+	 *
+	 * @private
+	 * @name sap.ui.core.util.ExportTypeCSV#generateColumns
+	 * @function
+	 */
+	CSV.prototype.generateColumns = function(aBuffer) {
+		var aColumnBuffer = [],
+			oColumns = this.columnGenerator(),
+			oColumn;
+
+		while (!(oColumn = oColumns.next()).done) {
+			aColumnBuffer.push(this.escapeContent(oColumn.value.name));
+		}
+
+		aBuffer.push(aColumnBuffer.join(this.getSeparatorChar()));
+	};
+
+	/**
+	 * Generates the row content.
+	 *
+	 * @param {string[]} aBuffer export buffer array
+	 *
+	 * @private
+	 * @name sap.ui.core.util.ExportTypeCSV#generateRows
+	 * @function
+	 */
+	CSV.prototype.generateRows = function(aBuffer) {
+		var oRows = this.rowGenerator(),
+			oRow;
+
+		while (!(oRow = oRows.next()).done) {
+			var aRowBuffer = [];
+
+			var oCells = oRow.value.cells,
+				oCell;
+
+			while (!(oCell = oCells.next()).done) {
+				aRowBuffer.push(this.escapeContent(oCell.value.content));
+			}
+
+			aBuffer.push(aRowBuffer.join(this.getSeparatorChar()))
+		}
+	};
+
+	return CSV;
+
+}, /* bExport= */ true
+);
+}; // end of sap/ui/core/util/ExportTypeCSV.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.util.MockServer') ) {
 /*
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -68494,13 +77962,12 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @class Class to mock a server
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.core.util.MockServer
-	 * @experimental Since 1.15.1. The mock server is still under construction, so some implementation details can be changed in future.
 	 */
-	var MockServer = ManagedObject.extend("sap.ui.core.util.MockServer", /** @lends sap.ui.core.util.MockServer */
+	var MockServer = ManagedObject.extend("sap.ui.core.util.MockServer", /** @lends sap.ui.core.util.MockServer.prototype */
 	{
 		constructor : function(sId, mSettings, oScope) {
 			ManagedObject.apply(this, arguments);
@@ -68653,17 +78120,20 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		var sODataQueryValue = aQuery[1];
 		if(sODataQueryValue === "") return;
 		if(sODataQueryValue.lastIndexOf(',') === sODataQueryValue.length){
+			jQuery.sap.log.error("The URI is violating the construction rules defined in the Data Services specification!");
 			throw new Error("400");
 		}
 		switch (aQuery[0]) {
 		case "top":
 			if(!(new RegExp(/^\d+$/).test(sODataQueryValue))){
+				jQuery.sap.log.error("Invalid system query options value!");
 				throw new Error("400");
 			}
 			oFilteredData.results = oFilteredData.results.slice(0, sODataQueryValue);
 			break;
 		case "skip":
 			if(!(new RegExp(/^\d+$/).test(sODataQueryValue))){
+				jQuery.sap.log.error("Invalid system query options value!");
 				throw new Error("400");
 			}
 			oFilteredData.results =  oFilteredData.results.slice(sODataQueryValue ,oFilteredData.results.length);
@@ -68672,7 +78142,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 			oFilteredData.results = this._getOdataQueryOrderby(oFilteredData.results, sODataQueryValue); 
 			break;
 		case "filter":
-			oFilteredData.results = this._getOdataQueryFilter(oFilteredData.results, sODataQueryValue); 
+			oFilteredData.results = this._recursiveOdataQueryFilter(oFilteredData.results, sODataQueryValue); 
 			break;
 		case "select":
 			oFilteredData.results = this._getOdataQuerySelect(oFilteredData.results, sODataQueryValue); 
@@ -68686,10 +78156,13 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		case "expand":			
 			oFilteredData.results = this._getOdataQueryExpand(oFilteredData.results, sODataQueryValue ,sEntitySetName); 
 			break;
+		case "format":			
+			this._getOdataQueryFormat(sODataQueryValue); 
+			break;
 		default:
+			jQuery.sap.log.error("Invalid system query options value!");
 			throw new Error("400");
 		}
-		
 	};
 
 	/**
@@ -68706,16 +78179,21 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		var sODataQueryValue = aQuery[1];
 		if(sODataQueryValue === "") return;
 		if(sODataQueryValue.lastIndexOf(',') === sODataQueryValue.length){
+			jQuery.sap.log.error("The URI is violating the construction rules defined in the Data Services specification!");
 			throw new Error("400");
 		}
 		switch (aQuery[0]) {
 		case "filter":
-			return this._getOdataQueryFilter([oEntry], sODataQueryValue)[0]; 
+			return this._recursiveOdataQueryFilter([oEntry], sODataQueryValue)[0]; 
 		case "select":
 			return this._getOdataQuerySelect([oEntry], sODataQueryValue)[0]; 
 		case "expand":			
 			return this._getOdataQueryExpand([oEntry], sODataQueryValue ,sEntitySetName)[0]; 
+		case "format":			
+			this._getOdataQueryFormat(sODataQueryValue); 
+			break;
 		default:
+			jQuery.sap.log.error("Invalid system query options value!");
 			throw new Error("400");
 		}
 	};
@@ -68729,8 +78207,13 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @function
 	 */
 	MockServer.prototype._getOdataQueryOrderby = function(aDataSet, sODataQueryValue){
-		// sort properties lookup
-		var aProperties = decodeURIComponent(sODataQueryValue).split(',');
+		// sort properties lookup  
+		var aProperties = sODataQueryValue.split(',');
+		var that = this;
+		//trim all properties
+		jQuery.each(aProperties, function(i, sPropertyName){
+			aProperties[i] = that._trim(sPropertyName);
+		});
 		
 		var fnComparator = function compare(a,b) {
 			
@@ -68748,21 +78231,151 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 						iSorter = -1;
 						break;
 					default:
+						jQuery.sap.log.error("Invalid sortorder '" + aSort[1] + "' detected!");
 						throw new Error("400");
 					}
 				}
-				// support for complex type property
-				var sPropName = aSort[0].replace("/", ".");
-				if(!a.hasOwnProperty(sPropName))
-					throw new Error("400");
-				if (a[sPropName] < b[sPropName])
-					return -1*iSorter;
-				if (a[sPropName] > b[sPropName])
-					return 1*iSorter;
+				// support for 1 level complex type property
+				var iComplexType = aSort[0].indexOf("/")
+				if (iComplexType != -1) {
+					var sPropName = aSort[0].substring(iComplexType + 1);
+					var sComplexType = aSort[0].substring(0, iComplexType);
+					if(!a[sComplexType].hasOwnProperty(sPropName)) {
+						jQuery.sap.log.error("Property " + sPropName + " not found!");
+						throw new Error("400");
+					}
+					if (a[sComplexType][sPropName] < b[sComplexType][sPropName])
+						return -1*iSorter;
+					if (a[sComplexType][sPropName] > b[sComplexType][sPropName])
+						return 1*iSorter;
+				} else {
+					var sPropName = aSort[0];
+					if(!a.hasOwnProperty(sPropName)) {
+						jQuery.sap.log.error("Property " + sPropName + " not found!");
+						throw new Error("400");
+					}
+					if (a[sPropName] < b[sPropName])
+						return -1*iSorter;
+					if (a[sPropName] > b[sPropName])
+						return 1*iSorter;
+					}
 			}
 			return 0;
 		};
 		return aDataSet.sort(fnComparator);
+	};
+	
+	MockServer.prototype._arrayUnique = function(array) {
+	    var a = array.concat();
+	    for(var i=0; i<a.length; ++i) {
+	        for(var j=i+1; j<a.length; ++j) {
+	            if(a[i] === a[j])
+	                a.splice(j--, 1);
+	        }
+	    }
+	    return a;
+	};
+	
+	MockServer.prototype._extractParentheses = function(sString) {
+		var aStack = [];
+		var iEndIndex = 0;
+		var iStartIndex;
+		for ( var character = 0; character < sString.length; character++) {
+			if (sString[character] == '(') {
+				aStack.push(sString[character]);
+				if (iStartIndex == undefined) 
+					iStartIndex = character;
+			}
+			else if (sString[character] == ')') {
+				aStack.pop();
+				iEndIndex = character;
+			}
+		}
+		if (aStack.length == 0 && iStartIndex != undefined)
+			return sString.substring(iStartIndex + 1, iEndIndex);
+		return sString;
+	};
+	
+	MockServer.prototype._recursiveOdataQueryFilter = function(aDataSet, sODataQueryValue) {
+		// e.g. cases where (A) or substringof(..)
+		if (sODataQueryValue.indexOf(' and ') == -1 && sODataQueryValue.indexOf(' or ') == -1) {
+			if (sODataQueryValue.indexOf('(') == 0) {
+				sODataQueryValue = this._extractParentheses(sODataQueryValue);
+			}
+			return this._getOdataQueryFilter(aDataSet, sODataQueryValue);
+		}
+		// e.g. (A and B)
+		if (sODataQueryValue.indexOf('(') == 0 && sODataQueryValue.indexOf(')') == sODataQueryValue.length -1) {
+			sODataQueryValue = this._extractParentheses(sODataQueryValue);
+			return this._recursiveOdataQueryFilter(aDataSet, sODataQueryValue);
+		}
+		var rExp1 = RegExp("(.*)( and | or )(.*)");
+		var rExp2 = RegExp("([^\(]*)( and | or )(.*)");
+		if (sODataQueryValue.indexOf('(') > -1) {
+			//e.g. (A and B) or C
+			if (sODataQueryValue.indexOf('(') == 0) {
+				if (sODataQueryValue.indexOf('((') == 0) {
+					sODataQueryValue = this._extractParentheses(sODataQueryValue);
+				}
+				var aParts = rExp1.exec(sODataQueryValue);
+			//e.g. A and (B or C)
+			} else {
+				var aParts = rExp2.exec(sODataQueryValue);
+			}
+			if (aParts) {
+			var sExpression = this._extractParentheses(aParts[1]);
+			var sOperator = aParts[2];
+			var sExpression2 = this._extractParentheses(aParts[3]);
+			} 
+			else {
+				var sExpression = this._extractParentheses(sODataQueryValue);
+			}
+			if (sOperator == " or ") {
+				var aSet1 = this._recursiveOdataQueryFilter(aDataSet, sExpression);
+				var aSet2 = this._recursiveOdataQueryFilter(aDataSet, sExpression2);
+				return this._arrayUnique(aSet1.concat(aSet2));
+			} 
+			if (sOperator == " and ") {
+				var aSet1 = this._recursiveOdataQueryFilter(aDataSet, sExpression);
+				return this._recursiveOdataQueryFilter(aSet1, sExpression2);
+			}
+			// e.g. (A) 
+			if (sOperator == undefined) {
+				return this._recursiveOdataQueryFilter(aDataSet, sExpression);
+			}
+		}
+			// e.g. A or B or C or D
+			var aLogicalOr = sODataQueryValue.split(' or ');
+			var aLogicalAnd = sODataQueryValue.split(' and ');
+			if (aLogicalOr.length > 1) {
+				var aOr = [];
+				for ( var i = 0; i < aLogicalOr.length; i++) {
+					var sExp = this._trim(aLogicalOr[i]);
+					if (sExp) {
+					aOr.push(this._recursiveOdataQueryFilter(aDataSet, sExp));
+					} else {
+						throw new Error("400");
+					}
+				}
+				for ( var i = 0; i < aOr.length - 1; i++) {
+					aOr[0] = aOr[0].concat(aOr[i + 1]);
+				}
+				return  this._arrayUnique(aOr[0]);
+			} else {
+				if (aLogicalAnd.length > 1) {
+					var aAnd = aDataSet;
+					for ( var i = 0; i < aLogicalAnd.length; i++) {
+						var sExp = this._trim(aLogicalAnd[i]);
+						if (sExp) { 
+						aAnd = this._recursiveOdataQueryFilter(aAnd, sExp);
+						} else {
+							throw new Error("400");
+						}
+					}
+					return  aAnd;
+				}
+			}
+		return this._getOdataQueryFilter(aDataSet, sODataQueryValue);
 	};
 
 	/**
@@ -68773,26 +78386,45 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @name sap.ui.core.util.MockServer#_getOdataQueryFilter
 	 * @function
 	 */
-	MockServer.prototype._getOdataQueryFilter = function(aDataSet, sODataQueryValue){
-		sODataQueryValue = decodeURIComponent(sODataQueryValue);
-		// The data needs to be filtered. for the moment only simple filters can be used
-		var sODataFilterMethod = sODataQueryValue.indexOf("(") != -1 ? sODataQueryValue.split("(")[0] : sODataQueryValue.split(" ")[1];
+	MockServer.prototype._getOdataQueryFilter = function(aDataSet, sODataQueryValue) {
+		if (aDataSet.length == 0) return aDataSet;
+		var rExp = new RegExp("(.*) (eq|ne|gt|lt|le|ge) (.*)");
+		var rExp2 = new RegExp("(endswith|startswith|substringof)\\((.*)");
+		var aODataFilterValues = rExp.exec(sODataQueryValue);
+		if (aODataFilterValues) {
+			var sODataFilterMethod = aODataFilterValues[2];
+		}
+		else {
+			aODataFilterValues = rExp2.exec(sODataQueryValue);
+			if(aODataFilterValues) {
+			sODataFilterMethod = aODataFilterValues[1];
+			}
+			else {
+			throw new Error("400");
+			}
+		}
 		var that = this;
 		var fnGetFilteredData = function (bValue, iValueIndex, iPathIndex, fnSelectFilteredData){
 			var aODataFilterValues, sValue;
 			if (!bValue){ //e.g eq, ne, gt, lt, le, ge
-				aODataFilterValues = sODataQueryValue.split(" ");
-				sValue = that._trim(aODataFilterValues[iValueIndex]);
-				sValue = ((sValue.charAt(0) == "'") && (sValue.charAt(sValue.length -1) == "'")) ? sValue.substr(1, aODataFilterValues[2].length - 2) : sValue;
+				aODataFilterValues = rExp.exec(sODataQueryValue);
+				sValue = that._trim(aODataFilterValues[iValueIndex + 1]);
+				sValue = ((sValue.charAt(0) == "'") && (sValue.charAt(sValue.length -1) == "'")) ? sValue.substr(1, aODataFilterValues[iValueIndex + 1].length - 2) : sValue;
+				var sPath = that._trim(aODataFilterValues[iPathIndex + 1]);
 			}
 			else{ //e.g.substringof, startswith, endswith
 				aODataFilterValues = sODataQueryValue.split("(")[1].split(")")[0].split(",");
 				sValue = that._trim(aODataFilterValues[iValueIndex]).substr(1, aODataFilterValues[0].length - 2);
+				sPath = that._trim(aODataFilterValues[iPathIndex]);
 			}	
+			
+			if (sValue.indexOf("datetime") === 0) {
+				sValue = "/Date(" + Date.parse(sValue.substring("datetime'".length, sValue.length - 1)) + ")/";
+			}
 
-			var sPath = that._trim(aODataFilterValues[iPathIndex]);
 			//check if sPath exists as property of the entityset
 			if(!aDataSet[0].hasOwnProperty(sPath)){
+				jQuery.sap.log.error("Property " + sPath + " not found!");
 				throw new Error("400")
 			}
 
@@ -68864,6 +78496,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				});
 			})
 		default:
+			jQuery.sap.log.error("Invalid $filter operator '" + sODataFilterMethod + "'!");
 			throw new Error("400");
 		}
 	};
@@ -68883,10 +78516,17 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		}	
 		var aSelectedDataSet = [];
 		
+		var that = this;
+		//trim all properties 
+		jQuery.each(aProperties, function(i, sPropertyName){
+			aProperties[i] = that._trim(sPropertyName);
+		})
+		
 		//check if all properties exist
 		jQuery.each(aProperties, function(i, sPropertyName){
 			if(!aDataSet[0].hasOwnProperty(sPropertyName)){
-				throw new Error("404")
+				jQuery.sap.log.error("Resource not found for the selection clause '" + sPropertyName + "'!");
+				throw new Error("404");
 			}
 		})
 		//TODO deepDown selection
@@ -68915,13 +78555,28 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		var aProperties = sODataQueryValue.split(',');
 		
 		if(aProperties.length !== 1 || (aProperties[0] !== 'none' && aProperties[0] !== 'allpages')){
+			jQuery.sap.log.error("Invalid system query options value!");
 			throw new Error("400");
 		}
 		if (aProperties[0] === 'none'){
 			return;
 		}			
 		return aDataSet.length;
-	};	
+	};
+	
+	/**
+	 * Applies the Format OData system query option 
+	 * @param {string} sODataQueryValue
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_getOdataQueryFormat
+	 * @function
+	 */
+	MockServer.prototype._getOdataQueryFormat = function(sODataQueryValue){ 
+		if(sODataQueryValue !== 'json'){
+			jQuery.sap.log.error("Unsupported format value. Only json format is supported!");
+			throw new Error("400");
+		}
+	};
 	
 	/**
 	 * Applies the Expand OData system query option string on the given array
@@ -68935,6 +78590,10 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	MockServer.prototype._getOdataQueryExpand = function(aDataSet , sODataQueryValue , sEntitySetName){ 
 		var that = this;
 		var aNavProperties = sODataQueryValue.split(',');
+		//trim all nav properties 
+		jQuery.each(aNavProperties, function(i, sPropertyName){
+			aNavProperties[i] = that._trim(sPropertyName);
+		})
 		var oEntitySetNavProps = that._mEntitySets[sEntitySetName].navprops; 
 		jQuery.each(aDataSet, function(iIndex, oRecord){
 			jQuery.each(aNavProperties, function(iIndex, sNavProp){
@@ -68955,7 +78614,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 			})
 		});
 		return aDataSet;
-	}
+	};
 	
 	/**
 	 * Refreshes the service metadata document and the mockdata
@@ -68966,7 +78625,6 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 */
 	MockServer.prototype._refreshData = function() {
 	
-		
 		// load the metadata
 		this._loadMetadata(this._sMetadataUrl);
 		
@@ -69196,21 +78854,26 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				if (sKeys) {
 					sKeys += ",";
 				}
-
 				var oKeyValue = oEntry[sKey];
 				if(oEntitySet.keysType[sKey] === "Edm.String"){
-					sKeys += sKey + "='" + oKeyValue + "'"; 
+					oKeyValue = "'" + oKeyValue + "'"; 
 				}
 				else if(oEntitySet.keysType[sKey] === "Edm.DateTime"){
-					sKeys += sKey + "=" + that._getDateInMin(oKeyValue); 
+					oKeyValue = that._getDateInMin(oKeyValue); 
 				}
-				else{
-					sKeys += sKey + "=" + oKeyValue; 
+				else if(oEntitySet.keysType[sKey] === "Edm.Guid"){
+					oKeyValue = "guid'" + oKeyValue + "'"; 
 				}
-		});
-	}
-	return sKeys;
-};
+				
+				if (oEntitySet.keys.length == 1) {
+						sKeys += oKeyValue; 
+					return sKeys;
+				} 
+				sKeys += sKey + "=" + oKeyValue; 
+			});
+		}
+		return sKeys;
+	};
 	
 	
 	/**
@@ -69249,7 +78912,11 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 					if (oResponse.success) {
 						mEntityTypesData[oEntitySet.type] = oResponse.data;
 					} else {
+						if (oResponse.status == "parsererror") {
+							jQuery.sap.log.error("The mockdata for entity type \"" + oEntitySet.type + "\" could not be loaded due to a parsing error!");
+						} else {
 						jQuery.sap.log.error("The mockdata for entity type \"" + oEntitySet.type + "\" could not be found at \"" + sBaseUrl + "\"!");
+						}
 					}
 				}
 			});
@@ -69342,7 +79009,12 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				if (sFirstChar === "'" || sLastChar !== "'"){
 					return false;
 				} 
-			}else {
+			}else if(oEntitySet.keysType[sKey] === "Edm.Guid"){
+				if (sFirstChar === "'" || sLastChar !== "'"){
+					return false;
+				}
+			}
+			else {
 				if(sFirstChar === "'" || sLastChar === "'"){
 					return false;
 				}
@@ -69360,22 +79032,92 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @param {object}
 	 *            object consisting of the parsed properties
 	 */	
-	MockServer.prototype._parseKeys = function(sKeys) {
+	MockServer.prototype._parseKeys = function(sKeys, oEntitySet) {
 	    var oResult = {}; // default is an empty hash map
 		    var aProps = sKeys.split(",");
 		    for (var i=0; i<aProps.length; i++) {
 		        var aPair = aProps[i].split("=");
-		        if (aPair.length === 2) {
-		        	if (aPair[1].indexOf('\'') === 0) {
-		            oResult[aPair[0]] = aPair[1].slice(1,aPair[1].length-1);
-		        	} else {
-		        		oResult[aPair[0]] = aPair[1];
-		        	}
-		        }
+                if (aPair.length === 1 && oEntitySet.keys.length === 1) {
+                        var sKeyName = oEntitySet.keys[0];
+                        var sKeyValue = aPair[0];
+                } else {
+                	if (aPair.length === 2) {
+                        var sKeyName = aPair[0];
+                        var sKeyValue = aPair[1];
+                	}
+                }
+	        	if (sKeyValue.indexOf('\'') === 0) {
+	        		oResult[sKeyName] = sKeyValue.slice(1,sKeyValue.length-1);
+	        	} else {
+	        		oResult[sKeyName] = sKeyValue;
+	        	}
 		    };
 	    return oResult;
 	};
 	
+	/**
+	 * Generate mock value for a specific property type. String value will be
+	 * based on the property name and an index Integer / Decimal value will be
+	 * generated randomly Date / Time / DateTime value will also be generated
+	 * randomly
+	 * 
+	 * @param {string}
+	 *            sKey the property name
+	 * @param {string}
+	 *            sType the property type without the Edm prefix
+	 * @param {map}
+	 *            mComplexTypes map of the complex types
+	 * @return {object} the mocked value
+	 * @private
+	 * @name sap.ui.core.util.MockServer#_generateDataFromEntity
+	 * @function
+	 */
+	MockServer.prototype._generatePropertyValue = function(sKey, sType, mComplexTypes) {
+		var iIndex = 0;		
+		switch (sType){
+					case "String": 
+						return sKey + "_" + iIndex;
+					case "DateTime":
+						var date = new Date();
+						date.setFullYear(2000 + Math.floor(Math.random() * 20));
+						date.setDate(Math.floor(Math.random() * 30));
+						date.setMonth(Math.floor(Math.random() * 12));
+						date.setMilliseconds(0);
+						return "/Date(" + date.getTime() + ")/";
+					case "Int16":
+					case "Int32":
+					case "Int64":
+						return Math.floor(Math.random() * 10000);
+					case "Decimal":
+						return Math.floor(Math.random() * 1000000) / 100;
+					case "Boolean": 
+						return Math.random()<.5;		
+					case "Byte":
+						return Math.floor(Math.random()*10);
+					case "Double":
+						return Math.random()*10;
+					case "Single":
+						return Math.random() * 1000000000;
+					case "SByte":
+						return Math.floor(Math.random()*10);
+					case "Time":
+						return Math.floor(Math.random()*23)+":"+ Math.floor(Math.random()*59)+":"+Math.floor(Math.random()*59);
+					case "Guid": 
+						return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+						    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+						    return v.toString(16);
+							});
+					case "Binary":
+						var nMask = Math.floor(-2147483648 + Math.random() * 4294967295);
+						  for (var nFlag = 0, nShifted = nMask, sMask = ""; nFlag < 32; nFlag++, sMask += String(nShifted >>> 31), nShifted <<= 1);
+						return sMask;
+					case "DateTimeOffset":
+						//TODO: generate value for DateTimeOffset
+					default:	
+						return this._generateDataFromEntity(mComplexTypes[sType], iIndex);
+				}
+
+	};
 	
 	/**
 	 * This method takes over the already existing key values from oKeys and
@@ -69393,21 +79135,20 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 */
 	MockServer.prototype._completeKey = function(oEntitySet, oKeys, oEntity) {
 		if (oEntity) {
-			jQuery.each(oEntitySet.keys, function(iIndex, sKey) {
+			for ( var i = 0; i < oEntitySet.keys.length; i++) {
+				var sKey = oEntitySet.keys[i];
 				if (oKeys[sKey]) {
 					if (!oEntity[sKey]) {
 						// take over the specified key value
 						oEntity[sKey] = oKeys[sKey];
-						}
-				} else {
-					// create a new key value
-					if (!oEntitySet.iSequence) {
-						oEntitySet.iSequence = 0;
 					}
-					oEntitySet.iSequence++;
-					oEntity[sKey] = oEntitySet.type + "_" + oEntity.type + "_" + oEntitySet.iSequence.toString();
+				} else {
+					if (!oEntity[sKey]) {
+						// take over the specified key value
+						oEntity[sKey] = this._generatePropertyValue(sKey, oEntitySet.keysType[sKey].substring(oEntitySet.keysType[sKey].lastIndexOf('.') + 1));
+					}
 				}
-			});
+			}
 		}
 	};
 	
@@ -69431,54 +79172,13 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 */
 	MockServer.prototype._generateDataFromEntity = function(oEntityType, iIndex, mComplexTypes) {
 		var oEntity = {};
+		if (!oEntityType) {
+			return oEntity;
+		}
 		for (var i = 0; i < oEntityType.properties.length; i++) {
 			var oProperty = oEntityType.properties[i];
 			var oPropertyValue = "";
-				switch (oProperty.type){
-					case "String": 
-						oEntity[oProperty.name] = oProperty.name + "_" + iIndex;
-						break;
-					case "DateTime":
-						var date = new Date();
-						date.setFullYear(2000 + Math.floor(Math.random() * 20));
-						date.setDate(Math.floor(Math.random() * 30));
-						date.setMonth(Math.floor(Math.random() * 12));
-						date.setMilliseconds(0);
-						oEntity[oProperty.name] = "/Date(" + date.getTime() + ")/";
-						break;
-					case "Int16":
-					case "Int32":
-					case "Int64":
-						oEntity[oProperty.name] = Math.floor(Math.random() * 10000);
-						break;
-					case "Decimal":
-						oEntity[oProperty.name] = Math.floor(Math.random() * 1000000) / 100;
-						break;
-					case "Boolean": 
-						oEntity[oProperty.name] = Math.random()<.5;		
-						break;
-					case "Byte":
-						oEntity[oProperty.name] = Math.floor(Math.random()*10);
-						break;
-					case "Double":
-						oEntity[oProperty.name] = Math.random()*10;
-						break;
-					case "Single":
-						oEntity[oProperty.name] = Math.random() * 1000000000;
-						break;
-					case "SByte":
-						oEntity[oProperty.name] = Math.floor(Math.random()*10);
-						break;
-					case "Time":
-						oEntity[oProperty.name] = Math.floor(Math.random()*23)+":"+ Math.floor(Math.random()*59)+":"+Math.floor(Math.random()*59);
-						break;
-					case "Guid":
-					case "DateTimeOffset":
-						break; //TODO: generate values for GUID and DateTimeOffset
-					default:	
-						oEntity[oProperty.name] = this._generateDataFromEntity(mComplexTypes[oProperty.type], iIndex);
-				}
-
+			oEntity[oProperty.name] = this._generatePropertyValue(oProperty.name, oProperty.type, mComplexTypes);
 		}		
 		return oEntity;
 	};
@@ -69592,7 +79292,6 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @param {string} sMetadataUrl url to the service metadata document
 	 * @param {string} sMockdataBaseUrl base url which contains the mockdata as single .json files or the .json file containing the complete mock data 
 	 * 
-	 * @experimental functionality might be enhanced in future
 	 * @since 1.13.2
 	 * @public
 	 * @name sap.ui.core.util.MockServer#simulate
@@ -69640,9 +79339,11 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 					else if (oEntitySet.keysType[sKey] === "Edm.DateTime"){
 							sOrigiValue = that._getDateInMin(sOrigiValue);
 					}
-
+					else if (oEntitySet.keysType[sKey] === "Edm.Guid"){
+						sNewValue = sNewValue.replace(/^guid\'|\'$/g,'');
+				}
 					//value doesn't match, continue to next entry
-					if ( sOrigiValue !== sNewValue) {
+					if ( sOrigiValue != sNewValue) {
 						return true; // = continue
 					}
 				}
@@ -69672,11 +79373,11 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		var initNewEntity = function(oXhr, sTargetEntityName, sKeys, sUrlParams) {
 			var oEntity = JSON.parse(oXhr.requestBody);
 			if (oEntity) {
+				var oKeys = {};
 				if (sKeys) {
-					var oKeys = that._parseKeys(sKeys);
-					//TODO is it allowed to create/update an entry without supplying all its keys?
-					that._completeKey(that._mEntitySets[sTargetEntityName], oKeys, oEntity);
+					var oKeys = that._parseKeys(sKeys, that._mEntitySets[sTargetEntityName]);
 				}
+				that._completeKey(that._mEntitySets[sTargetEntityName], oKeys, oEntity);
 				that._enhanceWithMetadata(that._mEntitySets[sTargetEntityName], [oEntity]);
 				return oEntity;
 			}
@@ -69692,7 +79393,9 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
             path : new RegExp(".*"),
             response : function(oXhr) {
                 if (oXhr.requestHeaders["x-csrf-token"] == "Fetch" ) {
+            		jQuery.sap.log.debug("MockServer: incoming request for x-csrf-token");
                     oXhr.respond(200, { "X-CSRF-Token": "42424242424242424242424242424242" });
+    				jQuery.sap.log.debug("MockServer: response sent with: 200");
                 } 
             }
         });
@@ -69703,7 +79406,9 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 			path : new RegExp("\\$metadata([?#].*)?"),
 			response : function(oXhr) {
 				jQuery.sap.require("jquery.sap.xml");
+				jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 				oXhr.respond(200, { "Content-Type": "application/xml;charset=utf-8" }, jQuery.sap.serializeXML(that._oMetadata));
+				jQuery.sap.log.debug("MockServer: response sent with: 200, " + jQuery.sap.serializeXML(that._oMetadata));
 			}
 		});
 
@@ -69712,6 +79417,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 			method : "POST",
 			path : new RegExp("\\$batch([?#].*)?"),
 			response : function(oXhr) {
+				jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 				var fnResovleStatus = function(iStatusCode) {
 					switch (iStatusCode) {
 					case 200:
@@ -69728,8 +79434,12 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 						break;
 					}
 				};
-				var fnBuildResponseString = function(oResponse) {
+				var fnBuildResponseString = function(oResponse, sContentType) {
 					var sResponseData = JSON.stringify(oResponse.data) || "";
+					if (sContentType) {
+						return "HTTP/1.1 " + fnResovleStatus(oResponse.statusCode) + "\r\nContent-Type: " + sContentType + "\r\nContent-Length: "
+						+ sResponseData.length + "\r\ndataserviceversion: 2.0\r\n\r\n" + sResponseData + "\r\n";
+					}
 					return "HTTP/1.1 " + fnResovleStatus(oResponse.statusCode) + "\r\nContent-Type: application/json\r\nContent-Length: "
 					+ sResponseData.length + "\r\ndataserviceversion: 2.0\r\n\r\n" + sResponseData + "\r\n";
 				};
@@ -69745,6 +79455,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 					var sServiceURL = oXhr.url.split("$")[0];
 
 					var rPut = new RegExp("PUT (.*) HTTP");
+					var rMerge = new RegExp("MERGE (.*) HTTP"); //TODO temporary solution to handle merge as put
 					var rPost = new RegExp("POST (.*) HTTP");
 					var rDelete = new RegExp("DELETE (.*) HTTP");
 					var rGet = new RegExp("GET (.*) HTTP");
@@ -69756,14 +79467,20 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 							//In case of POST, PUT or DELETE not in ChangeSet
 							if (rPut.test(sBatchRequest) || rPost.test(sBatchRequest) || rDelete.test(sBatchRequest)) {
 								oXhr.respond(400, null, "The Data Services Request could not be understood due to malformed syntax");
+								jQuery.sap.log.debug("MockServer: response sent with: 400");
 								return;
 							} 
 							var oResponse = jQuery.sap.sjax({
 								url : sServiceURL + rGet.exec(sBatchRequest)[1],
 								dataType : "json"
 							});
-							aBatchBodyResponse.push("\r\nContent-Type: application/http\r\n" + "Content-Length: " + fnBuildResponseString(oResponse).length
-									+ "\r\n" + "content-transfer-encoding: binary\r\n\r\n" + fnBuildResponseString(oResponse));
+							if (rGet.exec(sBatchRequest)[1].indexOf('$count') != -1) {
+								var sResponseString = fnBuildResponseString(oResponse, "text/plain");
+							} else {
+								sResponseString = fnBuildResponseString(oResponse);
+							}
+							aBatchBodyResponse.push("\r\nContent-Type: application/http\r\n" + "Content-Length: " + sResponseString.length
+									+ "\r\n" + "content-transfer-encoding: binary\r\n\r\n" + sResponseString);
 						}
 						//CUD handling within changesets    	   
 						else {
@@ -69800,13 +79517,19 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 										// rollback
 										that._oMockdata = oCopiedMockdata;
 										oXhr.respond(400, null, "The Data Services Request could not be understood due to malformed syntax");
+										jQuery.sap.log.debug("MockServer: response sent with: 400");
 										return;
 									} else if (rPut.test(sChangesetRequest)) {
 										// PUT
 										var sData = sChangesetRequest.substring(sChangesetRequest.indexOf("{"),
 												sChangesetRequest.lastIndexOf("}") + 1).replace(/\\/g, '');
 										fnCUDRequest(rPut, sData, 'PUT');
-									} else if (rPost.test(sChangesetRequest)) {
+									} else if (rMerge.test(sChangesetRequest)) {
+										// MERGE
+										var sData = sChangesetRequest.substring(sChangesetRequest.indexOf("{"),
+												sChangesetRequest.lastIndexOf("}") + 1).replace(/\\/g, '');
+										fnCUDRequest(rMerge, sData, 'PUT');
+									}  else if (rPost.test(sChangesetRequest)) {
 										// POST
 										var sData = sChangesetRequest.substring(sChangesetRequest.indexOf("{"),
 												sChangesetRequest.lastIndexOf("}") + 1).replace(/\\/g, '');
@@ -69843,6 +79566,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 							'Content-Type' : "multipart/mixed; boundary=ejjeeffe0"
 					};
 					oXhr.respond(202, mHeaders, sRespondData);
+					jQuery.sap.log.debug("MockServer: response sent with: 202, " + sRespondData);
 					//no boundary is defined
 				} else {
 					oXhr.respond(202);
@@ -69859,22 +79583,25 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				method : "GET",
 				path : new RegExp("(" + sEntitySetName + ")/\\$count/?(.*)?"),
 				response : function(oXhr, sEntitySetName, sUrlParams) {
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 					oXhr.respond(200, { "Content-Type": "text/plain;charset=utf-8" }, "" + that._oMockdata[sEntitySetName].length);
+					jQuery.sap.log.debug("MockServer: response sent with: 200, " +that._oMockdata[sEntitySetName].length);
 				}
 			});
 			
 			// support entity set with and without OData system query options
 			aRequests.push({
 				method : "GET",
-				path : new RegExp("(" + sEntitySetName + ")/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
+				path : new RegExp("(" + sEntitySetName + ")/?(\\?(\\$|%24)((filter|skip|top|orderby|select|inlinecount|expand|format)=(.*)))?"),
 				response : function(oXhr, sEntitySetName, sUrlParams) {
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 					var aData = that._oMockdata[sEntitySetName];
 					if(aData){
 						// using extend to copy the data to a new array
 						var oFilteredData = {results :jQuery.extend(true, [], aData)};
 						if (sUrlParams) {
 							// sUrlParams should not contains ?, but only & in its stead
-							var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+							var aUrlParams = decodeURIComponent(sUrlParams).replace("?", "&").replace(/\$/g,'').split("&");
 							if (aUrlParams.length > 1){
 								aUrlParams = that._orderQueryOptions(aUrlParams);
 							}	
@@ -69887,9 +79614,11 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 								return;
 							}
 						}
-						oXhr.respond(200, {	"Content-Type" : "application/json;charset=utf-8"	}, JSON.stringify({	d : oFilteredData}));		
+						oXhr.respond(200, {	"Content-Type" : "application/json;charset=utf-8"	}, JSON.stringify({	d : oFilteredData}));	
+						jQuery.sap.log.debug("MockServer: response sent with: 200, " + JSON.stringify({	d : oFilteredData}));
 					}else{
 						oXhr.respond(404);
+						jQuery.sap.log.debug("MockServer: response sent with: 404");
 					}
 				}
 			});
@@ -69897,14 +79626,14 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 			// support access of a single entry of an entity set with and without OData system query options
 			aRequests.push({
 				method : "GET",
-				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
+				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(\\?(\\$|%24)((filter|skip|top|orderby|select|inlinecount|expand|format)=(.*)))?"),
 				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
-					
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 					var oEntry = jQuery.extend(true, {}, fnGetEntitySetEntry(sEntitySetName, sKeys));
 					if (!jQuery.isEmptyObject(oEntry)) {
 						if (sUrlParams) {
 							// sUrlParams should not contains ?, but only & in its stead
-							var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+							var aUrlParams = decodeURIComponent(sUrlParams).replace("?", "&").replace(/\$/g,'').split("&");
 							if (aUrlParams.length > 1){
 								aUrlParams = that._orderQueryOptions(aUrlParams);
 							}
@@ -69915,12 +79644,15 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 								});
 							}catch(e){
 								oXhr.respond(parseInt(e.message || e.number, 10));
+								jQuery.sap.log.debug("MockServer: response sent with: " + parseInt(e.message || e.number, 10));
 								return;
 							 }
 						}
 						oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d: oEntry.entry}));
+						jQuery.sap.log.debug("MockServer: response sent with: 200, " + JSON.stringify({d: oEntry.entry}));
 					} else {
 						oXhr.respond(404);
+						jQuery.sap.log.debug("MockServer: response sent with: 404");
 					}
 				}
 			});
@@ -69932,12 +79664,16 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 					method : "GET",
 					path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/(" + sNavName + ")/\\$count/?(.*)?"),
 					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {
+						jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
 						if (oEntry) {
 							var aEntries = that._resolveNavigation(sEntitySetName, oEntry.entry, sNavProp);
 							oXhr.respond(200, { "Content-Type": "text/plain;charset=utf-8" }, "" + aEntries.length);
+							jQuery.sap.log.debug("MockServer: response sent with: 200, " + aEntries.length);
+
 						} else {
 							oXhr.respond(404);
+							jQuery.sap.log.debug("MockServer: response sent with: 404");
 						}
 					}
 				});
@@ -69945,9 +79681,10 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				// support access of navigation property with and without OData system query options
 				aRequests.push({
 					method : "GET",
-					path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/(" + sNavName + ")/?(\\?\\$((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
-					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {					
-						var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
+					path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/(" + sNavName + ")/?(\\?(\\$|%24)((filter|skip|top|orderby|select|inlinecount|expand)=(.*)))?"),
+					response : function(oXhr, sEntitySetName, sKeys, sNavProp, sUrlParams) {	
+						jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
+						var oEntry = fnGetEntitySetEntry(sEntitySetName, decodeURIComponent(sKeys));
 						if (oEntry) {
 							var aEntries,oFilteredData={}; 
 							try{
@@ -69962,7 +79699,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 									}
 									if (sUrlParams) {
 										// sUrlParams should not contains ?, but only & in its stead
-										var aUrlParams = sUrlParams.replace("?", "&").replace(/\$/g,'').split("&");
+										var aUrlParams = decodeURIComponent(sUrlParams).replace("?", "&").replace(/\$/g,'').split("&");
 
 										if (aUrlParams.length > 1){
 											aUrlParams = that._orderQueryOptions(aUrlParams);
@@ -69980,13 +79717,16 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 									}
 								}
 								oXhr.respond(200, { "Content-Type": "application/json;charset=utf-8" }, JSON.stringify({d: oFilteredData}));
+								jQuery.sap.log.debug("MockServer: response sent with: 200, " + JSON.stringify({d: oFilteredData}));
 								return;
 							}catch (e) {
 								oXhr.respond(parseInt(e.message || e.number, 10));
+								jQuery.sap.log.debug("MockServer: response sent with: " + parseInt(e.message || e.number, 10));
 								return;
 							}
 						}
 						oXhr.respond(404);
+						jQuery.sap.log.debug("MockServer: response sent with: 404");
 					}
 				});
 				
@@ -69997,10 +79737,11 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				method : "POST",
 				path : new RegExp("(" + sEntitySetName + ")(\\(([^/\\?#]+)\\)/?(.*)?)?"),
 				response : function(oXhr, sEntitySetName, group2 ,sKeys, sNavName) {
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 					var sRespondData = null;
 					var sRespondContentType = null;
 					var iResult = 405; // default: method not allowed
-					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sNavName);
+					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, decodeURIComponent(sKeys), sNavName);
 					if (sTargetEntityName) {
 						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sNavName);
 						if (oEntity) {
@@ -70012,6 +79753,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 						}
 					}
 					oXhr.respond(iResult, sRespondContentType, sRespondData); 
+					jQuery.sap.log.debug("MockServer: response sent with: " + iResult + ", " + sRespondData);
 				}
 			});
 			
@@ -70020,11 +79762,12 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				method : "PUT",
 				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(.*)?"),
 				response : function(oXhr, sEntitySetName, sKeys, sNavName) {
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
 					var iResult = 405; // default: method not allowed 
 					var sRespondData = null;
 					var sRespondContentType = null;
 					
-					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, sKeys, sNavName);
+					var sTargetEntityName = fnResolveTargetEntityName(oEntitySet, decodeURIComponent(sKeys), sNavName);
 					if (sTargetEntityName) {
 						var oEntity = initNewEntity(oXhr, sTargetEntityName, sKeys, sNavName);
 						if (oEntity) {
@@ -70035,13 +79778,15 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 							var oExistingEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
 							if (oExistingEntry) { // Overwrite existing
 								that._oMockdata[sEntitySetName][oExistingEntry.index] = oEntity;
-							} else { // really new //TODO don't allow creation of new entries with PUT
-								that._oMockdata[sTargetEntityName] = that._oMockdata[sTargetEntityName].concat([oEntity]);
-							}
+							} 
+//							else { // really new //TODO don't allow creation of new entries with PUT
+//								that._oMockdata[sTargetEntityName] = that._oMockdata[sTargetEntityName].concat([oEntity]);
+//							}
 							iResult = 204; 
 						}
 					} 
 					oXhr.respond(iResult, sRespondContentType, sRespondData);  
+					jQuery.sap.log.debug("MockServer: response sent with: " + iResult + ", " + sRespondData);
 				}
 			});
 			
@@ -70050,14 +79795,17 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				method : "DELETE",
 				path : new RegExp("(" + sEntitySetName + ")\\(([^/\\?#]+)\\)/?(.*)?"),
 				response : function(oXhr, sEntitySetName, sKeys, sUrlParams) {
+					jQuery.sap.log.debug("MockServer: incoming request for url: " + oXhr.url);
+
 					var iResult = 200; 
-					var oEntry = fnGetEntitySetEntry(sEntitySetName, sKeys);
+					var oEntry = fnGetEntitySetEntry(sEntitySetName, decodeURIComponent(sKeys));
 					if (oEntry) {
 						that._oMockdata[sEntitySetName].splice(oEntry.index, 1);
 					} else {
 						iResult = 400;
 					}
 					oXhr.respond(iResult, null, null);
+					jQuery.sap.log.debug("MockServer: response sent with: " + iResult);
 				}
 			});
 			
@@ -70077,7 +79825,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	 * @function
 	 */
 	MockServer.prototype._orderQueryOptions = function(aUrlParams) {	
-		var iFilterIndex, iInlinecountIndex, iSkipIndex, iTopIndex,  iOrderbyIndex, iSelectindex, iExpandIndex, aOrderedUrlParams = [];
+		var iFilterIndex, iInlinecountIndex, iSkipIndex, iTopIndex,  iOrderbyIndex, iSelectindex, iExpandIndex, iFormatIndex, aOrderedUrlParams = [];
 		jQuery.each(aUrlParams, function(iIndex, sQuery) {
 			switch (sQuery.split('=')[0]) {
 				case "top": iTopIndex = jQuery.inArray(sQuery, aUrlParams); break;			
@@ -70087,6 +79835,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 				case "select": iSelectindex = jQuery.inArray(sQuery, aUrlParams); break;
 				case "inlinecount": iInlinecountIndex = jQuery.inArray(sQuery, aUrlParams); break;
 				case "expand": iExpandIndex = jQuery.inArray(sQuery, aUrlParams); break;
+				case "format": iFormatIndex = jQuery.inArray(sQuery, aUrlParams); break;
 			}
 		});	
 		
@@ -70097,6 +79846,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 		if (iSelectindex >= 0) aOrderedUrlParams.push(aUrlParams[iSelectindex]);
 		if (iOrderbyIndex >= 0) aOrderedUrlParams.push(aUrlParams[iOrderbyIndex]);
 		if (iExpandIndex >= 0) aOrderedUrlParams.push(aUrlParams[iExpandIndex]);
+		if (iFormatIndex >= 0) aOrderedUrlParams.push(aUrlParams[iFormatIndex]);
 		
 		return aOrderedUrlParams;
 	};
@@ -70223,6 +79973,7 @@ sap.ui.define("sap/ui/core/util/MockServer",['jquery.sap.global', 'sap/ui/Device
 	MockServer.prototype._escapeStringForRegExp = function(sString) {
 		return sString.replace(/[\\\/\[\]\{\}\(\)\-\*\+\?\.\^\$\|]/g, "\\$&");
 	};
+	//
 	
 	/**
 	 * Creates a trim string
@@ -70552,21 +80303,19 @@ sap.ui.define("sap/ui/model/ClientModel",['jquery.sap.global', './ClientContextB
 	/**
 	 * Constructor for a new ClientModel.
 	 *
-	 * @class
+	 * @class Model implementation for Client models
 	 * @abstract
-	 * Model implementation for Client models
-	 *
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData URL where to load the data from
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.ClientModel
 	 */
-	var ClientModel = Model.extend("sap.ui.model.ClientModel", /** @lends sap.ui.model.ClientModel */ {
+	var ClientModel = Model.extend("sap.ui.model.ClientModel", /** @lends sap.ui.model.ClientModel.prototype */ {
 		
 		constructor : function(oData) {
 			Model.apply(this, arguments);
@@ -70767,6 +80516,131 @@ sap.ui.define("sap/ui/model/ClientModel",['jquery.sap.global', './ClientContextB
 }, /* bExport= */ true);
 
 }; // end of sap/ui/model/ClientModel.js
+if ( !jQuery.sap.isDeclared('sap.ui.model.analytics.ODataModelAdapter') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/**
+ * Analytical Adapter for ODataModels
+ * 
+ * @namespace
+ * @name sap.ui.model.analytics
+ * @public
+ */
+
+// Provides class ODataModelAdapter
+jQuery.sap.declare('sap.ui.model.analytics.ODataModelAdapter'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/model/analytics/ODataModelAdapter",['jquery.sap.global', './AnalyticalBinding', "./TreeBindingAdapter", 'sap/ui/model/odata/ODataModel', 'sap/ui/thirdparty/odata4analytics'],
+	function(jQuery, AnalyticalBinding, TreeBindingAdapter, ODataModel, odata4analytics) {
+	"use strict";
+	
+	
+	/**
+	 * If called on an instance of an ODataModel it will enrich it with analytics capabilities.
+	 *
+	 * @name sap.ui.model.analytics.ODataModelAdapter
+	 * @function
+	 * @experimental This module is only for experimental use!
+	 * @protected
+	 */
+	var ODataModelAdapter = function() {
+		// "this" is the prototype now when called with apply()
+	
+		// ensure only ODataModel are enhanced which have not been enhanced yet
+		if(!(this instanceof ODataModel && this.getAnalyticalExtensions === undefined)) {
+			return;
+		}
+	
+		// apply the methods of the adapters prototype to the ODataModelAdapter instance
+		for (var fn in ODataModelAdapter.prototype) {
+			if (ODataModelAdapter.prototype.hasOwnProperty(fn)) {
+				this[fn] = ODataModelAdapter.prototype[fn];
+			}
+		}
+		
+		// disable the count support (inline count is required for AnalyticalBinding)
+		if (this.isCountSupported()) {
+			jQuery.sap.log.info("ODataModelAdapter: switched ODataModel to use inlinecount (mandatory for analytical bindings)");
+			this.setCountSupported(false);
+		}
+		
+	};
+	
+	/**
+	 * @see sap.ui.model.odata.ODataModel#bindList
+	 * @name sap.ui.model.odata.ODataModelAdapter#bindList
+	 * @function
+	 */
+	ODataModelAdapter.prototype.bindList = function(sPath, oContext, aSorters, aFilters, mParameters) {
+		// detection for usage of AnalyticalBinding (aligned with AnalyticalTable#bindRows)
+		if (mParameters && mParameters.analyticalInfo) {
+			var oBinding = new AnalyticalBinding(this, sPath, oContext, aSorters, aFilters, mParameters);
+			TreeBindingAdapter.apply(oBinding); // enhance the TreeBinding wit an adapter for the ListBinding
+			return oBinding;
+		} else {
+			return ODataModel.prototype.bindList.apply(this, arguments);
+		}
+	};
+	
+	/**
+	 * @see sap.ui.model.odata.ODataModel#bindTree
+	 * @name sap.ui.model.odata.ODataModelAdapter#bindTree
+	 * @function
+	 */
+	ODataModelAdapter.prototype.bindTree = function(sPath, oContext, aFilters, mParameters) {
+		// detection for usage of AnalyticalBinding (aligned with AnalyticalTable#bindRows)
+		if (mParameters && mParameters.analyticalInfo) {
+			var oBinding = new AnalyticalBinding(this, sPath, oContext, [], aFilters, mParameters);
+			return oBinding;
+		} else {
+			return ODataModel.prototype.bindTree.apply(this, arguments);
+		}
+	};
+	
+	/**
+	 * @name sap.ui.model.odata.ODataModelAdapter#getAnalyticalExtensions
+	 * @function
+	 * @return {com.sap.odata4analytics.Model} Model providing access to analytical
+	 *         extensions of the OData model or null if the services does not
+	 *         include analytical extensions
+	 * @public
+	 */
+	ODataModelAdapter.prototype.getAnalyticalExtensions = function() {
+		// initialize API by loading the analytical OData model
+		if (this.oOData4SAPAnalyticsModel != undefined && this.oOData4SAPAnalyticsModel != null)
+			return this.oOData4SAPAnalyticsModel;
+	
+		var sAnnotationDoc = null;
+	
+		if (arguments.length == 1) {
+			// hidden feature: load resource with additional analytical metadata
+			// defined in a JSON format
+			var sAnnotationDocURI = arguments[0];
+	
+			var oResult = jQuery.sap.syncGetText(sAnnotationDocURI);
+			if (oResult.success) {
+				sAnnotationDoc = oResult.data;
+			}
+		}
+	
+		// initialize API by loading the analytical OData model
+		try {
+			this.oOData4SAPAnalyticsModel = new odata4analytics.Model(new odata4analytics.Model.ReferenceByModel(
+					this), sAnnotationDoc);
+		} catch (exception) {
+			throw "Failed to instantiate analytical extensions for given OData model: " + exception.message;
+		}
+		return this.oOData4SAPAnalyticsModel;
+	};
+	
+	return ODataModelAdapter;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/model/analytics/ODataModelAdapter.js
 if ( !jQuery.sap.isDeclared('sap.ui.model.json.JSONModel') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -70798,14 +80672,14 @@ sap.ui.define("sap/ui/model/json/JSONModel",['jquery.sap.global', 'sap/ui/model/
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData either the URL where to load the JSON from or a JS object
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.json.JSONModel
 	 */
-	var JSONModel = ClientModel.extend("sap.ui.model.json.JSONModel", /** @lends sap.ui.model.json.JSONModel */ {
+	var JSONModel = ClientModel.extend("sap.ui.model.json.JSONModel", /** @lends sap.ui.model.json.JSONModel.prototype */ {
 		
 		constructor : function(oData) {
 			ClientModel.apply(this, arguments);
@@ -71116,14 +80990,14 @@ sap.ui.define("sap/ui/model/xml/XMLModel",['jquery.sap.global', 'sap/ui/model/Cl
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData either the URL where to load the XML from or a XML
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.xml.XMLModel
 	 */
-	var XMLModel = ClientModel.extend("sap.ui.model.xml.XMLModel", /** @lends sap.ui.model.xml.XMLModel */ {
+	var XMLModel = ClientModel.extend("sap.ui.model.xml.XMLModel", /** @lends sap.ui.model.xml.XMLModel.prototype */ {
 		
 		constructor : function (oData) {
 			ClientModel.apply(this, arguments);
@@ -71584,8 +81458,8 @@ sap.ui.define("sap/ui/app/MockServer",['jquery.sap.global', 'sap/ui/core/util/Mo
 	 * @class Class to mock a server
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.app.MockServer
 	 * @experimental Since 1.13.0. The mock server is still under construction, so some implementation details can be changed in future.
@@ -71634,12 +81508,12 @@ sap.ui.define("sap/ui/core/tmpl/HandlebarsTemplate",['jquery.sap.global', './Tem
 	 * @class The class for Handlebars Templates.
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.tmpl.HandlebarsTemplate
 	 * @experimental Since 1.15.0. The Template concept is still under construction, so some implementation details can be changed in future.
 	 */
-	var HandlebarsTemplate = Template.extend("sap.ui.core.tmpl.HandlebarsTemplate", /** @lends sap.ui.core.tmpl.HandlebarsTemplate */
+	var HandlebarsTemplate = Template.extend("sap.ui.core.tmpl.HandlebarsTemplate", /** @lends sap.ui.core.tmpl.HandlebarsTemplate.prototype */
 	{
 		
 		constructor : function(sId, mSettings) {
@@ -72113,12 +81987,12 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	 * @class Base Class for Component.
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.Component
-	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
+	 * @since 1.9.2
 	 */
-	var Component = ManagedObject.extend("sap.ui.core.Component", /** @lends sap.ui.core.Component */
+	var Component = ManagedObject.extend("sap.ui.core.Component", /** @lends sap.ui.core.Component.prototype */
 	
 	{
 		constructor : function(sId, mSettings) {
@@ -72131,17 +82005,16 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 			stereotype : "component",
 			"abstract": true,
 			version : "0.0",
-			includes : [],  // css, javascript files that should be used in the component
-			dependencies : { // external dependencies
+			includes : [],    // css, javascript files that should be used in the component
+			dependencies : {  // external dependencies
 				libs : [],
 				components : [],
 				ui5version : ""
 			},
 			config: {}, // static configuration
 			customizing: { // component/view customizing
-				// TODO: custom customizing data? not prefixed with sap.ui.
-				//       e.g. sap.ext.viewExtensions => to be handled by custom hook!
-				/*
+				
+				/* Example:
 				"sap.ui.viewReplacements": {
 					"sap.xx.org.Main": {
 						viewName: "sap.xx.new.Main",
@@ -72152,7 +82025,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 					"sap.xx.org.Main": "sap.xx.new.Main"
 				},
 				"sap.ui.viewExtensions": {
-					"sap.xx.new.Main": { // TODO: global or view dependant names for extensions? ==> locally in the view / use the new name!
+					"sap.xx.new.Main": {
 						"extensionX": {
 							name: "sap.xx.new.Fragment1",
 							type: "sap.ui.core.XMLFragment"
@@ -72162,7 +82035,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 						}
 					}
 				},
-				"sap.ui.viewModification": { // ?????
+				"sap.ui.viewModification": {
 					"sap.xx.new.Main": {
 						"myControlId": {
 							text: "{i18n_custom>mytext}"
@@ -72188,6 +82061,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	 * @private
 	 * @name sap.ui.core.Component.activateCustomizing
 	 * @function
+	 * @deprecated Since 1.21.0 as it is handled by component instantiation
 	 */
 	Component.activateCustomizing = function(sComponentName) {
 		// noop since it will be handled by component instantiation
@@ -72199,26 +82073,30 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	 * @private
 	 * @name sap.ui.core.Component.deactivateCustomizing
 	 * @function
+	 * @deprecated Since 1.21.0 as it is handled by component termination
 	 */
 	Component.deactivateCustomizing = function(sComponentName) {
 		// noop since it will be handled by component termination
 	};
 	
 	/**
-	 * Returns the ID of the owner component in which the given ManagedObject has been
-	 * created. 
-	 * @param {sap.ui.core.ManagedObject} oObject the ManagedObject to return the owner component ID for
+	 * Returns the ID of the owner UI Component in which the given Component or View has been created using 
+	 * <pre>
+	 *   UIComponent.prototype.createContent();
+	 * </pre>
+	 *  
+	 * @param {sap.ui.core.Component|sap.ui.core.mvc.View} oObject Object to retrieve the owner for
 	 * @return {string} the owner component ID
 	 * @static
-	 * @protected
-	 * @experimental Since 1.15.1. The location of this function might change.
+	 * @public
+	 * @since 1.15.1 
 	 * @name sap.ui.core.Component.getOwnerIdFor
 	 * @function
 	 */
 	Component.getOwnerIdFor = function(oObject) {
 		// the owner id is only supported for Components and Views
 		if (oObject && (oObject instanceof Component ||
-				            oObject instanceof sap.ui.core.mvc.View)) {
+				        oObject instanceof sap.ui.core.mvc.View)) {
 			return ManagedObject.getOwnerIdFor(oObject);
 		} 
 	};
@@ -72457,36 +82335,6 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 	};
 	
 	
-	/* * TODO: RETHINK THIS CONCEPT!
-	 * Sets the configuration model. The configuration model is named "config" and
-	 * can be accessed via <code>getModel("config")</code>.
-	 * 
-	 * @param {string|object|sap.ui.model.Model} vConfig the configuration model, the configuration object or a URI string to load a JSON configuration file.
-	 * @since 1.15.1
-	 * @public
-	 */
-	/* 
-	sap.ui.core.Component.prototype.setConfig = function(vConfig) {
-		this.setProperty("config", vConfig);
-		if (typeof vConfig === "string") {
-			var sUri = vConfig;
-			var vConfig = new sap.ui.model.json.JSONModel();
-			var oResponse = jQuery.sap.sjax({url:sUri, dataType:'json'});
-			if (oResponse.success) {
-				vConfig.setData(oResponse.data);
-			} else {
-				throw new Error("Could not load config file: " + sUri);
-			}
-		}
-		if (typeof vConfig === "object" && !vConfig instanceof sap.ui.model.Model) {
-			vConfig = new sap.ui.model.json.JSONModel(vConfig);
-		}
-		jQuery.sap.assert(vConfig === undefined || vConfig instanceof sap.ui.model.Model, "the config property value must be a string, an object or an instance of sap.ui.model.Model");
-		this.setModel("config", vConfig);
-	},
-	*/
-	
-	
 	/**
 	 * Initializes the Component instance after creation.
 	 *
@@ -72630,7 +82478,7 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 			    mSettings = oComponent.settings;
 			
 			// load the component class 
-			var oClass = sap.ui.component.load(oComponent);
+			var oClass = sap.ui.component.load(oComponent, true);
 			
 			// create an instance
 			var oInstance = new oClass(jQuery.extend({}, mSettings, {
@@ -72639,20 +82487,20 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 			}));
 			jQuery.sap.assert(oInstance instanceof Component, "The specified component \"" + sController + "\" must be an instance of sap.ui.core.Component!");
 			jQuery.sap.log.info("Component instance Id = " + oInstance.getId());
-			return oInstance;
 			
+			return oInstance;
 		}
-		
 	};
 	
 	/**
 	 * Load a component without instantiating it.
+	 * @param {object} oComponent the Component's setting. See {@link sap.ui.component} for more Information.
 	 * 
-	 * @experimental since 1.16.3
+	 * @since 1.16.3
 	 * @static
 	 * @public
 	 */
-	sap.ui.component.load = function(oComponent) {
+	sap.ui.component.load = function(oComponent, bFailOnError) {
 	
 		var sName = oComponent.name,
 			sUrl = oComponent.url,
@@ -72689,12 +82537,17 @@ sap.ui.define("sap/ui/core/Component",['jquery.sap.global', 'sap/ui/base/Managed
 		jQuery.sap.require(sController);
 		var oClass = jQuery.sap.getObject(sController);
 	
-		jQuery.sap.assert(oClass !== undefined, "The specified component \"" + sController + "\" could not be found!");
-		
+		if (!oClass) {
+			if (bFailOnError) {
+				throw new Error("The specified component controller\"" + sController + "\" could not be found!");	
+			} else {
+				jQuery.sap.log.warning("The specified component controller \"" + sController + "\" could not be found!");
+			}
+		}
+
 		return oClass;
 	}
 	
-
 	return Component;
 
 }, /* bExport= */ true);
@@ -72777,8 +82630,8 @@ sap.ui.define("sap/ui/core/Element",['jquery.sap.global', 'sap/ui/base/ManagedOb
 	 *
 	 * @class Base Class for Elements.
 	 * @extends sap.ui.base.ManagedObject
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.core.Element
 	 */
@@ -74168,6 +84021,16 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	 * subclass and is described there. See {@link sap.ui.core.Element} for a general description of this
 	 * argument.
 	 *
+	 * The settings supported by Control are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getBusy busy} : boolean (default: false)</li>
+	 * <li>{@link #getBusyIndicatorDelay busyIndicatorDelay} : int (default: 1000)</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 *  
 	 * @param {string} [sId] optional id for the new control; generated automatically if no non-empty id is given
 	 *      Note: this can be omitted, no matter whether <code>mSettings</code> will be given or not!
 	 * @param {object} [mSettings] optional map/JSON-object with initial settings for the new control
@@ -74177,7 +84040,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	 * @extends sap.ui.core.Element
 	 * @abstract
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.core.Control
 	 */
 	var Control = Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -74232,6 +84095,32 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	 * @function
 	 */
 	
+	/**
+	 * Getter for property <code>busy</code>.
+	 * 
+	 * Whether the control is currently in busy state.
+	 * 
+	 * Default value is <code>false</code>
+	 *
+	 * @return {boolean} the value of property <code>busy</code>
+	 * @public
+	 * @name sap.ui.core.Control#getBusy
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>busyIndicatorDelay</code>.
+	 * 
+	 * The time in milliseconds after which the control displays a busy indicator after becoming busy.
+	 * 
+	 * Default value is <code>1000</code> ms.
+	 *
+	 * @return {int} the value of property <code>busyIndicatorDelay</code>
+	 * @public
+	 * @name sap.ui.core.Control#getBusyIndicatorDelay
+	 * @function
+	 */
+
 	/**
 	 * Overrides {@link sap.ui.core.Element#clone Element.clone} to clone additional 
 	 * internal state.
@@ -74298,7 +84187,15 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 			// The check for bOutput is necessary as the control
 			// re-rendering needs to identify the previous rendering results.
 			// Otherwise it wouldn't be able to replace them.
-			oUIArea.addInvalidatedControl(this);
+			//
+			// Note about destroy(): when this control is currently in the process of being 
+			// destroyed, registering it for an autonomous re-rendering doesn't make sense. 
+			// In most cases, invalidation of the parent also doesn't make sense, 
+			// but there might be composite controls that rely on being invalidated when 
+			// a child is destroyed, so we keep the invalidation propagation untouched.
+			if ( !this._bIsBeingDestroyed ) {
+				oUIArea.addInvalidatedControl(this);
+			}
 		} else {
 			// else we bubble up the hierarchy
 			var oParent = this.getParent();
@@ -74699,6 +84596,8 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 	};
 	
 	Control.prototype.destroy = function(bSuppressInvalidate) {
+		// avoid rerendering
+		this._bIsBeingDestroyed = true;
 		//Cleanup Busy Indicator
 		this._cleanupBusyIndicator();
 		
@@ -74717,7 +84616,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 				}
 			},
 			fnAppendBusyIndicator = function() {
-				var $this = this.$(),
+				var $this = this.$(this._sBusySection),
 					aForbiddenTags = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"];
 				
 	
@@ -74754,7 +84653,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 			},
 			fnHandleInteraction = function(bBusy) {
 				if (bBusy) {
-					var $this = this.$(),
+					var $this = this.$(this._sBusySection),
 						$TabRefs = $this.find('[tabindex]'),
 						that = this;
 					this._busyTabIndices = [];
@@ -74786,7 +84685,7 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 				oEvent.stopImmediatePropagation();
 			},
 			fnAnimate = function() {
-				var $bubbles = this.$().children('.sapUiLocalBusyIndicator').children('.sapUiLocalBusyIndicatorAnimation');
+				var $bubbles = this.$(this._sBusySection).children('.sapUiLocalBusyIndicator').children('.sapUiLocalBusyIndicatorAnimation');
 				var that = this;
 				that._busyAnimationTimer1 = setTimeout(function() {
 					$bubbles.children(":eq(0)").addClass('active');
@@ -74807,16 +84706,17 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 			};
 	
 		/**
-		 * Set the controls busy state
+		 * Set the controls busy state.
 		 * 
+		 * @param {boolean} bBusy The new busy state to be set
+		 * @return {sap.ui.core.Control} <code>this</code> to allow method chaining
 		 * @public
-		 * @param boolean The state to be set
-		 * @return {Control} reference to control for chaining
 		 * @name sap.ui.core.Control#setBusy
 		 * @function
 		 */
-		Control.prototype.setBusy = function (bBusy) {
-			var $this = this.$();
+		Control.prototype.setBusy = function (bBusy, sBusySection /* this is an internal parameter to apply partial local busy indicator for a specific section of the control */) {
+			this._sBusySection = sBusySection;
+			var $this = this.$(this._sBusySection);
 	
 			//If the new state is already set, we don't need to do anything
 			if (bBusy == this.getProperty("busy")) {
@@ -74883,8 +84783,8 @@ sap.ui.define("sap/ui/core/Control",['jquery.sap.global', './CustomStyleClassSup
 		 * Define the delay, after which the busy indicator will show up
 		 * 
 		 * @public
-		 * @param int The delay in ms
-		 * @return {Control} reference to control for chaining
+		 * @param {int} iDelay The delay in ms
+		 * @return {sap.ui.core.Control} <code>this</code> to allow method chaining
 		 * @name sap.ui.core.Control#setBusyIndicatorDelay
 		 * @function
 		 */
@@ -74947,7 +84847,94 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	function(jQuery, ManagedObject, Element/* , jQuerySap1, jQuerySap */) {
 	"use strict";
 
+	/**
+	 * A private logger instance used for 'debugRendering' logging.
+	 * 
+	 * It can be activated by setting the URL parameter sap-ui-xx-debugRerendering to true.
+	 * If activated, stack traces of invalidate() calls will be recorded and if new 
+	 * invalidations occur during rendering, they will be logged to the console together 
+	 * with the causing stack traces.
+	 *  
+	 * @private
+	 * @todo Add more log output where helpful
+	 */
+	var oRenderLog = jQuery.sap.log.getLogger("sap.ui.Rendering",
+			((window["sap-ui-config"] && window["sap-ui-config"]["xx-debugRendering"]) || /sap-ui-xx-debug(R|-r)endering=(true|x|X)/.test(document.location.search)) ? jQuery.sap.log.Level.DEBUG : Math.min(jQuery.sap.log.Level.INFO, jQuery.sap.log.getLevel())
+		),
+		fnDbgWrap = function(oControl) { return oControl; },
+		fnDbgReport = jQuery.noop,
+		fnDbgAnalyzeDelta = jQuery.noop;
+	
+	if ( oRenderLog.isLoggable() ) {
+		
+		// TODO this supportability feature could be moved out of the standard runtime code and only be loaded on demand
+		
+		/**
+		 * Records the stack trace that triggered the first invalidation of the given control
+		 * 
+		 * @private
+		 */
+		fnDbgWrap = function(oControl) { 
+			var location;
+			try {
+				throw new Error();
+			} catch(e) {
+				location = e.stack || e.stacktrace || (e.sourceURL ? e.sourceURL + ":" + e.line : null);
+				location = location ? location.split(/\n\s*/g).slice(2) : undefined;
+			}
+			return { 
+				obj : oControl,
+				location : location
+			}; 
+		};
+		
+		/**
+		 * Creates a condensed view of the controls for which a rendering task is pending.
+		 * Checking the output of this method should help to understand infinite or unexpected rendering loops.
+		 * @private
+		 */
+		fnDbgReport = function(that, mControls) {
+			var oCore = sap.ui.getCore(),
+				mReport = {}, 
+				n, oControl;
+			
+			for(n in mControls) {
+				// resolve oControl anew as it might have changed 
+				oControl = oCore.byId(n);
+				mReport[n] = { 
+					type: oControl ? oControl.getMetadata().getName() : (mControls[n].obj === that ? "UIArea" : "(no such control)"),
+					location: mControls[n].location,
+					reason : mControls[n].reason
+				};
+			}
+			
+			oRenderLog.debug("  UIArea '" + that.getId() + "', pending updates: " + JSON.stringify(mReport, null, "\t"));
+		};
+		
+		/**
+		 * Creates a condensed view of the controls that have been invalidated but not handled during rendering
+		 * Checking the output of this method should help to understand infinite or unexpected rendering loops.
+		 * @private
+		 */
+		fnDbgAnalyzeDelta = function(mBefore, mAfter) {
+			var n;
+			
+			for(n in mAfter) {
+				if ( mBefore[n] != null ) { 
+					if ( mBefore[n].obj !== mAfter[n].obj ) {
+						mAfter[n].reason = "replaced during rendering";
+					} else {
+						mAfter[n].reason = "invalidated again during rendering";
+					}
+				} else {
+					mAfter[n].reason = "invalidated during rendering"; 
+				}
+			}
 
+		};
+		
+	}
+	
 	/**
 	 * @class An area in a page that hosts a tree of UI elements.
 	 *
@@ -74960,7 +84947,7 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	 *
 	 * @extends sap.ui.base.ManagedObject
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @param {sap.ui.Core} oCore internal API of the <core>Core</code> that manages this UIArea
 	 * @param {object} [oRootNode] reference to the Dom Node that should be 'hosting' the UI Area.
 	 * @public
@@ -74990,7 +84977,7 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 			this.mInvalidatedControls = {};
 	
 			if(!this.bNeedsRerendering) {
-				this.oRenderControl = null;
+				this.bRenderSelf = false;
 			} else {
 				// Core needs to be notified about an invalid UIArea
 				this.oCore.addInvalidatedUIArea(this);
@@ -75020,11 +85007,9 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	
 	/**
 	 * Returns this <code>UIArea</code>'s id (as determined from provided RootNode).
-	 * @return {string} id of this UIArea
+	 * @return {string|null} id of this UIArea
 	 * @public
 	 *
-	 * TODO what is this needed for? ID can change and getRootNode() is also there...
-	 * Is this part of "UI area is like an Element" contract?
 	 * @name sap.ui.core.UIArea#getId
 	 * @function
 	 */
@@ -75452,13 +85437,13 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	 * controls or the complete content. It also informs the Core when it
 	 * becomes invalid the first time.
 	 *
-	 * TODO this.oRenderControl is either NULL or THIS. change to boolean?!
 	 * @protected
 	 * @name sap.ui.core.UIArea#addInvalidatedControl
 	 * @function
 	 */
 	UIArea.prototype.addInvalidatedControl = function(oControl){
-		if (this.oRenderControl == this) {
+		// if UIArea is already marked for a full rendering, there is no need to record invalidated controls 
+		if ( this.bRenderSelf ) {
 			return;
 		}
 	
@@ -75469,25 +85454,29 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	
 		var sId = oControl.getId();
 		//check whether the control is already invalidated
-		if (/*jQuery.inArray(oControl, this.getContent()) || */oControl == this ) {
-			this.oRenderControl = this; //everything in this UIArea
+		if (/*jQuery.inArray(oControl, this.getContent()) || */oControl === this ) {
+			this.bRenderSelf = true; //everything in this UIArea
 			this.bNeedsRerendering = true;
+			this.mInvalidatedControls = {};
+			this.mInvalidatedControls[sId] = fnDbgWrap(this);
 			return;
 		}
 		if (this.mInvalidatedControls[sId]) {
 			return;
 		}
-		if (!this.oRenderControl) {
+		if (!this.bRenderSelf) {
 			//add it to the list of controls
-			this.mInvalidatedControls[sId] = oControl;
+			this.mInvalidatedControls[sId] = fnDbgWrap(oControl);
+			
 			this.bNeedsRerendering = true;
 		}
 	};
 	
 	/**
-	 * TODO review and maybe refactor this complex algorithm
-	 * TODO documentation
-	 * TODO detach current "rerendering infos" before starting rerendering. Necessary to properly deal with concurrent modifications 
+	 * Renders any pending UI updates. 
+	 * 
+	 * Either renders the whole UIArea or a set of descendent controls that have been invalidated.
+	 * 
 	 * @param force {boolean} true, if the rerendering of the UI area should be forced
 	 * @return {boolean} whether a redraw was necessary or not
 	 * @private
@@ -75495,6 +85484,15 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	 * @function
 	 */
 	UIArea.prototype.rerender = function(force){
+		var that = this;
+		
+		function clearRenderingInfo() {
+			that.bRenderSelf = false;
+			that.aContentToRemove = [];
+			that.mInvalidatedControls = {};
+			that.bNeedsRerendering = false;
+		}
+		
 		if (force) {
 			this.bNeedsRerendering = true;
 		}
@@ -75502,17 +85500,28 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 			return false;
 		}
 		
-		var that = this;
-	
+		// Keep a reference to the collected rendering info and attach a new, empty info to this instance. 
+		// Any concurrent modification will be collected as new info and trigger a new automated rendering
+		var bRenderSelf = this.bRenderSelf,
+			aContentToRemove = this.aContentToRemove,
+			mInvalidatedControls = this.mInvalidatedControls,
+			bUpdated = false;
+		
+		clearRenderingInfo();
+		
 		// pause performance measurement for all UI Areas
-		jQuery.sap.measure.pause("rerenderAllUIAreas");
+		jQuery.sap.measure.pause("renderPendingUIUpdates");
 		// start performance measurement
 		jQuery.sap.measure.start(this.getId()+"---rerender","Rerendering of "+this.getMetadata().getName());
 	
-		if (this.oRenderControl == this) {
+		fnDbgReport(this, mInvalidatedControls);
+
+		if (bRenderSelf) { // full UIArea rendering
+			
 			if (this.oRootNode) {
-				jQuery.sap.log.info("Rerendering of UI area: " + this.getId());
-	
+				
+				oRenderLog.debug("Full Rendering of UIArea '" + this.getId() + "'");
+
 				// save old content
 				sap.ui.core.RenderManager.preserveContent(this.oRootNode, /* bPreserveRoot */ false, /* bPreserveNodesWithId */ this.bInitial);
 				this.bInitial = false;
@@ -75530,8 +85539,7 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 				}
 	
 				//First remove the old Dom nodes and then render the controls again
-				cleanUpDom(this.aContentToRemove);
-				this.aContentToRemove = [];
+				cleanUpDom(aContentToRemove);
 	
 				var aContent = this.getContent();
 				var len = cleanUpDom(aContent, true);
@@ -75539,17 +85547,20 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 				for(var i=0; i<len; i++){
 					this.oCore.oRenderManager.render(aContent[i], this.oRootNode, true);
 				}
-			} else { // cannot re-render now; wait!
-				// end performance measurement
-				jQuery.sap.measure.end(this.getId()+"---rerender");
-				// resume performance measurement for all UI Areas
-				jQuery.sap.measure.resume("rerenderAllUIAreas");
-				return false;
-			}
-		} else {
+				bUpdated = true;
+				
+			} else {
+
+				// cannot re-render now; wait!
+				oRenderLog.debug("Full Rendering of UIArea '" + this.getId() + "' postponed, no root node");
+
+			} 
+			
+		} else { // only partial update (invalidated controls)
+			
 			var isAncestorInvalidated = function(oAncestor) {
 				while ( oAncestor && oAncestor !== that ) {
-					if ( that.mInvalidatedControls.hasOwnProperty(oAncestor.getId()) ) {
+					if ( mInvalidatedControls.hasOwnProperty(oAncestor.getId()) ) {
 						return true;
 					}
 					// Controls that implement marker interface sap.ui.core.PopupInterface are by contract not rendered by their parent.
@@ -75561,28 +85572,50 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 				}
 				return false;
 			}
-			for (var n in this.mInvalidatedControls) { // TODO for in skips some names in IE8!
+			
+			for (var n in mInvalidatedControls) { // TODO for in skips some names in IE8!
 				var oControl = this.oCore.byId(n);
 				// CSN 0000834961 2011: control may have been destroyed since invalidation happened
 				if ( oControl && !isAncestorInvalidated(oControl.getParent()) ) {
 					oControl.rerender();
+					bUpdated = true;
 				}
 			}
 	
 		}
-	
-		this.oRenderControl = null;
-		this.mInvalidatedControls = {};
-		this.bNeedsRerendering = false;
-	
+
+		// enrich the bookkeeping 
+		fnDbgAnalyzeDelta(mInvalidatedControls, this.mInvalidatedControls);
+		
+		// uncomment the following line for old behavior: 
+		// clearRenderingInfo();
+
 		// end performance measurement
 		jQuery.sap.measure.end(this.getId()+"---rerender");
 		// resume performance measurement for all UI Areas
-		jQuery.sap.measure.resume("rerenderAllUIAreas");
-		return true;
+		jQuery.sap.measure.resume("renderPendingUIUpdates");
+		
+		return bUpdated;
 	
 	};
-	
+
+	/**
+	 * Receives a notification from the RenderManager immediately after a control has been rendered.
+	 * 
+	 * Only at that moment, registered invalidations are obsolete. If they happen (again) after 
+	 * that point in time, the previous rendering cannot reflect the changes that led to the 
+	 * invalidation and therefore a new rendering is required.
+	 * 
+	 * Therefore, pending invalidatoins can only be cleared at this point in time.
+	 * @private
+	 */
+	UIArea.prototype._onControlRendered = function(oControl) {
+		var sId = oControl.getId();
+		if ( this.mInvalidatedControls[sId] ) {
+			delete this.mInvalidatedControls[sId];
+		}
+	}
+
 	/**
 	 * Rerenders the given control
 	 * @see sap.ui.core.Control.rerender()
@@ -75597,11 +85630,13 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 		if(oParentDomRef){
 			var uiArea = oControl.getUIArea();
 			var rm = uiArea ? uiArea.oCore.oRenderManager : sap.ui.getCore().createRenderManager();
-			jQuery.sap.log.info("Rerendering of control (using Core-RenderManager: "+(!!uiArea)+"): " + oControl.getId());
+			oRenderLog.debug("Rerender Control '" + oControl.getId() + "'" + (uiArea ? "" : " (using a temp. RenderManager)"));
 			sap.ui.core.RenderManager.preserveContent(oDomRef, /* bPreserveRoot */ true, /* bPreserveNodesWithId */ false);
 			rm.render(oControl, oParentDomRef);
 		} else {
-			jQuery.sap.log.warning("Couldn't rerender '" + oControl.getId() + "', as its DOM location couldn't be determined");
+			var uiArea = oControl.getUIArea();
+			uiArea && uiArea._onControlRendered(oControl);
+			oRenderLog.warning("Couldn't rerender '" + oControl.getId() + "', as its DOM location couldn't be determined");
 		}
 	};
 	
@@ -75628,23 +85663,30 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 			return;
 		}
 		
-	// the mouse event which is fired by mobile browser with a certain delay after touch event should be suppressed
-	// in event delegation.
-	if(oEvent.isMarked("delayedMouseEvent")){
-		return;
-	}
+		// the mouse event which is fired by mobile browser with a certain delay after touch event should be suppressed
+		// in event delegation.
+		if(oEvent.isMarked("delayedMouseEvent")){
+			return;
+		}
 	
 		//if event is already handled by inner UIArea (as we use the bubbling phase now), returns.
 		//if capturing phase would be used, here means event is already handled by outer UIArea.
-	if(oEvent.isMarked("handledByUIArea")){
+		if(oEvent.isMarked("handledByUIArea")){
 		oEvent.setMark("firstUIArea", false);
 			return;
 		}
-	oEvent.setMarked("firstUIArea");
+		oEvent.setMarked("firstUIArea");
 	
 		// store the element on the event (aligned with jQuery syntax)
 		oEvent.srcControl = oElement;
 	
+		// in case of CRTL+SHIFT+ALT the contextmenu event should not be dispatched
+		// to allow to display the browsers context menu
+		if (oEvent.type === "contextmenu" && oEvent.shiftKey && oEvent.altKey && !!(oEvent.metaKey || oEvent.ctrlKey)) {
+			jQuery.sap.log.info("Suppressed forwarding the contextmenu event as control event because CTRL+SHIFT+ALT is pressed!");
+			return;
+		}
+		
 		// forward the control event:
 		// if the control propagation has been stopped or the default should be
 		// prevented then do not forward the control event.
@@ -75851,9 +85893,10 @@ sap.ui.define("sap/ui/core/UIArea",['jquery.sap.global', 'sap/ui/base/ManagedObj
 	UIArea.prototype.clone = function() {
 		throw new Error("UIArea can't be cloned");
 	};
-	
-	
 
+	// share the render log with Core 
+	UIArea._oRenderLog = oRenderLog;
+	
 	return UIArea;
 
 }, /* bExport= */ true);
@@ -75863,8 +85906,6 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	function(jQuery, Device, Global, DataType, EventProvider, Component, Configuration, Control, Element, ElementMetadata, FocusHandler, RenderManager, ResizeHandler, ThemeCheck, UIArea, Template/* , jQuerySap6, jQuerySap, jQuerySap1, jQuerySap2, jQuerySap3, jQuerySap4, jQuerySap5 */) {
 	"use strict";
 
-
-	
 	/**
 	 * @class Core Class of the SAP UI Library.
 	 *
@@ -75886,13 +85927,13 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	 *
 	 * @extends sap.ui.base.EventProvider
 	 * @final
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.Core 
 	 * @public
 	 */
-	var Core = EventProvider.extend("sap.ui.core.Core", /** @lends sap.ui.core.Core */ {
+	var Core = EventProvider.extend("sap.ui.core.Core", /** @lends sap.ui.core.Core.prototype */ {
 		constructor : function() {
 		
 			//make this class only available once
@@ -75941,7 +85982,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 			/**
 			 * Currently created UIAreas keyed by their id.
 			 * @private
-			 * FIXME how can a UI area ever be removed?
+			 * @todo FIXME how can a UI area ever be removed?
 			 */
 			this.mUIAreas = {};
 		
@@ -75964,7 +86005,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 			 * destroy method.
 			 *
 			 * @private
-			 * TODO get rid of this collection as it represents a candidate for memory leaks
+			 * @todo get rid of this collection as it represents a candidate for memory leaks
 			 */
 			this.mElements = {};
 		
@@ -75976,7 +86017,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 			 * destroy method.
 			 * 
 			 * @private
-			 * TODO get rid of this collection as it represents a candidate for memory leaks
+			 * @todo get rid of this collection as it represents a candidate for memory leaks
 			 */
 			this.mObjects = {
 				"component": {}, 
@@ -76409,14 +86450,14 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	Core.prototype._updateThemeUrls = function(sThemeName) {
 		var that = this,
 		sRTL = this.oConfiguration.getRTL() ? "-RTL" : "";
-	
 		// select "our" stylesheets
 		jQuery("link[id^=sap-ui-theme-]").each(function() {
 			var sLibName = this.id.slice(13), // length of "sap-ui-theme-"
 				sLibFileName = this.href.slice(this.href.lastIndexOf("/") + 1),
 				sStandardLibFilePrefix = "library", 
 				sHref,
-				pos;
+				pos,
+				$this = jQuery(this);
 			
 			// handle 'variants'
 			if ((pos = sLibName.indexOf("-[")) > 0) { // assumes that "-[" does not occur as part of a library name
@@ -76429,11 +86470,16 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 				sLibFileName = sStandardLibFilePrefix + sRTL + ".css"; 
 			}
 			
+			// remove additional css files (ie9 rule limit fix)
+			if ($this.attr("sap-ui-css-count")) {
+				$this.remove();
+			}
+
 			// set new URL
 			sHref = that._getThemePath(sLibName, sThemeName) + sLibFileName
 			if ( sHref != this.href ) {
 				this.href = sHref;
-				jQuery(this).removeAttr("sap-ui-ready");
+				$this.removeAttr("sap-ui-ready");
 			}
 		});
 	};
@@ -76640,7 +86686,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 			jQuery.each(aCallbacks, function(i,f) { f(); }); 
 		}
 	
-		this._rerenderAllUIAreas(); // directly render without setTimeout, so rendering is guaranteed to be finished when init() ends
+		this.renderPendingUIUpdates(); // directly render without setTimeout, so rendering is guaranteed to be finished when init() ends
 	};
 	
 	/**
@@ -77127,6 +87173,37 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	};
 	
 	/**
+	 * Retrieves a resource bundle for the given library and locale.
+	 *
+	 * If only one argument is given, it is assumed to be the libraryName. The locale
+	 * then falls back to the current {@link sap.ui.core.Configuration.prototype.getLanguage session locale}.
+	 * If no argument is given, the library also falls back to a default: "sap.ui.core".
+	 *
+	 * @param {string} [sLibraryName='sap.ui.core'] name of the library to retrieve the bundle for
+	 * @param {string} [sLocale] locale to retrieve the resource bundle for
+	 * @return {jQuery.sap.util.ResourceBundle} the best matching resource bundle for the given parameters or undefined
+	 * @public
+	 * @name sap.ui.core.Core#getLibraryResourceBundle
+	 * @function
+	 */
+	Core.prototype.getLibraryResourceBundle = function(sLibraryName, sLocale) {
+		jQuery.sap.assert((sLibraryName === undefined && sLocale === undefined) || typeof sLibraryName === "string", "sLibraryName must be a string or there is no argument given at all");
+		jQuery.sap.assert(sLocale === undefined || typeof sLocale === "string", "sLocale must be a string or omitted");
+	
+		// TODO move implementation together with similar stuff to a new class "UILibrary"?
+		sLibraryName = sLibraryName || "sap.ui.core";
+		sLocale = sLocale || this.getConfiguration().getLanguage();
+		var sKey = sLibraryName + "/" + sLocale;
+		if (!this.mResourceBundles[sKey]) {
+			var sURL = sap.ui.resource(sLibraryName, 'messagebundle.properties');
+			this.mResourceBundles[sKey] = jQuery.sap.resources({url : sURL, locale : sLocale});
+		}
+		return this.mResourceBundles[sKey];
+	};
+
+	// ---- UIArea and Rendering -------------------------------------------------------------------------------------
+
+	/**
 	 * Implicitly creates a new <code>UIArea</code> (or reuses an exiting one) for the given DOM reference and
 	 * adds the given control reference to the UIAreas content (existing content will be removed).
 	 *
@@ -77222,7 +87299,10 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	
 		return null;
 	};
-	
+
+	// share the rendering log with the UIArea
+	var oRenderLog = UIArea._oRenderLog;
+
 	/**
 	 * Informs the core about an UIArea that just became invalid.
 	 *
@@ -77237,87 +87317,94 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	 * @function
 	 */
 	Core.prototype.addInvalidatedUIArea = function(oUIArea) {
-		this.rerenderAllUIAreas(); // TODO: document why immediately rerender all??
+		if ( !this._sRerenderTimer ) {
+			oRenderLog.debug("Registering timer for delayed re-rendering");
+			this._sRerenderTimer = jQuery.sap.delayedCall(0,this,"renderPendingUIUpdates"); // decoupled for collecting several invalidations into one redraw
+		}
 	};
+
+	Core.MAX_RENDERING_ITERATIONS = 20;
 	
 	/**
-	 * Retrieves a resource bundle for the given library and locale.
-	 *
-	 * If only one argument is given, it is assumed to be the libraryName. The locale
-	 * then falls back to the current {@link sap.ui.core.Configuration.prototype.getLanguage session locale}.
-	 * If no argument is given, the library also falls back to a default: "sap.ui.core".
-	 *
-	 * @param {string} [sLibraryName='sap.ui.core'] name of the library to retrieve the bundle for
-	 * @param {string} [sLocale] locale to retrieve the resource bundle for
-	 * @return {jQuery.sap.util.ResourceBundle} the best matching resource bundle for the given parameters or undefined
-	 * @public
-	 * @name sap.ui.core.Core#getLibraryResourceBundle
-	 * @function
+	 * Asks all UIAreas to execute any pending rendering tasks.
+	 * 
+	 * The execution of rendering tasks might require multiple iterations
+	 * until either no more rendering tasks are produced or until 
+	 * MAX_RENDERING_ITERATIONS are reached. 
+	 * 
+	 * With a value of MAX_RENDERING_ITERATIONS=0 the loop can be avoided
+	 * and the remaining tasks are executed after another timeout. 
+	 * 
+	 * @private
 	 */
-	Core.prototype.getLibraryResourceBundle = function(sLibraryName, sLocale) {
-		jQuery.sap.assert((sLibraryName === undefined && sLocale === undefined) || typeof sLibraryName === "string", "sLibraryName must be a string or there is no argument given at all");
-		jQuery.sap.assert(sLocale === undefined || typeof sLocale === "string", "sLocale must be a string or omitted");
-	
-		// TODO move implementation together with similar stuff to a new class "UILibrary"?
-		sLibraryName = sLibraryName || "sap.ui.core";
-		sLocale = sLocale || this.getConfiguration().getLanguage();
-		var sKey = sLibraryName + "/" + sLocale;
-		if (!this.mResourceBundles[sKey]) {
-			var sURL = sap.ui.resource(sLibraryName, 'messagebundle.properties');
-			this.mResourceBundles[sKey] = jQuery.sap.resources({url : sURL, locale : sLocale});
-		}
-		return this.mResourceBundles[sKey];
-	};
-	
-	Core.prototype.rerenderAllUIAreas = function() {
-		if ( !this._sRerenderTimer ) {
-			jQuery.sap.log.info("registering timer for delayed re-rendering");
-			this._sRerenderTimer = jQuery.sap.delayedCall(0,this,"_rerenderAllUIAreas"); // decoupled for collecting several invalidations into one redraw
-		}
-	};
-	
-	Core.prototype._rerenderAllUIAreas = function() {
+	Core.prototype.renderPendingUIUpdates = function() {
 	
 		// start performance measurement
-		jQuery.sap.measure.start("rerenderAllUIAreas","Rerendering of all UIAreas");
+		oRenderLog.debug("Render pending UI updates: start");
+		
+		jQuery.sap.measure.start("renderPendingUIUpdates","Render pending UI updates in all UIAreas");
 	
-		// clear the timer so that the next call to re-render will create a new timer
-		if (this._sRerenderTimer) {
-			jQuery.sap.clearDelayedCall(this._sRerenderTimer); // explicitly stop the timer, as this call might be synchronous while still a timer is running
-			this._sRerenderTimer = undefined;
-		}
-	
-		var bUIUpdated = false;
-		// avoid 'concurrent modifications' as IE8 can't handle them
-		var mUIAreas = this.mUIAreas;
-		for (var sId in mUIAreas) {
-			bUIUpdated = mUIAreas[sId].rerender() || bUIUpdated;
-		}
-	
-		// TODO this only covers parts of the relevant changes, 
-		// A full solution requires changes in UIArea.rerender, see TODO about rendering infos there
-		jQuery.sap.assert(!this._sRerenderTimer, "invalidate() while rendering");
-	
+		var bUIUpdated = false,
+			bLooped = Core.MAX_RENDERING_ITERATIONS > 0,
+			iLoopCount = 0;
+
+		this._bRendering = true;
+		
+		do {
+			
+			if ( bLooped ) {
+				// try to detect long running ('endless') rendering loops
+				iLoopCount++;
+				// if we run another iteration despite the tracking mode, we complain ourselves 
+				if ( iLoopCount > Core.MAX_RENDERING_ITERATIONS ) {
+					this._bRendering = false;
+					throw new Error("Rendering has been re-started too many times (" + iLoopCount + "). Add URL parameter sap-ui-xx-debugRendering=true for a detailed analysis.");
+				}
+				
+				if ( iLoopCount > 1 ) {
+					oRenderLog.debug("Render pending UI updates: iteration " + iLoopCount);
+				}
+			}
+			
+			// clear a pending timer so that the next call to re-render will create a new timer
+			if (this._sRerenderTimer) {
+				jQuery.sap.clearDelayedCall(this._sRerenderTimer); // explicitly stop the timer, as this call might be a synchronous call (applyChanges) while still a timer is running
+				this._sRerenderTimer = undefined;
+			}
+		
+			// avoid 'concurrent modifications' as IE8 can't handle them
+			var mUIAreas = this.mUIAreas;
+			for (var sId in mUIAreas) {
+				bUIUpdated = mUIAreas[sId].rerender() || bUIUpdated;
+			}
+		
+		} while ( bLooped && this._sRerenderTimer ); // iterate if there are new rendering tasks
+
+		this._bRendering = false;
+
 		// TODO: Provide information on what actually was re-rendered...
-		if(bUIUpdated) {
+		if (bUIUpdated) {
 			this.fireUIUpdated();
 		}
-	
+
+		oRenderLog.debug("Render pending UI updates: finished");
+
 		// end performance measurement
-		jQuery.sap.measure.end("rerenderAllUIAreas");
+		jQuery.sap.measure.end("renderPendingUIUpdates");
 	};
 	
 	
 	/**
-	 * Returns "true" if the UI is marked as dirty and will be cleaned/re-rendered after a certain small timeout.
+	 * Returns <code>true</code> if there are any pending rendering tasks or when 
+	 * such rendering tasks are currently being executed.
 	 *
-	 * @return {boolean} true if some UI part is marked as dirty and will be cleaned up/re-rendered
+	 * @return {boolean} true if there are pending (or executing) rendering tasks.
 	 * @public
 	 * @name sap.ui.core.Core#getUIDirty
 	 * @function
 	 */
 	Core.prototype.getUIDirty = function() {
-		return !!this._sRerenderTimer;
+		return !!(this._sRerenderTimer || this._bRendering);
 	};
 	
 	/**
@@ -77556,7 +87643,7 @@ sap.ui.define("sap/ui/core/Core",['jquery.sap.global', 'sap/ui/Device', 'sap/ui/
 	 * @function
 	 */
 	Core.prototype.applyChanges = function() {
-		this._rerenderAllUIAreas();
+		this.renderPendingUIUpdates();
 	};
 	
 	/**
@@ -78601,8 +88688,8 @@ sap.ui.define("sap/ui/app/Application",['jquery.sap.global', './ApplicationMetad
 		 * @class Base class for application classes
 		 * @extends sap.ui.core.Component
 		 * @abstract
-		 * @author SAP
-		 * @version 1.20.10
+		 * @author SAP AG
+		 * @version 1.22.4
 		 * @name sap.ui.app.Application
 		 * @experimental Since 1.11.1. The Application class is still under construction, so some implementation details can be changed in future.
 		 * @deprecated Since 1.15.1. The Component class is enhanced to take care about the Application code.
@@ -79376,7 +89463,7 @@ sap.ui.define("sap/ui/core/CustomizingConfiguration",['jquery.sap.global', './Co
 		 * gets removed again.
 		 *
 		 * @author SAP AG
-		 * @version 1.20.10
+		 * @version 1.22.4
 		 * @constructor
 		 * @private
 		 * @since 1.15.1
@@ -79559,6 +89646,150 @@ sap.ui.define("sap/ui/core/LocalBusyIndicatorSupport",['jquery.sap.global', './E
 }, /* bExport= */ true);
 
 }; // end of sap/ui/core/LocalBusyIndicatorSupport.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.PopupSupport') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.PopupSupport
+jQuery.sap.declare('sap.ui.core.PopupSupport'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/PopupSupport",[ 'jquery.sap.global', './Element' ], function(jQuery, Element) {
+	"use strict";
+
+	/**
+	 * This class provides some methods for Popup handling. This class can be
+	 * used as a mixin for controls that use a Popup as a local instance.
+	 * 
+	 * @returns {sap.ui.core.PopupSupport}
+	 * @constructor
+	 * @private
+	 * @name sap.ui.core.PopupSupport
+	 */
+	var PopupSupport = function() {
+		this.getMetadata().addPublicMethods([ "getParentPopup", "isInPopup", "getParentPopupId", "addToPopup", "removeFromPopup" ]);
+
+		/**
+		 * Checks if the (optional) given jQuery-object or DOM-node is within a
+		 * Popup. If no object is given the instance of the control will be used
+		 * to check.
+		 * 
+		 * @param {jQuery |
+		 *            Node} [oThis] is the object that should be checked
+		 *            (optional)
+		 * @returns {boolean} whether this control instance is part of a Popup
+		 */
+		this.isInPopup = function(oThis) {
+			var $ParentPopup = this.getParentPopup(oThis);
+
+			return $ParentPopup && $ParentPopup.length > 0;
+		};
+
+		/**
+		 * This function returns the parent Popup if available.
+		 * 
+		 * @param {control}
+		 *            [oThat] is an optional control instance. If another
+		 *            instance than "this" is given the corresponding control
+		 *            instance will be used to fetch the Popup.
+		 * @returns {jQuery} [ParentPopup]
+		 */
+		this.getParentPopup = function(oThat) {
+			// use either given object (control or DOM-ref) or this instance
+			var oThis = oThat ? oThat : this;
+
+			// if oThis is an element use its DOM-ref to look for a Popup. Else
+			// 'oThis' is an DOM-ref therefore simply use it
+			var $This = jQuery(oThis instanceof sap.ui.core.Element ? oThis.getDomRef() : oThis);
+
+			// look up if there is a Popup above used DOM-ref
+			return $This.closest("[data-sap-ui-popup]");
+		};
+
+		/**
+		 * This returns the corresponding unique ID of the parent Popup.
+		 * 
+		 * @param {control}
+		 *            [oThat] is an optional control instance. If another
+		 *            instance than "this" is given the corresponding control
+		 *            instance will be used to fetch the Popup.
+		 * @returns [string] ParentPopupId
+		 */
+		this.getParentPopupId = function(oThis) {
+			var $ParentPopup = this.getParentPopup(oThis);
+			return $ParentPopup.attr("data-sap-ui-popup");
+		};
+
+		/**
+		 * Adds the given child Popup id to the given parent's association.
+		 * 
+		 * @param [string]
+		 *            sParentPopupId to which the id will be added
+		 * @param [string]
+		 *            sChildPopupId that will be added to the perant Popup
+		 */
+		this.addChildToPopup = function(sParentPopupId, sChildPopupId) {
+			var sEventId = "sap.ui.core.Popup.addFocusableContent-" + sParentPopupId;
+			sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, {
+				id : sChildPopupId
+			});
+		};
+
+		/**
+		 * Removes the control id to the Popup. If a dedicated Popup id is given
+		 * then the control will be removed accordingly from this Popup. Else
+		 * the closest Popup will be used.
+		 * 
+		 * @param {string}
+		 *            [sPopupId] from which Popup the control should be removed
+		 *            (optional)
+		 */
+		this.removeChildFromPopup = function(sPopupId) {
+			if (!sPopupId) {
+				sPopupId = this.getPopupId();
+			}
+
+			// de-register id of Menu-Popup to parent-Popup to make the menu as
+			// focusable
+			var sEventId = "sap.ui.core.Popup.removeFocusableContent-" + sPopupId;
+			sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, {
+				id : this.getId()
+			});
+		};
+
+		/**
+		 * Closes a specific Popup when the control instance isn't available
+		 * 
+		 * @param [string]
+		 *            sPopupId of Popup that should be closed
+		 */
+		this.closePopup = function(sPopupId) {
+			var sEventId = "sap.ui.core.Popup.closePopup-" + sPopupId;
+			sap.ui.getCore().getEventBus().publish("sap.ui", sEventId);
+		}
+
+		/**
+		 * This function calls a popup to increase its z-index
+		 * 
+		 * @param [string]
+		 *            sPopupId of Popup that should increase its z-index
+		 * @param [boolean]
+		 *            bIsParent marks if a parent Popup calls its child Popups
+		 *            to increase their z-index
+		 */
+		this.increaseZIndex = function(sPopupId, bIsParent) {
+			var sEventId = "sap.ui.core.Popup.increaseZIndex-" + sPopupId;
+			sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, {
+				isFromParentPopup : bIsParent ? bIsParent : false
+			});
+		}
+	}
+
+	return PopupSupport;
+
+}, /* bExport= */true);
+}; // end of sap/ui/core/PopupSupport.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.library') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -79572,7 +89803,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.core (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.core (1.22.4)
  */
 jQuery.sap.declare('sap.ui.core.library'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
 sap.ui.define("sap/ui/core/library",['./Core'], function() {
@@ -79580,8 +89811,8 @@ sap.ui.define("sap/ui/core/library",['./Core'], function() {
 /**
  * The SAPUI5 Core Runtime. 
  *   
- *   Contains the UI5 jQuery plugin (jQuery.sap.*), the Core and all its components, 
- *   base classes for Controls and the Model View Controller components.
+ *   Contains the UI5 jQuery plugins (jQuery.sap.*), the Core and all its components, 
+ *   base classes for Controls, Components and the Model View Controller classes.
  *
  * @namespace
  * @name sap.ui.core
@@ -79607,6 +89838,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.ImeMode",
     "sap.ui.core.MessageType",
     "sap.ui.core.OpenState",
+    "sap.ui.core.Orientation",
     "sap.ui.core.Percentage",
     "sap.ui.core.ScrollBarAction",
     "sap.ui.core.Scrolling",
@@ -79629,7 +89861,8 @@ sap.ui.getCore().initLibrary({
   ],
   interfaces: [
     "sap.ui.core.Label",
-    "sap.ui.core.PopupInterface"
+    "sap.ui.core.PopupInterface",
+    "sap.ui.core.Toolbar"
   ],
   controls: [
     "sap.ui.core.ComponentContainer",
@@ -79664,7 +89897,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.search.SearchProvider",
     "sap.ui.core.tmpl.DOMAttribute"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -79686,398 +89919,398 @@ sap.ui.define("sap/ui/core/AccessibleRole", function() {
  * For more information, goto "Roles for Accessible Rich Internet Applications (WAI-ARIA Roles)" at the www.w3.org homepage.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.AccessibleRole = {
-  
-    /**
-     * No explicit role is applicable. An AccessibleName should be specified for the control.
-     *  
-     * @public
-     */
-    None : "None",
 
-    /**
-     * A message with an alert or error information.
-     *  
-     * @public
-     */
-    Alert : "Alert",
+	/**
+	 * No explicit role is applicable. An AccessibleName should be specified for the control.
+	 * 
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * A separate window with an alert or error information.
-     *  
-     * @public
-     */
-    AlertDialog : "AlertDialog",
+	/**
+	 * A message with an alert or error information.
+	 * 
+	 * @public
+	 */
+	Alert : "Alert",
 
-    /**
-     * A software unit executing a set of tasks for the user. 
-     * @public
-     */
-    Application : "Application",
+	/**
+	 * A separate window with an alert or error information.
+	 * 
+	 * @public
+	 */
+	AlertDialog : "AlertDialog",
 
-    /**
-     * Usually defined as the advertisement at the top of a web page.
-     * The banner content typically contains the site or company logo, or other key advertisements.
-     *  
-     * @public
-     */
-    Banner : "Banner",
+	/**
+	 * A software unit executing a set of tasks for the user.
+	 * @public
+	 */
+	Application : "Application",
 
-    /**
-     * Allows user-triggered actions.
-     *  
-     * @public
-     */
-    Button : "Button",
+	/**
+	 * Usually defined as the advertisement at the top of a web page.
+	 * The banner content typically contains the site or company logo, or other key advertisements.
+	 * 
+	 * @public
+	 */
+	Banner : "Banner",
 
-    /**
-     * A control that has three possible values: true, false, mixed. 
-     * @public
-     */
-    Checkbox : "Checkbox",
+	/**
+	 * Allows user-triggered actions.
+	 * 
+	 * @public
+	 */
+	Button : "Button",
 
-    /**
-     * A table cell containing header information for a column. 
-     * @public
-     */
-    ColumnHeader : "ColumnHeader",
+	/**
+	 * A control that has three possible values: true, false, mixed.
+	 * @public
+	 */
+	Checkbox : "Checkbox",
 
-    /**
-     * Allows selecting an item from a list, or to enter data directly in the input field. 
-     * @public
-     */
-    Combobox : "Combobox",
+	/**
+	 * A table cell containing header information for a column.
+	 * @public
+	 */
+	ColumnHeader : "ColumnHeader",
 
-    /**
-     * Information about the content on the page. Examples are footnotes, copyrights, or links to privacy statements.
-     *  
-     * @public
-     */
-    ContentInfo : "ContentInfo",
+	/**
+	 * Allows selecting an item from a list, or to enter data directly in the input field.
+	 * @public
+	 */
+	Combobox : "Combobox",
 
-    /**
-     * The content of the associated element represents a definition.
-     * If there is a definition element within the content, this one represents the term being defined.
-     *  
-     * @public
-     */
-    Definition : "Definition",
+	/**
+	 * Information about the content on the page. Examples are footnotes, copyrights, or links to privacy statements.
+	 * 
+	 * @public
+	 */
+	ContentInfo : "ContentInfo",
 
-    /**
-     * Descriptive content for a page element. 
-     * @public
-     */
-    Description : "Description",
+	/**
+	 * The content of the associated element represents a definition.
+	 * If there is a definition element within the content, this one represents the term being defined.
+	 * 
+	 * @public
+	 */
+	Definition : "Definition",
 
-    /**
-     * A small window that is designed to interrupt the current application processing
-     * in order to inform the user and to get some response. 
-     * @public
-     */
-    Dialog : "Dialog",
+	/**
+	 * Descriptive content for a page element.
+	 * @public
+	 */
+	Description : "Description",
 
-    /**
-     * A list of references to members of a single group.
-     *  
-     * @public
-     */
-    Directory : "Directory",
+	/**
+	 * A small window that is designed to interrupt the current application processing
+	 * in order to inform the user and to get some response.
+	 * @public
+	 */
+	Dialog : "Dialog",
 
-    /**
-     * Content that contains related information, such as a book. 
-     * @public
-     */
-    Document : "Document",
+	/**
+	 * A list of references to members of a single group.
+	 * 
+	 * @public
+	 */
+	Directory : "Directory",
 
-    /**
-     * Contains cells of tabular data arranged in rows and columns, for example in a table. 
-     * @public
-     */
-    Grid : "Grid",
+	/**
+	 * Content that contains related information, such as a book.
+	 * @public
+	 */
+	Document : "Document",
 
-    /**
-     * A table cell in a grid where the cells can be active, editable, and selectable.
-     * Cells may have functional relationships to controls, for example. 
-     * @public
-     */
-    GridCell : "GridCell",
+	/**
+	 * Contains cells of tabular data arranged in rows and columns, for example in a table.
+	 * @public
+	 */
+	Grid : "Grid",
 
-    /**
-     * A section of user interface objects. 
-     * @public
-     */
-    Group : "Group",
+	/**
+	 * A table cell in a grid where the cells can be active, editable, and selectable.
+	 * Cells may have functional relationships to controls, for example.
+	 * @public
+	 */
+	GridCell : "GridCell",
 
-    /**
-     * A heading for a section of the page. 
-     * @public
-     */
-    Heading : "Heading",
+	/**
+	 * A section of user interface objects.
+	 * @public
+	 */
+	Group : "Group",
 
-    /**
-     * A container for a collection of elements that form an image. 
-     * @public
-     */
-    Img : "Img",
+	/**
+	 * A heading for a section of the page.
+	 * @public
+	 */
+	Heading : "Heading",
 
-    /**
-     * An interactive reference to a resource. 
-     * @public
-     */
-    Link : "Link",
+	/**
+	 * A container for a collection of elements that form an image.
+	 * @public
+	 */
+	Img : "Img",
 
-    /**
-     * A container for non-interactive list items which are the children of the list. 
-     * @public
-     */
-    List : "List",
+	/**
+	 * An interactive reference to a resource.
+	 * @public
+	 */
+	Link : "Link",
 
-    /**
-     * A widget that allows the user to select one or more items from a list.
-     * The items within the list are static and can contain images. 
-     * @public
-     */
-    Listbox : "Listbox",
+	/**
+	 * A container for non-interactive list items which are the children of the list.
+	 * @public
+	 */
+	List : "List",
 
-    /**
-     * A single item in a list. 
-     * @public
-     */
-    ListItem : "ListItem",
+	/**
+	 * A widget that allows the user to select one or more items from a list.
+	 * The items within the list are static and can contain images.
+	 * @public
+	 */
+	Listbox : "Listbox",
 
-    /**
-     * An area where new information is added, or old information disappears.
-     * Information types are chat logs, messaging, or error logs, for example.
-     * The log contains a sequence: New information is always added to the end of the log. 
-     * @public
-     */
-    Log : "Log",
+	/**
+	 * A single item in a list.
+	 * @public
+	 */
+	ListItem : "ListItem",
 
-    /**
-     * Defines the main content of a document.
-     *  
-     * @public
-     */
-    Main : "Main",
+	/**
+	 * An area where new information is added, or old information disappears.
+	 * Information types are chat logs, messaging, or error logs, for example.
+	 * The log contains a sequence: New information is always added to the end of the log.
+	 * @public
+	 */
+	Log : "Log",
 
-    /**
-     * Is used to scroll text across the page.
-     *  
-     * @public
-     */
-    Marquee : "Marquee",
+	/**
+	 * Defines the main content of a document.
+	 * 
+	 * @public
+	 */
+	Main : "Main",
 
-    /**
-     * Offers a list of choices to the user.
-     *  
-     * @public
-     */
-    Menu : "Menu",
+	/**
+	 * Is used to scroll text across the page.
+	 * 
+	 * @public
+	 */
+	Marquee : "Marquee",
 
-    /**
-     * A container for menu items where each item may activate a submenu.
-     *  
-     * @public
-     */
-    Menubar : "Menubar",
+	/**
+	 * Offers a list of choices to the user.
+	 * 
+	 * @public
+	 */
+	Menu : "Menu",
 
-    /**
-     * A child in a menu. 
-     * @public
-     */
-    MenuItem : "MenuItem",
+	/**
+	 * A container for menu items where each item may activate a submenu.
+	 * 
+	 * @public
+	 */
+	Menubar : "Menubar",
 
-    /**
-     * A checkable menu item (tri-state). 
-     * @public
-     */
-    MenuItemCheckbox : "MenuItemCheckbox",
+	/**
+	 * A child in a menu.
+	 * @public
+	 */
+	MenuItem : "MenuItem",
 
-    /**
-     * A menu item which is part of a group of menuitemradio roles. 
-     * @public
-     */
-    MenuItemRadio : "MenuItemRadio",
+	/**
+	 * A checkable menu item (tri-state).
+	 * @public
+	 */
+	MenuItemCheckbox : "MenuItemCheckbox",
 
-    /**
-     * A collection of links suitable for use when navigating the document or related documents. 
-     * @public
-     */
-    Navigation : "Navigation",
+	/**
+	 * A menu item which is part of a group of menuitemradio roles.
+	 * @public
+	 */
+	MenuItemRadio : "MenuItemRadio",
 
-    /**
-     * The content is parenthetic or ancillary to the main content of the resource. 
-     * @public
-     */
-    Note : "Note",
+	/**
+	 * A collection of links suitable for use when navigating the document or related documents.
+	 * @public
+	 */
+	Navigation : "Navigation",
 
-    /**
-     * A selectable item in a list represented by a select.
-     *  
-     * @public
-     */
-    Option : "Option",
+	/**
+	 * The content is parenthetic or ancillary to the main content of the resource.
+	 * @public
+	 */
+	Note : "Note",
 
-    /**
-     * An element whose role is presentational does not need to be mapped to the accessibility API. 
-     * @public
-     */
-    Presentation : "Presentation",
+	/**
+	 * A selectable item in a list represented by a select.
+	 * 
+	 * @public
+	 */
+	Option : "Option",
 
-    /**
-     * Shows the execution progress in applications providing functions that take a long time. 
-     * @public
-     */
-    ProgressBar : "ProgressBar",
+	/**
+	 * An element whose role is presentational does not need to be mapped to the accessibility API.
+	 * @public
+	 */
+	Presentation : "Presentation",
 
-    /**
-     * An option in single-select list. Only one radio control in a radiogroup can be selected at the same time.
-     *  
-     * @public
-     */
-    Radio : "Radio",
+	/**
+	 * Shows the execution progress in applications providing functions that take a long time.
+	 * @public
+	 */
+	ProgressBar : "ProgressBar",
 
-    /**
-     * A group of radio controls. 
-     * @public
-     */
-    RadioGroup : "RadioGroup",
+	/**
+	 * An option in single-select list. Only one radio control in a radiogroup can be selected at the same time.
+	 * 
+	 * @public
+	 */
+	Radio : "Radio",
 
-    /**
-     * A large section on the web page. 
-     * @public
-     */
-    Region : "Region",
+	/**
+	 * A group of radio controls.
+	 * @public
+	 */
+	RadioGroup : "RadioGroup",
 
-    /**
-     * A row of table cells. 
-     * @public
-     */
-    Row : "Row",
+	/**
+	 * A large section on the web page.
+	 * @public
+	 */
+	Region : "Region",
 
-    /**
-     * A table cell containing header information for a row. 
-     * @public
-     */
-    RowHeader : "RowHeader",
+	/**
+	 * A row of table cells.
+	 * @public
+	 */
+	Row : "Row",
 
-    /**
-     * A search section of a web document. In many cases, this is a form used to submit search requests about the site,
-     * or a more general Internet wide search service. 
-     * @public
-     */
-    Search : "Search",
+	/**
+	 * A table cell containing header information for a row.
+	 * @public
+	 */
+	RowHeader : "RowHeader",
 
-    /**
-     * A unique section of the document. In the case of a portal, this may include time display, weather forecast,
-     * or stock price. 
-     * @public
-     */
-    Secondary : "Secondary",
+	/**
+	 * A search section of a web document. In many cases, this is a form used to submit search requests about the site,
+	 * or a more general Internet wide search service.
+	 * @public
+	 */
+	Search : "Search",
 
-    /**
-     * Indicates that the element contains content that is related to the main content of the page. 
-     * @public
-     */
-    SeeAlso : "SeeAlso",
+	/**
+	 * A unique section of the document. In the case of a portal, this may include time display, weather forecast,
+	 * or stock price.
+	 * @public
+	 */
+	Secondary : "Secondary",
 
-    /**
-     * A line or bar that separates sections of content. 
-     * @public
-     */
-    Separator : "Separator",
+	/**
+	 * Indicates that the element contains content that is related to the main content of the page.
+	 * @public
+	 */
+	SeeAlso : "SeeAlso",
 
-    /**
-     * A user input where the user selects an input in a given range. This form of range expects an analogous keyboard
-     * interface. 
-     * @public
-     */
-    Slider : "Slider",
+	/**
+	 * A line or bar that separates sections of content.
+	 * @public
+	 */
+	Separator : "Separator",
 
-    /**
-     * Allows users to select a value from a list of given entries where exactly one value is displayed at runtime, and
-     * the other ones can be displayed by scrolling using the arrow up and arrow down key.
-     *  
-     * @public
-     */
-    SpinButton : "SpinButton",
+	/**
+	 * A user input where the user selects an input in a given range. This form of range expects an analogous keyboard
+	 * interface.
+	 * @public
+	 */
+	Slider : "Slider",
 
-    /**
-     * A container for processing advisory information. 
-     * @public
-     */
-    Status : "Status",
+	/**
+	 * Allows users to select a value from a list of given entries where exactly one value is displayed at runtime, and
+	 * the other ones can be displayed by scrolling using the arrow up and arrow down key.
+	 * 
+	 * @public
+	 */
+	SpinButton : "SpinButton",
 
-    /**
-     * A header for a tab panel. 
-     * @public
-     */
-    Tab : "Tab",
+	/**
+	 * A container for processing advisory information.
+	 * @public
+	 */
+	Status : "Status",
 
-    /**
-     * A list of tabs which are references to tab panels.
-     *  
-     * @public
-     */
-    Tablist : "Tablist",
+	/**
+	 * A header for a tab panel.
+	 * @public
+	 */
+	Tab : "Tab",
 
-    /**
-     * A container for the resources associated with a tab. 
-     * @public
-     */
-    Tabpanel : "Tabpanel",
+	/**
+	 * A list of tabs which are references to tab panels.
+	 * 
+	 * @public
+	 */
+	Tablist : "Tablist",
 
-    /**
-     * Inputs that allow free-form text as their value. 
-     * @public
-     */
-    Textbox : "Textbox",
+	/**
+	 * A container for the resources associated with a tab.
+	 * @public
+	 */
+	Tabpanel : "Tabpanel",
 
-    /**
-     * A numerical counter which indicates an amount of elapsed time from a start point,
-     * or of the time remaining until a certain end point. 
-     * @public
-     */
-    Timer : "Timer",
+	/**
+	 * Inputs that allow free-form text as their value.
+	 * @public
+	 */
+	Textbox : "Textbox",
 
-    /**
-     * A collection of commonly used functions represented in compact visual form. 
-     * @public
-     */
-    Toolbar : "Toolbar",
+	/**
+	 * A numerical counter which indicates an amount of elapsed time from a start point,
+	 * or of the time remaining until a certain end point.
+	 * @public
+	 */
+	Timer : "Timer",
 
-    /**
-     * A popup that displays a description for an element when the user passes over or rests on that element.
-     * Supplement to the normal tooltip processing of the user agent.
-     *  
-     * @public
-     */
-    Tooltip : "Tooltip",
+	/**
+	 * A collection of commonly used functions represented in compact visual form.
+	 * @public
+	 */
+	Toolbar : "Toolbar",
 
-    /**
-     * A form of a list (tree) having groups (subtrees) inside groups (subtrees), where the sub trees can be collapsed and expanded.
-     *  
-     * @public
-     */
-    Tree : "Tree",
+	/**
+	 * A popup that displays a description for an element when the user passes over or rests on that element.
+	 * Supplement to the normal tooltip processing of the user agent.
+	 * 
+	 * @public
+	 */
+	Tooltip : "Tooltip",
 
-    /**
-     * A grid whose rows are expandable and collapsable in the same manner as the ones of trees. 
-     * @public
-     */
-    TreeGrid : "TreeGrid",
+	/**
+	 * A form of a list (tree) having groups (subtrees) inside groups (subtrees), where the sub trees can be collapsed and expanded.
+	 * 
+	 * @public
+	 */
+	Tree : "Tree",
 
-    /**
-     * A tree node 
-     * @public
-     */
-    TreeItem : "TreeItem"
+	/**
+	 * A grid whose rows are expandable and collapsable in the same manner as the ones of trees.
+	 * @public
+	 */
+	TreeGrid : "TreeGrid",
 
-  };
+	/**
+	 * A tree node
+	 * @public
+	 */
+	TreeItem : "TreeItem"
+
+};
 
 
 	return sap.ui.core.AccessibleRole;
@@ -80100,37 +90333,37 @@ sap.ui.define("sap/ui/core/BarColor", function() {
 /**
  * @class Configuration options for the colors of a progress bar
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.BarColor = {
-  
-    /**
-     * Color: blue (#b8d0e8) 
-     * @public
-     */
-    NEUTRAL : "NEUTRAL",
 
-    /**
-     * Color: green (#b5e7a8) 
-     * @public
-     */
-    POSITIVE : "POSITIVE",
+	/**
+	 * Color: blue (#b8d0e8)
+	 * @public
+	 */
+	NEUTRAL : "NEUTRAL",
 
-    /**
-     * Color: yellow (#faf2b0) 
-     * @public
-     */
-    CRITICAL : "CRITICAL",
+	/**
+	 * Color: green (#b5e7a8)
+	 * @public
+	 */
+	POSITIVE : "POSITIVE",
 
-    /**
-     * Color: red (#ff9a90) 
-     * @public
-     */
-    NEGATIVE : "NEGATIVE"
+	/**
+	 * Color: yellow (#faf2b0)
+	 * @public
+	 */
+	CRITICAL : "CRITICAL",
 
-  };
+	/**
+	 * Color: red (#ff9a90)
+	 * @public
+	 */
+	NEGATIVE : "NEGATIVE"
+
+};
 
 
 	return sap.ui.core.BarColor;
@@ -80155,6 +90388,7 @@ sap.ui.define('sap/ui/core/CSSColor',['sap/ui/base/DataType'], function(DataType
  * 	names like "green" and "darkblue" and values like "inherit" and "transparent".
  * 	The empty string is also allowed and has the same effect as setting no color.
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80187,6 +90421,7 @@ sap.ui.define('sap/ui/core/CSSSize',['sap/ui/base/DataType'], function(DataType)
  * @class A string type that represents CSS size values. Allowed values are CSS sizes like "1px" or "2em" or "50%", but also the special values "auto" and "inherit". 
  * Note that CSS does not allow all of these values for every CSS property representing a size. E.g. "auto" is not an allowed value for a padding size.
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80220,6 +90455,8 @@ sap.ui.define('sap/ui/core/CSSSizeShortHand',['sap/ui/base/DataType'], function(
  * 		padding definition. E.g. "1px 1px" or up to four values are allowed.
  * 	
 	 *
+	 * @author SAP AG
+ * @since 1.11.0
 	 * @static
 	 * @public
 	 */
@@ -80254,6 +90491,7 @@ sap.ui.define('sap/ui/core/Collision',['sap/ui/base/DataType'], function(DataTyp
  * directions this can be "flip", "fit" or "none". If only one behavior is provided it is applied to both directions.
  * Examples: "flip", "fit none".
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80286,25 +90524,25 @@ sap.ui.define("sap/ui/core/Design", function() {
 /**
  * @class Font design for texts
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.Design = {
-  
-    /**
-     * Standard font 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Mono space font 
-     * @public
-     */
-    Monospace : "Monospace"
+	/**
+	 * Standard font
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * Mono space font
+	 * @public
+	 */
+	Monospace : "Monospace"
+
+};
 
 
 	return sap.ui.core.Design;
@@ -80331,6 +90569,7 @@ sap.ui.define('sap/ui/core/Dock',['sap/ui/base/DataType'], function(DataType) {
  * dependent on the text direction. For the vertical position possible values are "top", "center" and "bottom".
  * Examples: "left top", "end bottom", "center center".
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80363,43 +90602,43 @@ sap.ui.define("sap/ui/core/HorizontalAlign", function() {
 /**
  * @class Configuration options for horizontal alignments of controls
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.HorizontalAlign = {
-  
-    /**
-     * Locale-specific positioning at the beginning of the line 
-     * @public
-     */
-    Begin : "Begin",
 
-    /**
-     * Locale-specific positioning at the end of the line 
-     * @public
-     */
-    End : "End",
+	/**
+	 * Locale-specific positioning at the beginning of the line
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * Hard option for left alignment 
-     * @public
-     */
-    Left : "Left",
+	/**
+	 * Locale-specific positioning at the end of the line
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * Hard option for right alignment 
-     * @public
-     */
-    Right : "Right",
+	/**
+	 * Hard option for left alignment
+	 * @public
+	 */
+	Left : "Left",
 
-    /**
-     * Centered alignment of text 
-     * @public
-     */
-    Center : "Center"
+	/**
+	 * Hard option for right alignment
+	 * @public
+	 */
+	Right : "Right",
 
-  };
+	/**
+	 * Centered alignment of text
+	 * @public
+	 */
+	Center : "Center"
+
+};
 
 
 	return sap.ui.core.HorizontalAlign;
@@ -80421,6 +90660,7 @@ sap.ui.define('sap/ui/core/ID',['sap/ui/base/DataType'], function(DataType) {
 	/**
  * @class A string type representing an Id or a name.
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80453,43 +90693,43 @@ sap.ui.define("sap/ui/core/IconColor", function() {
 /**
  * @class Semantic Colors of an icon.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.IconColor = {
-  
-    /**
-     * Default color (brand color) 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Positive color 
-     * @public
-     */
-    Positive : "Positive",
+	/**
+	 * Default color (brand color)
+	 * @public
+	 */
+	Default : "Default",
 
-    /**
-     * Negative color 
-     * @public
-     */
-    Negative : "Negative",
+	/**
+	 * Positive color
+	 * @public
+	 */
+	Positive : "Positive",
 
-    /**
-     * Critical color 
-     * @public
-     */
-    Critical : "Critical",
+	/**
+	 * Negative color
+	 * @public
+	 */
+	Negative : "Negative",
 
-    /**
-     * Neutral color. 
-     * @public
-     */
-    Neutral : "Neutral"
+	/**
+	 * Critical color
+	 * @public
+	 */
+	Critical : "Critical",
 
-  };
+	/**
+	 * Neutral color.
+	 * @public
+	 */
+	Neutral : "Neutral"
+
+};
 
 
 	return sap.ui.core.IconColor;
@@ -80512,37 +90752,37 @@ sap.ui.define("sap/ui/core/ImeMode", function() {
 /**
  * @class State of the Input Method Editor (IME) for the control. Depending on its value, it allows users to enter and edit for example Chinese characters.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.ImeMode = {
-  
-    /**
-     * The value is automatically computed by the user agent. 
-     * @public
-     */
-    Auto : "Auto",
 
-    /**
-     * IME is used for entering characters. 
-     * @public
-     */
-    Active : "Active",
+	/**
+	 * The value is automatically computed by the user agent.
+	 * @public
+	 */
+	Auto : "Auto",
 
-    /**
-     * IME is not used for entering characters. 
-     * @public
-     */
-    Inactive : "Inactive",
+	/**
+	 * IME is used for entering characters.
+	 * @public
+	 */
+	Active : "Active",
 
-    /**
-     * IME is disabled. 
-     * @public
-     */
-    Disabled : "Disabled"
+	/**
+	 * IME is not used for entering characters.
+	 * @public
+	 */
+	Inactive : "Inactive",
 
-  };
+	/**
+	 * IME is disabled.
+	 * @public
+	 */
+	Disabled : "Disabled"
+
+};
 
 
 	return sap.ui.core.ImeMode;
@@ -80552,6 +90792,7 @@ sap.ui.core.ImeMode = {
  *   Marker interface for controls which are suitable for use as label.
  *   
  *
+ * @author SAP
  * @name sap.ui.core.Label
  * @interface
  * @public
@@ -80575,43 +90816,43 @@ sap.ui.define("sap/ui/core/MessageType", function() {
 /**
  * @class Defines the different message types of a message
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.MessageType = {
-  
-    /**
-     * Message should be just an information 
-     * @public
-     */
-    Information : "Information",
 
-    /**
-     * Message is a warning 
-     * @public
-     */
-    Warning : "Warning",
+	/**
+	 * Message should be just an information
+	 * @public
+	 */
+	Information : "Information",
 
-    /**
-     * Message is an error 
-     * @public
-     */
-    Error : "Error",
+	/**
+	 * Message is a warning
+	 * @public
+	 */
+	Warning : "Warning",
 
-    /**
-     * Message has no specific level 
-     * @public
-     */
-    None : "None",
+	/**
+	 * Message is an error
+	 * @public
+	 */
+	Error : "Error",
 
-    /**
-     * Message is an success message 
-     * @public
-     */
-    Success : "Success"
+	/**
+	 * Message has no specific level
+	 * @public
+	 */
+	None : "None",
 
-  };
+	/**
+	 * Message is an success message
+	 * @public
+	 */
+	Success : "Success"
+
+};
 
 
 	return sap.ui.core.MessageType;
@@ -80634,40 +90875,82 @@ sap.ui.define("sap/ui/core/OpenState", function() {
 /**
  * @class Defines the different possible states of an element that can be open or closed and does not only toggle between these states, but also spends some time in between (e.g. because of an animation).
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.OpenState = {
-  
-    /**
-     * Open and currently not changing states. 
-     * @public
-     */
-    OPEN : "OPEN",
 
-    /**
-     * Closed and currently not changing states. 
-     * @public
-     */
-    CLOSED : "CLOSED",
+	/**
+	 * Open and currently not changing states.
+	 * @public
+	 */
+	OPEN : "OPEN",
 
-    /**
-     * Already left the CLOSED state, is not OPEN yet, but in the process of getting OPEN. 
-     * @public
-     */
-    OPENING : "OPENING",
+	/**
+	 * Closed and currently not changing states.
+	 * @public
+	 */
+	CLOSED : "CLOSED",
 
-    /**
-     * Still open, but in the process of going to the CLOSED state. 
-     * @public
-     */
-    CLOSING : "CLOSING"
+	/**
+	 * Already left the CLOSED state, is not OPEN yet, but in the process of getting OPEN.
+	 * @public
+	 */
+	OPENING : "OPENING",
 
-  };
+	/**
+	 * Still open, but in the process of going to the CLOSED state.
+	 * @public
+	 */
+	CLOSING : "CLOSING"
+
+};
 
 
 	return sap.ui.core.OpenState;
+}, /* bExport = */ true);
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.type, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides enumeration sap.ui.core.Orientation.
+sap.ui.define("sap/ui/core/Orientation", function() {
+	"use strict";
+
+/**
+ * @class Orientation of an UI element
+ *
+ * @version 1.22.4
+ * @static
+ * @public
+ * @since 1.22
+ */
+sap.ui.core.Orientation = {
+
+	/**
+	 * Arrange Horizontally
+	 * @public
+	 */
+	Horizontal : "Horizontal",
+
+	/**
+	 * Arrange Vertically
+	 * @public
+	 */
+	Vertical : "Vertical"
+
+};
+
+
+	return sap.ui.core.Orientation;
 }, /* bExport = */ true);
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -80686,6 +90969,7 @@ sap.ui.define('sap/ui/core/Percentage',['sap/ui/base/DataType'], function(DataTy
 	/**
  * @class A string type that represents a percentage value.
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -80706,6 +90990,8 @@ sap.ui.define('sap/ui/core/Percentage',['sap/ui/base/DataType'], function(DataTy
  * 
  * Such controls are handled differently during rendering.
  *
+ * @author SAP
+ * @since 1.19.0
  * @name sap.ui.core.PopupInterface
  * @interface
  * @public
@@ -80729,37 +91015,37 @@ sap.ui.define("sap/ui/core/ScrollBarAction", function() {
 /**
  * @class Actions are: Click on track, button, drag of thumb, or mouse wheel click
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.ScrollBarAction = {
-  
-    /**
-     * Single step scrolling caused by clicking an arrow button or arrow key. 
-     * @public
-     */
-    Step : "Step",
 
-    /**
-     * Range scrolling caused by clicking track area or using page up or page down key. 
-     * @public
-     */
-    Page : "Page",
+	/**
+	 * Single step scrolling caused by clicking an arrow button or arrow key.
+	 * @public
+	 */
+	Step : "Step",
 
-    /**
-     * Scrolling done by mouse wheel 
-     * @public
-     */
-    MouseWheel : "MouseWheel",
+	/**
+	 * Range scrolling caused by clicking track area or using page up or page down key.
+	 * @public
+	 */
+	Page : "Page",
 
-    /**
-     * Scrolling done by dragging the scroll bar's paint thumb 
-     * @public
-     */
-    Drag : "Drag"
+	/**
+	 * Scrolling done by mouse wheel
+	 * @public
+	 */
+	MouseWheel : "MouseWheel",
 
-  };
+	/**
+	 * Scrolling done by dragging the scroll bar's paint thumb
+	 * @public
+	 */
+	Drag : "Drag"
+
+};
 
 
 	return sap.ui.core.ScrollBarAction;
@@ -80782,37 +91068,37 @@ sap.ui.define("sap/ui/core/Scrolling", function() {
 /**
  * @class Defines the possible values for horizontal and vertical scrolling behavior.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.Scrolling = {
-  
-    /**
-     * No scroll bar provided even if the content is larger than the available space. 
-     * @public
-     */
-    None : "None",
 
-    /**
-     * A scroll bar is shown if the content requires more space than the given space (rectangle) provides. 
-     * @public
-     */
-    Auto : "Auto",
+	/**
+	 * No scroll bar provided even if the content is larger than the available space.
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * A scroll bar is always shown even if the space is large enough for the current content. 
-     * @public
-     */
-    Scroll : "Scroll",
+	/**
+	 * A scroll bar is shown if the content requires more space than the given space (rectangle) provides.
+	 * @public
+	 */
+	Auto : "Auto",
 
-    /**
-     * No scroll bar is shown, and the content stays in the given rectangle. 
-     * @public
-     */
-    Hidden : "Hidden"
+	/**
+	 * A scroll bar is always shown even if the space is large enough for the current content.
+	 * @public
+	 */
+	Scroll : "Scroll",
 
-  };
+	/**
+	 * No scroll bar is shown, and the content stays in the given rectangle.
+	 * @public
+	 */
+	Hidden : "Hidden"
+
+};
 
 
 	return sap.ui.core.Scrolling;
@@ -80835,43 +91121,43 @@ sap.ui.define("sap/ui/core/TextAlign", function() {
 /**
  * @class Configuration options for text alignments.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.TextAlign = {
-  
-    /**
-     * Locale-specific positioning at the beginning of the line. 
-     * @public
-     */
-    Begin : "Begin",
 
-    /**
-     * Locale-specific positioning at the end of the line. 
-     * @public
-     */
-    End : "End",
+	/**
+	 * Locale-specific positioning at the beginning of the line.
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * Hard option for left alignment. 
-     * @public
-     */
-    Left : "Left",
+	/**
+	 * Locale-specific positioning at the end of the line.
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * Hard option for right alignment. 
-     * @public
-     */
-    Right : "Right",
+	/**
+	 * Hard option for left alignment.
+	 * @public
+	 */
+	Left : "Left",
 
-    /**
-     * Centered text alignment. 
-     * @public
-     */
-    Center : "Center"
+	/**
+	 * Hard option for right alignment.
+	 * @public
+	 */
+	Right : "Right",
 
-  };
+	/**
+	 * Centered text alignment.
+	 * @public
+	 */
+	Center : "Center"
+
+};
 
 
 	return sap.ui.core.TextAlign;
@@ -80894,31 +91180,31 @@ sap.ui.define("sap/ui/core/TextDirection", function() {
 /**
  * @class Configuration options for the direction of texts.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.TextDirection = {
-  
-    /**
-     * Specifies left-to-right text direction. 
-     * @public
-     */
-    LTR : "LTR",
 
-    /**
-     * Specifies right-to-left text direction. 
-     * @public
-     */
-    RTL : "RTL",
+	/**
+	 * Specifies left-to-right text direction.
+	 * @public
+	 */
+	LTR : "LTR",
 
-    /**
-     * Inherits the direction from its parent control/container. 
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * Specifies right-to-left text direction.
+	 * @public
+	 */
+	RTL : "RTL",
 
-  };
+	/**
+	 * Inherits the direction from its parent control/container.
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 
 
 	return sap.ui.core.TextDirection;
@@ -80941,60 +91227,72 @@ sap.ui.define("sap/ui/core/TitleLevel", function() {
 /**
  * @class Level of a title.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.9.1
  */
 sap.ui.core.TitleLevel = {
-  
-    /**
-     * The level of the title is choosen by the control rendering the title. 
-     * @public
-     */
-    Auto : "Auto",
 
-    /**
-     * The Title is of level 1. 
-     * @public
-     */
-    H1 : "H1",
+	/**
+	 * The level of the title is choosen by the control rendering the title.
+	 * @public
+	 */
+	Auto : "Auto",
 
-    /**
-     * The Title is of level 2 
-     * @public
-     */
-    H2 : "H2",
+	/**
+	 * The Title is of level 1.
+	 * @public
+	 */
+	H1 : "H1",
 
-    /**
-     * The Title is of level 3 
-     * @public
-     */
-    H3 : "H3",
+	/**
+	 * The Title is of level 2
+	 * @public
+	 */
+	H2 : "H2",
 
-    /**
-     * The Title is of level 4 
-     * @public
-     */
-    H4 : "H4",
+	/**
+	 * The Title is of level 3
+	 * @public
+	 */
+	H3 : "H3",
 
-    /**
-     * The Title is of level 5 
-     * @public
-     */
-    H5 : "H5",
+	/**
+	 * The Title is of level 4
+	 * @public
+	 */
+	H4 : "H4",
 
-    /**
-     * The Title is of level 6 
-     * @public
-     */
-    H6 : "H6"
+	/**
+	 * The Title is of level 5
+	 * @public
+	 */
+	H5 : "H5",
 
-  };
+	/**
+	 * The Title is of level 6
+	 * @public
+	 */
+	H6 : "H6"
+
+};
 
 
 	return sap.ui.core.TitleLevel;
 }, /* bExport = */ true);
+/**
+ * 
+ * 	Marker interface for toolbar controls.
+ * 	
+ *
+ * @author SAP AG
+ * @since 1.21.0
+ * @name sap.ui.core.Toolbar
+ * @interface
+ * @public
+ */
+
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -81012,6 +91310,7 @@ sap.ui.define('sap/ui/core/URI',['sap/ui/base/DataType'], function(DataType) {
 	/**
  * @class A string type that represents an RFC 3986 conformant URI.
 	 *
+	 * @author SAP AG
 	 * @static
 	 * @public
 	 */
@@ -81044,37 +91343,37 @@ sap.ui.define("sap/ui/core/ValueState", function() {
 /**
  * @class Marker for the correctness of the current value.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.ValueState = {
-  
-    /**
-     * State is not valid. 
-     * @public
-     */
-    Error : "Error",
 
-    /**
-     * State is valid but with a warning. 
-     * @public
-     */
-    Warning : "Warning",
+	/**
+	 * State is not valid.
+	 * @public
+	 */
+	Error : "Error",
 
-    /**
-     * State is valid. 
-     * @public
-     */
-    Success : "Success",
+	/**
+	 * State is valid but with a warning.
+	 * @public
+	 */
+	Warning : "Warning",
 
-    /**
-     * State is not specified. 
-     * @public
-     */
-    None : "None"
+	/**
+	 * State is valid.
+	 * @public
+	 */
+	Success : "Success",
 
-  };
+	/**
+	 * State is not specified.
+	 * @public
+	 */
+	None : "None"
+
+};
 
 
 	return sap.ui.core.ValueState;
@@ -81099,45 +91398,45 @@ sap.ui.define("sap/ui/core/VerticalAlign", function() {
  * Configuration options for vertical alignments, for example of a layout cell content within the borders.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.VerticalAlign = {
-  
-    /**
-     * 
-     * Content is aligned at the bottom.
-     *  
-     * @public
-     */
-    Bottom : "Bottom",
 
-    /**
-     * 
-     * Content is centered vertically .
-     *  
-     * @public
-     */
-    Middle : "Middle",
+	/**
+	 * 
+	 * Content is aligned at the bottom.
+	 * 
+	 * @public
+	 */
+	Bottom : "Bottom",
 
-    /**
-     * 
-     * Content is aligned at the top.
-     *  
-     * @public
-     */
-    Top : "Top",
+	/**
+	 * 
+	 * Content is centered vertically .
+	 * 
+	 * @public
+	 */
+	Middle : "Middle",
 
-    /**
-     * 
-     * Content respect the parent's vertical alignment.
-     *  
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * 
+	 * Content is aligned at the top.
+	 * 
+	 * @public
+	 */
+	Top : "Top",
 
-  };
+	/**
+	 * 
+	 * Content respect the parent's vertical alignment.
+	 * 
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 
 
 	return sap.ui.core.VerticalAlign;
@@ -81160,37 +91459,37 @@ sap.ui.define("sap/ui/core/Wrapping", function() {
 /**
  * @class Configuration options for text wrapping.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.Wrapping = {
-  
-    /**
-     * The standard browser behavior is considered for wrapping. 
-     * @public
-     */
-    None : "None",
 
-    /**
-     * The text is actually on the same line but displayed within several lines. 
-     * @public
-     */
-    Soft : "Soft",
+	/**
+	 * The standard browser behavior is considered for wrapping.
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * Inserts actual line breaks in the text at the wrap point. 
-     * @public
-     */
-    Hard : "Hard",
+	/**
+	 * The text is actually on the same line but displayed within several lines.
+	 * @public
+	 */
+	Soft : "Soft",
 
-    /**
-     * Wrapping shall not be allowed. 
-     * @public
-     */
-    Off : "Off"
+	/**
+	 * Inserts actual line breaks in the text at the wrap point.
+	 * @public
+	 */
+	Hard : "Hard",
 
-  };
+	/**
+	 * Wrapping shall not be allowed.
+	 * @public
+	 */
+	Off : "Off"
+
+};
 
 
 	return sap.ui.core.Wrapping;
@@ -81213,43 +91512,43 @@ sap.ui.define("sap/ui/core/mvc/ViewType", function() {
 /**
  * @class Specifies possible view types
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.mvc.ViewType = {
-  
-    /**
-     * JSON View 
-     * @public
-     */
-    JSON : "JSON",
 
-    /**
-     * XML view 
-     * @public
-     */
-    XML : "XML",
+	/**
+	 * JSON View
+	 * @public
+	 */
+	JSON : "JSON",
 
-    /**
-     * HTML view 
-     * @public
-     */
-    HTML : "HTML",
+	/**
+	 * XML view
+	 * @public
+	 */
+	XML : "XML",
 
-    /**
-     * JS View 
-     * @public
-     */
-    JS : "JS",
+	/**
+	 * HTML view
+	 * @public
+	 */
+	HTML : "HTML",
 
-    /**
-     * Template View 
-     * @public
-     */
-    Template : "Template"
+	/**
+	 * JS View
+	 * @public
+	 */
+	JS : "JS",
 
-  };
+	/**
+	 * Template View
+	 * @public
+	 */
+	Template : "Template"
+
+};
 
 
 	return sap.ui.core.mvc.ViewType;
@@ -81272,37 +91571,37 @@ sap.ui.define("sap/ui/core/routing/HistoryDirection", function() {
 /**
  * @class Enumaration for different HistoryDirections
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.core.routing.HistoryDirection = {
-  
-    /**
-     * The page has already been navigated to and it was the successor of the previous page 
-     * @public
-     */
-    Forwards : "Forwards",
 
-    /**
-     * The page has already been navigated to and it was the precessor of the previous page 
-     * @public
-     */
-    Backwards : "Backwards",
+	/**
+	 * The page has already been navigated to and it was the successor of the previous page
+	 * @public
+	 */
+	Forwards : "Forwards",
 
-    /**
-     * A new Entry is added to the history 
-     * @public
-     */
-    NewEntry : "NewEntry",
+	/**
+	 * The page has already been navigated to and it was the precessor of the previous page
+	 * @public
+	 */
+	Backwards : "Backwards",
 
-    /**
-     * A Navigation took place, but it could be any of the other three states 
-     * @public
-     */
-    Unknown : "Unknown"
+	/**
+	 * A new Entry is added to the history
+	 * @public
+	 */
+	NewEntry : "NewEntry",
 
-  };
+	/**
+	 * A Navigation took place, but it could be any of the other three states
+	 * @public
+	 */
+	Unknown : "Unknown"
+
+};
 
 
 	return sap.ui.core.routing.HistoryDirection;
@@ -81369,7 +91668,7 @@ sap.ui.define("sap/ui/core/plugin/TemplatingSupport",['jquery.sap.global', 'sap/
 	 * @author Peter Muessig
 	 * @public
 	 * @since 1.15.0
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.core.plugin.TemplatingSupport
 	 */
 	var TemplatingSupport = function() {
@@ -81477,7 +91776,7 @@ sap.ui.define("sap/ui/core/search/SearchProvider",['sap/ui/core/library','sap/ui
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -81723,7 +92022,33 @@ sap.ui.define("sap/ui/core/theming/Parameters",['jquery.sap.global', 'sap/ui/cor
 			}
 		};
 	
-	
+		/**
+		 * Helper function to get an image URL based on a given theme parameter.
+		 * 
+		 * @private
+		 * @name sap.ui.core.theming.Parameters._getThemeImage
+		 * @param {string} sParamName the theme parameter which contains the logo definition. If nothing is defined the parameter 'sapUiGlobalLogo' is used.
+		 * @param {boolean} bForce whether a valid URL should be returned even if there is no logo defined.
+		 * @function
+		 */
+		Parameters._getThemeImage = function(sParamName, bForce) {
+			sParamName = sParamName || "sapUiGlobalLogo";
+			var logo = sap.ui.core.theming.Parameters.get(sParamName);
+			if(logo){
+				var match = /url[\s]*\('?"?([^\'")]*)'?"?\)/.exec(logo);
+				if(match){
+					logo = match[1];
+				}else if(logo === "''"){
+					logo = null;
+				}
+			}
+			
+			if(!!bForce && !logo){
+				return sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif');
+			}
+			
+			return logo;
+		};
 	
 
 	return Parameters;
@@ -81791,7 +92116,7 @@ sap.ui.define("sap/ui/core/tmpl/DOMAttribute",['sap/ui/core/library','sap/ui/cor
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -81896,6 +92221,433 @@ sap.ui.core.tmpl.DOMAttribute.prototype.setValue = function(sValue) {
 }, /* bExport = */ true);
 
 }; // end of sap/ui/core/tmpl/DOMAttribute.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.ExportCell') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.ExportCell
+jQuery.sap.declare('sap.ui.core.util.ExportCell'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/ExportCell",['jquery.sap.global', 'sap/ui/core/Element'],
+	function(jQuery, Element) {
+	'use strict';
+
+	/**
+	 * Constructor for a new ExportCell.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getContent content} : string</li></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * Contains content that can be used to export data. Used in {@link sap.ui.core.util.ExportColumn ExportColumn} / {@link sap.ui.core.util.Export Export}.
+	 * @extends sap.ui.core.Element
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.ExportCell
+	 */
+	var ExportCell = Element.extend('sap.ui.core.util.ExportCell', {
+		metadata: {
+			properties: {
+				content: 'string'
+			}
+		}
+	});
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.ExportCell with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.ExportCell.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>content</code>.
+	 * Cell content.
+	 *
+	 * Default value is empty/<code>undefined</code>
+	 *
+	 * @return {string} the value of property <code>content</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportCell#getContent
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>content</code>.
+	 *
+	 * Default value is empty/<code>undefined</code> 
+	 *
+	 * @param {string} sContent  new value for property <code>content</code>
+	 * @return {sap.ui.core.util.ExportCell} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportCell#setContent
+	 * @function
+	 */
+
+	return ExportCell;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/ExportCell.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.ExportColumn') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.ExportColumn
+jQuery.sap.declare('sap.ui.core.util.ExportColumn'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/ExportColumn",['jquery.sap.global', 'sap/ui/base/ManagedObject', './ExportCell'],
+	function(jQuery, ManagedObject, ExportCell) {
+	'use strict';
+
+	/**
+	 * Constructor for a new ExportCell.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getName name} : string</li></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul>
+	 * <li>{@link #getTemplate template} : sap.ui.core.util.ExportCell</li>
+	 * </ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * Can have a name and a cell template.
+	 * @extends sap.ui.base.ManagedObject
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn
+	 */
+	var ExportColumn = ManagedObject.extend("sap.ui.core.util.ExportColumn", {
+		metadata: {
+			properties: {
+				name: "string"
+			},
+			aggregations: {
+				template: {
+					type: "sap.ui.core.util.ExportCell",
+					multiple: false
+				}
+			}
+		}
+	});
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.ExportColumn with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.ExportColumn.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>name</code>.
+	 * Column name.
+	 *
+	 * Default value is empty/<code>undefined</code>
+	 *
+	 * @return {string} the value of property <code>name</code>
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn#getName
+	 * @function
+	 */
+
+	/**
+	 * Setter for property <code>name</code>.
+	 *
+	 * Default value is empty/<code>undefined</code> 
+	 *
+	 * @param {string} sName  new value for property <code>content</code>
+	 * @return {sap.ui.core.util.ExportColumn} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn#setName
+	 * @function
+	 */
+
+	/**
+	 * Getter for aggregation <code>template</code>.<br/>
+	 * Cell template for column.
+	 *
+	 * @return {sap.ui.core.util.ExportCell}
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn#getTemplate
+	 * @function
+	 */
+
+	/**
+	 * Setter for the aggregated <code>template</code>.
+	 * @param {sap.ui.core.util.ExportCell} oTemplate
+	 * @return {sap.ui.core.util.ExportColumn} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn#setTemplate
+	 * @function
+	 */
+
+	/**
+	 * Destroys the template in the aggregation 
+	 * named <code>template</code>.
+	 * @return {sap.ui.core.util.ExportColumn} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportColumn#destroyTemplate
+	 * @function
+	 */
+
+	return ExportColumn;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/ExportColumn.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.ExportRow') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.ExportRow
+jQuery.sap.declare('sap.ui.core.util.ExportRow'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/ExportRow",['jquery.sap.global', 'sap/ui/base/ManagedObject', './ExportCell'],
+	function(jQuery, ManagedObject, ExportCell) {
+	'use strict';
+
+	/**
+	 * Constructor for a new ExportRow.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul>
+	 * <li>{@link #getCells cells} : sap.ui.core.util.ExportCell[]</li>
+	 * </ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * Internally used in {@link sap.ui.core.util.Export Export}.
+	 * @extends sap.ui.base.ManagedObject
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.ExportRow
+	 */
+	var ExportRow = ManagedObject.extend("sap.ui.core.util.ExportRow", {
+		metadata: {
+			aggregations: {
+				cells: {
+					type: "sap.ui.core.util.ExportCell",
+					multiple: true
+				}
+			}
+		}
+	});
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.ExportRow with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.ExportRow.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for aggregation <code>cells</code>.<br/>
+	 * Cells for the Export.
+	 *
+	 * @return {sap.ui.core.util.ExportCell[]}
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#getCells
+	 * @function
+	 */
+
+	/**
+	 * Inserts a cell into the aggregation named <code>cells</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportCell}
+	 *          oCell the cell to insert; if empty, nothing is inserted
+	 * @param {int}
+	 *             iIndex the <code>0</code>-based index the cell should be inserted at; for
+	 *             a negative value of <code>iIndex</code>, the cell is inserted at position 0; for a value
+	 *             greater than the current size of the aggregation, the cell is inserted at
+	 *             the last position
+	 * @return {sap.ui.core.util.ExportRow} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#insertCell
+	 * @function
+	 */
+
+	/**
+	 * Adds some cell <code>oCell</code> 
+	 * to the aggregation named <code>cells</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportCell}
+	 *            oCell the cell to add; if empty, nothing is inserted
+	 * @return {sap.ui.core.util.ExportRow} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#addCell
+	 * @function
+	 */
+
+	/**
+	 * Removes an cell from the aggregation named <code>cells</code>.
+	 *
+	 * @param {int | string | sap.ui.core.util.ExportCell} vCell the cell to remove or its index or id
+	 * @return {sap.ui.core.util.ExportCell} the removed cell or null
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#removeCell
+	 * @function
+	 */
+
+	/**
+	 * Removes all the controls in the aggregation named <code>cells</code>.<br/>
+	 * Additionally unregisters them from the hosting UIArea.
+	 * @return {sap.ui.core.util.ExportCell[]} an array of the removed elements (might be empty)
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#removeAllCells
+	 * @function
+	 */
+
+	/**
+	 * Checks for the provided <code>sap.ui.core.util.ExportCell</code> in the aggregation named <code>cells</code> 
+	 * and returns its index if found or -1 otherwise.
+	 *
+	 * @param {sap.ui.core.util.ExportCell}
+	 *            oCell the cell whose index is looked for.
+	 * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#indexOfCell
+	 * @function
+	 */
+
+	/**
+	 * Destroys all the cells in the aggregation 
+	 * named <code>cells</code>.
+	 * @return {sap.ui.core.util.ExportRow} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.ExportRow#destroyCells
+	 * @function
+	 */
+
+	return ExportRow;
+
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/ExportRow.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.CustomData') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -81957,7 +92709,7 @@ sap.ui.define("sap/ui/core/CustomData",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -82134,7 +92886,7 @@ sap.ui.define("sap/ui/core/EnabledPropagator",['jquery.sap.global', './Control']
 	 * </code>
 	 *
 	 * @author Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @param {boolean} [bDefault=true] the value that should be used as default value for the enhancement of the control.
 	 * @param {boolean} [bLegacy=false] whether the introduced property should use the old name 'Enabled' 
 	 * @public
@@ -82263,8 +93015,8 @@ sap.ui.define("sap/ui/core/HTML",['./library','./Control'], function() {
  * For further hints about usage restrictions for this control, see also the documentation of the 'content' property.
  * @extends sap.ui.core.Control
  *
- * @author Frank Weigel 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -82336,9 +93088,9 @@ sap.ui.core.HTML.M_EVENTS = {'afterRendering':'afterRendering'};
  * @param {string} sContent  new value for property <code>content</code>
  * @return {sap.ui.core.HTML} <code>this</code> to allow method chaining
  * @public
- * @SecSink {,XSS} The content of the 'content' property is rendered 1:1 to allow the full flexibility of HTML in UI5 applications. 
-		Applications therefore must ensure, that they don't set malicious content (e.g. derived from user input). UI5 does not provide an HTML validation function. 
-		jQuery.sap.encodeHTML will encode any HTML relevant character, but this is in nearly all cases not what applications want here.
+ * @SecSink {,XSS} The content of the 'content' property is rendered 1:1 to allow the full flexibility of HTML in UI5 applications.
+ * Applications therefore must ensure, that they don't set malicious content (e.g. derived from user input). UI5 does not provide an HTML validation function.
+ * jQuery.sap.encodeHTML will encode any HTML relevant character, but this is in nearly all cases not what applications want here.
  * @name sap.ui.core.HTML#setContent
  * @function
  */
@@ -82685,7 +93437,7 @@ sap.ui.define("sap/ui/core/Icon",['./library','./Control','./IconPool'], functio
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83089,7 +93841,7 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.Icon} <code>this</code> to allow method chaining
  * @protected
@@ -83110,20 +93862,13 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
  * @private
  */
 sap.ui.core.Icon.prototype.onAfterRendering = function() {
-	var $this = this.$();
-
-	// When cursor CSS style is set via CSS class,
-	// chrome doesn't return the set value by calling domNode.style.cursor,
-	// therefore inline style has to be set here.
-	if (sap.ui.Device.browser.chrome && this.hasListeners("press")) {
-		$this.css("cursor", "pointer");
-	}
+	var $Icon = this.$();
 
 	// This is to check if no cursor property inherited from parent DOM.
 	// If the current value is auto, set it to default.
 	// This is to fix the cursor: auto interpreted as text cursor in firefox and IE.
-	if ($this.css("cursor") === "auto") {
-		$this.css("cursor", "default");
+	if ($Icon.css("cursor") === "auto") {
+		$Icon.css("cursor", "default");
 	}
 };
 
@@ -83141,30 +93886,30 @@ sap.ui.core.Icon.prototype.onmousedown = function(oEvent) {
 
 	this._bPressFired = false;
 
-	if (oEvent.srcControl.mEventRegistry["press"] || oEvent.srcControl.mEventRegistry["tap"]) {
+	if (this.hasListeners("press") || this.hasListeners("tap")) {
 
-		// mark the event for components that needs to know if the event was handled by this component
+		// mark the event for components that needs to know if the event was handled
 		oEvent.setMarked();
 	}
 
 	var sActiveColor = this.getActiveColor(),
 		sActiveBackgroundColor = this.getActiveBackgroundColor(),
-		$this;
+		$Icon;
 
 	if (sActiveColor || sActiveBackgroundColor) {
 
 		// change the source only when the first finger is on the Icon, the following fingers doesn't affect
 		if (!oEvent.targetTouches || (oEvent.targetTouches && oEvent.targetTouches.length === 1)) {
-			$this = this.$();
+			$Icon = this.$();
 
-			$this.addClass("sapUiIconActive");
+			$Icon.addClass("sapUiIconActive");
 
 			if (sActiveColor) {
-				$this.css("color", sActiveColor);
+				$Icon.css("color", sActiveColor);
 			}
 
 			if (sActiveBackgroundColor) {
-				$this.css("background-color", sActiveBackgroundColor);
+				$Icon.css("background-color", sActiveBackgroundColor);
 			}
 		}
 	}
@@ -83219,14 +93964,14 @@ sap.ui.core.Icon.prototype.onmouseover = function() {
 
 	var sHoverColor = this.getHoverColor(),
 		sHoverBackgroundColor = this.getHoverBackgroundColor(),
-		$this = this.$();
+		$Icon = this.$();
 
 	if (sHoverColor) {
-		$this.css("color", sHoverColor);
+		$Icon.css("color", sHoverColor);
 	}
 
 	if (sHoverBackgroundColor) {
-		$this.css("background-color", sHoverBackgroundColor);
+		$Icon.css("background-color", sHoverBackgroundColor);
 	}
 };
 
@@ -83272,18 +94017,18 @@ sap.ui.core.Icon.prototype.onkeydown = function(oEvent) {
 		// note: prevent document scrolling
 		oEvent.preventDefault();
 
-		var $this = this.$(),
+		var $Icon = this.$(),
 			sActiveColor = this.getActiveColor(),
 			sActiveBackgroundColor = this.getActiveBackgroundColor();
 
-		$this.addClass("sapUiIconActive");
+		$Icon.addClass("sapUiIconActive");
 
 		if (sActiveColor) {
-			$this.css("color", sActiveColor);
+			$Icon.css("color", sActiveColor);
 		}
 
 		if (sActiveBackgroundColor) {
-			$this.css("background-color", sActiveBackgroundColor);
+			$Icon.css("background-color", sActiveBackgroundColor);
 		}
 	}
 };
@@ -83321,19 +94066,19 @@ sap.ui.core.Icon.prototype._restoreColors = function() {
 
 sap.ui.core.Icon.prototype.setSrc = function(sSrc) {
 	var oIconInfo = sap.ui.core.IconPool.getIconInfo(sSrc),
-		bTextNeeded = (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9),
-		$this = this.$();
+		bTextNeeded = sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9,
+		$Icon = this.$();
 
 	if (oIconInfo) {
-		$this.css("font-family", oIconInfo.fontFamily);
+		$Icon.css("font-family", oIconInfo.fontFamily);
 
 		if (bTextNeeded) {
-			$this.text(oIconInfo.content);
+			$Icon.text(oIconInfo.content);
 		} else {
-			$this.attr("data-sap-ui-icon-content", oIconInfo.content);
+			$Icon.attr("data-sap-ui-icon-content", oIconInfo.content);
 		}
 
-		$this.toggleClass("sapUiIconMirrorInRTL", !oIconInfo.suppressMirroring);
+		$Icon.toggleClass("sapUiIconMirrorInRTL", !oIconInfo.suppressMirroring);
 	}
 
 	// when the given sSrc can't be found in IconPool, rerender the icon is needed.
@@ -83394,6 +94139,23 @@ sap.ui.core.Icon.prototype.setActiveBackgroundColor = function(sColor) {
 
 sap.ui.core.Icon.prototype.setHoverBackgroundColor = function(sColor) {
 	return this.setProperty("hoverBackgroundColor", sColor, true);
+};
+
+sap.ui.core.Icon.prototype.attachPress = function() {
+	var aMyArgs = Array.prototype.slice.apply(arguments);
+	aMyArgs.splice(0, 0, "press");
+	this.addStyleClass("sapUiIconPointer");
+	return sap.ui.core.Control.prototype.attachEvent.apply(this, aMyArgs);
+};
+
+sap.ui.core.Icon.prototype.detachPress = function() {
+	var aMyArgs = Array.prototype.slice.apply(arguments);
+	aMyArgs.splice(0, 0, "press");
+	sap.ui.core.Control.prototype.detachEvent.apply(this, aMyArgs);
+	if (!this.hasListeners("press")) {
+		this.removeStyleClass("sapUiIconPointer");
+	}
+	return this;
 };
 
 	return sap.ui.core.Icon;
@@ -83464,7 +94226,7 @@ sap.ui.define("sap/ui/core/Item",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83667,7 +94429,7 @@ sap.ui.define("sap/ui/core/LayoutData",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83794,7 +94556,7 @@ sap.ui.define("sap/ui/core/ListItem",['./library','./Item'], function() {
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83953,7 +94715,7 @@ sap.ui.define("sap/ui/core/LocalBusyIndicator",['./library','./Control','./themi
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -84241,8 +95003,8 @@ sap.ui.define("sap/ui/core/Message",['./library','./Element','./theming/Paramete
  * Its default level is none.
  * @extends sap.ui.core.Element
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -84546,8 +95308,8 @@ if ( !jQuery.sap.isDeclared('sap.ui.core.Popup') ) {
 
 // Provides helper class sap.ui.core.Popup
 jQuery.sap.declare('sap.ui.core.Popup'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
-sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Object', './Control', './IntervalTrigger', './RenderManager', './UIArea', 'jquery.sap.script'],
-	function(jQuery, EventProvider, BaseObject, Control, IntervalTrigger, RenderManager, UIArea/* , jQuerySap */) {
+sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/ManagedObject', 'sap/ui/base/Object', './Control', './IntervalTrigger', './RenderManager', './UIArea', './PopupSupport', 'jquery.sap.script'],
+	function(jQuery, ManagedObject, BaseObject, Control, IntervalTrigger, RenderManager, UIArea, PopupSupport/* , jQuerySap */) {
 	"use strict";
 
 
@@ -84593,20 +95355,28 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @public
 	 * @name sap.ui.core.Popup
 	 */
-	var Popup = EventProvider.extend("sap.ui.core.Popup", /** @lends sap.ui.core.Popup */ {
+	var Popup = ManagedObject.extend("sap.ui.core.Popup", /** @lends sap.ui.core.Popup.prototype */ {
 		constructor: function (oContent, bModal, bShadow, bAutoClose) {
 			jQuery.sap.assert(arguments.length == 0 || (oContent && typeof oContent === "object"), "oContent must be an object or there may be no arguments at all");
 			jQuery.sap.assert((bModal === undefined || bModal === true || bModal === false), "bModal must be true, false, or undefined");
 			jQuery.sap.assert((bShadow === undefined || bShadow === true || bShadow === false), "bShadow must be true, false, or undefined");
 			jQuery.sap.assert((bAutoClose === undefined || bAutoClose === true || bAutoClose === false), "bAutoClose must be true, false, or undefined");
 	
-			EventProvider.apply(this);
+			ManagedObject.apply(this);
+			PopupSupport.apply(this);
 	
-			this._id = jQuery.sap.uid(); // internal ID to make event handlers unique
+			this._popupUID = jQuery.sap.uid(); // internal ID to make event handlers unique
 	
 			this.bOpen = false; // true exactly if the Popup is opening, open, or closing
 			this.eOpenState = sap.ui.core.OpenState.CLOSED;
-	
+
+			this._mFocusEvents = {};
+			this._mFocusEvents["sap.ui.core.Popup.addFocusableContent-" + this._popupUID] = this._addFocusableArea;
+			this._mFocusEvents["sap.ui.core.Popup.removeFocusableContent-" + this._popupUID] = this._removeFocusableArea;
+			this._mFocusEvents["sap.ui.core.Popup.closePopup-" + this._popupUID] = this._closePopup;
+			this._mFocusEvents["sap.ui.core.Popup.onFocusEvent-" + this._popupUID] = this.onFocusEvent;
+			this._mFocusEvents["sap.ui.core.Popup.increaseZIndex-" + this._popupUID] = this._increaseMyZIndex;
+
 			if (oContent) {
 				this.setContent(oContent);
 			}
@@ -84626,7 +95396,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			this._sInitialFocusId = null;
 			this._bShadow = typeof(bShadow) === "boolean" ? bShadow : true;
 			this._bAutoClose = !!bAutoClose;
-			this._aAutoCloseAreas;
 			this._animations = { open: null, close: null };
 			this._durations = {	open: "fast", close: "fast" };
 			this._iZIndex = -1;
@@ -84640,7 +95409,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 					if(oEvent.isMarked("delayedMouseEvent") || oEvent.isMarked("cancelAutoClose")){
 						return;
 					}
-
 					// call the close handler only when it's fully opened
 					// this also prevents calling close while closing
 					if (this.eOpenState === sap.ui.core.OpenState.CLOSING || this.eOpenState === sap.ui.core.OpenState.CLOSED) {
@@ -84649,38 +95417,52 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 
 					var oDomNode = oEvent.target,
 						oPopupDomNode = this._$().get(0),
-						bInsidePopup = jQuery.contains(oPopupDomNode, oDomNode),
-						bInsideAutoCloseAreas = false,
-						bInsideFocusableAreas = false,
-						i;
-	
-					if (this._aAutoCloseAreas) {
-						for (i = 0; i < this._aAutoCloseAreas.length; i++) {
-							if (jQuery.sap.containsOrEquals(this._aAutoCloseAreas[i], oDomNode)) {
-								bInsideAutoCloseAreas = true;
+						bInsidePopup = jQuery.contains(oPopupDomNode, oDomNode);
+
+					if (!bInsidePopup) {
+						var aChildPopups = this.getChildPopups();
+						for (var i = 0, l = aChildPopups.length; i < l; i++) {
+							var oDomRef = jQuery.sap.domById(aChildPopups[i]);
+							if(jQuery.sap.containsOrEquals(oDomRef, oDomNode)){
+								bInsidePopup = true;
 								break;
 							}
 						}
 					}
 
-					if (this._aFocusableArea) {
-						for (i = 0; i < this._aFocusableArea.length; i++ ) {
-							if (jQuery.sap.containsOrEquals(jQuery.sap.domById(this._aFocusableArea[i])), oDomNode) {
-								bInsideFocusableAreas = true;
-								break;
-							}
-						}
-					}
-
-					if (!(bInsidePopup || bInsideAutoCloseAreas || bInsideFocusableAreas)) {
+					if (!bInsidePopup) {
 						this.close();
+						
+						for (var j = 0, l = aChildPopups.length; j < l; j++) {
+							this._closePopup(aChildPopups[j]);
+						}
 					}
 				};
 			}
 		},
 	
 		metadata : {
-			publicMethods : ["open", "close", "setContent", "getContent", "setPosition", "setShadow", "setModal", "setAutoClose", "isOpen", "getAutoClose", "getOpenState", "setAnimations", "setDurations", "attachOpened", "attachClosed", "detachOpened", "detachClosed"]
+			library: "sap.ui.core",
+			
+			publicMethods : ["open", "close", 
+			                 "setContent", "getContent", 
+			                 "setPosition", 
+			                 "setShadow", "setModal", "setAutoClose", "setAutoCloseAreas", 
+			                 "isOpen", "getAutoClose", "getOpenState", "setAnimations", "setDurations", 
+			                 "attachOpened", "attachClosed", "detachOpened", "detachClosed"],
+			                 
+			associations : {
+				"childPopups" : {
+					type : "sap.ui.core.Popup",
+					multiple : true,
+					visibility: "hidden"
+				}
+			},
+
+			events : {
+				"opened" : {},
+				"closed" : {}
+			}
 		}
 	
 	});
@@ -84689,8 +95471,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	
 	// stack used for storing z-indices for blocklayer
 	Popup.blStack = [];
-	
-	Popup.M_EVENTS = {opened:'opened',closed:'closed'};
 	
 	/**
 	 * Enumeration providing options for docking of some element to another.
@@ -84823,10 +95603,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @name sap.ui.core.Popup#attachOpened
 	 * @function
 	 */
-	Popup.prototype.attachOpened = function(fnFunction, oListener) {
-		this.attachEvent("opened", fnFunction, oListener);
-		return this;
-	};
 	
 	/**
 	 * Attach event-handler <code>fnFunction</code> to the 'closed' event of this <code>sap.ui.core.Popup</code>.<br/>
@@ -84843,11 +95619,7 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @name sap.ui.core.Popup#attachClosed
 	 * @function
 	 */
-	Popup.prototype.attachClosed = function(fnFunction, oListener) {
-		this.attachEvent("closed", fnFunction, oListener);
-		return this;
-	};
-	
+
 	/**
 	 * Detach event handler <code>fnFunction</code> from the 'opened' event of this <code>sap.ui.core.Popup</code>.<br/>
 	 *
@@ -84860,11 +95632,7 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @name sap.ui.core.Popup#detachOpened
 	 * @function
 	 */
-	Popup.prototype.detachOpened = function(fnFunction, oListener) {
-		this.detachEvent("opened", fnFunction, oListener);
-		return this;
-	};
-	
+
 	/**
 	 * Detach event handler <code>fnFunction</code> from the 'closed' event of this <code>sap.ui.core.Popup</code>.<br/>
 	 *
@@ -84877,10 +95645,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @name sap.ui.core.Popup#detachClosed
 	 * @function
 	 */
-	Popup.prototype.detachClosed = function(fnFunction, oListener) {
-		this.detachEvent("closed", fnFunction, oListener);
-		return this;
-	};
 	
 	//****************************************************
 	//Layer et al
@@ -85099,13 +95863,13 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	Popup.prototype.open = function(iDuration, my, at, of, offset, collision, followOf) {
 		jQuery.sap.assert(this.oContent, "Popup content must have been set by now");
 		// other asserts follow after parameter shifting
-	
+
 		if(this.eOpenState != sap.ui.core.OpenState.CLOSED) {
 			return;
 		}
-	
+
 		this.eOpenState = sap.ui.core.OpenState.OPENING;
-	
+
 		var oStatic = sap.ui.getCore().getStaticAreaRef();
 		oStatic = sap.ui.getCore().getUIArea(oStatic);
 		
@@ -85117,7 +95881,7 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			oStatic.addContent(this.oContent, true);
 			this._bContentAddedToStatic = true;
 		}
-	
+
 		// Check if the content isn't connected properly to an UI-area. This could cause strange behavior of events and rendering.
 		// To find a Popup issue in this case a warning should be logged to the console.
 		//
@@ -85135,7 +95899,7 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 				jQuery.sap.log.warning("The Popup content is NOT connected with the static-UIArea and may not work properly!");
 			}
 		}
-	
+
 		// iDuration is optional... if not given:
 		if (typeof(iDuration) == "string") {
 			followOf = collision;
@@ -85146,30 +95910,30 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			my = iDuration;
 			iDuration = -1;
 		}
-	
+
 		// if no arguments are passed iDuration has to be set to -1
 		if (iDuration === undefined) {
 			iDuration = -1;
 		}
-	
+
 		// all other parameters must be given if any subsequent parameter is given, hence no more shifting
 		// now every parameter should be in the right variable
-	
+
 		jQuery.sap.assert(iDuration === -1 || (typeof iDuration === "number" && iDuration % 1 == 0), "iDuration must be an integer (or omitted)"); // omitted results in -1
 		jQuery.sap.assert(my === undefined || typeof my === "string", "my must be a string or empty");
 		jQuery.sap.assert(at === undefined || typeof at === "string", "at must be a string or empty");
 		jQuery.sap.assert(!of || typeof of === "object" || typeof of === "function", "of must be empty or an object");
 		jQuery.sap.assert(!offset || typeof offset === "string", "offset must be empty or a string");
 		jQuery.sap.assert(!collision || typeof collision === "string", "collision must be empty or a string");
-	
+
 		// disable for mobile or desktop browser in touch mode
 		if(this.restoreFocus){
-	
 			// save current focused element to restore the focus after closing
 			this._oPreviousFocus = Popup.getCurrentFocusInfo();
 		}
-	
+
 		var $Ref = this._$(true);
+
 		var iRealDuration = "fast";
 		if((iDuration === 0) || (iDuration > 0)) {
 			iRealDuration = iDuration;
@@ -85255,10 +96019,10 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			// notify that opening has completed
 			if (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 9) {
 				jQuery.sap.delayedCall(0,that,function(){
-					that.fireEvent(Popup.M_EVENTS.opened);
+					that.fireOpened();
 				});
 			} else {
-				that.fireEvent(Popup.M_EVENTS.opened);
+				that.fireOpened();
 			}
 		};
 	
@@ -85292,34 +96056,30 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 		
 		this.bOpen = true;
 	
-		if (this._bModal || this._bAutoClose) { // initialize focus handling
-			this.fEventHandler = jQuery.proxy(this.onFocusEvent, this);
-			// make sure to notice all blur's in the popup
-			var jPopupRoot = $Ref;//this._$();
-			if(document.addEventListener && !sap.ui.Device.browser.internet_explorer) { //FF, Safari
-				document.addEventListener("focus", this.fEventHandler, true);
-				jPopupRoot.get(0).addEventListener("blur", this.fEventHandler, true);
-				if (this._aAutoCloseAreas) {
-					for (var i = 0; i < this._aAutoCloseAreas.length; i++) {
-						this._aAutoCloseAreas[i].addEventListener("blur", this.fEventHandler, true);
-					}
-				}
-			} else { // IE8
-				jQuery(document).bind("activate." + this._id, this.fEventHandler);
-				jPopupRoot.bind("deactivate." + this._id, this.fEventHandler);
-				if (this._aAutoCloseAreas) {
-					for (var i = 0; i < this._aAutoCloseAreas.length; i++) {
-						jQuery(this._aAutoCloseAreas[i]).bind("deactivate." + this._id, this.fEventHandler);
-					}
-				}
+		if (this.isInPopup(of)) {
+			var sParentId = this.getParentPopupId(of);
+			var sChildId = "";
+			
+			var oContent = this.getContent();
+			if (oContent instanceof sap.ui.core.Element) {
+				sChildId = oContent.getId();
+			} else if (typeof oContent === "object") {
+				sChildId = oContent.id;
 			}
+			
+			this.addChildToPopup(sParentId, sChildId);
+			this.addChildToPopup(sParentId, this._popupUID);
 		}
-	
+
+		if (this._bModal || this._bAutoClose) { // initialize focus handling
+			this._addFocusEventListeners();
+		}
+
 		//autoclose implementation for mobile or desktop browser in touch mode
 		if(this.touchEnabled && !this._bModal && this._bAutoClose){
-		jQuery(document).on("touchstart mousedown", jQuery.proxy(this._fAutoCloseHandler, this));
+			jQuery(document).on("touchstart mousedown", jQuery.proxy(this._fAutoCloseHandler, this));
 		}
-	
+
 		//  register resize handler for blindlayer resizing
 		if(this._oBlindLayer) {
 			this._resizeListenerId = sap.ui.core.ResizeHandler.register(this._$().get(0), jQuery.proxy(this.onresize, this));
@@ -85336,6 +96096,10 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 */
 	Popup.prototype.onFocusEvent = function(oBrowserEvent) {
 		var oEvent = jQuery.event.fix(oBrowserEvent);
+		if (arguments.length > 1 && arguments[1] === "sap.ui.core.Popup.onFocusEvent-" + this._popupUID) {
+			// if forwarding a focus event to this Popup via EventBus by any child Popup
+			oEvent = jQuery.event.fix(arguments[2]);
+		}
 		var type = (oEvent.type == "focus" || oEvent.type == "activate") ? "focus" : "blur";
 		var bContains = false;
 	
@@ -85344,22 +96108,14 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			if (oDomRef) {
 				bContains = oDomRef == oEvent.target || jQuery.contains(oDomRef, oEvent.target);
 	
-				// if focus does not go into the popup, check any other areas belonging to it
-				if (!bContains && this._aAutoCloseAreas) {
-					for (var i = 0; i < this._aAutoCloseAreas.length; i++) {
-						bContains = this._aAutoCloseAreas[i] == oEvent.target || jQuery.contains(this._aAutoCloseAreas[i], oEvent.target);
-						if (bContains) {
-							break;
-						}
-					}
-				}
-	
-				// check if any additional focusable elements should be focused
-				if (!bContains && this._aFocusableArea) {
-					var j = this._aFocusableArea.length;
-					for (i = 0; i < j; i++) {
-						if (jQuery.sap.domById(this._aFocusableArea[i])) {
-							bContains = oEvent.target.id === this._aFocusableArea[i] || jQuery.contains(jQuery.sap.domById(this._aFocusableArea[i]), oEvent.target);
+				var aChildPopups = this.getChildPopups();
+				if (!bContains) {
+					for (var i = 0, l = aChildPopups.length; i < l; i++) {
+						// define a new variable to prevent any influence if focused element isn't a child of
+						// this Popup: oDomRef is reused below.
+						var oChildDomRef = jQuery.sap.domById(aChildPopups[i]); 
+						if (oChildDomRef) {
+							bContains = oChildDomRef == oEvent.target || jQuery.contains(oChildDomRef, oEvent.target);
 							if (bContains) {
 								break;
 							}
@@ -85370,7 +96126,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 				jQuery.sap.log.debug("focus event on " + oEvent.target.id + ", contains: " + bContains);
 	
 				if (this._bModal && !bContains) { // case: modal popup and focus has gone somewhere else in the document
-	
 					// The popup is modal, but the focus has moved to a part of the document that is NOT inside the popup
 					// check whether this modal popup is the topmost one
 					var bTopMost = (Popup.getLastZIndex() == this._iZIndex);
@@ -85387,7 +96142,6 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 						}
 					}
 				} else if (this._bAutoClose && bContains && this._sTimeoutId) { // case: autoclose popup and focus has returned into the popup immediately
-	
 					// focus has returned, so it did only move inside the popup => clear timeout
 					if(this._sTimeoutId){
 						jQuery.sap.clearDelayedCall(this._sTimeoutId);
@@ -85463,27 +96217,11 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 		if (this.getFollowOf()) {
 			Popup.DockTrigger.removeListener(Popup.checkDocking, this);
 		}
-	
-		if (this._aFocusableArea) {
-			delete this._aFocusableArea;
-		}
-	
-		// unsubscribe the event listeners from EventBus
-		if (this._bFocusableListenersRegistered) {
-			delete this._bFocusableListenersRegistered;
-	
-			var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._addFocusableArea, this);
-	
-			sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._removeFocusableArea, this);
-		}
-	
+
 		// If we added the content control to the static UIArea,
 		// then we should remove it again now.
 		// Assumption: application did not move the content in the meantime!
 		if ( this.oContent && this._bContentAddedToStatic ) {
-	
 			//Fix for RTE in PopUp
 			sap.ui.getCore().getEventBus().publish("sap.ui","__beforePopupClose", { domNode : this._$().get(0) });
 			var oStatic = sap.ui.getCore().getStaticAreaRef();
@@ -85496,31 +96234,13 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 		this._sTimeoutId = null;
 	
 		if (this.fEventHandler) { // remove focus handling
-			var jPopupRoot = this._$();
-			if(document.removeEventListener && !sap.ui.Device.browser.internet_explorer) { //FF, Safari
-				document.removeEventListener("focus", this.fEventHandler, true);
-				jPopupRoot.get(0).removeEventListener("blur", this.fEventHandler, true);
-				if (this._aAutoCloseAreas) {
-					for (var i = 0; i < this._aAutoCloseAreas.length; i++) {
-						this._aAutoCloseAreas[i].removeEventListener("blur", this.fEventHandler, true);
-					}
-				}
-			} else { // IE8
-				jQuery(document).unbind("activate." + this._id, this.fEventHandler);
-				jPopupRoot.unbind("deactivate." + this._id, this.fEventHandler);
-				if (this._aAutoCloseAreas) {
-					for (var i = 0; i < this._aAutoCloseAreas.length; i++) {
-						jQuery(this._aAutoCloseAreas[i]).unbind("deactivate." + this._id, this.fEventHandler);
-					}
-				}
-			}
-			this.fEventHandler = null;
+			this._removeFocusEventListeners();
 		}
 	
 		//deregister the autoclose handler for mobile
 		if(this.touchEnabled){
 			if(!this._bModal && this._bAutoClose){
-			jQuery(document).off("touchstart mousedown", this._fAutoCloseHandler);
+				jQuery(document).off("touchstart mousedown", this._fAutoCloseHandler);
 			}
 		}
 		
@@ -85529,6 +96249,10 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 		}
 	
 		var $Ref = this._$();
+		// unsubscribe the event listeners from EventBus
+		if (this._bEventBusEventsRegistered) {
+			this._unregisterEventBusEvents();
+		}
 	
 		// get (and 'hide' i.e. remove) the BlindLayer
 		if(this._oBlindLayer) {
@@ -85558,12 +96282,13 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			});
 		}
 		
-		var fnClose = function() { // the function to call when the popup closing animation has completed
-			jQuery($Ref).hide().
-				css("visibility", "inherit").
-				css("left", "0px").
-				css("top", "0px").
-				css("right", "");
+		var fnClosed = function() { // the function to call when the popup closing animation has completed
+			jQuery($Ref).hide().css({
+				"visibility" : "inherit",
+				"left" : "0px",
+				"top" : "0px",
+				"right" : ""
+			});
 	
 			//disabled for mobile or desktop browser in touch mode
 			if(that.restoreFocus){
@@ -85581,16 +96306,16 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			that.eOpenState = sap.ui.core.OpenState.CLOSED;
 	
 			// notify users that the popup is now officially closed
-			that.fireEvent(Popup.M_EVENTS.closed);
+			that.fireClosed();
 		};
 	
 		if (iRealDuration == 0) { // iRealDuration == 0 means: no animation!
-			fnClose.apply();
+			fnClosed.apply();
 		} else {
 			if (this._animations.close) {
-				this._animations.close.call(null, $Ref, iRealDuration, fnClose); // play custom animation, if supplied
+				this._animations.close.call(null, $Ref, iRealDuration, fnClosed); // play custom animation, if supplied
 			} else {
-				$Ref.fadeOut(iRealDuration, fnClose); // otherwise use jQuery animation
+				$Ref.fadeOut(iRealDuration, fnClosed); // otherwise use jQuery animation
 			}
 		}
 	
@@ -85691,7 +96416,7 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * Optional parameters can only be omitted when all subsequent parameters are omitted as well.
 	 *
 	 * @param {sap.ui.core.Popup.Dock} my specifies which point of the given Content should be aligned
-	 * @param {sap.ui.core.Popup.Dock | object {left: {sap.ui.core.CSSSize}, top: {sap.ui.core.CSSSize}}} at specifies the point of the reference element to which the given Content should be aligned
+	 * @param {sap.ui.core.Popup.Dock | {left: sap.ui.core.CSSSize, top: sap.ui.core.CSSSize}} at specifies the point of the reference element to which the given Content should be aligned
 	 * @param {string | sap.ui.core.Control | DOMRef | jQuery | jQuery.Event} [of=document] specifies the reference element to which the given content should be aligned as specified in the other parameters
 	 * @param {string} [offset='0 0'] the offset relative to the docking point, specified as a string with space-separated pixel values (e.g. "0 10" to move the popup 10 pixels to the right). If the docking of both "my" and "at" are both RTL-sensitive ("begin" or "end"), this offset is automatically mirrored in the RTL case as well.
 	 * @param {string} [collision] defines how the position of an element should be adjusted in case it overflows the window in some direction. The valid values that refer to jQuery-UI's position parameters are "flip", "fit" and "none".
@@ -86082,15 +96807,13 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 		jQuery.sap.assert(typeof bAutoClose === "boolean", "bAutoClose must be boolean");
 	
 		if(this.touchEnabled && this.isOpen() && this._bAutoClose !== bAutoClose){
-			if(!this._bModal){
-				if(bAutoClose){
-	
+			if(!this._bModal) {
+				if(bAutoClose) {
 					//register the autoclose hanlder when autoclose is set to true
-				jQuery(document).on("touchstart mousedown", jQuery.proxy(this._fAutoCloseHandler, this));
-				}else{
-	
+					jQuery(document).on("touchstart mousedown", jQuery.proxy(this._fAutoCloseHandler, this));
+				} else {
 					//deregister the autoclose handler when autoclose is set to false
-				jQuery(document).off("touchstart mousedown", this._fAutoCloseHandler);
+					jQuery(document).off("touchstart mousedown", this._fAutoCloseHandler);
 				}
 			}
 		}
@@ -86112,7 +96835,20 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 */
 	Popup.prototype.setAutoCloseAreas = function(aAutoCloseAreas) {
 		jQuery.sap.assert(aAutoCloseAreas === null || jQuery.isArray(aAutoCloseAreas), "aAutoCloseAreas must be null or an array");
-		this._aAutoCloseAreas = aAutoCloseAreas;
+		
+		for (var i = 0, l = aAutoCloseAreas.length; i < l; i++) {
+			var sId = "";
+			
+			if (aAutoCloseAreas[i] instanceof sap.ui.core.Element) {
+				sId = aAutoCloseAreas[i].getId();
+			} else if (typeof aAutoCloseAreas[i] === "object") {
+				sId = aAutoCloseAreas[i].id;
+			} else if (typeof aAutoCloseAreas[i] === "string") {
+				sId = aAutoCloseAreas[i];
+			}
+
+			this.addChildPopup(sId);
+		}
 		return this;
 	};
 	
@@ -86281,59 +97017,158 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * @function
 	 */
 	Popup.prototype.destroy = function() {
-	
 		// deregister resize handler
 		if (this._resizeListenerId) {
 			sap.ui.core.ResizeHandler.deregister(this._resizeListenerId);
 			this._resizeListenerId = null;
 		}
-	
+
 		this.close();
 		this.oContent = null;
-	
+
 		if (this._bFollowOf) {
 			this.setFollowOf(null);
 		}
-	
-		// deregister all additional focusable stuff
-		if (this._aFocusableArea) {
-			delete this._aFocusableArea;
+
+		if (this._bEventBusEventsRegistered) {
+			this._unregisterEventBusEvents();
 		}
+	};
 	
-		if (this._bFocusableListenersRegistered) {
-			delete this._bFocusableListenersRegistered;
-	
-			var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._addFocusableArea);
-	
-			sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, this._removeFocusableArea);
+	/**
+	 * When the Popup is being destroyed all corresponding references should be 
+	 * deleted as well to prevent any memory leeks.
+	 * 
+	 * @public
+	 * @name sap.ui.core.Popup#exit
+	 * @function
+	 */
+	Popup.prototype.exit = function() {
+		delete this._mFocusEvents;
+	};
+
+	/**
+	 * @private
+	 */
+	Popup.prototype._addFocusEventListeners = function(sChannel, sEvent, oEventData) {
+		if (!this.fEventHandler) {
+			this.fEventHandler = jQuery.proxy(this.onFocusEvent, this);
 		}
+		// make sure to notice all blur's in the popup
+		var $PopupRoot = this._$();
+		var aChildPopups = this.getChildPopups();
+
+		if(document.addEventListener && !sap.ui.Device.browser.internet_explorer) { //FF, Safari
+			document.addEventListener("focus", this.fEventHandler, true);
+			$PopupRoot.get(0).addEventListener("blur", this.fEventHandler, true);
+
+			for (var i = 0, l = aChildPopups.length; i < l; i++) {
+				var oDomRef = jQuery.sap.domById(aChildPopups[i]);
+				if (oDomRef) {
+					oDomRef.addEventListener("blur", this.fEventHandler, true);
+				}
+			}
+		} else { // IE8
+			jQuery(document).bind("activate." + this._popupUID, this.fEventHandler);
+			$PopupRoot.bind("deactivate." + this._popupUID, this.fEventHandler);
+
+			for (var i = 0, l = aChildPopups.length; i < l; i++) {
+				var oDomRef = jQuery.sap.domById(aChildPopups[i]);
+				if (oDomRef) {
+					jQuery(oDomRef).bind("deactivate", this.fEventHandler);
+				}
+			}
+		}
+	};
+
+	/**
+	 * @private
+	 */
+	Popup.prototype._removeFocusEventListeners = function(sChannel, sEvent, oEventData) {
+		var $PopupRoot = this._$();
+		var aChildPopups = this.getChildPopups();
+		
+		if(document.removeEventListener && !sap.ui.Device.browser.internet_explorer) { //FF, Safari
+			document.removeEventListener("focus", this.fEventHandler, true);
+			$PopupRoot.get(0).removeEventListener("blur", this.fEventHandler, true);
+			
+			for (var i = 0, l = aChildPopups.length; i < l; i++) {
+				var oDomRef = jQuery.sap.domById(aChildPopups[i]); 
+				if (oDomRef) {
+					oDomRef.removeEventListener("blur", this.fEventHandler, true);
+				}
+				
+				this.closePopup(aChildPopups[i]);
+			}
+		} else { // IE8
+			jQuery(document).unbind("activate." + this._popupUID, this.fEventHandler);
+			$PopupRoot.unbind("deactivate." + this._popupUID, this.fEventHandler);
+			
+			for (var i = 0, l = aChildPopups.length; i < l; i++) {
+				var oDomRef = jQuery.sap.domById(aChildPopups[i]); 
+				if (oDomRef) {
+					jQuery(oDomRef).unbind("deactivate." + this._popupUID, this.fEventHandler);
+				}
+			}
+		}
+		this.fEventHandler = null;
+	};
+	
+	/**
+	 * @private
+	 */
+	Popup.prototype._registerEventBusEvents = function(sChannel, sEvent, oEventData) {
+		var that = this;
+
+		jQuery.each(that._mFocusEvents, function(sEventId, fnListener) {
+			sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, fnListener, that);
+		});
+
+		this._bEventBusEventsRegistered = true;
+	};
+
+	/**
+	 * @private
+	 */
+	Popup.prototype._unregisterEventBusEvents = function(sChannel, sEvent, oEventData) {
+		var that = this;
+
+		jQuery.each(that._mFocusEvents, function(sEventId, fnListener) {
+			sap.ui.getCore().getEventBus().unsubscribe("sap.ui", sEventId, fnListener, that);
+		});
+
+		delete this._bEventBusEventsRegistered;
 	};
 	
 	/**
 	 * This listener is called by the EventBus when an element-id should be added to the
 	 * focusable area. The event is fired when a control publishes the corresponding event
 	 * according to the channel id "sap.ui" with the event id:
-	 * "sap.ui.core.Popup.addFocusableContent-<Popup-ID>". The Popup-id can be obtained by this._id.
+	 * "sap.ui.core.Popup.addFocusableContent-<Popup-ID>". The Popup-id can be obtained by this._popupUID.
 	 * 
-	 * @param {string} 'sChannel': channel of the EventBus
-	 * @param {string} 'sEvent': name of the event
-	 * @param {Object} 'oFocusable': object with an id-property
+	 * @param {string} sChannel channel of the EventBus
+	 * @param {string} sEvent name of the event
+	 * @param {Object} oFocusable object with an id-property
 	 * @since 1.12.3
 	 * @private
 	 * @name sap.ui.core.Popup#_addFocusableArea
 	 * @function
 	 */
-	Popup.prototype._addFocusableArea = function(sChannel, sEvent, oFocusable) {
-		if (!this._aFocusableArea) {
-			this._aFocusableArea = [];
-		}
-	
-		if (oFocusable.id && typeof(oFocusable.id) === "string") {
-			this._aFocusableArea.push(oFocusable.id);
-		} else {
-			jQuery.sap.log.warning("Either no id given or id is no string");
+	Popup.prototype._addFocusableArea = function(sChannel, sEvent, oEventData) {
+		var sParentPopupId = this._popupUID; // save for call below
+		this.addChildPopup(oEventData.id);
+
+		// Forward the blur event of the child to the parent Popup
+		var $ChildDomRef = jQuery('[data-sap-ui-popup="' + oEventData.id + '"]');
+		if ($ChildDomRef.length > 0) {
+			var fnOnBlur = function(oEvent) {
+				$ChildDomRef.off("blur", fnOnBlur);
+
+				var sEventId = "sap.ui.core.Popup.onFocusEvent-" + sParentPopupId;
+				sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, oEvent);
+			}
+
+			$ChildDomRef.on("blur", fnOnBlur);
 		}
 	};
 	
@@ -86341,30 +97176,30 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 * This listener is called by the EventBus when an element-id should be removed from the
 	 * focusable area. The event is fired when a control publishes the corresponding event
 	 * according to the channel id "sap.ui" with the event id:
-	 * "sap.ui.core.Popup.removeFocusableContent-<Popup-ID>". The Popup-id can be obtained by this._id.
+	 * "sap.ui.core.Popup.removeFocusableContent-<Popup-ID>". The Popup-id can be obtained by this._popupUID.
 	 * 
-	 * @param {string} 'sChannel': channel of the EventBus
-	 * @param {string} 'sEvent': name of the event
-	 * @param {Object} 'oFocusable': object with an id-property and if a autoClose machanism should occur
+	 * @param {string} sChannel channel of the EventBus
+	 * @param {string} sEvent name of the event
+	 * @param {Object} oFocusable object with an id-property and if a autoClose machanism should occur
 	 * @since 1.17.0
 	 * @private
 	 * @name sap.ui.core.Popup#_removeFocusableArea
 	 * @function
 	 */
-	Popup.prototype._removeFocusableArea = function(sChannel, sEvent, oFocusable) {
-		if (this._aFocusableArea && this._aFocusableArea.length > 0) {
-			for (var i=0; i < this._aFocusableArea.length; i++) {
-				if (this._aFocusableArea[i] === oFocusable.id) {
-					// remove corresponding id and stop looping
-					this._aFocusableArea = this._aFocusableArea.splice(i, i);
-					break;
-				}
-			}
-			
-			if (oFocusable.bAutoClose && this._bAutoClose) {
-				this.close();
-			}
-		}
+	Popup.prototype._removeFocusableArea = function(sChannel, sEvent, oEventData) {
+		this.removeChildPopup(oEventData.id);
+	};
+
+	/**
+	 * This is the internal event listener that is called when a parent Popup closes its child
+	 * Popups.
+	 * 
+	 * @param {string} sChannel channel of the EventBus
+	 * @param {string} sEvent name of the event
+	 * @param {object} oEventData provides further attributes
+	 */
+	Popup.prototype._closePopup = function(sChannel, sEvent, oEventData) {
+		this.close(typeof this._durations.close === "string" ? 0 : this._durations.close);
 	};
 	
 	/**
@@ -86384,20 +97219,14 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 	 */
 	Popup.prototype._setIdentity = function($Ref) {
 		if (typeof $Ref === "object") {
-			$Ref.attr("data-sap-ui-popup", this._id);
+			$Ref.attr("data-sap-ui-popup", this._popupUID);
 		} else {
 			jQuery.sap.log.warning("Incorrect DomRef-type for 'setIdentity': " + $Ref, this);
 			return;
 		}
 	
-		if (!this._bFocusableListenersRegistered) {
-			this._bFocusableListenersRegistered = true;
-	
-			var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, this._addFocusableArea, this);
-	
-			sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._id;
-			sap.ui.getCore().getEventBus().subscribe("sap.ui", sEventId, this._removeFocusableArea, this);
+		if (!this._bEventBusEventsRegistered) {
+			this._registerEventBusEvents();
 		}
 	};
 	
@@ -86505,10 +97334,10 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 				return;
 			}
 
-			// Check if the current rect-object of the given 'of' became 0 it is sure that the 'of'
+			// Check if the current 'of' dom element is removed from the dom tree which indicates that it
 			// was rerendered and all corresponding stuff has to be updated to position the popup
 			// properly again
-			if (fnRectEqual(oCurrentOfRect, {left : 0, top : 0, width : 0, height : 0})) {
+			if (!jQuery.sap.containsOrEquals(document, this._oLastPosition.of)) {
 				if (this._oLastPosition.of.id && this._oLastPosition.of.id !== "") {
 					// The 'of' was rerendered so the newest DOM-element has to be updated for the corresponding rect-object.
 					// Because the id of the 'of' may be still the same but due to its rerendering the reference changed and has to be updated 
@@ -86534,8 +97363,13 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 					if (this._followOfHandler) {
 						// provide the last position additionally if the call back needs it also
 						// e.g. the Callout needs it => create deep copy of old positioning object
-						var oLastCopy = jQuery.extend(true, {}, this._oLastPosition);
-						this._followOfHandler(oLastCopy);
+						var oLastPositionCopy = jQuery.extend(true, {}, this._oLastPosition),
+							oLastOfRectCopy = jQuery.extend(true, {}, this._oLastOfRect);
+						this._followOfHandler({
+							lastPosition: oLastPositionCopy,
+							lastOfRect: oLastOfRectCopy,
+							currentOfRect: oCurrentOfRect
+						});
 					} else {
 						this._applyPosition(this._oLastPosition);
 					}
@@ -86578,20 +97412,47 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			this._bMousedownCalled = false;
 			return;
 		}
-		
+
 		if (this._iZIndex === this.getLastZIndex()) {
 			return;
 		} // we are 'uppermost' and therefore everything is ok
-	
-		this._iZIndex = this.getNextZIndex();
-	
-		var $Ref = this._$();
-		$Ref.css("z-index", this._iZIndex);
-	
-		if (this._oBlindLayer) {
-			this._oBlindLayer.update($Ref, this._iZIndex -1);
-		}
+
+		this._increaseMyZIndex("", "mousedown", oEvent);
 	};
+	
+	/**
+	 * @private
+	 */
+	Popup.prototype._increaseMyZIndex = function(sChannel, sEvent, oEventData) {
+		var oParentPopup = this.getParentPopup(this._oLastPosition.of);
+
+		/*
+		 * Checks if the parent Popup should increase its z-index.
+		 * If true then all child popups should increase their indexes accordingly
+		 * to the parent popup.
+		 */
+		if (oEventData.type && oEventData.type === "mousedown" || oEventData.isFromParentPopup || oParentPopup.length === 0) {
+			this._iZIndex = this.getNextZIndex();
+			
+			var $Ref = this._$();
+			$Ref.css("z-index", this._iZIndex);
+			
+			if (this._oBlindLayer) {
+				this._oBlindLayer.update($Ref, this._iZIndex -1);
+			}
+			
+			// only increase children's z-index if this function call
+			if (!oEventData.type || oEventData.type != "mousedown") {
+				var aChildPopups = this.getChildPopups();
+				for (var i = 0, l = aChildPopups.length; i < l; i++) {
+					this.increaseZIndex(aChildPopups[i], true);
+				}
+			}
+		} else if (oParentPopup.length > 0){
+			// call the parent popup to increase index
+			this.increaseZIndex(jQuery(oParentPopup.get(0)).attr("data-sap-ui-popup"), false);
+		}
+	}
 	
 	//****************************************************
 	//Rerendering Handling Delegate function for use with the given content (of type sap.ui.core.Element)
@@ -86626,9 +97487,10 @@ sap.ui.define("sap/ui/core/Popup",['jquery.sap.global', 'sap/ui/base/EventProvid
 			this._applyPosition(this._oLastPosition);
 		}
 	
-		$Ref.show()
-			.css("visibility", "visible")
-			.css("z-index", this._iZIndex);
+		$Ref.show().css({
+			"visibility" : "visible",
+			"z-index" : this._iZIndex
+		});
 	
 		// register resize handler for blindlayer resizing
 		if (this._oBlindLayer) {
@@ -86739,7 +97601,7 @@ sap.ui.define("sap/ui/core/ScrollBar",['./library','./Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -87687,7 +98549,7 @@ sap.ui.define("sap/ui/core/SeparatorItem",['./library','./Item'], function() {
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -87794,7 +98656,7 @@ sap.ui.define("sap/ui/core/Title",['./library','./Element'], function() {
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -87994,7 +98856,8 @@ sap.ui.define("sap/ui/core/TooltipBase",['./library','./Control','./Popup'], fun
  * <ul></ul>
  * </li>
  * <li>Events
- * <ul></ul>
+ * <ul>
+ * <li>{@link sap.ui.core.TooltipBase#event:closed closed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -88007,7 +98870,7 @@ sap.ui.define("sap/ui/core/TooltipBase",['./library','./Control','./Popup'], fun
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -88030,6 +98893,9 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
 		"collision" : {type : "sap.ui.core.Collision", group : "Behavior", defaultValue : 'flip'},
 		"openDelay" : {type : "int", group : "Misc", defaultValue : 500},
 		"closeDelay" : {type : "int", group : "Misc", defaultValue : 100}
+	},
+	events : {
+		"closed" : {}
 	}
 }});
 
@@ -88049,6 +98915,8 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
  * @name sap.ui.core.TooltipBase.extend
  * @function
  */
+
+sap.ui.core.TooltipBase.M_EVENTS = {'closed':'closed'};
 
 
 /**
@@ -88277,6 +99145,68 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
  */
 
 
+/**
+ * This event is fired when the Tooltip has been closed 
+ *
+ * @name sap.ui.core.TooltipBase#closed
+ * @event
+ * @since 1.11.0
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'closed' event of this <code>sap.ui.core.TooltipBase</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.ui.core.TooltipBase</code>.<br/> itself. 
+ *  
+ * This event is fired when the Tooltip has been closed 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.core.TooltipBase</code>.<br/> itself.
+ *
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#attachClosed
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'closed' event of this <code>sap.ui.core.TooltipBase</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#detachClosed
+ * @function
+ */
+
+/**
+ * Fire event closed to attached listeners.
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @protected
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#fireClosed
+ * @function
+ */
+
+
 // Start of sap/ui/core/TooltipBase.js
 
 /**
@@ -88486,7 +99416,7 @@ sap.ui.core.TooltipBase.prototype.closePopup = function() {
 
 sap.ui.core.TooltipBase.prototype.handleClosed = function(){
 	this._getPopup().detachClosed(jQuery.proxy(this.handleClosed, this));
-	this.fireEvent(sap.ui.core.Popup.M_EVENTS.closed);
+	this.fireClosed();
 };
 
 
@@ -88731,7 +99661,7 @@ sap.ui.define("sap/ui/core/VariantLayoutData",['./library','./LayoutData'], func
  * @extends sap.ui.core.LayoutData
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -88919,7 +99849,7 @@ sap.ui.define("sap/ui/core/mvc/View",['sap/ui/core/library','sap/ui/core/Control
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -89204,7 +100134,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event afterInit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -89262,7 +100192,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event beforeExit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -89320,7 +100250,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event afterRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -89378,7 +100308,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event beforeRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -89746,7 +100676,7 @@ sap.ui.define("sap/ui/core/mvc/XMLView",['sap/ui/core/library','./View','jquery.
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -90004,7 +100934,7 @@ sap.ui.define("sap/ui/core/search/OpenSearchProvider",['sap/ui/core/library','./
  * @extends sap.ui.core.search.SearchProvider
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -90208,7 +101138,7 @@ sap.ui.define("sap/ui/core/tmpl/DOMElement",['sap/ui/core/library','sap/ui/core/
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -90707,7 +101637,7 @@ sap.ui.define("sap/ui/core/tmpl/TemplateControl",['sap/ui/core/library','sap/ui/
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -90853,7 +101783,7 @@ sap.ui.core.tmpl.TemplateControl.M_EVENTS = {'afterRendering':'afterRendering','
 
 /**
  * Fire event afterRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.tmpl.TemplateControl} <code>this</code> to allow method chaining
  * @protected
@@ -90911,7 +101841,7 @@ sap.ui.core.tmpl.TemplateControl.M_EVENTS = {'afterRendering':'afterRendering','
 
 /**
  * Fire event beforeRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.tmpl.TemplateControl} <code>this</code> to allow method chaining
  * @protected
@@ -91197,6 +102127,490 @@ sap.ui.core.tmpl.TemplateControl.prototype.createControl = function(mSettings, s
 }, /* bExport = */ true);
 
 }; // end of sap/ui/core/tmpl/TemplateControl.js
+if ( !jQuery.sap.isDeclared('sap.ui.core.util.Export') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+// Provides class sap.ui.core.util.Export
+jQuery.sap.declare('sap.ui.core.util.Export'); // unresolved dependency added by SAPUI5 'AllInOne' Builder
+sap.ui.define("sap/ui/core/util/Export",['jquery.sap.global', 'sap/ui/core/Control', './ExportColumn', './ExportRow', './ExportType', './File'],
+	function(jQuery, Control, ExportColumn, ExportRow, ExportType, File) {
+	'use strict';
+
+	/**
+	 * Constructor for a new Export.
+	 * 
+	 * Accepts an object literal <code>mSettings</code> that defines initial 
+	 * property values, aggregated and associated objects as well as event handlers. 
+	 * 
+	 * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+	 * then the framework assumes property, aggregation, association, event in that order. 
+	 * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+	 * or "event:" can be added to the name of the setting (such a prefixed name must be
+	 * enclosed in single or double quotes).
+	 *
+	 * The supported settings are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul></ul>
+	 * </li>
+	 * <li>Aggregations
+	 * <ul>
+	 * <li>{@link #getExportType exportType} : sap.ui.core.util.ExportType</li>
+	 * <li>{@link #getColumns columns} : sap.ui.core.util.ExportColumn[]</li>
+	 * <li>{@link #getRows rows} : sap.ui.core.util.ExportRow[]</li></ul>
+	 * </li>
+	 * <li>Associations
+	 * <ul></ul>
+	 * </li>
+	 * <li>Events
+	 * <ul></ul>
+	 * </li>
+	 * </ul>
+	 *
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {object} [mSettings] initial settings for the new control
+	 *
+	 * @class
+	 * Export provides the possibility to generate a list of data in a specific format / type, e.g. CSV to use it in other programs / applications.
+	 * @extends sap.ui.core.Control
+	 *
+	 * @author SAP AG
+	 * @version 1.22.4
+	 * @since 1.22.0
+	 *
+	 * @constructor
+	 * @public
+	 * @name sap.ui.core.util.Export
+	 */
+	var Export = Control.extend('sap.ui.core.util.Export', {
+
+		metadata: {
+
+			// ---- object ----
+			publicMethods: [
+				// methods
+				"generate", "saveFile"
+			],
+
+			// ---- control specific ----
+			library: "sap.ui.core",
+
+			aggregations: {
+				exportType: {
+					type: 'sap.ui.core.util.ExportType',
+					multiple: false
+				},
+				columns: {
+					type: 'sap.ui.core.util.ExportColumn',
+					multiple: true,
+					bindable : 'bindable'
+				},
+				rows: {
+					type: 'sap.ui.core.util.ExportRow',
+					multiple: true,
+					bindable: 'bindable'
+				},
+				_template: {
+					type: 'sap.ui.core.util.ExportRow',
+					multiple: false,
+					visibility: 'hidden'
+				}
+			}
+
+		}
+
+	});
+
+	// The aggregation is only to get the data / contexts. no actual rows will be created so no template/factory is needed here
+	Export.getMetadata().getAllAggregations()["rows"]._doesNotRequireFactory = true;
+
+	/**
+	 * Creates a new subclass of class sap.ui.core.util.Export with name <code>sClassName</code> 
+	 * and enriches it with the information contained in <code>oClassInfo</code>.
+	 * 
+	 * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+	 *   
+	 * @param {string} sClassName name of the class to be created
+	 * @param {object} [oClassInfo] object literal with informations about the class  
+	 * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+	 * @return {function} the created class / constructor function
+	 * @public
+	 * @static
+	 * @name sap.ui.core.util.Export.extend
+	 * @function
+	 */
+
+	/**
+	 * Getter for aggregation <code>exportType</code>.<br/>
+	 * Type that generates the content.
+	 *
+	 * @return {sap.ui.core.util.ExportType}
+	 * @public
+	 * @name sap.ui.core.util.Export#getExportType
+	 * @function
+	 */
+
+	/**
+	 * Setter for the aggregated <code>exportType</code>.
+	 * @param {sap.ui.core.util.ExportType} oExportType
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#setExportType
+	 * @function
+	 */
+
+	/**
+	 * Destroys the exportType in the aggregation 
+	 * named <code>exportType</code>.
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#destroyExportType
+	 * @function
+	 */
+
+	/**
+	 * Getter for aggregation <code>columns</code>.<br/>
+	 * Columns for the Export.
+	 *
+	 * @return {sap.ui.core.util.ExportColumn[]}
+	 * @public
+	 * @name sap.ui.core.util.Export#getColumns
+	 * @function
+	 */
+
+	/**
+	 * Inserts a column into the aggregation named <code>columns</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportColumn}
+	 *          oColumn the column to insert; if empty, nothing is inserted
+	 * @param {int}
+	 *             iIndex the <code>0</code>-based index the column should be inserted at; for
+	 *             a negative value of <code>iIndex</code>, the column is inserted at position 0; for a value
+	 *             greater than the current size of the aggregation, the column is inserted at
+	 *             the last position
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#insertColumn
+	 * @function
+	 */
+
+	/**
+	 * Adds some column <code>oColumn</code> 
+	 * to the aggregation named <code>columns</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportColumn}
+	 *            oColumn the column to add; if empty, nothing is inserted
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#addColumn
+	 * @function
+	 */
+
+	/**
+	 * Removes an column from the aggregation named <code>columns</code>.
+	 *
+	 * @param {int | string | sap.ui.core.util.ExportColumn} vColumn the column to remove or its index or id
+	 * @return {sap.ui.core.util.ExportColumn} the removed column or null
+	 * @public
+	 * @name sap.ui.core.util.Export#removeColumn
+	 * @function
+	 */
+
+	/**
+	 * Removes all the controls in the aggregation named <code>columns</code>.<br/>
+	 * Additionally unregisters them from the hosting UIArea.
+	 * @return {sap.ui.core.util.ExportColumn[]} an array of the removed elements (might be empty)
+	 * @public
+	 * @name sap.ui.core.util.Export#removeAllColumns
+	 * @function
+	 */
+
+	/**
+	 * Checks for the provided <code>sap.ui.core.util.ExportColumn</code> in the aggregation named <code>columns</code> 
+	 * and returns its index if found or -1 otherwise.
+	 *
+	 * @param {sap.ui.core.util.ExportColumn}
+	 *            oColumn the column whose index is looked for.
+	 * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
+	 * @public
+	 * @name sap.ui.core.util.Export#indexOfColumn
+	 * @function
+	 */
+
+	/**
+	 * Destroys all the columns in the aggregation 
+	 * named <code>columns</code>.
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#destroyColumns
+	 * @function
+	 */
+
+	/**
+	 * Binder for aggregation <code>columns</code>.
+	 *
+	 * @param {string} sPath path to a list in the model 
+	 * @param {sap.ui.core.Element} oTemplate the control template for this aggregation
+	 * @param {sap.ui.model.Sorter} oSorter the initial sort order (optional)
+	 * @param {array} aFilters the predefined filters for this aggregation (optional)
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#bindColumns
+	 * @function
+	 */
+
+	/**
+	 * Unbinder for aggregation <code>columns</code>.
+	 *
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#unbindColumns
+	 * @function
+	 */
+
+	/**
+	 * Getter for aggregation <code>rows</code>.<br/>
+	 * Rows of the Export.
+	 * 
+	 * @return {sap.ui.core.util.ExportRow[]}
+	 * @public
+	 * @name sap.ui.core.util.Export#getRows
+	 * @function
+	 */
+
+	/**
+	 * Inserts a row into the aggregation named <code>rows</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportRow}
+	 *          oRow the row to insert; if empty, nothing is inserted
+	 * @param {int}
+	 *             iIndex the <code>0</code>-based index the row should be inserted at; for 
+	 *             a negative value of <code>iIndex</code>, the row is inserted at position 0; for a value 
+	 *             greater than the current size of the aggregation, the row is inserted at 
+	 *             the last position        
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#insertRow
+	 * @function
+	 */
+
+	/**
+	 * Adds some row <code>oRow</code> 
+	 * to the aggregation named <code>rows</code>.
+	 *
+	 * @param {sap.ui.core.util.ExportRow}
+	 *            oRow the row to add; if empty, nothing is inserted
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#addRow
+	 * @function
+	 */
+
+	/**
+	 * Removes an row from the aggregation named <code>rows</code>.
+	 *
+	 * @param {int | string | sap.ui.core.util.ExportRow} vRow the row to remove or its index or id
+	 * @return {sap.ui.core.util.ExportRow} the removed row or null
+	 * @public
+	 * @name sap.ui.core.util.Export#removeRow
+	 * @function
+	 */
+
+	/**
+	 * Removes all the controls in the aggregation named <code>rows</code>.<br/>
+	 * Additionally unregisters them from the hosting UIArea.
+	 * @return {sap.ui.core.util.ExportRow[]} an array of the removed elements (might be empty)
+	 * @public
+	 * @name sap.ui.core.util.Export#removeAllRows
+	 * @function
+	 */
+
+	/**
+	 * Checks for the provided <code>sap.ui.core.util.ExportRow</code> in the aggregation named <code>rows</code> 
+	 * and returns its index if found or -1 otherwise.
+	 *
+	 * @param {sap.ui.core.util.ExportRow}
+	 *            oRow the row whose index is looked for.
+	 * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
+	 * @public
+	 * @name sap.ui.core.util.Export#indexOfRow
+	 * @function
+	 */
+
+	/**
+	 * Destroys all the rows in the aggregation 
+	 * named <code>rows</code>.
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#destroyRows
+	 * @function
+	 */
+
+	/**
+	 * Binder for aggregation <code>rows</code>.
+	 *
+	 * @param {string} sPath path to a list in the model 
+	 * @param {sap.ui.core.Element} oTemplate the control template for this aggregation
+	 * @param {sap.ui.model.Sorter} oSorter the initial sort order (optional)
+	 * @param {array} aFilters the predefined filters for this aggregation (optional)
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#bindRows
+	 * @function
+	 */
+
+	/**
+	 * Unbinder for aggregation <code>rows</code>.
+	 *
+	 * @return {sap.ui.core.util.Export} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.core.util.Export#unbindRows
+	 * @function
+	 */
+
+	/**
+	 * @private
+	 * @name sap.ui.core.util.Export#init
+	 * @function
+	 */
+	Export.prototype.init = function() {
+		this._oDeferred = null;
+		this._oRowBindingInfo = null;
+	};
+
+	/**
+	 * @private
+	 * @name sap.ui.core.util.Export#exit
+	 * @function
+	 */
+	Export.prototype.exit = function() {
+		delete this._oDeferred;
+		delete this._oRowBindingInfo;
+	};
+
+	/**
+	 * Creates the row template using the defined columns
+	 *
+	 * @return {sap.ui.core.util.ExportRow} row template
+	 * @private
+	 * @name sap.ui.core.util.Export#_createRowTemplate
+	 * @function
+	 */
+	Export.prototype._createRowTemplate = function() {
+		var oTemplate = new ExportRow(this.getId() + "-row"),
+			aCols = this.getColumns();
+
+		for (var i = 0, l = aCols.length; i < l; i++) {
+			var oColTemplate = aCols[i].getTemplate();
+			if (oColTemplate) {
+				oTemplate.addCell(oColTemplate.clone("col" + i));
+			}
+		}
+		return oTemplate;
+	};
+
+	Export.prototype.bindAggregation = function(sName, oBindingInfo) {
+		if (sName === 'rows') {
+			// skip binding the aggregation for now.
+			// will be bound when generating and unbound afterwards
+			this._oRowBindingInfo = oBindingInfo;
+			return this;
+		}
+		return Control.prototype.bindAggregation.apply(this, arguments);
+	};
+
+	/**
+	 * Called when the row aggregation gets updated
+	 *
+	 * @private
+	 * @name sap.ui.core.util.Export#updateRows
+	 * @function
+	 */
+	Export.prototype.updateRows = function(sReason) {
+		if (sReason === 'change') {
+			// generate the file
+			var sContent = this.getExportType()._generate(this);
+
+			// template and rows aren't needed anymore, cleans up bindings, etc.
+			this.destroyAggregation('_template');
+			this.unbindAggregation('rows');
+
+			// resolve promise to notify listeners
+			this._oDeferred.resolveWith(this, [ sContent] );
+			this._oDeferred = null;
+		}
+	};
+
+	/**
+	 * Generates the file content and returns a jQuery Promise
+	 * with the instance as context (this).<br>
+	 * The promise will be resolved with the generated content
+	 * as a string.
+	 *
+	 * @return {jQuery.Promise} Promise object
+	 *
+	 * @public
+	 * @name sap.ui.core.util.Export#generate
+	 * @function
+	 */
+	Export.prototype.generate = function() {
+		if (!this._oDeferred) {
+			this._oDeferred = jQuery.Deferred();
+			var oPromise = this._oDeferred.promise();
+
+			if (!this.hasModel()) {
+				this._oDeferred.rejectWith(this, [ "Generate is not possible beause no model was set." ]);
+			} else {
+				// setup row-template
+				var oTemplate = this._createRowTemplate();
+				this.setAggregation('_template', oTemplate, true);
+
+				// bind row aggregation (this.bindAggregation would do nothing)
+				Control.prototype.bindAggregation.call(this, 'rows', this._oRowBindingInfo);
+
+				// triggers data loading for OData.
+				// TODO: find a cleaner solution (when $count is not supported)
+				if (this.getBinding("rows")) {
+					this.getBinding("rows").getContexts(0, this.getBinding("rows").getLength());
+				}
+			}
+
+			return oPromise;
+		}
+
+		return this._oDeferred.promise();
+	};
+
+	/**
+	 * Generates the file content, triggers a download / save action and
+	 * returns a jQuery Promise with the instance as context (this).<br>
+	 * The promise will be resolved with the generated content
+	 * as a string.
+	 * <p><b>For information about browser support, see <code>sap.ui.core.util.File.save</code></b></p>
+	 *
+	 * @param {string} [sFileName] file name, defaults to 'data'
+	 * @return {jQuery.Promise} Promise object
+	 *
+	 * @public
+	 * @name sap.ui.core.util.Export#saveFile
+	 * @function
+	 */
+	Export.prototype.saveFile = function(sFileName) {
+		return this.generate().then(function(sContent) {
+			var oExportType = this.getExportType();
+			// Trigger the save action
+			File.save(sContent, sFileName || "data", oExportType.getFileExtension(), oExportType.getMimeType(), oExportType.getCharset());
+		});
+	};
+
+	return Export;
+}, /* bExport= */ true);
+
+}; // end of sap/ui/core/util/Export.js
 if ( !jQuery.sap.isDeclared('sap.ui.core.BusyIndicator') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -91213,7 +102627,7 @@ sap.ui.define("sap/ui/core/BusyIndicator",['jquery.sap.global', './Popup'],
 	/**
 	 * @class Provides methods to show or hide a waiting animation covering the whole page and blocking user interaction.
 	 * @static 
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.core.BusyIndicator
 	 */
@@ -91545,7 +102959,7 @@ sap.ui.define("sap/ui/core/ComponentContainer",['./library','./Control'], functi
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -91783,7 +103197,7 @@ sap.ui.core.ComponentContainer.prototype.getComponentInstance = function () {
  * question which was not answered before - what to do here when exchanging
  * the component - destroy or not? Right now we at least unlink the container. 
  */
-sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent) {
+sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent, bSupressInvalidate) {
 	// unlink the old component from the container
 	var oOldComponent = this.getComponentInstance();
 	if (oOldComponent) {
@@ -91791,7 +103205,7 @@ sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent) {
 		oOldComponent.setContainer(undefined);
 	}
 	// set the new component
-	this.setAssociation("component", oComponent);
+	this.setAssociation("component", oComponent, bSupressInvalidate);
 	// cross link the new component and propagate the properties (models)
 	oComponent = this.getComponentInstance();
 	if (oComponent) {
@@ -91821,7 +103235,7 @@ sap.ui.core.ComponentContainer.prototype.onBeforeRendering = function(){
 				url: this.getUrl(),
 				settings: this.getSettings() 
 			});
-			this.setComponent(oComponent);
+			this.setComponent(oComponent, true);
 		}
 	}
 
@@ -92170,12 +103584,12 @@ sap.ui.define("sap/ui/core/UIComponent",['jquery.sap.global', './Component', './
 	 * @class Base Class for UI Component.
 	 * @extends sap.ui.core.Component
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.UIComponent
-	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
+	 * @since 1.9.2
 	 */
-	var UIComponent = Component.extend("sap.ui.core.UIComponent", /** @lends sap.ui.core.UIComponent */
+	var UIComponent = Component.extend("sap.ui.core.UIComponent", /** @lends sap.ui.core.UIComponent.prototype */
 	
 	{
 		constructor : function(sId, mSettings) {
@@ -92355,7 +103769,6 @@ sap.ui.define("sap/ui/core/UIComponent",['jquery.sap.global', './Component', './
 	 * prefixing.
 	 * 
 	 * @since 1.15.1
-	 * @experimental Since 1.15.1. This feature might be changed in future.
 	 * @return {boolean} true, if the controls IDs should be prefixed automatically
 	 * @protected
 	 * @name sap.ui.core.UIComponent#getAutoPrefixId
@@ -92563,8 +103976,8 @@ sap.ui.define("sap/ui/core/mvc/HTMLView",['sap/ui/core/library','./View','sap/ui
  * A view defined/constructed by declarative HTML.
  * @extends sap.ui.core.mvc.View
  *
- * @author Stefan Hipfel, Tino Butz 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -92900,7 +104313,7 @@ sap.ui.define("sap/ui/core/mvc/JSONView",['sap/ui/core/library','./View'], funct
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -93121,7 +104534,7 @@ sap.ui.define("sap/ui/core/mvc/JSView",['sap/ui/core/library','./View'], functio
  * @extends sap.ui.core.mvc.View
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -93324,7 +104737,7 @@ sap.ui.define("sap/ui/core/mvc/TemplateView",['sap/ui/core/library','./View'], f
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public

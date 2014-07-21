@@ -62,10 +62,10 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	} else{
 		rm.addStyle("overflow", "hidden");
 	}
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		rm.addClass("sapUiVSplitterFirstPane");
 		rm.addStyle("width", position + "%");
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		rm.addClass("sapUiHSplitterFirstPane");
 		rm.addStyle("height", position + "%");
 	}
@@ -84,14 +84,14 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 
 	/*rendering the splitter bar*/
 	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"" + oControl.getText("SPLITTER_MOVE") + "\""); 
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiVerticalSplitterBar");
 		} else {
 			rm.addClass("sapUiVerticalSplitterBarHidden");
 		}
 		rm.addStyle("width", 0 + "%");
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiHorizontalSplitterBar");
 		} else {
@@ -111,10 +111,10 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	} else{
 		rm.addStyle("overflow", "hidden");
 	}
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		rm.addClass("sapUiVSplitterSecondPane");
 		rm.addStyle("width", dimensionSecPane + '%');
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		rm.addClass("sapUiHSplitterSecondPane");
 		rm.addStyle("height", dimensionSecPane + '%');
 	}

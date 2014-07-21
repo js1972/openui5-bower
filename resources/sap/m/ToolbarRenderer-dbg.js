@@ -13,13 +13,21 @@ jQuery.sap.require("sap.ui.core.Renderer");
  */
 sap.m.ToolbarRenderer = {};
 
-sap.m.ToolbarRenderer.render = function(rm, oToolbar) {
-	if (oToolbar._isInvisible()) {
-		return this.renderInvisible(rm, oToolbar);
-	}
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * @protected
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the render output buffer.
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered.
+ */
+sap.m.ToolbarRenderer.render = sap.m.BarInPageEnabler.prototype.render;
 
-	rm.write("<div");
-	rm.writeControlData(oToolbar);
+/**
+ * Add classes attributes and styles to the root tag
+ *
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the Render-Output-Buffer
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+ */
+sap.m.ToolbarRenderer.decorateRootElement = function (rm, oToolbar) {
 	rm.addClass("sapMTB");
 
 	if (!sap.m.Toolbar.hasFlexBoxSupport) {
@@ -43,24 +51,20 @@ sap.m.ToolbarRenderer.render = function(rm, oToolbar) {
 	var sHeight = oToolbar.getHeight();
 	sWidth && rm.addStyle("width", sWidth);
 	sHeight && rm.addStyle("height", sHeight);
+};
 
-	rm.writeClasses();
-	rm.writeStyles();
-	rm.write(">");
-
-	oToolbar.getContent().forEach(function(oContent) {
-		rm.renderControl(oContent);
+sap.m.ToolbarRenderer.renderBarContent = function(rm, oToolbar) {
+	oToolbar.getContent().forEach(function(oControl) {
+		sap.m.BarInPageEnabler.addChildClassTo(oControl, oToolbar);
+		rm.renderControl(oControl);
 	});
-
-	rm.write("</div>");
 };
 
-
-// TODO: Add this functionality to more central place that every control can use
-sap.m.ToolbarRenderer.renderInvisible = function(rm, oToolbar) {
-	rm.write("<div");
-	rm.writeControlData(oToolbar);
-	rm.addStyle("display", "none");
-	rm.writeStyles();
-	rm.write("></div>");
+/**
+ * Determines, if the IBarContext classes should be added to the control
+ * @private
+ */
+sap.m.ToolbarRenderer.shouldAddIBarContext = function (oControl) {
+	return false;
 };
+

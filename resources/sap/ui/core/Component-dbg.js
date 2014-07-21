@@ -31,12 +31,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 	 * @class Base Class for Component.
 	 * @extends sap.ui.base.ManagedObject
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.Component
-	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
+	 * @since 1.9.2
 	 */
-	var Component = ManagedObject.extend("sap.ui.core.Component", /** @lends sap.ui.core.Component */
+	var Component = ManagedObject.extend("sap.ui.core.Component", /** @lends sap.ui.core.Component.prototype */
 	
 	{
 		constructor : function(sId, mSettings) {
@@ -49,17 +49,16 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 			stereotype : "component",
 			"abstract": true,
 			version : "0.0",
-			includes : [],  // css, javascript files that should be used in the component
-			dependencies : { // external dependencies
+			includes : [],    // css, javascript files that should be used in the component
+			dependencies : {  // external dependencies
 				libs : [],
 				components : [],
 				ui5version : ""
 			},
 			config: {}, // static configuration
 			customizing: { // component/view customizing
-				// TODO: custom customizing data? not prefixed with sap.ui.
-				//       e.g. sap.ext.viewExtensions => to be handled by custom hook!
-				/*
+				
+				/* Example:
 				"sap.ui.viewReplacements": {
 					"sap.xx.org.Main": {
 						viewName: "sap.xx.new.Main",
@@ -70,7 +69,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 					"sap.xx.org.Main": "sap.xx.new.Main"
 				},
 				"sap.ui.viewExtensions": {
-					"sap.xx.new.Main": { // TODO: global or view dependant names for extensions? ==> locally in the view / use the new name!
+					"sap.xx.new.Main": {
 						"extensionX": {
 							name: "sap.xx.new.Fragment1",
 							type: "sap.ui.core.XMLFragment"
@@ -80,7 +79,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 						}
 					}
 				},
-				"sap.ui.viewModification": { // ?????
+				"sap.ui.viewModification": {
 					"sap.xx.new.Main": {
 						"myControlId": {
 							text: "{i18n_custom>mytext}"
@@ -106,6 +105,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 	 * @private
 	 * @name sap.ui.core.Component.activateCustomizing
 	 * @function
+	 * @deprecated Since 1.21.0 as it is handled by component instantiation
 	 */
 	Component.activateCustomizing = function(sComponentName) {
 		// noop since it will be handled by component instantiation
@@ -117,26 +117,30 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 	 * @private
 	 * @name sap.ui.core.Component.deactivateCustomizing
 	 * @function
+	 * @deprecated Since 1.21.0 as it is handled by component termination
 	 */
 	Component.deactivateCustomizing = function(sComponentName) {
 		// noop since it will be handled by component termination
 	};
 	
 	/**
-	 * Returns the ID of the owner component in which the given ManagedObject has been
-	 * created. 
-	 * @param {sap.ui.core.ManagedObject} oObject the ManagedObject to return the owner component ID for
+	 * Returns the ID of the owner UI Component in which the given Component or View has been created using 
+	 * <pre>
+	 *   UIComponent.prototype.createContent();
+	 * </pre>
+	 *  
+	 * @param {sap.ui.core.Component|sap.ui.core.mvc.View} oObject Object to retrieve the owner for
 	 * @return {string} the owner component ID
 	 * @static
-	 * @protected
-	 * @experimental Since 1.15.1. The location of this function might change.
+	 * @public
+	 * @since 1.15.1 
 	 * @name sap.ui.core.Component.getOwnerIdFor
 	 * @function
 	 */
 	Component.getOwnerIdFor = function(oObject) {
 		// the owner id is only supported for Components and Views
 		if (oObject && (oObject instanceof Component ||
-				            oObject instanceof sap.ui.core.mvc.View)) {
+				        oObject instanceof sap.ui.core.mvc.View)) {
 			return ManagedObject.getOwnerIdFor(oObject);
 		} 
 	};
@@ -375,36 +379,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 	};
 	
 	
-	/* * TODO: RETHINK THIS CONCEPT!
-	 * Sets the configuration model. The configuration model is named "config" and
-	 * can be accessed via <code>getModel("config")</code>.
-	 * 
-	 * @param {string|object|sap.ui.model.Model} vConfig the configuration model, the configuration object or a URI string to load a JSON configuration file.
-	 * @since 1.15.1
-	 * @public
-	 */
-	/* 
-	sap.ui.core.Component.prototype.setConfig = function(vConfig) {
-		this.setProperty("config", vConfig);
-		if (typeof vConfig === "string") {
-			var sUri = vConfig;
-			var vConfig = new sap.ui.model.json.JSONModel();
-			var oResponse = jQuery.sap.sjax({url:sUri, dataType:'json'});
-			if (oResponse.success) {
-				vConfig.setData(oResponse.data);
-			} else {
-				throw new Error("Could not load config file: " + sUri);
-			}
-		}
-		if (typeof vConfig === "object" && !vConfig instanceof sap.ui.model.Model) {
-			vConfig = new sap.ui.model.json.JSONModel(vConfig);
-		}
-		jQuery.sap.assert(vConfig === undefined || vConfig instanceof sap.ui.model.Model, "the config property value must be a string, an object or an instance of sap.ui.model.Model");
-		this.setModel("config", vConfig);
-	},
-	*/
-	
-	
 	/**
 	 * Initializes the Component instance after creation.
 	 *
@@ -548,7 +522,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 			    mSettings = oComponent.settings;
 			
 			// load the component class 
-			var oClass = sap.ui.component.load(oComponent);
+			var oClass = sap.ui.component.load(oComponent, true);
 			
 			// create an instance
 			var oInstance = new oClass(jQuery.extend({}, mSettings, {
@@ -557,20 +531,20 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 			}));
 			jQuery.sap.assert(oInstance instanceof Component, "The specified component \"" + sController + "\" must be an instance of sap.ui.core.Component!");
 			jQuery.sap.log.info("Component instance Id = " + oInstance.getId());
-			return oInstance;
 			
+			return oInstance;
 		}
-		
 	};
 	
 	/**
 	 * Load a component without instantiating it.
+	 * @param {object} oComponent the Component's setting. See {@link sap.ui.component} for more Information.
 	 * 
-	 * @experimental since 1.16.3
+	 * @since 1.16.3
 	 * @static
 	 * @public
 	 */
-	sap.ui.component.load = function(oComponent) {
+	sap.ui.component.load = function(oComponent, bFailOnError) {
 	
 		var sName = oComponent.name,
 			sUrl = oComponent.url,
@@ -607,12 +581,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './ComponentMet
 		jQuery.sap.require(sController);
 		var oClass = jQuery.sap.getObject(sController);
 	
-		jQuery.sap.assert(oClass !== undefined, "The specified component \"" + sController + "\" could not be found!");
-		
+		if (!oClass) {
+			if (bFailOnError) {
+				throw new Error("The specified component controller\"" + sController + "\" could not be found!");	
+			} else {
+				jQuery.sap.log.warning("The specified component controller \"" + sController + "\" could not be found!");
+			}
+		}
+
 		return oClass;
 	}
 	
-
 	return Component;
 
 }, /* bExport= */ true);

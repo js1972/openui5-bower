@@ -20,13 +20,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.Type
 	 */
-	var Type = BaseObject.extend("sap.ui.model.Type", /** @lends sap.ui.model.Type */ {
+	var Type = BaseObject.extend("sap.ui.model.Type", /** @lends sap.ui.model.Type.prototype */ {
 		
 		constructor : function () {
 			BaseObject.apply(this, arguments);

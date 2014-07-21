@@ -66,7 +66,7 @@ sap.ui.define(['./library','./Control','./IconPool'], function() {
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -470,7 +470,7 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.Icon} <code>this</code> to allow method chaining
  * @protected
@@ -491,20 +491,13 @@ sap.ui.core.Icon.M_EVENTS = {'press':'press'};
  * @private
  */
 sap.ui.core.Icon.prototype.onAfterRendering = function() {
-	var $this = this.$();
-
-	// When cursor CSS style is set via CSS class,
-	// chrome doesn't return the set value by calling domNode.style.cursor,
-	// therefore inline style has to be set here.
-	if (sap.ui.Device.browser.chrome && this.hasListeners("press")) {
-		$this.css("cursor", "pointer");
-	}
+	var $Icon = this.$();
 
 	// This is to check if no cursor property inherited from parent DOM.
 	// If the current value is auto, set it to default.
 	// This is to fix the cursor: auto interpreted as text cursor in firefox and IE.
-	if ($this.css("cursor") === "auto") {
-		$this.css("cursor", "default");
+	if ($Icon.css("cursor") === "auto") {
+		$Icon.css("cursor", "default");
 	}
 };
 
@@ -522,30 +515,30 @@ sap.ui.core.Icon.prototype.onmousedown = function(oEvent) {
 
 	this._bPressFired = false;
 
-	if (oEvent.srcControl.mEventRegistry["press"] || oEvent.srcControl.mEventRegistry["tap"]) {
+	if (this.hasListeners("press") || this.hasListeners("tap")) {
 
-		// mark the event for components that needs to know if the event was handled by this component
+		// mark the event for components that needs to know if the event was handled
 		oEvent.setMarked();
 	}
 
 	var sActiveColor = this.getActiveColor(),
 		sActiveBackgroundColor = this.getActiveBackgroundColor(),
-		$this;
+		$Icon;
 
 	if (sActiveColor || sActiveBackgroundColor) {
 
 		// change the source only when the first finger is on the Icon, the following fingers doesn't affect
 		if (!oEvent.targetTouches || (oEvent.targetTouches && oEvent.targetTouches.length === 1)) {
-			$this = this.$();
+			$Icon = this.$();
 
-			$this.addClass("sapUiIconActive");
+			$Icon.addClass("sapUiIconActive");
 
 			if (sActiveColor) {
-				$this.css("color", sActiveColor);
+				$Icon.css("color", sActiveColor);
 			}
 
 			if (sActiveBackgroundColor) {
-				$this.css("background-color", sActiveBackgroundColor);
+				$Icon.css("background-color", sActiveBackgroundColor);
 			}
 		}
 	}
@@ -600,14 +593,14 @@ sap.ui.core.Icon.prototype.onmouseover = function() {
 
 	var sHoverColor = this.getHoverColor(),
 		sHoverBackgroundColor = this.getHoverBackgroundColor(),
-		$this = this.$();
+		$Icon = this.$();
 
 	if (sHoverColor) {
-		$this.css("color", sHoverColor);
+		$Icon.css("color", sHoverColor);
 	}
 
 	if (sHoverBackgroundColor) {
-		$this.css("background-color", sHoverBackgroundColor);
+		$Icon.css("background-color", sHoverBackgroundColor);
 	}
 };
 
@@ -653,18 +646,18 @@ sap.ui.core.Icon.prototype.onkeydown = function(oEvent) {
 		// note: prevent document scrolling
 		oEvent.preventDefault();
 
-		var $this = this.$(),
+		var $Icon = this.$(),
 			sActiveColor = this.getActiveColor(),
 			sActiveBackgroundColor = this.getActiveBackgroundColor();
 
-		$this.addClass("sapUiIconActive");
+		$Icon.addClass("sapUiIconActive");
 
 		if (sActiveColor) {
-			$this.css("color", sActiveColor);
+			$Icon.css("color", sActiveColor);
 		}
 
 		if (sActiveBackgroundColor) {
-			$this.css("background-color", sActiveBackgroundColor);
+			$Icon.css("background-color", sActiveBackgroundColor);
 		}
 	}
 };
@@ -702,19 +695,19 @@ sap.ui.core.Icon.prototype._restoreColors = function() {
 
 sap.ui.core.Icon.prototype.setSrc = function(sSrc) {
 	var oIconInfo = sap.ui.core.IconPool.getIconInfo(sSrc),
-		bTextNeeded = (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9),
-		$this = this.$();
+		bTextNeeded = sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9,
+		$Icon = this.$();
 
 	if (oIconInfo) {
-		$this.css("font-family", oIconInfo.fontFamily);
+		$Icon.css("font-family", oIconInfo.fontFamily);
 
 		if (bTextNeeded) {
-			$this.text(oIconInfo.content);
+			$Icon.text(oIconInfo.content);
 		} else {
-			$this.attr("data-sap-ui-icon-content", oIconInfo.content);
+			$Icon.attr("data-sap-ui-icon-content", oIconInfo.content);
 		}
 
-		$this.toggleClass("sapUiIconMirrorInRTL", !oIconInfo.suppressMirroring);
+		$Icon.toggleClass("sapUiIconMirrorInRTL", !oIconInfo.suppressMirroring);
 	}
 
 	// when the given sSrc can't be found in IconPool, rerender the icon is needed.
@@ -775,6 +768,23 @@ sap.ui.core.Icon.prototype.setActiveBackgroundColor = function(sColor) {
 
 sap.ui.core.Icon.prototype.setHoverBackgroundColor = function(sColor) {
 	return this.setProperty("hoverBackgroundColor", sColor, true);
+};
+
+sap.ui.core.Icon.prototype.attachPress = function() {
+	var aMyArgs = Array.prototype.slice.apply(arguments);
+	aMyArgs.splice(0, 0, "press");
+	this.addStyleClass("sapUiIconPointer");
+	return sap.ui.core.Control.prototype.attachEvent.apply(this, aMyArgs);
+};
+
+sap.ui.core.Icon.prototype.detachPress = function() {
+	var aMyArgs = Array.prototype.slice.apply(arguments);
+	aMyArgs.splice(0, 0, "press");
+	sap.ui.core.Control.prototype.detachEvent.apply(this, aMyArgs);
+	if (!this.hasListeners("press")) {
+		this.removeStyleClass("sapUiIconPointer");
+	}
+	return this;
 };
 
 	return sap.ui.core.Icon;

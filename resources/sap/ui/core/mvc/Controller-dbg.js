@@ -28,7 +28,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		 * @public
 		 * @name sap.ui.core.mvc.Controller
 		 */
-		var Controller = EventProvider.extend("sap.ui.core.mvc.Controller", /** @lends sap.ui.core.mvc.Controller */ {
+		var Controller = EventProvider.extend("sap.ui.core.mvc.Controller", /** @lends sap.ui.core.mvc.Controller.prototype */ {
 			
 			constructor : function(sName) {
 				var oToExtend = null;

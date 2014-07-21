@@ -15,7 +15,7 @@ jQuery.sap.declare("sap.m.ios7");
 		 * Thats why we scroll to the top on orientation change.
 		 * We also need to catch blur since if you do orientation change with keyboard open, close the Keyboard, Open it on another input, 
 		 * the black box will appear again. Since closing the keyboard will fire blur, we attach on this one.
-		 * @internal
+		 * @private
 		 */
 		constructor : function() {
 			var bIsIOS7Safari = sap.ui.Device.os.ios && sap.ui.Device.os.version >= 7 && sap.ui.Device.os.version < 8 && sap.ui.Device.browser.name === "sf";
@@ -164,7 +164,8 @@ jQuery.sap.declare("sap.m.ios7");
 	};
 
 	/**
-	 * @private handles the orientation change
+	 * handles the orientation change
+	 * @private
 	 */
 	sap.m._Ios7.prototype._onOrientationChange = function (oEvent) {
 		var bIsLandscape = oEvent.landscape;

@@ -148,7 +148,7 @@ sap.ui.commons.TreeRenderer.renderNode = function(oRenderManager, oNode, iLevel,
 	rm.writeClasses(oNode);
 
 	//ARIA
-	var mProps = {role: 'treeitem', level: iLevel, setsize: iSize, posinset: iPos,};
+	var mProps = {role: 'treeitem', level: iLevel, setsize: iSize, posinset: iPos};
 
 	if(bExpanded){
 		mProps["expanded"] = true;

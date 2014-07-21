@@ -24,7 +24,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding'],
 	* @name sap.ui.model.odata.ODataTreeBinding
 	* @extends sap.ui.model.TreeBinding
 	*/
-	var ODataTreeBinding = TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lends sap.ui.model.odata.ODataTreeBinding */ {
+	var ODataTreeBinding = TreeBinding.extend("sap.ui.model.odata.ODataTreeBinding", /** @lends sap.ui.model.odata.ODataTreeBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			TreeBinding.apply(this, arguments);
@@ -84,7 +84,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding'],
 			//An context is bound
 			if (this.bDisplayRootNode) {
 				//Get the binding context for the root element, it is created if it doesn't exist yet
-				this.oModel.createBindingContext(this.sPath, this.getContext(), { expand: sNavPath }, function(oNewContext) {
+				this.oModel.createBindingContext(sAbsolutePath, null, { expand: sNavPath }, function(oNewContext) {
 					oContext = oNewContext;
 					if (that.oRootContext !== oNewContext) {
 						that.oRootContext = oNewContext;

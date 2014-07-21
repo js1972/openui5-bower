@@ -47,8 +47,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Aggregations
  * <ul>
  * <li>{@link #getContent content} : sap.ui.core.Control[]</li>
- * <li>{@link #getCustomHeader customHeader} : sap.m.Bar</li>
- * <li>{@link #getSubHeader subHeader} : sap.m.Bar</li>
+ * <li>{@link #getCustomHeader customHeader} : sap.m.IBar</li>
+ * <li>{@link #getSubHeader subHeader} : sap.m.IBar</li>
  * <li>{@link #getBeginButton beginButton} : sap.m.Button</li>
  * <li>{@link #getEndButton endButton} : sap.m.Button</li></ul>
  * </li>
@@ -74,7 +74,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -107,8 +107,8 @@ sap.ui.core.Control.extend("sap.m.ResponsivePopover", { metadata : {
 	},
 	aggregations : {
     	"content" : {type : "sap.ui.core.Control", multiple : true, singularName : "content"}, 
-    	"customHeader" : {type : "sap.m.Bar", multiple : false}, 
-    	"subHeader" : {type : "sap.m.Bar", multiple : false}, 
+    	"customHeader" : {type : "sap.m.IBar", multiple : false}, 
+    	"subHeader" : {type : "sap.m.IBar", multiple : false}, 
     	"beginButton" : {type : "sap.m.Button", multiple : false}, 
     	"endButton" : {type : "sap.m.Button", multiple : false}, 
     	"_popup" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
@@ -529,7 +529,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * Getter for aggregation <code>customHeader</code>.<br/>
  * CustomHeader is supported by both variants. Please see the documentation on {@linkcode sap.m.Popover#customHeader sap.m.Popover} and {@linkcode sap.m.Dialog#customHeader sap.m.Dialog}
  * 
- * @return {sap.m.Bar}
+ * @return {sap.m.IBar}
  * @public
  * @name sap.m.ResponsivePopover#getCustomHeader
  * @function
@@ -538,7 +538,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>customHeader</code>.
- * @param {sap.m.Bar} oCustomHeader
+ * @param {sap.m.IBar} oCustomHeader
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setCustomHeader
@@ -560,7 +560,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * Getter for aggregation <code>subHeader</code>.<br/>
  * SubHeader is supported by both variants. Please see the documentation on {@linkcode sap.m.Popover#subHeader sap.m.Popover} and {@linkcode sap.m.Dialog#subHeader sap.m.Dialog}
  * 
- * @return {sap.m.Bar}
+ * @return {sap.m.IBar}
  * @public
  * @name sap.m.ResponsivePopover#getSubHeader
  * @function
@@ -569,7 +569,7 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
 
 /**
  * Setter for the aggregated <code>subHeader</code>.
- * @param {sap.m.Bar} oSubHeader
+ * @param {sap.m.IBar} oSubHeader
  * @return {sap.m.ResponsivePopover} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.ResponsivePopover#setSubHeader
@@ -681,9 +681,9 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy 
-						This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
-					
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy
+ *         This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
+ * 
  * @public
  */
  
@@ -749,9 +749,9 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy 
-						This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
-					
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy
+ *         This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
+ * 
  * @public
  */
  
@@ -817,12 +817,12 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy 
-						This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
-					
- * @param {sap.m.Button} oControlEvent.getParameters.origin 
-						This parameter contains the control which triggers the close of the ResponsivePopover. This parameter is undefined when runs on desktop or tablet.
-					
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy
+ *         This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
+ * 
+ * @param {sap.m.Button} oControlEvent.getParameters.origin
+ *         This parameter contains the control which triggers the close of the ResponsivePopover. This parameter is undefined when runs on desktop or tablet.
+ * 
  * @public
  */
  
@@ -891,12 +891,12 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy 
-						This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
-					
- * @param {sap.m.Button} oControlEvent.getParameters.origin 
-						This parameter contains the control which triggers the close of the ResponsivePopover. This parameter is undefined when runs on desktop or tablet.
-					
+ * @param {sap.ui.core.Control} oControlEvent.getParameters.openBy
+ *         This parameter contains the control which is passed as the parameter when calling openBy method. When runs on the phone, this parameter is undefined.
+ * 
+ * @param {sap.m.Button} oControlEvent.getParameters.origin
+ *         This parameter contains the control which triggers the close of the ResponsivePopover. This parameter is undefined when runs on desktop or tablet.
+ * 
  * @public
  */
  
@@ -963,8 +963,8 @@ sap.m.ResponsivePopover.M_EVENTS = {'beforeOpen':'beforeOpen','afterOpen':'after
  * @function
  * @param {object} 
  *         oControl
- *         
- * When this control runs on tablet or desktop, the ResponsivePopover is positioned relatively to this control.
+ * 
+ *         When this control runs on tablet or desktop, the ResponsivePopover is positioned relatively to this control.
  * 
 
  * @type sap.ui.core.Control
@@ -1206,35 +1206,42 @@ sap.m.ResponsivePopover.prototype.setModel = function(oModel, sName){
 };
 
 sap.m.ResponsivePopover.prototype._createButtonFooter = function(){
-	this._oFooter = this._oFooter || new sap.m.Bar(this.getId() + "-footer");
+	if (this._oFooter) {
+		return this._oFooter;
+	}
+
+	this._oFooter = new sap.m.Toolbar(this.getId() + "-footer", {
+		content: [new sap.m.ToolbarSpacer()]
+	});
+
 	return this._oFooter;
 };
 
 sap.m.ResponsivePopover.prototype._setButton = function(sPos, oButton){
-	if(this._oControl instanceof sap.m.Popover){
+	if (this._oControl instanceof sap.m.Popover) {
 		var sGetterName = "get" + this._firstLetterUpperCase(sPos) + "Button",
 			oOldButton = this[sGetterName](),
 			oFooter = this._createButtonFooter(),
 			sPrivateName = "_o" + this._firstLetterUpperCase(sPos) + "Button",
 			iIndex = (sPos.toLowerCase() === "begin" ? 0 : 1),
 			sOtherGetterName = (sPos.toLowerCase() === "begin" ? "getEndButton" : "getBeginButton");
-		
-		if(oOldButton){
-			oFooter.removeContentMiddle(oOldButton);
+
+		if (oOldButton) {
+			oFooter.removeContent(oOldButton);
 		}
-		if(oButton){
+		if (oButton) {
 			if(!oFooter.getParent()){
 				this._oControl.setFooter(oFooter);
 			}
-			oFooter.insertAggregation("contentMiddle", oButton, iIndex)
-		}else{
+			oFooter.insertContent(oButton, iIndex + 1);
+		} else {
 			var oOtherButton = this[sOtherGetterName]();
 			if(!oOtherButton){
 				oFooter.destroy();
 				this._oFooter = null;
 			}
 		}
-		
+
 		this[sPrivateName] = oButton;
 		return this;
 	}else{

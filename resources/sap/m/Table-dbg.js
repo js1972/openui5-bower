@@ -31,7 +31,9 @@ jQuery.sap.require("sap.m.ListBase");
  * <ul>
  * <li>Properties
  * <ul>
- * <li>{@link #getBackgroundDesign backgroundDesign} : sap.m.BackgroundDesign (default: sap.m.BackgroundDesign.Translucent)</li></ul>
+ * <li>{@link #getBackgroundDesign backgroundDesign} : sap.m.BackgroundDesign (default: sap.m.BackgroundDesign.Translucent)</li>
+ * <li>{@link #getFixedLayout fixedLayout} : boolean (default: true)</li>
+ * <li>{@link #getShowOverlay showOverlay} : boolean (default: false)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -58,7 +60,7 @@ jQuery.sap.require("sap.m.ListBase");
  * @extends sap.m.ListBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -72,7 +74,9 @@ sap.m.ListBase.extend("sap.m.Table", { metadata : {
 	// ---- control specific ----
 	library : "sap.m",
 	properties : {
-		"backgroundDesign" : {type : "sap.m.BackgroundDesign", group : "Appearance", defaultValue : sap.m.BackgroundDesign.Translucent}
+		"backgroundDesign" : {type : "sap.m.BackgroundDesign", group : "Appearance", defaultValue : sap.m.BackgroundDesign.Translucent},
+		"fixedLayout" : {type : "boolean", group : "Behavior", defaultValue : true},
+		"showOverlay" : {type : "boolean", group : "Appearance", defaultValue : false}
 	},
 	aggregations : {
     	"columns" : {type : "sap.m.Column", multiple : true, singularName : "column"}
@@ -118,6 +122,66 @@ sap.m.ListBase.extend("sap.m.Table", { metadata : {
  * @return {sap.m.Table} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Table#setBackgroundDesign
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>fixedLayout</code>.
+ * Defines the algorithm to be used to layout the table cells, rows, and columns.
+ * 
+ * If you set this property to false, then table is rendered with "auto" layout algorithm. This means, the width of the table and its cells depends on the content thereof. The column width is set by the widest unbreakable content in the cells. This can make the rendering slow, since the browser needs to read through all the content in the table, before determining the final layout.
+ * Note: Since table does not have own scroll container, setting fixedLayout to false can force the table to overflow and this can cause visual problems. So, we highly suggest to use this property when table has a few columns in wide screens or horizontal scroll container(e.g Dialog, Popover) to handle overflow.
+ * Please note that with "auto" layout mode Column width property is taken into account as minimum width.
+ * 
+ * By default, table is rendered with "fixed" layout algorithm. This means the horizontal layout only depends on the table's width and the width of the columns, not the contents of the cells. Cells in subsequent rows do not affect column widths. This allows a browser to layout the table faster than the auto table layout since the browser can begin to display the table once the first row has been analyzed.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>fixedLayout</code>
+ * @public
+ * @since 1.22
+ * @name sap.m.Table#getFixedLayout
+ * @function
+ */
+
+/**
+ * Setter for property <code>fixedLayout</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bFixedLayout  new value for property <code>fixedLayout</code>
+ * @return {sap.m.Table} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Table#setFixedLayout
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>showOverlay</code>.
+ * Setting this property to true will show an overlay on top of the Table content and users cannot click anymore on the Table content.
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>showOverlay</code>
+ * @public
+ * @since 1.22.1
+ * @name sap.m.Table#getShowOverlay
+ * @function
+ */
+
+/**
+ * Setter for property <code>showOverlay</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bShowOverlay  new value for property <code>showOverlay</code>
+ * @return {sap.m.Table} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22.1
+ * @name sap.m.Table#setShowOverlay
  * @function
  */
 
@@ -230,6 +294,27 @@ sap.m.Table.prototype.onAfterRendering = function() {
 
 	// update select-all
 	this.updateSelectAllCheckbox();
+
+	// render the overlay if necessary
+	this._renderOverlay();
+};
+
+sap.m.Table.prototype._renderOverlay = function() {
+	var $this = this.$(),
+	    $overlay = $this.find(".sapMTableOverlay"),
+	    bShowOverlay = this.getShowOverlay();
+	if (bShowOverlay && $overlay.length === 0) {
+		$overlay = jQuery("<div>").addClass("sapUiOverlay sapMTableOverlay").css("z-index", "1");
+		$this.append($overlay);
+	} else if (!bShowOverlay) {
+		$overlay.remove();
+	}
+};
+
+sap.m.Table.prototype.setShowOverlay = function(bShow) {
+	this.setProperty("showOverlay", bShow, true);
+	this._renderOverlay();
+	return this;
 };
 
 sap.m.Table.prototype.exit = function () {
@@ -259,6 +344,12 @@ sap.m.Table.prototype.removeSelections = function() {
 sap.m.Table.prototype.selectAll = function () {
 	sap.m.ListBase.prototype.selectAll.apply(this, arguments);
 	this.updateSelectAllCheckbox();
+	return this;
+};
+
+sap.m.Table.prototype.setFixedLayout = function (bFixed) {
+	this.setProperty("fixedLayout", bFixed, true);
+	this.$("listUl").css("table-layout", this.getFixedLayout() ? "fixed" : "auto");
 	return this;
 };
 

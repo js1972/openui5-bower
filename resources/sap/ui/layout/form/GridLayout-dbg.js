@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -134,7 +134,24 @@ jQuery.sap.require("sap.ui.layout.form.GridElementData");
 	sap.ui.layout.form.GridLayout.prototype.toggleContainerExpanded = function(oContainer){
 
 		// rerendering of the form is needed
-		this.rerender();
+		this.invalidate();
+
+	};
+
+	sap.ui.layout.form.GridLayout.prototype.onAfterRendering = function(){
+
+		// set tabindex of expander buttons to -1 to prevent tabbing from outside the Form
+		// directly to the expander
+		var oForm = this.getParent();
+		if (oForm) {
+			var aContainers = oForm.getFormContainers();
+			for ( var i = 0; i < aContainers.length; i++) {
+				var oContainer = aContainers[i];
+				if (oContainer.getExpandable()) {
+					oContainer._oExpandButton.$().attr("tabindex", "-1");
+				}
+			}
+		}
 
 	};
 

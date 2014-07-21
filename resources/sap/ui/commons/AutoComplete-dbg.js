@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.commons.ComboBox");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -213,6 +213,9 @@ sap.ui.commons.AutoComplete.M_EVENTS = {'suggest':'suggest'};
 jQuery.sap.require("jquery.sap.strings");
 
 sap.ui.commons.AutoComplete._DEFAULTFILTER = function(sValue, oItem){
+	if(this._skipFilter){ //Easy (currently internal) way to skip auto filtering
+		return true;
+	}
 	return jQuery.sap.startsWithIgnoreCase(oItem.getText(), sValue);
 };
 
@@ -374,6 +377,37 @@ sap.ui.commons.AutoComplete.prototype._doTypeAhead = function(){
 	this._sTypedChars = jQuery(this.getInputDomRef()).val();
 
 	refreshListBoxItems(this);
+};
+
+
+sap.ui.commons.AutoComplete.prototype.refreshItems = function(sReason){
+	var oBinding = this.getBinding("items");
+	if(sReason == "filter" && oBinding){
+		oBinding.getContexts(); //Avoid update of aggregation when filter not yet applied (filter request triggered by this call)
+	}else{
+		sap.ui.commons.AutoComplete.prototype.updateItems.apply(this, arguments);
+	}
+};
+
+//see sap.ui.commons.ComboBox.prototype._handleItemsChanged
+sap.ui.commons.AutoComplete.prototype._handleItemsChanged = function(oEvent, bDelayed){
+	if (this.bNoItemCheck) {
+		return;
+	}
+
+	if (bDelayed) {
+		this._sHandleItemsChanged = null;
+	}
+
+	var aItems = [];
+	if (this._getExistingListBox()) {
+		aItems = this._getListBox().getItems();
+	}
+
+	var oDomRef = this.getDomRef();
+	if( oDomRef){
+		jQuery(this.getInputDomRef()).attr("aria-setsize", aItems.length);
+	}
 };
 
 

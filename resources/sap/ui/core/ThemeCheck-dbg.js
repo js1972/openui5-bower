@@ -5,8 +5,8 @@
  */
 
 // Provides class sap.ui.core.ThemeCheck
-sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
-	function(jQuery, BaseObject/* , jQuerySap */) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/base/Object', 'jquery.sap.script'],
+	function(jQuery, Device, BaseObject/* , jQuerySap */) {
 	"use strict";
 
 
@@ -39,6 +39,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 			this._CUSTOMID = "sap-ui-core-customcss";
 			this._customCSSAdded = false;
 			this._themeCheckedForCustom = null;
+			this._mAdditionalLibCss = {};
 		},
 	
 		getInterface : function() {
@@ -95,6 +96,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 			jQuery.sap.clearDelayedCall(oThemeCheck._sThemeCheckId);
 			oThemeCheck._sThemeCheckId = null;
 			oThemeCheck._iCount = 0;
+			oThemeCheck._mAdditionalLibCss = {};
 		}
 	}
 	
@@ -109,14 +111,65 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 			// hence, needs to be checked for successful inclusion, too
 			mLibs["sap-ui-theme-"+oThemeCheck._CUSTOMID] = {};
 		}
-	
-		jQuery.each(mLibs, function(lib) {
+
+		function checkLib(lib) {
 			res = res && ThemeCheck.checkStyle("sap-ui-theme-"+lib, true);
-			if (!!res){
-			/* as soon as css has been loaded, look if there is a flag for custom css inclusion inside, but only
+			if (!!res) {
+
+			// check for css rule count
+				if (Device.browser.msie && Device.browser.version <= 9) {
+					var oStyle = jQuery.sap.domById("sap-ui-theme-"+lib);
+					var iRules = oStyle && oStyle.sheet && oStyle.sheet.rules &&
+									oStyle.sheet.rules.length ? oStyle.sheet.rules.length : 0;
+
+					// IE9 and below can only handle up to 4095 rules and therefore additional
+					// css files have to be included
+					if (iRules === 4095) {
+						var iNumber = parseInt(jQuery(oStyle).attr("sap-ui-css-count"), 10);
+						if (isNaN(iNumber)) {
+							iNumber = 1; // first additional stylesheet
+						} else {
+							iNumber += 1;
+						}
+						var sAdditionalLibSuffix = "ie9_" + iNumber;
+						var sAdditionalLibName = this.name + "-" + sAdditionalLibSuffix;
+						var sLinkId = "sap-ui-theme-" + sAdditionalLibName;
+						if (!oThemeCheck._mAdditionalLibCss[sAdditionalLibName] && !jQuery.sap.domById(sLinkId)) {
+							oThemeCheck._mAdditionalLibCss[sAdditionalLibName] = {
+								name: this.name // remember original libName
+							};
+							var oBaseStyleSheet;
+							if (lib !== this.name) {
+								// use first stylesheet element of theme
+								oBaseStyleSheet = jQuery.sap.domById("sap-ui-theme-" + this.name);
+							} else {
+								oBaseStyleSheet = oStyle;
+							}
+							// create the new link element
+							var oLink = document.createElement("link");
+							oLink.type = "text/css";
+							oLink.rel = "stylesheet";
+							oLink.href = oBaseStyleSheet.getAttribute("href").substr(0, oBaseStyleSheet.getAttribute("href").length - 4 /* length of .css */) +
+								"_" + sAdditionalLibSuffix + ".css";
+							oLink.id = sLinkId;
+
+							jQuery(oLink)
+							.attr("sap-ui-css-count", iNumber)
+							.load(function() {
+								jQuery(oLink).attr("sap-ui-ready", "true");
+							}).error(function() {
+								jQuery(oLink).attr("sap-ui-ready", "false");
+							});
+
+							oStyle.parentNode.insertBefore(oLink, oStyle.nextSibling);
+						}
+					}
+				}
+
+				/* as soon as css has been loaded, look if there is a flag for custom css inclusion inside, but only
 				 * if this has not been checked successfully before for the same theme
 				 */
-			if(oThemeCheck._themeCheckedForCustom != sThemeName){
+				if(oThemeCheck._themeCheckedForCustom != sThemeName){
 					if (checkCustom(oThemeCheck, lib)){
 							//load custom css available at sap/ui/core/themename/library.css
 						jQuery.sap.includeStyleSheet(sPath,  oThemeCheck._CUSTOMID);
@@ -125,8 +178,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 						oThemeCheck._themeCheckedForCustom = sThemeName;
 						res = false;
 						return false;
-					}
-					else{
+					}	else {
 						// remove stylesheet once the particular class is not available (e.g. after theme switch)
 						/*check for custom theme was not successful, so we need to make sure there are no custom style sheets attached*/
 						var customCssLink = jQuery("LINK[id='"+  oThemeCheck._CUSTOMID + "']");
@@ -138,7 +190,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 					}
 				}
 			}
-		});
+		}
+
+		jQuery.each(mLibs, checkLib);
+		jQuery.each(oThemeCheck._mAdditionalLibCss, checkLib);
+
 		if(!res){
 			jQuery.sap.log.warning("ThemeCheck: Theme not yet applied.");
 		}

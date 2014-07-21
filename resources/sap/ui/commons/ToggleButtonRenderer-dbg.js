@@ -18,13 +18,13 @@ jQuery.sap.require("sap.ui.core.Renderer");
 sap.ui.commons.ToggleButtonRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.ButtonRenderer);
 
 /**
+ * Hint: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
+ *       It is used to allow extensions to display content after the actual button content.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.ToggleButton}
  *            oToggleButton the ToggleButton that should be rendered
  * @private
- * P.S.: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
- *       It is used to allow extensions to display content after the actual button content.
  */
 sap.ui.commons.ToggleButtonRenderer.renderButtonAttributes = function(rm, oToggleButton) {
 	rm.addClass("sapUiToggleBtn");

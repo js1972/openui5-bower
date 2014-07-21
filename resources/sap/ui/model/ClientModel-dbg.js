@@ -21,21 +21,19 @@ sap.ui.define(['jquery.sap.global', './ClientContextBinding', './ClientListBindi
 	/**
 	 * Constructor for a new ClientModel.
 	 *
-	 * @class
+	 * @class Model implementation for Client models
 	 * @abstract
-	 * Model implementation for Client models
-	 *
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData URL where to load the data from
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.ClientModel
 	 */
-	var ClientModel = Model.extend("sap.ui.model.ClientModel", /** @lends sap.ui.model.ClientModel */ {
+	var ClientModel = Model.extend("sap.ui.model.ClientModel", /** @lends sap.ui.model.ClientModel.prototype */ {
 		
 		constructor : function(oData) {
 			Model.apply(this, arguments);

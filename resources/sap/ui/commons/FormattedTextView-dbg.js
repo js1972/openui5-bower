@@ -57,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -405,8 +405,7 @@ jQuery.sap.require("jquery.sap.encoder");
 	 * @private
 	 * @param {string}
 	 *            inputHtml The HTML to sanitize.
-	 * @param {function(string,
-	 *            Array.<?string>)} tagPolicy A function that decides which
+	 * @param {function(string,string[])} tagPolicy A function that decides which
 	 *            tags to accept and sanitizes their attributes (see
 	 *            makeHtmlSanitizer above for details).
 	 * @return {string} The sanitized HTML.

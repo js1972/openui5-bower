@@ -181,6 +181,29 @@ sap.ui.define(['jquery.sap.global'],
 	jQuery.sap.encodeURL = function(sString) {
 		return sString.replace(rURL, fURL);
 	};
+	
+	/**
+	 * Encode a map of parameters into a combined URL parameter string
+	 * 
+	 * @param {object} mParams The map of parameters to encode
+	 * @return The URL encoded parameters
+	 * @type {string}
+	 * @public
+	 * @SecValidate {0|return|XSS} validates the given string for a CSS context
+	 */
+	jQuery.sap.encodeURLParameters = function(mParams) {
+		if (!mParams) {
+			return "";
+		}
+		var aUrlParams = [];
+		jQuery.each(mParams, function (sName, oValue) {
+			if (jQuery.type(oValue) === "string") {
+				oValue = jQuery.sap.encodeURL(oValue);
+			}
+			aUrlParams.push(jQuery.sap.encodeURL(sName) + "=" + oValue);
+		});
+		return aUrlParams.join("&");
+	};
 
 	/**
 	 * RegExp and escape function for CSS escaping
@@ -209,7 +232,7 @@ sap.ui.define(['jquery.sap.global'],
 	jQuery.sap.encodeCSS = function(sString) {
 		return sString.replace(rCSS, fCSS);
 	};
-
+	
 	/**
 	 * WhitelistEntry object
 	 * @param {string} protocol The protocol of the URL

@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -406,7 +406,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
  * @param {int} 
  *         iIndex
  *         Specifies the index where the controls shall be added. For a negative value of iIndex, the content is inserted at
- * position '0'; for a value greater than the current size of the aggregation, the content is inserted at the last position.
+ *         position '0'; for a value greater than the current size of the aggregation, the content is inserted at the last position.
  * @param {sap.ui.core.Control} 
  *         oControl
  *         N controls can be submitted to be added. Each control is submitted as one argument.
@@ -527,10 +527,10 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
  * @function
  * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} 
  *         oAreaId
- *         
+ * 
  * @param {boolean} 
  *         bCreate
- *         
+ * 
 
  * @type sap.ui.commons.layout.BorderLayoutAreaTypes
  * @public

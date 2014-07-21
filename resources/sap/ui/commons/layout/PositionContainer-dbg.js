@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -300,10 +300,10 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.PositionContainer", { metadata
  * @name sap.ui.commons.layout.PositionContainer.prototype.updatePosition
  * @function
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control in the absolute layout. The object is expected
- * to have one or more out of the attributes top, bottom, left, right (each with a value of type sap.ui.core.CSSSize). If no object
- * is given, nothing is updated.
+ *         to have one or more out of the attributes top, bottom, left, right (each with a value of type sap.ui.core.CSSSize). If no object
+ *         is given, nothing is updated.
 
  * @type void
  * @public

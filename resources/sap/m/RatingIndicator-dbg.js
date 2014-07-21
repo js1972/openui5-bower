@@ -35,7 +35,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getEnabled enabled} : boolean (default: true)</li>
  * <li>{@link #getMaxValue maxValue} : int (default: 5)</li>
  * <li>{@link #getValue value} : float (default: 0)</li>
- * <li>{@link #getIconSize iconSize} : sap.ui.core.CSSSize (default: '1.375rem')</li>
+ * <li>{@link #getIconSize iconSize} : sap.ui.core.CSSSize</li>
  * <li>{@link #getIconSelected iconSelected} : sap.ui.core.URI</li>
  * <li>{@link #getIconUnselected iconUnselected} : sap.ui.core.URI</li>
  * <li>{@link #getIconHovered iconHovered} : sap.ui.core.URI</li>
@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -82,7 +82,7 @@ sap.ui.core.Control.extend("sap.m.RatingIndicator", { metadata : {
 		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"maxValue" : {type : "int", group : "Behavior", defaultValue : 5},
 		"value" : {type : "float", group : "Behavior", defaultValue : 0, bindable : "bindable"},
-		"iconSize" : {type : "sap.ui.core.CSSSize", group : "Behavior", defaultValue : '1.375rem'},
+		"iconSize" : {type : "sap.ui.core.CSSSize", group : "Behavior", defaultValue : null},
 		"iconSelected" : {type : "sap.ui.core.URI", group : "Behavior", defaultValue : null},
 		"iconUnselected" : {type : "sap.ui.core.URI", group : "Behavior", defaultValue : null},
 		"iconHovered" : {type : "sap.ui.core.URI", group : "Behavior", defaultValue : null},
@@ -243,9 +243,9 @@ sap.m.RatingIndicator.M_EVENTS = {'change':'change','liveChange':'liveChange'};
 
 /**
  * Getter for property <code>iconSize</code>.
- * The Size of the image or icon to be displayed. Please be sure that the size is corresponding to a full pixel value as some browsers don't support subpixel calculations.
+ * The Size of the image or icon to be displayed. The default value depends on the theme. Please be sure that the size is corresponding to a full pixel value as some browsers don't support subpixel calculations. Recommended size is 1.375rem (22px) for normal, 1rem (16px) for small, and 2rem (32px) for large icons correspondingly.
  *
- * Default value is <code>1.375rem</code>
+ * Default value is empty/<code>undefined</code>
  *
  * @return {sap.ui.core.CSSSize} the value of property <code>iconSize</code>
  * @public
@@ -256,7 +256,7 @@ sap.m.RatingIndicator.M_EVENTS = {'change':'change','liveChange':'liveChange'};
 /**
  * Setter for property <code>iconSize</code>.
  *
- * Default value is <code>1.375rem</code> 
+ * Default value is empty/<code>undefined</code> 
  *
  * @param {sap.ui.core.CSSSize} sIconSize  new value for property <code>iconSize</code>
  * @return {sap.m.RatingIndicator} <code>this</code> to allow method chaining
@@ -694,12 +694,18 @@ sap.m.RatingIndicator.prototype.exit = function () {
 /* =========================================================== */
 
 sap.m.RatingIndicator.prototype._toPx = function (cssSize) {
+	cssSize = cssSize || 0;
 	var  scopeVal = sap.m.RatingIndicator._pxCalculations[cssSize],
 		scopeTest;
 
 	if (scopeVal === undefined) {
-		scopeTest = jQuery('<div style="display: none; width: ' + cssSize + '; margin: 0; padding:0; height: auto; line-height: 1; font-size: 1; border:0; overflow: hidden">&nbsp;</div>').appendTo(sap.ui.getCore().getStaticAreaRef());
-		scopeVal = scopeTest.width();
+		if(cssSize){
+			scopeTest = jQuery('<div style="display: none; width: ' + cssSize + '; margin: 0; padding:0; height: auto; line-height: 1; font-size: 1; border:0; overflow: hidden">&nbsp;</div>').appendTo(sap.ui.getCore().getStaticAreaRef());
+			scopeVal = scopeTest.width();
+		} else {
+			scopeTest = jQuery('<div class="sapMRIIcon">&nbsp;</div>').appendTo(sap.ui.getCore().getStaticAreaRef());
+			scopeVal = scopeTest.height();
+		}
 		scopeTest.remove();
 	}
 

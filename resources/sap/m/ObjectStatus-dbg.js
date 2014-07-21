@@ -31,6 +31,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <ul>
  * <li>Properties
  * <ul>
+ * <li>{@link #getTitle title} : string</li>
  * <li>{@link #getText text} : string</li>
  * <li>{@link #getState state} : sap.ui.core.ValueState (default: sap.ui.core.ValueState.None)</li>
  * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
@@ -57,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -70,6 +71,7 @@ sap.ui.core.Control.extend("sap.m.ObjectStatus", { metadata : {
 	// ---- control specific ----
 	library : "sap.m",
 	properties : {
+		"title" : {type : "string", group : "Misc", defaultValue : null},
 		"text" : {type : "string", group : "Misc", defaultValue : null},
 		"state" : {type : "sap.ui.core.ValueState", group : "Misc", defaultValue : sap.ui.core.ValueState.None},
 		"icon" : {type : "sap.ui.core.URI", group : "Misc", defaultValue : null},
@@ -97,8 +99,33 @@ sap.ui.core.Control.extend("sap.m.ObjectStatus", { metadata : {
 
 
 /**
+ * Getter for property <code>title</code>.
+ * The object status title.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string} the value of property <code>title</code>
+ * @public
+ * @name sap.m.ObjectStatus#getTitle
+ * @function
+ */
+
+/**
+ * Setter for property <code>title</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string} sTitle  new value for property <code>title</code>
+ * @return {sap.m.ObjectStatus} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectStatus#setTitle
+ * @function
+ */
+
+
+/**
  * Getter for property <code>text</code>.
- * Text value.
+ * The object status text.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -260,10 +287,50 @@ sap.m.ObjectStatus.prototype._getImageControl = function() {
 };
 
 /**
+ * Setter for property title.
+ * Default value is empty/undefined
+ * @public
+ * @param {string} sTitle new value for property title
+ * @returns {sap.m.ObjectStatus} this to allow method chaining
+ */
+sap.m.ObjectStatus.prototype.setTitle = function (sTitle) {
+	var $Title = this.$().children(".sapMObjStatusTitle"),
+		bShouldSuppressInvalidate = !!$Title.length && !!this.validateProperty("title", sTitle).trim();
+
+	this.setProperty("title", sTitle, bShouldSuppressInvalidate);
+
+	if(bShouldSuppressInvalidate) {
+		$Title.text(this.getTitle() + ":");
+	}
+
+	return this;
+};
+
+/**
+ * Setter for property text.
+ * Default value is empty/undefined
+ * @public
+ * @param {string} sText new value for property text
+ * @returns {sap.m.ObjectStatus} this to allow method chaining
+ */
+sap.m.ObjectStatus.prototype.setText = function (sText) {
+	var $Text = this.$().children(".sapMObjStatusText"),
+		bShouldSuppressInvalidate = !!$Text.length && !!this.validateProperty("text", sText).trim();
+
+	this.setProperty("text", sText, bShouldSuppressInvalidate);
+
+	if(bShouldSuppressInvalidate) {
+		$Text.text(this.getText());
+	}
+
+	return this;
+};
+
+/**
  * @private
  * @returns {boolean}
  */
 sap.m.ObjectStatus.prototype._isEmpty = function() {
 	
-	return !(this.getText().trim() || this.getIcon().trim());
+	return !(this.getText().trim() || this.getIcon().trim() || this.getTitle().trim());
 };

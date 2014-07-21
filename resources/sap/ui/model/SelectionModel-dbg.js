@@ -19,7 +19,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * @extends sap.ui.base.Object
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {int} iSelectionMode <code>sap.ui.model.SelectionModel.SINGLE_SELECTION</code> or <code>sap.ui.model.SelectionModel.MULTI_SELECTION</code>
 	 *
@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * @public
 	 * @name sap.ui.model.SelectionModel
 	 */
-	var SelectionModel = EventProvider.extend("sap.ui.model.SelectionModel", /** @lends sap.ui.model.SelectionModel */ {
+	var SelectionModel = EventProvider.extend("sap.ui.model.SelectionModel", /** @lends sap.ui.model.SelectionModel.prototype */ {
 	
 		constructor : function(iSelectionMode) {
 			EventProvider.apply(this);
@@ -313,6 +313,82 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		return this;
 	};
 	
+	/**
+	 * Slices a the indices between the two indices from the selection.
+	 * If <code>iFromIndex</code> is smaller than <code>iToIndex</code>, both parameters are swapped.
+	 *
+	 * If the range of removed selection indices includes the current lead selection,
+	 * then the lead selection will be unset (set to -1).
+	 *
+	 * If this call results in a change to the current selection or lead selection, then a
+	 * <code>SelectionChanged</code> event is fired.
+	 *
+	 * @param {int} iFromIndex one end of the interval.
+	 * @param {int} iToIndex other end of the interval
+	 * @return {sap.ui.model.SelectionModel} <code>this</code> to allow method chaining
+	 * @public
+	 * @name sap.ui.model.SelectionModel#sliceSelectionInterval
+	 * @function
+	 */
+	SelectionModel.prototype.sliceSelectionInterval = function(iFromIndex, iToIndex) {
+		jQuery.sap.assert(typeof iFromIndex === "number", "iFromIndex must be an integer");
+		jQuery.sap.assert(typeof iToIndex === "number", "iToIndex must be an integer");
+	
+		var iFrom = Math.min(iFromIndex, iToIndex);
+		var iTo = Math.max(iFromIndex, iToIndex);
+
+		var aChangedRowIndices = [];
+		var aRemovedIndices = [];
+		var aOldSelectedIndices = this.aSelectedIndices.slice(0);
+		var aSelectedIndices = this.aSelectedIndices;
+		var iLeadIndex = this.iLeadIndex;
+		var iRange = iTo - iFrom + 1;
+		
+		//Check for each item in the range if is selected, if this is the case remove it from the list
+		for (var iIndex = iTo; iIndex >= iFrom; iIndex--) {
+			var iIndexToRemove = jQuery.inArray(iIndex, aSelectedIndices);
+			if (iIndexToRemove > -1) {
+				aSelectedIndices.splice(iIndexToRemove, 1);
+				//Store removed indices to calculate changed indices later
+				aRemovedIndices.push(iIndex);
+			}
+			//if the lead index is removed it is reset
+			if (iIndex === this.iLeadIndex) {
+				iLeadIndex = -1;
+			}
+		}
+
+		//For all entries in the selected indices list, that are behind the removed section decrease the index by the number of removed items
+		for (var iIndex = 0; iIndex < aSelectedIndices.length; iIndex++) {
+			var iOldIndex = aSelectedIndices[iIndex];
+			if (iOldIndex >= iFrom) {
+				var iNewIndex = aSelectedIndices[iIndex] - iRange;
+				if (iOldIndex === iLeadIndex) {
+					iLeadIndex = iNewIndex;
+				}
+				aSelectedIndices[iIndex] = iNewIndex;
+				if (jQuery.inArray(iNewIndex, aOldSelectedIndices) === -1) {
+					aChangedRowIndices.push(iNewIndex);
+				}
+			}
+		}
+		
+		//Get the last x indices from the old list and remove them, because this amount of indices was sliced
+		for (var i = 0; i < aRemovedIndices.length; i++) {
+			var iIndex = aOldSelectedIndices[aOldSelectedIndices.length - 1 - i];
+			if (jQuery.inArray(iIndex, aChangedRowIndices) === -1) {
+				aChangedRowIndices.push(iIndex);
+			}
+		}
+		for (var i = 0; i < aRemovedIndices.length; i++) {
+			if (jQuery.inArray(aRemovedIndices[i], aSelectedIndices) === -1 && jQuery.inArray(aRemovedIndices[i], aChangedRowIndices) === -1) {
+				aChangedRowIndices.push(aRemovedIndices[i]);
+			}
+		}
+
+		this._update(aSelectedIndices, iLeadIndex, aChangedRowIndices);
+		return this;
+	};
 	
 	/**
 	 * Change the selection to the empty set and clears the lead selection.

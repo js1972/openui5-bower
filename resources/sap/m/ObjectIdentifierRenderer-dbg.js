@@ -13,8 +13,7 @@ jQuery.sap.declare("sap.m.ObjectIdentifierRenderer");
 sap.m.ObjectIdentifierRenderer = {};
 
 /**
- * Renders the HTML for the given control, using the provided
- * {@link sap.ui.core.RenderManager}.
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
  * 
  * @param {sap.ui.core.RenderManager}
  *            oRm the RenderManager that can be used for writing to the render
@@ -24,6 +23,10 @@ sap.m.ObjectIdentifierRenderer = {};
  *            rendered
  */
 sap.m.ObjectIdentifierRenderer.render = function(oRm, oOI) {
+	// Return immediately if control is invisible
+	if (!oOI.getVisible()) {
+		return;
+	}
 
 	// write the HTML into the render manager
 	oRm.write("<div"); // Identifier begins

@@ -70,7 +70,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -2001,7 +2001,6 @@ sap.ui.ux3.ActionBar.prototype.invalidate = function(oControl) {
 			//the social actions are ThingActions too, but they need no special treatment
 			sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 		}
-	} else {
-		sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 	}
+	sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 };

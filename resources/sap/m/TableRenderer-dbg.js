@@ -48,7 +48,6 @@ sap.m.TableRenderer.renderColumns = function(rm, oTable, type) {
 					!oColumn.isNeverVisible() &&
 					!oColumn.isHidden();
 		}).length == 1,
-		isDeleteOnRight = (sap.ui.core.theming.Parameters.get("sapMPlatformDependent") != "true" && mode == "Delete"),
 		createBlankCell = function(cls, id) {
 			rm.write("<");
 			rm.write(cellTag);
@@ -75,7 +74,7 @@ sap.m.TableRenderer.renderColumns = function(rm, oTable, type) {
 	rm.writeClasses();
 	rm.write(">");
 
-	if (mode != "None" && mode != "SingleSelect" && !isDeleteOnRight) {
+	if (mode != "None" && mode != "SingleSelect" && mode != "Delete") {
 		if (mode == "SingleSelectMaster") {
 			createBlankCell("None");
 			hiddens++;
@@ -120,6 +119,7 @@ sap.m.TableRenderer.renderColumns = function(rm, oTable, type) {
 		rm.write("<" + cellTag);
 		cls && rm.addClass(cls);
 		rm.addClass(clsPrefix + "Cell");
+		rm.addClass(clsPrefix + type + "erCell");
 		rm.writeAttribute("id", idPrefix + type + index);
 		rm.writeAttribute("data-sap-orig-width", oColumn.getWidth());
 		width && rm.addStyle("width", width);
@@ -140,7 +140,7 @@ sap.m.TableRenderer.renderColumns = function(rm, oTable, type) {
 
 	createBlankCell("NavCol", type + "Nav");
 
-	if (mode == "SingleSelect" || isDeleteOnRight) {
+	if (mode == "SingleSelect" || mode == "Delete") {
 		createBlankCell("SelCol");
 	}
 
@@ -169,6 +169,7 @@ sap.m.TableRenderer.renderContainerAttributes = function(rm, oControl) {
 sap.m.TableRenderer.renderListStartAttributes = function(rm, oControl) {
 	rm.write("<table");
 	rm.addClass("sapMListTbl");
+	rm.addStyle("table-layout", oControl.getFixedLayout() ? "fixed" : "auto");
 };
 
 /**

@@ -53,8 +53,8 @@ sap.ui.define(['sap/ui/core/library','./View','sap/ui/core/DeclarativeSupport','
  * A view defined/constructed by declarative HTML.
  * @extends sap.ui.core.mvc.View
  *
- * @author Stefan Hipfel, Tino Butz 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public

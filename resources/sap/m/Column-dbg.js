@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -589,10 +589,10 @@ sap.m.Column.prototype._isWidthPredefined = function(sWidth) {
  * to inherit text-alignment and we should add a new
  * sap.ui.core.TextAlign type called "Inherit"
  *
- * @protected *
  * @param {sap.ui.core.Control} oControl List control
  * @param {String} [sAlign] TextAlign enumeration
  * @return {sap.ui.core.Control} oControl
+ * @protected
  */
 sap.m.Column.prototype.applyAlignTo = function(oControl, sAlign) {
 	if (oControl.getMetadata().getProperties().textAlign) {
@@ -836,7 +836,7 @@ sap.m.Column.prototype.setMinScreenWidth = function(sWidth) {
 		// keep the minimum width value
 		this._minWidth = width;
 
-		/**
+		/*
 		// OLD: if pop-in is requested or if unknown screen-size is given then go with JS media queries
 		// NEW: We always need JS media queries to detect table header visibility
 		if (this.getDemandPopin() || !this._screen) {

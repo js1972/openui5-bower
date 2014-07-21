@@ -9,8 +9,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 	function(jQuery, BaseObject) {
 	"use strict";
 
-
-	
 	/**
 	 * Creates an instance of the History.
 	 * 
@@ -24,10 +22,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.History
-	 * @private
+	 * @protected
 	 */
 	var History = BaseObject.extend("sap.ui.core.History", /** @lends sap.ui.core.History.prototype */ {
 	
@@ -41,8 +39,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 	
 			this._iMaxHistory = mSettings.max ? mSettings.max : 100;
 			this._sHistoryId = sHistoryPrefix + sId;
-			var that = this;
-	
+
 			jQuery.sap.require("jquery.sap.storage");
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 	
@@ -98,7 +95,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 		 */
 		remove : function(sValue) {
 			var aHistory = this._initHistory();
-			var aResult = [];
 			for(var i=0; i<aHistory.length; i++){
 				if(aHistory[i] == sValue) {
 					aHistory.splice(i, 1);

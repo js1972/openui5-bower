@@ -21,17 +21,18 @@ jQuery.sap.require("sap.ui.core.theming.Parameters");
  * <pre>
  *   jQuery.sap.require("sap.m.MessageBox");
  *   sap.m.MessageBox.show(
- *       "This message should appear in the message box.",
- *       sap.m.MessageBox.Icon.INFORMATION,
- *       "My message box title",
- *       [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
- *       function() { / * do something * / }
+ *       "This message should appear in the message box.", {
+ *           icon: sap.m.MessageBox.Icon.INFORMATION,
+ *           title: "My message box title",
+ *           actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+ *           onClose: function(oAction) { / * do something * / }
+ *       }
  *	 );
  * </pre>
  *
  * @static
  * @public
- * @since 1.9.2
+ * @since 1.21.2
  */
 sap.m.MessageBox = {};
 
@@ -183,9 +184,19 @@ sap.m.MessageBox.Icon = {
 
 	/**
 	 * Creates and displays a sap.m.Dialog with type sap.m.DialogType.Message with the given text and buttons, and optionally other parts.
-	 * After the user has tapped a button, the <code>callback</code> function is invoked when given.
+	 * After the user has tapped a button, the <code>onClose</code> function is invoked when given.
 	 *
 	 * The only mandatory parameter is <code>sMessage</code>.
+	 * 
+	 * <pre>
+	 * sap.m.MessageBox.show("This message should appear in the message box", {
+	 *     icon: sap.m.MessageBox.Icon.NONE,      // default
+	 *     title: "",                             // default
+	 *     actions: sap.m.MessageBox.Action.OK    // default
+	 *     onClose: null                          // default
+	 *     styleClass: ""                         // default
+	 * });
+	 * </pre>
 	 *
 	 * The created dialog is executed asynchronously. When it has been created and registered for rendering,
 	 * this function returns without waiting for a user reaction.
@@ -201,42 +212,64 @@ sap.m.MessageBox.Icon = {
 	 * a sap.m.MessageBox.Action.Close is returned.
 	 *
 	 * @param {string} sMessage The message to be displayed.
-	 * @param {sap.m.MessageBox.Icon} [oIcon=None] The icon to be displayed.
-	 * @param {string} [sTitle=''] The title of the message box.
-	 * @param {sap.m.MessageBox.Action|sap.m.MessageBox.Action[]|string|string[]} [vActions] Either a single action, or an array of two actions.
-	 *      If no action(s) are given, the single action MessageBox.Action.OK is taken as a default for the parameter. If more than two actions are given,
-	 *      only the first two actions are taken. Custom action string(s) can be provided, and then the translation of custom action string(s) needs to be done by the application.
-	 * @param {function} [fnCallback] Function to be called when the user has tapped a button or has closed the message box.
-	 * @param {string} [sDialogId] ID to be used for the dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {object} [mOptions] Optionally other options.
+	 * @param {sap.m.MessageBox.Icon} [mOptions.icon] The icon to be displayed.
+	 * @param {string} [mOptions.title] The title of the message box.
+	 * @param {sap.m.MessageBox.Action|sap.m.MessageBox.Action[]|string|string[]} [mOptions.actions=sap.m.MessageBox.Action.OK] Either a single action, or an array of two actions.
+	 *      If no action(s) are given, the single action MessageBox.Action.OK is taken as a default for the parameter. From UI5 version 1.21, more than 2 actions are supported.
+	 *      For the former versions, if more than two actions are given, only the first two actions are taken. Custom action string(s) can be provided, and then the translation
+	 *      of custom action string(s) needs to be done by the application.
+	 * @param {function} [mOptions.onClose] Function to be called when the user taps a button or closes the message box.
+	 * @param {string} [mOptions.id] ID to be used for the dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {string} [mOptions.styleClass] Added since version 1.21.2. CSS style class which is added to the dialog's root DOM node. The compact design can be activated by setting this to "sapUiSizeCompact"
 	 * @public
 	 */
-	sap.m.MessageBox.show = function(sMessage, oIcon, sTitle, vActions, fnCallback, sDialogId) {
-		var oDialog, oResult = null, that = this;
-		
+	sap.m.MessageBox.show = function(sMessage, mOptions) {
+		var oDialog, oResult = null, that = this, aButtons = [], i,
+			sIcon, sTitle, vActions, fnCallback, sDialogId, sClass,
+			mDefaults = {
+				id: sap.ui.core.ElementMetadata.uid("mbox")
+			};
+
+		if (typeof mOptions === "string" || arguments.length > 2) {
+			// Old API compatibility
+			// oIcon, sTitle, vActions, fnCallback, sDialogId, sStyleClass
+			sIcon = arguments[1];
+			sTitle = arguments[2];
+			vActions = arguments[3];
+			fnCallback = arguments[4];
+			sDialogId = arguments[5];
+			sClass = arguments[6];
+			mOptions = {
+				icon: sIcon,
+				title: sTitle,
+				actions: vActions,
+				onClose: fnCallback,
+				id: sDialogId,
+				styleClass: sClass
+			};
+		}
+
+		mOptions = jQuery.extend({}, mDefaults, mOptions);
+
 		// normalize the vActions array
-		if(typeof vActions !== "undefined" && !jQuery.isArray(vActions)) {
-			vActions = [vActions];
+		if(typeof mOptions.actions !== "undefined" && !jQuery.isArray(mOptions.actions)) {
+			mOptions.actions = [mOptions.actions];
 		}
-		if(!vActions || vActions.length === 0) {
-			vActions = [Action.OK];
+		if(!mOptions.actions || mOptions.actions.length === 0) {
+			mOptions.actions = [Action.OK];
 		}
-		//only allows maximum two actions
-		if(vActions.length > 2) {
-			vActions = vActions.slice(0, 2);
-		}
-		// create a unique ID
-		sDialogId = sDialogId || sap.ui.core.ElementMetadata.uid("mbox");
 
 		/** creates a button for the given action */
 		function button(sAction) {
 			var sKey = "MSGBOX_"+ sAction,
 				sText = that._rb.getText(sKey);
-			
+
 			//not from defined actions
 			if(sKey === sText){
 				sText = sAction;
 			}
-			
+
 			var	oButton = new sap.m.Button({
 				id: sap.ui.core.ElementMetadata.uid("mbox-btn-"),
 				text: sText || sAction,
@@ -248,39 +281,62 @@ sap.m.MessageBox.Icon = {
 			return oButton;
 		}
 
+		for (i = 0 ; i < mOptions.actions.length ; i++) {
+			aButtons.push(button(mOptions.actions[i]));
+		}
+
 		function onclose() {
-			if(typeof fnCallback === "function") {
-				fnCallback(oResult);
+			if(typeof mOptions.onClose === "function") {
+				mOptions.onClose(oResult);
 			}
 			oDialog.detachAfterClose(onclose);
 			oDialog.destroy();
 		}
-		
+
 		oDialog = new sap.m.Dialog({
-			id: sDialogId,
+			id: mOptions.id,
 			type: sap.m.DialogType.Message,
-			title: sTitle,
-			icon: mIcons[oIcon],
-			leftButton: button(vActions[0]),
+			title: mOptions.title,
+			icon: mIcons[mOptions.icon],
 			content: new sap.m.Text({
 				text: sMessage
 			}).addStyleClass("sapMMsgBoxText"),
 			afterClose: onclose
 		});
-		
-		if(mClasses[oIcon]){
-			oDialog.addStyleClass(mClasses[oIcon]);
+
+		if (aButtons.length > 2) {
+			for (i = 0 ; i < aButtons.length ; i++) {
+				oDialog.addButton(aButtons[i]);
+			}
+		} else {
+			oDialog.setBeginButton(aButtons[0]);
+			if (aButtons[1]) {
+				oDialog.setEndButton(aButtons[1]);
+			}
 		}
-		
-		if(vActions[1]){
-			oDialog.setRightButton(button(vActions[1]));
+
+		if (mClasses[mOptions.icon]) {
+			oDialog.addStyleClass(mClasses[mOptions.icon]);
 		}
-		
+
+		if (mOptions.styleClass) {
+			oDialog.addStyleClass(mOptions.styleClass);
+		}
+
 		oDialog.open();
 	};
 
 	/**
 	 * Displays an alert dialog with the given message and an OK button (no icons).
+	 * 
+	 * <pre>
+	 * sap.m.MessageBox.alert("This message should appear in the alert", {
+	 *     title: "Alert",                        // default
+	 *     onClose: null,                         // default
+	 *     styleClass: ""                         // default
+	 * });
+	 * </pre>
+	 * 
 	 * If a callback is given, it is called after the alert dialog has been closed
 	 * by the user via the OK button. The callback is called with the following signature:
 	 *
@@ -296,27 +352,54 @@ sap.m.MessageBox.Icon = {
 	 * user closed the alert dialog.
 	 *
 	 * @param {string} sMessage Message to be displayed in the alert dialog
-	 * @param {function} [fnCallback] callback function to be called when the user closes the dialog
-	 * @param {string} [sTitle='Alert'] Title to be displayed in the alert dialog
-	 * @param {string} [sDialogId] ID to be used for the alert dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {object} [mOptions] Optionally other options
+	 * @param {function} [mOptions.onClose] callback function to be called when the user closes the dialog
+	 * @param {string} [mOptions.title='Alert'] Title to be displayed in the alert dialog
+	 * @param {string} [mOptions.id] ID to be used for the alert dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {string} [mOptions.styleClass] Added since version 1.21.2. CSS style class which is added to the alert dialog's root DOM node. The compact design can be activated by setting this to "sapUiSizeCompact"
 	 * @public
 	 */
-	sap.m.MessageBox.alert = function(sMessage, fnCallback, sTitle, sDialogId) {
-		return sap.m.MessageBox.show(sMessage, Icon.NONE, 
-				sTitle ? sTitle : this._rb.getText("MSGBOX_TITLE_ALERT"), Action.OK,
-				function(oAction) {
-					if ( typeof fnCallback === "function" ) {
-						fnCallback(oAction);
-					}
-				}, sDialogId || sap.ui.core.ElementMetadata.uid("alert"));
+	sap.m.MessageBox.alert = function(sMessage, mOptions) {
+		var mDefaults = {
+				icon: Icon.NONE,
+				title: this._rb.getText("MSGBOX_TITLE_ALERT"),
+				actions: Action.OK,
+				id: sap.ui.core.ElementMetadata.uid("alert")
+			}, fnCallback, sTitle, sDialogId, sStyleClass;
+
+		if (typeof mOptions === "function" || arguments.length > 2) {
+			// Old API Compatibility
+			// fnCallback, sTitle, sDialogId, sStyleClass
+			fnCallback = arguments[1];
+			sTitle = arguments[2];
+			sDialogId = arguments[3];
+			sStyleClass = arguments[4];
+			mOptions = {
+				onClose: fnCallback,
+				title: sTitle,
+				id: sDialogId,
+				styleClass: sStyleClass
+			};
+		}
+
+		mOptions = jQuery.extend({}, mDefaults, mOptions);
+
+		return sap.m.MessageBox.show(sMessage, mOptions);
 	};
 
-	
-	//TODO: change the documentation after icon is available
 	/**
-	 * Displays a confirmation dialog with the given message, no icon (will be provided later)
-	 * an OK button, and a Cancel button. If a callback is given, it is called after the
-	 * alert box has been closed by the user via one of the buttons.
+	 * Displays a confirmation dialog with the given message, a QUESTION icon, an OK button
+	 * and a Cancel button. If a callback is given, it is called after the confirmation box 
+	 * has been closed by the user via one of the buttons.
+	 * 
+	 * <pre>
+	 * sap.m.MessageBox.confirm("This message should appear in the confirm", {
+	 *     title: "Confirm",                      // default
+	 *     onClose: null                          // default
+	 *     styleClass: ""                         // default
+	 * });
+	 * </pre>
+	 * 
 	 * The callback is called with the following signature
 	 *
 	 * <pre>
@@ -333,19 +416,38 @@ sap.m.MessageBox.Icon = {
 	 * user closed the confirmation dialog
 	 *
 	 * @param {string} sMessage Message to display in the confirmation dialog
-	 * @param {function} [fnCallback] Callback to be called when the user closes the dialog
-	 * @param {string} [sTitle='Confirmation'] Title to display in the confirmation dialog
-	 * @param {string} [sDialogId] ID to be used for the confirmation dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {object} [mOptions] Optionally other options
+	 * @param {function} [mOptions.onClose] Callback to be called when the user closes the dialog
+	 * @param {string} [mOptions.onClose='Confirmation'] Title to display in the confirmation dialog
+	 * @param {string} [mOptions.id] ID to be used for the confirmation dialog. Intended for test scenarios, not recommended for productive apps
+	 * @param {string} [mOptions.styleClass] Added since version 1.21.2. CSS style class which is added to the confirmation dialog's root DOM node. The compact design can be activated by setting this to "sapUiSizeCompact"
 	 * @public
 	 */
-	sap.m.MessageBox.confirm = function(sMessage, fnCallback, sTitle, sDialogId) {
-		return sap.m.MessageBox.show(sMessage, Icon.QUESTION,
-				sTitle ? sTitle : this._rb.getText("MSGBOX_TITLE_CONFIRM"), [Action.OK, Action.CANCEL],
-				function(oAction) {
-					if ( typeof fnCallback === "function" ) {
-						fnCallback(oAction);
-					}
-				}, sDialogId || sap.ui.core.ElementMetadata.uid("confirm"));
-	};
+	sap.m.MessageBox.confirm = function(sMessage, mOptions) {
+		var mDefaults = {
+			icon: Icon.QUESTION,
+			title: this._rb.getText("MSGBOX_TITLE_CONFIRM"),
+			actions: [Action.OK, Action.CANCEL],
+			id: sap.ui.core.ElementMetadata.uid("confirm")
+		}, fnCallback, sTitle, sDialogId, sStyleClass;
 
+		if (typeof mOptions === "function" || arguments.length > 2) {
+			// Old API Compatibility
+			// fnCallback, sTitle, sDialogId
+			fnCallback = arguments[1];
+			sTitle = arguments[2];
+			sDialogId = arguments[3];
+			sStyleClass = arguments[4];
+			mOptions = {
+				onClose: fnCallback,
+				title: sTitle,
+				id: sDialogId,
+				styleClass: sStyleClass
+			};
+		}
+
+		mOptions = jQuery.extend({}, mDefaults, mOptions);
+
+		return sap.m.MessageBox.show(sMessage, mOptions);
+	};
 }());

@@ -83,7 +83,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -1182,7 +1182,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * Fire event worksetItemSelected to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> The id of the workset item that has been newly selected by the user. If a top-level item has been clicked which has sub-items, the ID of the currently active sub-item (/leaf) is given.</li>
@@ -1315,7 +1315,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event logout to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -1373,7 +1373,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event search to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -1431,7 +1431,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event feedSubmit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -3867,10 +3867,6 @@ sap.ui.ux3.Shell.prototype.initializePersonalization = function(oSettings) {
 	this._getPersonalization().initializeSettings(oSettings);
 };
 
-sap.ui.ux3.Shell.prototype._convertImageParameter = function(sParameter) {
-	var rExtractUri = new RegExp(/url[\s]*\('?"?([^\'")]*)'?"?\)/);
-	return rExtractUri.exec(sParameter) ? rExtractUri.exec(sParameter)[1] : sParameter;
-};
 sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 	this._iFacetBarHeight = undefined;
 	
@@ -3882,30 +3878,15 @@ sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 	var sImage = "";
 	// if already rendered update images
 	if (!this.getAppIcon()) {
-		sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellApplicationImageURL');
-		sImage = this._convertImageParameter(sImage);
-		if (sImage) {
-			this.$("logoImg").attr('src', sImage);
-		}else{
-			this.$("logoImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-		}
+		sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellApplicationImageURL', true);
+		this.$("logoImg").attr('src', sImage);
 	}
 
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellHeaderImageURL');
-	sImage = this._convertImageParameter(sImage);
-	if (sImage) {
-		this.$("hdrImg").attr('src', sImage);
-	}else{
-		this.$("hdrImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellHeaderImageURL', true);
+	this.$("hdrImg").attr('src', sImage);
 
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellBackgroundImageURL');
-	sImage = this._convertImageParameter(sImage);
-	if (sImage) {
-		this.$("bgImg").attr('src', sImage);
-	}else{
-		this.$("bgImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellBackgroundImageURL', true);
+	this.$("bgImg").attr('src', sImage);
 
 	this.$("facetBar").stop(true, true); //Stop potentially running animations
 	this._adaptContentHeight();

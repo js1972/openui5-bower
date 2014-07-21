@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -312,12 +312,12 @@ sap.ui.commons.MessageList.prototype.setMessages = function(aMessages) {
  *
  * Default value is <code>true</code>
  *
+ * The default implementation of function "setVisible()" is overwritten 
+ * in order to invoke the open() and close() of the MessageList Popup.
+ * 
  * @param {boolean} bVisible  new value for property <code>visible</code>
  * @return {sap.ui.commons.MessageBar} <code>this</code> to allow method chaining
  * @public
- *
- * The MessageBar.API.js "setVisible" function is overwritten in order to
- * invoke the open() and close() the MessageList Popup.
  */
 sap.ui.commons.MessageList.prototype.setVisible = function(bVisible) {
 	this.setProperty("visible", bVisible);

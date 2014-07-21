@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -544,7 +544,7 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
 
 /**
  * Fire event selected to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
  * @protected
@@ -603,7 +603,6 @@ sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.TreeNode.prototype);
 sap.ui.commons.TreeNode.prototype.expand = function(bExpandChildren){
 
 	var oDomNode = this.$();
-
 	if(oDomNode.hasClass("sapUiTreeNodeCollapsed")){
 		//If not, not an expandable node
 		oDomNode.toggleClass("sapUiTreeNodeCollapsed");
@@ -669,7 +668,7 @@ sap.ui.commons.TreeNode.prototype.collapse = function(bCollapseChildren){
 /**Select the node, and if any, deselects the previously selected node
  * @public
  */
-sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent) {
+sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent, bDeselectOtherNodes) {
 	var oTree = this.getTree(),
 		$Tree;
 
@@ -684,7 +683,13 @@ sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent) {
 
 	//Remove selection elsewhere
 	var oDomSelectedNode = $Tree.find(".sapUiTreeNodeSelected");
-	oDomSelectedNode.removeClass("sapUiTreeNodeSelected").removeAttr("aria-selected");
+	
+//STS
+	if (bDeselectOtherNodes) {
+		oDomSelectedNode.removeClass("sapUiTreeNodeSelected").removeAttr("aria-selected");
+	} 
+//STS
+
 	$Tree.find(".sapUiTreeNodeSelectedParent").removeClass("sapUiTreeNodeSelectedParent");
 
 	if(oDomSelectedNode.length){
@@ -793,9 +798,8 @@ sap.ui.commons.TreeNode.prototype.setSelectable = function(bSelectable) {
  * @private
  */
 sap.ui.commons.TreeNode.prototype.onclick = function(oEvent){
-
 	var oDomClicked = oEvent.target,
-		oTree = this.getTree();
+	oTree = this.getTree();
 
 	if(jQuery(oDomClicked).is(".sapUiTreeNode") || jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable") ){
 		//When user click a Not-Selectable node text, it behaves as clicking on the node itself
@@ -816,15 +820,22 @@ sap.ui.commons.TreeNode.prototype.onclick = function(oEvent){
 
 	}
 	else if(jQuery(oDomClicked).is(".sapUiTreeNodeContent") || jQuery(oDomClicked).is(".sapUiTreeIcon")){
-
-		oTree.setSelection(this);
+		var sSelectionType = sap.ui.commons.Tree.SelectionType.Select;
+		if (oTree.getSelectionMode() == sap.ui.commons.TreeSelectionMode.Multi) {
+			if (oEvent.shiftKey) {
+				sSelectionType = sap.ui.commons.Tree.SelectionType.Range;
+			}
+			if (oEvent.metaKey || oEvent.ctrlKey) {
+				sSelectionType = sap.ui.commons.Tree.SelectionType.Toggle;
+			}
+		}
+		oTree.setSelection(this, sSelectionType);
 
 		//Set focus
 		oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
 		oTree.placeFocus(oDomClicked);
 		oDomClicked.focus();
 	}
-
 };
 
 

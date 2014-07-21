@@ -78,8 +78,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * 
  * @extends sap.ui.core.Control
  *
- * @author d029921 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -378,7 +378,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.MatrixLayout", { metadata : {
  * @param {sap.ui.core.Control} 
  *         oControls
  *         Each argument must be either a matrix layout cell, which is added to the row "as is", or an arbitrary content control, which is wrapped with a new (default) matrix layout cell first and then added to the row.
- * Supports a variable number of arguments!
+ *         Supports a variable number of arguments!
 
  * @type sap.ui.commons.layout.MatrixLayout
  * @public

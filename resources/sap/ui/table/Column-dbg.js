@@ -34,7 +34,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize</li>
  * <li>{@link #getFlexible flexible} : boolean (default: true)</li>
  * <li>{@link #getResizable resizable} : boolean (default: true)</li>
- * <li>{@link #getHAlign hAlign} : sap.ui.commons.layout.HAlign (default: sap.ui.commons.layout.HAlign.Begin)</li>
+ * <li>{@link #getHAlign hAlign} : sap.ui.core.HorizontalAlign (default: sap.ui.core.HorizontalAlign.Begin)</li>
  * <li>{@link #getSorted sorted} : boolean (default: false)</li>
  * <li>{@link #getSortOrder sortOrder} : sap.ui.table.SortOrder (default: sap.ui.table.SortOrder.Ascending)</li>
  * <li>{@link #getSortProperty sortProperty} : string</li>
@@ -47,14 +47,16 @@ jQuery.sap.require("sap.ui.core.Element");
  * <li>{@link #getFilterType filterType} : any</li>
  * <li>{@link #getName name} : string</li>
  * <li>{@link #getShowFilterMenuEntry showFilterMenuEntry} : boolean (default: true)</li>
- * <li>{@link #getShowSortMenuEntry showSortMenuEntry} : boolean (default: true)</li></ul>
+ * <li>{@link #getShowSortMenuEntry showSortMenuEntry} : boolean (default: true)</li>
+ * <li>{@link #getHeaderSpan headerSpan} : any (default: 1)</li>
+ * <li>{@link #getAutoResizable autoResizable} : boolean (default: false)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
  * <li>{@link #getLabel label} <strong>(default aggregation)</strong> : sap.ui.core.Control</li>
  * <li>{@link #getMultiLabels multiLabels} : sap.ui.core.Control[]</li>
  * <li>{@link #getTemplate template} : sap.ui.core.Control</li>
- * <li>{@link #getMenu menu} : sap.ui.commons.Menu</li></ul>
+ * <li>{@link #getMenu menu} : sap.ui.unified.Menu</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -76,7 +78,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -96,7 +98,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : null},
 		"flexible" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"resizable" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"hAlign" : {type : "sap.ui.commons.layout.HAlign", group : "Appearance", defaultValue : sap.ui.commons.layout.HAlign.Begin},
+		"hAlign" : {type : "sap.ui.core.HorizontalAlign", group : "Appearance", defaultValue : sap.ui.core.HorizontalAlign.Begin},
 		"sorted" : {type : "boolean", group : "Appearance", defaultValue : false},
 		"sortOrder" : {type : "sap.ui.table.SortOrder", group : "Appearance", defaultValue : sap.ui.table.SortOrder.Ascending},
 		"sortProperty" : {type : "string", group : "Behavior", defaultValue : null},
@@ -109,14 +111,16 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 		"filterType" : {type : "any", group : "Misc", defaultValue : null},
 		"name" : {type : "string", group : "Appearance", defaultValue : null},
 		"showFilterMenuEntry" : {type : "boolean", group : "Appearance", defaultValue : true},
-		"showSortMenuEntry" : {type : "boolean", group : "Appearance", defaultValue : true}
+		"showSortMenuEntry" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"headerSpan" : {type : "any", group : "Behavior", defaultValue : 1},
+		"autoResizable" : {type : "boolean", group : "Behavior", defaultValue : false}
 	},
 	defaultAggregation : "label",
 	aggregations : {
     	"label" : {type : "sap.ui.core.Control", multiple : false}, 
     	"multiLabels" : {type : "sap.ui.core.Control", multiple : true, singularName : "multiLabel"}, 
     	"template" : {type : "sap.ui.core.Control", multiple : false}, 
-    	"menu" : {type : "sap.ui.commons.Menu", multiple : false}
+    	"menu" : {type : "sap.ui.unified.Menu", multiple : false}
 	}
 }});
 
@@ -219,7 +223,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
  *
  * Default value is <code>Begin</code>
  *
- * @return {sap.ui.commons.layout.HAlign} the value of property <code>hAlign</code>
+ * @return {sap.ui.core.HorizontalAlign} the value of property <code>hAlign</code>
  * @public
  * @name sap.ui.table.Column#getHAlign
  * @function
@@ -230,7 +234,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
  *
  * Default value is <code>Begin</code> 
  *
- * @param {sap.ui.commons.layout.HAlign} oHAlign  new value for property <code>hAlign</code>
+ * @param {sap.ui.core.HorizontalAlign} oHAlign  new value for property <code>hAlign</code>
  * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Column#setHAlign
@@ -465,7 +469,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 
 /**
  * Getter for property <code>filterType</code>.
- * Type of Filter. This is used to transform the search term to the specified type, to make sure that the right columns are displayed. This should be the same as defined in binding for this column. Alternativly, you can pass a function which does the conversion. The functions only parameter is the string to convert. By default the filter type is String.
+ * Type of Filter. This is used to transform the search term to the specified type, to make sure that the right columns are displayed. This should be the same as defined in binding for this column. Alternativly, you can pass a function which does the conversion or the classname of the type, e.g.: sap.ui.model.type.Date. The functions only parameter is the string to convert. By default the filter type is sap.ui.model.type.String.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -567,6 +571,58 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
  * @public
  * @since 1.13.0
  * @name sap.ui.table.Column#setShowSortMenuEntry
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>headerSpan</code>.
+ * If this property is set a span is applied for the header. When moving columns all columns which are part of the header will be moved. This can be either an integer or an array of integers (if you use the multi header feature of the table). If you only specify an integer this span is applied for all header rows, with multiple integers you can specify a seperate span for each header row.
+ *
+ * Default value is <code>1</code>
+ *
+ * @return {any} the value of property <code>headerSpan</code>
+ * @public
+ * @name sap.ui.table.Column#getHeaderSpan
+ * @function
+ */
+
+/**
+ * Setter for property <code>headerSpan</code>.
+ *
+ * Default value is <code>1</code> 
+ *
+ * @param {any} oHeaderSpan  new value for property <code>headerSpan</code>
+ * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.table.Column#setHeaderSpan
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>autoResizable</code>.
+ * Enables auto-resizing of the column on doubleclicking the resizer. Currently only implemented to work with the following controls: sap.m.Text, sap.m.Label, sap.m.Link , sap.m.Input, sap.ui.commons.TextView, sap.ui.commons.Label, sap.ui.commons.Link and sap.ui.commons.TextField, sap.ui.commons.Checkbox, sap.m.Checkbox
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>autoResizable</code>
+ * @public
+ * @since 1.21.1
+ * @name sap.ui.table.Column#getAutoResizable
+ * @function
+ */
+
+/**
+ * Setter for property <code>autoResizable</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bAutoResizable  new value for property <code>autoResizable</code>
+ * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.21.1
+ * @name sap.ui.table.Column#setAutoResizable
  * @function
  */
 
@@ -726,7 +782,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
  * Getter for aggregation <code>menu</code>.<br/>
  * The menu used by the column. By default the {@link sap.ui.table.ColumnMenu} is used.
  * 
- * @return {sap.ui.commons.Menu}
+ * @return {sap.ui.unified.Menu}
  * @public
  * @name sap.ui.table.Column#getMenu
  * @function
@@ -735,7 +791,7 @@ sap.ui.core.Element.extend("sap.ui.table.Column", { metadata : {
 
 /**
  * Setter for the aggregated <code>menu</code>.
- * @param {sap.ui.commons.Menu} oMenu
+ * @param {sap.ui.unified.Menu} oMenu
  * @return {sap.ui.table.Column} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.table.Column#setMenu
@@ -787,9 +843,6 @@ jQuery.sap.require("sap.ui.core.RenderManager");
 jQuery.sap.require("sap.ui.model.Type");
 jQuery.sap.require("sap.ui.model.Filter");
 jQuery.sap.require("sap.ui.model.Sorter");
-jQuery.sap.require("sap.ui.commons.Image");
-jQuery.sap.require("sap.ui.commons.Label");
-jQuery.sap.require("sap.ui.commons.TextField");
 jQuery.sap.require("sap.ui.model.type.String");
 
 /** default filter type for the columns */
@@ -859,36 +912,13 @@ sap.ui.table.Column.prototype.invalidate = function(oOrigin) {
   }
 };
 
-
-/*
- * @see JSDoc generated by SAPUI5 control API generator
- */
-sap.ui.table.Column.prototype.setVisible = function(bVisible) {
-	var oTable = this.getParent();
-	var bExecuteDefault = true;
-	if (oTable) {	
-		// forward the event
-		bExecuteDefault = oTable.fireColumnVisibility({
-			column: this,
-			newVisible: bVisible
-		});
-	}
-	if (bExecuteDefault) {
-		this.setProperty("visible", bVisible);
-	}
-	return this;
-};
-
-
 /*
  * @see JSDoc generated by SAPUI5 control API generator
  */
 sap.ui.table.Column.prototype.setLabel = function(vLabel) {
 	var oLabel = vLabel;
 	if (typeof (vLabel) === "string") {
-		oLabel = new sap.ui.commons.Label({
-			text : vLabel
-		});
+		oLabel = sap.ui.table.TableHelper.createLabel({text: vLabel});
 	}
 	this.setAggregation("label", oLabel);
 	return this;
@@ -900,7 +930,7 @@ sap.ui.table.Column.prototype.setLabel = function(vLabel) {
 sap.ui.table.Column.prototype.setTemplate = function(vTemplate) {
 	var oTemplate = vTemplate;
 	if (typeof (vTemplate) === "string") {
-		oTemplate = new sap.ui.commons.TextView().bindText(vTemplate);
+		oTemplate = sap.ui.table.TableHelper.createTextView().bindProperty("text", vTemplate);
 	}
 	this.setAggregation("template", oTemplate);
 	// manually invalidate the Column (because of the invalidate decoupling to 
@@ -946,7 +976,7 @@ sap.ui.table.Column.prototype._createMenu = function() {
 sap.ui.table.Column.prototype.setEditorTemplate = function(vTemplate) {
 	var oTemplate = vTemplate;
 	if (typeof (vTemplate) === "string") {
-		oTemplate = new sap.ui.commons.TextField().bindValue(vTemplate);
+		oTemplate = sap.ui.table.TableHelper.createTextField().bindProperty("value", vTemplate);
 	}
 	this.setAggregation("editorTemplate", oTemplate);
 	return this;
@@ -1097,6 +1127,9 @@ sap.ui.table.Column.prototype.sort = function(bDescending, bAdd) {
 				// sort the binding 
 				oTable.getBinding("rows").sort(aSorters);
 				
+				if (this._afterSort) {
+					this._afterSort();
+				}
 			}
 			
 			// update the sort icon
@@ -1118,7 +1151,7 @@ sap.ui.table.Column.prototype._renderSortIcon = function() {
 		
 			// create the image for the sort order visualization
 			var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
-			var oImage = sap.ui.getCore().byId(this.getId() + "-sortIcon") || new sap.ui.commons.Image(this.getId() + "-sortIcon");
+			var oImage = sap.ui.getCore().byId(this.getId() + "-sortIcon") || sap.ui.table.TableHelper.createImage(this.getId() + "-sortIcon");
 			oImage.addStyleClass("sapUiTableColIconsOrder");
 			if (this.getSortOrder() === sap.ui.table.SortOrder.Ascending) {
 				oImage.setSrc(sap.ui.resource("sap.ui.table", "themes/" + sCurrentTheme + "/img/ico12_sort_asc.gif"));
@@ -1299,7 +1332,7 @@ sap.ui.table.Column.prototype._renderFilterIcon = function() {
 	var oTable = this.getParent();
 	if (oTable && oTable.getDomRef()) {
 		var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
-		var oImage = sap.ui.getCore().byId(this.getId() + "-filterIcon") || new sap.ui.commons.Image(this.getId() + "-filterIcon");
+		var oImage = sap.ui.getCore().byId(this.getId() + "-filterIcon") || sap.ui.table.TableHelper.createImage(this.getId() + "-filterIcon");
 		oImage.$().remove();
 		oImage.addStyleClass("sapUiTableColIconsFilter");
 		if (this.getFiltered()) {
@@ -1334,3 +1367,22 @@ sap.ui.table.Column.prototype._restoreIcons = function() {
 sap.ui.table.Column.prototype.shouldRender = function() {
 	return this.getVisible() && !this.getGrouped();
 };
+
+/*
+ * support the declarative usage of the filter type 
+ * @see JSDoc generated by SAPUI5 control API generator
+ */
+sap.ui.table.Column.prototype.setFilterType = function(vType) {
+	var oType = vType;
+	if (typeof (vType) === "string") {
+		var fnType = jQuery.sap.getObject(vType);
+		oType = fnType && new fnType();
+		if (!(oType instanceof sap.ui.model.Type)) {
+			jQuery.sap.log.error("The filter type is not an instance of sap.ui.model.Type! Ignoring the filter type!");
+			oType = undefined;
+		}
+	}
+	this.setProperty("filterType", oType, true);
+	return this;
+};
+

@@ -293,8 +293,8 @@ sap.ui.define(['jquery.sap.global'],
 	 *            closing curly brace. Nested placeholdes are not accepted!
 	 * Group 4: captures any remaining curly braces and indicates syntax errors
 	 *
-	 * @private
 	 *                    [-1] [----- quoted string -----] [------ placeholder ------] [--]
+	 * @private
 	 */
 	var rMessageFormat = /('')|'([^']+(?:''[^']*)*)(?:'|$)|\{([0-9]+(?:\s*,[^{}]*)?)\}|[{}]/g;
 

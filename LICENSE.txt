@@ -239,7 +239,7 @@ License: BSD 3-clause "New" or "Revised" License
 <ORGANIZATION> = Michael Bostock
 <YEAR> = 2013
 
-Component: datajs - JavaScript Library for data-centric web applications 1.0.0
+Component: datajs - JavaScript Library for data-centric web applications 1.1.0
 Licensor: Microsoft
 Website: http://datajs.codeplex.com/ 
 License: MIT License
@@ -289,13 +289,6 @@ License: MIT License
 <year> = 2008-2013
 <copyright holders> = Matteo Spinelli
 
-Component: jQuery 1.4.3
-Licensor: John Resig
-Website: http://github.com/jquery/jquery/
-License: MIT License
-<year> = 2010
-<copyright holders> = John Resig
-
 Component: jQuery 1.7.1
 Licensor: John Resig
 Website: http://jszip.org/redist/jquery
@@ -317,19 +310,26 @@ License: MIT License
 <year> = 2013
 <copyright holders> = jQuery Foundation and other contributors
 
-Component: jQuery-UI 1.8.2
+Component: jQuery 1.10.2
+Licensor: jQuery Foundation and other contributors
+Website: http://jquery.com/
+License: MIT License
+<year> = 2013
+<copyright holders> = jQuery Foundation and other contributors
+
+Component: jQuery-UI 1.10.4
 Licensor: Paul Bakaus
 Website: http://github.com/jquery/jquery-ui/
 License: MIT License
-<year> = 2010
+<year> = 2014
 <copyright holders> = Paul Bakaus
 
-Component: jQuery-UI 1.8.17
-Licensor: Paul Bakaus
-Website: http://github.com/jquery/jquery-ui/
+Component: jQuery mobile 1.3.1
+Licensor: jQuery Foundation and other contributors
+Website: http://jquerymobile.com/
 License: MIT License
-<year> = 2011
-<copyright holders> = Paul Bakaus
+<year> = 2013
+<copyright holders> = jQuery Foundation and other contributors
 
 Component: jquery-glob
 Licensor: Software Freedom Conservancy, Inc.
@@ -371,7 +371,7 @@ License: MIT License
 <year> = 2009-2012
 <copyright holders> = Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso
 
-Component: less.js 1.3.1
+Component: less.js 1.6.3
 Licensor: Alexis Sellier & The Core Less Team
 Website: http://github.com/cloudhead/less.js/
 License: Apache License 2.0
@@ -382,6 +382,13 @@ Website: http://github.com/bestiejs/punycode.js/
 License: MIT License
 <year> = 2010
 <copyright holders> = Acid Media
+
+Component: mobify.js 1.1
+Licensor: Mobify R&D Inc
+Website: http://www.mobify.com/
+License: MIT License
+<year> = unspecified
+<copyright holders> = Mobify R&D Inc
 
 Component: mobiscroll
 Licensor: Mathias Bynens
@@ -424,7 +431,7 @@ Component: SwipeView
 Licensor: Matteo Spinelli
 Website: http://github.com/cubiq/SwipeView/
 License: MIT License
-<year> = 2011
+<year> = 2012
 <copyright holders> = Matteo Spinelli
 
 Component: URI.js
@@ -433,6 +440,13 @@ Website: http://github.com/medialize/URI.js/
 License: MIT License
 <year> = unspecified
 <copyright holders> = Rodney Rehm
+
+Component: vkBeautify 0.99.00.beta
+Licensor: Vadim Kiryukhin
+Website: http://www.eslinstructor.net/vkbeautify/
+License: MIT License
+<year> = 2012
+<copyright holders> = Vadim Kiryukhin
 
 Component: Zynga Scroller 1.2.1-0-g5d43806
 Licensor: Zynga Inc.

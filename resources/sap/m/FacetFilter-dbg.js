@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -430,7 +430,7 @@ sap.m.FacetFilter.M_EVENTS = {'reset':'reset'};
 
 /**
  * Fire event reset to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.FacetFilter} <code>this</code> to allow method chaining
  * @protected
@@ -540,6 +540,7 @@ sap.m.FacetFilter.prototype.setLiveSearch = function(bVal) {
 		oSearchField.detachLiveChange(oList._handleSearchEvent, oList);
 		if (bVal) {
 			oSearchField.attachLiveChange(oList._handleSearchEvent, oList);
+			
 		}				
 	}
 	return this;
@@ -663,6 +664,7 @@ sap.m.FacetFilter.prototype.onBeforeRendering = function() {
 		var oSummaryBar = this.getAggregation("summaryBar");
 		var oText = oSummaryBar.getContent()[0];
 		oText.setText(this._getSummaryText());
+		oText.setTooltip(this._getSummaryText());
 	}
 	
 	// Detach the interval timer attached in onAfterRendering
@@ -771,20 +773,23 @@ sap.m.FacetFilter.prototype._handlePopoverAfterClose = function(oList) {
  * @param oControl The control the popover will be opened "by"
  */
 sap.m.FacetFilter.prototype._openPopover = function(oPopover, oControl) {
-	
-	// Don't open if already open, otherwise the popover will display empty.	
+
+	// Don't open if already open, otherwise the popover will display empty.
 	if (!oPopover.isOpen()) {
-		
+
 		var oList = sap.ui.getCore().byId(oControl.getAssociation("list"));
 		jQuery.sap.assert(oList, "The facet filter button should be associated with a list.");
-		
+
 		this._moveListToDisplayContainer(oList, oPopover);
-						
+
 		oList.fireListOpen({});
 		oPopover.openBy(oControl);
-		this._displayRemoveIcon(true, oList);
+		// Display remove facet icon only if ShowRemoveFacetIcon property is set to true
+		if (oList.getShowRemoveFacetIcon()) {
+			this._displayRemoveIcon(true, oList);
+		}
 		oList._applySearch();
-	}			
+	}
 	return this;
 };
 
@@ -803,9 +808,9 @@ sap.m.FacetFilter.prototype._getAddFacetButton = function() {
 			
 			icon: sap.ui.core.IconPool.getIconURI("add-filter"),
 			type: sap.m.ButtonType.Transparent,
+			tooltip:this._bundle.getText("FACETFILTER_ADDFACET"),
 			press: function(oEvent) {
-
-				that.openFilterDialog();
+			that.openFilterDialog();
 			}			
 		});
 		this.setAggregation("addFacetButton", oButton, true);			
@@ -892,6 +897,7 @@ sap.m.FacetFilter.prototype._setButtonText = function(oList) {
 		}
 		
 		oButton.setText(sText);
+		oButton.setTooltip(sText);
 	}	
 };
 
@@ -908,6 +914,7 @@ sap.m.FacetFilter.prototype._getFacetRemoveIcon = function(oList) {
 		oIcon = new sap.ui.core.Icon({
 
 			src : sap.ui.core.IconPool.getIconURI("sys-cancel"),
+			tooltip:this._bundle.getText("FACETFILTER_REMOVE"),
 			press : function(oEvent) {
 				var oList = sap.ui.getCore().byId(this.getAssociation("list"));
 				oList.removeSelections(true);
@@ -940,8 +947,7 @@ sap.m.FacetFilter.prototype._displayRemoveIcon = function(bDisplay, oList) {
 
 			oIcon.removeStyleClass("sapMFFLHiddenRemoveIcon");
 			oIcon.addStyleClass("sapMFFLVisibleRemoveIcon");
-		} else {
-
+			}else {
 			oIcon.removeStyleClass("sapMFFLVisibleRemoveIcon");
 			oIcon.addStyleClass("sapMFFLHiddenRemoveIcon");
 		}
@@ -999,6 +1005,7 @@ sap.m.FacetFilter.prototype._createFacetPage = function() {
 	var oFacetList = this._createFacetList();
 	var oFacetsSearchField = new sap.m.SearchField({
 		width : "100%",
+		tooltip : this._bundle.getText("Search"),
 		liveChange : function(oEvent) {
 
 			var binding = oFacetList.getBinding("items");
@@ -1008,12 +1015,12 @@ sap.m.FacetFilter.prototype._createFacetPage = function() {
 			}
 		}
 	});	
-	
+		
 	var oPage = new sap.m.Page({
 		enableScrolling : true,
 		title : this._bundle.getText("FACETFILTER_TITLE"),
 		subHeader : new sap.m.Bar({
-			contentMiddle : oFacetsSearchField
+		contentMiddle : oFacetsSearchField
 		}),
 		content : [  oFacetList ]
 	});		
@@ -1071,12 +1078,11 @@ sap.m.FacetFilter.prototype._createFilterItemsSearchFieldBar = function(oList) {
 	var oSearchField = new sap.m.SearchField({
 		value: oList._getSearchValue(), // Seed search field with previous search value for the list
 		width : "100%",
+		tooltip: this._bundle.getText("FACETFILTER_SEARCH"),
 		search : function(oEvent) {
-
 			that._displayedList._handleSearchEvent(oEvent);
 		}
 	});	
-	
 	if (this.getLiveSearch()) {
 		oSearchField.attachLiveChange(oList._handleSearchEvent, oList);
 	}	
@@ -1128,6 +1134,7 @@ sap.m.FacetFilter.prototype._getFacetDialog = function() {
 			},
 			beginButton : new sap.m.Button({
 				text : this._bundle.getText("FACETFILTER_ACCEPT"),
+				tooltip:this._bundle.getText("FACETFILTER_ACCEPT"),
 				press : function() {
 
 					that._closeDialog();
@@ -1184,6 +1191,7 @@ sap.m.FacetFilter.prototype._createFacetList = function() {
 			path: "/items",
 			template: new sap.m.StandardListItem({
 				title: "{text}",
+		    tooltip:"{text}",
 				counter: "{count}",
 				type: sap.m.ListType.Navigation,
 				customData : [ new sap.ui.core.CustomData({
@@ -1201,6 +1209,7 @@ sap.m.FacetFilter.prototype._createFacetList = function() {
 
 		aFacetFilterLists.push({
 			text: oList.getTitle(),
+			tooltip:oList.getTitle(),
 			count: oList.getAllCount(),
 			index : i
 		});
@@ -1244,6 +1253,7 @@ sap.m.FacetFilter.prototype._createSelectAllCheckboxBar = function(oList) {
 		
 		var oCheckbox = new sap.m.CheckBox(oList.getId() + "-selectAll", {
 			text : this._bundle.getText("FACETFILTER_CHECKBOX_ALL"),
+			tooltip:this._bundle.getText("FACETFILTER_CHECKBOX_ALL"),
 			selected: oList.getActive() && !oList.getSelectedItem() && !Object.getOwnPropertyNames(oList._oSelectedKeys).length, 
 			select : function(oEvent) {
 				
@@ -1308,46 +1318,39 @@ sap.m.FacetFilter.prototype._handleFacetListItemPress = function(oEvent) {
  */
 sap.m.FacetFilter.prototype._navToFilterItemsPage = function(oFacetListItem) {
 	
-	       this._selectedFacetItem = oFacetListItem;
-       
-       var oNavCont = this.getAggregation("dialog").getContent()[0];
-       var oCustomData = oFacetListItem.getCustomData();
-       jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
-       var iIndex = oCustomData[0].getValue();  
-       var oFacetFilterList = this.getLists()[iIndex];
-       
-       this._listIndexAgg = this.indexOfAggregation("lists", oFacetFilterList);
+	this._selectedFacetItem = oFacetListItem;
+	
+	var oNavCont = this.getAggregation("dialog").getContent()[0];
+	var oCustomData = oFacetListItem.getCustomData();
+	jQuery.sap.assert(oCustomData.length === 1, "There should be exactly one custom data for the original facet list item index");
+	var iIndex = oCustomData[0].getValue();	
+	var oFacetFilterList = this.getLists()[iIndex];
+	this._listIndexAgg = this.indexOfAggregation("lists", oFacetFilterList);
+  if (this._listIndexAgg == iIndex){      
+	var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
+	
+	// This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
+	//oFilterItemsPage.destroyAggregation("content", true);
+	
+	// Add the facet filter list
+	this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
+	
+	// Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
+	oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
+		
+	// Add the select all checkbox bar if the list being displayed on the filter items page
+	// is a multi select list. The bar is created only if the list is multi select.
+	// The bar is destroyed from NavContainer.afterNavigate.
+	var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
+	if(oCheckboxBar) {
+		oFilterItemsPage.insertContent(oCheckboxBar, 0);	
+	}
 
-       if (this._listIndexAgg == iIndex)
-       {
-
-       
-       var oFilterItemsPage = this._getFilterItemsPage(oNavCont);
-       
-       // This page instance is used to display content for every facet filter list, so remove any prior content, if any. 
-       //oFilterItemsPage.destroyAggregation("content", true);
-       
-       // Add the facet filter list
-       this._moveListToDisplayContainer(oFacetFilterList, oFilterItemsPage);
-       
-       // Add the search field bar. The bar is destroyed from NavContainer.afterNavigate.
-       oFilterItemsPage.setSubHeader(this._createFilterItemsSearchFieldBar(oFacetFilterList));
-              
-       // Add the select all checkbox bar if the list being displayed on the filter items page
-       // is a multi select list. The bar is created only if the list is multi select.
-       // The bar is destroyed from NavContainer.afterNavigate.
-       var oCheckboxBar = this._createSelectAllCheckboxBar(oFacetFilterList);
-       if(oCheckboxBar) {
-              oFilterItemsPage.insertContent(oCheckboxBar, 0);       
-       }
-
-       oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
-       
-       oFacetFilterList.fireListOpen({});
-       oNavCont.to(oFilterItemsPage);
-       
-       };
-
+	oFilterItemsPage.setTitle(oFacetFilterList.getTitle());
+	
+	oFacetFilterList.fireListOpen({});
+	oNavCont.to(oFilterItemsPage);
+	};
 };
 
 /**
@@ -1428,12 +1431,17 @@ sap.m.FacetFilter.prototype._getSequencedLists = function() {
 				}	
 				else if (aLists[i].getSequence() > iMaxSequence) {
 					iMaxSequence = aLists[i].getSequence();
+					
 				}
 				aSequencedLists.push(aLists[i]);
-			} else {
-				aLists[i].setSequence(-1); // Reset the sequence if the list is inactive so that if it is made active again it is placed at the end
 			}
-		}
+ 			// Reset the sequence if the list is inactive and if it is made active again, it is placed
+			// at the end if retainListSequence is not set to true
+				else if(!aLists[i].getRetainListSequence()){
+				aLists[i].setSequence(-1);
+				}
+}
+		
 		
 		// Every list whose sequence is unspecified should be moved to the end
 		for ( var j=0; j < aSequencedLists.length; j++) {
@@ -1495,6 +1503,7 @@ sap.m.FacetFilter.prototype._createResetButton = function() {
 	var oButton = new sap.m.Button({
 		type: sap.m.ButtonType.Transparent,
 		icon : sap.ui.core.IconPool.getIconURI("undo"),
+		tooltip:this._bundle.getText("FACETFILTER_RESET"),
 		press : function(oEvent) {
 
 			that.fireReset();			
@@ -1518,6 +1527,7 @@ sap.m.FacetFilter.prototype._addOKButtonToPopover = function(oPopover) {
 		var that = this;
 		var oButton = new sap.m.Button({
 			text : this._bundle.getText("FACETFILTER_ACCEPT"),
+			tooltip:this._bundle.getText("FACETFILTER_ACCEPT"),
 			width : "100%",
 			press : function() {
 
@@ -1678,13 +1688,14 @@ sap.m.FacetFilter.prototype._getScrollingArrow = function(sName) {
 	
 	if (sName === "left") {
 		oArrowIcon = this.getAggregation("arrowLeft");
-		if (!oArrowIcon) {
+			if (!oArrowIcon) {
 			mProperties.id = this.getId() + "-arrowScrollLeft";
 			oArrowIcon = sap.ui.core.IconPool.createControlByURI(mProperties);
 			var aCssClassesToAddLeft = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollLeft" ];
 			for(var i=0; i < aCssClassesToAddLeft.length; i++) {
 				oArrowIcon.addStyleClass(aCssClassesToAddLeft[i]);
-			}
+				oArrowIcon.setTooltip(this._bundle.getText("FACETFILTER_PREVIOUS"));
+				}
 			this.setAggregation("arrowLeft", oArrowIcon);
 		}
 	}
@@ -1696,7 +1707,8 @@ sap.m.FacetFilter.prototype._getScrollingArrow = function(sName) {
 			var aCssClassesToAddRight = [ "sapMPointer", "sapMFFArrowScroll", "sapMFFArrowScrollRight" ];
 			for(var i=0; i < aCssClassesToAddRight.length; i++) {
 				oArrowIcon.addStyleClass(aCssClassesToAddRight[i]);
-			}
+				oArrowIcon.setTooltip(this._bundle.getText("FACETFILTER_NEXT"));
+				}
 			this.setAggregation("arrowRight", oArrowIcon);
 		}
 	} else {

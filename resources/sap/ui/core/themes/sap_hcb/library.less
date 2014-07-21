@@ -376,10 +376,12 @@
 @sapUiContentDisabledTextColor: #666666;
 @sapUiButtonBackground: #000000;
 @sapUiButtonBorderColor: #FFFFFF;
+@sapUiButtonTextColor: #FFFFFF;
 @sapUiButtonDisabledBackground: #000000;
 @sapUiButtonDisabledBorderColor: #666666;
 @sapUiButtonHoverBackground: #7A5100;
 @sapUiButtonHoverBorderColor: #FFFFFF;
+@sapUiButtonHoverTextColor: #FFFFFF;
 @sapUiFieldBackground: #000000;
 @sapUiFieldBorderColor: #FFFFFF;
 @sapUiFieldHoverBorderColor: #FFFFFF;
@@ -623,6 +625,15 @@
 		display : none !important;
 	}
 }
+
+.sapUiOverlay {
+	background-color: fade(@sapUiExtraLightBG, 80%);
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
 /* Shared CSS for 'sap_hcb' theme */
 
 :focus {
@@ -695,7 +706,6 @@ html[data-sap-ui-browser^="cr"] :focus {
 	text-align: center;
 	display: inline-block;
 	vertical-align: baseline;
-	line-height: 100%;
 }
 
 .sapUiIconPointer {
@@ -789,6 +799,42 @@ HTML[data-sap-ui-browser='ie8'] .sapUiLocalBusyIndicator {
 @sapUiLocalBusyIndicatorBoxColorActive: @sapUiBaseBG;
 
 @sapUiLocalBusyIndicatorBoxTransitionDuration: ~"125ms";
+/************ Media queries for screen sizes ************
+
+Usage:
+
+@media (@Query_sapUiMedia-Std-Desktop) {
+      .test {
+            width: 50em;
+      }
+}
+
+*********************************************************/
+
+
+/* see sap.ui.Device.media.RANGESETS.SAP_STANDARD*/
+@Query_sapUiMedia-Std-Desktop:  ~"screen and (min-width : 1024px)";
+@Query_sapUiMedia-Std-Tablet:  ~"screen and (min-width : 600px) and (max-width : 1023px)";
+@Query_sapUiMedia-Std-Phone:  ~"screen and (max-width : 599px)";
+
+/* see sap.ui.Device.media.RANGESETS.SAP_3STEPS*/
+@Query_sapUiMedia-3Step-L:  ~"screen and (min-width : 960px)";
+@Query_sapUiMedia-3Step-M:  ~"screen and (min-width : 520px) and (max-width : 959px)";
+@Query_sapUiMedia-3Step-S:  ~"screen and (max-width : 519px)";
+
+/* see sap.ui.Device.media.RANGESETS.SAP_4STEPS*/
+@Query_sapUiMedia-4Step-XL:  ~"screen and (min-width : 960px)";
+@Query_sapUiMedia-4Step-L:  ~"screen and (min-width : 760px) and (max-width : 959px)";
+@Query_sapUiMedia-4Step-M:  ~"screen and (min-width : 520px) and (max-width : 759px)";
+@Query_sapUiMedia-4Step-S:  ~"screen and (max-width : 519px)";
+
+/* see sap.ui.Device.media.RANGESETS.SAP_6STEPS*/
+@Query_sapUiMedia-6Step-XXL:  ~"screen and (min-width : 960px)";
+@Query_sapUiMedia-6Step-XL:  ~"screen and (min-width : 768px) and (max-width : 959px)";
+@Query_sapUiMedia-6Step-L:  ~"screen and (min-width : 541px) and (max-width : 767px)";
+@Query_sapUiMedia-6Step-M:  ~"screen and (min-width : 400px) and (max-width : 540px)";
+@Query_sapUiMedia-6Step-S:  ~"screen and (min-width : 241px) and (max-width : 399px)";
+@Query_sapUiMedia-6Step-XS:  ~"screen and (max-width : 240px)";
 
 /* CSS parameters which are available in base theme */
 

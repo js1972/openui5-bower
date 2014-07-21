@@ -69,7 +69,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Core', 'sap/ui/core/Popup', 'jq
 					var html=[];
 					html.push("<div id='sap-ui-techinfo' class='sapUiTInf sapUiDlg' style='width:640px; position: relative;'>");
 					html.push("<table border='0' cellpadding='3'>");
-					html.push("<tr><td align='right' valign='top'><b>SAPUI5 Version</b></td><td>", sap.ui.version, " (built at ", sap.ui.buildinfo.buildtime, ", last change ", sap.ui.buildinfo.lastchange, ")</td></tr>");
+					try {
+						var oVersionInfo = sap.ui.getVersionInfo();
+						var sVersion = "<a href='" + sap.ui.resource("", "sap-ui-version.json") + "' target='_blank' title='Open Version Info'>" + oVersionInfo.version + "</a>";
+						html.push("<tr><td align='right' valign='top'><b>SAPUI5 Version</b></td><td>", sVersion, " (built at ", oVersionInfo.buildTimestamp, ", last change ", oVersionInfo.scmRevision, ")</td></tr>");
+					} catch (ex) {
+						html.push("<tr><td align='right' valign='top'><b>SAPUI5 Version</b></td><td>not available</td></tr>");
+					}
+					html.push("<tr><td align='right' valign='top'><b>Core Version</b></td><td>", sap.ui.version, " (built at ", sap.ui.buildinfo.buildtime, ", last change ", sap.ui.buildinfo.lastchange, ")</td></tr>");
 					html.push("<tr><td align='right' valign='top'><b>User Agent</b></td><td>", navigator.userAgent, (document.documentMode? ", Document Mode '" + document.documentMode + "'" : ""), "</td></tr>");
 					html.push("<tr><td align='right' valign='top'><b>Configuration</b></td><td class='sapUiTInfCfg'>");
 					list(ojQSData.config);

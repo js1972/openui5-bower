@@ -60,8 +60,8 @@ sap.ui.define(['./library','./Element','./theming/Parameters'], function() {
  * Its default level is none.
  * @extends sap.ui.core.Element
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public

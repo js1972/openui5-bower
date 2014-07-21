@@ -8,11 +8,9 @@
 jQuery.sap.declare("sap.m.TablePersoDialog");
 jQuery.sap.require("sap.ui.base.ManagedObject");
 jQuery.sap.require("sap.m.InputListItem");
-jQuery.sap.require("sap.m.Switch");
-jQuery.sap.require("sap.m.SwitchType");
 jQuery.sap.require("sap.m.Dialog");
 jQuery.sap.require("sap.m.List");
-jQuery.sap.require("sap.m.Bar");
+jQuery.sap.require("sap.m.Toolbar");
 jQuery.sap.require("sap.m.Button");
 
 
@@ -35,7 +33,7 @@ jQuery.sap.require("sap.m.Button");
  * @class Table Personalization Dialog
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.10
+ * @version 1.22.4
  * @name sap.m.TablePersoDialog
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.TablePersoDialog */
@@ -50,8 +48,13 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
 	metadata : {
 		properties: {
 			"contentWidth": {type: "sap.ui.core.CSSSize"},
+			"contentHeight": {type: "sap.ui.core.CSSSize", since: "1.22"}, 
 			"persoMap": {type: "object"},
-			"columnInfo": {type: "object"}
+			"columnInfoCallback": {type: "object", since: "1.22"},
+			"initialColumnState": {type: "object", since: "1.22"},
+			"hasGrouping": {type: "boolean", since: "1.22"},
+			"showSelectAll": {type: "boolean", since: "1.22"},
+			"showResetAll": {type: "boolean", since: "1.22"},
 		},
 		aggregations: {
 			"persoService": {
@@ -72,6 +75,8 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
 });
 
 
+
+
 /**
  * Initializes the TablePersoDialog instance after creation.
  *
@@ -80,23 +85,57 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoDialog", /** @lends sap.m.Tabl
  * @protected
  */
 sap.m.TablePersoDialog.prototype.init = function() {
-	var that = this;
+	var that = this,
+		iLiveChangeTimer = 0;
 
 	// Resource bundle, for texts
 	this._oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 
 	// To store the column settings
 	this._oP13nModel = new sap.ui.model.json.JSONModel();
+	// Make sure that model can contain more than the 100 entries
+	// it may contain by default
+	this._oP13nModel.setSizeLimit(Number.MAX_VALUE);
+	
+	this._fnUpdateCheckBoxes = jQuery.proxy(function(oEvent) {
+		var bSelected = oEvent.getParameter('selected'),
+			oData = this._oP13nModel.getData();
+		if(oEvent.getSource().getParent().getParent() == this._oSelectAllHeader){
+			//'Select All' checkbox has been changed
+			oData.aColumns.forEach(function(oColumn) {
+				oColumn.visible = bSelected;
+			});
+		} else {
+			//One of the list checkboxes has been modified
+			//Update the state of the 'Select All' checkbox
+			var bSelectAll = !oData.aColumns.some(function(oColumn) {
+					return !oColumn.visible;
+				}
+			);
+			oData.aHeaders[0].visible = bSelectAll;
+		}
+		//call setData to trigger update of bound controls
+		this._oP13nModel.setData(oData);
+	}, this);
+	
 
 	// Template for list inside the dialog - 1 item per column
-	this._columnItemTemplate = new sap.m.InputListItem({
+	this._oColumnItemTemplate = new sap.m.InputListItem({
 		label: "{Personalization>text}",
-		content: new sap.m.Switch({
-			state: "{Personalization>visible}",
-			customTextOn: " ",
-			customTextOff: " "
-		})
+		content: new sap.m.CheckBox({
+			selected: "{Personalization>visible}",
+			select: this._fnUpdateCheckBoxes
+		}),
 	}).addStyleClass("sapMPersoDialogLI");
+	
+	// Template for fixed header list inside the dialog
+	this._oHeaderItemTemplate = new sap.m.InputListItem({
+		label: "{Personalization>text}",
+		content: new sap.m.CheckBox({
+			selected: "{Personalization>visible}",
+			select: this._fnUpdateCheckBoxes
+		}),
+	}).addStyleClass("sapMPersoDialogLI").addStyleClass("sapMPersoDialogLIHeader");
 
 	//Button definition for sorting of the table content(up/down)
 	this._oButtonUp = new sap.m.Button({
@@ -104,83 +143,163 @@ sap.m.TablePersoDialog.prototype.init = function() {
 					enabled: false,
 					press: function(oEvent) {
 						that._moveItem(-1);
-						},
+					}
 	});
 	
 	this._oButtonDown = new sap.m.Button({
-					  icon: "sap-icon://arrow-bottom",
-					  enabled: false,
-					  press: function(oEvent) {
+					icon: "sap-icon://arrow-bottom",
+					enabled: false,
+					press: function(oEvent) {
 						  that._moveItem(1);
-					  	}
+					}
 	});
 	
+	this._fnHandleResize = function() {
+		//check if dialog is rendered
+		var $dialogCont = jQuery("#" + that._oDialog.getId() + "-cont");
+		if($dialogCont.children().length > 0 && that._oSelectAllHeader.$().length > 0) {
+			var iContentHeight = $dialogCont.children()[0].clientHeight;
+			var iHeaderHeight = that.getShowSelectAll() ? that._oSelectAllHeader.$()[0].clientHeight : 0;
+			that._oScrollContainer.setHeight((iContentHeight - iHeaderHeight) + 'px');
+		}
+	};
+	
 	this._fnUpdateArrowButtons = function() {
-		var oList = that._oDialog.getContent()[0],
-			length = oList.getItems().length;
+		
 		//Initialisation of the enabled property 
 		var bButtonDownEnabled = true,
-		    bButtonUpEnabled = true;
-		if (length == 0) {
-			//No data -> both buttons(arrow-up/-down have to be disabled!)
+			bButtonUpEnabled = true,
+			sValue = that._oSearchField.getValue(),
+			iItemCount = that._oList.getItems().length;
+		if(!!sValue || that._oList.getSelectedItems().length === 0){
+			//Disable buttons if search filters the list or if list is empty
 			bButtonUpEnabled = false;
 			bButtonDownEnabled = false;
-			
 		} else {
 			//data available (1 or more items)
-			if (oList.getItems()[0].getSelected()) {
+			if (that._oList.getItems()[0].getSelected()) {
 				//first item selected: disable button "arrow top"
 				bButtonUpEnabled = false;
 			};
-			if (oList.getItems()[length-1].getSelected()){
+			if (that._oList.getItems()[iItemCount-1].getSelected()){
 				//last item selected: disable button "arrow bottom"
 				bButtonDownEnabled = false;
 			};
-		};
+		}
+		
 		that._oButtonUp.setEnabled(bButtonUpEnabled);
 		that._oButtonDown.setEnabled(bButtonDownEnabled);
 	};
 	
+	this._fnAfterListRendering = function(oEvent) {
+		//find all checkboxes in the list
+		var aItems = oEvent.srcControl.$().find('.sapMCb'),
+			iItemsLength = aItems.length;
+		//'forEach' does not work
+		for(var i=0; i<iItemsLength; i++) {
+			var $checkBox = jQuery(aItems[i]).parent(),
+				aSiblings = $checkBox.siblings(),
+				$label = aSiblings.length == 1 ? jQuery(aSiblings[0]) : null;
+			
+			if($label) {
+				$checkBox = $checkBox.detach();
+				$checkBox[0].className = 'sapMLIBSelectM';
+				$checkBox.insertBefore($label);
+			}
+			
+		}
+	};
+	
+	this._oList =  new sap.m.List({
+		includeItemInSelection: true,
+		noDataText: this._oRb.getText('PERSODIALOG_NO_DATA'),
+		mode: sap.m.ListMode.SingleSelectMaster,
+		select: this._fnUpdateArrowButtons,
+	});
+	
+	this._oSelectAllHeader =  new sap.m.List({
+		includeItemInSelection: true,
+		mode: sap.m.ListMode.None,
+	});
+	
+	this._oList.addDelegate({onAfterRendering : this._fnAfterListRendering});
+	this._oSelectAllHeader.addDelegate({onAfterRendering : this._fnAfterListRendering});
+	
+	this._oSearchField = new sap.m.SearchField(this.getId() + "-searchField", {
+		width: "100%",
+		liveChange: function (oEvent) {
+			var sValue = oEvent.getSource().getValue(),
+				iDelay = (sValue ? 300 : 0); // no delay if value is empty
+
+			// execute search after user stops typing for 300ms
+			clearTimeout(iLiveChangeTimer);
+			if (iDelay) {
+				iLiveChangeTimer = setTimeout(function () {
+					that._executeSearch();
+				}, iDelay);
+			} else {
+				that._executeSearch();
+			}
+		},
+		// execute the standard search
+		search: function (oEvent) {
+			that._executeSearch();
+		}
+	});
+	
+	this._oScrollContainer = new sap.m.ScrollContainer({
+		horizontal: false,
+		vertical: true,
+		content:[this._oList],
+		width:'100%',
+	});
+	
+	this._resetAllButton = new sap.m.Button({
+		icon: "sap-icon://undo",
+		tooltip: this._oRb.getText('PERSODIALOG_UNDO'),
+		press : function () {
+			that._resetAll();
+		}
+	});
+	
+	this._oSelectAllToolbar = new sap.m.Toolbar({ 
+		active: true,
+		design : sap.m.ToolbarDesign.Transparent,
+		content: [this._oSelectAllHeader, this._resetAllButton]
+	}).addStyleClass("sapMPersoDialogFixedBar");;
 	
 	this._oDialog = new sap.m.Dialog({
 		title : this._oRb.getText("PERSODIALOG_COLUMNS_TITLE"),
 		stretch: sap.ui.Device.system.phone,
 		horizontalScrolling: false,
-		content : new sap.m.List({
-			includeItemInSelection: true,
-			mode: sap.m.ListMode.SingleSelectMaster,
-			select: this._fnUpdateArrowButtons,
-		}),
-		subHeader : new sap.m.Bar({
-			contentLeft: [ this._oButtonUp, this._oButtonDown],
-			contentRight: new sap.m.Button({
-				icon: "sap-icon://refresh",
-				press : function () {
-					that._resetAll();
-				}
-			})
+		verticalScrolling: false,
+		content : [ this._oSelectAllToolbar, this._oScrollContainer],
+		subHeader : new sap.m.Toolbar({
+			active : true,
+			content: [ this._oButtonUp, this._oButtonDown, this._oSearchField ]
 		}),
 		leftButton : new sap.m.Button({
 			text : this._oRb.getText("PERSODIALOG_OK"),
 			press : function () {
-				this.getParent().close();
-				that._oButtonUp.setEnabled(false);
-				that._oButtonDown.setEnabled(false);				
+				that._oDialog.close();
+				that._oSearchField.setValue("");
+				that._oSelectAllToolbar.setVisible(true);
+				sap.ui.Device.resize.detachHandler(that._fnHandleResize);
 				that.fireConfirm();
 			}
 		}),
 		rightButton : new sap.m.Button({
 			text: this._oRb.getText("PERSODIALOG_CANCEL"),
 			press: function () {
-				that._readCurrentSettingsFromTable();
-				this.getParent().close();
-				that._oButtonUp.setEnabled(false);
-				that._oButtonDown.setEnabled(false);				
+				that._oDialog.close();
+				that._oSearchField.setValue("");
+				that._oSelectAllToolbar.setVisible(true);
+				sap.ui.Device.resize.detachHandler(that._fnHandleResize);
 				that.fireCancel();
 			}
 		})
 	}).addStyleClass("sapMPersoDialog");
-
+	
 };
 
 /**
@@ -204,32 +323,43 @@ sap.m.TablePersoDialog.prototype.retrievePersonalizations = function () {
  * @public
  */
 sap.m.TablePersoDialog.prototype.open = function () {
-
-	// The only control in the Dialog's content aggregation is a List
-	var oList = this._oDialog.getContent()[0];
-
+	var aSorter = null;
+	if(this.getHasGrouping()) {
+		aSorter = [new sap.ui.model.Sorter('group', false, true)];
+	}
 	// Get the associated Table's column info and set it into the Personalization model
 	this._readCurrentSettingsFromTable();
 
-	// Also save initial state in model in case of Reset All
-	this._oInitialState = JSON.stringify(this._oP13nModel.getData().aColumns);
-
 	this._oDialog.setModel(this._oP13nModel, "Personalization");
-	oList.bindAggregation("items", "Personalization>/aColumns", this._columnItemTemplate);
+	this._oList.bindAggregation("items", {
+		path: "Personalization>/aColumns", 
+		sorter: aSorter, 
+		template: this._oColumnItemTemplate
+	});
+	this._oSelectAllHeader.bindAggregation("items", {
+		path: "Personalization>/aHeaders", 
+		template: this._oHeaderItemTemplate
+	});
+	
+	//Update 'Move' button's state
+	this._fnUpdateArrowButtons.call(this);
 
 	// Now show the dialog
 	this._oDialog.open();
+	
+	this._fnHandleResize.call(this);
+	sap.ui.Device.resize.attachHandler(this._fnHandleResize);
 };
 
-/**
- * Reflectors for the internal Dialog's contentWidth property
- * @public
- */
-sap.m.TablePersoDialog.prototype.getContentWidth = function() {
-	return this._oDialog.getContentWidth();
+
+sap.m.TablePersoDialog.prototype.setContentHeight = function(sHeight) {
+	this.setProperty("contentHeight", sHeight, true);
+	this._oDialog.setContentHeight(sHeight);
+	return this;
 };
 
 sap.m.TablePersoDialog.prototype.setContentWidth = function(sWidth) {
+	this.setProperty("contentWidth", sWidth, true);
 	this._oDialog.setContentWidth(sWidth);
 	return this;
 };
@@ -241,11 +371,35 @@ sap.m.TablePersoDialog.prototype.setContentWidth = function(sWidth) {
 sap.m.TablePersoDialog.prototype.exit = function () {
 	this._oRb = null;
 	this._oP13nModel = null;
-	this._oInitialState = null;
 
-	if (this._columnItemTemplate) {
-		this._columnItemTemplate.destroy();
-		this._columnItemTemplate = null;
+	if (this._oColumnItemTemplate) {
+		this._oColumnItemTemplate.destroy();
+		this._oColumnItemTemplate = null;
+	}
+	
+	if (this._oHeaderItemTemplate) {
+		this._oHeaderItemTemplate.destroy();
+		this._oHeaderItemTemplate = null;
+	}
+	
+	if (this._oSelectAllHeader) {
+		this._oSelectAllHeader.destroy();
+		this._oSelectAllHeader = null;
+	}
+	
+	if (this._oList) {
+		this._oList.destroy();
+		this._oList = null;
+	}
+	
+	if (this._oSearchField) {
+		this._oSearchField.destroy();
+		this._oSearchField = null;
+	}
+	
+	if (this._oScrollContainer) {
+		this._oScrollContainer.destroy();
+		this._oScrollContainer = null;
 	}
 
 	if (this._oDialog) {
@@ -268,16 +422,25 @@ sap.m.TablePersoDialog.prototype.exit = function () {
 /* =========================================================== */
 
 /**
-* Turn column visibility and order back to initial state
-* when dialog was opened
+* Turn column visibility and order back to initial state (state before table
+* was personalized)
 * @private
 */
 sap.m.TablePersoDialog.prototype._resetAll = function () {
-
-	var oData = this._oP13nModel.getData();
-	oData.aColumns = JSON.parse(this._oInitialState);
-	this._oP13nModel.setData(oData);
-
+	if(this.getInitialColumnState()) {
+		//Deep copy of Initial Data, otherwise initial data will be changed
+		//and can only be used once to restore the initial state
+		
+		var aInitialStateCopy = jQuery.extend(true, [], this.getInitialColumnState());
+		
+		this._oP13nModel.getData().aColumns = aInitialStateCopy;
+		
+		this._oP13nModel.getData().aHeaders[0].visible = !this.getInitialColumnState().some(function(oColumn) {
+			return !oColumn.visible;
+		});
+		
+		this._oP13nModel.updateBindings();
+	}
 };
 
 
@@ -297,6 +460,11 @@ sap.m.TablePersoDialog.prototype._tableColumnInfo = function (oTable) {
 			var sCaption = null;
 			if(that.getPersoService().getCaption) {
 				sCaption = that.getPersoService().getCaption(oColumn);
+			}
+			
+			var sGroup = null;
+			if(that.getPersoService().getGroup) {
+				sGroup = that.getPersoService().getGroup(oColumn);
 			}
 			
 			if (!sCaption) {
@@ -321,7 +489,8 @@ sap.m.TablePersoDialog.prototype._tableColumnInfo = function (oTable) {
 				text : sCaption,
 				order : oColumn.getOrder(),
 				visible : oColumn.getVisible(),
-				id: that.getPersoMap()[oColumn]
+				id: that.getPersoMap()[oColumn],
+				group : sGroup
 			});
 		});
 
@@ -341,15 +510,12 @@ sap.m.TablePersoDialog.prototype._tableColumnInfo = function (oTable) {
  */
 sap.m.TablePersoDialog.prototype._moveItem = function (iDirection) {
 
-	var oList = this._oDialog.getContent()[0];
-	var oModel = this._oP13nModel;
-
 	// Abort if nothing selected
-	var oSelectedItem = oList.getSelectedItem();
+	var oSelectedItem = this._oList.getSelectedItem();
 	if (! oSelectedItem) return;
 
 	// The items themselves
-	var data = oModel.getData();
+	var oData = this._oP13nModel.getData();
 
 	// Get array index of selected item
 	var item = oSelectedItem.getBindingContext("Personalization").getPath().split("/").pop() * 1;
@@ -358,62 +524,106 @@ sap.m.TablePersoDialog.prototype._moveItem = function (iDirection) {
 	var swap = item + iDirection;
 
 	// Abort if out of bounds
-	if ( swap < 0 || swap >= data.aColumns.length ) return;
+	if ( swap < 0 || swap >= oData.aColumns.length ) return;
 
 	// Do the swap
-	var temp = data.aColumns[swap];
-	data.aColumns[swap] = data.aColumns[item];
+	var temp = oData.aColumns[swap];
+	oData.aColumns[swap] = oData.aColumns[item];
 	//Make sure the order member is adapted as well!
-	data.aColumns[swap].order = swap;
-	data.aColumns[item] = temp;
+	oData.aColumns[swap].order = swap;
+	oData.aColumns[item] = temp;
 	//Make sure the order member is adapted as well!
-	data.aColumns[item].order = item;
+	oData.aColumns[item].order = item;
 
 	// Remove selection before binding
-	oList.removeSelections(true);
+	this._oList.removeSelections(true);
 
-	// Swap in the visible list
-	this._swapListItemContent(oList, item, swap);
-
+	//call setData to trigger update of bound controls
+	this._oP13nModel.updateBindings();
+	
 	// Switch the selected item
-	oList.setSelectedItem(oList.getItems()[swap], true);
-
+	this._oList.setSelectedItem(this._oList.getItems()[swap], true);
+	
 	this._fnUpdateArrowButtons.call(this);
+	
 };
 
-/**
-* Exchanges the label property text and the Switch inside the Dialog's List
-* for the two items being swapped, using DOM manipulation (to save re-rendering)
-* @private
-*/
-sap.m.TablePersoDialog.prototype._swapListItemContent = function(oList, iItem, iSwap) {
 
-	var aListItems = oList.getItems();
-
-	// Labels
-	var sLabelItemId = "#" + aListItems[iItem].getId() + " label",
-	sLabelSwapId = "#" + aListItems[iSwap].getId() + " label";
-	var sLabelTemp = jQuery(sLabelSwapId).html();
-
-	// Switches
-	var sSwitchItemId = "#" + aListItems[iItem].getContent()[0].getId();
-	var sSwitchSwapId = "#" + aListItems[iSwap].getContent()[0].getId();
-	var sSwitchTemp = jQuery(sSwitchSwapId).html();
-
-	// Do the swap
-	jQuery(sLabelSwapId).html(jQuery(sLabelItemId).html());
-	jQuery(sLabelItemId).html(sLabelTemp);
-	jQuery(sSwitchSwapId).html(jQuery(sSwitchItemId).html());
-	jQuery(sSwitchItemId).html(sSwitchTemp);
-
-};
 
 /**
  * Reads current column settings from the table and stores in the model
  * @private
  */
 sap.m.TablePersoDialog.prototype._readCurrentSettingsFromTable = function() {
-	var oTable = sap.ui.getCore().byId(this.getPersoDialogFor());
-	this._oP13nModel.setData({ aColumns : this._tableColumnInfo(oTable) });
+	var oTable = sap.ui.getCore().byId(this.getPersoDialogFor()),
+		aCurrentColumns = this.getColumnInfoCallback().call(this, oTable, this.getPersoMap(), this.getPersoService());
+	this._oP13nModel.setData({ aColumns : aCurrentColumns, aHeaders : [{
+		text : this._oRb.getText("PERSODIALOG_SELECT_ALL"),
+		visible : !aCurrentColumns.some(function(oColumn) {
+				return !oColumn.visible;
+			}
+		),
+		id: this.getId() + '_SelectAll'
+	}] });
 };
+
+/**
+ * Filters the columns list with the given sValue
+ * @private
+ */
+sap.m.TablePersoDialog.prototype._executeSearch = function () {
+	var sValue = this._oSearchField.getValue(),
+		oFilter = new sap.ui.model.Filter("text", sap.ui.model.FilterOperator.Contains, sValue),
+		oBinding = this._oList.getBinding("items");
+	
+	this._oSelectAllToolbar.setVisible(!sValue && this.getShowSelectAll());
+	oBinding.filter([oFilter]);
+	this._fnUpdateArrowButtons.call(this);
+	return this;
+};
+
+/**
+ * Reflector for the TablePersoDialog's Dialog's hasGrouping property.
+ * @public
+ */
+sap.m.TablePersoDialog.prototype.setHasGrouping = function (bHasGrouping) {
+	this.setProperty("hasGrouping", bHasGrouping, true);
+	var oBar = this._oDialog.getSubHeader();
+	if(!bHasGrouping) {
+		if(oBar.getContent().length === 1) {
+			//Only search field is displayed, add up- and down
+			//buttons
+			oBar.insertContent(this._oButtonDown, 0);
+			oBar.insertContent(this._oButtonUp, 0);
+		}
+	} else {
+		oBar.removeContent(this._oButtonUp);
+		oBar.removeContent(this._oButtonDown);
+	}
+	return this;
+};
+
+/**
+ * Reflector for the TablePersoDialog's Dialog's showSelectAll property.
+ * @public
+ */
+sap.m.TablePersoDialog.prototype.setShowSelectAll = function (bShowSelectAll) {
+	this.setProperty("showSelectAll", bShowSelectAll, true);
+	this._oSelectAllToolbar.setVisible(bShowSelectAll);
+	//Need to recalculate content height now
+	this._fnHandleResize.call(this);
+	return this;
+};
+
+/**
+ * Reflector for the TablePersoDialog's Dialog's showResetAll property.
+ * @public
+ */
+sap.m.TablePersoDialog.prototype.setShowResetAll = function (bShowResetAll) {
+	this.setProperty("showResetAll", bShowResetAll, true);
+	this._resetAllButton.setVisible(bShowResetAll);
+	return this;
+};
+
+
 

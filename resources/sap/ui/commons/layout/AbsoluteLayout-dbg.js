@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -320,13 +320,13 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.setPositionOfChild
  * @function
  * @param {sap.ui.core.Control} 
- *         oOControl
+ *         oControl
  *         The child control for which to change the position information; if empty or not aggregated, nothing is changed
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control. The object is expected to have one or more from the attribute set
- * top, bottom, left, right; each with a value of type sap.ui.core.CSSSize.
- * If no object is given, the default is used which is left=0px,right=0px.
+ *         top, bottom, left, right; each with a value of type sap.ui.core.CSSSize.
+ *         If no object is given, the default is used which is left=0px,right=0px.
 
  * @type boolean
  * @public
@@ -351,7 +351,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.indexOfContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content of which the index is looked for
 
  * @type int
@@ -376,7 +376,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.removeContent
  * @function
  * @param {object} 
- *         oVContent
+ *         oContent
  *         The content control to remove, its ID, or the index of the corresponding position container in the 'positions' aggregation.
 
  * @type sap.ui.core.Control
@@ -390,16 +390,16 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.insertContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content to insert; if empty, nothing is inserted
  * @param {int} 
- *         iIIndex
+ *         iIndex
  *         The '0'-based index where the content shall be inserted at. For a negative value of iIndex, the content is inserted at position '0';
- * for a value greater than the current size of the aggregation, the content is inserted at the last position.
+ *         for a value greater than the current size of the aggregation, the content is inserted at the last position.
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control within the layout. The object is expected to have one or more
- * from the attribute set top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px.
+ *         from the attribute set top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px.
 
  * @type sap.ui.commons.layout.AbsoluteLayout
  * @public
@@ -412,12 +412,12 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.addContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content to add; if empty, nothing is inserted.
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control in the layout. The object is expected to have one or more from the attribute set
- * top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px
+ *         top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px
 
  * @type sap.ui.commons.layout.AbsoluteLayout
  * @public
@@ -777,11 +777,11 @@ var adaptControlSize = function(oControl){
 	if(oControl.getParent() && oControl.getParent().getComputedPosition) {
 		var oPos = oControl.getParent().getComputedPosition();
 		if(oPos.top && oPos.bottom || oPos.height){
-			jQuery(oControl.getDomRef()).height("100%");
+			jQuery(oControl.getDomRef()).css("height", "100%");
 			bAdapted = true;
 		}
 		if(oPos.left && oPos.right || oPos.width){
-			jQuery(oControl.getDomRef()).width("100%");
+			jQuery(oControl.getDomRef()).css("width", "100%");
 			bAdapted = true;
 		}
 		if(bAdapted) {

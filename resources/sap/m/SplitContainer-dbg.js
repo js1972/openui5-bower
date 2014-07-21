@@ -75,7 +75,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -787,7 +787,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
 
 /**
  * Fire event masterButton to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SplitContainer} <code>this</code> to allow method chaining
  * @protected
@@ -845,7 +845,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
 
 /**
  * Fire event beforeMasterOpen to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SplitContainer} <code>this</code> to allow method chaining
  * @protected
@@ -903,7 +903,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
 
 /**
  * Fire event afterMasterOpen to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SplitContainer} <code>this</code> to allow method chaining
  * @protected
@@ -961,7 +961,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
 
 /**
  * Fire event beforeMasterClose to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SplitContainer} <code>this</code> to allow method chaining
  * @protected
@@ -1019,7 +1019,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
 
 /**
  * Fire event afterMasterClose to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SplitContainer} <code>this</code> to allow method chaining
  * @protected
@@ -1205,24 +1205,24 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation to apply. This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
- * Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
+ *         Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
  * 
- * None of the standard transitions is currently making use of any given transition parameters.
+ *         None of the standard transitions is currently making use of any given transition parameters.
  * @param {object} 
  *         oData
  *         This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
  * 
- * Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
  *         This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
  * 
- * For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
+ *         For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
- * The "show", "slide" and "fade" transitions do not use any parameter.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         The "show", "slide" and "fade" transitions do not use any parameter.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1245,18 +1245,18 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1275,26 +1275,24 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation to apply. This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
- * Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
+ *         Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
  * 
- * None of the standard transitions is currently making use of any given transition parameters.
+ *         None of the standard transitions is currently making use of any given transition parameters.
  * @param {object} 
  *         oData
-
- * @since 1.7.1 *         This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
+ *         Since version 1.7.1. This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
  * 
- * Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
-
- * @since 1.7.1 *         This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
+ *         Since version 1.7.1. This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
  * 
- * For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
+ *         For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
- * The "show", "slide" and "fade" transitions do not use any parameter.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         The "show", "slide" and "fade" transitions do not use any parameter.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1308,28 +1306,28 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  * @function
  * @param {string} 
  *         sPageId
- *         
+ * 
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation to apply. This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
- * Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
+ *         Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
  * 
- * None of the standard transitions is currently making use of any given transition parameters.
+ *         None of the standard transitions is currently making use of any given transition parameters.
  * @param {object} 
  *         oData
  *         This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
  * 
- * Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameter
  *         This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
  * 
- * For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
+ *         For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
- * The "show", "slide" and "fade" transitions do not use any parameter.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         The "show", "slide" and "fade" transitions do not use any parameter.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1345,18 +1343,18 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameter
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1372,18 +1370,18 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameter
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.SplitContainer
  * @public
@@ -1461,18 +1459,18 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameter
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.ui.core.Control
  * @public
@@ -1489,18 +1487,18 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameter
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.ui.core.Control
  * @public
@@ -1588,7 +1586,7 @@ sap.m.SplitContainer.M_EVENTS = {'masterNavigate':'masterNavigate','afterMasterN
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation which would have been used to navigate from the (inserted) previous page to the current page. When navigating back, the inverse animation will be applied.
- * This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
+ *         This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
  * @param {object} 
  *         oData
  *         This optional object can carry any payload data which would have been given to the inserted previous page if the user would have done a normal forward navigation to it.
@@ -1695,8 +1693,7 @@ sap.m.SplitContainer.prototype.init = function() {
 				oSplitContainer._bMasterisOpen = true;
 			},
 			afterClose: function(){
-				oSplitContainer.fireAfterMasterClose();
-				oSplitContainer._bMasterisOpen = false;
+				this._afterHideMasterAnimation();
 			}
 		}).addStyleClass("sapMSplitContainerPopover");
 		
@@ -2137,39 +2134,24 @@ sap.m.SplitContainer.prototype.hideMaster = function() {
 	var _this$ = this._oMasterNav.$(),
 		that = this,
 		_curPage = that._getRealPage(that._oDetailNav.getCurrentPage());
-	if(this._portraitPopover()) {
-        if(this._oPopOver.isOpen()){
-        	function afterPopoverClose(){
-        		this._oPopOver.detachAfterClose(afterPopoverClose, this);
-        		this._bMasterClosing = false;
-        		this._bMasterisOpen = false;
-        		this.fireAfterMasterClose();
-        	}
-        	this._oPopOver.attachAfterClose(afterPopoverClose, this);
-        	this.fireBeforeMasterClose();
-        	this._oPopOver.close();
-        	this._bMasterClosing = true;
-        }
+	if (this._portraitPopover()) {
+		if (this._oPopOver.isOpen()) {
+			this._oPopOver.close();
+			this._bMasterClosing = true;
+		}
 	}else{
-		if((this._portraitHide() || this._hideMode()) 
-			&& this._bMasterisOpen) {
-			if(this._isMie9) {
+		if ((this._portraitHide() || this._hideMode()) && this._bMasterisOpen) {
+			if (this._isMie9) {
 				_this$.animate({
 					left: "-=320"
 				}, {
-					duration: 300
+					duration: 300,
+					complete: jQuery.proxy(this._afterHideMasterAnimation, this)
 				});
-				this._bMasterisOpen = false;
-				this._setMasterButton(_curPage, jQuery.proxy(this._setTitleVisibility, this));
+			} else {
+				_this$.bind((sap.ui.Device.os.ios || !this._isPlatformDependent) ? "webkitTransitionEnd transitionend" : "webkitAnimationEnd animationend", jQuery.proxy(this._afterHideMasterAnimation, this));
 			}
-			_this$.bind((sap.ui.Device.os.ios || !this._isPlatformDependent) ? "webkitTransitionEnd transitionend" : "webkitAnimationEnd animationend", function(){
-				jQuery(this).unbind("webkitTransitionEnd transitionend");
-				jQuery(this).unbind("webkitAnimationEnd animationend");
-				that._bMasterClosing = false;
-				that._bMasterisOpen = false;
-				that._setMasterButton(_curPage, jQuery.proxy(that._setTitleVisibility, that));
-				that.fireAfterMasterClose();
-			});
+
 			this.fireBeforeMasterClose();
 			_this$.toggleClass("sapMSplitContainerMasterVisible" , false);
 			_this$.toggleClass("sapMSplitContainerMasterHidden" , true);
@@ -2179,11 +2161,25 @@ sap.m.SplitContainer.prototype.hideMaster = function() {
 	return this;
 };
 
+sap.m.SplitContainer.prototype._afterHideMasterAnimation = function() {
+	if (this._portraitHide() || this._hideMode()) {
+		if (!this._isMie9) {
+			var $MasterNav = this._oMasterNav.$();
+			$MasterNav.unbind("webkitTransitionEnd transitionend", this._afterHideMasterAnimation);
+			$MasterNav.unbind("webkitAnimationEnd animationend", this._afterHideMasterAnimation);
+		}
+	}
+	var oCurPage = this._getRealPage(this._oDetailNav.getCurrentPage());
+	this._setMasterButton(oCurPage, jQuery.proxy(this._setTitleVisibility, this));
+
+	this._bMasterClosing = false;
+	this._bMasterisOpen = false;
+	this.fireAfterMasterClose();
+};
+
 sap.m.SplitContainer.prototype.getCurrentMasterPage = function() {
 	return this._oMasterNav.getCurrentPage();
 };
-
-
 
 sap.m.SplitContainer.prototype.getCurrentDetailPage = function() {
 	return this._oDetailNav.getCurrentPage();
@@ -2196,7 +2192,6 @@ sap.m.SplitContainer.prototype.getCurrentPage = function(bMaster){
 		return this.getCurrentDetailPage();
 	}
 };
-
 
 sap.m.SplitContainer.prototype.getPreviousPage = function(bMaster) {	
 	if(bMaster){

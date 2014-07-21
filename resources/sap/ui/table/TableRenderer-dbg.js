@@ -217,11 +217,15 @@ sap.ui.table.TableRenderer.renderHeader = function(rm, oTable, oTitle) {
 sap.ui.table.TableRenderer.renderToolbar = function(rm, oTable, oToolbar) {
 	rm.write("<div");
 	rm.addClass("sapUiTableTbr");
+	if (typeof oToolbar.getStandalone !== "function") {
+		// for the mobile toolbar we add another class
+		rm.addClass("sapUiTableMTbr");
+	}
 	rm.writeClasses();
 	rm.write(">");
 
 	// toolbar has to be embedded (not standalone)!
-	if (oToolbar.getStandalone()) {
+	if (typeof oToolbar.getStandalone === "function" && oToolbar.getStandalone()) {
 		oToolbar.setStandalone(false);
 	}
 
@@ -322,13 +326,23 @@ sap.ui.table.TableRenderer.renderColHdr = function(rm, oTable) {
 			rm.addStyle("min-width", oTable._getColumnsWidth(0, oTable.getFixedColumnCount()) + "px");
 			rm.writeStyles();
 			rm.write(">");
-	
+
+			var iSpan = 1;
 			for (var i = 0, l = oTable.getFixedColumnCount(); i < l; i++) {
 				if (aCols[i] && aCols[i].shouldRender()) {
-					this.renderCol(rm, oTable, aCols[i], i, h);
+					if (iSpan <= 1) {
+						this.renderCol(rm, oTable, aCols[i], i, h);
+						var aHeaderSpan = aCols[i].getHeaderSpan();
+						if (jQuery.isArray(aHeaderSpan)) {
+							iSpan = aCols[i].getHeaderSpan()[h] + 1;
+						} else {
+							iSpan = aCols[i].getHeaderSpan() + 1;
+						}
+					}
 					if (h == 0) {
 						this.renderColRsz(rm, oTable, aCols[i], i);
 					}
+					iSpan--;
 				}
 			}
 	
@@ -361,13 +375,23 @@ sap.ui.table.TableRenderer.renderColHdr = function(rm, oTable) {
 		rm.addStyle("min-width", oTable._getColumnsWidth(oTable.getFixedColumnCount(), aCols.length) + "px");
 		rm.writeStyles();
 		rm.write(">");
-	
+
+		var iSpan = 1;
 		for (var i = oTable.getFixedColumnCount(), l = aCols.length; i < l; i++) {
 			if (aCols[i].shouldRender()) {
-				this.renderCol(rm, oTable, aCols[i], i, h);
+				if (iSpan <= 1) {
+					this.renderCol(rm, oTable, aCols[i], i, h);
+					var aHeaderSpan = aCols[i].getHeaderSpan();
+					if (jQuery.isArray(aHeaderSpan)) {
+						iSpan = aCols[i].getHeaderSpan()[h] + 1;
+					} else {
+						iSpan = aCols[i].getHeaderSpan() + 1;
+					}
+				}
 				if (h == 0) {
 					this.renderColRsz(rm, oTable, aCols[i], i);
 				}
+				iSpan--;
 			}
 		}
 
@@ -426,6 +450,7 @@ sap.ui.table.TableRenderer.renderCol = function(rm, oTable, oColumn, iIndex, iHe
 		//       which belongs to the same column but it is not in one structure!
 		rm.writeAttribute('id', oColumn.getId() + "_" + iHeader);
 	}
+	rm.writeAttribute('data-sap-ui-colid', oColumn.getId());
 	rm.writeAttribute("data-sap-ui-colindex", iIndex);
 	if (oTable._bAccMode) {
 		if (!!sap.ui.Device.browser.internet_explorer) {
@@ -582,14 +607,20 @@ sap.ui.table.TableRenderer.renderTableCtrl = function(rm, oTable) {
 	rm.writeClasses();
 	rm.writeAttribute("tabindex", "0");
 	rm.write(">");
-	if (oTable.getNoData()) {
+	if (oTable.getNoData() && oTable.getNoData() instanceof sap.ui.core.Control) {
 		rm.renderControl(oTable.getNoData());
 	} else {
 		rm.write("<span");
 		rm.addClass("sapUiTableCtrlEmptyMsg");
 		rm.writeClasses();
 		rm.write(">");
-		rm.writeEscaped(oTable._oResBundle.getText("TBL_NO_DATA"));
+		if (typeof oTable.getNoData() === "string" || oTable.getNoData() instanceof String) {
+			rm.writeEscaped(oTable.getNoData());
+		} else if (oTable.getNoDataText()) {
+			rm.writeEscaped(oTable.getNoDataText());
+		} else {
+			rm.writeEscaped(oTable._oResBundle.getText("TBL_NO_DATA"));
+		}
 		rm.write("</span>");
 	}
 	rm.write("</div>");
@@ -840,7 +871,8 @@ sap.ui.table.TableRenderer.renderTableCell = function(rm, oTable, oRow, oCell, i
 			rm.addStyle("text-align", sHAlign);
 		}
 		rm.writeStyles();
-		if (iCellIndex === 0) {
+		var aVisibleColumns = oTable._getVisibleColumns();
+		if (aVisibleColumns.length > 0 && aVisibleColumns[0] === oColumn) {
 			rm.addClass("sapUiTableTdFirst");
 		}
 		// grouping support to show/hide values of grouped columns
@@ -894,19 +926,19 @@ sap.ui.table.TableRenderer.renderHSb = function(rm, oTable) {
  * Returns the value for the HTML "align" attribute according to the given
  * horizontal alignment and RTL mode, or NULL if the HTML default is fine.
  *
- * @param {sap.ui.commons.layout.HAlign} oHAlign
+ * @param {sap.ui.core.HorizontalAlign} oHAlign
  * @param {boolean} bRTL
  * @type string
  */
 sap.ui.table.TableRenderer.getHAlign = function(oHAlign, bRTL) {
   switch (oHAlign) {
-	case sap.ui.commons.layout.HAlign.Center:
+	case sap.ui.core.HorizontalAlign.Center:
 	  return "center";
-	case sap.ui.commons.layout.HAlign.End:
-	case sap.ui.commons.layout.HAlign.Right:
+	case sap.ui.core.HorizontalAlign.End:
+	case sap.ui.core.HorizontalAlign.Right:
 	  return bRTL ? "left" : "right";
   }
-  // case sap.ui.commons.layout.HAlign.Left:
-  // case sap.ui.commons.layout.HAlign.Begin:
+  // case sap.ui.core.HorizontalAlign.Left:
+  // case sap.ui.core.HorizontalAlign.Begin:
   return bRTL ? "right" : "left";
 };

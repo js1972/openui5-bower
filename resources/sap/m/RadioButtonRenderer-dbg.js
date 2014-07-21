@@ -28,7 +28,6 @@ sap.m.RadioButtonRenderer.render = function(oRm, oRadioButton){
 
 	// get control properties
 	var bEnabled = oRadioButton.getEnabled();
-	var iTabIndex = bEnabled ? 0 : -1;
 	var bReadOnly = false;
 
 	// Radio Button style class
@@ -60,7 +59,6 @@ sap.m.RadioButtonRenderer.render = function(oRm, oRadioButton){
 	}
 
 	oRm.writeClasses();
-	oRm.writeAttribute("tabIndex", "-1");
 
 	var sTooltip = sap.ui.core.ValueStateSupport.enrichTooltip(oRadioButton, oRadioButton.getTooltip_AsString());
 	if (sTooltip) {
@@ -71,21 +69,21 @@ sap.m.RadioButtonRenderer.render = function(oRm, oRadioButton){
 
 	oRm.write("<div class='sapMRbB'");
 
-	//set an id on this this to be able to focus it, on ApplyFocusInfo (rerenderAllUiAreas)
-	oRm.writeAttribute("id", oRadioButton.getId() + "-Button");
-
-	oRm.writeAttribute("tabindex", oRadioButton.hasOwnProperty("_iTabIndex") ? oRadioButton._iTabIndex : iTabIndex);
 	oRm.write(">");
 
 	oRm.write("<div");
 	oRm.addClass("sapMRbBOut");
 
+	//set an id on this this to be able to focus it, on ApplyFocusInfo (rerenderAllUiAreas)
+	oRm.writeAttribute("id", oRadioButton.getId() + "-Button");
+
+	if(bEnabled) {
+		oRm.writeAttribute("tabindex", oRadioButton.hasOwnProperty("_iTabIndex") ? oRadioButton._iTabIndex : 0);
+	}
 	if(bEnabled && sap.ui.Device.system.desktop) {
 		oRm.addClass("sapMRbHoverable");
 	}
 
-	oRm.writeAttribute("id", oRadioButton.getId() + "-out");
-	oRm.writeAttribute("tabindex", oRadioButton.hasOwnProperty("_iTabIndex") ? oRadioButton._iTabIndex : iTabIndex);
 	oRm.writeClasses();
 	oRm.write(">");		// DIV element
 	oRm.write("<div");

@@ -4,7 +4,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	function(jQuery, EventProvider, signals, hasher1) {
 	"use strict";
 
-
 	/**
 	 * Class for manipulating and receiving changes of the browserhash with the hasher framework.
 	 * Fires a "hashChanged" event if the browser hash changes.
@@ -24,7 +23,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 		}
 	
 	});
-	
+
 	/**
 	 * Will start listening to hashChanges with the parseHash function.
 	 * This will also fire a hashchanged event with the initial hash.
@@ -39,21 +38,20 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 			jQuery.sap.log.info("this HashChanger instance has already been initialized.");
 			return false;
 		}
-	
+
 		hasher.changed.add(this.fireHashChanged, this); //parse hash changes
-	
+
 		if(!hasher.isActive()) {
 			hasher.initialized.addOnce(this.fireHashChanged, this); //parse initial hash
 			hasher.init(); //start listening for history change
 		} else {
 			this.fireHashChanged(hasher.getHash());
 		}
-	
-		this._initialized = true
+
+		this._initialized = true;
 		return this._initialized;
 	};
-	
-	
+
 	/**
 	 * Fires the hashchanged event, may be extended to modify the hash before fireing the event
 	 * @param {string} newHash the new hash of the browser
@@ -65,8 +63,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	HashChanger.prototype.fireHashChanged = function(newHash, oldHash) {
 		this.fireEvent("hashChanged",{ newHash : newHash, oldHash : oldHash });
 	};
-	
-	
+
 	/**
 	 * Sets the hash to a certain value. When using the set function a browser history  entry is written. 
 	 * If you do not want to have an entry in the browser history, please use set replaceHash function.
@@ -76,10 +73,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	 * @function
 	 */
 	HashChanger.prototype.setHash = function(sHash) {
-		this.fireEvent("hashSet",{ sHash : sHash });
+		this.fireEvent("hashSet", { sHash : sHash });
 		hasher.setHash(sHash);
 	};
-	
+
 	/**
 	 * Replaces the hash to a certain value. When using the replace function no browser history is written. 
 	 * If you want to have an entry in the browser history, please use set setHash function.
@@ -89,11 +86,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	 * @function
 	 */
 	HashChanger.prototype.replaceHash = function(sHash) {
-		this.fireEvent("hashReplaced",{ sHash : sHash });
+		this.fireEvent("hashReplaced", { sHash : sHash });
 		hasher.replaceHash(sHash);
 	};
-	
-	
+
 	/**
 	 * Gets the current hash
 	 * 
@@ -105,8 +101,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	HashChanger.prototype.getHash = function() {
 		return hasher.getHash();
 	};
-	
-	
+
 	/**
 	 * Cleans the event registration
 	 * @see sap.ui.base.Object.prototype.destroy
@@ -120,16 +115,24 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 	};
 	
 	(function() {
-	
-		var _oHashChanger;
-		
+
+		var _oHashChanger = null;
+
+		/**
+		 * Gets a global singleton of the HashChanger. The singleton will get created when this function is invoked for the first time.
+		 * @param oHashChanger {sap.ui.core.routing.HashChanger} The instance for the global singleton.
+		 * @public
+		 * @static
+		 * @name sap.ui.core.routing.HashChanger.getInstance
+		 * @function
+		 */
 		HashChanger.getInstance = function() {
 			if (!_oHashChanger) {
 				_oHashChanger = new HashChanger();
 			}
 			return _oHashChanger;
 		};
-	
+
 		/**
 		 * Sets the hashChanger to a new instance, destroys the old one and copies all its event listeners to the new one
 		 * @param oHashChanger {sap.ui.core.routing.HashChanger} the new instance for the global singleton
@@ -142,12 +145,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 				jQuery.extend(oHashChanger.mEventRegistry, _oHashChanger.mEventRegistry);
 				_oHashChanger.destroy();
 			}
-			
+
 			_oHashChanger = oHashChanger;
 		};
 		
 	}());
-	
 
 	return HashChanger;
 

@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -330,17 +330,17 @@ sap.ui.core.Control.extend("sap.m.ScrollContainer", { metadata : {
  * @param {int} 
  *         iX
  *         The horizontal pixel position to scroll to.
- * Scrolling to the right happens with positive values.
- * If only vertical scrolling is enabled, give 0 as value.
+ *         Scrolling to the right happens with positive values.
+ *         If only vertical scrolling is enabled, give 0 as value.
  * @param {int} 
  *         iY
  *         The vertical pixel position to scroll to.
- * Scrolling down happens with positive values.
- * If only horizontal scrolling is enabled, give 0 as value.
+ *         Scrolling down happens with positive values.
+ *         If only horizontal scrolling is enabled, give 0 as value.
  * @param {int} 
  *         iTime
  *         The duration of animated scrolling.
- * To scroll immediately without animation, give 0 as value. 0 is also the default value, when this optional parameter is omitted.
+ *         To scroll immediately without animation, give 0 as value. 0 is also the default value, when this optional parameter is omitted.
 
  * @type sap.m.ScrollContainer
  * @public

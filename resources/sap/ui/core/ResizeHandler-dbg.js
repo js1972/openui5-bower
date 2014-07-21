@@ -32,7 +32,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global', 'sap/ui/base/Object', 'jque
 		 * @public
 		 */
 		
-		var ResizeHandler = BaseObject.extend("sap.ui.core.ResizeHandler", /** @lends sap.ui.core.ResizeHandler */ {
+		var ResizeHandler = BaseObject.extend("sap.ui.core.ResizeHandler", /** @lends sap.ui.core.ResizeHandler.prototype */ {
 	
 			constructor : function(oCore) {
 				BaseObject.apply(this);
@@ -193,6 +193,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global', 'sap/ui/base/Object', 'jque
 		/**
 		 * Registers the given handler for resize events on the given
 		 * DOM reference or Control.
+		 * In case the core is not initialized yet, the timer cannot be registered and this method
+		 * will return null. Please use sap.ui.getCore().attachInit() with a callback as parameter 
+		 * that calls ResizeHandler.register().
 		 *
 		 * @param {Element|sap.ui.core.Control} oRef the Control or the DOM reference for which the given handler should be registered (beside the window)
 		 * @param {function} fHandler the handler which should be called on a resize event

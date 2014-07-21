@@ -3385,13 +3385,8 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 
 	// write header
 	rm.write("<img id='" + sId + "-hdrImg' class='sapUiUx3ShellHeaderImg' src='");
-	var sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellHeaderImageURL');
-	sImage = oControl._convertImageParameter(sImage);
-	if (sImage) {
-		rm.writeEscaped(sImage);
-	} else {
-		rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	var sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellHeaderImageURL', true);
+	rm.writeEscaped(sImage);
 	rm.write("' />");
 	rm.write("<header id='" + sId + "-hdr' class='sapUiUx3ShellHeader' role='banner'>");
 	var tabIndex = oControl._topSyncRefId ? " tabindex='0'" : "";
@@ -3405,13 +3400,8 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	// write page background
 	rm.write("<div id='", sId, "-bg' class='sapUiUx3ShellBg'></div>");
 	rm.write("<img id='", sId, "-bgImg' class='sapUiUx3ShellBgImg' src='");
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellBackgroundImageURL');
-	sImage = oControl._convertImageParameter(sImage);
-	if (sImage) {
-		rm.writeEscaped(sImage);
-	} else {
-		rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellBackgroundImageURL', true);
+	rm.writeEscaped(sImage);
 	rm.write("'/>");
 
 
@@ -3506,13 +3496,8 @@ sap.ui.ux3.ShellRenderer.renderHeader = function(rm, oControl) {
 	if (appIcon) {
 		rm.writeEscaped(oControl.getAppIcon());
 	} else {
-		var sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellApplicationImageURL');
-		sImage = oControl._convertImageParameter(sImage);
-		if (sImage) {
-			rm.writeEscaped(sImage);
-		} else {
-			rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-		}
+		var sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellApplicationImageURL', true);
+		rm.writeEscaped(sImage);
 	}
 	rm.write("'");
 
@@ -3862,7 +3847,7 @@ sap.ui.ux3.ThingViewerRenderer.renderContent = function(oRenderManager, oControl
 	rm.write("<div role='Navigation' class='sapUiUx3TVFacetBar'>");
 	rm.renderControl(oControl._getNavBar());
 	rm.write("</div>");
-	rm.write("<div id='" + oControl.getId() + "-facetContent' class='sapUiUx3TVFacetContent'>");
+	rm.write("<div id='" + oControl.getId() + "-facetContent' class='sapUiUx3TVFacetContent sapUiBodyBackground'>");
 
 	// render Facet Content
 	this.renderFacetContent(rm, oControl);
@@ -4170,13 +4155,13 @@ if ( !jQuery.sap.isDeclared('sap.ui.ux3.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.ux3 (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.ux3 (1.22.4)
  */
 jQuery.sap.declare("sap.ui.ux3.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
 
 /**
- * SAPUI5 library with controls that implement the SAP User Experience (UX) Guidelines 3.0
+ * Controls that implement the SAP User Experience (UX) Guidelines 3.0
  *
  * @namespace
  * @name sap.ui.ux3
@@ -4242,7 +4227,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.ux3.ThingAction",
     "sap.ui.ux3.ThingGroup"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -4262,50 +4247,51 @@ jQuery.sap.declare("sap.ui.ux3.ActionBarSocialActions");
 /**
  * @class Enumeration of available standard actions for 'sap.ui.ux3.ActionBar'. To be used as parameters for function 'sap.ui.ux3.ActionBar.getSocialAction'.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @experimental Since version 1.2. 
  * API is not yet finished and might change completely
  */
 sap.ui.ux3.ActionBarSocialActions = {
-  
-    /**
-     * Standard action 'Create an update' (Feed) 
-     * @public
-     */
-    Update : "Update",
 
-    /**
-     * Standard action 'Follow/Unfollow' 
-     * @public
-     */
-    Follow : "Follow",
+	/**
+	 * Standard action 'Create an update' (Feed)
+	 * @public
+	 */
+	Update : "Update",
 
-    /**
-     * Standard action 'Mark for Follow up' 
-     * @public
-     */
-    Flag : "Flag",
+	/**
+	 * Standard action 'Follow/Unfollow'
+	 * @public
+	 */
+	Follow : "Follow",
 
-    /**
-     * Standards action 'Mark as Favorite' 
-     * @public
-     */
-    Favorite : "Favorite",
+	/**
+	 * Standard action 'Mark for Follow up'
+	 * @public
+	 */
+	Flag : "Flag",
 
-    /**
-     * Standard action 'Open Thing Inspector' 
-     * @public
-     */
-    Open : "Open"
+	/**
+	 * Standards action 'Mark as Favorite'
+	 * @public
+	 */
+	Favorite : "Favorite",
 
-  };
+	/**
+	 * Standard action 'Open Thing Inspector'
+	 * @public
+	 */
+	Open : "Open"
+
+};
 /**
  * 
  *   		Marker interface for controls which are suitable as view rendering for a DataSet.
  *   	
  *
+ * @author d049080
  * @name sap.ui.ux3.DataSetView
  * @interface
  * @public
@@ -4329,26 +4315,26 @@ jQuery.sap.declare("sap.ui.ux3.ExactOrder");
 /**
  * @class Defines the order of the sub lists of a list in the ExactBrowser.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.7.1
  */
 sap.ui.ux3.ExactOrder = {
-  
-    /**
-     * The order of the sub lists is defined by the selection order of the user. 
-     * @public
-     */
-    Select : "Select",
 
-    /**
-     * The order of the sub lists is defined by order of the defined sub attributes. 
-     * @public
-     */
-    Fixed : "Fixed"
+	/**
+	 * The order of the sub lists is defined by the selection order of the user.
+	 * @public
+	 */
+	Select : "Select",
 
-  };
+	/**
+	 * The order of the sub lists is defined by order of the defined sub attributes.
+	 * @public
+	 */
+	Fixed : "Fixed"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4367,33 +4353,33 @@ jQuery.sap.declare("sap.ui.ux3.FeederType");
 /**
  * @class Type of an Feeder.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @experimental Since version 1.2. 
  * The whole Feed/Feeder API is still under discussion, significant changes are likely. Especially text presentation (e.g. @-references and formatted text) is not final. Also the Feed model topic is still open.
  */
 sap.ui.ux3.FeederType = {
-  
-    /**
-     * large Feeder 
-     * @public
-     */
-    Large : "Large",
 
-    /**
-     * medium feeder 
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * large Feeder
+	 * @public
+	 */
+	Large : "Large",
 
-    /**
-     * comment feeder (small) 
-     * @public
-     */
-    Comment : "Comment"
+	/**
+	 * medium feeder
+	 * @public
+	 */
+	Medium : "Medium",
 
-  };
+	/**
+	 * comment feeder (small)
+	 * @public
+	 */
+	Comment : "Comment"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4412,31 +4398,31 @@ jQuery.sap.declare("sap.ui.ux3.FollowActionState");
 /**
  * @class Defines the states of the follow action
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.ux3.FollowActionState = {
-  
-    /**
-     * follow state 
-     * @public
-     */
-    Follow : "Follow",
 
-    /**
-     * hold state 
-     * @public
-     */
-    Hold : "Hold",
+	/**
+	 * follow state
+	 * @public
+	 */
+	Follow : "Follow",
 
-    /**
-     * default state 
-     * @public
-     */
-    Default : "Default"
+	/**
+	 * hold state
+	 * @public
+	 */
+	Hold : "Hold",
 
-  };
+	/**
+	 * default state
+	 * @public
+	 */
+	Default : "Default"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4455,37 +4441,37 @@ jQuery.sap.declare("sap.ui.ux3.NotificationBarStatus");
 /**
  * @class This entries are used to set the visibility status of a NotificationBar
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.ux3.NotificationBarStatus = {
-  
-    /**
-     * Default height for the bar 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Bar should be minimized 
-     * @public
-     */
-    Min : "Min",
+	/**
+	 * Default height for the bar
+	 * @public
+	 */
+	Default : "Default",
 
-    /**
-     * Bar should be maximized 
-     * @public
-     */
-    Max : "Max",
+	/**
+	 * Bar should be minimized
+	 * @public
+	 */
+	Min : "Min",
 
-    /**
-     * Bar should not be visible 
-     * @public
-     */
-    None : "None"
+	/**
+	 * Bar should be maximized
+	 * @public
+	 */
+	Max : "Max",
 
-  };
+	/**
+	 * Bar should not be visible
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4504,39 +4490,39 @@ jQuery.sap.declare("sap.ui.ux3.ShellDesignType");
 /**
  * @class Available shell design types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.12.0
  */
 sap.ui.ux3.ShellDesignType = {
-  
-    /**
-     * The standard Shell design (dark). 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * 
-     * A lighter design. Should be used in combination with the Standard header
-     * type.
-     *  
-     * @public
-     */
-    Light : "Light",
+	/**
+	 * The standard Shell design (dark).
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * 
-     * An even lighter design. It borrows most of its properties from the Light
-     * design and just changes a few details like the header colors in order to
-     * have a blue design within gold reflection.
-     *  
-     * @public
-     */
-    Crystal : "Crystal"
+	/**
+	 * 
+	 * A lighter design. Should be used in combination with the Standard header
+	 * type.
+	 * 
+	 * @public
+	 */
+	Light : "Light",
 
-  };
+	/**
+	 * 
+	 * An even lighter design. It borrows most of its properties from the Light
+	 * design and just changes a few details like the header colors in order to
+	 * have a blue design within gold reflection.
+	 * 
+	 * @public
+	 */
+	Crystal : "Crystal"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4555,37 +4541,37 @@ jQuery.sap.declare("sap.ui.ux3.ShellHeaderType");
 /**
  * @class Available shell header display types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.ux3.ShellHeaderType = {
-  
-    /**
-     * The standard Shell header. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Only the branding area is visible. Top-level navigation bar, header items, title and icon are not shown. 
-     * @public
-     */
-    BrandOnly : "BrandOnly",
+	/**
+	 * The standard Shell header.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * Like the Standard Area but without top-level navigation bar. 
-     * @public
-     */
-    NoNavigation : "NoNavigation",
+	/**
+	 * Only the branding area is visible. Top-level navigation bar, header items, title and icon are not shown.
+	 * @public
+	 */
+	BrandOnly : "BrandOnly",
 
-    /**
-     * Like the Standard Area but with a leaner top-level navigation bar. 
-     * @public
-     */
-    SlimNavigation : "SlimNavigation"
+	/**
+	 * Like the Standard Area but without top-level navigation bar.
+	 * @public
+	 */
+	NoNavigation : "NoNavigation",
 
-  };
+	/**
+	 * Like the Standard Area but with a leaner top-level navigation bar.
+	 * @public
+	 */
+	SlimNavigation : "SlimNavigation"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4604,26 +4590,26 @@ jQuery.sap.declare("sap.ui.ux3.ThingViewerHeaderType");
 /**
  * @class Available ThingViewer header display types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.16.3
  */
 sap.ui.ux3.ThingViewerHeaderType = {
-  
-    /**
-     * The standard ThingViewer header. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The header content is displayed horizontally above the facet content 
-     * @public
-     */
-    Horizontal : "Horizontal"
+	/**
+	 * The standard ThingViewer header.
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * The header content is displayed horizontally above the facet content
+	 * @public
+	 */
+	Horizontal : "Horizontal"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -4642,25 +4628,25 @@ jQuery.sap.declare("sap.ui.ux3.VisibleItemCountMode");
 /**
  * @class VisibleItemCountMode of the FacetFilter defines if the FacetFilter takes the whole available height (Auto) in the surrounding container, or is so high as needed to show 5 Items ("Fixed " - default).
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.ux3.VisibleItemCountMode = {
-  
-    /**
-     * The FacetFilter always has as many items in the FacetFilterList as defined in the visibleItemCount property. 
-     * @public
-     */
-    Fixed : "Fixed",
 
-    /**
-     * The FacetFilter automatically fills the height of the surrounding container. The visibleItemCount property is automatically changed accordingly. 
-     * @public
-     */
-    Auto : "Auto"
+	/**
+	 * The FacetFilter always has as many items in the FacetFilterList as defined in the visibleItemCount property.
+	 * @public
+	 */
+	Fixed : "Fixed",
 
-  };
+	/**
+	 * The FacetFilter automatically fills the height of the surrounding container. The visibleItemCount property is automatically changed accordingly.
+	 * @public
+	 */
+	Auto : "Auto"
+
+};
 
 }; // end of sap/ui/ux3/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.ActionBar') ) {
@@ -4737,7 +4723,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -6669,9 +6655,8 @@ sap.ui.ux3.ActionBar.prototype.invalidate = function(oControl) {
 			//the social actions are ThingActions too, but they need no special treatment
 			sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 		}
-	} else {
-		sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 	}
+	sap.ui.core.Control.prototype.invalidate.apply(this,arguments);
 };
 }; // end of sap/ui/ux3/ActionBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.ux3.Collection') ) {
@@ -6740,7 +6725,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -7032,7 +7017,7 @@ sap.ui.ux3.Collection.M_EVENTS = {'selectionChanged':'selectionChanged','propert
 
 /**
  * Fire event selectionChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Collection} <code>this</code> to allow method chaining
  * @protected
@@ -7090,7 +7075,7 @@ sap.ui.ux3.Collection.M_EVENTS = {'selectionChanged':'selectionChanged','propert
 
 /**
  * Fire event propertyChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Collection} <code>this</code> to allow method chaining
  * @protected
@@ -7284,7 +7269,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -7619,7 +7604,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
 
 /**
  * Fire event collectionSelected to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @protected
@@ -7677,7 +7662,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
 
 /**
  * Fire event itemSelectionChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @protected
@@ -7735,7 +7720,7 @@ sap.ui.ux3.CollectionInspector.M_EVENTS = {'collectionSelected':'collectionSelec
 
 /**
  * Fire event editCollection to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.CollectionInspector} <code>this</code> to allow method chaining
  * @protected
@@ -8369,7 +8354,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -8953,7 +8938,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @function
  * @param {int} 
  *         iIIndex
- *         
+ * 
 
  * @type void
  * @public
@@ -8992,7 +8977,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @function
  * @param {sap.ui.commons.ToolbarItem} 
  *         oOToolbarItem
- *         
+ * 
 
  * @type void
  * @public
@@ -9686,7 +9671,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -9992,7 +9977,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.ux3.DataSetView
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -10823,7 +10808,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -11174,7 +11159,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -11928,7 +11913,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -13720,7 +13705,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -13956,7 +13941,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -14555,7 +14540,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -15082,7 +15067,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -15383,7 +15368,7 @@ sap.ui.ux3.NavigationBar.M_EVENTS = {'select':'select'};
  * Fire event select to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'itemId' of type <code>string</code> The ID of the newly selected NavigationItem.</li>
@@ -16177,7 +16162,7 @@ jQuery.sap.require('sap.ui.core.Item'); // unlisted dependency retained
  * @extends sap.ui.core.Item
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -16418,7 +16403,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -18117,7 +18102,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -18641,7 +18626,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -18793,7 +18778,7 @@ sap.ui.ux3.Overlay.M_EVENTS = {'close':'close','openNew':'openNew','open':'open'
  * Fire event close to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> The Id of the Thing which is inspected in this ThingInspector instance</li>
@@ -19297,7 +19282,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayContainer");
  * @extends sap.ui.ux3.Overlay
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -19577,7 +19562,7 @@ jQuery.sap.declare("sap.ui.ux3.OverlayDialog");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -20074,7 +20059,7 @@ jQuery.sap.require('sap.ui.commons.CalloutBase'); // unlisted dependency retaine
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -20888,7 +20873,7 @@ sap.ui.ux3.QuickView.M_EVENTS = {'actionSelected':'actionSelected','feedSubmit':
  * Fire event navigate to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'href' of type <code>string</code> URI of the Thing Inspector application.</li>
@@ -21324,7 +21309,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -22423,7 +22408,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
  * Fire event worksetItemSelected to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> The id of the workset item that has been newly selected by the user. If a top-level item has been clicked which has sub-items, the ID of the currently active sub-item (/leaf) is given.</li>
@@ -22556,7 +22541,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event logout to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -22614,7 +22599,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event search to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -22672,7 +22657,7 @@ sap.ui.ux3.Shell.M_EVENTS = {'worksetItemSelected':'worksetItemSelected','paneBa
 
 /**
  * Fire event feedSubmit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Shell} <code>this</code> to allow method chaining
  * @protected
@@ -25110,10 +25095,6 @@ sap.ui.ux3.Shell.prototype.initializePersonalization = function(oSettings) {
 	this._getPersonalization().initializeSettings(oSettings);
 };
 
-sap.ui.ux3.Shell.prototype._convertImageParameter = function(sParameter) {
-	var rExtractUri = new RegExp(/url[\s]*\('?"?([^\'")]*)'?"?\)/);
-	return rExtractUri.exec(sParameter) ? rExtractUri.exec(sParameter)[1] : sParameter;
-};
 sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 	this._iFacetBarHeight = undefined;
 	
@@ -25125,30 +25106,15 @@ sap.ui.ux3.Shell.prototype.onThemeChanged = function(oEvent) {
 	var sImage = "";
 	// if already rendered update images
 	if (!this.getAppIcon()) {
-		sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellApplicationImageURL');
-		sImage = this._convertImageParameter(sImage);
-		if (sImage) {
-			this.$("logoImg").attr('src', sImage);
-		}else{
-			this.$("logoImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-		}
+		sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellApplicationImageURL', true);
+		this.$("logoImg").attr('src', sImage);
 	}
 
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellHeaderImageURL');
-	sImage = this._convertImageParameter(sImage);
-	if (sImage) {
-		this.$("hdrImg").attr('src', sImage);
-	}else{
-		this.$("hdrImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellHeaderImageURL', true);
+	this.$("hdrImg").attr('src', sImage);
 
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellBackgroundImageURL');
-	sImage = this._convertImageParameter(sImage);
-	if (sImage) {
-		this.$("bgImg").attr('src', sImage);
-	}else{
-		this.$("bgImg").attr('src', sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellBackgroundImageURL', true);
+	this.$("bgImg").attr('src', sImage);
 
 	this.$("facetBar").stop(true, true); //Stop potentially running animations
 	this._adaptContentHeight();
@@ -25221,7 +25187,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -25461,7 +25427,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -25793,7 +25759,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -26378,7 +26344,7 @@ sap.ui.ux3.ThingViewer.M_EVENTS = {'facetSelected':'facetSelected'};
  * Fire event facetSelected to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> Id of selected NavigationItem</li>
@@ -26839,7 +26805,8 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <li>Associations
  * <ul>
  * <li>{@link #getInitialFocus initialFocus} : string | sap.ui.core.Control</li>
- * <li>{@link #getOpener opener} : string | sap.ui.core.Control</li></ul>
+ * <li>{@link #getOpener opener} : string | sap.ui.core.Control</li>
+ * <li>{@link #getDefaultButton defaultButton} : string | sap.ui.core.Control</li></ul>
  * </li>
  * <li>Events
  * <ul>
@@ -26866,7 +26833,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -26905,7 +26872,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.ToolPopup", { metadata : {
 	},
 	associations : {
 		"initialFocus" : {type : "sap.ui.core.Control", multiple : false}, 
-		"opener" : {type : "sap.ui.core.Control", multiple : false}
+		"opener" : {type : "sap.ui.core.Control", multiple : false}, 
+		"defaultButton" : {type : "sap.ui.core.Control", multiple : false}
 	},
 	events : {
 		"open" : {}, 
@@ -27442,6 +27410,31 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 	
 /**
+ * Defines one of the buttons that have been provided via button aggregation to be the default button. This default button is initially selected, if no control is set via the initialFocus association explicitly. The default button is activated when Enter is pressed in the context of the dialog and when the currently selected element does not handle the Enter event itself.
+ *
+ * @return {string} Id of the element which is the current target of the <code>defaultButton</code> association, or null
+ * @public
+ * @since 1.20.1
+ * @name sap.ui.ux3.ToolPopup#getDefaultButton
+ * @function
+ */
+
+/**
+ * Defines one of the buttons that have been provided via button aggregation to be the default button. This default button is initially selected, if no control is set via the initialFocus association explicitly. The default button is activated when Enter is pressed in the context of the dialog and when the currently selected element does not handle the Enter event itself.
+ *
+ * @param {string | sap.ui.core.Control} vDefaultButton 
+ *    Id of an element which becomes the new target of this <code>defaultButton</code> association.
+ *    Alternatively, an element instance may be given.
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20.1
+ * @name sap.ui.ux3.ToolPopup#setDefaultButton
+ * @function
+ */
+
+
+	
+/**
  * Event is fired when the pop up opens 
  *
  * @name sap.ui.ux3.ToolPopup#open
@@ -27490,7 +27483,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event open to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -27676,7 +27669,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event iconChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -27734,7 +27727,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event closed to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -27795,7 +27788,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event opened to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -28601,16 +28594,35 @@ sap.ui.ux3.ToolPopup.prototype.getEnabled = function() {
 	return eState === sap.ui.core.OpenState.OPENING || eState === sap.ui.core.OpenState.OPEN;
 };
 
-sap.ui.ux3.ToolPopup.prototype.onsapenter = function(oEvent) {
-	this.fireEnter({originalEvent:oEvent,originalSrcControl:oEvent.srcControl});
+sap.ui.ux3.ToolPopup.prototype.onsapenter = function(oEvent) {	
+	// See open-method
+	var sInitFocus = this.getDefaultButton();
+	var oFocusCtrl = sap.ui.getCore().byId(sInitFocus); 
+
+	// trigger the default button if it exists and is inside the Dialog
+	if(sInitFocus && oFocusCtrl && jQuery.contains(this.getDomRef(), oFocusCtrl.getDomRef())) {
+		// Okay, we have the control
+		if (oFocusCtrl instanceof sap.ui.commons.Button) {
+			var $FocusCtrl = oFocusCtrl.$();
+			$FocusCtrl.click();
+			$FocusCtrl.focus();
+		}
+	}
+
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
 };
 
 sap.ui.ux3.ToolPopup.prototype.onBeforeRendering = function() {
-	var sId = this.getInitialFocus();
-	if (sId) {
-		this._bFocusSet = true;
-		this.oPopup.setInitialFocusId(sId);
-	} else {
+	var sInitialFocusId = this.getInitialFocus();
+	var sDefaultButtontId = this.getDefaultButton();
+	this._bFocusSet = true;
+	
+	if (sInitialFocusId) {
+		this.oPopup.setInitialFocusId(sInitialFocusId);
+	}else if(sDefaultButtontId){
+		this.oPopup.setInitialFocusId(sDefaultButtontId);
+	}else{
 		this._bFocusSet = false;
 	}
 	
@@ -28819,7 +28831,7 @@ sap.ui.ux3.ToolPopup.prototype.setAutoCloseAreas = function(aAutoCloseAreas) {
  */
 sap.ui.ux3.ToolPopup.prototype.addFocusableArea = function(sID) {
 	this._ensurePopup();
-	
+
 	if (typeof(sID) === "string") {
 		// channelId & eventId are mandatory dummy values
 		this.oPopup._addFocusableArea("channelId", "eventId", {
@@ -28959,7 +28971,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -29565,7 +29577,7 @@ sap.ui.ux3.ExactBrowser.M_EVENTS = {'attributeSelected':'attributeSelected','sav
 
 /**
  * Fire event save to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ExactBrowser} <code>this</code> to allow method chaining
  * @protected
@@ -29906,7 +29918,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -31131,7 +31143,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -31864,7 +31876,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event deleted to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected
@@ -32050,7 +32062,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event senderClicked to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected
@@ -32236,7 +32248,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event inspect to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected
@@ -32918,7 +32930,7 @@ jQuery.sap.declare("sap.ui.ux3.ThingInspector");
  * @extends sap.ui.ux3.Overlay
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -33784,7 +33796,7 @@ sap.ui.ux3.ThingInspector.M_EVENTS = {'actionSelected':'actionSelected','facetSe
  * Fire event facetSelected to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> Id of selected NavigationItem</li>
@@ -34466,7 +34478,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public

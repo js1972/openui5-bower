@@ -34,12 +34,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Jens Pflueger
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.RenderManager
 	 * @public
 	 */
-	var RenderManager = BaseObject.extend("sap.ui.core.RenderManager", /** @lends sap.ui.core.RenderManager */ {
+	var RenderManager = BaseObject.extend("sap.ui.core.RenderManager", /** @lends sap.ui.core.RenderManager.prototype */ {
 
 		constructor : function() {
 			BaseObject.apply(this, arguments);
@@ -187,7 +187,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	
 		//Remember the rendered control
 		this.aRenderedControls.push(oControl);
-	
+
+		// let the UIArea know that this control has been rendered
+		// FIXME: RenderManager (RM) should not need to know about UIArea. Maybe UIArea should delegate rendering to RM
+		if ( oControl.getUIArea && oControl.getUIArea() ) {
+			oControl.getUIArea()._onControlRendered(oControl);
+		}
+		
 		//Check whether the control has produced HTML
 		oControl.bOutput = this.aBuffer.length != iBufferLength;
 	
@@ -608,9 +614,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	
 	(function() {
 	
-		var ID_PRESERVE_AREA = "sap-ui-preserve";
-		var ATTR_PRESERVE_MARKER = "data-sap-ui-preserve";
-	
+		var ID_PRESERVE_AREA = "sap-ui-preserve",
+			ID_STATIC_AREA = "sap-ui-static", // to be kept in sync with Core!
+			ATTR_PRESERVE_MARKER = "data-sap-ui-preserve",
+			ATTR_UI_AREA_MARKER = "data-sap-ui-area";
+			
 		function getPreserveArea() {
 			var $preserve = jQuery("#"+ID_PRESERVE_AREA);
 			if ($preserve.length === 0){
@@ -620,7 +628,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 			}
 			return $preserve;
 		}
-	
+
+		/**
+		 * Create a placeholder node for the given node (which must have an ID) and insert it before the node
+		 */
+		function makePlaceholder(node) {
+			jQuery("<DIV/>", { id: "sap-ui-dummy-" + node.id}).addClass("sapUiHidden").insertBefore(node);
+		}
+		
 		/**
 		 * Collects descendants of the given root node that need to be preserved before the root node
 		 * is wiped out. The "to-be-preserved" nodes are moved to a special, hidden 'preserve' area.
@@ -649,39 +664,49 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	
 			var $preserve = getPreserveArea();
 	
-			function check($candidates) {
-	
-				$candidates.each(function(i,candidate) {
-	
-					// don't process the preserve area or the static area
-					if ( candidate.id === ID_PRESERVE_AREA || sap.ui.getCore().isStaticAreaRef(candidate)) {
-						return;
+			function check(candidate) {
+				
+				// don't process the preserve area or the static area
+				if ( candidate.id === ID_PRESERVE_AREA || candidate.id === ID_STATIC_AREA ) {
+					return;
+				}
+
+				if ( candidate.hasAttribute(ATTR_PRESERVE_MARKER) )  { // node is marked with the preserve marker
+					// when the current node is the root node then we're doing a single control rerendering
+					if ( candidate === oRootNode ) {
+						makePlaceholder(candidate);
 					}
-	
-					var $candidate = jQuery(candidate);
-	
-					if ( $candidate.attr(ATTR_PRESERVE_MARKER) )  { // node is marked with the preserve marker
-						// when the current node is the root node then we're doing a single control rerendering
-						if ( candidate === oRootNode ) {
-							var $placeholder = jQuery("<DIV/>", { id: "sap-ui-dummy-" + candidate.id}).addClass("sapUiHidden");
-							$placeholder.insertBefore($candidate);
+					$preserve.append(candidate);
+				} else if ( bPreserveNodesWithId && candidate.id ) {
+					RenderManager.markPreservableContent(jQuery(candidate), candidate.id);
+					$preserve.append(candidate);
+					return;
+				}
+				
+				// don't dive into nested UIAreas. They are preserved together with any preserved parent (e.g. HTML control)
+				if ( !candidate.hasAttribute(ATTR_UI_AREA_MARKER) ) {
+					var next = candidate.firstChild;
+					while ( next ) {
+						// determine nextSibiling before checking the candidate because
+						// a move to the preserveArea will modify the sibling relationship!
+						candidate = next;
+						next = next.nextSibling;
+						if ( candidate.nodeType === 1 /* Node.ELEMENT */ ) {
+							check(candidate);
 						}
-						$preserve.append($candidate);
-					} else if ( bPreserveNodesWithId && candidate.id ) {
-						RenderManager.markPreservableContent($candidate, candidate.id);
-						$preserve.append($candidate);
-						return;
 					}
-	
-					// don't dive into nested UIAreas. They are preserved together with any preserved parent (e.g. HTML control)
-					if ( !$candidate.attr("data-sap-ui-area") ) {
-						check($candidate.children());
-					}
-				});
+				}
+				
 			}
 	
 			jQuery.sap.measure.start(oRootNode.id+"---preserveContent","preserveContent for "+oRootNode.id);
-			check(bPreserveRoot? jQuery(oRootNode) : jQuery(oRootNode).children());
+			if ( bPreserveRoot ) {
+				check(oRootNode);
+			} else {
+				jQuery(oRootNode).children().each(function(i,oNode) {
+					check(oNode);
+				});
+			}
 			jQuery.sap.measure.end(oRootNode.id+"---preserveContent");
 		};
 	
@@ -782,7 +807,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Interface', 'sap/ui/base/Object
 	
 	/**
 	 * Write the given texts to the buffer
-	 * @param {string|number ...} sText (can be a number too)
+	 * @param {...string|number} sText (can be a number too)
 	 * @return {sap.ui.core.RenderManager} this render manager instance to allow chaining
 	 * @public
 	 * @SecSink {*|XSS}

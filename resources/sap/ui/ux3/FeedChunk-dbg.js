@@ -82,7 +82,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -815,7 +815,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event deleted to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected
@@ -1001,7 +1001,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event senderClicked to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected
@@ -1187,7 +1187,7 @@ sap.ui.ux3.FeedChunk.M_EVENTS = {'deleted':'deleted','commentAdded':'commentAdde
 
 /**
  * Fire event inspect to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.FeedChunk} <code>this</code> to allow method chaining
  * @protected

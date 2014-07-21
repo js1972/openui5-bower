@@ -68,7 +68,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -90,7 +90,7 @@ sap.m.ListItemBase.extend("sap.m.FeedListItem", { metadata : {
 		"timestamp" : {type : "string", group : "Data", defaultValue : null},
 		"senderActive" : {type : "boolean", group : "Behavior", defaultValue : true},
 		"iconActive" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"iconDensityAware" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"iconDensityAware" : {type : "boolean", group : "", defaultValue : true},
 		"showIcon" : {type : "boolean", group : "Behavior", defaultValue : true}
 	},
 	events : {

@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getPercentValue percentValue} : float (default: 0)</li>
  * <li>{@link #getShowValue showValue} : boolean (default: true)</li>
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '100%')</li>
- * <li>{@link #getHeight height} : sap.ui.core.CSSSize (default: '2.5rem')</li></ul>
+ * <li>{@link #getHeight height} : sap.ui.core.CSSSize</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -82,7 +82,7 @@ sap.ui.core.Control.extend("sap.m.ProgressIndicator", { metadata : {
 		"percentValue" : {type : "float", group : "Data", defaultValue : 0},
 		"showValue" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : '100%'},
-		"height" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : '2.5rem'}
+		"height" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : null}
 	}
 }});
 
@@ -281,10 +281,9 @@ sap.ui.core.Control.extend("sap.m.ProgressIndicator", { metadata : {
 
 /**
  * Getter for property <code>height</code>.
- * The height of the control.
- * Suggested size for normal use 2.5rem (40px). Suggested size for small size (like for use in ObjectHeader) 1.375rem (22px).
+ * The height of the control. The default value depends on the theme. Suggested size for normal use is 2.5rem (40px). Suggested size for small size (like for use in ObjectHeader) is 1.375rem (22px).
  *
- * Default value is <code>2.5rem</code>
+ * Default value is empty/<code>undefined</code>
  *
  * @return {sap.ui.core.CSSSize} the value of property <code>height</code>
  * @public
@@ -296,7 +295,7 @@ sap.ui.core.Control.extend("sap.m.ProgressIndicator", { metadata : {
 /**
  * Setter for property <code>height</code>.
  *
- * Default value is <code>2.5rem</code> 
+ * Default value is empty/<code>undefined</code> 
  *
  * @param {sap.ui.core.CSSSize} sHeight  new value for property <code>height</code>
  * @return {sap.m.ProgressIndicator} <code>this</code> to allow method chaining
@@ -316,10 +315,13 @@ sap.ui.core.Control.extend("sap.m.ProgressIndicator", { metadata : {
 //};
 
 sap.m.ProgressIndicator.prototype.onAfterRendering = function() {
-	var lineHeightText = this.$().height();
-	this.$("textRight").css("line-height", lineHeightText + "px");
-	this.$("textLeft").css("line-height", lineHeightText + "px");
-}
+	//if the user sets a height, this wins against everything else, therefore the styles have to be calculated and set here
+	if (!!this.getHeight()) {
+		var lineHeightText = this.$().height();
+		this.$("textRight").css("line-height", lineHeightText + "px");
+		this.$("textLeft").css("line-height", lineHeightText + "px");
+	}
+};
 
 sap.m.ProgressIndicator.prototype.setPercentValue = function(fPercentValue) {
 

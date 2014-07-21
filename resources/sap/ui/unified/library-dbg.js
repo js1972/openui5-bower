@@ -10,12 +10,12 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.unified (1.22.4)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require("sap.ui.core.Core");
 /**
- * SAPUI5 unified library
+ * Unified controls intended for both, mobile and desktop scenarios
  *
  * @namespace
  * @name sap.ui.unified
@@ -35,15 +35,25 @@ sap.ui.getCore().initLibrary({
   ],
   interfaces: [],
   controls: [
+    "sap.ui.unified.Calendar",
     "sap.ui.unified.ContentSwitcher",
+    "sap.ui.unified.Currency",
+    "sap.ui.unified.FileUploader",
+    "sap.ui.unified.Menu",
     "sap.ui.unified.Shell",
     "sap.ui.unified.ShellOverlay",
     "sap.ui.unified.SplitContainer"
   ],
   elements: [
-    "sap.ui.unified.ShellHeadItem"
+    "sap.ui.unified.DateRange",
+    "sap.ui.unified.FileUploaderParameter",
+    "sap.ui.unified.MenuItem",
+    "sap.ui.unified.MenuItemBase",
+    "sap.ui.unified.MenuTextFieldItem",
+    "sap.ui.unified.ShellHeadItem",
+    "sap.ui.unified.ShellHeadUserItem"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -63,7 +73,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.16.0
@@ -71,50 +81,50 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
  * API is not yet finished and might change completely
  */
 sap.ui.unified.ContentSwitcherAnimation = {
-  
-    /**
-     * No animation. Content is switched instantly. 
-     * @public
-     */
-    None : "None",
 
-    /**
-     * Content is faded (opacity change). 
-     * @public
-     */
-    Fade : "Fade",
+	/**
+	 * No animation. Content is switched instantly.
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * The new content is "zoomed in" from the center and grows to fill the full content area. 
-     * @public
-     */
-    ZoomIn : "ZoomIn",
+	/**
+	 * Content is faded (opacity change).
+	 * @public
+	 */
+	Fade : "Fade",
 
-    /**
-     * The old content is "zoomed out", i.e. shrinks to a point at the center of the content area. 
-     * @public
-     */
-    ZoomOut : "ZoomOut",
+	/**
+	 * The new content is "zoomed in" from the center and grows to fill the full content area.
+	 * @public
+	 */
+	ZoomIn : "ZoomIn",
 
-    /**
-     * The new content rotates in. (Just like one of those old newspaper-animations.) 
-     * @public
-     */
-    Rotate : "Rotate",
+	/**
+	 * The old content is "zoomed out", i.e. shrinks to a point at the center of the content area.
+	 * @public
+	 */
+	ZoomOut : "ZoomOut",
 
-    /**
-     * The new slides in from the left (to the right). 
-     * @public
-     */
-    SlideRight : "SlideRight",
+	/**
+	 * The new content rotates in. (Just like one of those old newspaper-animations.)
+	 * @public
+	 */
+	Rotate : "Rotate",
 
-    /**
-     * The new content slides in from the left while the old content slides out to the left at the same time. 
-     * @public
-     */
-    SlideOver : "SlideOver"
+	/**
+	 * The new slides in from the left (to the right).
+	 * @public
+	 */
+	SlideRight : "SlideRight",
 
-  };
+	/**
+	 * The new content slides in from the left while the old content slides out to the left at the same time.
+	 * @public
+	 */
+	SlideOver : "SlideOver"
+
+};
 
 // -----------------------------------------------------------------------------
 // Begin of Library Initialization coding, copied from shared.js
@@ -176,3 +186,13 @@ sap.ui.base.Object.extend("sap.ui.unified._ContentRenderer", {
 
 
 sap.ui.unified._iNumberOfOpenedShellOverlays = 0;
+
+//factory for the FileUploader to create TextField an Button to be overwritten by commons and mobile library
+if (!sap.ui.unified.FileUploaderHelper) {
+	sap.ui.unified.FileUploaderHelper = {
+		createTextField: function(sId){ throw new Error("no TextField control available!"); }, /* must return a TextField control */
+		setTextFieldContent: function(oTextField, sWidth){ throw new Error("no TextField control available!"); },
+		createButton: function(){ throw new Error("no Button control available!"); }, /* must return a Button control */
+		bFinal: false /* if true, the helper must not be overwritten by an other library */
+	};
+}

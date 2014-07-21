@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides enumeration sap.ui.model.FilterOperator
+// Provides enumeration sap.ui.model.FilterType
 sap.ui.define(['jquery.sap.global'],
 	function(jQuery) {
 	"use strict";
@@ -21,12 +21,14 @@ sap.ui.define(['jquery.sap.global'],
 	var FilterType = {
 			/**
 			 * Filters which are changed by the application
+			 * @name sap.ui.model.FilterType#Application
 			 * @public
 			 */
 			Application: "Application",
 	
 			/**
 			 * Filters which are set by the different controls
+			 * @name sap.ui.model.FilterType#Control
 			 * @public
 			 */
 			Control: "Control"

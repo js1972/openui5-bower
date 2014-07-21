@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -372,7 +372,7 @@ sap.m.TileContainer.M_EVENTS = {'tileMove':'tileMove','tileDelete':'tileDelete',
  * @param {object} oControlEvent.getParameters
 
  * @param {sap.m.Tile} oControlEvent.getParameters.tile The tile
-
+ * 
  * @public
  */
  
@@ -477,7 +477,7 @@ sap.m.TileContainer.M_EVENTS = {'tileMove':'tileMove','tileDelete':'tileDelete',
 
 /**
  * Fire event tileAdd to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.TileContainer} <code>this</code> to allow method chaining
  * @protected
@@ -654,8 +654,15 @@ sap.m.TileContainer.prototype.init = function() {
 					var oNextTile = this.getTiles()[iNextIndex];
 
 					if (!!oNextTile) {
-						this._findTile(oNextTile.$()).focus();
-
+						if (iNextIndex >= this._iCurrentTileStartIndex && iNextIndex < this._iCurrentTileStartIndex + this._iMaxTiles) { //tile on same page?
+							this._findTile(oNextTile.$()).focus();
+						} else {
+							this.scrollIntoView(oNextTile, true);
+							var that = this;
+							setTimeout(function(){
+								that._findTile(oNextTile.$()).focus();
+							}, 400);
+						}
 						//event should not trigger any further actions
 						oEvent.stopPropagation();
 					}
@@ -676,8 +683,15 @@ sap.m.TileContainer.prototype.init = function() {
 					var oNextTile = this.getTiles()[iNextIndex];
 
 					if (!!oNextTile) {
-						this._findTile(oNextTile.$()).focus();
-
+						if (iNextIndex >= this._iCurrentTileStartIndex && iNextIndex < this._iCurrentTileStartIndex + this._iMaxTiles) { //tile on same page?
+							this._findTile(oNextTile.$()).focus();
+						} else {
+							this.scrollIntoView(oNextTile, true);
+							var that = this;
+							setTimeout(function(){
+								that._findTile(oNextTile.$()).focus();
+							}, 400);
+						}
 						//event should not trigger any further actions
 						oEvent.stopPropagation();
 					}
@@ -724,6 +738,56 @@ sap.m.TileContainer.prototype.init = function() {
 					}
 				}
 
+			}, this),
+			
+			fnOnTabNext = jQuery.proxy(function(oEvent) {
+
+				if (this._iCurrentFocusIndex >= 0) {
+					var iNextIndex = this._iCurrentFocusIndex + 1;
+					var oNextTile = this.getTiles()[iNextIndex];
+
+					if (!!oNextTile) {
+						
+						if (iNextIndex >= this._iCurrentTileStartIndex && iNextIndex < this._iCurrentTileStartIndex + this._iMaxTiles) { //tile on same page?
+							this._findTile(oNextTile.$()).focus();
+						} else {
+							this.scrollIntoView(oNextTile, true);
+							var that = this;
+							setTimeout(function(){
+								that._findTile(oNextTile.$()).focus();
+							}, 400);
+						}
+						//event should not trigger any further actions
+						oEvent.preventDefault();
+						oEvent.stopPropagation();
+					}
+				}
+
+			}, this),
+
+			fnOnTabPrevious = jQuery.proxy(function(oEvent) {
+
+				if (this._iCurrentFocusIndex >= 0) {
+					var iNextIndex = this._iCurrentFocusIndex - 1;
+					var oNextTile = this.getTiles()[iNextIndex];
+
+					if (!!oNextTile) {
+						// check if previous tile is on the same page
+						if (iNextIndex >= this._iCurrentTileStartIndex && iNextIndex < this._iCurrentTileStartIndex + this._iMaxTiles) { //tile on same page?
+							this._findTile(oNextTile.$()).focus();
+						} else {
+							this.scrollIntoView(oNextTile, true);
+							var that = this;
+							setTimeout(function(){
+								that._findTile(oNextTile.$()).focus();
+							}, 400);
+						}
+						//event should not trigger any further actions
+						oEvent.preventDefault();
+						oEvent.stopPropagation();
+					}
+				}
+
 			}, this);
 
 		this.onsaphome = fnOnHome;
@@ -734,6 +798,8 @@ sap.m.TileContainer.prototype.init = function() {
 		this.onsapdown = fnOnDown;
 		this.onsappageup = fnOnPageUp;
 		this.onsappagedown = fnOnPageDown;
+		this.onsaptabnext = fnOnTabNext;
+		this.onsaptabprevious = fnOnTabPrevious;
 };
 
 /**
@@ -1025,9 +1091,42 @@ sap.m.TileContainer.prototype.deleteTile = function(oTile) {
 	} else {
 		this.removeAggregation("tiles",oTile,false);
 	}
-
 	return this;
 };
+
+sap.m.TileContainer.prototype.removeTile = sap.m.TileContainer.prototype.deleteTile;
+
+sap.m.TileContainer.prototype.removeAllTiles = function(){
+	if (this.getDomRef()){
+		var aTiles = this.getTiles();
+		for (var i=0; i<aTiles.length; i++) {
+			this.removeAggregation("tiles",aTiles[i],true);
+			if (!this._oDragSession) {
+				aTiles[i].getDomRef().parentNode.removeChild(aTiles[i].getDomRef());
+			}
+			this._applyPageStartIndex(i);
+		}
+		this._update(false);
+	} else {
+		this.removeAllAggregation("tiles", false);
+	}
+	return this;
+}
+
+sap.m.TileContainer.prototype.destroyTiles = function(){
+	if (this.getDomRef()){
+		var aTiles = this.getTiles();
+		this.removeAllAggregation("tiles", true);
+		this._update();
+		for (var i=0;i<aTiles.length; i++) {
+			var tile = aTiles[i];
+			tile.destroy();
+		}
+	} else {
+		this.destroyAggregation("tiles", false);
+	}
+	return this;
+}
 
 sap.m.TileContainer.prototype.rerender = function() {
 	if (!this._oDragSession || this._oDragSession.bDropped) {

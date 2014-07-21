@@ -20,12 +20,15 @@ sap.m.ActionSheetRenderer = {
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
 sap.m.ActionSheetRenderer.render = function(oRm, oControl){ 
-	var aActionButtons = oControl.getButtons(), i, bMixedButtons;
+	var aActionButtons = oControl.getButtons(), 
+		i, bMixedButtons, oButton;
 	
 	for(i = 0 ; i < aActionButtons.length ; i++){
-		if(aActionButtons[i].getIcon()){
+		oButton = aActionButtons[i];
+		if(oButton.getIcon()){
 			bMixedButtons = true;
-			break;
+		}else{
+			oButton.addStyleClass("sapMActionSheetButtonNoIcon");
 		}
 	}
 	

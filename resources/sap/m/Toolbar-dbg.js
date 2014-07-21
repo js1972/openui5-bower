@@ -58,11 +58,12 @@ jQuery.sap.require("sap.ui.core.Control");
  * @class
  * The Toolbar control is a horizontal items container that can be used to get an input from user or just to display output.
  * 
- * Note: By default, when Toolbar overflows, it provides shrinking for text controls(e.g. Text, Label) and the control that have percent width.(e.g. Input, Slider). This behaviour can be overwritten by providing sap.m.ToolbarLayoutData for your items.
+ * Note: By default, when Toolbar overflows, it provides shrinking for text controls(e.g. Text, Label) and the controls that have percentual width.(e.g. Input, Slider). This behaviour can be overwritten by providing sap.m.ToolbarLayoutData for toolbar items.
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.Toolbar,sap.m.IBar
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -72,6 +73,10 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.m.Toolbar", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.Toolbar",
+		"sap.m.IBar"
+	],
 
 	// ---- control specific ----
 	library : "sap.m",
@@ -416,6 +421,7 @@ sap.m.Toolbar.M_EVENTS = {'press':'press'};
 // Start of sap\m\Toolbar.js
 jQuery.sap.require("sap.m.ToolbarSpacer");
 jQuery.sap.require("sap.m.ToolbarDesign");
+jQuery.sap.require("sap.m.BarInPageEnabler");
 jQuery.sap.require("sap.m.ToolbarLayoutData");
 jQuery.sap.require("sap.ui.core.ResizeHandler");
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
@@ -556,7 +562,7 @@ sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
 			return !sWidth || sWidth == "auto" || sWidth == "inherit";
 		},
 		calcUnShrinkableItem = function($Item) {
-			// add too unshrinkable width calculation with margins
+			// add to unshrinkable width calculation with margins
 			iTotalUnShrinkableWidth += $Item.outerWidth(true);
 		},
 		pushShrinkableItem = function($Item) {
@@ -642,7 +648,7 @@ sap.m.Toolbar.flexie = function($Element, sFlexClass, sShrinkClass) {
 			// calculate remain width
 			iTotalWidth -= iSumOfWidth;
 			if (iTotalWidth > 1) {
-				// share the remaining width to spacers
+				// share the remaining width to the spacers
 				aFlexibleItems.forEach(function(oFlexibleItem) {
 					var fWidth = iTotalWidth / aFlexibleItems.length;
 					oFlexibleItem.style.width = fWidth + "px";
@@ -687,12 +693,18 @@ sap.m.Toolbar.hasNewFlexBoxSupport = (function() {
 			oStyle.webkitFlexShrink !== undefined);
 }());
 
+sap.m.Toolbar.prototype.init = function() {
+	this._oContentDelegate = {
+		onAfterRendering: this._onAfterContentRendering
+	};
+};
+
 sap.m.Toolbar.prototype.onBeforeRendering = function() {
 	this._cleanup();
 };
 
 sap.m.Toolbar.prototype.onAfterRendering = function() {
-	// do nothing for invisible
+	// do nothing for invisible toolbar
 	if (this._isInvisible()) {
 		return;
 	}
@@ -702,49 +714,39 @@ sap.m.Toolbar.prototype.onAfterRendering = function() {
 		return;
 	}
 
-	// let the new flexbox do the job
-	if (sap.m.Toolbar.hasNewFlexBoxSupport) {
-		return;
-	}
-
-	// cache jQuery object
-	this._$this = this.$();
-
-	// define behaviour according to flex support
-	if (sap.m.Toolbar.hasFlexBoxSupport) {
-		this._resetOverflow();
-	} else {
-		this._reflexie();
-	}
+	// layout the toolbar
+	this._doLayout();
 };
 
 sap.m.Toolbar.prototype.exit = function() {
 	this._cleanup();
 };
 
-sap.m.Toolbar.prototype.addContent = function(oContent) {
-	this.addAggregation("content", oContent);
-	this._attachContentPropertyChange(oContent);
+sap.m.Toolbar.prototype.onLayoutDataChange = function() {
+	this.rerender();
+};
+
+sap.m.Toolbar.prototype.addContent = function(oControl) {
+	this.addAggregation("content", oControl);
+	this._onContentInserted(oControl);
 	return this;
 };
 
-sap.m.Toolbar.prototype.insertContent = function(oContent, iIndex) {
-	this.insertAggregation("content", oContent, iIndex);
-	this._attachContentPropertyChange(oContent);
+sap.m.Toolbar.prototype.insertContent = function(oControl, iIndex) {
+	this.insertAggregation("content", oControl, iIndex);
+	this._onContentInserted(oControl);
 	return this;
 };
 
 sap.m.Toolbar.prototype.removeContent = function(vContent) {
 	vContent = this.removeAggregation("content", vContent);
-	this._detachContentPropertyChange(vContent);
+	this._onContentRemoved(vContent);
 	return vContent;
 };
 
 sap.m.Toolbar.prototype.removeAllContent = function() {
 	var aContents = this.removeAllAggregation("content") || [];
-	aContents.forEach(function(oContent) {
-		this._detachContentPropertyChange(oContent);
-	}, this);
+	aContents.forEach(this._onContentRemoved, this);
 	return aContents;
 };
 
@@ -791,20 +793,30 @@ sap.m.Toolbar.prototype._checkContents = function() {
 		if (sap.m.Toolbar.checkShrinkable(oControl)) {
 			iShrinkableItemCount++;
 		}
-
-		var oLayout = oControl.getLayoutData();
-		if (oLayout instanceof sap.m.ToolbarLayoutData) {
-			oLayout.applyProperties();
-		}
 	});
 
 	return iShrinkableItemCount;
 };
 
-// Reset overflow and mark with classname if overflows
+// apply the layout calculation according to flexbox support
+sap.m.Toolbar.prototype._doLayout = function() {
+	// let the flexbox do its job
+	if (sap.m.Toolbar.hasNewFlexBoxSupport) {
+		return;
+	}
+
+	// apply layout according to flex support
+	if (sap.m.Toolbar.hasFlexBoxSupport) {
+		this._resetOverflow();
+	} else {
+		this._reflexie();
+	}
+};
+
+// reset overflow and mark with classname if overflows
 sap.m.Toolbar.prototype._resetOverflow = function() {
 	this._deregisterResize();
-	var $this = this._$this;
+	var $this = this.$();
 	var oDomRef = $this[0] || {};
 	$this.removeClass("sapMTBOverflow");
 	var bOverflow = oDomRef.scrollWidth > oDomRef.clientWidth;
@@ -816,12 +828,37 @@ sap.m.Toolbar.prototype._resetOverflow = function() {
 // recalculate flexbox layout
 sap.m.Toolbar.prototype._reflexie = function() {
 	this._deregisterResize();
-	sap.m.Toolbar.flexie(this._$this);
+	sap.m.Toolbar.flexie(this.$());
 	this._endPoint = this._getEndPoint();
 	this._registerResize();
 };
 
-// called when a content property is changed
+// gets called when new control is inserted into content aggregation
+sap.m.Toolbar.prototype._onContentInserted = function(oControl) {
+	if (oControl) {
+		oControl.attachEvent("_change", this._onContentPropertyChanged, this);
+		oControl.addEventDelegate(this._oContentDelegate, oControl);
+	}
+};
+
+// gets called when a control is removed from content aggregation
+sap.m.Toolbar.prototype._onContentRemoved = function(oControl) {
+	if (oControl) {
+		oControl.detachEvent("_change", this._onContentPropertyChanged, this);
+		oControl.removeEventDelegate(this._oContentDelegate, oControl);
+	}
+};
+
+// gets called after content is (re)rendered
+// here "this" points to the control not to the toolbar
+sap.m.Toolbar.prototype._onAfterContentRendering = function() {
+	var oLayout = this.getLayoutData();
+	if (oLayout instanceof sap.m.ToolbarLayoutData) {
+		oLayout.applyProperties();
+	}
+};
+
+// gets called when any content property is changed
 sap.m.Toolbar.prototype._onContentPropertyChanged = function(oEvent) {
 	if (oEvent.getParameter("name") != "width") {
 		return;
@@ -831,16 +868,6 @@ sap.m.Toolbar.prototype._onContentPropertyChanged = function(oEvent) {
 	var oControl = oEvent.getSource();
 	var bPercent = oControl.getWidth().indexOf("%") > 0;
 	oControl.toggleStyleClass(sap.m.Toolbar.shrinkClass, bPercent);
-};
-
-// attach property change handler for the given control
-sap.m.Toolbar.prototype._attachContentPropertyChange = function(oControl) {
-	oControl.attachEvent("_change", this._onContentPropertyChanged, this);
-};
-
-// detach property change handler from given control
-sap.m.Toolbar.prototype._detachContentPropertyChange = function(oControl) {
-	oControl.detachEvent("_change", this._onContentPropertyChanged, this);
 };
 
 // register interval timer to detect inner content size is changed
@@ -858,7 +885,7 @@ sap.m.Toolbar.prototype._registerToolbarResize = function() {
 	// register resize handler only if toolbar has relative width
 	if (sap.m.Toolbar.isRelativeWidth(this.getWidth())) {
 		var fnResizeProxy = jQuery.proxy(this._handleToolbarResize, this);
-		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this._$this[0], fnResizeProxy);
+		this._sResizeListenerId = sap.ui.core.ResizeHandler.register(this, fnResizeProxy);
 	}
 };
 
@@ -883,15 +910,14 @@ sap.m.Toolbar.prototype._deregisterResize = function() {
 	this._deregisterContentResize();
 };
 
-// remove jquery cache and resize handlers
+// cleanup resize handlers
 sap.m.Toolbar.prototype._cleanup = function() {
 	this._deregisterResize();
-	this._$this = [];
 };
 
 // get the end position of last content
 sap.m.Toolbar.prototype._getEndPoint = function() {
-	var oLastChild = (this._$this[0] || this.getDomRef() || {}).lastElementChild;
+	var oLastChild = (this.getDomRef() || {}).lastElementChild;
 	if (oLastChild) {
 		var iEndPoint = oLastChild.offsetLeft;
 		if (!sap.ui.getCore().getConfiguration().getRTL()) {
@@ -918,12 +944,8 @@ sap.m.Toolbar.prototype._handleResize = function(bCheckEndPoint) {
 		return;
 	}
 
-	// decide the behaviour
-	if (!sap.m.Toolbar.hasFlexBoxSupport) {
-		this._reflexie();
-	} else if (!sap.m.Toolbar.hasNewFlexBoxSupport) {
-		this._resetOverflow();
-	}
+	// re-layout the toolbar
+	this._doLayout();
 };
 
 /*
@@ -958,3 +980,35 @@ sap.m.Toolbar.prototype.getActiveDesign = function() {
 
 	return this._sAutoDesign || sDesign;
 };
+
+/////////////////
+//Bar in page delegation
+/////////////////
+/**
+ * Returns if the bar is sensitive to the container context. Implementation of the IBar interface
+ * @returns {bool} isContextSensitive
+ * @protected
+ */
+sap.m.Toolbar.prototype.isContextSensitive = sap.m.BarInPageEnabler.prototype.isContextSensitive;
+
+/**
+ * Sets the HTML tag of the root domref
+ * @param {string} sTag
+ * @returns {IBar} this for chaining
+ * @protected
+ */
+sap.m.Toolbar.prototype.setHTMLTag = sap.m.BarInPageEnabler.prototype.setHTMLTag;
+
+/**
+ * Gets the HTML tag of the root domref
+ * @returns {IBarHTMLTag} the HTML-tag
+ * @protected
+ */
+sap.m.Toolbar.prototype.getHTMLTag = sap.m.BarInPageEnabler.prototype.getHTMLTag;
+
+/**
+ * Sets classes and tag according to the context in the page. Possible contexts are header, footer, subheader
+ * @returns {IBar} this for chaining
+ * @protected
+ */
+sap.m.Toolbar.prototype.applyTagAndContextClassFor = sap.m.BarInPageEnabler.prototype.applyTagAndContextClassFor;

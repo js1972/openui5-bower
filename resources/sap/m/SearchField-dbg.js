@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83,7 +83,7 @@ sap.ui.core.Control.extend("sap.m.SearchField", { metadata : {
 		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"maxLength" : {type : "int", group : "Behavior", defaultValue : 0},
 		"placeholder" : {type : "string", group : "Misc", defaultValue : null},
-		"showMagnifier" : {type : "boolean", group : "Misc", defaultValue : true},
+		"showMagnifier" : {type : "boolean", group : "Misc", defaultValue : true, deprecated: true},
 		"showRefreshButton" : {type : "boolean", group : "Behavior", defaultValue : false},
 		"refreshButtonTooltip" : {type : "string", group : "Misc", defaultValue : null},
 		"selectOnFocus" : {type : "boolean", group : "Behavior", defaultValue : true}
@@ -288,12 +288,14 @@ sap.m.SearchField.M_EVENTS = {'search':'search','liveChange':'liveChange'};
 
 /**
  * Getter for property <code>showMagnifier</code>.
- * Set to false to hide the magnifier icon. This property is deprecated since version 1.16.
+ * Set to false to hide the magnifier icon.
  *
  * Default value is <code>true</code>
  *
  * @return {boolean} the value of property <code>showMagnifier</code>
  * @public
+ * @deprecated Since version 1.16.0. 
+ * This parameter was introduced for the obsolete sap_mvi theme due to differences in native rendering of the search field on different devices. It is ignored in the sap_bluecrystal theme that has common design for all devices.
  * @name sap.m.SearchField#getShowMagnifier
  * @function
  */
@@ -306,6 +308,8 @@ sap.m.SearchField.M_EVENTS = {'search':'search','liveChange':'liveChange'};
  * @param {boolean} bShowMagnifier  new value for property <code>showMagnifier</code>
  * @return {sap.m.SearchField} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.16.0. 
+ * This parameter was introduced for the obsolete sap_mvi theme due to differences in native rendering of the search field on different devices. It is ignored in the sap_bluecrystal theme that has common design for all devices.
  * @name sap.m.SearchField#setShowMagnifier
  * @function
  */
@@ -460,7 +464,7 @@ sap.m.SearchField.M_EVENTS = {'search':'search','liveChange':'liveChange'};
 
 
 /**
- * This event is fired when the value of the search field is changed by a user - e.g. at each key press. 
+ * This event is fired when the value of the search field is changed by a user - e.g. at each key press. Do not invalidate or re-render a focused search field, especially during the liveChange event. 
  *
  * @name sap.m.SearchField#liveChange
  * @event
@@ -478,7 +482,7 @@ sap.m.SearchField.M_EVENTS = {'search':'search','liveChange':'liveChange'};
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.SearchField</code>.<br/> itself. 
  *  
- * This event is fired when the value of the search field is changed by a user - e.g. at each key press. 
+ * This event is fired when the value of the search field is changed by a user - e.g. at each key press. Do not invalidate or re-render a focused search field, especially during the liveChange event. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -536,9 +540,6 @@ sap.ui.core.IconPool.insertFontFaceStyle();
 
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 
-// Do special table-based rendering in IE
-sap.m.SearchField.prototype._bNoFlex = !!sap.ui.Device.browser.internet_explorer;
-
 sap.m.SearchField.prototype.init = function() {
 
 	// IE9 does not fire input event when characters are deleted in an input field, use keyup instead
@@ -547,22 +548,11 @@ sap.m.SearchField.prototype.init = function() {
 	// New design: right-aligned magnifying glass and refresh button
 	if(sap.ui.core.theming.Parameters.get("sapMPlatformDependent") !== "true"){
 		this._sDesign = "bluecrystal";
-		this._sSearch = sap.ui.core.IconPool.getIconURI("search");
-		this._sReload = sap.ui.core.IconPool.getIconURI("synchronize");
-		this._oButton = new sap.m.Button(this.getId()+"-btn", {icon: this._sSearch, press: jQuery.proxy(this._onButtonPress, this) });
-		this._oButton.setParent(this);
 	}
 
 	// Default placeholder: "Search"
 	this.setProperty("placeholder", sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("FACETFILTER_SEARCH"),true);
 	// TODO: suggestions and search provider
-};
-
-sap.m.SearchField.prototype.exit = function() {
-	if (this._oButton) {
-		this._oButton.destroy();
-		this._oButton = null;
-	}
 };
 
 sap.m.SearchField.prototype.getFocusDomRef = function() {
@@ -612,22 +602,27 @@ sap.m.SearchField.prototype.clear = function() {
 
 sap.m.SearchField.prototype.ontouchstart = function(oEvent) {
 
-	// mark the event for components that needs to know if the event was handled by the SearchField
-	oEvent.setMarked();
+	if (oEvent.originalEvent.button === 2) return; // no action on the right mouse button
 
-	if (!this.getEnabled()) {
-		return;
+	var oSrc = oEvent.target,
+		sId  =  this.getId();
+
+	if(oSrc.id == sId +"-search" || oSrc.id == sId + "-reset" ){
+		// do not remove focus from the focused input
+		oEvent.preventDefault();
 	}
+};
+
+sap.m.SearchField.prototype.ontouchend = function(oEvent) {
+
+	if (oEvent.originalEvent.button === 2) return; // no action on the right mouse button
 
 	var oSrc = oEvent.target;
 
-	if(oSrc.id == this.getId()+"-reset"){
-		if(oEvent.originalEvent.button === 2) return; // no action on the right mouse button
+	if(oSrc.id == this.getId() +"-reset"){
 
 		var bEmpty = !this.getValue();
 		this.clear();
-		oEvent.preventDefault();
-		oEvent.stopPropagation();
 
 		// When a user presses "x":
 		// - always focus input on desktop
@@ -638,18 +633,26 @@ sap.m.SearchField.prototype.ontouchstart = function(oEvent) {
 		if((sap.ui.Device.system.desktop || bEmpty || /(INPUT|TEXTAREA)/i.test(active.tagName) ) && (active !== this._inputElement)) {
 			this._inputElement.focus();
 		}
+	} else 	if(oSrc.id == this.getId() +"-search"){
+		// focus input only if the button with the search icon is pressed
+		if(sap.ui.Device.system.desktop && !this.getShowRefreshButton() && (document.activeElement !== this._inputElement)) {
+			this._inputElement.focus();
+		}
+		this.fireSearch({
+			query: this.getValue(),
+			refreshButtonPressed: this.getShowRefreshButton() && !this.$().hasClass("sapMFocus")
+		});
+	} else {
+		// focus by form area touch outside of the input field
+		this.onmouseup(oEvent);
 	}
-
-	// focus by form area touch outside of the input field
-	this.onmousedown(oEvent);
 };
 
-sap.m.SearchField.prototype.onmousedown = function(oEvent) {
+sap.m.SearchField.prototype.onmouseup = function(oEvent) {
 
 	// focus if mouse-clicked on the form outside of the input
 	if(this.getEnabled() && oEvent.target.tagName == "FORM"){
 		this._inputElement.focus();
-		oEvent.preventDefault();
 	}
 };
 
@@ -682,9 +685,7 @@ sap.m.SearchField.prototype.onSearch = function(event) {
 sap.m.SearchField.prototype._blur = function() {
 	var that = this;
 	window.setTimeout( function(){
-		if(that._oButton){
-			that._oButton.focus();
-		} else if(that._inputElement){
+		if(that._inputElement){
 			that._inputElement.blur();
 		}
 	}, 13);
@@ -715,25 +716,6 @@ sap.m.SearchField.prototype.onInput = function(event) {
 };
 
 /**
- * React on the Enter and Esc buttons for browsers that do not fire the onsearch event (IE9, IE10).
- * @private
- */
-sap.m.SearchField.prototype.onKeyup = function(event) {
-	if (event.keyCode === jQuery.sap.KeyCodes.ENTER) {
-
-		// Enter button ==>> search
-		this.onSearch(event);
-	} else if (event.keyCode === jQuery.sap.KeyCodes.ESCAPE) {
-
-		// Escape button ==>> clear + search
-		this.clear();
-
-		// Webkit browsers remove focus on escape. Do the same in IE:
-		this._blur();
-	}
-};
-
-/**
  * Handle the key down event for F5 on all browsers.
  *
  * @param {jQuery.Event}
@@ -741,10 +723,10 @@ sap.m.SearchField.prototype.onKeyup = function(event) {
  * @private
  */
 sap.m.SearchField.prototype.onkeydown = function(event) {
-	if (this._oButton && (event.which === jQuery.sap.KeyCodes.F5 || event.which === jQuery.sap.KeyCodes.ENTER)) {
+	if (event.which === jQuery.sap.KeyCodes.F5 || event.which === jQuery.sap.KeyCodes.ENTER) {
 
-		// set active button state
-		this._oButton._activeButton();
+		// show search button active state
+		this.$("search").toggleClass("sapMSFBA", true);
 
 		// do not refresh browser window
 		event.stopPropagation();
@@ -760,15 +742,15 @@ sap.m.SearchField.prototype.onkeydown = function(event) {
  * @private
  */
 sap.m.SearchField.prototype.onkeyup = function(event) {
-	if (this._oButton && (event.which === jQuery.sap.KeyCodes.F5 || event.which === jQuery.sap.KeyCodes.ENTER)) {
+	if (event.which === jQuery.sap.KeyCodes.F5 || event.which === jQuery.sap.KeyCodes.ENTER) {
 
-		// set inactive button state
-		this._oButton._inactiveButton();
-		this._onButtonPress(); // as with the button press: fire search with refreshButtonPressed:true
+		// hide search button active state
+		this.$("search").toggleClass("sapMSFBA", false);
 
-		// do not refresh browser window
-		event.stopPropagation();
-		event.preventDefault();
+		this.fireSearch({
+			query: this.getValue(),
+			refreshButtonPressed : this.getShowRefreshButton() && event.which === jQuery.sap.KeyCodes.F5
+		});
 	}
 };
 
@@ -778,11 +760,8 @@ sap.m.SearchField.prototype.onkeyup = function(event) {
  * @private
  */
 sap.m.SearchField.prototype.onFocus = function(event) {
-	this.$().toggleClass("sapMFocus", true);
 
-	if (this.getShowRefreshButton()) {
-		this._setIcon(this._sSearch);
-	}
+	this.$().toggleClass("sapMFocus", true);
 
 	// Some applications do re-render during the liveSearch event.
 	// The input is focused and most browsers select the input text for copy.
@@ -799,66 +778,8 @@ sap.m.SearchField.prototype.onFocus = function(event) {
  *
  * @private
  */
-sap.m.SearchField.prototype.onBlur = function(event) {
+sap.m.SearchField.prototype.onBlur = function(oEvent) {
 	this.$().toggleClass("sapMFocus", false);
-
-	if (this.getShowRefreshButton()) {
-		this._setIcon(this._sReload, 250);
-	}
-};
-
-
-/**
- * React on the search button press.
- *
- * @private
- */
-sap.m.SearchField.prototype._onButtonPress = function() {
-
-	this.fireSearch({
-		query: this.getValue(), // because of proxy "this" is SearchField, not Button
-		refreshButtonPressed: this._oButton && this._sReload && this._oButton.getIcon() == this._sReload
-	});
-};
-
-/**
- * Toggle the search/refresh icon with optional delay.
- *
- * @private
- */
-sap.m.SearchField.prototype._setIcon = function(icon, delay) {
-	if (!this._oButton) {
-		return;
-	}
-
-	if (this._refreshDelay) {
-		jQuery.sap.clearDelayedCall(this._refreshDelay);
-		this._refreshDelay = null;
-	}
-
-	if (this._oButton.getIcon() == icon) {
-		return; // do nothing;
-	}
-
-	var that = this;
-	function setIcon(){
-		var showReload = icon == that._sReload,
-			button = that._oButton,
-			tooltip = showReload? that.getRefreshButtonTooltip() : "";
-
-		that.$().find(".sapMSFB").toggleClass("sapMSFReload", showReload);
-		button.setIcon(icon);
-
-		if(tooltip != button.getTooltip_AsString()){
-			that._oButton.setTooltip(tooltip);
-		}
-	}
-
-	if(delay){
-		jQuery.sap.delayedCall(delay, this, setIcon);
-	} else {
-		setIcon();
-	}
 };
 
 sap.m.SearchField.prototype.setValue = function(value){
@@ -875,19 +796,5 @@ sap.m.SearchField.prototype.setValue = function(value){
 	}
 
 	this.setProperty("value", value, true);
-	return this;
-};
-
-sap.m.SearchField.prototype.setShowRefreshButton = function(showRefresh){
-	this.setProperty("showRefreshButton", showRefresh);
-	this._setIcon(showRefresh? this._sReload : this._sSearch);
-	return this;
-};
-
-sap.m.SearchField.prototype.setRefreshButtonTooltip = function(tooltip){
-	this.setProperty("refreshButtonTooltip", tooltip);
-	if (this.getShowRefreshButton() && this._oButton) {
-		this._oButton.setTooltip(tooltip);
-	}
 	return this;
 };

@@ -22,7 +22,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	 */
 	var History = function(oHashChanger) {
 		this._iHistoryLength = window.history.length;
-		this._aHistory = [];
+		this.aHistory = [];
 		this._bIsInitial = true;
 	
 		if (!oHashChanger) {
@@ -36,8 +36,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	
 		this._reset();
 	};
-	
-	
+
 	/**
 	 * Detaches all events and cleans up this instance
 	 * @name sap.ui.core.routing.History#destroy
@@ -83,7 +82,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	 * @function
 	 */
 	History.prototype.getPreviousHash = function() {
-		return this._aHistory[this._iHistoryPosition - 1];
+		return this.aHistory[this.iHistoryPosition - 1];
 	};
 	
 	/**
@@ -93,8 +92,8 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	 * @function
 	 */
 	History.prototype._reset = function() {	
-		this._aHistory.length = 0;
-		this._iHistoryPosition = 0;
+		this.aHistory.length = 0;
+		this.iHistoryPosition = 0;
 		this._bUnknown = true;
 	
 		/*
@@ -102,7 +101,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 		 * if you go from the Unknown to a defined state and then back is pressed we can be sure that the direction is backwards.
 		 * Because the only way from unknown to known state is a new entry in the history.
 		 */
-		this._aHistory[0] = this._oHashChanger.getHash();
+		this.aHistory[0] = this._oHashChanger.getHash();
 	};
 	
 	/**
@@ -115,46 +114,46 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	 */
 	History.prototype._getDirection = function(sNewHash, bHistoryLengthIncreased) {	
 		var oDirection = sap.ui.core.routing.HistoryDirection;
-	
+
 		//Next hash was set by the router - it has to be a new entry
 		if (this._oNextHash && this._oNextHash.sHash === sNewHash) {
 			return oDirection.NewEntry;
 		}
-	
+
 		//we have not had a direction yet and the application did not trigger navigation + the browser history does not increase
 		//the user is navigating in his history but we cannot determine the direction
 		if (this._bUnknown) {
 			return oDirection.Unknown;
 		}
-	
+
 		//increasing the history length will add entries but we cannot rely on this as only criteria, since the history length is capped
 		if (bHistoryLengthIncreased) {
 			return oDirection.NewEntry;
 		}
-	
+
 		//At this point we know the user pressed a native browser navigation button
-	
+
 		//both directions contain the same hash we don't know the direction
-		if (this._aHistory[this._iHistoryPosition + 1] === sNewHash && this._aHistory[this._iHistoryPosition - 1] === sNewHash) {
+		if (this.aHistory[this.iHistoryPosition + 1] === sNewHash && this.aHistory[this.iHistoryPosition - 1] === sNewHash) {
 			return oDirection.Unknown;
 		}
-	
-		if (this._aHistory[this._iHistoryPosition - 1] === sNewHash) {
+
+		if (this.aHistory[this.iHistoryPosition - 1] === sNewHash) {
 			return oDirection.Backwards;
 		}
-	
-		if (this._aHistory[this._iHistoryPosition + 1] === sNewHash) {
+
+		if (this.aHistory[this.iHistoryPosition + 1] === sNewHash) {
 			return oDirection.Forwards;
 		}
-	
+
 		//Nothing hit, return unknown since we cannot determine what happened
 		return oDirection.Unknown;
 	};
-	
+
 	History.prototype._onHashChange = function(oEvent) {
 		this._hashChange(oEvent.getParameter("newHash"));
 	};
-	
+
 	/**
 	 * Handles a hash change and cleans up the History
 	 * @private
@@ -163,62 +162,61 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	 */
 	History.prototype._hashChange = function(sNewHash) {
 		var oDirection = sap.ui.core.routing.HistoryDirection,
-			iHistoryIndex = jQuery.inArray(sNewHash, this._aHistory),
 			actualHistoryLength = window.history.length,
 			sDirection;
-	
+
 		//We don't want to record replaced hashes
 		if (this._oNextHash && this._oNextHash.bWasReplaced && this._oNextHash.sHash === sNewHash) {
 			//Since a replace has taken place, the current history entry is also replaced
-			this._aHistory[this._iHistoryPosition] = sNewHash;
+			this.aHistory[this.iHistoryPosition] = sNewHash;
 			this._oNextHash = null;
 			return;
 		}
-	
+
 		//a navigation has taken place so the history is not initial anymore.
 		this._bIsInitial = false;
-	
+
 		sDirection = this._sCurrentDirection = this._getDirection(sNewHash, this._iHistoryLength < window.history.length);
-	
+
 		if (this._oNextHash && !this._oNextHash.bWasReplaced) {
 			this._iHistoryLength = actualHistoryLength + 1;
 		} else {
 			this._iHistoryLength = actualHistoryLength;
 		}
-	
+
 		//the next hash direction was determined - set it back
 		if (this._oNextHash) {
 			this._oNextHash = null;
 		}
-	
+
 		//We don't know the state of the history, don't record it set it back to unknown, since we can't say what comes up until the app navigates again
 		if (sDirection === oDirection.Unknown) {
 			this._reset();
 			return;
 		}
-	
+
 		//We are at a known state of the history now, since we have a new entry / forwards or backwards
 		this._bUnknown = false;
-	
+
 		//new history entry
 		if (sDirection === oDirection.NewEntry) {
 			//new item and there where x back navigations before - remove all the forward items from the history
-			if (this._iHistoryPosition + 1 < this._aHistory.length) {
-				this._aHistory = this._aHistory.slice(0, this._iHistoryPosition + 1);
+			if (this.iHistoryPosition + 1 < this.aHistory.length) {
+				this.aHistory = this.aHistory.slice(0, this.iHistoryPosition + 1);
 			}
-			
-			this._aHistory.push(sNewHash);
-			this._iHistoryPosition += 1;
-			return;
-		} 
-	
-		if (sDirection === oDirection.Forwards) {
-			this._iHistoryPosition++;
+
+			this.aHistory.push(sNewHash);
+			this.iHistoryPosition += 1;
 			return;
 		}
-	
+
+		if (sDirection === oDirection.Forwards) {
+			this.iHistoryPosition++;
+			return;
+		}
+
 		if (sDirection === oDirection.Backwards) {
-			this._iHistoryPosition--;
+			this.iHistoryPosition--;
 		}
 	};
 	
@@ -231,7 +229,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	History.prototype._hashSet = function(oEvent) {
 		this._hashChangedByApp(oEvent.getParameter("sHash"), false);
 	};
-	
+
 	/**
 	 * Handles a hash change and cleans up the History
 	 * @private
@@ -241,7 +239,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	History.prototype._hashReplaced = function(oEvent) {
 		this._hashChangedByApp(oEvent.getParameter("sHash"), true);
 	};
-	
+
 	/**
 	 * Sets the next hash that is going to happen in the hashChange function - used to determine if the app or the browserHistory/links triggered this navigation
 	 * @param {string} sNewHash 
@@ -252,7 +250,7 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 	History.prototype._hashChangedByApp = function(sNewHash, bWasReplaced) {
 		this._oNextHash = { sHash : sNewHash, bWasReplaced : bWasReplaced };
 	};
-	
+
 	(function() {
 		var instance = new History(HashChanger.getInstance());
 	
@@ -266,7 +264,6 @@ sap.ui.define(['jquery.sap.global', './HashChanger'],
 			return instance;
 		};
 	}());
-	
 
 	return History;
 

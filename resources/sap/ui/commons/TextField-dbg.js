@@ -73,7 +73,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -160,8 +160,8 @@ sap.ui.commons.TextField.M_EVENTS = {'change':'change','liveChange':'liveChange'
  * @param {string} sValue  new value for property <code>value</code>
  * @return {sap.ui.commons.TextField} <code>this</code> to allow method chaining
  * @public
- * @SecSource {return} The 'value' property of the TextField control and its subclasses represents unfiltered user input. 
-		Applications must ensure that the data is either validated / cleansed or that it is not used in a context which is sensible to XSS attacks.
+ * @SecSource {return} The 'value' property of the TextField control and its subclasses represents unfiltered user input.
+ * Applications must ensure that the data is either validated / cleansed or that it is not used in a context which is sensible to XSS attacks.
  * @name sap.ui.commons.TextField#setValue
  * @function
  */

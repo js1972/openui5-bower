@@ -56,7 +56,7 @@ jQuery.sap.require("sap.m.Select");
  * @extends sap.m.Select
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public

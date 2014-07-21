@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -398,7 +398,7 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * Fire event navigate to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'from' of type <code>sap.ui.core.Control</code> The page which was shown before the current navigation.</li>
@@ -525,26 +525,24 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation to apply. This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
- * Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
+ *         Other options are: "fade", "flip", and "show" and the names of any registered custom transitions.
  * 
- * None of the standard transitions is currently making use of any given transition parameters.
+ *         None of the standard transitions is currently making use of any given transition parameters.
  * @param {object} 
  *         oData
-
- * @since 1.7.1 *         This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
+ *         Since version 1.7.1. This optional object can carry any payload data which should be made available to the target page. The "beforeShow" event on the target page will contain this data object as "data" property.
  * 
- * Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         Use case: in scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
-
- * @since 1.7.1 *         This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
+ *         Since version 1.7.1. This optional object can contain additional information for the transition function, like the DOM element which triggered the transition or the desired transition duration.
  * 
- * For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
+ *         For a proper parameter order, the "data" parameter must be given when the "transitionParameters" parameter is used. (it can be given as "null")
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
- * The "show", "slide" and "fade" transitions do not use any parameter.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         The "show", "slide" and "fade" transitions do not use any parameter.
 
  * @type sap.m.NavContainer
  * @public
@@ -560,22 +558,20 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @function
  * @param {object} 
  *         oBackData
-
- * @since 1.7.1 *         This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
+ *         Since version 1.7.1. This optional object can carry any payload data which should be made available to the target page of the back navigation. The event on the target page will contain this data object as "backData" property. (The original data from the "to()" navigation will still be available as "data" property.)
  * 
- * In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
- * For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
+ *         In scenarios where the entity triggering the navigation can or should not directly initialize the target page, it can fill this object and the target page itself (or a listener on it) can take over the initialization, using the given data.
+ *         For back navigation this can be used e.g. when returning from a detail page to transfer any settings done there.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
-
- * @since 1.7.1 *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         Since version 1.7.1. This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.NavContainer
  * @public
@@ -592,20 +588,20 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @function
  * @param {string} 
  *         sPageId
- *         The ID of the screen to which back navigation should happen. The nearest page with this ID among the previous pages in the history stack will be used.
+ *         The ID of the screen to which back navigation should happen. The ID or the control itself can be given. The nearest such page among the previous pages in the history stack will be used.
  * @param {object} 
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the "backToPage" navigation. The event on the target page will contain this data object as "backData" property.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.NavContainer
  * @public
@@ -625,15 +621,15 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  *         oBackData
  *         This optional object can carry any payload data which should be made available to the target page of the "backToTop" navigation. The event on the target page will contain this data object as "backData" property.
  * 
- * When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
+ *         When the "transitionParameters" object is used, this "data" object must also be given (either as object or as null) in order to have a proper parameter order.
  * @param {object} 
  *         oTransitionParameters
  *         This optional object can give additional information to the transition function, like the DOM element which triggered the transition or the desired transition duration.
- * The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
+ *         The animation type can NOT be selected here - it is always the inverse of the "to" navigation.
  * 
- * In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
+ *         In order to use the "transitionParameters" property, the "data" property must be used (at least "null" must be given) for a proper parameter order.
  * 
- * NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
+ *         NOTE: it depends on the transition function how the object should be structured and which parameters are actually used to influence the transition.
 
  * @type sap.m.NavContainer
  * @public
@@ -712,17 +708,17 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  *         sName
  *         The name of the transition. This name can be used by the application to choose this transition when navigating "to()" or "back()": the "transitionName" parameter of "NavContainer.to()" corresponds to this name, the back() navigation will automatically use the same transition.
  * 
- * Make sure to only use names that will not collide with transitions which may be added to the NavContainer later. A suggestion is to use the prefix "c_" or "_" for your custom transitions to ensure this.
+ *         Make sure to only use names that will not collide with transitions which may be added to the NavContainer later. A suggestion is to use the prefix "c_" or "_" for your custom transitions to ensure this.
  * @param {object} 
  *         oTo
  *         The function which will be called by the NavContainer when the application navigates "to()", using this animation's name. The NavContainer instance is the "this" context within the animation function.
  * 
- * See the documentation of NavContainer.addCustomTransitions for more details about this function.
+ *         See the documentation of NavContainer.addCustomTransitions for more details about this function.
  * @param {object} 
  *         oBack
  *         The function which will be called by the NavContainer when the application navigates "back()" from a page where it had navigated to using this animation's name. The NavContainer instance is the "this" context within the animation function.
  * 
- * See the documentation of NavContainer.addCustomTransitions for more details about this function.
+ *         See the documentation of NavContainer.addCustomTransitions for more details about this function.
 
  * @type sap.m.NavContainer
  * @public
@@ -742,7 +738,7 @@ sap.m.NavContainer.M_EVENTS = {'navigate':'navigate','afterNavigate':'afterNavig
  * @param {string} 
  *         sTransitionName
  *         The type of the transition/animation which would have been used to navigate from the (inserted) previous page to the current page. When navigating back, the inverse animation will be applied.
- * This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
+ *         This parameter can be omitted; then the default is "slide" (horizontal movement from the right).
  * @param {object} 
  *         oData
  *         This optional object can carry any payload data which would have been given to the inserted previous page if the user would have done a normal forward navigation to it.
@@ -1135,6 +1131,10 @@ sap.m.NavContainer.prototype._backTo = function(sType, backData, oTransitionPara
 		return this;
 
 	} else { // normal back navigation
+		
+		if (sRequestedPageId instanceof sap.ui.core.Control) {
+			sRequestedPageId = sRequestedPageId.getId();
+		}
 		
 		var oFromPageInfo = this._pageStack[this._pageStack.length-1];
 		var mode = oFromPageInfo.mode;

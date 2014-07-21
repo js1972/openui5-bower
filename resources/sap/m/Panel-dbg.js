@@ -34,7 +34,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getVisible visible} : boolean (default: true)</li>
  * <li>{@link #getHeaderText headerText} : string</li>
  * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '100%')</li>
- * <li>{@link #getHeight height} : sap.ui.core.CSSSize (default: 'auto')</li></ul>
+ * <li>{@link #getHeight height} : sap.ui.core.CSSSize (default: 'auto')</li>
+ * <li>{@link #getExpandable expandable} : boolean (default: false)</li>
+ * <li>{@link #getExpanded expanded} : boolean (default: false)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -46,7 +48,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <ul></ul>
  * </li>
  * <li>Events
- * <ul></ul>
+ * <ul>
+ * <li>{@link sap.m.Panel#event:expand expand} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -59,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -76,13 +79,18 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
 		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"headerText" : {type : "string", group : "Data", defaultValue : null},
 		"width" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : '100%'},
-		"height" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : 'auto'}
+		"height" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : 'auto'},
+		"expandable" : {type : "boolean", group : "Appearance", defaultValue : false},
+		"expanded" : {type : "boolean", group : "Appearance", defaultValue : false}
 	},
 	defaultAggregation : "content",
 	aggregations : {
     	"content" : {type : "sap.ui.core.Control", multiple : true, singularName : "content"}, 
     	"headerToolbar" : {type : "sap.m.Toolbar", multiple : false}, 
     	"infoToolbar" : {type : "sap.m.Toolbar", multiple : false}
+	},
+	events : {
+		"expand" : {}
 	}
 }});
 
@@ -102,6 +110,8 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
  * @name sap.m.Panel.extend
  * @function
  */
+
+sap.m.Panel.M_EVENTS = {'expand':'expand'};
 
 
 /**
@@ -200,6 +210,60 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
  * @return {sap.m.Panel} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Panel#setHeight
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>expandable</code>.
+ * Is the control expandable
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>expandable</code>
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#getExpandable
+ * @function
+ */
+
+/**
+ * Setter for property <code>expandable</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bExpandable  new value for property <code>expandable</code>
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#setExpandable
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>expanded</code>.
+ * If expandable, this property indicates is the state is expanded or not. If expanded, then infoToolbar (if available) and content is rendered; if expanded is false, then only the headerText/headerToolbar is rendered.
+ *
+ * Default value is <code>false</code>
+ *
+ * @return {boolean} the value of property <code>expanded</code>
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#getExpanded
+ * @function
+ */
+
+/**
+ * Setter for property <code>expanded</code>.
+ *
+ * Default value is <code>false</code> 
+ *
+ * @param {boolean} bExpanded  new value for property <code>expanded</code>
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#setExpanded
  * @function
  */
 
@@ -355,18 +419,87 @@ sap.ui.core.Control.extend("sap.m.Panel", { metadata : {
  */
 
 
+/**
+ * Indicates that the panel will expand or collapse 
+ *
+ * @name sap.m.Panel#expand
+ * @event
+ * @since 1.22
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @param {boolean} oControlEvent.getParameters.expand If the panel will expand, this is true. If the panel will collapse, this is false.
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'expand' event of this <code>sap.m.Panel</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.m.Panel</code>.<br/> itself. 
+ *  
+ * Indicates that the panel will expand or collapse 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.m.Panel</code>.<br/> itself.
+ *
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#attachExpand
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'expand' event of this <code>sap.m.Panel</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Panel#detachExpand
+ * @function
+ */
+
+/**
+ * Fire event expand to attached listeners.
+ * 
+ * Expects following event parameters:
+ * <ul>
+ * <li>'expand' of type <code>boolean</code> If the panel will expand, this is true. If the panel will collapse, this is false.</li>
+ * </ul>
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @protected
+ * @since 1.22
+ * @name sap.m.Panel#fireExpand
+ * @function
+ */
+
+
 // Start of sap\m\Panel.js
 sap.m.Panel.prototype.init = function() {
 };
 
 /**
  * Sets the width of the panel.
- *
- * @param {string} sWidth the width of the panel as CSS size
+ * 
+ * @param {string}
+ *          sWidth the width of the panel as CSS size
  * @return {sap.m.Panel} <code>this</code> to allow method chaining
  * @public
  */
-sap.m.Panel.prototype.setWidth = function (sWidth) {
+sap.m.Panel.prototype.setWidth = function(sWidth) {
 	this.setProperty("width", sWidth, true); // don't rerender
 	var oDomRef = this.getDomRef();
 	if (oDomRef) {
@@ -375,19 +508,122 @@ sap.m.Panel.prototype.setWidth = function (sWidth) {
 	return this;
 };
 
-
 /**
  * Sets the height of the panel.
- *
- * @param {string} sHeight the height of the panel as CSS size
+ * 
+ * @param {string}
+ *          sHeight the height of the panel as CSS size
  * @return {sap.m.Panel} <code>this</code> to allow method chaining
  * @public
  */
-sap.m.Panel.prototype.setHeight = function (sHeight) {
+sap.m.Panel.prototype.setHeight = function(sHeight) {
 	this.setProperty("height", sHeight, true); // don't rerender
 	var oDomRef = this.getDomRef();
 	if (oDomRef) {
 		oDomRef.style.height = sHeight;
 	}
 	return this;
+};
+
+/**
+ * Sets the expandable property of the control.
+ * 
+ * @param {sap.ui.core/boolean}
+ *          bExpandable defining whether control "expandable" - if yes infoToolbar (if available) and content can be
+ *          collapsed/expanded
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ */
+sap.m.Panel.prototype.setExpandable = function(bExpandable) {
+	this.setProperty("expandable", bExpandable, false); // rerender since we set certain css classes
+
+	if (bExpandable && !this.oIconCollapsed) {
+		jQuery.sap.require("sap.ui.core.IconPool");
+
+		// we use only one icon (for collapsed) which is then rotated in css
+		var sCollapsedIconURI = sap.ui.core.IconPool.getIconURI("navigation-right-arrow");
+		var that = this;
+		var oIconCollapsed = sap.ui.core.IconPool.createControlByURI({
+			id : that.getId() + "-CollapsedImg",
+			src : sCollapsedIconURI
+		}).addStyleClass("sapMPanelExpandableIcon").attachPress(function(oEvent) {
+			that.setExpanded(!that.getExpanded());
+		});
+
+		// make sure it is focusable
+		oIconCollapsed.setDecorative(false);
+
+		this.oIconCollapsed = oIconCollapsed;
+	}
+
+	return this;
+};
+
+/**
+ * Sets the expanded property of the control.
+ * 
+ * @param {sap.ui.core/boolean}
+ *          bExpanded defining whether control is expanded or not
+ * @return {sap.m.Panel} <code>this</code> to allow method chaining
+ * @public
+ */
+sap.m.Panel.prototype.setExpanded = function(bExpanded) {
+
+	// should not toggle if nothing changed
+	if (bExpanded === this.getExpanded()) {
+		return;
+	}
+
+	this.setProperty("expanded", bExpanded, true); // do not rerender !
+
+	if (!this.getExpandable()) {
+		return;
+	}
+
+	var $this = this.$();
+	$this.find(".sapMPanelExpandableIcon").toggleClass("sapMPanelExpandableIconExpanded");
+
+	// need empty object as parameter to toggle since otherwise duration is set to 0
+	$this.find(".sapMPanelExpandablePart").slideToggle({});
+
+	// for controlling the visibility of the border 
+	 $this.find(".sapMPanelWrappingDiv").toggleClass("sapMPanelWrappingDivExpanded");
+
+	this.fireExpand({
+		expand : bExpanded
+	});
+
+	return this;
+};
+
+sap.m.Panel.prototype.onAfterRendering = function() {
+
+	var $this = this.$();
+
+	if (this.getExpandable())
+		if (this.getExpanded()) {
+			// this is relevant when we create Panel specifying the expanded property as 'constructor parameter'
+			$this.find(".sapMPanelWrappingDiv").addClass("sapMPanelWrappingDivExpanded");
+		} else {
+			// hide those parts which are collapsible (w/o animation, otherwise initial loading doesn't look good ...)
+			$this.find(".sapMPanelExpandablePart").hide();
+		}
+
+};
+
+sap.m.Panel.prototype.exit = function() {
+	if (this.oIconCollapsed) {
+		this.oIconCollapsed.destroy();
+		delete this.oIconCollapsed;
+	}
+};
+
+/**
+ * Get the icon representing the collapsed state
+ * 
+ * @return {sap.ui.core.Icon} the icon representing the collapsed state
+ * @private
+ */
+sap.m.Panel.prototype._getIcon = function() {
+	return this.oIconCollapsed;
 };

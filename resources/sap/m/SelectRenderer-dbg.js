@@ -45,7 +45,6 @@ sap.m.SelectRenderer.render = function(oRm, oSelect) {
 	oRm.write("<div");
 	this.addStyleClass(oRm, oSelect);
 	oRm.addClass(CSS_CLASS);
-
 	oRm.addClass(CSS_CLASS + oSelect.getType());
 
 	if (!bEnabled) {
@@ -62,12 +61,13 @@ sap.m.SelectRenderer.render = function(oRm, oSelect) {
 		oRm.addClass(CSS_CLASS + "WithIcon");
 	}
 
+	if (bEnabled && sap.ui.Device.system.desktop) {
+		oRm.addClass(CSS_CLASS + "Hoverable");
+	}
+
 	oRm.addClass(CSS_CLASS + "WithArrow");
-
 	oRm.addStyle("max-width", oSelect.getMaxWidth());
-
 	oRm.writeControlData(oSelect);
-
 	oRm.writeStyles();
 	oRm.writeClasses();
 
@@ -81,22 +81,22 @@ sap.m.SelectRenderer.render = function(oRm, oSelect) {
 
 	oRm.write(">");
 
-		switch (sType) {
-			case sap.m.SelectType.Default:
-				this._renderLabel(oRm, oSelect, sId, sSelectedItemText);
-				this._renderArrow(oRm);
-				break;
+	switch (sType) {
+		case sap.m.SelectType.Default:
+			this._renderLabel(oRm, oSelect, sId, sSelectedItemText);
+			this._renderArrow(oRm);
+			break;
 
-			case sap.m.SelectType.IconOnly:
-				this._renderIcon(oRm, sIconURI);
-				break;
+		case sap.m.SelectType.IconOnly:
+			this._renderIcon(oRm, sIconURI);
+			break;
 
-			// no default
-		}
+		// no default
+	}
 
-		if (oSelect._isRequiredSelectElement()) {
-			this._renderSelectElement(oRm, oSelect, sId, bEnabled, sSelectedItemText);
-		}
+	if (oSelect._isRequiredSelectElement()) {
+		this._renderSelectElement(oRm, oSelect, sSelectedItemText);
+	}
 
 	oRm.write("</div>");
 };
@@ -113,9 +113,8 @@ sap.m.SelectRenderer.render = function(oRm, oSelect) {
 sap.m.SelectRenderer._renderLabel = function(oRm, oSelect, sId, sSelectedItemText) {
 	oRm.write('<label class="' + sap.m.SelectRenderer.CSS_CLASS + 'Label"');
 	oRm.writeAttribute("for", sId);
-
 	oRm.write(">");
-		oRm.writeEscaped(sSelectedItemText);
+	oRm.writeEscaped(sSelectedItemText);
 	oRm.write('</label>');
 };
 
@@ -145,31 +144,21 @@ sap.m.SelectRenderer._renderIcon = function(oRm, sIconURI) {
  *
  * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
  * @param {sap.m.Select} oSelect An object representation of the select that should be rendered.
- * @param {string} sId
- * @param {boolean} bEnabled
  * @param {string} sSelectedItemText
  * @private
  */
-sap.m.SelectRenderer._renderSelectElement = function(oRm, oSelect, sId, bEnabled, sSelectedItemText) {
+sap.m.SelectRenderer._renderSelectElement = function(oRm, oSelect, sSelectedItemText) {
 	var sName = oSelect.getName();
 
-	oRm.write("<select");
-	oRm.writeAttribute("id", sId);
+	oRm.write('<select class="'+ sap.m.SelectRenderer.CSS_CLASS + "Native" +'"');
 
 	if (sName) {
 		oRm.writeAttributeEscaped("name", sName);
 	}
 
-	if (!bEnabled) {
-		oRm.write(" disabled");
-	}
-
 	oRm.writeAttribute("tabindex", "-1");
-
 	oRm.write(">");
-
-		this._renderOptions(oRm, oSelect, sSelectedItemText);
-
+	this._renderOptions(oRm, oSelect, sSelectedItemText);
 	oRm.write("</select>");
 };
 
@@ -184,25 +173,11 @@ sap.m.SelectRenderer._renderSelectElement = function(oRm, oSelect, sId, bEnabled
 sap.m.SelectRenderer._renderOptions = function(oRm, oSelect, sSelectedItemText) {
 	var aItems = oSelect.getItems(),
 		aItemsLength = aItems.length,
-		sSelectedItemId = oSelect.getAssociation("selectedItem"),
 		i = 0;
 
-	// rendering options
 	for (; i < aItemsLength; i++) {
-		oRm.write("<option");
-			oRm.writeAttribute("id", aItems[i].getId());
-			oRm.writeAttributeEscaped("value", (aItems[i].getKey() !== "") ? aItems[i].getKey() : aItems[i].getId());
-
-			if (aItems[i].getId() === sSelectedItemId) {
-				oRm.write(" selected");
-			}
-
-			if (!aItems[i].getEnabled()) {
-				oRm.write(" disabled");
-			}
-
-			oRm.write(">");
-			oRm.writeEscaped(aItems[i].getText());
+		oRm.write("<option>");
+		oRm.writeEscaped(aItems[i].getText());
 		oRm.write("</option>");
 	}
 

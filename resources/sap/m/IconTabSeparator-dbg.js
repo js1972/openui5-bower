@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -163,7 +163,7 @@ sap.m.IconTabSeparator.prototype._getImageControl = function(aCssClasses, oParen
 		densityAware : this.getIconDensityAware()
 	};
 	
-	this._oImageControl = sap.m.ImageHelper.getImageControl(null, this._oImageControl, oParent, mProperties, aCssClasses);
+	this._oImageControl = sap.m.ImageHelper.getImageControl(this.getId() + "-icon", this._oImageControl, oParent, mProperties, aCssClasses);
 	
 	return this._oImageControl;
 };

@@ -10,12 +10,12 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.commons (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.commons (1.22.4)
  */
 jQuery.sap.declare("sap.ui.commons.library");
 jQuery.sap.require("sap.ui.core.Core");
 /**
- * SAPUI5 library with most common controls.
+ * Common basic controls, mainly intended for desktop scenarios
  *
  * @namespace
  * @name sap.ui.commons
@@ -38,7 +38,6 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.LabelDesign",
     "sap.ui.commons.MenuBarDesign",
     "sap.ui.commons.MessageType",
-    "sap.ui.commons.Orientation",
     "sap.ui.commons.PaginatorEvent",
     "sap.ui.commons.RatingIndicatorVisualMode",
     "sap.ui.commons.RowRepeaterDesign",
@@ -48,6 +47,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.TitleLevel",
     "sap.ui.commons.ToolbarDesign",
     "sap.ui.commons.ToolbarSeparatorDesign",
+    "sap.ui.commons.TreeSelectionMode",
     "sap.ui.commons.TriStateCheckBoxState",
     "sap.ui.commons.enums.AreaDesign",
     "sap.ui.commons.enums.BorderDesign",
@@ -158,7 +158,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.layout.PositionContainer",
     "sap.ui.commons.layout.ResponsiveFlowLayoutData"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -178,42 +178,43 @@ jQuery.sap.declare("sap.ui.commons.ButtonStyle");
 /**
  * @class different styles for a button.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ButtonStyle = {
-  
-    /**
-     * Button is emphasized. 
-     * @public
-     */
-    Emph : "Emph",
 
-    /**
-     * Accept button (normally green). 
-     * @public
-     */
-    Accept : "Accept",
+	/**
+	 * Button is emphasized.
+	 * @public
+	 */
+	Emph : "Emph",
 
-    /**
-     * Reject button (normally red). 
-     * @public
-     */
-    Reject : "Reject",
+	/**
+	 * Accept button (normally green).
+	 * @public
+	 */
+	Accept : "Accept",
 
-    /**
-     * default style (no special styling). 
-     * @public
-     */
-    Default : "Default"
+	/**
+	 * Reject button (normally red).
+	 * @public
+	 */
+	Reject : "Reject",
 
-  };
+	/**
+	 * default style (no special styling).
+	 * @public
+	 */
+	Default : "Default"
+
+};
 /**
  * 
  *   		Marker interface for common controls which are suitable for use within a FormattedTextView.
  *   
  *
+ * @author SAP
  * @name sap.ui.commons.FormattedTextViewControl
  * @interface
  * @public
@@ -237,37 +238,37 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerHeight");
 /**
  * @class Enumeration of possible HorizontalDivider height settings.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.HorizontalDividerHeight = {
-  
-    /**
-     * Divider gets no top and bottom margin. 
-     * @public
-     */
-    Ruleheight : "Ruleheight",
 
-    /**
-     * Divider gets a small top and bottom margin. 
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * Divider gets no top and bottom margin.
+	 * @public
+	 */
+	Ruleheight : "Ruleheight",
 
-    /**
-     * Divider gets a medium top and bottom margin. 
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * Divider gets a small top and bottom margin.
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * Divider gets a large top and bottom margin. 
-     * @public
-     */
-    Large : "Large"
+	/**
+	 * Divider gets a medium top and bottom margin.
+	 * @public
+	 */
+	Medium : "Medium",
 
-  };
+	/**
+	 * Divider gets a large top and bottom margin.
+	 * @public
+	 */
+	Large : "Large"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -286,25 +287,25 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerType");
 /**
  * @class Enumeration of possible HorizontalDivider types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.HorizontalDividerType = {
-  
-    /**
-     * Type Area 
-     * @public
-     */
-    Area : "Area",
 
-    /**
-     * Type Page 
-     * @public
-     */
-    Page : "Page"
+	/**
+	 * Type Area
+	 * @public
+	 */
+	Area : "Area",
 
-  };
+	/**
+	 * Type Page
+	 * @public
+	 */
+	Page : "Page"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -323,25 +324,25 @@ jQuery.sap.declare("sap.ui.commons.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.LabelDesign = {
-  
-    /**
-     * Displays the label in bold. 
-     * @public
-     */
-    Bold : "Bold",
 
-    /**
-     * Displays the label in normal mode. 
-     * @public
-     */
-    Standard : "Standard"
+	/**
+	 * Displays the label in bold.
+	 * @public
+	 */
+	Bold : "Bold",
 
-  };
+	/**
+	 * Displays the label in normal mode.
+	 * @public
+	 */
+	Standard : "Standard"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -360,25 +361,25 @@ jQuery.sap.declare("sap.ui.commons.MenuBarDesign");
 /**
  * @class Determines the visual design of a MenuBar. The feature might be not supported by all themes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.MenuBarDesign = {
-  
-    /**
-     * The MenuBar appears in standard design. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The MenuBar appears in header design. 
-     * @public
-     */
-    Header : "Header"
+	/**
+	 * The MenuBar appears in standard design.
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * The MenuBar appears in header design.
+	 * @public
+	 */
+	Header : "Header"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -397,68 +398,31 @@ jQuery.sap.declare("sap.ui.commons.MessageType");
 /**
  * @class [Enter description for MessageType]
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.MessageType = {
-  
-    /**
-     * Error message 
-     * @public
-     */
-    Error : "Error",
 
-    /**
-     * Warning message 
-     * @public
-     */
-    Warning : "Warning",
+	/**
+	 * Error message
+	 * @public
+	 */
+	Error : "Error",
 
-    /**
-     * Successful message 
-     * @public
-     */
-    Success : "Success"
+	/**
+	 * Warning message
+	 * @public
+	 */
+	Warning : "Warning",
 
-  };
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
+	/**
+	 * Successful message
+	 * @public
+	 */
+	Success : "Success"
 
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.type, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides enumeration sap.ui.commons.Orientation.
-jQuery.sap.declare("sap.ui.commons.Orientation");
-
-
-/**
- * @class Orientation of an UI element
- *
- * @version 1.20.10
- * @static
- * @public
- */
-sap.ui.commons.Orientation = {
-  
-    /**
-     * Arrange Horizontally 
-     * @public
-     */
-    Horizontal : "Horizontal",
-
-    /**
-     * Arrange Vertically 
-     * @public
-     */
-    Vertical : "Vertical"
-
-  };
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -477,43 +441,43 @@ jQuery.sap.declare("sap.ui.commons.PaginatorEvent");
 /**
  * @class Disctinct paginator event types
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.PaginatorEvent = {
-  
-    /**
-     * First page event 
-     * @public
-     */
-    First : "First",
 
-    /**
-     * Previous page event 
-     * @public
-     */
-    Previous : "Previous",
+	/**
+	 * First page event
+	 * @public
+	 */
+	First : "First",
 
-    /**
-     * Go to page event 
-     * @public
-     */
-    Goto : "Goto",
+	/**
+	 * Previous page event
+	 * @public
+	 */
+	Previous : "Previous",
 
-    /**
-     * Next page event 
-     * @public
-     */
-    Next : "Next",
+	/**
+	 * Go to page event
+	 * @public
+	 */
+	Goto : "Goto",
 
-    /**
-     * Last page event 
-     * @public
-     */
-    Last : "Last"
+	/**
+	 * Next page event
+	 * @public
+	 */
+	Next : "Next",
 
-  };
+	/**
+	 * Last page event
+	 * @public
+	 */
+	Last : "Last"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -532,31 +496,31 @@ jQuery.sap.declare("sap.ui.commons.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.RatingIndicatorVisualMode = {
-  
-    /**
-     * Values are rounded to the nearest integer value (e.g. 1.7 -> 2). 
-     * @public
-     */
-    Full : "Full",
 
-    /**
-     * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5). 
-     * @public
-     */
-    Half : "Half",
+	/**
+	 * Values are rounded to the nearest integer value (e.g. 1.7 -> 2).
+	 * @public
+	 */
+	Full : "Full",
 
-    /**
-     * Values are not rounded. 
-     * @public
-     */
-    Continuous : "Continuous"
+	/**
+	 * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5).
+	 * @public
+	 */
+	Half : "Half",
 
-  };
+	/**
+	 * Values are not rounded.
+	 * @public
+	 */
+	Continuous : "Continuous"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -575,31 +539,31 @@ jQuery.sap.declare("sap.ui.commons.RowRepeaterDesign");
 /**
  * @class Determines the visual design of a RowRepeater.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.RowRepeaterDesign = {
-  
-    /**
-     * The RowRepeater header and footer elements, as well as the row container background, appear solid. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The RowRepeater header and footer elements, as well as the row container background, appear transparent. 
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * The RowRepeater header and footer elements, as well as the row container background, appear solid.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * The RowRepeater will be displayed without header, toolbar or footer. Background will be transparent. 
-     * @public
-     */
-    BareShell : "BareShell"
+	/**
+	 * The RowRepeater header and footer elements, as well as the row container background, appear transparent.
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * The RowRepeater will be displayed without header, toolbar or footer. Background will be transparent.
+	 * @public
+	 */
+	BareShell : "BareShell"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -618,6 +582,7 @@ jQuery.sap.require('sap.ui.base.DataType');
 /**
  * @class A string type that represents subset of CSS size values. For the Splitter only px and % are allowed.
  *
+ * @author SAP AG
  * @static
  * @public
  */
@@ -648,37 +613,37 @@ jQuery.sap.declare("sap.ui.commons.TextViewColor");
 /**
  * @class Semantic Colors of a text.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.TextViewColor = {
-  
-    /**
-     * Default color 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Positive color 
-     * @public
-     */
-    Positive : "Positive",
+	/**
+	 * Default color
+	 * @public
+	 */
+	Default : "Default",
 
-    /**
-     * Negative color 
-     * @public
-     */
-    Negative : "Negative",
+	/**
+	 * Positive color
+	 * @public
+	 */
+	Positive : "Positive",
 
-    /**
-     * Critical color 
-     * @public
-     */
-    Critical : "Critical"
+	/**
+	 * Negative color
+	 * @public
+	 */
+	Negative : "Negative",
 
-  };
+	/**
+	 * Critical color
+	 * @public
+	 */
+	Critical : "Critical"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -697,85 +662,85 @@ jQuery.sap.declare("sap.ui.commons.TextViewDesign");
 /**
  * @class Designs for TextView.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.TextViewDesign = {
-  
-    /**
-     * Displays the text in standard letters. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Displays the text in bold letters 
-     * @public
-     */
-    Bold : "Bold",
+	/**
+	 * Displays the text in standard letters.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * Displays the text in header 1 letters. 
-     * @public
-     */
-    H1 : "H1",
+	/**
+	 * Displays the text in bold letters
+	 * @public
+	 */
+	Bold : "Bold",
 
-    /**
-     * Displays the text in header 2 letters. 
-     * @public
-     */
-    H2 : "H2",
+	/**
+	 * Displays the text in header 1 letters.
+	 * @public
+	 */
+	H1 : "H1",
 
-    /**
-     * Displays the text in header 3 letters. 
-     * @public
-     */
-    H3 : "H3",
+	/**
+	 * Displays the text in header 2 letters.
+	 * @public
+	 */
+	H2 : "H2",
 
-    /**
-     * Displays the text in header 4 letters. 
-     * @public
-     */
-    H4 : "H4",
+	/**
+	 * Displays the text in header 3 letters.
+	 * @public
+	 */
+	H3 : "H3",
 
-    /**
-     * Displays the text in header 5 letters. 
-     * @public
-     */
-    H5 : "H5",
+	/**
+	 * Displays the text in header 4 letters.
+	 * @public
+	 */
+	H4 : "H4",
 
-    /**
-     * Displays the text in header 6 letters. 
-     * @public
-     */
-    H6 : "H6",
+	/**
+	 * Displays the text in header 5 letters.
+	 * @public
+	 */
+	H5 : "H5",
 
-    /**
-     * Displays the text in italic letters 
-     * @public
-     */
-    Italic : "Italic",
+	/**
+	 * Displays the text in header 6 letters.
+	 * @public
+	 */
+	H6 : "H6",
 
-    /**
-     * Displays the text in smaller letters. 
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * Displays the text in italic letters
+	 * @public
+	 */
+	Italic : "Italic",
 
-    /**
-     * Displays the text in monospace letters. 
-     * @public
-     */
-    Monospace : "Monospace",
+	/**
+	 * Displays the text in smaller letters.
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * underlined Text 
-     * @public
-     */
-    Underline : "Underline"
+	/**
+	 * Displays the text in monospace letters.
+	 * @public
+	 */
+	Monospace : "Monospace",
 
-  };
+	/**
+	 * underlined Text
+	 * @public
+	 */
+	Underline : "Underline"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -794,34 +759,34 @@ jQuery.sap.declare("sap.ui.commons.ToolbarDesign");
 /**
  * @class Determines the visual design of a Toolbar.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ToolbarDesign = {
-  
-    /**
-     * The toolbar elements such as buttons for example have their normal visual design, and the toolbar appears solid.
-     * The feature might be not supported by all themes. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The controls included in the toolbar have a normal visual design where the toolbar appears transparent.
-     * The feature might be not supported by all themes.
-     *  
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * The toolbar elements such as buttons for example have their normal visual design, and the toolbar appears solid.
+	 * The feature might be not supported by all themes.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * The included controls have a very light appearance. The feature might be not supported by all themes. 
-     * @public
-     */
-    Flat : "Flat"
+	/**
+	 * The controls included in the toolbar have a normal visual design where the toolbar appears transparent.
+	 * The feature might be not supported by all themes.
+	 * 
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * The included controls have a very light appearance. The feature might be not supported by all themes.
+	 * @public
+	 */
+	Flat : "Flat"
+
+};
 /**
  * 
  *   Marker interface for common controls which are suitable for use within a toolbar.
@@ -832,6 +797,7 @@ sap.ui.commons.ToolbarDesign = {
  *   "sapUiTb" to adjust their own theming when used inside a toolbar.
  *   
  *
+ * @author d029921
  * @name sap.ui.commons.ToolbarItem
  * @interface
  * @public
@@ -855,25 +821,68 @@ jQuery.sap.declare("sap.ui.commons.ToolbarSeparatorDesign");
 /**
  * @class Design of the Toolbar Separator.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ToolbarSeparatorDesign = {
-  
-    /**
-     * Standard Separator between controls 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * 100% height Separator before and after specific controls 
-     * @public
-     */
-    FullHeight : "FullHeight"
+	/**
+	 * Standard Separator between controls
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * 100% height Separator before and after specific controls
+	 * @public
+	 */
+	FullHeight : "FullHeight"
+
+};
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.type, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides enumeration sap.ui.commons.TreeSelectionMode.
+jQuery.sap.declare("sap.ui.commons.TreeSelectionMode");
+
+
+/**
+ * @class Selection mode of the tree
+ *
+ * @version 1.22.4
+ * @static
+ * @public
+ */
+sap.ui.commons.TreeSelectionMode = {
+
+	/**
+	 * Select multiple rows at a time.
+	 * @public
+	 */
+	Multi : "Multi",
+
+	/**
+	 * Select one row at a time.
+	 * @public
+	 */
+	Single : "Single",
+
+	/**
+	 * No rows can be selected.
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -892,32 +901,32 @@ jQuery.sap.declare("sap.ui.commons.TriStateCheckBoxState");
 /**
  * @class States for TriStateCheckBox
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.7.2
  */
 sap.ui.commons.TriStateCheckBoxState = {
-  
-    /**
-     * unchecked, default value for tri-state checkbox 
-     * @public
-     */
-    Unchecked : "Unchecked",
 
-    /**
-     * mixed state for tri-state checkbox 
-     * @public
-     */
-    Mixed : "Mixed",
+	/**
+	 * unchecked, default value for tri-state checkbox
+	 * @public
+	 */
+	Unchecked : "Unchecked",
 
-    /**
-     * checked value for tri-state checkbox 
-     * @public
-     */
-    Checked : "Checked"
+	/**
+	 * mixed state for tri-state checkbox
+	 * @public
+	 */
+	Mixed : "Mixed",
 
-  };
+	/**
+	 * checked value for tri-state checkbox
+	 * @public
+	 */
+	Checked : "Checked"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -936,31 +945,31 @@ jQuery.sap.declare("sap.ui.commons.enums.AreaDesign");
 /**
  * @class Value set for the background design of areas
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.AreaDesign = {
-  
-    /**
-     * Shows the area in a plain look 
-     * @public
-     */
-    Plain : "Plain",
 
-    /**
-     * Shows the label in a filled look 
-     * @public
-     */
-    Fill : "Fill",
+	/**
+	 * Shows the area in a plain look
+	 * @public
+	 */
+	Plain : "Plain",
 
-    /**
-     * Shows the background as transparent 
-     * @public
-     */
-    Transparent : "Transparent"
+	/**
+	 * Shows the label in a filled look
+	 * @public
+	 */
+	Fill : "Fill",
 
-  };
+	/**
+	 * Shows the background as transparent
+	 * @public
+	 */
+	Transparent : "Transparent"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -979,25 +988,25 @@ jQuery.sap.declare("sap.ui.commons.enums.BorderDesign");
 /**
  * @class Value set for the border design of areas
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.BorderDesign = {
-  
-    /**
-     * Draws the border as a box around the area 
-     * @public
-     */
-    Box : "Box",
 
-    /**
-     * Suppresses the border 
-     * @public
-     */
-    None : "None"
+	/**
+	 * Draws the border as a box around the area
+	 * @public
+	 */
+	Box : "Box",
 
-  };
+	/**
+	 * Suppresses the border
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1016,25 +1025,25 @@ jQuery.sap.declare("sap.ui.commons.enums.Orientation");
 /**
  * @class Orientation of a UI element
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.Orientation = {
-  
-    /**
-     * Horizontal orientation 
-     * @public
-     */
-    horizontal : "horizontal",
 
-    /**
-     * Vertical orientation 
-     * @public
-     */
-    vertical : "vertical"
+	/**
+	 * Horizontal orientation
+	 * @public
+	 */
+	horizontal : "horizontal",
 
-  };
+	/**
+	 * Vertical orientation
+	 * @public
+	 */
+	vertical : "vertical"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1055,69 +1064,69 @@ jQuery.sap.declare("sap.ui.commons.layout.BackgroundDesign");
  * Background design (i.e. color), e.g. of a layout cell.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.BackgroundDesign = {
-  
-    /**
-     * 
-     * A background design suitable for borders.
-     *  
-     * @public
-     */
-    Border : "Border",
 
-    /**
-     * 
-     * An opaque background design that looks dark filled.
-     *  
-     * @public
-     */
-    Fill1 : "Fill1",
+	/**
+	 * 
+	 * A background design suitable for borders.
+	 * 
+	 * @public
+	 */
+	Border : "Border",
 
-    /**
-     * 
-     * An opaque background design that looks medium filled.
-     *  
-     * @public
-     */
-    Fill2 : "Fill2",
+	/**
+	 * 
+	 * An opaque background design that looks dark filled.
+	 * 
+	 * @public
+	 */
+	Fill1 : "Fill1",
 
-    /**
-     * 
-     * An opaque background design that looks light filled.
-     *  
-     * @public
-     */
-    Fill3 : "Fill3",
+	/**
+	 * 
+	 * An opaque background design that looks medium filled.
+	 * 
+	 * @public
+	 */
+	Fill2 : "Fill2",
 
-    /**
-     * 
-     * A background design suitable for headers.
-     *  
-     * @public
-     */
-    Header : "Header",
+	/**
+	 * 
+	 * An opaque background design that looks light filled.
+	 * 
+	 * @public
+	 */
+	Fill3 : "Fill3",
 
-    /**
-     * 
-     * A plain but opaque background design.
-     *  
-     * @public
-     */
-    Plain : "Plain",
+	/**
+	 * 
+	 * A background design suitable for headers.
+	 * 
+	 * @public
+	 */
+	Header : "Header",
 
-    /**
-     * 
-     * A transparent background.
-     *  
-     * @public
-     */
-    Transparent : "Transparent"
+	/**
+	 * 
+	 * A plain but opaque background design.
+	 * 
+	 * @public
+	 */
+	Plain : "Plain",
 
-  };
+	/**
+	 * 
+	 * A transparent background.
+	 * 
+	 * @public
+	 */
+	Transparent : "Transparent"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1136,43 +1145,43 @@ jQuery.sap.declare("sap.ui.commons.layout.BorderLayoutAreaTypes");
 /**
  * @class The type (=position) of a BorderLayoutArea
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.BorderLayoutAreaTypes = {
-  
-    /**
-     * Value to identify the top area. 
-     * @public
-     */
-    top : "top",
 
-    /**
-     * Value to identify the begin area. 
-     * @public
-     */
-    begin : "begin",
+	/**
+	 * Value to identify the top area.
+	 * @public
+	 */
+	top : "top",
 
-    /**
-     * Value to identify the center area. 
-     * @public
-     */
-    center : "center",
+	/**
+	 * Value to identify the begin area.
+	 * @public
+	 */
+	begin : "begin",
 
-    /**
-     * Value to identify the end area. 
-     * @public
-     */
-    end : "end",
+	/**
+	 * Value to identify the center area.
+	 * @public
+	 */
+	center : "center",
 
-    /**
-     * Value to identify the bottom area. 
-     * @public
-     */
-    bottom : "bottom"
+	/**
+	 * Value to identify the end area.
+	 * @public
+	 */
+	end : "end",
 
-  };
+	/**
+	 * Value to identify the bottom area.
+	 * @public
+	 */
+	bottom : "bottom"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1195,53 +1204,53 @@ jQuery.sap.declare("sap.ui.commons.layout.HAlign");
  * others do not.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.HAlign = {
-  
-    /**
-     * 
-     * Aligned towards the beginning of a line, in the current locale's writing direction.
-     *  
-     * @public
-     */
-    Begin : "Begin",
 
-    /**
-     * 
-     * Horizontally centered.
-     *  
-     * @public
-     */
-    Center : "Center",
+	/**
+	 * 
+	 * Aligned towards the beginning of a line, in the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * 
-     * Aligned towards the end of a line, in the current locale's writing direction.
-     *  
-     * @public
-     */
-    End : "End",
+	/**
+	 * 
+	 * Horizontally centered.
+	 * 
+	 * @public
+	 */
+	Center : "Center",
 
-    /**
-     * 
-     * Left aligned, regardless of the current locale's writing direction.
-     *  
-     * @public
-     */
-    Left : "Left",
+	/**
+	 * 
+	 * Aligned towards the end of a line, in the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * 
-     * Right aligned, regardless of the current locale's writing direction.
-     *  
-     * @public
-     */
-    Right : "Right"
+	/**
+	 * 
+	 * Left aligned, regardless of the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Left : "Left",
 
-  };
+	/**
+	 * 
+	 * Right aligned, regardless of the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Right : "Right"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1265,59 +1274,59 @@ jQuery.sap.declare("sap.ui.commons.layout.Padding");
  * or end of a line, in the current locale's writing direction.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.Padding = {
-  
-    /**
-     * 
-     * No padding at all.
-     *  
-     * @public
-     */
-    None : "None",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards the beginning of a line, in the current locale's
-     * writing direction, but none towards its end.
-     *  
-     * @public
-     */
-    Begin : "Begin",
+	/**
+	 * 
+	 * No padding at all.
+	 * 
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards the end of a line, in the current locale's
-     * writing direction, but none towards its beginning.
-     *  
-     * @public
-     */
-    End : "End",
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards the beginning of a line, in the current locale's
+	 * writing direction, but none towards its end.
+	 * 
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards both the beginning and end of a line.
-     *  
-     * @public
-     */
-    Both : "Both",
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards the end of a line, in the current locale's
+	 * writing direction, but none towards its beginning.
+	 * 
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * No padding towards neither the beginning nor end of a line.
-     *  
-     * @public
-     */
-    Neither : "Neither"
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards both the beginning and end of a line.
+	 * 
+	 * @public
+	 */
+	Both : "Both",
 
-  };
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * No padding towards neither the beginning nor end of a line.
+	 * 
+	 * @public
+	 */
+	Neither : "Neither"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1339,69 +1348,69 @@ jQuery.sap.declare("sap.ui.commons.layout.Separation");
  * defined width, with or without a vertical line in its middle.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.Separation = {
-  
-    /**
-     * 
-     * No gutter at all (0px), and without a vertical line, of course.
-     *  
-     * @public
-     */
-    None : "None",
 
-    /**
-     * 
-     * A small (17px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * 
+	 * No gutter at all (0px), and without a vertical line, of course.
+	 * 
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * 
-     * A small (17px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    SmallWithLine : "SmallWithLine",
+	/**
+	 * 
+	 * A small (17px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * 
-     * A medium (31px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * 
+	 * A small (17px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	SmallWithLine : "SmallWithLine",
 
-    /**
-     * 
-     * A medium (31px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    MediumWithLine : "MediumWithLine",
+	/**
+	 * 
+	 * A medium (31px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Medium : "Medium",
 
-    /**
-     * 
-     * A large (63px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Large : "Large",
+	/**
+	 * 
+	 * A medium (31px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	MediumWithLine : "MediumWithLine",
 
-    /**
-     * 
-     * A large (63px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    LargeWithLine : "LargeWithLine"
+	/**
+	 * 
+	 * A large (63px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Large : "Large",
 
-  };
+	/**
+	 * 
+	 * A large (63px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	LargeWithLine : "LargeWithLine"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1422,37 +1431,37 @@ jQuery.sap.declare("sap.ui.commons.layout.VAlign");
  * Vertical alignment, e.g. of a layout cell's content within the cell's borders.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.VAlign = {
-  
-    /**
-     * 
-     * Aligned at the bottom.
-     *  
-     * @public
-     */
-    Bottom : "Bottom",
 
-    /**
-     * 
-     * Vertically centered.
-     *  
-     * @public
-     */
-    Middle : "Middle",
+	/**
+	 * 
+	 * Aligned at the bottom.
+	 * 
+	 * @public
+	 */
+	Bottom : "Bottom",
 
-    /**
-     * 
-     * Aligned at the top.
-     *  
-     * @public
-     */
-    Top : "Top"
+	/**
+	 * 
+	 * Vertically centered.
+	 * 
+	 * @public
+	 */
+	Middle : "Middle",
 
-  };
+	/**
+	 * 
+	 * Aligned at the top.
+	 * 
+	 * @public
+	 */
+	Top : "Top"
+
+};
 
 // -----------------------------------------------------------------------------
 // Begin of Library Initialization coding, copied from shared.js
@@ -1461,9 +1470,16 @@ sap.ui.commons.layout.VAlign = {
 // lazy imports for MessageBox
 sap.ui.lazyRequire("sap.ui.commons.MessageBox", "alert confirm show");
 
-//map the Orientation enum to new enums with uppercase
-sap.ui.commons.Orientation.vertical = sap.ui.commons.Orientation.Vertical;
-sap.ui.commons.Orientation.horizontal = sap.ui.commons.Orientation.Horizontal;
+sap.ui.lazyRequire("sap.ui.commons.MenuItemBase", "new extend getMetadata");
+
+sap.ui.commons.Orientation = {
+	// Map the Orientation enum to new enums in core
+	"Vertical"   : sap.ui.core.Orientation.Vertical,
+	"Horizontal" : sap.ui.core.Orientation.Horizontal,
+	// Map the Orientation enum to new enums with uppercase
+	"vertical"   : sap.ui.core.Orientation.Vertical,
+	"horizontal" : sap.ui.core.Orientation.Horizontal
+};
 
 //map the old commons type to new ones after move
 sap.ui.commons.form.GridElementCells = sap.ui.layout.form.GridElementCells;
@@ -1494,3 +1510,37 @@ if (!sap.ui.layout.form.FormHelper || !sap.ui.layout.form.FormHelper.bFinal) {
 		bFinal: false /* to allow mobile to overwrite  */
 	};
 }
+
+//implement FileUploader helper factory with commons controls
+jQuery.sap.setObject("sap.ui.unified.FileUploaderHelper", {
+	createTextField: function(sId){
+		var oTextField = new sap.ui.commons.TextField(sId);
+		return oTextField;
+	},
+	setTextFieldContent: function(oTextField, sWidth){
+		oTextField.setWidth(sWidth);
+	},
+	createButton: function(){
+		var oButton = new sap.ui.commons.Button();
+		return oButton;
+	},
+	bFinal: false /* to allow mobile to overwrite  */
+});
+
+//implement table helper factory with m controls
+//possible is set before layout lib is loaded.
+jQuery.sap.setObject("sap.ui.table.TableHelper", {
+	createLabel: function(mConfig){
+		return new sap.ui.commons.Label(mConfig);
+	},
+	createTextView: function(mConfig){
+		return new sap.ui.commons.TextView(mConfig);
+	},
+	createTextField: function(mConfig){
+		return new sap.ui.commons.TextField(mConfig);
+	},
+	createImage: function(mConfig){
+		return new sap.ui.commons.Image(mConfig);
+	},
+	bFinal: false /* to allow mobile to overwrite  */
+});

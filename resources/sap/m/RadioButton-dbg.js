@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -401,10 +401,6 @@ sap.m.RadioButton.M_EVENTS = {'select':'select'};
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.RadioButton.prototype);
 
-sap.m.RadioButton.prototype.getFocusDomRef = function() {
-	return this.getDomRef("out");
-};
-
 /**
  * Function is called when radiobutton is tapped.
  *
@@ -415,7 +411,7 @@ sap.m.RadioButton.prototype.ontap = function() {
 		return;
 	}
 
-	this.$("Button").focus();
+	this.applyFocusInfo();
 
 	if (this.getSelected()) {
 		return;
@@ -560,7 +556,7 @@ sap.m.RadioButton.prototype._createLabel = function(prop, value){
  */
 sap.m.RadioButton.prototype.setTabIndex = function(iTabIndex) {
 	this._iTabIndex = iTabIndex;
-	this.$().find(".sapMRbB").attr("tabindex", iTabIndex);
+	this.$("Button").attr("tabindex", iTabIndex);
 	return this;
 };
 

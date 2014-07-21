@@ -27,11 +27,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * @class Control Tree used for the Debug Environment
 	 * @extends sap.ui.base.EventProvider
 	 * @author Martin Schaus, Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.debug.ControlTree
 	 * @private
 	 */
-	var ControlTree = EventProvider.extend("sap.ui.debug.ControlTree", /** @lends sap.ui.debug.ControlTree */ {
+	var ControlTree = EventProvider.extend("sap.ui.debug.ControlTree", /** @lends sap.ui.debug.ControlTree.prototype */ {
 		constructor: function(oCore, oWindow, oParentDomRef, bRunsEmbedded) {
 			EventProvider.apply(this,arguments);
 			this.oWindow = oWindow;

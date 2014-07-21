@@ -88,6 +88,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 		if (this._oControl.setBackgroundDesign) {
 			rm.addClass("sapMListBG" + this._oControl.getBackgroundDesign());
 		}
+
 		if (this._oControl.getInset()) {
 			rm.addClass("sapMListInset");
 		}
@@ -451,8 +452,7 @@ sap.ui.base.Object.extend("sap.m.GrowingEnablement", {
 	updateItems : function(sChangeReason) {
 		var oBindingInfo = this._oControl.getBindingInfo("items"),
 			oBinding = oBindingInfo.binding,
-			fnFactory = oBindingInfo.factory,
-			oChangeReason = sap.ui.model.ChangeReason;
+			fnFactory = oBindingInfo.factory;
 
 		// set iItemCount to initial value if not set or filtered
 		if (!this._iItemCount || sChangeReason == sap.ui.model.ChangeReason.Filter) {

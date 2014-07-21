@@ -41,12 +41,12 @@ sap.ui.define(['jquery.sap.global', './Object'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author Malte Wedel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.base.ObjectPool
 	 * @public
 	 */
-	var ObjectPool = BaseObject.extend("sap.ui.base.ObjectPool", /** @lends sap.ui.base.ObjectPool */ {
+	var ObjectPool = BaseObject.extend("sap.ui.base.ObjectPool", /** @lends sap.ui.base.ObjectPool.prototype */ {
 		constructor: function(oObjectClass) {
 		
 			BaseObject.apply(this);
@@ -111,7 +111,6 @@ sap.ui.define(['jquery.sap.global', './Object'],
 	 *
 	 * @name sap.ui.base.Poolable
 	 * @interface Contract for objects that can be pooled by ObjectPool
-	 * @constructor
 	 * @public
 	 */
 	

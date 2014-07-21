@@ -3,9 +3,10 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
- *//* Global CSS for 'base' theme */
+ */@import "../../../../../../Base/baseLib/baseTheme/base.less";
+@import "../../../../../../Base/baseLib/sap_goldreflection/base.less";
+/* Global CSS for 'base' theme */
 
-@import "../../../../../../Base/baseLib/baseTheme/base.less";
 
 
 // Semantic Theming Mapping
@@ -276,7 +277,6 @@
 @sapUiShadow: 5px 5px 10px fade(@sapUiShadowTint,50%);
 /* Global CSS for 'sap_goldreflection' theme */
 
-@import "../../../../../../Base/baseLib/sap_goldreflection/base.less";
 
 
 // Semantic Theming Mapping
@@ -375,6 +375,8 @@
 @sapUiBlue: #007CC0;
 @sapUiRed: #E52929;
 @sapUiYellow: #F0AB00;
+
+@sapUiCritical: #d14900; //rgb(209, 73, 0)
 
 
 // Base Colors
@@ -478,6 +480,8 @@
 @sapUiNegativeText: darken(@sapUiRed, 8%);   // #cc1919
 
 @sapUiPositiveText: darken(@sapUiGreen, 3.5%);   // #007833
+
+@sapUiCriticalText: @sapUiCritical; // #d14900
 
 // Grayscale Borders
 @sapUiWhiteBorder: lighten(@sapUiBaseBorder, 100%);	// #ffffff
@@ -2160,6 +2164,11 @@ html[data-sap-ui-browser^="cr"] .sapUiGrid td > .sapUiCb{
 	margin: 0px;
 }
 
+html[data-sap-ui-browser="ie8"] .sapUiColorPicker-ColorPickerAlphaSlider.sapUiSliHori .sapUiSliBar,
+html[data-sap-ui-browser="ie9"] .sapUiColorPicker-ColorPickerAlphaSlider.sapUiSliHori .sapUiSliBar {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/ColorPicker/Alphaslider_BG.png') progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#FF000000',GradientType=1 ); /* IE6-9 */
+}
+
 .sapUiColorPicker-ColorPickerSlider.sapUiSliHori .sapUiSliBar, 
 .sapUiColorPicker-ColorPickerSlider.sapUiSliHori .sapUiSliBar .sapUiSliHiLi
 	{
@@ -2273,14 +2282,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 /*                       Base DATEPICKER                        */
 /****************************************************************/
 
-.sapUi-visibilityHidden {
-	visibility: hidden;
-	/* to avoid scollbars */
-	position: absolute;
-	top: -1000px;
-	left: -1000px;
-}
-
 /* calendar icon */
 .sapUiTfCombo > .sapUiTfDateIcon {
 	background-image: url(img/datepicker/icon_cal.png);
@@ -2305,122 +2306,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 	background-image: url(img/datepicker/icon_cal_disabled.png);
 }
 
-/* hide trigger button */
-.sapUiTfCombo > .ui-datepicker-trigger{
-	display: none;
-}
-
-/*********************** Picker container. ***********************/
-.sapUi-jQdatePicker.ui-datepicker{
-	background: none repeat scroll 0 0 @sapUiFieldBackground;
-	border-color: @sapUiFieldBorderColor;
-	margin-left: -1px; /* To account for the outer DIV    */
-	margin-top: 1px;   /* DatePicker must be under the border */
-	width: 14em;       /* For Calendar pad to reach about 168px */
-}
-
-.sapUi-jQdatePicker.ui-datepicker.sapUi-DP-top{
-	margin-top: -1px;   /* DatePicker must be over the border */
-}
-
-/* Picker Header */
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-header{
-	background: none repeat scroll 0 0 transparent;
-	border: none;
-}
-
-/* Picker Previous and Next month buttons */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover {
-	cursor: pointer;
-}
-
-/* Picker Previous month arrow */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon {
-	background-image: url(img/datepicker/v_remove.gif);
-	background-position: 4px 2px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	background-image: url(img/datepicker/v_add.gif);
-	background-position: 1px 2px;
-}
-
-/* Picker Month & Year DDLB selectors */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	font-size: 0.9em;
-	font-family: @sapUiFontFamily;
-}
-
-/* Picker Text cells */
-.sapUi-jQdatePicker.ui-datepicker th {
-	border:1px solid @sapUiFieldBorderColor;
-	border-width: 1px;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	overflow: hidden; /* maybe weekdays are too large*/
-}
-
-/* Picker Number cells */
-.sapUi-jQdatePicker.ui-datepicker td {
-	border:1px solid @sapUiFieldBorderColor;
-	border-width: 1px;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	text-align: center;
-}
-
-/* Picker cell contents (span or a) */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	background: none repeat scroll 0 0 @sapUiFieldBackground;
-	border: none;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	text-align: center;
-}
-
-/* Picker Wk# column */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col {
-	color: @sapUiLink;
-	border: none;
-}
-
-/* Picker Days outside of the month */
-.sapUi-jQdatePicker .ui-datepicker-other-month > .ui-state-default {
-	color: @sapUiContentDisabledTextColor;
-	opacity: 1;
-}
-
-/* Picker OnHover Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	background-color: @sapUiDarkBG;
-}
-
-/* Picker Today */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiMediumBG;
-}
-
-/* Picker Currently-Selected Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day >.ui-state-default {
-	background-color: @sapUiHighlight;
-}
-
-/* "Previous" and "Next" onHover buttons */
-.sapUi-jQdatePicker .ui-state-hover,
-.sapUi-jQdatePicker .ui-widget-content .ui-state-hover,
-.sapUi-jQdatePicker .ui-widget-header .ui-state-hover,
-.sapUi-jQdatePicker .ui-state-focus, .ui-widget-content .ui-state-focus,
-.sapUi-jQdatePicker .ui-widget-header .ui-state-focus {
-	border-color: transparent;
-	background: none;
-}
-
 .sapUiTableCellEdit .sapUiTfStd > .sapUiTfDateIcon:hover,
 .sapUiTableCellEdit .sapUiTfFoc > .sapUiTfDateIcon {
 	background-color: @sapUiWhiteBG;
@@ -2436,11 +2321,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 	background-image: url(img/datepicker/icon_cal.png), -webkit-gradient(linear, left top, left bottom, from(@sapUiWhiteBG), color-stop(0.05, @sapUiWhiteBG), color-stop(0.75, @sapUiWhiteBG), color-stop(0.95, @sapUiWhiteBG),  to(@sapUiWhiteBG));
 	border-width: 0px;
 }
-
-/* .sapUi-jQdatePicker .dev-datepicker{
-	color: @sapUiBaseText;
-	border: 1px solid blue;
-} */
 /* ================================================= */
 /* CSS for control sap.ui.commons/DatePicker.control */
 /* Goldreflection theme                              */
@@ -2470,211 +2350,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 html[data-sap-ui-os^="iOS6"] .sapUiTfDsbl > .sapUiTfInner.sapUiTf[type="date"]{
 	/* On iPad with iOS6 for disabled input fields an opacity is set.*/
 	color: darken(@sapUiContentDisabledTextColor, 25); /* looks better than original color because this is nor readable*/
-}
-
-/**************** DatePicker ****************/
-.sapUi-jQdatePicker.ui-datepicker {
-	border: 4px solid @sapUiFieldBackground;
-	padding: 0;
-	width: 190px;
-}
-
-.sapUi-jQdatePicker.ui-corner-all,
-.sapUi-jQdatePicker .ui-corner-all { 
-	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-header {
-	padding: 0 0 9px 0;
-}
-
-/* Previous and Next arrows */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next {
-	height: 22px;
-	width: 22px;
-	top: 0;
-	border: none;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev{
-	left: 0;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next{
-	right: 0;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover {
-	background-color: @sapUiButtonHoverBackground;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
-	margin: 0;
-	background-position: center center;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon {
-	background-image: url(img/arrow_left.png);
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover > .ui-icon {
-	background-image: url(img/arrow_left_hover.png);
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	background-image: url(img/arrow_right.png);
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover > .ui-icon {
-	background-image: url(img/arrow_right_hover.png);
-}
-
-/* Month and Year selectors */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title{
-	margin: 0 22px;
-	line-height: 12px;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	font-weight: bold;
-	font-size: 12px;
-	color:@sapUiDeepText;
-	margin: 0 1px;
-	width: 47%;
-	border: 1px solid @sapUiExtraLightBG;
-	height: 22px;
-}
-html[data-sap-ui-browser="sf5"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	margin: 0;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select:hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select:focus {
-	background-color: @sapUiButtonHoverBackground;
-	color: @sapUiTextSelection;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select option {
-	background-color: @sapUiFieldBackground;
-	color:@sapUiDeepText;
-}
-
-/* Table */
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-calendar{
-	width: auto;
-	margin: 0;
-}
-/* Header */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col,
-.sapUi-jQdatePicker.ui-datepicker th > span,
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	display: block;
-	width: 18px;
-	height: 18px;
-	line-height: 18px;
-	padding: 1px;
-	border: 1px solid transparent;
-}
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col,
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker th > span,
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	line-height: 19px; 
-}
-.sapUi-jQdatePicker.ui-datepicker td.ui-datepicker-week-col {
-	color: @sapUiHighlight;
-	font-size: 11px;
-	font-weight: bold;
-	background: transparent;
-	padding-top: 2px;
-}
-.sapUi-jQdatePicker.ui-datepicker th {
-	border-color: @sapUiFieldBackground;
-	border-width: 0 0 0 2px;
-	padding: 0;
-	color: @sapUiHighlight;
-	font-size: 11px;
-	font-weight: bold;
-}
-
-/* Pad */
-.sapUi-jQdatePicker.ui-datepicker td {
-	border-color: @sapUiFieldBackground;
-	border-width: 2px 0 0 2px;
-	font-size: 12px;
-	padding: 0;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	color:@sapUiDeepText;
-
-	background-color: @sapUiExtraLightBG;
-}
-/* Picker OnHover Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	background-color: @sapUiHighlight;
-	color: @sapUiTextSelection;
-}
-/* Picker Days outside of the month */
-.sapUi-jQdatePicker .ui-datepicker-other-month > .ui-state-default {
-	color: @sapUiLightText;
-}
-html[data-sap-ui-browser^="ie"] .sapUi-jQdatePicker .ui-datepicker-other-month{
-	filter: Alpha(Opacity=100); opacity: 100;
-}
-
-/* Picker Today */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiFieldBackground;
-	border-color: @sapUiCalendarColorToday;
-	border-width: 3px;
-	width: 14px;
-	height: 14px;
-	line-height: 14px;
-}
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	line-height: 15px;
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	border-color: @sapUiButtonHoverBackground;
-}
-html[data-sap-ui-browser="ie8"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiCalendarColorToday; /*As IE8 don't support shadows - complete filled*/
-}
-
-/* Picker Currently-Selected Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default{
-	border-color: @sapUiButtonHoverBackground;
-	background-color: @sapUiFieldBackground;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	border-color: @sapUiButtonHoverBackground;
-	border-width: 1px;
-	box-shadow: inset 1px 1px 0 1px @sapUiCalendarColorToday, inset -1px -1px 0 1px @sapUiCalendarColorToday;
-	-moz-box-shadow: inset 1px 1px 0 1px @sapUiCalendarColorToday, inset -1px -1px 0 1px @sapUiCalendarColorToday;
-	-webkit-box-shadow: inset 1px 1px 0 1px @sapUiCalendarColorToday, inset -1px -1px 0 1px @sapUiCalendarColorToday;
-	width: 18px;
-	height: 18px;
-	line-height: 18px;
-}
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	line-height: 19px; 
-}
-html[data-sap-ui-browser="ie8"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	background-color: @sapUiCalendarColorToday; /*As IE8 don't support shadows - complete filled*/
-}
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day.ui-datepicker-today > .ui-state-default.ui-state-hover{
-	border-color: transparent;
-	color: @sapUiTextSelection;
-	box-shadow: none;
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-}
-
-/* Hide outline for focused day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default:focus {
-	outline: none;
 }
 .sapUiDlg {
 	position: absolute; /*relative;/* enable positioning for children */
@@ -2919,69 +2594,6 @@ html[data-sap-ui-browser="ie8"] .sapUiDlgGrip {
 /* =================================================== */
 /* CSS for control sap.ui.commons/FileUploader.control */
 /* =================================================== */
-
-.sapUiFup {
-	display: inline-block;
-}
-
-.sapUiFupGroup {
-	display: table;
-}
-
-.sapUiFupGroup > div {
-	display: table-row;
-}
-
-.sapUiFupGroup > div > div {
-	display: table-cell;
-}
-
-.sapUiFupGroup > div > div:last-child {
-	padding-left: 1px;
-}
-
-.sapUiFup > form {
-	display: inline-block;
-}
-
-.sapUiFup > form > div {
-	position: relative;
-	display: inline-block;
-}
-
-.sapUiFupInputMask {  /* the element masking the real (but hidden) file input, so the clickable area has exactly the same size as the visible control */
-	display: inline-block;
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	overflow: hidden;
-}
-
-.sapUiFupInputMask > input { /* the real, but hidden file input */
-	position: absolute;
-	opacity: 0;
-	top: 0px;
-	bottom: 0px;
-	cursor: pointer;
-	cursor: hand;
-	left: -4em;       /* avoid the input field behind the file chooser */
-	font-size: 500px; /* to make the field high enough for most themes; for themes with very large fonts this needs to be increased further */
-}
-
-html[data-sap-ui-browser="ie8"] .sapUiFupInputMask > input { /* for IE8 the file input should be native */
-	position: relative;
-	left: auto;
-	font-size: small;
-}
-
-html[data-sap-ui-browser^="sf"] .sapUiFupInputMask > input, /* for Safari and Chrome the file input is not clickable with opacity "0" */
-html[data-sap-ui-browser^="cr"] .sapUiFupInputMask > input {
-	position: relative;
-	left: auto;
-	opacity: 0.01;
-}
 .sapUiFupGroup > div > div:last-child {
 	padding-left: 4px;
 }
@@ -4278,290 +3890,6 @@ html[dir=rtl][data-sap-ui-browser=ff3] .sapUiLbx.sapUiLbxFlexWidth > ul > li > s
 .sapUiLbxIIcoFont{
 	font-size: 16px;
 	line-height: 16px;
-}
-@sapUiMnuItmHeight: 20px;
-
-.sapUiMnu {
-	/* initially hidden off the screen */
-	position: absolute;
-	top: -10000px;
-	display: block;
-	min-width: 80px;
-	border: 1px solid @sapUiMediumBorder; /* the regular popup menu border */
-	background-color: @sapUiLightBG; /* the popup menu's main background */
-	cursor: default;
-	outline: none;
-	overflow: hidden;
-	padding: 1px;
-}
-
-.sapUiMnuLst {
-	padding: 0;
-	margin: 0;
-	display: block;
-	cursor: default;
-	color: @sapUiBaseText;
-	font-size: @sapUiFontSize;
-	font-family: @sapUiFontFamily;
-}
-
-.sapUiMnuItm {
-	display: block;
-	height: @sapUiMnuItmHeight;
-	line-height: @sapUiMnuItmHeight;
-	white-space: nowrap;
-	position: relative;
-}
-
-.sapUiMnuItm.sapUiMnuItmDsbl,
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmDsbl > .sapUiMnuItmTxt > label,
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmDsbl.sapUiMnuItmHov > .sapUiMnuItmTxt > label {
-	color: @sapUiContentDisabledTextColor;
-}
-
-.sapUiMnuItm.sapUiMnuItmHov {
-	color: @sapUiTextSelection;
-	background-color: @sapUiHighlight;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmHov > .sapUiMnuItmTxt > label {
-	color: @sapUiTextSelection;
-}
-
-.sapUiMnuItm.sapUiMnuItmDsbl.sapUiMnuItmHov {
-	background-color: darken(@sapUiWhiteBG, 24.7);
-	color: @sapUiContentDisabledTextColor;
-}
-
-.sapUiMnuItmL,
-.sapUiMnuItmIco,
-.sapUiMnuItmTxt,
-.sapUiMnuItmSCut,
-.sapUiMnuItmSbMnu,
-.sapUiMnuItmR {
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
-	overflow: hidden;
-	outline: none;
-}
-
-.sapUiMnuItmSCut,
-.sapUiMnuItmSbMnu,
-.sapUiMnuItmR {
-	position: absolute;
-	top: 0px;
-}
-
-.sapUiMnuItmL{
-	width: 2px;
-}
-
-.sapUiMnuItmIco {
-	width: 20px;
-}
-
-.sapUiMnuItmIco > img{
-	max-width: 16px;
-	max-height: 16px;
-	padding-left: 2px;
-	vertical-align: middle;
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmIco > img {
-	opacity: 0.5;
-	filter: alpha(opacity=50);
-}
-
-.sapUiMnuNoIco > .sapUiMnuItm > .sapUiMnuItmIco {
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmTxt {
-	padding-right: 27px; /*22+5*/
-	white-space: nowrap;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt {
-	padding-right: 5px;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > label {
-	margin-right: 5px;
-	line-height: @sapUiMnuItmHeight;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr {
-	position: absolute;
-	right: 5px;
-	top: 0;
-	width: 22ex;
-	display: inline-block;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr > input {
-	width: 100%;
-}
-
-.sapUiMnuTfItmStretch {
-	display: inline-block;
-	width: 22ex;
-	height: 1px;
-}
-
-.sapUiMnuNoSbMnu > .sapUiMnuItm > .sapUiMnuItmTxt {
-	padding-right: 7px; /*2+5*/
-}
-
-.sapUiMnuItmSCut {
-	white-space: nowrap;
-	right: 22px;
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmSbMnu {
-	right: 2px;
-	width: 20px;
-}
-
-.sapUiMnuItmSbMnu > div {
-	width: 18px;
-	background-image: url("img/menu/menuitem-sub.gif");
-	background-repeat: no-repeat;
-	background-position: center center;
-	outline: none;
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-dis.gif");
-}
-
-.sapUiMnuNoSbMnu > .sapUiMnuItm > .sapUiMnuItmSbMnu {
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmR {
-	width: 2px;
-	right: 0px;
-}
-
-.sapUiMnuDiv{
-	position: relative;
-	height: 3px;
-}
-
-.sapUiMnuDiv > hr {
-	display: inline-block;
-	margin: 0;
-	position: absolute;
-	left: 5px;
-	right: 5px;
-	margin-top: 1px;
-	margin-bottom: 1px;
-	border-width: 0;
-	border-top: 1px solid @sapUiMediumBorder;
-	height: 1px;
-}
-
-.sapUiMnuDivL,
-.sapUiMnuDivR{
-	display: inline-block;
-	position: absolute;
-	width: 5px;
-	height: 100%;
-}
-
-.sapUiMnuDivR{
-	right: 0;
-}
-
-.sapUiMnuDivL{
-	left: 0;
-}
-@sapUiMnuItmHeight: 25px; 
-
-.sapUiMnu { 
-	padding: 1px;
-	background-color: @sapUiExtraLightBG;
-	border: 1px solid @sapUiMediumLine;
-	color: @sapUiDarkText;
-}
-
-.sapUiMnu.sapUiMnuTop {
-	border: 1px solid @sapUiDarkBG;
-	background-color: transparent;
-	padding: 0;
-}
-
-.sapUiMnuTop > .sapUiMnuLst {
-	background-color: @sapUiBlackBG;
-	color: @sapUiTextInverted;
-	background-color: rgba(0, 0, 0, .84);
-}
-
-.sapUiMnuItm.sapUiMnuItmDsbl.sapUiMnuItmHov {
-	background-color: transparent;
-}
-
-.sapUiMnuItmL,
-.sapUiMnuItmR {
-	width: 0px;
-}
-
-.sapUiMnuItmIco {
-	padding-left: 5px;
-	width: 16px;
-}
-
-.sapUiMnuItmIco > img {
-	padding-bottom: 1px;
-	padding-left: 0;
-}
-
-.sapUiMnuItmTxt {
-	padding-left: 5px;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr > input {
-	margin-top: 2px;
-	height: 21px; 
-}
-
-.sapUiMnu.sapUiMnuTop .sapUiMnuItm.sapUiMnuTfItm.sapUiMnuTfItm > .sapUiMnuItmTxt > label {
-	color: @sapUiTextSelection;
-}
-
-.sapUiMnu.sapUiMnuTop .sapUiMnuItm.sapUiMnuTfItm.sapUiMnuTfItm.sapUiMnuItmDsbl > .sapUiMnuItmTxt > label {
-	color: @sapUiContentDisabledTextColor;
-}
-
-.sapUiMnuItmSbMnu > div {
-	width: 9px;
-	margin-left: 4px;
-	background-image: url("img/menu/menuitem-sub.png");
-}
-
-.sapUiMnuTop .sapUiMnuItmSbMnu > div,
-.sapUiMnuItm.sapUiMnuItmHov > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-hov.png");
-}
-
-.sapUiMnuTop .sapUiMnuItmHov:not(.sapUiMnuItmDsbl) > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-hov.png");
-}
-
-html[data-sap-ui-browser="ie8"] .sapUiMnuTop .sapUiMnuItmHov > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-hov.png");
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div,
-.sapUiMnuItmDsbl.sapUiMnuItmHov > .sapUiMnuItmSbMnu > div,
-.sapUiMnuTop .sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div,
-html[data-sap-ui-browser="ie8"] .sapUiMnuTop .sapUiMnuItmHov.sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div {
-	background-image: url(img/menu/menuitem-sub-dis.png);
 }
 .sapUiMnuBar {
 	border: 1px solid black;
@@ -8118,12 +7446,12 @@ html[data-sap-ui-browser^="ie"].sapUiMedia-Std-Desktop .sapUiFormResGridCont > d
 	transition: color 1s linear;
 	-webkit-transition: color 1s linear;
 	-moz-transition: color 1s linear;
-	color: @sapUiFieldWarningColor;
+	color: @sapUiCriticalText; /*looks more like yellow: darken(@sapUiFieldWarningColor, 17);*/
 	background-color: transparent;
 }
 
 .sapUiInverted-CTX .sapUiTvWarn {
-	color: @sapUiFieldWarningColor;
+	color: @sapUiCriticalText; /*looks more like yellow: darken(@sapUiFieldWarningColor, 17);*/
 }
 
 .sapUiTvInfo.sapUiTvSucc,
@@ -9138,6 +8466,7 @@ html[data-sap-ui-browser="ie8"] .sapUiTreeNode{
 	font-size: 0;
 	position: absolute;
 	right: 0;
+	line-height: 100%;
 }
 
 .sapUiTfCombo > span.sapUiTfValueHelpIcon {

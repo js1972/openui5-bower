@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -646,7 +646,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @function
  * @param {int} 
  *         iIIndex
- *         
+ * 
 
  * @type void
  * @public
@@ -685,7 +685,7 @@ sap.ui.ux3.DataSet.M_EVENTS = {'selectionChanged':'selectionChanged','search':'s
  * @function
  * @param {sap.ui.commons.ToolbarItem} 
  *         oOToolbarItem
- *         
+ * 
 
  * @type void
  * @public

@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -626,13 +626,13 @@ sap.ui.core.Control.extend("sap.ui.commons.Panel", { metadata : {
  * @function
  * @param {sap.ui.core.CSSSize} 
  *         sWidth
- *         
- * Panel width as CSS size
+ * 
+ *         Panel width as CSS size
  * 
  * @param {sap.ui.core.CSSSize} 
  *         sHeight
- *         
- * Panel height as CSS size
+ * 
+ *         Panel height as CSS size
  * 
 
  * @type sap.ui.commons.Panel

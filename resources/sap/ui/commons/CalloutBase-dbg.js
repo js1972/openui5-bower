@@ -43,8 +43,7 @@ jQuery.sap.require("sap.ui.core.TooltipBase");
  * <li>{@link sap.ui.commons.CalloutBase#event:open open} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.ui.commons.CalloutBase#event:close close} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.ui.commons.CalloutBase#event:beforeOpen beforeOpen} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.CalloutBase#event:opened opened} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.CalloutBase#event:closed closed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.ui.commons.CalloutBase#event:opened opened} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
  *
@@ -60,7 +59,7 @@ jQuery.sap.require("sap.ui.core.TooltipBase");
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -80,8 +79,7 @@ sap.ui.core.TooltipBase.extend("sap.ui.commons.CalloutBase", { metadata : {
 		"open" : {}, 
 		"close" : {}, 
 		"beforeOpen" : {allowPreventDefault : true}, 
-		"opened" : {}, 
-		"closed" : {}
+		"opened" : {}
 	}
 }});
 
@@ -102,7 +100,7 @@ sap.ui.core.TooltipBase.extend("sap.ui.commons.CalloutBase", { metadata : {
  * @function
  */
 
-sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen':'beforeOpen','opened':'opened','closed':'closed'};
+sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen':'beforeOpen','opened':'opened'};
 
 
 /**
@@ -218,7 +216,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
 
 /**
  * Fire event close to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @protected
@@ -279,7 +277,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * Fire event beforeOpen to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'parent' of type <code>sap.ui.core.Control</code> Parent control that has this Callout as a tooltip</li>
@@ -345,74 +343,12 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
 
 /**
  * Fire event opened to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @protected
  * @since 1.11.0
  * @name sap.ui.commons.CalloutBase#fireOpened
- * @function
- */
-
-
-/**
- * Is fired when the Callout has been closed 
- *
- * @name sap.ui.commons.CalloutBase#closed
- * @event
- * @since 1.11.0
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'closed' event of this <code>sap.ui.commons.CalloutBase</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself. 
- *  
- * Is fired when the Callout has been closed 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
- *
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @public
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#attachClosed
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'closed' event of this <code>sap.ui.commons.CalloutBase</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @public
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#detachClosed
- * @function
- */
-
-/**
- * Fire event closed to attached listeners.
-
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @protected
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#fireClosed
  * @function
  */
 
@@ -789,7 +725,7 @@ sap.ui.commons.CalloutBase.prototype.closePopup = function() {
 sap.ui.commons.CalloutBase.prototype.handleClosed = function(){
 	if (this.oPopup){
 		this.oPopup.detachEvent("closed", this.handleClosed, this);
-		this.fireEvent(sap.ui.core.Popup.M_EVENTS.closed);
+		this.fireClosed();
 	}
 };
 
@@ -846,7 +782,7 @@ sap.ui.commons.CalloutBase.prototype.handleOpened = function() {
 		this.bFocused = true; // Remember to set focus to parent on close
 	}
 	
-	this.fireEvent(sap.ui.core.Popup.M_EVENTS.opened);
+	this.fireOpened();
 	
 	// - listen to mouse over events outside
 	//   do always because the Callout can lose focus to child popup controls

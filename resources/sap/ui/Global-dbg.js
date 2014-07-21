@@ -18,7 +18,7 @@
  * sap.ui.lazyRequire("sap.ui.core.Control");
  * sap.ui.lazyRequire("sap.ui.commons.Button");
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @author  Martin Schaus, Daniel Brinkmann
  * @public
  */
@@ -40,7 +40,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap</code> namespace is automatically registered with the
 	 * OpenAjax hub if it exists.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @name sap
@@ -53,7 +53,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.dom'],
 	 * The <code>sap.ui</code> namespace is the central OpenAjax compliant entry
 	 * point for UI related JavaScript functionality provided by SAP.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @name sap.ui
 	 * @public
@@ -66,9 +66,40 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.dom'],
 			 * The version of the SAP UI Library
 			 * @type string
 			 */
-			version: "1.20.10",
-			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201407091311" }
+			version: "1.22.4",
+			buildinfo : { lastchange : "${ldi.scm.revision}", buildtime : "201407151731" }
 		});
+
+	/**
+	 * Loads the version info file (resources/sap-ui-version.json) and returns 
+	 * it or if a library name is specified then the version info of the individual 
+	 * library will be returned.
+	 * 
+	 * In case of the version info file is not available an error will occur when
+	 * calling this function.
+	 * 
+	 * @param {string} [sLibName] name of the library (e.g. "sap.ui.core")
+	 * @return {object} either the full version info or the library specific one
+	 * @public
+	 * @static
+	 */
+	sap.ui.getVersionInfo = function(sLibName) {
+		if (!sap.ui.versioninfo) {
+			sap.ui.versioninfo = jQuery.sap.loadResource("sap-ui-version.json");
+		}
+		if (sLibName !== undefined) {
+			// find the version of the individual library 
+			var aLibs = sap.ui.versioninfo.libraries;
+			for (var i = 0, l = aLibs.length; i < l; i++) {
+				if (aLibs[i].name === sLibName) {
+					return aLibs[i];
+				}
+			}
+		} else {
+			// returns the full version info
+			return sap.ui.versioninfo;
+		}
+	};
 	
 	/**
 	 * Ensures that a given a namespace or hierarchy of nested namespaces exists in the

@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -91,7 +91,7 @@ sap.ui.core.Control.extend("sap.m.ActionSheet", { metadata : {
     	"_cancelButton" : {type : "sap.m.Button", multiple : false, visibility : "hidden"}
 	},
 	events : {
-		"cancelButtonTap" : {}, 
+		"cancelButtonTap" : {deprecated: true}, 
 		"beforeOpen" : {}, 
 		"afterOpen" : {}, 
 		"beforeClose" : {}, 
@@ -197,7 +197,8 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Getter for property <code>title</code>.
- * Title will be show in the header area in iPhone and every Android devices. This property will be ignored in iPad.
+ * Title will be shown in the header area in iPhone and every Android
+ * devices. This property will be ignored in tablets and desktop browser.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -302,10 +303,12 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 
 /**
- * This event is fired when the cancelButton is tapped. For iPad, this event is also fired when showCancelButton is set to true, and Popover is closed by tapping outside. (This event is deprecated, use the press event instead) 
+ * This event is fired when the cancelButton is tapped. For iPad, this event is also fired when showCancelButton is set to true, and Popover is closed by tapping outside. 
  *
  * @name sap.m.ActionSheet#cancelButtonTap
  * @event
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the cancelButtonPress event instead.
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -318,7 +321,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ActionSheet</code>.<br/> itself. 
  *  
- * This event is fired when the cancelButton is tapped. For iPad, this event is also fired when showCancelButton is set to true, and Popover is closed by tapping outside. (This event is deprecated, use the press event instead) 
+ * This event is fired when the cancelButton is tapped. For iPad, this event is also fired when showCancelButton is set to true, and Popover is closed by tapping outside. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -329,6 +332,8 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  *
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the cancelButtonPress event instead.
  * @name sap.m.ActionSheet#attachCancelButtonTap
  * @function
  */
@@ -344,16 +349,20 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
  *            oListener Context object on which the given function had to be called.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the cancelButtonPress event instead.
  * @name sap.m.ActionSheet#detachCancelButtonTap
  * @function
  */
 
 /**
  * Fire event cancelButtonTap to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the cancelButtonPress event instead.
  * @name sap.m.ActionSheet#fireCancelButtonTap
  * @function
  */
@@ -408,7 +417,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Fire event beforeOpen to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
@@ -466,7 +475,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Fire event afterOpen to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
@@ -524,7 +533,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Fire event beforeClose to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
@@ -582,7 +591,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Fire event afterClose to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
@@ -640,7 +649,7 @@ sap.m.ActionSheet.M_EVENTS = {'cancelButtonTap':'cancelButtonTap','beforeOpen':'
 
 /**
  * Fire event cancelButtonPress to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ActionSheet} <code>this</code> to allow method chaining
  * @protected
@@ -724,11 +733,11 @@ sap.m.ActionSheet.prototype._setItemNavigation = function() {
 		this._oItemNavigation.setRootDomRef(oDomRef);
 		for(var i = 0; i < aButtons.length; i++){
 			if(aButtons[i].getEnabled()){
-				aDomRefs.push(aButtons[i].getDomRef());
+				aDomRefs.push(aButtons[i].getFocusDomRef());
 			}
 		}
 		if(this._oCancelButton){
-			aDomRefs.push(this._oCancelButton.getDomRef());
+			aDomRefs.push(this._oCancelButton.getFocusDomRef());
 		}
 		this._oItemNavigation.setItemDomRefs(aDomRefs);
 		this._oItemNavigation.setSelectedIndex(0);
@@ -923,11 +932,13 @@ sap.m.ActionSheet.prototype.openBy = function(oControl){
 				this._parent._adjustScrollingPane = function(){
 					var $this = this.$(),
 						iHeight = $this.height(),
-						iHeaderHeight = $this.children("header.sapMBar").outerHeight(true),
+						iHeaderHeight = $this.children("header.sapMIBar").outerHeight(true),
 						$content = this.$("cont");
 				
 					$content.css("max-height", iHeight - iHeaderHeight);
-					this._oScroller.refresh();
+					if (this._oScroller) {
+						this._oScroller.refresh();
+					}
 				};
 				
 				//only need to recalculate the transform offset when window resizes, doesn't need to reposition using Popup.js again for iPhone.
@@ -987,7 +998,7 @@ sap.m.ActionSheet.prototype._createCancelButton = function(){
 //			var sButtonStyle = (sap.ui.Device.os.ios) ? sap.m.ButtonType.Unstyled : sap.m.ButtonType.Default;
 		this._oCancelButton = new sap.m.Button(this.getId() + '-cancelBtn', {
 			text: sCancelButtonText,
-			type: sap.m.ButtonType.Emphasized,
+			type: sap.m.ButtonType.Reject,
 			press : function() {
 				if(!(jQuery.device.is.ipad || (sap.m.Dialog._bOneDesign && !sap.ui.Device.system.phone)) && that._parent){
 					that._parent._oCloseTrigger = this;

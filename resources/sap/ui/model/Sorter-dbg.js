@@ -28,7 +28,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * @public
 	 * @name sap.ui.model.Sorter
 	 */
-	var Sorter = sap.ui.base.Object.extend("sap.ui.model.Sorter", /** @lends sap.ui.model.Sorter */ {
+	var Sorter = sap.ui.base.Object.extend("sap.ui.model.Sorter", /** @lends sap.ui.model.Sorter.prototype */ {
 		
 		constructor : function(sPath, bDescending, vGroup){
 			if (typeof sPath === "object") {

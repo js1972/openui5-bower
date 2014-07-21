@@ -55,7 +55,7 @@ sap.ui.define(['sap/ui/core/library','sap/ui/core/Control','./DOMElement','./DOM
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -201,7 +201,7 @@ sap.ui.core.tmpl.TemplateControl.M_EVENTS = {'afterRendering':'afterRendering','
 
 /**
  * Fire event afterRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.tmpl.TemplateControl} <code>this</code> to allow method chaining
  * @protected
@@ -259,7 +259,7 @@ sap.ui.core.tmpl.TemplateControl.M_EVENTS = {'afterRendering':'afterRendering','
 
 /**
  * Fire event beforeRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.tmpl.TemplateControl} <code>this</code> to allow method chaining
  * @protected

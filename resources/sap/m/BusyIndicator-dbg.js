@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -697,12 +697,12 @@ sap.m.BusyIndicator.prototype.setDesign = function(sDesign) {
  *
  * Default value is <code>true</code>
  *
+ * The default implementation of the "setVisible" function is enhanced 
+ * in order to toggle the "visibility:hidden;" attribute over the control.
+ *
  * @param {boolean} bVisible  new value for property <code>visible</code>
  * @return {sap.m.BusyIndicator} <code>this</code> to allow method chaining
  * @public
- *
- * The MessageBar.API.js "setVisible" function is enhanced in order to
- * toggle the "visibility:hidden;" attribute over the control.
  */
 sap.m.BusyIndicator.prototype.setVisible = function(bVisible){
 	var oDomRef = this.getDomRef();

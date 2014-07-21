@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -480,7 +480,7 @@ sap.m.Shell.M_EVENTS = {'logout':'logout'};
 
 /**
  * Fire event logout to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.Shell} <code>this</code> to allow method chaining
  * @protected

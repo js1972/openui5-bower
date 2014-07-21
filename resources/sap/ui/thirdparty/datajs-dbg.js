@@ -3669,7 +3669,9 @@
     var edmNs2b = ado + "2009/08/edm";                  // http://schemas.microsoft.com/ado/2009/08/edm
 
     var edmNs3 = ado + "2009/11/edm";                   // http://schemas.microsoft.com/ado/2009/11/edm
-
+    // ##### BEGIN: MODIFIED BY SAP
+	var edmNs4 = http + "docs.oasis-open.org/odata/ns/edm";  // http://docs.oasis-open.org/odata/ns/edm
+	// ##### END: MODIFIED BY SAP
     var odataXmlNs = adoDs;                             // http://schemas.microsoft.com/ado/2007/08/dataservices
     var odataMetaXmlNs = adoDs + "/metadata";           // http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
     var odataRelatedPrefix = adoDs + "/related/";       // http://schemas.microsoft.com/ado/2007/08/dataservices/related
@@ -5679,8 +5681,14 @@
         elements: {
             Annotations: schemaElement(
             /*attributes*/["Target", "Qualifier"],
-            /*elements*/["TypeAnnotation*", "ValueAnnotation*"]
+            /*elements*/["Annotation*","TypeAnnotation*", "ValueAnnotation*"] // ##### MODIFIED BY SAP
             ),
+            // ##### BEGIN: MODIFIED BY SAP
+            Annotation: schemaElement(
+            /*attributes*/["Term"],
+            /*elements*/["Record"]
+            ),
+            // ##### END: MODIFIED BY SAP
             Association: schemaElement(
             /*attributes*/["Name"],
             /*elements*/["End*", "ReferentialConstraint", "TypeAnnotation*", "ValueAnnotation*"]
@@ -5826,9 +5834,15 @@
             /*attributes*/["Name"]
             ),
             PropertyValue: schemaElement(
-            /*attributes*/["Property", "Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time"],
-            /*Elements*/["Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time", "Collection", "Record", "LabeledElement", "Null"]
+            /*attributes*/["PropertyPath", "Property", "Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time"], // ##### MODIFIED BY SAP
+            /*Elements*/["Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time", "Collection", "Record", "LabeledElement", "Null"] 
             ),
+            // ##### BEGIN: MODIFIED BY SAP
+            Record: schemaElement(
+            /*attributes*/["Type"],
+            /*Elements*/["PropertyValue*"] 
+            ),
+            // ##### END: MODIFIED BY SAP
             ReferenceType: schemaElement(
             /*attributes*/["Type"]
             ),
@@ -5981,6 +5995,9 @@
             || nsURI === edmNs2a
             || nsURI === edmNs2b
             || nsURI === edmNs3
+            // ##### BEGIN: MODIFIED BY SAP
+            || nsURI === edmNs4
+            // ##### END: MODIFIED BY SAP
     };
 
     var parseConceptualModelElement = function (element) {

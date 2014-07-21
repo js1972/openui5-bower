@@ -46,7 +46,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getCurtainPaneContent curtainPaneContent} : sap.ui.core.Control[]</li>
  * <li>{@link #getHeadItems headItems} : sap.ui.unified.ShellHeadItem[]</li>
  * <li>{@link #getHeadEndItems headEndItems} : sap.ui.unified.ShellHeadItem[]</li>
- * <li>{@link #getSearch search} : sap.ui.core.Control</li></ul>
+ * <li>{@link #getSearch search} : sap.ui.core.Control</li>
+ * <li>{@link #getUser user} : sap.ui.unified.ShellHeadUserItem</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -65,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -96,7 +97,8 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
     	"headEndItems" : {type : "sap.ui.unified.ShellHeadItem", multiple : true, singularName : "headEndItem"}, 
     	"search" : {type : "sap.ui.core.Control", multiple : false}, 
     	"canvasSplitContainer" : {type : "sap.ui.unified.SplitContainer", multiple : false, visibility : "hidden"}, 
-    	"curtainSplitContainer" : {type : "sap.ui.unified.SplitContainer", multiple : false, visibility : "hidden"}
+    	"curtainSplitContainer" : {type : "sap.ui.unified.SplitContainer", multiple : false, visibility : "hidden"}, 
+    	"user" : {type : "sap.ui.unified.ShellHeadUserItem", multiple : false}
 	}
 }});
 
@@ -605,7 +607,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Getter for aggregation <code>headItems</code>.<br/>
- * The buttons shown in the begin (left in left-to-right case) of the Shell header. Currently max. 3 buttons are supported.
+ * The buttons shown in the begin (left in left-to-right case) of the Shell header. Currently max. 3 visible buttons are supported.
  * 
  * @return {sap.ui.unified.ShellHeadItem[]}
  * @public
@@ -686,7 +688,7 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
 
 /**
  * Getter for aggregation <code>headEndItems</code>.<br/>
- * The buttons shown in the end (right in left-to-right case) of the Shell header. Currently max. 3 buttons are supported.
+ * The buttons shown in the end (right in left-to-right case) of the Shell header. Currently max. 3 visible buttons are supported (when user is set only 1).
  * 
  * @return {sap.ui.unified.ShellHeadItem[]}
  * @public
@@ -796,6 +798,40 @@ sap.ui.core.Control.extend("sap.ui.unified.Shell", { metadata : {
  */
 
 
+/**
+ * Getter for aggregation <code>user</code>.<br/>
+ * The user item which is rendered in the shell header beside the items.
+ * 
+ * @return {sap.ui.unified.ShellHeadUserItem}
+ * @public
+ * @since 1.22.0
+ * @name sap.ui.unified.Shell#getUser
+ * @function
+ */
+
+
+/**
+ * Setter for the aggregated <code>user</code>.
+ * @param {sap.ui.unified.ShellHeadUserItem} oUser
+ * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22.0
+ * @name sap.ui.unified.Shell#setUser
+ * @function
+ */
+	
+
+/**
+ * Destroys the user in the aggregation 
+ * named <code>user</code>.
+ * @return {sap.ui.unified.Shell} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22.0
+ * @name sap.ui.unified.Shell#destroyUser
+ * @function
+ */
+
+
 // Start of sap\ui\unified\Shell.js
 jQuery.sap.require("sap.ui.Device");
 jQuery.sap.require("jquery.sap.script");
@@ -821,6 +857,7 @@ sap.ui.unified.Shell.prototype.init = function(){
 	this._animation = sap.ui.getCore().getConfiguration().getAnimation();
 	this._showHeader = true;
 	this._iHeaderHidingDelay = 3000; /*Currently hidden but maybe a property later (see getter and setter below)*/
+	this._useStrongBG = false;
 	
 	this._cont = new sap.ui.unified.SplitContainer(this.getId()+"-container");
 	this._cont._bRootContent = true; // see e.g. sap.m.App#onAfterRendering
@@ -836,8 +873,8 @@ sap.ui.unified.Shell.prototype.init = function(){
 		}
 		
 		var w = sap.ui.unified.Shell["_SIDEPANE_WIDTH_"+sRange.toUpperCase()]+"px";
-		that._cont.setSecondaryContentWidth(w);
-		that._curtCont.setSecondaryContentWidth(w);
+		that._cont.setSecondaryContentSize(w);
+		that._curtCont.setSecondaryContentSize(w);
 	};
 	
 	_setSidePaneWidth();
@@ -853,6 +890,20 @@ sap.ui.unified.Shell.prototype.init = function(){
 	};
 	
 	sap.ui.Device.media.attachHandler(this._handleMediaChange, this, sap.ui.Device.media.RANGESETS.SAP_STANDARD);
+	
+	this._handleResizeChange = function(mParams){
+		if(!that.getDomRef() || !that.getUser()){
+			return;
+		}
+		
+		var oUser = this.getUser();
+		var bChanged = oUser._checkAndAdaptWidth(!this.$("hdr-search").hasClass("sapUiUfdShellHidden") && !!this.getSearch());
+		if(bChanged){
+			that._refreshHeader();
+		}
+	};
+	
+	sap.ui.Device.resize.attachHandler(this._handleResizeChange, this);
 	
 	function __refreshHeader(){
 		that._refreshHeader();
@@ -875,6 +926,9 @@ sap.ui.unified.Shell.prototype.init = function(){
 sap.ui.unified.Shell.prototype.exit = function(){
 	sap.ui.Device.media.detachHandler(this._handleMediaChange, this, sap.ui.Device.media.RANGESETS.SAP_STANDARD);
 	delete this._handleMediaChange;
+	
+	sap.ui.Device.resize.detachHandler(this._handleResizeChange, this);
+	delete this._handleResizeChange;
 	
 	this._headCenterRenderer.destroy();
 	delete this._headCenterRenderer;
@@ -1062,16 +1116,33 @@ sap.ui.unified.Shell.prototype.setIcon = function(sIcon){
 
 
 sap.ui.unified.Shell.prototype.setSearchVisible = function(bSearchVisible){
-	return this._mod(function(bRendered){
-		return this.setProperty("searchVisible", !!bSearchVisible, bRendered);
-	}, this._headCenterRenderer);
+	var bSearchCurrentlyVisible = this.getSearchVisible(),
+		bSearchVisible = !!bSearchVisible,
+		$search = this.$("hdr-search");
+	
+	if(bSearchCurrentlyVisible == bSearchVisible){
+		return;
+	}
+	
+	$search.toggleClass("sapUiUfdShellHidden", !bSearchVisible);
+	
+	return this.setProperty("searchVisible", bSearchVisible, true);
 };
 
 
 sap.ui.unified.Shell.prototype.setSearch = function(oSearch){
 	return this._mod(function(bRendered){
-		return this.setAggregation("search", oSearch, bRendered);
+		this.setAggregation("search", oSearch, bRendered);
+		this.$().toggleClass("sapUiUfdShellWithSearch", !!oSearch);
+		return this;
 	}, this._headCenterRenderer);
+};
+
+
+sap.ui.unified.Shell.prototype.setUser = function(oUser){
+	return this._mod(function(bRendered){
+		return this.setAggregation("user", oUser, bRendered);
+	}, this._headEndRenderer);
 };
 
 
@@ -1220,6 +1291,11 @@ sap.ui.unified.Shell.prototype.destroyHeadEndItems = function() {
 	}, this._headEndRenderer);
 };
 
+/*Restricted API for Launchpad to set a Strong BG style*/
+sap.ui.unified.Shell.prototype._setStrongBackground = function(bUseStongBG){	
+	this._useStrongBG = !!bUseStongBG;
+	this.$("strgbg").toggleClass("sapMGlobalBackgroundColorStrong", this._useStrongBG);
+};
 
 // ***************** Private Helpers *****************
 
@@ -1247,6 +1323,7 @@ sap.ui.unified.Shell.prototype._timedHideHeader = function(bClearOnly){
 	this._headerHidingTimer = jQuery.sap.delayedCall(this._iHeaderHidingDelay, this, function(){
 		if(this._isHeaderHidingActive() && this._iHeaderHidingDelay > 0 && !jQuery.sap.containsOrEquals(this.getDomRef("hdr"), document.activeElement)){
 			this._doShowHeader(false);
+			this._refreshCSSWorkaround();
 		}
 	});
 };
@@ -1300,11 +1377,17 @@ sap.ui.unified.Shell.prototype._refreshHeader = function(){
 	updateItems(this.getHeadItems());
 	updateItems(this.getHeadEndItems());
 	
-	var isPhoneSize = jQuery("html").hasClass("sapUiMedia-Std-Phone"),
+	var oUser = this.getUser(),
+		isPhoneSize = jQuery("html").hasClass("sapUiMedia-Std-Phone"),
 		searchVisible = !this.$("hdr-search").hasClass("sapUiUfdShellHidden"),
 		$logo = this.$("icon");
 	
-	$logo.parent().toggleClass("sapUiUfdShellHidden", isPhoneSize && searchVisible);
+	if(oUser){
+		oUser._refreshImage();
+		oUser._checkAndAdaptWidth(searchVisible && !!this.getSearch());
+	}
+	
+	$logo.parent().toggleClass("sapUiUfdShellHidden", isPhoneSize && searchVisible && !!this.getSearch());
 	
 	var	we = this.$("hdr-end").outerWidth(),
 		wb = this.$("hdr-begin").outerWidth(),
@@ -1322,20 +1405,10 @@ sap.ui.unified.Shell.prototype._refreshHeader = function(){
 sap.ui.unified.Shell.prototype._getIcon = function(){
 	var ico = this.getIcon();
 	if(!ico){
-		//see sap.m.Shell
 		jQuery.sap.require("sap.ui.core.theming.Parameters");
-		ico = sap.ui.core.theming.Parameters.get("sapUiGlobalLogo"); // theme logo
-		if(ico){
-			var match = /url[\s]*\('?"?([^\'")]*)'?"?\)/.exec(ico);
-			if(match){
-				ico = match[1];
-			}else if(ico === "''"){ // theme default
-				ico = null;
-			}
-		}
+		ico = sap.ui.core.theming.Parameters._getThemeImage(null, true); // theme logo
 	}
-	
-	return ico || sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif');
+	return ico;
 };
 
 
@@ -1372,6 +1445,28 @@ sap.ui.unified.Shell.prototype._isHeaderHidingActive = function(){
 	return true;
 };
 
+sap.ui.unified.Shell.prototype._refreshCSSWorkaround = function() {
+	if(!sap.ui.Device.browser.chrome || !sap.ui.Device.support.touch){
+		return;
+	}
+	
+	if(this._cssWorkaroundTimer){
+		jQuery.sap.clearDelayedCall(this._cssWorkaroundTimer);
+		this._cssWorkaroundTimer = null;
+	}
+	this.$("css").remove();
+
+	this._cssWorkaroundTimer = jQuery.sap.delayedCall(10, this, function(){
+		this._cssWorkaroundTimer = null;
+		jQuery.sap.log.debug("sap.ui.unified.Shell: CSS Workaround applied.");
+		jQuery("head").append("<link type='text/css' rel='stylesheet' id='"+this.getId()+"-css' href='data:text/css;base64,LnNhcFVpVWZkU2hlbGxDaHJvbWVSZXBhaW50e291dGxpbmUtY29sb3I6aW5pdGlhbDt9'/>");
+		this._cssWorkaroundTimer = jQuery.sap.delayedCall(100, this, function(){
+			this.$("css").remove();
+		});
+	});
+};
+
+
 
 //***************** Avoid Rerendering *****************
 
@@ -1379,6 +1474,8 @@ sap.ui.unified.Shell.prototype._isHeaderHidingActive = function(){
 sap.ui.unified.Shell.prototype.invalidate = function(oOrigin) {
 	if(oOrigin instanceof sap.ui.unified.ShellHeadItem && this._headBeginRenderer && this._headEndRenderer){
 		this._headBeginRenderer.render();
+		this._headEndRenderer.render();
+	}else if(oOrigin instanceof sap.ui.unified.ShellHeadUserItem && this._headEndRenderer){
 		this._headEndRenderer.render();
 	}else{
 		sap.ui.core.Control.prototype.invalidate.apply(this, arguments);

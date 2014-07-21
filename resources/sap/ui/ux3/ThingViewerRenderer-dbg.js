@@ -90,7 +90,7 @@ sap.ui.ux3.ThingViewerRenderer.renderContent = function(oRenderManager, oControl
 	rm.write("<div role='Navigation' class='sapUiUx3TVFacetBar'>");
 	rm.renderControl(oControl._getNavBar());
 	rm.write("</div>");
-	rm.write("<div id='" + oControl.getId() + "-facetContent' class='sapUiUx3TVFacetContent'>");
+	rm.write("<div id='" + oControl.getId() + "-facetContent' class='sapUiUx3TVFacetContent sapUiBodyBackground'>");
 
 	// render Facet Content
 	this.renderFacetContent(rm, oControl);

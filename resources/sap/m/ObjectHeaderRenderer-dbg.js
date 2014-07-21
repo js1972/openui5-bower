@@ -158,7 +158,7 @@ sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 	if (sap.m.ObjectHeaderRenderer._isEmptyRow(oLeft, aRight)) {
 		return; // nothing to render
 	}
-    
+
 	rm.write("<div"); // Start attribute row container
 	rm.addClass("sapMOHAttrRow");
 	rm.writeClasses();
@@ -166,14 +166,14 @@ sap.m.ObjectHeaderRenderer.renderRow = function(rm, oOH, oLeft, aRight) {
 
 	if (!sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft)) {
 		this.renderAttribute(rm, oOH, oLeft, sap.m.ObjectHeaderRenderer._isEmptyArray(aRight));
-	} else if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft) && !sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {						
-		if (aRight[0] instanceof sap.m.ProgressIndicator) {				
+	} else if (sap.m.ObjectHeaderRenderer._isEmptyObject(oLeft) && !sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
+		if (aRight[0] instanceof sap.m.ProgressIndicator) {
 			rm.write("<div");
 			rm.addClass("sapMOHAttr");
 			rm.writeClasses();
 			rm.write(">");
 			rm.write("</div>");
-		}		
+		}
 	}
 
 	if (!sap.m.ObjectHeaderRenderer._isEmptyArray(aRight)) {
@@ -211,8 +211,8 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 	var aAttribs = oOH.getAttributes();
 	var aVisibleAttribs = [];
 
-	for( var i = 0; i < aAttribs.length; i ++){
-		if( aAttribs[i].getVisible()){
+	for (var i = 0; i < aAttribs.length; i ++){
+		if (aAttribs[i].getVisible()) {
 			aVisibleAttribs.push(aAttribs[i]);
 		}
 	}
@@ -221,7 +221,8 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 
 	var aIconsAndStatuses = [];
 	var aIcons = sap.m.ObjectHeaderRenderer._getIcons(oOH);
-	if (!sap.m.ObjectHeaderRenderer._isEmptyArray(aIcons)) {
+	// flag and favorite are not rendered here in responsive mode
+	if (!oOH.getResponsive() && !sap.m.ObjectHeaderRenderer._isEmptyArray(aIcons)) {
 		aIconsAndStatuses.push(aIcons);
 	}
 
@@ -233,10 +234,10 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 	}
 	if (oOH.getStatuses()) {
 		var aStatuses = oOH.getStatuses();
-		for ( var i = 0; i < aStatuses.length; i++) {
-			if(!aStatuses[i].getVisible || aStatuses[i].getVisible()){
+		for (var i = 0; i < aStatuses.length; i++) {
+			if (!aStatuses[i].getVisible || aStatuses[i].getVisible()) {
 				if (aStatuses[i] instanceof sap.m.ObjectStatus || aStatuses[i] instanceof sap.m.ProgressIndicator) {
-					aIconsAndStatuses.push([ aStatuses[i] ]);
+					aIconsAndStatuses.push([aStatuses[i]]);
 				} else {
 					jQuery.sap.log.warning("Only sap.m.ObjectStatus or sap.m.ProgressIndicator are allowed in \"sap.m.ObjectHeader.statuses\" aggregation." + " Current object is "
 							+ aStatuses[i].constructor.getMetadata().getName() + " with id \"" + aStatuses[i].getId() + "\"");
@@ -249,9 +250,14 @@ sap.m.ObjectHeaderRenderer.renderAttributesAndStatuses = function(rm, oOH) {
 
 	var iNoOfRows = iAttribsLength > iIconsAndStatusesLength ? iAttribsLength : iIconsAndStatusesLength;
 
-	for ( var i = 0; i < iNoOfRows; i++) {
-		this.renderRow(rm, oOH, aVisibleAttribs[i], aIconsAndStatuses[i]);
+	if (oOH.getResponsive()) {
+		this.renderRowResponsive(rm, oOH, aVisibleAttribs, aIconsAndStatuses);
+	} else {
+		for (var i = 0; i < iNoOfRows; i++) {
+			this.renderRow(rm, oOH, aVisibleAttribs[i], aIconsAndStatuses[i]);
+		}
 	}
+	
 };
 
 /**
@@ -329,23 +335,26 @@ sap.m.ObjectHeaderRenderer.renderTitle = function(rm, oOH) {
 		}
 		rm.writeClasses();
 		rm.write(">");	
-		oOH._titleText.addStyleClass("sapMOHTitle");
-		
+		// TODO: why is sapMOHTitle added here and to parent??? remove one
+		if (!oOH.getResponsive()) {
+			oOH._titleText.addStyleClass("sapMOHTitle");
+		}
+
 		rm.renderControl(oOH._titleText);
 		rm.write("</span>"); // End Title Text container
-	}	
-	
+	}
+
 	if(oOH.getShowTitleSelector()){
-		rm.write("<span"); // Start title arrow container				
+		rm.write("<span"); // Start title arrow container
 		rm.addClass("sapMOHTitleArrow");
 		rm.writeClasses();
 		rm.write(">");
 		rm.renderControl(oOH._oTitleArrowIcon);
-		rm.write("</span>"); // end title arrow container	
+		rm.write("</span>"); // end title arrow container
 	}
-	
+
 	if(oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()){
-		rm.write("</div>"); // end title text and title arrow container	
+		rm.write("</div>"); // end title text and title arrow container
 	}
 };
 
@@ -463,13 +472,13 @@ sap.m.ObjectHeaderRenderer.renderCondensedOH = function(rm, oOH) {
 	rm.write(">");
 	
 	this.renderTitle(rm, oOH);
-	
+
 	rm.write("</div>"); // End Title container
-	
+
 	this.renderNumber(rm, oOH);
 	
 	var oFirstAttr = oOH.getAttributes()[0];
-	
+
 	if (oFirstAttr && !oFirstAttr._isEmpty()){
 		this.renderAttribute(rm, oOH, oFirstAttr);
 	}
@@ -484,11 +493,18 @@ sap.m.ObjectHeaderRenderer.renderCondensedOH = function(rm, oOH) {
  *            oOH an object representation of the control that should be rendered
  */
 sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
-
 	// return immediately if control is invisible
 	if (!oOH.getVisible()) {
 		return;
 	}
+
+	// responsive prototype
+	if (oOH.getResponsive()) {
+		this.renderResponsive(rm, oOH);
+		return;
+	}
+
+	// === old renderer, no changes here for downwards compatibility
 
 	var bCondensed = oOH.getCondensed();
 	
@@ -519,3 +535,440 @@ sap.m.ObjectHeaderRenderer.render = function(rm, oOH) {
 	rm.write("</div>"); // End Main container\
 
 };
+
+/**** responsive rendering start (barely any methods from above are used in this part to not break old UIs, it replaces most parts of renderer) ****/
+
+sap.m.ObjectHeaderRenderer.renderResponsive = function(oRm, oControl) {
+	var bCondensed,
+		bTitle = true, // TODO: determine whether title 
+		bMarkers = this.hasResponsiveMarkers(oControl),
+		bStates = this.hasResponsiveStates(oControl), // TODO: determine whether states need to be rendered or not
+		bTabs = this.hasResponsiveTabs(oControl),
+		oHeaderContainer = oControl.getHeaderContainer();
+
+	// do not render if control is invisible
+	if (!oControl.getVisible()) {
+		return;
+	}
+
+	// initialization
+	bCondensed = oControl.getCondensed();
+
+	// start outer div (containing ObjectHeader and IconTabBar content div)
+	oRm.write('<div class="sapMOHROuter"');
+	oRm.writeControlData(oControl);
+	oRm.write(">");
+
+	// start object wrapper div (containing the sections title, stats, tabs, markers)
+	oRm.write("<div");
+	oRm.addClass("sapMOH");
+	oRm.addClass("sapMOHR"); // this will allow to make a distinction for responsiveness in CSS
+	if (oControl.getHeaderContainer() instanceof sap.m.IconTabBar) {
+		oRm.addClass("sapMOHWithITB");
+	}
+	oRm.addClass("sapMOHBg" + oControl.getBackgroundDesign());
+	if (bCondensed) {
+		oRm.addClass("sapMOHC");
+	}
+
+	if (oControl._iCountVisAttrStat <= 2) {
+		oRm.addClass("sapMOHStatesTwoOrLess");
+	} else if (oControl._iCountVisAttrStat <= 4) {
+		oRm.addClass("sapMOHStatesThreeOrFour");
+	} else {
+		oRm.addClass("sapMOHStatesFiveOrMore");
+	}
+
+	if (!bMarkers) {
+		oRm.addClass("sapMOHNoMarkers");
+	}
+	if (!bTabs) {
+		oRm.addClass("sapMOHNoTabs");
+	}
+	if (oControl._iCountVisTabs > 7) {
+		oRm.addClass("sapMOHTabsMoreThanSeven");
+	}
+
+	oRm.writeClasses();
+
+	// write tooltip
+	var sTooltip = oControl.getTooltip_AsString();
+	if (sTooltip) {
+		oRm.writeAttributeEscaped("title", sTooltip);
+	}
+	oRm.write(">");
+
+	if (bMarkers) {
+		this.renderResponsiveMarkers(oRm, oControl, bTitle, bMarkers, bStates, bTabs);
+	}
+	this.renderResponsiveTitle(oRm, oControl, bTitle, bMarkers, bStates, bTabs);
+	if(bStates) {
+		this.renderResponsiveStates(oRm, oControl, bTitle, bMarkers, bStates, bTabs);
+	}
+	if (bTabs) {
+		this.renderResponsiveTabs(oRm, oControl, bTitle, bMarkers, bStates, bTabs);
+	}
+
+	// end wrapper div
+	oRm.write("</div>");
+
+	// render the IconTabBar content section after the object header div
+	if (oHeaderContainer && oHeaderContainer instanceof sap.m.IconTabBar) {
+		oRm.renderControl(oHeaderContainer);
+	}
+
+	// end outer div
+	oRm.write("</div>");
+};
+
+// first building block for the responsive header, it contains
+// - intro
+// - image
+// - title
+// - number and unit
+sap.m.ObjectHeaderRenderer.renderResponsiveTitle = function(oRm, oControl, bTitle, bMarkers, bStates, bTabs) {
+	// Title container displayed to the left of the number and number units container.
+	oRm.write("<div"); // Start Title container
+	oRm.writeAttribute("id", oControl.getId() + "-titlediv");
+	oRm.addClass("sapMOHTitleDiv");
+	if (!bTabs) {
+		oRm.addClass("sapMOHTitleDivNoTabs");
+	}
+	if (!bStates) {
+		oRm.addClass("sapMOHTitleDivNoStates");	
+	}
+	if (oControl._hasIcon()) {
+		oRm.addClass("sapMOHTitleIcon");
+	}
+	if (!oControl.getNumber()) {
+		oRm.addClass("sapMOHTitleDivFull");
+	}
+	oRm.writeClasses();
+	oRm.write(">");
+
+	if (!oControl.getNumber()) {
+		oRm.addClass("sapMOHTitleDivFull");
+	}
+
+	// render the title icon in a separate container
+	if (oControl._hasIcon()) {
+		oRm.write("<div");
+		oRm.addClass("sapMOHIcon");
+		if (oControl.getIconActive()) {
+			oRm.addClass("sapMPointer");
+		}
+		oRm.writeClasses();
+		oRm.write(">");
+		oRm.renderControl(oControl._getImageControl());
+		oRm.write("</div>"); // end icon container
+	}
+
+	// TODO: put this in behaviour
+	oControl._titleText.setMaxLines(2);
+
+	this.renderTitleResponsive(oRm, oControl);
+	this.renderResponsiveNumber(oRm, oControl);
+
+	oRm.write("</div>"); // End Title container
+};
+
+// helper function to determine wheter markers need to be rendered or not
+// TODO: put this in control
+sap.m.ObjectHeaderRenderer.hasResponsiveMarkers = function (oControl) {
+	return (oControl.getShowMarkers() && (oControl.getMarkFavorite() || oControl.getMarkFlagged()));
+};
+	
+// render flag and favorite icon with float right (in wrapper div)
+sap.m.ObjectHeaderRenderer.renderResponsiveMarkers = function(oRm, oControl) {
+	var aIcons = [],
+		i = 0;
+
+	// load icons based on control state
+	if (oControl.getShowMarkers()) {
+		oControl._oFavIcon.setVisible(oControl.getMarkFavorite());
+		oControl._oFlagIcon.setVisible(oControl.getMarkFlagged());
+		// TODO: check if placeholder can be safely removed now (see comment in behaviour) 
+		//aIcons.push(oControl._oPlaceholderIcon);
+		aIcons.push(oControl._oFavIcon);
+		aIcons.push(oControl._oFlagIcon);
+
+		// render icons
+		oRm.write("<div class=\"sapMObjStatusMarker\">");
+		for (; i < aIcons.length; i++) {
+			oRm.renderControl(aIcons[i]);
+		}
+		oRm.write("</div>");
+	}
+};
+
+sap.m.ObjectHeaderRenderer.renderResponsiveNumber = function(oRm, oControl) {
+	var oObjectNumber = oControl.getAggregation("_objectNumber");
+	if (oObjectNumber && oObjectNumber.getNumber()) {
+		oObjectNumber.toggleStyleClass("sapMObjectNumberFull", !oControl.getTitle());
+		oRm.renderControl(oObjectNumber);
+	}
+};
+
+//helper function to determine wheter states need to be rendered or not
+//TODO: put this in control and make it nicer (it is too conplex, copied logic from above)
+sap.m.ObjectHeaderRenderer.hasResponsiveStates = function (oControl) {
+	var aAttribs = oControl.getAttributes();
+	var aVisibleAttribs = [];
+
+	if (!(oControl._hasAttributes() || oControl._hasStatus())) {
+		oControl._iCountVisAttrStat = 0;
+		return false;
+	}
+
+	for( var i = 0; i < aAttribs.length; i ++){
+		if (aAttribs[i].getVisible()){
+			aVisibleAttribs.push(aAttribs[i]);
+		}
+	}
+
+	var aIconsAndStatuses = [];
+	var aIcons = sap.m.ObjectHeaderRenderer._getIcons(oControl);
+	// flag and favorite are not rendered here in responsive mode
+	if (!oControl.getResponsive() && !sap.m.ObjectHeaderRenderer._isEmptyArray(aIcons)) {
+		aIconsAndStatuses.push(aIcons);
+	}
+
+	if (oControl.getFirstStatus() && oControl.getFirstStatus().getVisible()) {
+		aIconsAndStatuses.push([ oControl.getFirstStatus() ]);
+	}
+	if (oControl.getSecondStatus() && oControl.getSecondStatus().getVisible()) {
+		aIconsAndStatuses.push([ oControl.getSecondStatus() ]);
+	}
+	var aStatuses = oControl.getStatuses();
+	for (var i = 0; i < aStatuses.length; i++) {
+		if(!aStatuses[i].getVisible || aStatuses[i].getVisible()){
+			if (aStatuses[i] instanceof sap.m.ObjectStatus || aStatuses[i] instanceof sap.m.ProgressIndicator) {
+				aIconsAndStatuses.push([ aStatuses[i] ]);
+			} else {
+				jQuery.sap.log.warning("Only sap.m.ObjectStatus or sap.m.ProgressIndicator are allowed in \"sap.m.ObjectHeader.statuses\" aggregation." + " Current object is "
+						+ aStatuses[i].constructor.getMetadata().getName() + " with id \"" + aStatuses[i].getId() + "\"");
+			}
+		}
+	}
+
+	//this value needs to be adapted when an attribute or status is set to visible(false) after rendering
+	oControl._iCountVisAttrStat = aVisibleAttribs.length + aIconsAndStatuses.length;
+
+	return !!(aVisibleAttribs.length + aIconsAndStatuses.length);
+};
+
+sap.m.ObjectHeaderRenderer.renderResponsiveStates = function(oRm, oControl, bTitle, bMarkers, bStates, bTabs) {
+	oRm.write("<div");
+	oRm.addClass("sapMOHStates");
+//	if (oControl._iCountVisAttrStat <= 2) {
+//		oRm.addClass("sapMOHStatesTwoOrLess");
+//	} else if (oControl._iCountVisAttrStat <= 4) {
+//		oRm.addClass("sapMOHStatesThreeOrFour");
+//	} else {
+//		oRm.addClass("sapMOHStatesFiveOrMore");
+//	}
+	if (!bTabs) {
+		oRm.addClass("sapMOHStatesNoTabs");
+	}
+	oRm.writeClasses();
+	oRm.write("\">");
+
+	//oRm.write("<div class=\"sapMOHStates" + (oControl._iCountVisAttrStat <= 2 ? " sapMOHStatesTwoOrLess" : " sapMOHStatesThreeOrMore") + (!bTabs ? " sapMOHStatesNoTabs" : "") + "\">");
+	this.renderAttributesAndStatuses(oRm, oControl);
+	oRm.write("</div>");
+};
+
+// helper function to determine whether tabs need to be rendered or not
+// TODO: put this in control
+sap.m.ObjectHeaderRenderer.hasResponsiveTabs = function (oControl) {
+	var oHeaderContainer = oControl.getHeaderContainer(),
+		oIconTabHeader;
+
+	if (oHeaderContainer) {
+		if (oHeaderContainer instanceof sap.m.IconTabBar) {
+			oIconTabHeader = oHeaderContainer._getIconTabHeader();
+			if (oIconTabHeader.getVisible()) {
+				oControl._iCountVisTabs = oIconTabHeader.getItems().length;
+				return !!oIconTabHeader.getItems().length;
+			}
+		} else if (sap.suite && sap.suite.ui && sap.suite.ui.commons && oHeaderContainer instanceof sap.suite.ui.commons.HeaderContainer) {
+			return !!oHeaderContainer.getItems().length;
+		}
+	}
+	return false;
+};
+
+sap.m.ObjectHeaderRenderer.renderResponsiveTabs = function(oRm, oControl, bTitle, bMarkers, bStates, bTabs) {
+	var oHeaderContainer = oControl.getHeaderContainer(),
+		oIconTabHeader;
+
+	oRm.write("<div class=\"sapMOHTabs" + (oHeaderContainer instanceof sap.m.IconTabBar ? " sapmMOHTabsITB" : "") + (!bStates ? " sapMOHTabsNoStates" : "") + "\">");
+	if (oHeaderContainer) {
+		if (oHeaderContainer instanceof sap.m.IconTabBar) {
+			// TODO: use a public function
+			oIconTabHeader = oHeaderContainer._getIconTabHeader();
+			oRm.renderControl(oIconTabHeader);
+			// tell iconTabBar to not render the header
+			oHeaderContainer._bHideHeader = true;
+		} else if (sap.suite && sap.suite.ui && sap.suite.ui.commons && oHeaderContainer instanceof sap.suite.ui.commons.HeaderContainer) {
+			// render the header container
+			oRm.renderControl(oHeaderContainer);
+		} else {
+			console.log("The control " + oHeaderContainer + " is not supported for aggregation \"headerContainer\"");
+		}
+	}
+	oRm.write("</div>");
+};
+
+sap.m.ObjectHeaderRenderer.renderRowResponsive = function(rm, oOH, aVisibleAttribs, aIconsAndStatuses) {
+	var aVisibleAttrAndStat = aVisibleAttribs.concat(aIconsAndStatuses),
+		iCountVisibleAttr = aVisibleAttribs.length,
+		iCountAttrAndStat = aVisibleAttrAndStat.length;
+
+	if (iCountAttrAndStat === 0) {
+		return; //nothing to render
+	}
+
+	rm.write("<div"); // Start first container
+	rm.addClass("sapMOHStatesFirstCont");
+	rm.writeClasses();
+	rm.write(">");
+
+	//render first attr
+	if (iCountVisibleAttr >= 1) {
+		this.renderAttribute(rm, oOH, aVisibleAttrAndStat[0]);
+	} else {
+		this.renderStatus(rm, oOH, aVisibleAttrAndStat[0]);
+	}
+
+	if (iCountAttrAndStat >= 2) {
+		//render second attr
+		if (iCountVisibleAttr >= 2) {
+			this.renderAttribute(rm, oOH, aVisibleAttrAndStat[1]);
+		} else {
+			this.renderStatus(rm, oOH, aVisibleAttrAndStat[1]);
+		}
+	}
+	var i = 2;
+	if (iCountAttrAndStat > 4) {
+		for (; i < iCountAttrAndStat / 2; i++) {
+			if (iCountVisibleAttr > i) {
+				this.renderAttribute(rm, oOH, aVisibleAttrAndStat[i]);
+			} else {
+				this.renderStatus(rm, oOH, aVisibleAttrAndStat[i]);
+			}
+		}
+	}
+
+	rm.write("</div>"); //close first container
+	
+	if (iCountAttrAndStat === 2) {
+		//no more attr and stat to render
+		//add class sapMOHStates das nur zwei Attribute vorhanden
+		return;
+	}
+
+	rm.write("<div"); // Start second container
+	rm.addClass("sapMOHStatesSecondCont");
+	rm.writeClasses();
+	rm.write(">");
+
+	//render all remaining attr
+	for (; i < iCountAttrAndStat; i++) {
+		//render attr[i]
+		if (iCountVisibleAttr > i) {
+			this.renderAttribute(rm, oOH, aVisibleAttrAndStat[i]);
+		} else {
+			this.renderStatus(rm, oOH, aVisibleAttrAndStat[i]);
+		}
+	}
+
+	rm.write("</div>"); //close second container
+};
+
+sap.m.ObjectHeaderRenderer.renderStatus = function(rm, oOH, oStatus, bFullWidth) {
+	rm.write("<div");
+	rm.addClass("sapMOHStatus");
+	rm.writeClasses();
+	if (bFullWidth) {
+		rm.addStyle("width", "100%");
+		rm.writeStyles();
+	}
+	rm.write(">");
+	rm.renderControl(oStatus[0]);
+	rm.write("</div>");
+};
+
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ * 
+ * @param {sap.ui.core.RenderManager}
+ *            rm the RenderManager that can be used for writing to the render output buffer
+ * @param {sap.m.Control}
+ *            oOH an object representation of the control that should be rendered
+ */
+sap.m.ObjectHeaderRenderer.renderTitleResponsive = function(oRm, oOH) {
+	// Start title text and title arrow container
+	oOH._oTitleArrowIcon.setVisible(oOH.getShowTitleSelector());
+	if(oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()){
+		oRm.write("<div");
+		oRm.addClass("sapMOHTitleAndArrow");
+		oRm.writeClasses();
+		oRm.write(">");
+	}
+
+	if (oOH.getTitle()) {
+		oOH._titleText.setText(oOH.getTitle());
+		oRm.write("<div"); // Start Title Text container
+		oRm.writeAttribute("id", oOH.getId() + "-title");
+		oRm.addClass("sapMOHTitle");
+		if (oOH.getTitleActive()) {
+			oRm.addClass("sapMOHTitleActive");
+		}
+		if(oOH.getShowTitleSelector()){
+			oRm.addClass("sapMOHTitleFollowArrow");
+		}
+		oRm.writeClasses();
+		oRm.write(">");	
+		// TODO: why is sapMOHTitle added here and to parent??? remove one
+		if (!oOH.getResponsive()) {
+			oOH._titleText.addStyleClass("sapMOHTitle");
+		}
+
+		oRm.renderControl(oOH._titleText);
+
+		if(oOH.getShowTitleSelector()){
+			oRm.write("<span"); // Start title arrow container
+			oRm.addClass("sapMOHTitleArrow");
+			oRm.writeClasses();
+			oRm.write(">");
+			oRm.renderControl(oOH._oTitleArrowIcon);
+			oRm.write("</span>"); // end title arrow container
+		}
+
+		// Introductory text at the top of the item, like "On behalf of Julie..."
+		if (oOH.getIntro()) {
+			oRm.write("<div");
+			oRm.addClass("sapMOHIntro");
+			if (oOH.getIntroActive()) {
+				oRm.addClass("sapMOHIntroActive");
+			}
+			oRm.writeClasses();
+			oRm.write(">");
+			oRm.write("<span");
+			oRm.writeAttribute("id", oOH.getId() + "-intro");
+			oRm.write(">");
+			oRm.writeEscaped(oOH.getIntro());
+			oRm.write("</span>");
+			oRm.write("</div>");
+		}
+
+		oRm.write("</div>"); // End Title Text container
+	}
+
+	if(oOH.getShowTitleSelector() && oOH._oTitleArrowIcon.getVisible()){
+		oRm.write("</div>"); // end title text and title arrow container
+	}
+};
+
+/**** responsive rendering end ****/

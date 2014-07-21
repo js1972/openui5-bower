@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -499,8 +499,8 @@ sap.m.TableSelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveC
 
  * @param {sap.m.StandardListItem} oControlEvent.getParameters.selectedItem Returns the selected list item. When no item is selected, "null" is returned. When multi-selection is enabled and multiple items are selected, only the first selected item is returned.
  * @param {sap.m.StandardListItem[]} oControlEvent.getParameters.selectedItems Returns an array containing the visible selected list items. If no items are selected, an empty array is returned.
- * @param {string} oControlEvent.getParameters.selectedContexts Returns the binding contexts of the selected items including the non-visible items. 
-Note: In contrast to the parameter "selectedItems", this parameter will also include the selected but NOT visible items (e.g. due to list filtering). An empty array will be set for this parameter if no Databinding is used.
+ * @param {string} oControlEvent.getParameters.selectedContexts Returns the binding contexts of the selected items including the non-visible items.
+ *         Note: In contrast to the parameter "selectedItems", this parameter will also include the selected but NOT visible items (e.g. due to list filtering). An empty array will be set for this parameter if no Databinding is used.
  * @public
  */
  
@@ -739,7 +739,7 @@ Note: In contrast to the parameter "selectedItems", this parameter will also inc
 
 /**
  * Fire event cancel to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.TableSelectDialog} <code>this</code> to allow method chaining
  * @protected
@@ -1095,6 +1095,63 @@ sap.m.TableSelectDialog.prototype.setContentWidth = function (sWidth) {
 	return this;
 };
 
+/**
+ * Forward method to the inner dialog: addStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.TableSelectDialog.prototype.addStyleClass = function () {
+	this._oDialog.addStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: removeStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.TableSelectDialog.prototype.removeStyleClass = function () {
+	this._oDialog.removeStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: toggleStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.TableSelectDialog.prototype.toggleStyleClass = function () {
+	this._oDialog.toggleStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: hasStyleClass
+ * @public
+ * @override
+ * @returns {boolean} true if the class is set, false otherwise
+ */
+sap.m.TableSelectDialog.prototype.hasStyleClass = function () {
+	return this._oDialog.hasStyleClass.apply(this._oDialog, arguments);
+};
+
+/**
+ * Forward method to the inner dialog: getDomRef
+ * @public
+ * @override
+ * @return {Element} The Element's DOM Element sub DOM Element or null
+ */
+sap.m.TableSelectDialog.prototype.getDomRef = function () {
+	if(this._oDialog) {
+		return this._oDialog.getDomRef.apply(this._oDialog, arguments);
+	} else {
+		return null;
+	}
+};
+
 /* =========================================================== */
 /*           begin: forward aggregation  methods to table      */
 /* =========================================================== */
@@ -1277,6 +1334,7 @@ sap.m.TableSelectDialog.prototype._executeSearch = function (sValue, sEventType)
 		// set the internal value to the passed value to check if the same value has already been filtered (happens when clear is called, it fires liveChange and change events)
 		this._sSearchFieldValue = sValue;
 
+		// only set when the binding has already been executed
 		// only set when the binding has already been executed
 		if (oBinding) {
 			// we made another request in this control, so we update the counter

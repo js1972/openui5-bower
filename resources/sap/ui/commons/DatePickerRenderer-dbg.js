@@ -10,25 +10,6 @@ jQuery.sap.require("sap.ui.commons.TextFieldRenderer");
 jQuery.sap.require("sap.ui.commons.DatePicker");
 
 /**
- * Registers our SAP-defined locales for jQuery to use (DatePicker and DateNavigator).
- * Examples can be found at: http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/
- */
-(function($){
-
-	var regional = $.datepicker.regional;
-	function define(sLocale, oSettings) {
-		regional[sLocale] = jQuery.extend(regional[sLocale] || {}, oSettings);
-	}
-
-// SAP-defined English (DEFAULT) grammar:
-	define('en', {
-		firstDay : 0, // CLDR has both 1 (default) and 0 (alternative). How to handle this?
-		yearSuffix : ''
-	});
-
-}(jQuery));
-
-/**
  * @class DatePicker renderer.
  * @static
  * For a common look&feel, the DatePicker extends the TextField control,
@@ -37,13 +18,14 @@ jQuery.sap.require("sap.ui.commons.DatePicker");
 sap.ui.commons.DatePickerRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.TextFieldRenderer);
 
 /**
+ * Hint: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
+ *       It is used to allow extensions to display help icons.
+ *
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.DatePicker}
  *            oControl the DatePicker whose "value help" should be rendered
  * @private
- * P.S.: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
- *       It is used to allow extensions to display help icons.
  */
 sap.ui.commons.DatePickerRenderer.renderOuterAttributes = function(rm, oControl) {
 	// To share the overall ComboBox styling:
@@ -70,6 +52,7 @@ sap.ui.commons.DatePickerRenderer.renderOuterContentBefore = function(rm, oContr
 
 	rm.write("<div");
 	rm.writeAttribute('id', oControl.getId() + '-icon');
+	rm.writeAttribute('tabindex', '-1'); // to do not close popup by click on it
 	// As mentioned above, a more generic "sapUiTfIcon" className could have been used...
 	// One would just have had to add its own icon className!
 	// Using "sapUiTfDateIcon" for now, as it proved easier to define instead of overwriting
@@ -104,7 +87,7 @@ sap.ui.commons.DatePickerRenderer.renderOuterContentBefore = function(rm, oContr
  */
 sap.ui.commons.DatePickerRenderer.renderInnerAttributes = function(rm, oDatePicker) {
 
-	if (oDatePicker.mobile) {
+	if (oDatePicker._bMobile) {
 		rm.writeAttribute('type', 'date');
 		rm.addStyle('position', 'absolute'); // to lay input field over expander icon
 	}
@@ -154,10 +137,7 @@ sap.ui.commons.DatePickerRenderer.convertPlaceholder = function(oDatePicker) {
 	if (sPlaceholder.length == 8 && !isNaN(sPlaceholder)) {
 		var oDate = oDatePicker._oFormatYyyymmdd.parse(sPlaceholder);
 		if (oDate) {
-			if (!oDatePicker._oFormat) {
-				oDatePicker.getRenderedLocale();
-			}
-			sPlaceholder = oDatePicker._oFormat.format(oDate);
+			sPlaceholder = oDatePicker._formatValue(oDate);
 		}
 	}
 

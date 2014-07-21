@@ -29,7 +29,7 @@ sap.ui.define(['jquery.sap.global', './Binding'],
 	 * @public
 	 * @name sap.ui.model.TreeBinding
 	 */
-	var TreeBinding = Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.TreeBinding */ {
+	var TreeBinding = Binding.extend("sap.ui.model.TreeBinding", /** @lends sap.ui.model.TreeBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			Binding.call(this, oModel, sPath, oContext, mParameters);

@@ -139,7 +139,33 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Core'],
 			}
 		};
 	
-	
+		/**
+		 * Helper function to get an image URL based on a given theme parameter.
+		 * 
+		 * @private
+		 * @name sap.ui.core.theming.Parameters._getThemeImage
+		 * @param {string} sParamName the theme parameter which contains the logo definition. If nothing is defined the parameter 'sapUiGlobalLogo' is used.
+		 * @param {boolean} bForce whether a valid URL should be returned even if there is no logo defined.
+		 * @function
+		 */
+		Parameters._getThemeImage = function(sParamName, bForce) {
+			sParamName = sParamName || "sapUiGlobalLogo";
+			var logo = sap.ui.core.theming.Parameters.get(sParamName);
+			if(logo){
+				var match = /url[\s]*\('?"?([^\'")]*)'?"?\)/.exec(logo);
+				if(match){
+					logo = match[1];
+				}else if(logo === "''"){
+					logo = null;
+				}
+			}
+			
+			if(!!bForce && !logo){
+				return sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif');
+			}
+			
+			return logo;
+		};
 	
 
 	return Parameters;

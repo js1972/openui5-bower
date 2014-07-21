@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -362,7 +362,7 @@ sap.ui.ux3.NavigationBar.M_EVENTS = {'select':'select'};
  * Fire event select to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'itemId' of type <code>string</code> The ID of the newly selected NavigationItem.</li>

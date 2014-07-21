@@ -32,6 +32,12 @@ sap.m.BusyDialogRenderer.render = function(oRm, oControl){
 			oRm.addClass("sapMBusyDialogSimple");
 		}
 	}
+
+	// test dialog with sap-ui-xx-formfactor=compact
+	if(sap.m._bSizeCompact){
+		oRm.addClass("sapUiSizeCompact");
+	}
+
 	oRm.writeClasses();
 	var sTooltip = oControl.getTooltip_AsString();
 	if (sTooltip) {
@@ -52,9 +58,13 @@ sap.m.BusyDialogRenderer.render = function(oRm, oControl){
 	}
 	
 	if(oControl.getShowCancelButton()){
-		oRm.write("<footer class='sapMBusyDialogFooter sapMFooter-CTX'>");
-		oRm.renderControl(oControl._oButton);
-		oRm.write("</footer>");
+		if (sap.ui.Device.system.phone) {
+			oRm.write("<footer class='sapMBusyDialogFooter sapMFooter-CTX'>");
+			oRm.renderControl(oControl._oButton);
+			oRm.write("</footer>");
+		} else {
+			oRm.renderControl(oControl._oButtonToolBar);
+		}
 	}
 	oRm.write("</div>");
 };

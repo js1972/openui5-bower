@@ -51,7 +51,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			 * @param {boolean} [oConfig.preventDefault=false] If set, the default of touchmove is prevented
 			 * @param {boolean} [oConfig.nonTouchScrolling=false] If true, the delegate will also be active to allow touch like scrolling with the mouse on non-touch platforms; if set to "scrollbar", there will be normal scrolling with scrollbars and no touch-like scrolling where the content is dragged
 			 *
-			 * @version 1.20.10
+			 * @version 1.22.4
 			 * @constructor
 			 * @protected
 			 */
@@ -685,7 +685,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 	
 			_onScroll: function(oEvent) {
 				var $Container = this._$Container;
-	
+
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					var dY = Math.abs(this._scrollY - $Container.scrollTop());
+					// check if we are still in momentum scrolling
+					if(dY > 0 && dY < 10 || oEvent.timeStamp - this._oIOSScroll.iTimeStamp > 120){
+						jQuery.sap.log.debug("IOS Momentum Scrolling is OFF");
+						this._oIOSScroll.bMomentum = false;
+					}
+				}
+
 				this._scrollX = $Container.scrollLeft(); // remember position
 				this._scrollY = $Container.scrollTop();
 	
@@ -694,7 +704,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 					this._fnScrollLoadCallback(); // close to the bottom
 				}
 
-				// IconTabBar
+				// IconTabHeader
 				if (this._oIconTabBar && this._fnScrollEndCallback) {
 					this._fnScrollEndCallback();
 				}
@@ -703,7 +713,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			_onStart : function(oEvent){
 				var container = this._$Container[0];
 				if(!container) return;
-	
+
 				// vertically scrollable, for rubber page prevention
 				this._bAllowScroll = !sap.ui.Device.os.ios || this._bVertical && (container.scrollHeight > container.clientHeight + 1);
 	
@@ -716,7 +726,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 						container.scrollTop = delta-1;
 					}
 				}
-	
+
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					jQuery.sap.log.debug("IOS Momentum Scrolling: prevent tap event");
+					oEvent.stopPropagation();
+					this._oIOSScroll.bMomentum = false;
+				}
+
 				// Store initial coordinates for drag scrolling
 				var point = oEvent.touches ? oEvent.touches[0] : oEvent;
 				this._iX = point.pageX;
@@ -728,6 +745,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			_onTouchMove : function(oEvent){
 				var container = this._$Container[0];
 				var point = oEvent.touches[0];
+
 				if(this._iDirection == ""){ // do once at start
 					var dx = point.pageX - this._iX;
 					var dy = point.pageY - this._iY;
@@ -770,6 +788,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 					return;
 				}
 
+				// Prevent false tap event during momentum scroll in IOS
+				if(this._oIOSScroll && this._bAllowScroll && this._iDirection == "v" && Math.abs(oEvent.touches[0].pageY - this._iY) >= 10){
+					this._oIOSScroll.bMomentum = true;
+					this._oIOSScroll.iTimeStamp = oEvent.timeStamp;
+				}
+
 				if(this._bAllowScroll || this._bHorizontal && this._iDirection == "h"){
 					oEvent.setMarked(); // see jQuery.sap.mobile.js
 					if(window.iScroll){ // if both iScroll and native scrolling are used (IconTabBar)
@@ -779,6 +803,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 			},
 	
 			_onEnd : function(oEvent){
+				if(this._oIOSScroll && this._oIOSScroll.bMomentum){
+					this._oIOSScroll.iTimeStamp = oEvent.timeStamp;
+				}
+
 				if (this._oPullDown && this._oPullDown._bTouchMode) {
 					this._oPullDown.doScrollEnd();
 					this._refresh();
@@ -931,7 +959,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 						}
 						if( sap.ui.Device.os.android && sap.ui.Device.os.version < 4.1 ||
 							sap.ui.Device.os.blackberry || // BlackBerry: iScroll works smoother, no scroll bars in native scrolling
-							sap.ui.Device.os.ios){ // IOS: use iScroll until the issue with wrong touch event targets during momentum scroll is solved
+							sap.ui.Device.os.ios && sap.ui.Device.os.version < 6){
 							return "i";
 						}
 						if (!sap.ui.Device.support.touch && $.sap.simulateMobileOnDesktop){
@@ -946,7 +974,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 						return "n";
 					}
 					var sLib = getLibrary();
-	
+
 					// Initialization
 					this._preventTouchMoveDefault = !!oConfig.preventDefault;
 					this._scroller = null;
@@ -973,6 +1001,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object'],
 							}
 							if (sap.ui.getCore().getConfiguration().getRTL()) {
 								this._scrollX = 9999; // in RTL case initially scroll to the very right
+							}
+							if(sap.ui.Device.os.ios){
+								this._oIOSScroll = {
+									iTimeStamp : 0,
+									bMomentum : false
+								};
 							}
 							break;
 					}

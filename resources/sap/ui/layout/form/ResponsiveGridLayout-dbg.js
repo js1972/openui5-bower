@@ -67,7 +67,7 @@ jQuery.sap.require("sap.ui.layout.form.FormLayout");
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -833,17 +833,18 @@ sap.ui.core.Control.extend("sap.ui.layout.form.ResponsiveGridLayoutPanel", {
 						if (oField != oControl) {
 							// check if other fields have layoutData
 							var oFieldLD = oLayout.getLayoutDataForElement(oField, "sap.ui.layout.GridData");
+							// is Spans are too large - ignore in calculation....
 							if (oFieldLD) {
 								iEffectiveSpan = oFieldLD._getEffectiveSpanLarge();
-								if (iEffectiveSpan) {
+								if (iEffectiveSpan && iEffectiveSpan < iLSpan) {
 									iLSpan = iLSpan - iEffectiveSpan;
 								}
 								iEffectiveSpan = oFieldLD._getEffectiveSpanMedium();
-								if (iEffectiveSpan) {
+								if (iEffectiveSpan && iEffectiveSpan < iMSpan) {
 									iMSpan = iMSpan - iEffectiveSpan;
 								}
 								iEffectiveSpan = oFieldLD._getEffectiveSpanSmall();
-								if (iEffectiveSpan) {
+								if (iEffectiveSpan && iEffectiveSpan < iSSpan) {
 									iSSpan = iSSpan - iEffectiveSpan;
 								}
 							}else {

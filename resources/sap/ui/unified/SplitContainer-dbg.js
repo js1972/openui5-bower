@@ -32,7 +32,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Properties
  * <ul>
  * <li>{@link #getShowSecondaryContent showSecondaryContent} : boolean</li>
- * <li>{@link #getSecondaryContentWidth secondaryContentWidth} : sap.ui.core.CSSSize (default: '250px')</li></ul>
+ * <li>{@link #getSecondaryContentSize secondaryContentSize} : sap.ui.core.CSSSize (default: '250px')</li>
+ * <li>{@link #getSecondaryContentWidth secondaryContentWidth} : sap.ui.core.CSSSize (default: '250px')</li>
+ * <li>{@link #getOrientation orientation} : sap.ui.core.Orientation (default: sap.ui.core.Orientation.Horizontal)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -56,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -73,7 +75,9 @@ sap.ui.core.Control.extend("sap.ui.unified.SplitContainer", { metadata : {
 	library : "sap.ui.unified",
 	properties : {
 		"showSecondaryContent" : {type : "boolean", group : "Appearance", defaultValue : null},
-		"secondaryContentWidth" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : '250px'}
+		"secondaryContentSize" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : '250px'},
+		"secondaryContentWidth" : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : '250px', deprecated: true},
+		"orientation" : {type : "sap.ui.core.Orientation", group : "Appearance", defaultValue : sap.ui.core.Orientation.Horizontal}
 	},
 	defaultAggregation : "content",
 	aggregations : {
@@ -126,13 +130,42 @@ sap.ui.core.Control.extend("sap.ui.unified.SplitContainer", { metadata : {
 
 
 /**
- * Getter for property <code>secondaryContentWidth</code>.
+ * Getter for property <code>secondaryContentSize</code>.
  * The width if the secondary content. The height is always 100%.
+ *
+ * Default value is <code>250px</code>
+ *
+ * @return {sap.ui.core.CSSSize} the value of property <code>secondaryContentSize</code>
+ * @public
+ * @name sap.ui.unified.SplitContainer#getSecondaryContentSize
+ * @function
+ */
+
+/**
+ * Setter for property <code>secondaryContentSize</code>.
+ *
+ * Default value is <code>250px</code> 
+ *
+ * @param {sap.ui.core.CSSSize} sSecondaryContentSize  new value for property <code>secondaryContentSize</code>
+ * @return {sap.ui.unified.SplitContainer} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.unified.SplitContainer#setSecondaryContentSize
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>secondaryContentWidth</code>.
+ * Do not use. Use secondaryContentSize instead.
  *
  * Default value is <code>250px</code>
  *
  * @return {sap.ui.core.CSSSize} the value of property <code>secondaryContentWidth</code>
  * @public
+ * @deprecated Since version 1.22. 
+ * 
+ * Only available for backwards compatibility.
+ * 
  * @name sap.ui.unified.SplitContainer#getSecondaryContentWidth
  * @function
  */
@@ -145,7 +178,38 @@ sap.ui.core.Control.extend("sap.ui.unified.SplitContainer", { metadata : {
  * @param {sap.ui.core.CSSSize} sSecondaryContentWidth  new value for property <code>secondaryContentWidth</code>
  * @return {sap.ui.unified.SplitContainer} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.22. 
+ * 
+ * Only available for backwards compatibility.
+ * 
  * @name sap.ui.unified.SplitContainer#setSecondaryContentWidth
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>orientation</code>.
+ * Whether to show the secondary content on the left ("Horizontal", default) or on the top ("Vertical").
+ *
+ * Default value is <code>Horizontal</code>
+ *
+ * @return {sap.ui.core.Orientation} the value of property <code>orientation</code>
+ * @public
+ * @since 1.22.0
+ * @name sap.ui.unified.SplitContainer#getOrientation
+ * @function
+ */
+
+/**
+ * Setter for property <code>orientation</code>.
+ *
+ * Default value is <code>Horizontal</code> 
+ *
+ * @param {sap.ui.core.Orientation} oOrientation  new value for property <code>orientation</code>
+ * @return {sap.ui.unified.SplitContainer} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22.0
+ * @name sap.ui.unified.SplitContainer#setOrientation
  * @function
  */
 
@@ -402,21 +466,38 @@ sap.ui.unified.SplitContainer.prototype.onAfterRendering = function() {
 sap.ui.unified.SplitContainer.prototype._applySecondaryContentSize = function(){
 	// Only set if rendered...
 	if (this.getDomRef()) {
-		var sDir = this.bRtl ? "right" : "left";
-		
-		var sSize = this.getSecondaryContentWidth();
+		var bVertical = this.getOrientation() == sap.ui.core.Orientation.Vertical;
+		var sSize, sOtherSize;
+		var sDir, sOtherDir;
+		var sSizeValue = this.getSecondaryContentSize();
 		var bShow = this.getShowSecondaryContent();
 
+		if (bVertical) {
+			// Vertical mode
+			sSize = "height";
+			sOtherSize =  "width";
+			sDir = "top";
+			sOtherDir = this.bRtl ? "right" : "left";
+		} else {
+			// Horizontal mode
+			sSize = "width";
+			sOtherSize =  "height";
+			sDir = this.bRtl ? "right" : "left";
+			sOtherDir = "top";
+		}
+		
 		if (this._closeContentDelayId) {
 			jQuery.sap.clearDelayedCall(this._closeContentDelayId);
 		}
 		
-		this._secondaryContentContainer.css("width", sSize);
-		this._secondaryContentContainer.css(sDir, bShow ? "0" : "-" + sSize);
+		this._secondaryContentContainer.css(sSize, sSizeValue);
+		this._secondaryContentContainer.css(sOtherSize, "");
+		this._secondaryContentContainer.css(sDir, bShow ? "0" : "-" + sSizeValue);
+		this._secondaryContentContainer.css(sOtherDir, "");
 		
 		// Move main content if it should be completely visible. @see _handleMediaChange()
 		if (this._moveContent) {
-			this._contentContainer.css(sDir, bShow ? sSize : "0");
+			this._contentContainer.css(sDir, bShow ? sSizeValue : "0");
 		} else {
 			this._contentContainer.css(sDir, "0");
 		}
@@ -476,13 +557,33 @@ sap.ui.unified.SplitContainer.prototype.setShowSecondaryContent = function(bShow
 };
 
 
-	///////////////////////////// Property "secondaryContentWidth" /////////////////////////////
+	///////////////////////////// Property "secondaryContentSize" /////////////////////////////
 
-sap.ui.unified.SplitContainer.prototype.setSecondaryContentWidth = function(sSize) {
-	this.setProperty("secondaryContentWidth", sSize, true);
+sap.ui.unified.SplitContainer.prototype.setSecondaryContentSize = function(sSize) {
+	this.setProperty("secondaryContentSize", sSize, true);
 	this._applySecondaryContentSize();
 	return this;
 };
+
+/**
+ * Backwards compatibility with old property name
+ */
+sap.ui.unified.SplitContainer.prototype.getSecondaryContentWidth = function() {
+	jQuery.sap.log.warning(
+		"SplitContainer: Use of deprecated property \"SecondaryContentWidth\", please use " +
+		"\"SecondaryContentSize\" instead."
+	);
+	return this.getSecondaryContentSize.apply(this, arguments);
+};
+	
+sap.ui.unified.SplitContainer.prototype.setSecondaryContentWidth = function() {
+	jQuery.sap.log.warning(
+		"SplitContainer: Use of deprecated property \"SecondaryContentWidth\", please use " +
+		"\"SecondaryContentSize\" instead."
+	);
+	return this.setSecondaryContentSize.apply(this, arguments);
+};
+
 
 
 	/////////////////////////////////// Aggregation "content" //////////////////////////////////
