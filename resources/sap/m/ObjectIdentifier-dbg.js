@@ -35,7 +35,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>{@link #getText text} : string</li>
  * <li>{@link #getBadgeNotes badgeNotes} : boolean</li>
  * <li>{@link #getBadgePeople badgePeople} : boolean</li>
- * <li>{@link #getBadgeAttachments badgeAttachments} : boolean</li></ul>
+ * <li>{@link #getBadgeAttachments badgeAttachments} : boolean</li>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -57,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -75,7 +76,8 @@ sap.ui.core.Control.extend("sap.m.ObjectIdentifier", { metadata : {
 		"text" : {type : "string", group : "Misc", defaultValue : null},
 		"badgeNotes" : {type : "boolean", group : "Misc", defaultValue : null},
 		"badgePeople" : {type : "boolean", group : "Misc", defaultValue : null},
-		"badgeAttachments" : {type : "boolean", group : "Misc", defaultValue : null}
+		"badgeAttachments" : {type : "boolean", group : "Misc", defaultValue : null},
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true}
 	}
 }});
 
@@ -222,6 +224,31 @@ sap.ui.core.Control.extend("sap.m.ObjectIdentifier", { metadata : {
  */
 
 
+/**
+ * Getter for property <code>visible</code>.
+ * Indicates if the object identifier is visible. An invisible object identifier is not being rendered.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visible</code>
+ * @public
+ * @name sap.m.ObjectIdentifier#getVisible
+ * @function
+ */
+
+/**
+ * Setter for property <code>visible</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisible  new value for property <code>visible</code>
+ * @return {sap.m.ObjectIdentifier} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectIdentifier#setVisible
+ * @function
+ */
+
+
 // Start of sap\m\ObjectIdentifier.js
 ///**
 // * This file defines behavior for the control
@@ -313,4 +340,39 @@ sap.m.ObjectIdentifier.prototype._getIcon = function(sURI, sImageId) {
     oImage.setSrc(sURI);
 
     return oImage;
+};
+
+/**
+ * Setter for property title.
+ * Default value is empty/undefined
+ * @public
+ * @param {string} sTitle new value for property title
+ * @returns {sap.m.ObjectIdentifier} this to allow method chaining
+ */
+sap.m.ObjectIdentifier.prototype.setTitle = function (sTitle) {
+	//always suppress rerendering because title div is rendered
+	//if text is empty or not
+	this.setProperty("title", sTitle, true);
+
+	//Have to use 'find' because 'sapMObjectIdentifierTitle' is a grandchild, not a child
+	this.$().find(".sapMObjectIdentifierTitle").text(this.getTitle());
+
+	return this;
+};
+
+/**
+ * Setter for property text.
+ * Default value is empty/undefined
+ * @public
+ * @param {string} sText new value for property text
+ * @returns {sap.m.ObjectIdentifier} this to allow method chaining
+ */
+sap.m.ObjectIdentifier.prototype.setText = function (sText) {
+	//always suppress rerendering because text div is rendered
+	//if text is empty or not
+	this.setProperty("text", sText, true);
+	
+	this.$().children(".sapMObjectIdentifierText").text(this.getText());
+
+	return this;
 };

@@ -23,7 +23,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/PropertyBinding'],
 	 * @name sap.ui.model.odata.ODataPropertyBinding
 	 * @extends sap.ui.model.PropertyBinding
 	 */
-	var ODataPropertyBinding = PropertyBinding.extend("sap.ui.model.odata.ODataPropertyBinding", /** @lends sap.ui.model.odata.ODataPropertyBinding */ {
+	var ODataPropertyBinding = PropertyBinding.extend("sap.ui.model.odata.ODataPropertyBinding", /** @lends sap.ui.model.odata.ODataPropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters){
 			PropertyBinding.apply(this, arguments);
@@ -49,6 +49,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/PropertyBinding'],
 	 * @name sap.ui.model.odata.ODataPropertyBinding.extend
 	 * @function
 	 */
+	
+	/**
+	 * Initialize the binding. The message should be called when creating a binding.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
+	 * 
+	 * @protected
+	 * @name sap.ui.model.Binding#initialize
+	 * @function
+	 */
+	ODataPropertyBinding.prototype.initialize = function() {
+		if (this.oModel.oMetadata.isLoaded()) {
+			this.checkUpdate(true);
+		}
+	};
 	
 	/**
 	 * Returns the current value of the bound target

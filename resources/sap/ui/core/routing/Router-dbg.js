@@ -38,7 +38,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 		 * @public
 		 * @name sap.ui.core.routing.Router
 		 */
-		var Router = EventProvider.extend("sap.ui.core.routing.Router", /** @lends sap.ui.core.routing.Router */ {
+		var Router = EventProvider.extend("sap.ui.core.routing.Router", /** @lends sap.ui.core.routing.Router.prototype */ {
 	
 			constructor : function(oRoutes, oConfig, oOwner) {
 				EventProvider.apply(this);
@@ -159,12 +159,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 		};
 		
 		/**
-		 * @public
 		 * Stops to listen to the hashChange of the browser.</br>
 		 * If you want the router to start again, call initialize again.
 		 * @returns { sap.ui.core.routing.Router } this for chaining.
 		 * @name sap.ui.core.routing.Router#stop
 		 * @function
+		 * @public
 		 */
 		Router.prototype.stop = function () {
 	
@@ -249,7 +249,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 			if (!sViewName) {
 				jQuery.sap.log.error("A name for the view has to be defined");
 			}
-			
+
 			if (!this._oViews[sViewName]) {
 				var fnCreateView = function() {
 					var oViewOptions = { 
@@ -276,6 +276,24 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/base/Ma
 				});
 			}
 			return this._oViews[sViewName];
+		};
+
+		/**
+		 * Adds or overwrites a view in the viewcache of the router, the viewname serves as a key
+		 * 
+		 * @param {string} sViewName Name of the view
+		 * @param {sap.ui.core.mvc.View} oView the view instance
+		 * @since 1.22
+		 * @public
+		 * @name sap.ui.core.routing.Router#setView
+		 * @function
+		 */
+		Router.prototype.setView = function (sViewName, oView) {
+			if (!sViewName) {
+				jQuery.sap.log.error("A name for the view has to be defined");
+			}
+
+			this._oViews[sViewName] = oView;
 		};
 		
 		/**

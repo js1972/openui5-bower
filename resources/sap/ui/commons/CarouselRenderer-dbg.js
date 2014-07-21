@@ -88,11 +88,11 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 		rm.write("&#9660");//Symbol for Base and HCB Theme (Must be hidden in other themes)
 	} else {
 		if (bRTL) {
-				rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
-			}
-			else{
-				rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
-			}
+			rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
+		else{
+			rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
 	}
 	rm.write("</div>");
 	// End Next button

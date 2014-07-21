@@ -54,7 +54,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -175,7 +175,7 @@ sap.ui.commons.MessageToast.M_EVENTS = {'next':'next'};
 
 /**
  * Fire event next to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.MessageToast} <code>this</code> to allow method chaining
  * @protected
@@ -391,7 +391,7 @@ sap.ui.commons.MessageToast.prototype.toast = function(oMessage, sAnchorId) {
 
 /**
  * Returns the idle state of the control.
- * @public ???
+ * @public
  */
 sap.ui.commons.MessageToast.prototype.isIdle = function() {
   return this.bIdle;

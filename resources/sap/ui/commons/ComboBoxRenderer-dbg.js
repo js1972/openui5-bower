@@ -157,3 +157,33 @@ sap.ui.commons.ComboBoxRenderer.renderARIAInfo = function(rm, oCmb) {
 	rm.writeAccessibilityState(oCmb, mProps);
 
 };
+
+sap.ui.commons.ComboBoxRenderer.setEditable = function(oCmb, bEditable) {
+
+	if (oCmb.mobile) {
+		var $Select = oCmb.$("select");
+		if (bEditable && oCmb.getEnabled()) {
+			$Select.removeAttr("disabled");
+		} else {
+			$Select.attr("disabled", "disabled");
+		}
+	}
+
+	sap.ui.commons.TextFieldRenderer.setEditable.apply(this, arguments);
+
+};
+
+sap.ui.commons.ComboBoxRenderer.setEnabled = function(oCmb, bEnabled) {
+
+	if (oCmb.mobile) {
+		var $Select = oCmb.$("select");
+		if (bEnabled && oCmb.getEditable()) {
+			$Select.removeAttr("disabled");
+		} else {
+			$Select.attr("disabled", "disabled");
+		}
+	}
+
+	sap.ui.commons.TextFieldRenderer.setEnabled.apply(this, arguments);
+
+};

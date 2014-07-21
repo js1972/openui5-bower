@@ -12,7 +12,7 @@
 // Provides control sap.ui.commons.MenuItem.
 jQuery.sap.declare("sap.ui.commons.MenuItem");
 jQuery.sap.require("sap.ui.commons.library");
-jQuery.sap.require("sap.ui.commons.MenuItemBase");
+jQuery.sap.require("sap.ui.unified.MenuItem");
 
 
 /**
@@ -30,9 +30,7 @@ jQuery.sap.require("sap.ui.commons.MenuItemBase");
  * The supported settings are:
  * <ul>
  * <li>Properties
- * <ul>
- * <li>{@link #getText text} : string (default: '')</li>
- * <li>{@link #getIcon icon} : sap.ui.core.URI (default: '')</li></ul>
+ * <ul></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -46,7 +44,7 @@ jQuery.sap.require("sap.ui.commons.MenuItemBase");
  * </ul> 
  *
  * 
- * In addition, all settings applicable to the base type {@link sap.ui.commons.MenuItemBase#constructor sap.ui.commons.MenuItemBase}
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.MenuItem#constructor sap.ui.unified.MenuItem}
  * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
@@ -55,25 +53,24 @@ jQuery.sap.require("sap.ui.commons.MenuItemBase");
  * @class
  * Smallest unit in the menu hierarchy. An item can be a direct part of a menu bar, of a menu, or of a sub menu.
  * 
- * @extends sap.ui.commons.MenuItemBase
+ * @extends sap.ui.unified.MenuItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.MenuItem of the library sap.ui.unified instead.
  * @name sap.ui.commons.MenuItem
  */
-sap.ui.commons.MenuItemBase.extend("sap.ui.commons.MenuItem", { metadata : {
+sap.ui.unified.MenuItem.extend("sap.ui.commons.MenuItem", { metadata : {
 
 	// ---- object ----
+	deprecated : true,
 
 	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"text" : {type : "string", group : "Appearance", defaultValue : ''},
-		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : ''}
-	}
+	library : "sap.ui.commons"
 }});
 
 
@@ -94,122 +91,5 @@ sap.ui.commons.MenuItemBase.extend("sap.ui.commons.MenuItem", { metadata : {
  */
 
 
-/**
- * Getter for property <code>text</code>.
- * 
- * Item text
- * 
- *
- * Default value is <code>''</code>
- *
- * @return {string} the value of property <code>text</code>
- * @public
- * @name sap.ui.commons.MenuItem#getText
- * @function
- */
-
-/**
- * Setter for property <code>text</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {string} sText  new value for property <code>text</code>
- * @return {sap.ui.commons.MenuItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItem#setText
- * @function
- */
-
-
-/**
- * Getter for property <code>icon</code>.
- * 
- * Icon to be displayed
- * 
- *
- * Default value is <code>''</code>
- *
- * @return {sap.ui.core.URI} the value of property <code>icon</code>
- * @public
- * @name sap.ui.commons.MenuItem#getIcon
- * @function
- */
-
-/**
- * Setter for property <code>icon</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {sap.ui.core.URI} sIcon  new value for property <code>icon</code>
- * @return {sap.ui.commons.MenuItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItem#setIcon
- * @function
- */
-
-
 // Start of sap\ui\commons\MenuItem.js
-sap.ui.commons.MenuItem.prototype.render = function(oRenderManager, oItem, oMenu, oInfo){
-	var rm = oRenderManager;
-	var oSubMenu = oItem.getSubmenu();
-	rm.write("<li ");
-	rm.writeAttribute("class", "sapUiMnuItm" + (oMenu.checkEnabled(oItem) ? "" : " sapUiMnuItmDsbl"));
-	if(oItem.getTooltip_AsString()) {
-		rm.writeAttributeEscaped("title", oItem.getTooltip_AsString());
-	}
-	rm.writeElementData(oItem);
-
-	// ARIA
-	if(oInfo.bAccessible){
-		rm.writeAttribute("role", "menuitem");
-		rm.writeAttribute("aria-labelledby", oMenu.getId()+" "+this.getId()+"-txt "+this.getId()+"-scuttxt");
-		rm.writeAttribute("aria-disabled", !oMenu.checkEnabled(oItem));
-		rm.writeAttribute("aria-posinset", oInfo.iItemNo);
-		rm.writeAttribute("aria-setsize", oInfo.iTotalItems);
-		if (oSubMenu) {
-			rm.writeAttribute("aria-haspopup", true);
-			rm.writeAttribute("aria-owns", oSubMenu.getId());
-		}
-	}
-
-	// Left border
-	rm.write("><div class=\"sapUiMnuItmL\"></div>");
-
-	// icon/check column
-	rm.write("<div class=\"sapUiMnuItmIco\">");
-	if (oItem.getIcon()) {
-		rm.writeIcon(oItem.getIcon());
-	}
-	rm.write("</div>");
-
-	// Text column
-	rm.write("<div id=\""+this.getId()+"-txt\" class=\"sapUiMnuItmTxt\">");
-	rm.writeEscaped(oItem.getText());
-	rm.write("</div>");
-
-	// Shortcut column
-	rm.write("<div id=\""+this.getId()+"-scuttxt\" class=\"sapUiMnuItmSCut\"></div>");
-
-	// Submenu column
-	rm.write("<div class=\"sapUiMnuItmSbMnu\">");
-	if(oSubMenu) {
-		rm.write("<div>&nbsp;</div>");
-	}
-	rm.write("</div>");
-
-	// Right border
-	rm.write("<div class=\"sapUiMnuItmR\"></div>");
-
-	rm.write("</li>");
-};
-
-/**
- * @protected
- */
-sap.ui.commons.MenuItem.prototype.hover = function(bHovered, oMenu){
-	if(bHovered){
-		jQuery(this.getDomRef()).addClass("sapUiMnuItmHov");
-	}else{
-		jQuery(this.getDomRef()).removeClass("sapUiMnuItmHov");
-	}
-};
+jQuery.sap.require("sap.ui.commons.MenuItemBase"); /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/

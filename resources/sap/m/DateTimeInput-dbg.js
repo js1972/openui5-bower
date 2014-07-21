@@ -57,10 +57,11 @@ jQuery.sap.require("sap.m.InputBase");
  *
  * @class
  * Allows end users to interact with date and/or time and select from a date and/or time pad.
+ * Note: Since 1.22, this control should not be used as a date picker(type property "Date"), instead please use dedicated sap.m.DatePicker control.
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -453,6 +454,10 @@ sap.m.DateTimeInput.prototype.getValueFormat = function() {
 	return this.getProperty("valueFormat") || this._types[this.getType()].valueFormat;
 };
 
+sap.m.DateTimeInput.prototype.onfocusin = function() {
+	this._setLabelVisibility();
+};
+
 // Check given is JS Date Object and throw error if not
 sap.m.DateTimeInput.prototype._isDate = function(oValue) {
 	if (!sap.m.isDate(oValue)) {
@@ -465,9 +470,9 @@ sap.m.DateTimeInput.prototype._isDate = function(oValue) {
  * Change event handler of the Input field
  * Also gets called programmatically without parameter to update input value
  *
- * @overwrite sap.m.InputBase#_onChange
+ * @overwrite sap.m.InputBase#onChange
  */
-sap.m.DateTimeInput.prototype._onChange = function(oEvent) {
+sap.m.DateTimeInput.prototype.onChange = function(oEvent) {
 	var oDate = null,
 		sNewValue = this._$input.val(),
 		sOldValue = this.getProperty("value");
@@ -502,13 +507,11 @@ sap.m.DateTimeInput.prototype._onChange = function(oEvent) {
 	this._setLabelVisibility();
 
 	if (oEvent && oEvent.type != "focus") {
-		this.fireChange({
+		this.fireChangeEvent(sNewValue, {
 			dateValue: oDate,
-			value: sNewValue,
 
 			// backwards compatibility
-			newDateValue: oDate,
-			newValue: sNewValue
+			newDateValue: oDate
 		});
 	}
 };
@@ -526,7 +529,7 @@ sap.m.DateTimeInput.prototype._destroyCustomPicker = function() {
 sap.m.DateTimeInput.prototype._setInputValue = function(sValue) {
 	this._$input.val(sValue);
 	this._setLabelVisibility();
-	this._onChange();
+	this.onChange();
 };
 
 /**
@@ -853,6 +856,10 @@ sap.m.DateTimeInput.prototype.onsapshow = function(oEvent) {
 							$dialogToClean.unbind('keydown', fnKeyDown);
 							$dialogToClean.unbind('keydown.dw', fnHandleBtnKeyDown);
 						}
+					},
+					onSelect : function() {
+						// fire change event on selection
+						that.onChange({});
 					},
 					onMarkupReady : function($dialog, inst) {
 						that._restrictMaxWidth($dialog);

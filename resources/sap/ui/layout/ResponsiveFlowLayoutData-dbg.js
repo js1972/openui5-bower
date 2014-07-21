@@ -59,8 +59,8 @@ jQuery.sap.require("sap.ui.core.LayoutData");
  * This is a LayoutData Element that can be added to a control if this control is used within a ResponsiveFlowLayout
  * @extends sap.ui.core.LayoutData
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public

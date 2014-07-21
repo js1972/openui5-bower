@@ -3,9 +3,10 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
- *//* Global CSS for 'base' theme */
+ */@import "../../../../../../Base/baseLib/baseTheme/base.less";
+@import "../../../../../../Base/baseLib/sap_goldreflection/base.less";
+/* Global CSS for 'base' theme */
 
-@import "../../../../../../Base/baseLib/baseTheme/base.less";
 
 
 // Semantic Theming Mapping
@@ -276,7 +277,6 @@
 @sapUiShadow: 5px 5px 10px fade(@sapUiShadowTint,50%);
 /* Global CSS for 'sap_goldreflection' theme */
 
-@import "../../../../../../Base/baseLib/sap_goldreflection/base.less";
 
 
 // Semantic Theming Mapping
@@ -375,6 +375,8 @@
 @sapUiBlue: #007CC0;
 @sapUiRed: #E52929;
 @sapUiYellow: #F0AB00;
+
+@sapUiCritical: #d14900; //rgb(209, 73, 0)
 
 
 // Base Colors
@@ -478,6 +480,8 @@
 @sapUiNegativeText: darken(@sapUiRed, 8%);   // #cc1919
 
 @sapUiPositiveText: darken(@sapUiGreen, 3.5%);   // #007833
+
+@sapUiCriticalText: @sapUiCritical; // #d14900
 
 // Grayscale Borders
 @sapUiWhiteBorder: lighten(@sapUiBaseBorder, 100%);	// #ffffff
@@ -2382,6 +2386,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkExpand:focus,
 .sapUiFeedChunkExpand:hover {
 	background-image: url(img/feed/Expand_button_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkCollapse {
@@ -2391,6 +2396,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkCollapse:focus,
 .sapUiFeedChunkCollapse:hover {
 	background-image: url(img/feed/Collapse_button_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkAct,
@@ -2414,6 +2420,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkActComment:hover,
 .sapUiFeedChunkActComment:focus {
 	background-image: url(img/feed/Action_Comment_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkActFlag {
@@ -2423,6 +2430,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkActFlag:hover,
 .sapUiFeedChunkActFlag:focus {
 	background-image: url(img/feed/Action_Flag_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkActFavorite {
@@ -2432,6 +2440,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkActFavorite:hover,
 .sapUiFeedChunkActFavorite:focus {
 	background-image: url(img/feed/Action_Favorite_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkActInspect {
@@ -2441,6 +2450,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkActInspect:hover,
 .sapUiFeedChunkActInspect:focus {
 	background-image: url(img/feed/Action_Inspect_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkActShare {
@@ -2450,6 +2460,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkActShare:hover,
 .sapUiFeedChunkActShare:focus {
 	background-image: url(img/feed/Share_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunk > .sapUiMenuButton {
@@ -2475,6 +2486,7 @@ html[data-sap-ui-browser^="ie"] .sapUiFeedChunk button {
 .sapUiFeedChunkDel:hover,
 .sapUiFeedChunkDel:focus {
 	background-image: url(img/feed/Delete_button_hover.png);
+	background-color: @sapUiHighlight;
 }
 
 .sapUiFeedChunkDel:active {
@@ -3391,6 +3403,12 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 	text-overflow: ellipsis;
 	max-height: 30px;
 	overflow: hidden;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	-o-user-select: text;
+	user-select: text;
 }
 
 .sapUiNotifierMessageTimestamp {
@@ -3488,7 +3506,7 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 	background: url("img/open_in_new_window_hover.png");
 	background-repeat: no-repeat;
 	background-position: right center;
-	padding-right:20px;
+	padding-right:22px;
 	color: @sapUiTextSelection;
 	font-weight: bold;
 	position: absolute;
@@ -3497,24 +3515,24 @@ li.sapUiInPlaceMessage>div.sapUiNotifierMessageText:focus {
 	display: inline-block;
 	height: 16px;
 	cursor: pointer;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 5px;
 }
 
 .sapUiUx3OverlayOpenButton:hover {
-	background: url("img/open_in_new_window_hover.png");
+	background-color: @sapUiHighlight;
 	background-repeat: no-repeat;
 	background-position: right center;
-	padding-right:20px;
-	/*background-color: #007CD0;*/
-	color: @sapUiHighlight;
+	padding-right:22px;
+
 }
 
 .sapUiUx3OverlayOpenButton:focus {
-	/*background-color: #007CD0;*/
-	background: url("img/open_in_new_window_hover.png");
+	background-color: @sapUiHighlight;
 	background-repeat: no-repeat;
 	background-position: right center;
-	padding-right:20px;
-	color: @sapUiTextSelection;
+	padding-right:22px;
 }
 
 .sapUiUx3OverlayFocusDummyPane {

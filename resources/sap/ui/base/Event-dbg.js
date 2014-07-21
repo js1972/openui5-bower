@@ -21,11 +21,11 @@ sap.ui.define(['jquery.sap.global', './Object'],
 	 * @extends sap.ui.base.Object
 	 * @implements sap.ui.base.Poolable
 	 * @author Malte Wedel, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.base.Event
 	 * @public
 	 */
-	var Event = BaseObject.extend("sap.ui.base.Event", /** @lends sap.ui.base.Event */ {
+	var Event = BaseObject.extend("sap.ui.base.Event", /** @lends sap.ui.base.Event.prototype */ {
 		constructor : function(sId, oSource, mParameters) {
 		
 			BaseObject.apply(this);

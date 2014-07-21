@@ -32,6 +32,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Properties
  * <ul>
  * <li>{@link #getVisible visible} : boolean (default: true)</li>
+ * <li>{@link #getTitle title} : string</li>
  * <li>{@link #getText text} : string</li>
  * <li>{@link #getActive active} : boolean</li></ul>
  * </li>
@@ -56,7 +57,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -71,8 +72,12 @@ sap.ui.core.Control.extend("sap.m.ObjectAttribute", { metadata : {
 	library : "sap.m",
 	properties : {
 		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"title" : {type : "string", group : "Misc", defaultValue : null},
 		"text" : {type : "string", group : "Misc", defaultValue : null},
 		"active" : {type : "boolean", group : "Misc", defaultValue : null}
+	},
+	aggregations : {
+    	"_textControl" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
 	},
 	events : {
 		"press" : {}
@@ -101,7 +106,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>visible</code>.
- * Indicates if the object attribute is visible. Invisible object attribute is not rendered.
+ * Indicates if the object attribute is visible. An invisible object attribute is not rendered.
  *
  * Default value is <code>true</code>
  *
@@ -125,8 +130,33 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 
 /**
+ * Getter for property <code>title</code>.
+ * The object attribute title.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string} the value of property <code>title</code>
+ * @public
+ * @name sap.m.ObjectAttribute#getTitle
+ * @function
+ */
+
+/**
+ * Setter for property <code>title</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string} sTitle  new value for property <code>title</code>
+ * @return {sap.m.ObjectAttribute} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.m.ObjectAttribute#setTitle
+ * @function
+ */
+
+
+/**
  * Getter for property <code>text</code>.
- * The object attribute text
+ * The object attribute text.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -151,7 +181,7 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 
 /**
  * Getter for property <code>active</code>.
- * Indicates if the object attribute text is selectable by the user
+ * Indicates if the object attribute text is selectable by the user.
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -243,6 +273,30 @@ sap.m.ObjectAttribute.M_EVENTS = {'press':'press'};
 // * This file defines behavior for the control,
 // */
 
+
+
+/**
+ *  Initialize member variables
+ * 
+ * @private
+ */
+sap.m.ObjectAttribute.prototype.init = function() {
+	this.setAggregation('_textControl', new sap.m.Text());
+};
+
+/**
+ * Delivers text control wiht updated title, text and maxLines property
+ * 
+ * @private
+ */
+sap.m.ObjectAttribute.prototype._getUpdatedTextControl = function(){
+	var oTextControl = this.getAggregation('_textControl');
+	oTextControl.setProperty('text', (this.getTitle() ? this.getTitle() + ": " : "") + this.getText(), true);
+	//if attribute is used inside responsive ObjectHeader only 1 line
+	oTextControl.setProperty('maxLines', (this.getParent() && this.getParent() instanceof sap.m.ObjectHeader && this.getParent().getResponsive()) ? 1 : 2, true);
+	return oTextControl;
+};
+
 /**
  * @private
  */
@@ -260,7 +314,7 @@ sap.m.ObjectAttribute.prototype.ontap = function(oEvent) {
  * @returns {boolean} true if attribute's text is empty or only consists of whitespaces.
  */
 sap.m.ObjectAttribute.prototype._isEmpty = function() {
-	return !this.getText().trim();
+	return !(this.getText().trim() || this.getTitle().trim());
 };
 
 /**

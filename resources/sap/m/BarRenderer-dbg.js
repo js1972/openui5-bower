@@ -1,10 +1,12 @@
 /*!
+
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
 jQuery.sap.declare("sap.m.BarRenderer");
+jQuery.sap.require("sap.ui.core.Renderer");
 
 /**
  * @class Bar renderer.
@@ -12,104 +14,140 @@ jQuery.sap.declare("sap.m.BarRenderer");
  */
 sap.m.BarRenderer = {};
 
+/////////////////
+//Bar in page delegation
+/////////////////
+
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
- * 
- * @param {sap.ui.core.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
+ * @protected
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the render output buffer.
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered.
+ */
+sap.m.BarRenderer.render = sap.m.BarInPageEnabler.prototype.render;
+
+/////////////////
+//Bar specific rendering + implementation of enabler hooks
+/////////////////
+
+/**
+ * Add classes attributes and styles to the root tag
+ *
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the Render-Output-Buffer
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
-sap.m.BarRenderer.render = function(oRenderManager, oControl) { 
-	var i = 0;
-
-	//_context is set by the page control
-	switch (oControl._context) {
-	case 'header':
-		//render header element 
-		oRenderManager.write("<header");
-		break;
-	case 'footer':
-		//render footer element 
-		oRenderManager.write("<footer");
-		oRenderManager.addClass("sapMFooter-CTX");
-		break;
-	default: 
-		//render div element as default 
-		oRenderManager.write("<div");
-		break;
-	}
-	oRenderManager.writeControlData(oControl);
-	oRenderManager.addClass("sapMBar");
+sap.m.BarRenderer.decorateRootElement = function (oRM, oControl) {
+	oRM.addClass("sapMBar");
+	oRM.addClass(this.getContext(oControl));
 
 	if (oControl.getTranslucent() && (sap.ui.Device.support.touch  || jQuery.sap.simulateMobileOnDesktop)) {
-		oRenderManager.addClass("sapMBarTranslucent");
+		oRM.addClass("sapMBarTranslucent");
 	}
 
-	oRenderManager.addClass("sapMBar-CTX");
-	oRenderManager.writeClasses();
-	
-	var sTooltip = oControl.getTooltip_AsString();
-	if (sTooltip) {
-		oRenderManager.writeAttributeEscaped("title", sTooltip);
-	}
-	
-	oRenderManager.write(">"); 
+	oRM.addClass("sapMBar-CTX");
+};
+
+/**
+ * Determines, if the IBarContext classes should be added to the control
+ * @private
+ */
+sap.m.BarRenderer.shouldAddIBarContext = function () {
+	return true;
+};
+
+/**
+ * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
+ *
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the Render-Output-Buffer
+ * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+ */
+sap.m.BarRenderer.renderBarContent = function(oRM, oControl) {
+	var sClosingDiv = "</div>";
 
 	//left content area
-	oRenderManager.write("<div id='"); 
-	oRenderManager.write(oControl.getId());
-	oRenderManager.write("-BarLeft' class='sapMBarLeft' >");
-	var aLContent = oControl.getContentLeft();
-	for(i=0; i< aLContent.length; i++){
-		oRenderManager.renderControl(aLContent[i]);
-	}
-	oRenderManager.write("</div>");
+	oRM.write("<div id='" + oControl.getId() + "-BarLeft' ");
+	oRM.addClass('sapMBarLeft');
+	oRM.addClass('sapMBarContainer');
+	oRM.writeClasses();
+	oRM.write(">");
 
-	//middle content area 
-	oRenderManager.write("<div id='"); 
-	oRenderManager.write(oControl.getId());
-	oRenderManager.write("-BarMiddle' class='sapMBarMiddle' >");
+	this.renderAllControls(oControl.getContentLeft(), oRM, oControl);
+
+	oRM.write(sClosingDiv);
+
+	//middle content area
+	oRM.write("<div id='" + oControl.getId() + "-BarMiddle' ");
+	oRM.addClass('sapMBarMiddle');
+	oRM.writeClasses();
+	oRM.write(">");
 	if (oControl.getEnableFlexBox()){
 		oControl._oflexBox = oControl._oflexBox || new sap.m.HBox(oControl.getId() + "-BarPH", {alignItems: "Center"}).addStyleClass("sapMBarPH").setParent(oControl, null, true);
-		aMContent = oControl.getContentMiddle();
-		for(i=0; i<aMContent.length; i++){
-			oControl._oflexBox.addItem(aMContent[i]);
-		}
-		oRenderManager.renderControl(oControl._oflexBox);
+
+		oControl.getContentMiddle().forEach(function(oMidContent) {
+			oControl._oflexBox.addItem(oMidContent);
+		});
+
+		oRM.renderControl(oControl._oflexBox);
 	} else {
-		oRenderManager.write("<div id='" + oControl.getId() + "-BarPH' class='sapMBarPH' >"); //place holder
-		var aMContent = oControl.getContentMiddle();
-		for(i=0; i<aMContent.length; i++){
-			oRenderManager.renderControl(aMContent[i]);
-		}
-		oRenderManager.write("</div>");
+		oRM.write("<div id='" + oControl.getId() + "-BarPH' ");
+		oRM.addClass('sapMBarPH');
+		oRM.addClass('sapMBarContainer');
+		oRM.writeClasses();
+		oRM.write(">");
+
+		this.renderAllControls(oControl.getContentMiddle(), oRM, oControl);
+
+		oRM.write(sClosingDiv);
 	}
-	oRenderManager.write("</div>");
+	oRM.write(sClosingDiv);
 
 
 	//right content area
-	oRenderManager.write("<div id='" + oControl.getId() + "-BarRight'");
-	oRenderManager.addClass('sapMBarRight');
-	if(sap.ui.getCore().getConfiguration().getRTL()){
-		oRenderManager.addClass("sapMRTL");
+	oRM.write("<div id='" + oControl.getId() + "-BarRight'");
+	oRM.addClass('sapMBarRight');
+	oRM.addClass('sapMBarContainer');
+	if(sap.ui.getCore().getConfiguration().getRTL()) {
+		oRM.addClass("sapMRTL");
 	}
-	oRenderManager.writeClasses();
-	oRenderManager.write(">");
-	var aRContent = oControl.getContentRight();
-	for(i=0; i<aRContent.length; i++){
-		oRenderManager.renderControl(aRContent[i]);
-	}
-	oRenderManager.write("</div>");
-	
-	switch (oControl._context) {
-	case 'header':
-		oRenderManager.write("</header>");
-		break;
-	case 'footer':
-		oRenderManager.write("</footer>");
-		break;
-	default: 
-		oRenderManager.write("</div>");
-		break;
-	}
-	
+	oRM.writeClasses();
+	oRM.write(">");
+
+	this.renderAllControls(oControl.getContentRight(), oRM, oControl);
+
+	oRM.write(sClosingDiv);
 };
+
+/**
+ * Makes the render manager renderAllControls in an array
+ * @param {sap.ui.core.Control} aControls the Controls to be rendered
+ * @param {sap.ui.core.RenderManager} oRM the RenderManager that can be used for writing to the Render-Output-Buffer
+ * @param {sap.m.Bar} oBar an object representation of the control that should be rendered
+ */
+sap.m.BarRenderer.renderAllControls = function (aControls, oRM, oBar) {
+	aControls.forEach(function (oControl) {
+		sap.m.BarInPageEnabler.addChildClassTo(oControl, oBar);
+
+		oRM.renderControl(oControl);
+	});
+};
+
+sap.m.BarRenderer._mContexts = {
+		Header : "sapMHeader-CTX",
+		SubHeader : "sapMSubHeader-CTX",
+		Footer : "sapMFooter-CTX",
+		Default : "sapMContent-CTX",
+};
+
+/**
+ * Determines wich tag or context class the bar should have.
+ * @protected
+ * @param {sap.m.BarBase} oControl the Bar control.
+ * @returns {string} the context class
+ */
+sap.m.BarRenderer.getContext = function(oControl) {
+	var sDesign = oControl.getDesign(),
+		mContexts = sap.m.BarRenderer._mContexts;
+
+	return mContexts[sDesign] || mContexts.Default;
+};
+

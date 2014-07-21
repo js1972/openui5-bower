@@ -10,7 +10,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonRenderer");
 /**
  * @class
  * @author SAP AG
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  */
 sap.ui.commons.ButtonRenderer = {

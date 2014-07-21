@@ -60,7 +60,7 @@ sap.ui.define(['sap/ui/core/library','sap/ui/core/Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -345,7 +345,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event afterInit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -403,7 +403,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event beforeExit to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -461,7 +461,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event afterRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected
@@ -519,7 +519,7 @@ sap.ui.core.mvc.View.M_EVENTS = {'afterInit':'afterInit','beforeExit':'beforeExi
 
 /**
  * Fire event beforeRendering to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.core.mvc.View} <code>this</code> to allow method chaining
  * @protected

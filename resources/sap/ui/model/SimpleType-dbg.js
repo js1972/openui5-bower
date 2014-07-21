@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global', './FormatException', './ParseException', './
 	 * @extends sap.ui.model.Type
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @param {object} [oFormatOptions] options as provided by concrete subclasses
@@ -29,7 +29,7 @@ sap.ui.define(['jquery.sap.global', './FormatException', './ParseException', './
 	 * @public
 	 * @name sap.ui.model.SimpleType
 	 */
-	var SimpleType = Type.extend("sap.ui.model.SimpleType", /** @lends sap.ui.model.SimpleType */ {
+	var SimpleType = Type.extend("sap.ui.model.SimpleType", /** @lends sap.ui.model.SimpleType.prototype */ {
 	
 		constructor : function(oFormatOptions, oConstraints) {
 			Type.apply(this, arguments);

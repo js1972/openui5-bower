@@ -31,23 +31,30 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	 * <li>maxIntegerDigits: maximum number of non-fraction digits</li>
 	 * <li>minFractionDigits: minimal number of fraction digits</li>
 	 * <li>maxFractionDigits: maximum number of fraction digits</li>
+	 * <li>pattern: CLDR number pattern</li>
 	 * <li>groupingEnabled: enable grouping (show the grouping separators</li>
 	 * <li>groupingSeparator: the used grouping separator</li>
 	 * <li>decimalSeparator: the used decimal separator</li>
 	 * <li>plusSign: the used plus symbol</li>
 	 * <li>minusSign: the used minus symbol</li>
+	 * <li>showMeasure: Show the measure according to the format in the formatted string</li>
 	 * </ul>
 	 * For format options which are not specified default values according to the type and locale settings are used.
 	 *
 	 * @public
 	 * @name sap.ui.core.format.NumberFormat
 	 */
-	var NumberFormat = sap.ui.base.Object.extend("sap.ui.core.format.NumberFormat", /** @lends sap.ui.core.format.NumberFormat */ {
+	var NumberFormat = sap.ui.base.Object.extend("sap.ui.core.format.NumberFormat", /** @lends sap.ui.core.format.NumberFormat.prototype */ {
 		constructor : function(oFormatOptions) {
 			// Do not use the constructor
 			throw new Error();
 		}
 	});
+	
+	NumberFormat.INTEGER = 0;
+	NumberFormat.FLOAT = 1;
+	NumberFormat.CURRENCY = 2;
+	NumberFormat.PERCENT = 3;
 	
 	/*
 	 * Default format options for Integer
@@ -63,7 +70,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 		decimalSeparator: ".",
 		plusSign: "+",
 		minusSign: "-",
-		isInteger: true
+		isInteger: true,
+		type: NumberFormat.INTEGER,
+		showMeasure: false
 	};
 	
 	/*
@@ -80,7 +89,28 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 		decimalSeparator: ".",
 		plusSign: "+",
 		minusSign: "-",
-		isInteger: false
+		isInteger: false,
+		type: NumberFormat.FLOAT,
+		showMeasure: false
+	};
+	
+	/*
+	 * Default format options for Currency
+	 * @name sap.ui.core.format.NumberFormat.oDefaultCurrencyFormat
+	 */
+	NumberFormat.oDefaultCurrencyFormat = {
+		minIntegerDigits: 1,
+		maxIntegerDigits: 99,
+		minFractionDigits: 2,
+		maxFractionDigits: 2,
+		groupingEnabled: true,
+		groupingSeparator: ",",
+		decimalSeparator: ".",
+		plusSign: "+",
+		minusSign: "-",
+		isInteger: false,
+		type: NumberFormat.CURRENCY,
+		showMeasure: true
 	};
 	
 	/**
@@ -112,8 +142,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	 * @function
 	 */
 	NumberFormat.getFloatInstance = function(oFormatOptions, oLocale) {
-		var oFormat = this.createInstance(oFormatOptions, oLocale);
-		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultFloatFormat, this.getLocaleFormatOptions(oFormat.oLocaleData), oFormatOptions);
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.FLOAT);
+		
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultFloatFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
 		return oFormat;
 	};
 	
@@ -132,8 +167,38 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	 * @function
 	 */
 	NumberFormat.getIntegerInstance = function(oFormatOptions, oLocale) {
-		var oFormat = this.createInstance(oFormatOptions, oLocale);
-		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultIntegerFormat, this.getLocaleFormatOptions(oFormat.oLocaleData), oFormatOptions);
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.INTEGER);
+		
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultIntegerFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
+		return oFormat;
+	};
+	
+	/**
+	 * Get an currency instance of the NumberFormat, which can be used for formatting.
+	 *
+	 * If no locale is given, the currently configured 
+	 * {@link sap.ui.core.Configuration.FormatSettings#getFormatLocale formatLocale} will be used. 
+	 *
+	 * @param {object} [oFormatOptions] Object which defines the format options
+	 * @param {sap.ui.core.Locale} [oLocale] Locale to get the formatter for
+	 * @return {sap.ui.core.format.NumberFormat} integer instance of the NumberFormat
+	 * @static
+	 * @public
+	 * @name sap.ui.core.format.NumberFormat.getIntegerInstance
+	 * @function
+	 */
+	NumberFormat.getCurrencyInstance = function(oFormatOptions, oLocale) {
+		var oFormat = this.createInstance(oFormatOptions, oLocale),
+			oLocaleFormatOptions = this.getLocaleFormatOptions(oFormat.oLocaleData, NumberFormat.CURRENCY);
+
+		oFormat.oFormatOptions = jQuery.extend(false, {}, this.oDefaultCurrencyFormat, oLocaleFormatOptions, oFormatOptions);
+		if (oFormatOptions && oFormatOptions.pattern) {
+			oFormat.oFormatOptions = jQuery.extend(false, oFormat.oFormatOptions, this.parseNumberPattern(oFormatOptions.pattern));
+		}
 		return oFormat;
 	};
 	
@@ -169,12 +234,66 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	 * @name sap.ui.core.format.NumberFormat.getLocaleFormatOptions
 	 * @function
 	 */
-	NumberFormat.getLocaleFormatOptions = function(oLocaleData) {
+	NumberFormat.getLocaleFormatOptions = function(oLocaleData, iType) {
+		var oLocaleFormatOptions = {},
+			sNumberPattern;
+		
+		if (iType == NumberFormat.CURRENCY) {
+			sNumberPattern = oLocaleData.getCurrencyPattern();
+			oLocaleFormatOptions = this.parseNumberPattern(sNumberPattern);
+		}
+		
+		oLocaleFormatOptions.plusSign = oLocaleData.getNumberSymbol("plusSign");
+		oLocaleFormatOptions.minusSign = oLocaleData.getNumberSymbol("minusSign");
+		oLocaleFormatOptions.decimalSeparator = oLocaleData.getNumberSymbol("decimal");
+		oLocaleFormatOptions.groupingSeparator = oLocaleData.getNumberSymbol("group");
+		oLocaleFormatOptions.pattern = sNumberPattern;
+		
+		return oLocaleFormatOptions;
+	};
+	
+	/**
+	 * Get digit information from number format.
+	 *
+	 * @static
+	 * @name sap.ui.core.format.NumberFormat.parseNumberFormat
+	 * @function
+	 */
+	NumberFormat.parseNumberPattern = function(sFormatString) {
+		var iMinIntegerDigits = 0;
+		var iMinFractionDigits = 0;
+		var iMaxFractionDigits = 0;
+		var bGroupingEnabled = false;
+		
+		var iSection = 0;
+
+		for (var i=0; i < sFormatString.length; i++) {
+			var sCharacter = sFormatString[i];
+			
+			if (sCharacter === ",") {
+				bGroupingEnabled = true;
+				continue;
+			} else if (sCharacter === ".") {
+				iSection = 1;
+				continue;
+			} else if (iSection == 0 && sCharacter === "0") {
+				iMinIntegerDigits++;
+			} else if (iSection == 1) {
+				if (sCharacter === "0") {
+					iMinFractionDigits++;
+					iMaxFractionDigits++;
+				} else if (sCharacter === "#") {
+					iMaxFractionDigits++;
+				}
+			}
+			
+		}
+		
 		return {
-			plusSign: oLocaleData.getNumberSymbol("plusSign"),
-			minusSign: oLocaleData.getNumberSymbol("minusSign"),
-			decimalSeparator: oLocaleData.getNumberSymbol("decimal"),
-			groupingSeparator: oLocaleData.getNumberSymbol("group")
+			minIntegerDigits: iMinIntegerDigits,
+			minFractionDigits: iMinFractionDigits,
+			maxFractionDigits: iMaxFractionDigits,
+			groupingEnabled: bGroupingEnabled
 		}
 	};
 	
@@ -182,12 +301,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	 * Format a number according to the given format options.
 	 *
 	 * @param {number} oValue the number to format
+	 * @param {string} sMeasure a measure which has an impact on the formatting
 	 * @return {string} the formatted output value
 	 * @public
 	 * @name sap.ui.core.format.NumberFormat#format
 	 * @function
 	 */
-	NumberFormat.prototype.format = function(oValue) {
+	NumberFormat.prototype.format = function(oValue, sMeasure) {
 		var sNumber = this.convertToDecimal(oValue),
 			sIntegerPart = "",
 			sFractionPart = "",
@@ -201,7 +321,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 	
 		if (sNumber == "NaN") {
 			return sNumber;
-		}	
+		}
+		
+		//handle measure
+		if (oOptions.type == NumberFormat.CURRENCY) {
+			var iDigits = this.oLocaleData.getCurrencyDigits(sMeasure);
+			oOptions.maxFractionDigits = iDigits;
+			oOptions.minFractionDigits = iDigits;
+		}
 		
 		// if number is negative remove minus
 		if (bNegative) {
@@ -254,6 +381,18 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 		sResult += sIntegerPart;
 		if (sFractionPart) {
 			sResult += oOptions.decimalSeparator + sFractionPart;
+		}
+		
+		if (sMeasure && oOptions.showMeasure) {
+			if (oOptions.type == NumberFormat.CURRENCY) {
+				var sCurrencyPlaceholder = '\u00a4';
+				var sPattern = oOptions.pattern;
+				
+				sPattern = sPattern.replace(/\u00a4/, this.oLocaleData.getCurrencySymbol(sMeasure));
+				sPattern = sPattern.replace(/[0#.,]+/, sResult);
+				
+				sResult = sPattern;
+			}
 		}
 	
 		if (sap.ui.getCore().getConfiguration().getOriginInfo()) {

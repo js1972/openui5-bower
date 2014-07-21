@@ -61,7 +61,7 @@ jQuery.sap.require("sap.m.InputBase");
  * @extends sap.m.InputBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -301,29 +301,25 @@ sap.m.TextArea.prototype.init = function() {
 	this._inputProxy = jQuery.proxy(this._onInput, this);
 };
 
-sap.m.TextArea.prototype.exit = function() {
-	sap.m.InputBase.prototype.exit.call(this);
-	delete this._oIScroll;
-};
-
 // Attach listeners on after rendering and find iscroll
 sap.m.TextArea.prototype.onAfterRendering = function() {
 	sap.m.InputBase.prototype.onAfterRendering.call(this);
 
 	// bind events
-	this._bindToInputEvent(this._inputProxy);
+	this.bindToInputEvent(this._inputProxy);
 
+	// touch browser behaviour differs
 	if (sap.ui.Device.support.touch) {
 
+		// check behaviour mode
 		if (this._behaviour.INSIDE_SCROLLABLE_WITHOUT_FOCUS) {
-			this._oIScroll = null;	// set null to find iScroll
 
 			// Bind browser events to mimic native scrolling
 			this._$input.on("touchstart", jQuery.proxy(this._onTouchStart, this));
 			this._$input.on("touchmove", jQuery.proxy(this._onTouchMove, this));
 		} else if (this._behaviour.PAGE_NON_SCROLLABLE_AFTER_FOCUS) {
 
-			// stop bubbling to disable iScroll
+			// stop bubbling to disable preventDefault calls
 			this._$input.on("touchmove", function(e) {
 				if (jQuery(this).is(":focus")) {
 					e.stopPropagation();
@@ -333,30 +329,8 @@ sap.m.TextArea.prototype.onAfterRendering = function() {
 	}
 };
 
-sap.m.TextArea.prototype.setRows = function(iRows) {
-	this.setProperty("rows", iRows, true);
-
-	if (this.getDomRef()) {
-		this._$input.attr("rows", this.getRows());
-	}
-
-	return this;
-};
-
-sap.m.TextArea.prototype.setCols = function(iCols) {
-	this.setProperty("cols", iCols, true);
-
-	if (this.getDomRef()) {
-		this._$input.attr("cols", this.getCols());
-	}
-
-	return this;
-};
-
-sap.m.TextArea.prototype.setHeight = function(sHeight) {
-	this.setProperty("height", sHeight, true);
-	this.$().css("height", this.getHeight());
-	return this;
+// overwrite the input base enter handling for change event
+sap.m.TextArea.prototype.onsapenter = function(oEvent) {
 };
 
 sap.m.TextArea.prototype._onInput = function(oEvent) {
@@ -370,10 +344,11 @@ sap.m.TextArea.prototype._onInput = function(oEvent) {
 
 	if (value != this.getValue()) {
 		this.setProperty("value", value, true);
-		this._curpos = this._$input.cursorPos();
-		this._setLabelVisibility();
 		this.fireLiveChange({
-			newValue : value
+			value: value,
+
+			// backwards compatibility
+			newValue: value
 		});
 	}
 };
@@ -401,16 +376,14 @@ sap.m.TextArea.prototype._behaviour = (function(oDevice) {
  * @param {jQuery.EventObject} oEvent The event object
  */
 sap.m.TextArea.prototype._onTouchStart = function(oEvent) {
-	if (this._oIScroll === null) {
-		this._oIScroll = sap.m.getIScroll(this);
-	}
-
-	this._startY = oEvent.touches[0].pageY;
-	this._startX = oEvent.touches[0].pageX;
+	var oTouchEvent = oEvent.touches[0];
+	this._iStartY = oTouchEvent.pageY;
+	this._iStartX = oTouchEvent.pageX;
 	this._bHorizontalScroll = undefined;
-	this._iDirection = 0;
 
-	oEvent.setMarked("swipestartHandled"); //disable swipe in jQuery-mobile
+	// disable swipe handling of jQuery-mobile since it calls preventDefault
+	// on touchmove and this can break the scrolling nature of the textarea
+	oEvent.setMarked("swipestartHandled");
 };
 
 
@@ -422,88 +395,23 @@ sap.m.TextArea.prototype._onTouchStart = function(oEvent) {
  */
 sap.m.TextArea.prototype._onTouchMove = function(oEvent) {
 
-	var textarea = this._$input[0],	// dom reference
-		pageY = oEvent.touches[0].pageY,
-		isTop = textarea.scrollTop <= 0,
-		isBottom = textarea.scrollTop + textarea.clientHeight >= textarea.scrollHeight,
-		isGoingUp = this._startY > pageY,
-		isGoingDown =  this._startY < pageY,
-		isOnEnd = isTop && isGoingDown || isBottom && isGoingUp;
+	var oDomRef = this._$input[0],	// textarea dom reference
+		iPageY = oEvent.touches[0].pageY,
+		iScrollTop = oDomRef.scrollTop,
+		bTop = iScrollTop <= 0,
+		bBottom = iScrollTop + oDomRef.clientHeight >= oDomRef.scrollHeight,
+		bGoingUp = this._iStartY > iPageY,
+		bGoingDown =  this._iStartY < iPageY,
+		bOnEnd = bTop && bGoingDown || bBottom && bGoingUp;
 
-	// Native scrolling:
-	if (!this._oIScroll) {
-
-		if(this._bHorizontalScroll === undefined){ // do once
-			this._bHorizontalScroll = Math.abs(this._startY - pageY) < Math.abs(this._startX - oEvent.touches[0].pageX);
-		}
-
-		if (this._bHorizontalScroll || !isOnEnd) { // mark if it can scroll itself
-			oEvent.setMarked();
-		}
-
-		return;
+	if (this._bHorizontalScroll === undefined) { // check once
+		this._bHorizontalScroll = Math.abs(this._iStartY - iPageY) < Math.abs(this._iStartX - oEvent.touches[0].pageX);
 	}
 
-	// iScroll:
+	if (this._bHorizontalScroll || !bOnEnd) {
 
-	// update position
-	this._startY = pageY;
-
-	// if we reached the edges of textarea then enable page scrolling
-	if (isOnEnd) {
-		var iDirection = (isGoingDown) ? -1 : 1;
-
-		if (!(this._iDirection == iDirection) && this._oIScroll) {
-			// set current touch point as iscroll last point
-			this._oIScroll.pointY = pageY;
-			this._iDirection = iDirection;
-		}
-
-		// let page scroll happen
-		oEvent.preventDefault();
-		return;
+		// to prevent the rubber-band effect we are calling prevent default on touchmove
+		// from jquery.sap.mobile but this breaks the scrolling nature of the textarea
+		oEvent.setMarked();
 	}
-
-	// do not let event bubbling needed for textarea scrolling
-	oEvent.stopPropagation();
 };
-
-/**
- * in iOS(5-6) if transforms(iScroll) are in use textarea is not working properly
- *	- auto-scroll to bottom doesn't work when typing
- *  - user cannot focus to specific text position with tap
- *
- *  As a very lame workaround
- *   1 - turn off -webkit-transform style from the child of iScroll element while textarea is in focus.
- *   2 - immediately set scrollTop value to avoid jumping of scrolled content.
- *   3 - set iScroll useTransform option to false for any internal calculation during this time
- *   4 - return original styles and options on blur
- */
-if (sap.ui.Device.os.ios && sap.ui.Device.os.version < 7) {
-
-sap.m.TextArea.prototype.onfocusin = function() {
-	if (!this._oIScroll || !this._oIScroll.options.useTransform) {
-		return;
-	}
-
-	this._oIScroll.scroller.style.webkitTransform = '';
-	this._oIScroll.wrapper.scrollTop = -this._oIScroll.y;
-	this._oIScroll.options.useTransform = false;
-	this._lastOffset = {
-		x : this._oIScroll.x,
-		y : this._oIScroll.y
-	};
-};
-
-sap.m.TextArea.prototype.onfocusout = function() {
-	if (!this._oIScroll || !this._lastOffset) {
-		return;
-	}
-
-	// return original styles on blur
-	this._oIScroll.wrapper.scrollTop = 0;
-	this._oIScroll.options.useTransform = true;
-	this._oIScroll.scrollTo(this._lastOffset.x, this._lastOffset.y);
-};
-
-}

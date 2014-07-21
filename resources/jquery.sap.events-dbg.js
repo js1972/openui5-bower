@@ -211,6 +211,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 	jQuery.sap.ControlEvents = [  // IMPORTANT: update the public documentation when extending this list
 		"click",
 		"dblclick",
+		"contextmenu",
 		"focusin",
 		"focusout",
 		"keydown",
@@ -229,7 +230,11 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 		"dragend",
 		"drop",
 		"paste",
-		"cut"
+		"cut",
+		
+		/* input event is fired synchronously on IE9+ when the value of an <input> or <textarea> element is changed */
+		/* for more details please see : https://developer.mozilla.org/en-US/docs/Web/Reference/Events/input */
+		"input"
 	];
 
 	// touch events natively supported
@@ -780,7 +785,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 						fnHandler(oEvent, oAdditionalConfig);
 					};
 
-					$this.data(sHandlerKey + oHandle.guid, fnHandlerWrapper);
+					oHandle.__sapSimulatedEventHandler = fnHandlerWrapper;
 					for(var i=0; i<aOrigEvents.length; i++){
 						$this.on(aOrigEvents[i], fnHandlerWrapper);
 					}
@@ -790,7 +795,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 				// to the original events.
 				remove: function(oHandle) {
 					var $this = jQuery(this);
-					var fnHandler = $this.data(sHandlerKey + oHandle.guid);
+					var fnHandler = oHandle.__sapSimulatedEventHandler;
 					$this.removeData(sHandlerKey + oHandle.guid);
 					for(var i=0; i<aOrigEvents.length; i++){
 						jQuery.event.remove(this, aOrigEvents[i], fnHandler);
@@ -950,8 +955,10 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 				 * @param {object} oConfig Additional configuration passed from createSimulatedEvent function
 				 */
 				var fnTouchToMouseHandler = function(oEvent, oConfig) {
-					var oTouch = oEvent.originalEvent.touches[0];
-					if(oEvent.type === "touchstart"){
+					var oTouch = oEvent.originalEvent.touches[0],
+						bEventHandledByUIArea;
+
+					if (oEvent.type === "touchstart") {
 						bFingerIsMoved = false;
 						iStartX = oTouch.pageX;
 						iStartY = oTouch.pageY;
@@ -985,10 +992,12 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 					oNewEvent.altKey = oMappedEvent.altKey;
 					oNewEvent.shiftKey = oMappedEvent.shiftKey;
 
+					bEventHandledByUIArea = oNewEvent.isMarked("handledByUIArea");
+
 					oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
 
 					// also call the onclick event handler when touchend event is received and the movement is within threshold
-					if(oEvent.type === "touchend" && !bFingerIsMoved){
+					if(oEvent.type === "touchend" && !bEventHandledByUIArea && !bFingerIsMoved){
 						oNewEvent.type = "click";
 						oNewEvent.setMark("handledByUIArea", false);
 						oNewEvent.offsetX = iOffsetX; // use offset from touchstart
@@ -1242,7 +1251,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetX of Event. In jQuery there is a bug. In IE the value is in offsetX, in FF in layerX
 	 *
-	 * @returns offsetX
+	 * @returns {int} offsetX
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetX = function() {
@@ -1265,7 +1274,7 @@ sap.ui.define(['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY.
 	 *
-	 * @returns offsetY
+	 * @returns {int} offsetY
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetY = function() {

@@ -51,7 +51,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Associations
  * <ul>
  * <li>{@link #getInitialFocus initialFocus} : string | sap.ui.core.Control</li>
- * <li>{@link #getOpener opener} : string | sap.ui.core.Control</li></ul>
+ * <li>{@link #getOpener opener} : string | sap.ui.core.Control</li>
+ * <li>{@link #getDefaultButton defaultButton} : string | sap.ui.core.Control</li></ul>
  * </li>
  * <li>Events
  * <ul>
@@ -78,7 +79,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -117,7 +118,8 @@ sap.ui.core.Control.extend("sap.ui.ux3.ToolPopup", { metadata : {
 	},
 	associations : {
 		"initialFocus" : {type : "sap.ui.core.Control", multiple : false}, 
-		"opener" : {type : "sap.ui.core.Control", multiple : false}
+		"opener" : {type : "sap.ui.core.Control", multiple : false}, 
+		"defaultButton" : {type : "sap.ui.core.Control", multiple : false}
 	},
 	events : {
 		"open" : {}, 
@@ -654,6 +656,31 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 	
 /**
+ * Defines one of the buttons that have been provided via button aggregation to be the default button. This default button is initially selected, if no control is set via the initialFocus association explicitly. The default button is activated when Enter is pressed in the context of the dialog and when the currently selected element does not handle the Enter event itself.
+ *
+ * @return {string} Id of the element which is the current target of the <code>defaultButton</code> association, or null
+ * @public
+ * @since 1.20.1
+ * @name sap.ui.ux3.ToolPopup#getDefaultButton
+ * @function
+ */
+
+/**
+ * Defines one of the buttons that have been provided via button aggregation to be the default button. This default button is initially selected, if no control is set via the initialFocus association explicitly. The default button is activated when Enter is pressed in the context of the dialog and when the currently selected element does not handle the Enter event itself.
+ *
+ * @param {string | sap.ui.core.Control} vDefaultButton 
+ *    Id of an element which becomes the new target of this <code>defaultButton</code> association.
+ *    Alternatively, an element instance may be given.
+ * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.20.1
+ * @name sap.ui.ux3.ToolPopup#setDefaultButton
+ * @function
+ */
+
+
+	
+/**
  * Event is fired when the pop up opens 
  *
  * @name sap.ui.ux3.ToolPopup#open
@@ -702,7 +729,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event open to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -888,7 +915,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event iconChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -946,7 +973,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event closed to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -1007,7 +1034,7 @@ sap.ui.ux3.ToolPopup.M_EVENTS = {'open':'open','close':'close','enter':'enter','
 
 /**
  * Fire event opened to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.ToolPopup} <code>this</code> to allow method chaining
  * @protected
@@ -1810,16 +1837,35 @@ sap.ui.ux3.ToolPopup.prototype.getEnabled = function() {
 	return eState === sap.ui.core.OpenState.OPENING || eState === sap.ui.core.OpenState.OPEN;
 };
 
-sap.ui.ux3.ToolPopup.prototype.onsapenter = function(oEvent) {
-	this.fireEnter({originalEvent:oEvent,originalSrcControl:oEvent.srcControl});
+sap.ui.ux3.ToolPopup.prototype.onsapenter = function(oEvent) {	
+	// See open-method
+	var sInitFocus = this.getDefaultButton();
+	var oFocusCtrl = sap.ui.getCore().byId(sInitFocus); 
+
+	// trigger the default button if it exists and is inside the Dialog
+	if(sInitFocus && oFocusCtrl && jQuery.contains(this.getDomRef(), oFocusCtrl.getDomRef())) {
+		// Okay, we have the control
+		if (oFocusCtrl instanceof sap.ui.commons.Button) {
+			var $FocusCtrl = oFocusCtrl.$();
+			$FocusCtrl.click();
+			$FocusCtrl.focus();
+		}
+	}
+
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
 };
 
 sap.ui.ux3.ToolPopup.prototype.onBeforeRendering = function() {
-	var sId = this.getInitialFocus();
-	if (sId) {
-		this._bFocusSet = true;
-		this.oPopup.setInitialFocusId(sId);
-	} else {
+	var sInitialFocusId = this.getInitialFocus();
+	var sDefaultButtontId = this.getDefaultButton();
+	this._bFocusSet = true;
+	
+	if (sInitialFocusId) {
+		this.oPopup.setInitialFocusId(sInitialFocusId);
+	}else if(sDefaultButtontId){
+		this.oPopup.setInitialFocusId(sDefaultButtontId);
+	}else{
 		this._bFocusSet = false;
 	}
 	
@@ -2028,7 +2074,7 @@ sap.ui.ux3.ToolPopup.prototype.setAutoCloseAreas = function(aAutoCloseAreas) {
  */
 sap.ui.ux3.ToolPopup.prototype.addFocusableArea = function(sID) {
 	this._ensurePopup();
-	
+
 	if (typeof(sID) === "string") {
 		// channelId & eventId are mandatory dummy values
 		this.oPopup._addFocusableArea("channelId", "eventId", {

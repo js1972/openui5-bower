@@ -26,7 +26,7 @@ sap.ui.define(['jquery.sap.global', './FilterType', './ListBinding'],
 	 * @name sap.ui.model.ClientListBinding
 	 * @extends sap.ui.model.ListBinding
 	 */
-	var ClientListBinding = ListBinding.extend("sap.ui.model.ClientListBinding", /** @lends sap.ui.model.ClientListBinding */ {
+	var ClientListBinding = ListBinding.extend("sap.ui.model.ClientListBinding", /** @lends sap.ui.model.ClientListBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters){
 			ListBinding.apply(this, arguments);
@@ -462,7 +462,7 @@ sap.ui.define(['jquery.sap.global', './FilterType', './ListBinding'],
 					if (typeof value != "string") {
 						throw new Error("Only \"String\" values are supported for the FilterOperator: \"EndsWith\".");
 					}
-					var iPos = value.indexOf(oValue1);
+					var iPos = value.lastIndexOf(oValue1);
 					if (iPos == -1){
 						return false;					
 					}

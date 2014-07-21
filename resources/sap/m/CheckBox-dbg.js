@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -375,6 +375,7 @@ sap.m.CheckBox.M_EVENTS = {'select':'select'};
 // Start of sap\m\CheckBox.js
 jQuery.sap.require("sap.ui.core.EnabledPropagator");
 sap.ui.core.EnabledPropagator.call(sap.m.CheckBox.prototype);
+jQuery.sap.require("sap.m.Label");
 
 sap.m.CheckBox.prototype.init = function() {
 	this.addActiveState(this);
@@ -439,34 +440,37 @@ sap.m.CheckBox.prototype.addActiveState = function(oControl) {
 	}
 };
 
-sap.m.CheckBox.prototype.setText = function(sText){
-	this.setProperty("text", sText, true);
-	if(this._oLabel){
-		this._oLabel.setText(this.getText());
-	}else{
-		this._createLabel("text", this.getText());
+/**
+ * sets a property of the label, and creates the label if it has not been initialized
+ * @private
+ */
+sap.m.CheckBox.prototype._setLabelProperty = function (sPropertyName, vPropertyValue, bSupressRerendering) {
+	var bHasLabel = !!this._oLabel,
+		sUpperPropertyName = jQuery.sap.charToUpperCase(sPropertyName, 0);
+
+	this.setProperty(sPropertyName, vPropertyValue, bHasLabel && bSupressRerendering);
+
+	if(!bHasLabel){
+		this._oLabel = new sap.m.Label(this.getId() + "-label", {})
+							.addStyleClass("sapMCbLabel")
+							.setParent(this, null, true);
 	}
+
+	this._oLabel["set" + sUpperPropertyName](this["get" + sUpperPropertyName]()); // e.g. this._oLabel.setText(value);
+
 	return this;
+};
+
+sap.m.CheckBox.prototype.setText = function(sText){
+	this._setLabelProperty("text", sText, true);
 };
 
 sap.m.CheckBox.prototype.setWidth = function(sWidth){
-	this.setProperty("width", sWidth, true);
-	if(this._oLabel){
-		this._oLabel.setWidth(this.getWidth());
-	}else{
-		this._createLabel("width", this.getWidth());
-	}
-	return this;
+	this._setLabelProperty("width", sWidth, true);
 };
 
 sap.m.CheckBox.prototype.setTextDirection = function(sDirection){
-	this.setProperty("textDirection", sDirection, true);
-	if(this._oLabel){
-		this._oLabel.setTextDirection(this.getTextDirection());
-	}else{
-		this._createLabel("textDirection", this.getTextDirection());
-	}
-	return this;
+	this._setLabelProperty("textDirection", sDirection);
 };
 
 sap.m.CheckBox.prototype.exit = function() {
@@ -474,12 +478,6 @@ sap.m.CheckBox.prototype.exit = function() {
 	if(this._oLabel){
 		this._oLabel.destroy();
 	}
-};
-
-sap.m.CheckBox.prototype._createLabel = function(prop, value){
-	this._oLabel = new sap.m.Label(this.getId() + "-label", {
-					}).addStyleClass("sapMCbLabel").setParent(this, null, true);
-	this._oLabel.setProperty(prop, value, false);
 };
 
 /**
@@ -497,7 +495,7 @@ sap.m.CheckBox.prototype.onsapspace = function(oEvent) {
 	}
 };
 
-/*
+/**
  * Sets the tab index of the control
  *
  * @param {int} iTabIndex  greater than or equal -1
@@ -510,3 +508,20 @@ sap.m.CheckBox.prototype.setTabIndex = function(iTabIndex) {
 	this.$("CbBg").attr("tabindex", iTabIndex);
 	return this;
 };
+
+
+
+/**
+ * Gets the tab index of the control
+ *
+ * @return {integer} tabIndex for Checkbox
+ * @since 1.22
+ * @protected
+ */
+sap.m.CheckBox.prototype.getTabIndex = function() {
+	if ( this.hasOwnProperty("_iTabIndex") ) {
+		return this._iTabIndex;
+	}
+	return this.getEnabled() ? 0 : -1 ;
+};
+

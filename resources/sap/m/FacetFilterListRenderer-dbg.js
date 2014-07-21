@@ -12,7 +12,7 @@ jQuery.sap.require("sap.m.ListRenderer");
 jQuery.sap.declare("sap.m.FacetFilterListRenderer");
 
 /**
- * @class List renderer.
+ * @class FacetFilterList renderer.
  * @static
  *
  * ListRenderer extends the ListBaseRenderer

@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -87,7 +87,7 @@ sap.ui.core.Control.extend("sap.m.Button", { metadata : {
 		"iconDensityAware" : {type : "boolean", group : "Misc", defaultValue : true}
 	},
 	events : {
-		"tap" : {}, 
+		"tap" : {deprecated: true}, 
 		"press" : {}
 	}
 }});
@@ -340,10 +340,12 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
 
 
 /**
- * Event is fired when the user taps the control. (This event is deprecated, use the press event instead) 
+ * Event is fired when the user taps the control. 
  *
  * @name sap.m.Button#tap
  * @event
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -356,7 +358,7 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.Button</code>.<br/> itself. 
  *  
- * Event is fired when the user taps the control. (This event is deprecated, use the press event instead) 
+ * Event is fired when the user taps the control. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -367,6 +369,8 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
  *
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.Button#attachTap
  * @function
  */
@@ -382,16 +386,20 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
  *            oListener Context object on which the given function had to be called.
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.Button#detachTap
  * @function
  */
 
 /**
  * Fire event tap to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @protected
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.Button#fireTap
  * @function
  */
@@ -446,7 +454,7 @@ sap.m.Button.M_EVENTS = {'tap':'tap','press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.Button} <code>this</code> to allow method chaining
  * @protected
@@ -461,14 +469,16 @@ sap.ui.core.EnabledPropagator.call(sap.m.Button.prototype);
 jQuery.sap.require("sap.ui.core.theming.Parameters");
 jQuery.sap.require("sap.ui.core.IconPool");
 
+
 /**
  * Function is called to define the behavior for the control.
  *
  * @private
  */
 sap.m.Button.prototype.init = function() {
-	this._isPlatformDependent = sap.ui.core.theming.Parameters.get("sapMPlatformDependent") == "true";
+	this._isPlatformDependent = sap.ui.core.theming.Parameters.get("sapMPlatformDependent") === "true";
 };
+
 
 /**
  * Function is called when exiting the control.
@@ -486,6 +496,7 @@ sap.m.Button.prototype.exit = function(oEvent) {
 		this._iconBtn.destroy();
 	}
 };
+
 
 /**
  * Function is called when touchstart occurs on button .
@@ -509,6 +520,7 @@ sap.m.Button.prototype.ontouchstart = function(oEvent) {
 	}
 };
 
+
 /**
  * Function is called when touchend occurs on button .
  *
@@ -519,6 +531,19 @@ sap.m.Button.prototype.ontouchend = function(oEvent) {
 	// set inactive button state
 	this._inactiveButton();
 };
+
+
+/**
+ * Function is called when touchcancel occurs .
+ *
+ * @private
+ */
+sap.m.Button.prototype.ontouchcancel = function(oEvent) {
+
+	// set inactive button state
+	this._inactiveButton();
+};
+
 
 /**
  * Function is called when tap occurs on button.
@@ -549,6 +574,7 @@ sap.m.Button.prototype.ontap = function(oEvent) {
 	delete this._target;
 };
 
+
 /**
  * Handle the key down event for SPACE and ENTER.
  * This implementation differs from that of commons button.
@@ -570,6 +596,7 @@ sap.m.Button.prototype.onkeydown = function(oEvent) {
 		this._target = oEvent.target;
 	}
 };
+
 
 /**
  * Handle the key up event for SPACE and ENTER.
@@ -597,6 +624,7 @@ sap.m.Button.prototype.onkeyup = function(oEvent) {
 	}
 };
 
+
 /**
  * Ensure that the active button state is removed by focus loss.
  *
@@ -609,13 +637,16 @@ sap.m.Button.prototype.onfocusout = function(oEvent) {
 	this._inactiveButton();
 };
 
+
 /**
  * Function is called when button is active.
  *
  * @private
  */
 sap.m.Button.prototype._activeButton = function() {
-	this.$().addClass("sapMBtnActive");
+	if (!this._isUnstyled()) {
+		this.$("inner").addClass("sapMBtnActive");
+	}
 
 	// handling active icon
 	if (this.getEnabled()) {
@@ -625,13 +656,16 @@ sap.m.Button.prototype._activeButton = function() {
 	}
 };
 
+
 /**
  * Function is called when button is inactive.
  *
  * @private
  */
 sap.m.Button.prototype._inactiveButton = function() {
-	this.$().removeClass("sapMBtnActive");
+	if (!this._isUnstyled()) {
+		this.$("inner").removeClass("sapMBtnActive");
+	}
 
 	// handling active icon
 	if (this.getEnabled()) {
@@ -641,6 +675,17 @@ sap.m.Button.prototype._inactiveButton = function() {
 	}
 };
 
+
+/**
+ * Function to determine if the button is hoverable
+ *
+ * @private
+ */
+sap.m.Button.prototype._isHoverable = function() {
+	return this.getEnabled() && sap.ui.Device.system.desktop;
+};
+
+
 /**
  * Function is called when image control needs to be loaded.
  *
@@ -649,7 +694,7 @@ sap.m.Button.prototype._inactiveButton = function() {
 sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensityAware) {
 
 	// check if image source has changed - if yes destroy and reset image control
-	if(this._image && (this._image.getSrc() != sSrc)){
+	if(this._image && (this._image.getSrc() !== sSrc)){
 		this._image.destroy();
 		this._image = undefined;
 	}
@@ -658,14 +703,12 @@ sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensi
 	var oImage = this._image;
 
 	if (!!oImage) {
-
 		oImage.setSrc(sSrc);
 		if(oImage instanceof sap.m.Image) {
 			oImage.setActiveSrc(sActiveSrc);
 			oImage.setDensityAware(bIconDensityAware);
 		}
 	} else {
-
 		oImage = sap.ui.core.IconPool.createControlByURI({
 			id: sImgId,
 			src : sSrc,
@@ -674,8 +717,35 @@ sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensi
 		}, sap.m.Image).addStyleClass("sapMBtnCustomIcon").setParent(this, null, true);
 	}
 
+	// add style classes to the object
+	oImage.addStyleClass("sapMBtnIcon");
+
+	if (this.getText()) {
+		// remove previous set style classes
+		if (oImage.hasStyleClass("sapMBtnIconLeft")) {
+			oImage.removeStyleClass("sapMBtnIconLeft");
+		}
+		if (oImage.hasStyleClass("sapMBtnIconRight")) {
+			oImage.removeStyleClass("sapMBtnIconRight");
+		}
+		if (oImage.hasStyleClass("sapMBtnBackIconLeft")) {
+			oImage.removeStyleClass("sapMBtnBackIconLeft");
+		}
+		// check and set absolute position depending on icon and icon position
+		if (this.getIconFirst()) {
+			if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+				oImage.addStyleClass("sapMBtnBackIconLeft");
+			} else {
+				oImage.addStyleClass("sapMBtnIconLeft");
+			}
+		} else {
+			oImage.addStyleClass("sapMBtnIconRight");
+		}
+	}
+
 	return this._image = oImage;
 };
+
 
 /**
  * Function is called when internal image control needs to be loaded.
@@ -685,11 +755,298 @@ sap.m.Button.prototype._getImage = function(sImgId, sSrc, sActiveSrc, bIconDensi
 sap.m.Button.prototype._getInternalIconBtn = function(sImgId, sSrc) {
 	var oIcon = this._iconBtn;
 
+	// update or create image control
 	if (!!oIcon) {
 		oIcon.setSrc(sSrc);
 	} else {
 		oIcon = sap.ui.core.IconPool.createControlByURI(sSrc, sap.m.Image);
 	}
 
+	// add style classes to the object
+	oIcon.addStyleClass("sapMBtnIcon");
+	if (this.getText()) {
+		oIcon.addStyleClass("sapMBtnIconLeft");
+	}
+
 	return this._iconBtn = oIcon;
+};
+
+
+/**
+ * Function is called to determine if the button is.unstyled
+ *
+ * @private
+ */
+sap.m.Button.prototype._isUnstyled = function() {
+	var bUnstyled = false;
+
+	if (this.getType()  === sap.m.ButtonType.Unstyled) {
+		bUnstyled = true;
+	}
+
+	return bUnstyled;
+};
+
+
+// Overwrite of generated function
+/** Property setter for the text
+ *
+ * @param sText
+ * @return {sap.m.Button}
+ * @public
+ */
+sap.m.Button.prototype.setText = function(sText) {
+	var sValue = this.getText();
+
+	if (sText === null || sText === undefined) {
+		sText = "";
+	}
+
+	if (sValue !== sText) {
+		var oDomRef = this.getDomRef("content");
+		var bShouldSupressRendering = !!oDomRef;
+
+		// Render control if element is not available in the DOM
+		this.setProperty("text", sText, bShouldSupressRendering);
+
+		if (bShouldSupressRendering) {
+			// Get text to have the type conversation for non-string values done by the framework
+			sText = this.getText();
+			oDomRef.innerHTML = jQuery.sap.escapeHTML(sText);
+
+			// Check if an icon is set
+			if (this.getIcon()) {
+				oDomRef = this.getDomRef("inner");
+
+				// Remove all text padding classes
+				this._removeTextPadding();
+
+				// Add the text padding classes
+				if (sText.length > 0) {
+					this._addTextPadding(this.getIconFirst());
+				}
+
+				// extend  minimum button size if icon is set without text for button types back and up
+				if (this.$().hasClass("sapMBtnBack")) {
+					this.$().removeClass("sapMBtnBack");
+				}
+				if ((this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) && this.getIcon() && !this.getText()) {
+					this.$().addClass("sapMBtnBack");
+				}
+			}
+		}
+	}
+
+	return this;
+};
+
+
+// Overwrite of generated function
+/** Property setter for enabled
+ *
+ * @param bEnabled
+ * @return {sap.m.Button}
+ * @public
+ */
+sap.m.Button.prototype.setEnabled = function(bEnabled) {
+
+	if (this.getEnabled() !== bEnabled) {
+		this.setProperty("enabled", bEnabled, true);
+		this.$().prop("disabled", !bEnabled);
+		this.$("inner")
+			.toggleClass("sapMBtnDisabled", !bEnabled)
+			.toggleClass("sapMFocusable", bEnabled && sap.ui.Device.system.desktop);
+	}
+
+	return this;
+};
+
+
+// Overwrite of generated function
+/** Property setter for the icon
+ *
+<<<<<<< rel-1.22
+ * @param bIcon
+=======
+ * @param {sap.ui.core.URI} sIcon
+>>>>>>> 2d5ef88 [FIX] sap.m.Button: text truncation fix for the different browsers
+ * @return {sap.m.Button}
+ * @public
+ */
+sap.m.Button.prototype.setIcon = function(sIcon) {
+	var sValue = this.getIcon();
+
+	if (sIcon === null || sIcon === undefined) {
+		sIcon = "";
+	}
+
+	if (sValue !== sIcon) {
+		var oDomRef = this.getDomRef("img");
+		var bShouldSupressRendering = !!oDomRef;
+
+		// Check if old and new icon URI is equal 
+		if (sap.ui.core.IconPool.isIconURI(sIcon) === sap.ui.core.IconPool.isIconURI(sValue)) {
+			bShouldSupressRendering = true;
+		} else {
+			bShouldSupressRendering = false;
+		}
+
+		// Control needs to be re-rendered when icon should be removed
+		if (sIcon.length === 0) {
+			bShouldSupressRendering = false;
+		}
+
+		// Render control if element is not available in the DOM
+		this.setProperty("icon", sIcon, bShouldSupressRendering);
+
+		if (bShouldSupressRendering && this._image) {
+			this._image.setSrc(sIcon);
+		}
+	}
+
+	return this;
+};
+
+
+// Overwrite of generated function
+/** Property setter for the icon first
+ *
+ * @param bIconFirst
+ * @return {sap.m.Button}
+ * @public
+ */
+sap.m.Button.prototype.setIconFirst = function(bIconFirst) {
+	var sValue = this.getIconFirst();
+
+	if (sValue !== bIconFirst) {
+		var oDomRef = this.getDomRef("img");
+		var bShouldSupressRendering = !!oDomRef;
+
+		// Render control if element is not available in the DOM
+		this.setProperty("iconFirst", bIconFirst, bShouldSupressRendering);
+
+		if (bShouldSupressRendering) {
+
+			if (this.getText()) {
+				// remove previous set style classes
+				if (this.$("img").hasClass("sapMBtnIconLeft")) {
+					this.$("img").removeClass("sapMBtnIconLeft");
+				}
+				if (this.$("img").hasClass("sapMBtnIconRight")) {
+					this.$("img").removeClass("sapMBtnIconRight");
+				}
+				if (this.$("img").hasClass("sapMBtnBackIconLeft")) {
+					this.$("img").removeClass("sapMBtnBackIconLeft");
+				}
+				if (this.$("content").hasClass("sapMBtnContentLeft")) {
+					this.$("content").removeClass("sapMBtnContentLeft");
+				}
+				if (this.$("content").hasClass("sapMBtnContentRight")) {
+					this.$("content").removeClass("sapMBtnContentRight");
+				}
+				if (this.$("content").hasClass("sapMBtnBackContentRight")) {
+					this.$("content").removeClass("sapMBtnBackContentRight");
+				}
+
+				// check and set absolute position depending on icon and icon position
+				if (bIconFirst) {
+					if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+						this.$("img").addClass("sapMBtnBackIconLeft");
+						this.$("content").addClass("sapMBtnBackContentRight");
+					} else {
+						this.$("img").addClass("sapMBtnIconLeft");
+						this.$("content").addClass("sapMBtnContentRight");
+					}
+				} else {
+					if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+						this.$("content").addClass("sapMBtnContentRight");
+					} else {
+						this.$("content").addClass("sapMBtnContentLeft");
+					}
+					this.$("img").addClass("sapMBtnIconRight");
+				}
+			}
+
+			// Remove all text padding classes
+			this._removeTextPadding();
+
+			// Add the text padding classes
+			if (this.getText().length > 0) {
+				this._addTextPadding(bIconFirst);
+			}
+		}
+	}
+
+	return this;
+};
+
+
+
+/**
+ * Function is called to remove the padding classes for the text
+ *
+ * @private
+ */
+sap.m.Button.prototype._removeTextPadding = function() {
+
+	// Search and remove padding classes
+	if (this.$("inner").hasClass("sapMBtnPaddingLeft")) {
+		this.$("inner").removeClass("sapMBtnPaddingLeft");
+	} else if (this.$("inner").hasClass("sapMBtnPaddingRight")) {
+		this.$("inner").removeClass("sapMBtnPaddingRight");
+	}
+
+	// Search and remove padding between icon and text
+	if (!this.getText()) {
+		if (this.$("content").hasClass("sapMBtnContentLeft")) {
+			this.$("content").removeClass("sapMBtnContentLeft");
+		}
+		if (this.$("content").hasClass("sapMBtnContentRight")) {
+			this.$("content").removeClass("sapMBtnContentRight");
+		}
+		if (this.$("content").hasClass("sapMBtnBackContentRight")) {
+			this.$("content").removeClass("sapMBtnBackContentRight");
+		}
+	}
+};
+
+
+/**
+ * Function is called to add the padding classes for the text
+ *
+ * @private
+ */
+sap.m.Button.prototype._addTextPadding = function( bIconFirst) {
+	var sType = this.getType();
+
+	// Add text padding classes
+	if (bIconFirst) {
+		this.$("inner").addClass("sapMBtnPaddingRight");
+	} else {
+		if (sType != sap.m.ButtonType.Back && sType != sap.m.ButtonType.Up) {
+			this.$("inner").addClass("sapMBtnPaddingLeft");
+		}
+	}
+
+	// Add text padding classes between icon and text
+	if (this.getText()) {
+		if (this.getIcon()) {
+			if (this.getIconFirst()) {
+				if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+					this.$("content").addClass("sapMBtnBackContentRight");
+				} else {
+					this.$("content").addClass("sapMBtnContentRight");
+				}
+			} else {
+				if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+					this.$("content").addClass("sapMBtnContentRight");
+				}
+				this.$("content").addClass("sapMBtnContentLeft");
+			}
+		} else {
+			if (this.getType() === sap.m.ButtonType.Back || this.getType() === sap.m.ButtonType.Up) {
+				this.$("content").addClass("sapMBtnContentRight");
+			}
+		}
+	}
 };

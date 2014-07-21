@@ -55,8 +55,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * In this layout the elemnts are orderd one below the other
  * @extends sap.ui.core.Control
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public

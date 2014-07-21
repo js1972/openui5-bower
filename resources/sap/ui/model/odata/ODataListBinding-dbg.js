@@ -5,8 +5,8 @@
  */
 
 // Provides class sap.ui.model.odata.ODataListBinding
-sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/model/FilterType', 'sap/ui/model/ListBinding', './CountMode', './Filter'],
-	function(jQuery, DateFormat, FilterType, ListBinding, CountMode, Filter) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/model/FilterType', 'sap/ui/model/ListBinding', './ODataUtils', './CountMode', './Filter'],
+	function(jQuery, DateFormat, FilterType, ListBinding, ODataUtils, CountMode, Filter) {
 	"use strict";
 
 
@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 	 * @name sap.ui.model.odata.ODataListBinding
 	 * @extends sap.ui.model.ListBinding
 	 */
-	var ODataListBinding = ListBinding.extend("sap.ui.model.odata.ODataListBinding", /** @lends sap.ui.model.odata.ODataListBinding */ {
+	var ODataListBinding = ListBinding.extend("sap.ui.model.odata.ODataListBinding", /** @lends sap.ui.model.odata.ODataListBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aSorters, aFilters, mParameters) {
 			ListBinding.apply(this, arguments);
@@ -319,8 +319,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 		if (this.oContext != oContext) {
 			this.oContext = oContext;
 			if (this.isRelative()) {
-				// get new entity type with new context
-				this.oEntityType = this._getEntityType();
+				// get new entity type with new context and init filters now correctly
+				this._initSortersFilters();
 	
 				if (this.bInitialized){
 					// if nested list is already available, use the data and don't send additional requests
@@ -424,9 +424,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 			that.fireDataReceived();
 		}
 		
-		function fnError(oError) {
+		function fnError(oError, bAborted) {
 			that.oRequestHandle = null;
 			that.bPendingRequest = false;
+			if (!bAborted) {
+				// reset data and trigger update
+				that.aKeys = [];
+				that.iLength = 0;
+				that.bLengthFinal = true;
+				that.bDataAvailable = true;
+				that._fireChange({reason: sap.ui.model.ChangeReason.Change});
+			}
 			that.fireDataReceived();
 		}
 		
@@ -584,17 +592,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 	};
 	
 	/**
-	 * Initialize binding. Fires a refresh 
-	 * 
+	 * Initialize binding. Fires a change if data is already available ($expand) or a refresh.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
+	 *  
 	 * @public
 	 * @name sap.ui.model.odata.ODataListBinding#initialize
 	 * @function
 	 */
 	ODataListBinding.prototype.initialize = function() {
-		if (this.bDataAvailable) {
-			this._fireChange({reason: sap.ui.model.ChangeReason.Change});
-		} else {
-			this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+		if (this.oModel.oMetadata.isLoaded()) {
+			if (this.bDataAvailable) {
+				this._fireChange({reason: sap.ui.model.ChangeReason.Change});
+			} else {
+				this._fireRefresh({reason: sap.ui.model.ChangeReason.Refresh});
+			}
 		}
 	};
 	
@@ -727,29 +739,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 		return this;
 	};
 	
-	/**
-	 * Create URL parameters for sorting
-	 * @name sap.ui.model.odata.ODataListBinding#createSortParams
-	 * @function
-	 */
 	ODataListBinding.prototype.createSortParams = function(aSorters) {
-		if (!aSorters || aSorters.length == 0) {
-			return;
-		}
-		this.sSortParams = "$orderby=";
-		for (var i=0; i < aSorters.length; i++) {
-			var oSorter = aSorters[i];
-			if(oSorter instanceof sap.ui.model.Sorter){
-				this.sSortParams += oSorter.sPath;
-				this.sSortParams += oSorter.bDescending ? "%20desc" : "%20asc";
-				this.sSortParams += ",";
-			}
-		}
-		//remove trailing comma
-		this.sSortParams = this.sSortParams.slice(0,-1);
-	
-	};
-	
+		this.sSortParams = ODataUtils.createSortParams(aSorters)
+	}
 	
 	/**
 	 * 
@@ -760,10 +752,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 	 * results of all groups are ANDed.
 	 * Usually this means, all filters applied to a single table column
 	 * are ORed, while filters on different table columns are ANDed.
-	 * 
-	 * When using the specific sap.ui.model.odata.Filter it is possible to specify to AND or OR the filters with the same binding path:
-	 * Syntax: new sap.ui.model.odata.Filter(sPath, [{operator:sap.ui.model.FilterOperator, value1: oValue},
-	 *				                                 {operator: sap.ui.model.FilterOperator, value1: oValue}], bAND); // [bAND] = true
 	 * 
 	 * @param {sap.ui.model.Filter[]|sap.ui.model.odata.Filter[]} aFilters Array of filter objects
 	 * @param {sap.ui.model.FilterType} sFilterType Type of the filter which should be adjusted, if it is not given, the standard behaviour applies
@@ -818,169 +806,18 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/DateFormat', 'sap/ui/mod
 		
 		return this;
 	};
-	
-	/**
-	 * Create URL parameters for filtering
-	 * @name sap.ui.model.odata.ODataListBinding#createFilterParams
-	 * @function
-	 */
+
 	ODataListBinding.prototype.createFilterParams = function(aFilters) {
-		
-		if(aFilters && aFilters.length > 0){
-			var oFilterGroups = {},
-				iFilterGroupLength = 0,
-				aFilterGroup,
-				sFilterParam = "$filter=",
-				iFilterGroupCount = 0,
-				that = this;
-			//group filters by path
-			jQuery.each(aFilters, function(j, oFilter) {
-				if (oFilter.sPath) {
-					aFilterGroup = oFilterGroups[oFilter.sPath];
-					if (!aFilterGroup) {
-						aFilterGroup = oFilterGroups[oFilter.sPath] = [];
-						iFilterGroupLength++;
-					}
-				} else {
-					aFilterGroup = oFilterGroups["__multiFilter"];
-					if (!aFilterGroup) {
-						aFilterGroup = oFilterGroups["__multiFilter"] = [];
-						iFilterGroupLength++;
-					}
-				}
-				aFilterGroup.push(oFilter);
-			});
-			jQuery.each(oFilterGroups, function(sPath, aFilterGroup) {
-				if (aFilterGroup.length > 1) {
-					sFilterParam += '(';
-				}
-				jQuery.each(aFilterGroup, function(i,oFilter) {
-					if (oFilter instanceof Filter) {
-						if (oFilter.aValues.length > 1) {
-							sFilterParam += '(';
-						}
-						jQuery.each(oFilter.aValues, function(i, oFilterSegment) {
-							if (i > 0) {
-								if(oFilter.bAND) {
-									sFilterParam += "%20and%20";
-								} else {
-									sFilterParam += "%20or%20";
-								}
-							}
-							sFilterParam = that._createFilterSegment(oFilter.sPath, oFilterSegment.operator, oFilterSegment.value1, oFilterSegment.value2, sFilterParam);
-						});
-						if (oFilter.aValues.length > 1) {
-							sFilterParam += ')';
-						}
-					} else if (oFilter._bMultiFilter) {
-						sFilterParam += that._resolveMultiFilter(oFilter);
-					} else {
-						sFilterParam = that._createFilterSegment(oFilter.sPath, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, sFilterParam);
-					}
-					if (i < aFilterGroup.length-1) {
-						sFilterParam += "%20or%20";
-					}
-				});
-				if (aFilterGroup.length > 1) {
-					sFilterParam += ')';
-				}
-				if (iFilterGroupCount < iFilterGroupLength-1) {
-					sFilterParam += "%20and%20";
-				}
-				iFilterGroupCount++;
-			});
-			this.sFilterParams = sFilterParam;
-		}else{
-			this.sFilterParams = null;
-		}
-	};
-	
-	/**
-	 * convert multi filter to filter string
-	 *
-	 * @private
-	 * @name sap.ui.model.odata.ODataListBinding#_resolveMultiFilter
-	 * @function
-	 */
-	ODataListBinding.prototype._resolveMultiFilter = function(oMultiFilter){
-		var that = this,
-			aFilters = oMultiFilter.aFilters,
-			sFilterParam = "";
-		
-		if (aFilters) {
-			sFilterParam += "(";
-			jQuery.each(aFilters, function(i, oFilter) {
-				var bLocalMatch = false;
-				if (oFilter._bMultiFilter) {
-					sFilterParam += that._resolveMultiFilter(oFilter)
-				} else if (oFilter.sPath) {
-					sFilterParam += that._createFilterSegment(oFilter.sPath, oFilter.sOperator, oFilter.oValue1, oFilter.oValue2, "");
-				}
-				if (i < (aFilters.length - 1)) {
-					if (oMultiFilter.bAnd) {
-						sFilterParam += "%20and%20";
-					} else {
-						sFilterParam += "%20or%20";
-					}
-				}
-			});
-			sFilterParam += ")";
-		}
-		
-		return sFilterParam;
-	};
-	
-	ODataListBinding.prototype._createFilterSegment = function(sPath, sOperator, oValue1, oValue2, sFilterParam) {
-		
-		var oProperty;
-		if (this.oEntityType) {
-			oProperty = this.oModel.oMetadata._getPropertyMetadata(this.oEntityType, sPath);
-			jQuery.sap.assert(oProperty, "PropertyType for property "+ sPath + " of EntityType " + this.oEntityType.name + " not found!");
-		}
-		
-		if (oProperty) {
-			oValue1 = this.oModel.formatValue(oValue1, oProperty.type);
-			oValue2 = (oValue2 != null) ? this.oModel.formatValue(oValue2, oProperty.type) : null;
-		} else {
-			jQuery.sap.assert(null, "Type for filter property could not be found in metadata!");
-		}
-		
-		if (oValue1) {
-			oValue1 = jQuery.sap.encodeURL(String(oValue1));
-		}
-		if (oValue2) {
-			oValue2 = jQuery.sap.encodeURL(String(oValue2));
-		}
-		
-		// TODO embed 2nd value
-		switch(sOperator) {
-			case "EQ":
-			case "NE":
-			case "GT":
-			case "GE":
-			case "LT":
-			case "LE":
-				sFilterParam += sPath + "%20" + sOperator.toLowerCase() + "%20" + oValue1;
-				break;
-			case "BT":
-				sFilterParam += "(" + sPath + "%20ge%20" + oValue1 + "%20and%20" + sPath + "%20le%20" + oValue2 + ")";
-				break;
-			case "Contains":
-				sFilterParam += "substringof(" + oValue1 + "," + sPath + ")";
-				break;
-			case "StartsWith":
-				sFilterParam += "startswith(" + sPath + "," + oValue1 + ")";
-				break;
-			case "EndsWith":
-				sFilterParam += "endswith(" + sPath + "," + oValue1 + ")";
-				break;
-			default:
-				sFilterParam += "true";
-		}
-		return sFilterParam;
+		this.sFilterParams = ODataUtils.createFilterParams(aFilters, this.oModel.oMetadata, this.oEntityType);
 	};
 	
 	ODataListBinding.prototype._initSortersFilters = function(){
+		// if path could not be resolved entity type cannot be retrieved and
+		// also filters/sorters don't need to be set
+		var sResolvedPath = this.oModel.resolve(this.sPath, this.oContext);
+		if (!sResolvedPath) {
+			return;
+		}
 		this.oEntityType = this._getEntityType();	
 		this.createSortParams(this.aSorters);
 		this.createFilterParams(this.aFilters.concat(this.aApplicationFilters));

@@ -65,13 +65,13 @@ sap.ui.base.Object.extend("sap.m.routing.RouteMatchedHandler", {
 
 /* =================================
  * public
- * =================================
-*/
+ * =================================*/
 
 /**
  * Removes the routeMatchedHandler from the Router
  *
  * @public
+ * @returns {sap.m.routing.RouteMatchedHandler} for chaining
  */
 sap.m.routing.RouteMatchedHandler.prototype.destroy = function () {
 	this._oRouter.detachRouteMatched(this._onHandleRouteMatched, this);
@@ -85,6 +85,7 @@ sap.m.routing.RouteMatchedHandler.prototype.destroy = function () {
 /**
  * Sets if a navigation should close dialogs
  *
+ * @param {boolean} bCloseDialogs close dialogs if true
  * @public
  * @returns {sap.m.routing.RouteMatchedHandler} for chaining
  */
@@ -116,6 +117,7 @@ sap.m.routing.RouteMatchedHandler.prototype.getCloseDialogs = function () {
  * We collect all RouteMatched events in a queue (one for each container) as soon as the RoutePatternMatched
  * is reached the direction of the navigation is derived by _handleRoutePatternMatched. This direction is
  * forwarded to the route's view container (done in _handleRouteMatched)
+ * @param {object} oEvent The routePatternMatched event
  * @private
  */
 sap.m.routing.RouteMatchedHandler.prototype._handleRoutePatternMatched = function(oEvent) {
@@ -142,6 +144,7 @@ sap.m.routing.RouteMatchedHandler.prototype._handleRoutePatternMatched = functio
 
 /**
  * queues up calls
+ * @param {object} oEvent The routeMatched event
  * @private
  */
 sap.m.routing.RouteMatchedHandler.prototype._onHandleRouteMatched = function(oEvent) {
@@ -159,6 +162,7 @@ sap.m.routing.RouteMatchedHandler.prototype._onHandleRouteMatched = function(oEv
  * In case of a navContainer or phone mode, only one transition for the container is allowed.
  * In case of a splitContainer in desktop mode, two transitions are allowed, one for the master and one for the detail.
  * Both transitions will be the same. 
+ * @returns {array} a queue of navigations
  * @private
  */
 sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = function(sRouteName) {
@@ -225,9 +229,6 @@ sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = functi
 				aResults.push(oCurrentNavigation);
 				bFoundTheCurrentNavigation = true;
 				break;
-			} else {
-				//its not the same aggregation continue trying to find the correct aggregation
-				continue;
 			}
 		}
 
@@ -253,6 +254,8 @@ sap.m.routing.RouteMatchedHandler.prototype._createResultingNavigations = functi
 /**
  * Triggers all navigation on the correct containers with the transition direction.
  *
+ * @param {object} oParams the navigation parameters
+ * @param {boolean} bBack forces the nav container to show a backwards transition
  * @private
  */
 sap.m.routing.RouteMatchedHandler.prototype._handleRouteMatched = function(oParams, bBack) {
@@ -311,5 +314,5 @@ sap.m.routing.RouteMatchedHandler.prototype._closeDialogs = function() {
 	if (sap.m.InstanceManager.hasOpenDialog()) {
 		sap.m.InstanceManager.closeAllDialogs();
 	}
-}
+};
 

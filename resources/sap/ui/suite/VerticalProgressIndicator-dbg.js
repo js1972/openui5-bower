@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author Svetozar Buzdumovic 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -254,7 +254,7 @@ sap.ui.suite.VerticalProgressIndicator.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.suite.VerticalProgressIndicator} <code>this</code> to allow method chaining
  * @protected

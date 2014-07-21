@@ -57,9 +57,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * A horizontal row of items where in many cases the single toolbar items are buttons containing icons. Note that all controls with the
  * sap.ui.commons.ToolbarItem interface can be used as item: Button, ComboBox, TextField.
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.Toolbar
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -68,6 +69,9 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.ui.commons.Toolbar", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.Toolbar"
+	],
 
 	// ---- control specific ----
 	library : "sap.ui.commons",

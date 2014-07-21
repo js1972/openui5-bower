@@ -387,7 +387,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/LocaleData'],
 					aBuffer.push(jQuery.sap.padLeft(String(iSeconds), "0", oPart.iDigits));
 					break;
 				case "millisecond":
-					aBuffer.push(jQuery.sap.padLeft(String(iMilliseconds), "0", oPart.iDigits));
+					aBuffer.push(jQuery.sap.padRight(jQuery.sap.padLeft(String(iMilliseconds), "0", Math.min(3, oPart.iDigits)), "0", oPart.iDigits));
 					break;
 				case "amPmMarker":
 					var iDayPeriod = iHours < 12 ? 0 : 1;

@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -354,7 +354,7 @@ sap.ui.ux3.Collection.M_EVENTS = {'selectionChanged':'selectionChanged','propert
 
 /**
  * Fire event selectionChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Collection} <code>this</code> to allow method chaining
  * @protected
@@ -412,7 +412,7 @@ sap.ui.ux3.Collection.M_EVENTS = {'selectionChanged':'selectionChanged','propert
 
 /**
  * Fire event propertyChanged to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.ux3.Collection} <code>this</code> to allow method chaining
  * @protected

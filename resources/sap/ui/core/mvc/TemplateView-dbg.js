@@ -54,7 +54,7 @@ sap.ui.define(['sap/ui/core/library','./View'], function() {
  * @extends sap.ui.core.mvc.View
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public

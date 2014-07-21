@@ -8,7 +8,7 @@ sap.m.ListBase.prototype.init=function(){this._oGrowingDelegate=null;this._bSele
 sap.m.ListBase.prototype.onBeforeRendering=function(){this._aNavSections.length=0;if(this.hasOwnProperty("_$touchBlocker")){this._removeSwipeContent();delete this._$touchBlocker}};
 sap.m.ListBase.prototype.onAfterRendering=function(){this._startItemNavigation();if(!this._oGrowingDelegate&&this.isBound("items")){this._updateFinished()}};
 sap.m.ListBase.prototype.exit=function(){this._oSelectedItem=null;this._bReceivingData=false;this._aNavSections.length=0;this._aSelectedPaths.length=0;this._destroyGrowingDelegate();this._destroyItemNavigation()};
-sap.m.ListBase.prototype.refreshItems=function(r){this._showBusyIndicator();if(this._oGrowingDelegate){this._oGrowingDelegate.refreshItems(r)}else{if(!this._bReceivingData){this._updateStarted(r);this._bReceivingData=true}this.getBinding("items").getContexts()}};
+sap.m.ListBase.prototype.refreshItems=function(r){this._showBusyIndicator();if(this._oGrowingDelegate){this._oGrowingDelegate.refreshItems(r)}else{if(!this._bReceivingData){this._updateStarted(r);this._bReceivingData=true}this.refreshAggregation("items")}};
 sap.m.ListBase.prototype.updateItems=function(r){if(this._oGrowingDelegate){this._oGrowingDelegate.updateItems(r)}else{if(this._bReceivingData){this._bReceivingData=false}else{this._updateStarted(r)}this.updateAggregation("items")}};
 sap.m.ListBase.prototype.bindAggregation=function(n){n=="items"&&this._resetItemsBinding();return this._applyAggregation("bind",arguments)};
 sap.m.ListBase.prototype._bindAggregation=function(n){n=="items"&&this._resetItemsBinding();return this._applyAggregation("_bind",arguments)};
@@ -79,7 +79,7 @@ sap.m.ListBase.prototype.onswipeleft=function(e){var a=sap.ui.getCore().getConfi
 sap.m.ListBase.prototype.onswiperight=function(e){var a=sap.ui.getCore().getConfiguration().getRTL()?"LeftToRight":"RightToLeft";if(this.getSwipeDirection()!=a){this._onSwipe(e)}};
 sap.m.ListBase.prototype.setSwipeDirection=function(d){return this.setProperty("swipeDirection",d,true)};
 sap.m.ListBase.prototype.getSwipedItem=function(){return(this._isSwipeActive?this._swipedItem:null)};
-sap.m.ListBase.prototype.setSwipeContent=function(c){this._bRerenderSwipeContent=true;this.addStyleClass("sapMListSwipable");return this.setAggregation("swipeContent",c,true)};
+sap.m.ListBase.prototype.setSwipeContent=function(c){this._bRerenderSwipeContent=true;this.toggleStyleClass("sapMListSwipable",!!c);return this.setAggregation("swipeContent",c,true)};
 sap.m.ListBase.prototype.invalidate=function(o){if(o&&o===this.getSwipeContent()){this._bRerenderSwipeContent=true}sap.ui.core.Control.prototype.invalidate.apply(this,arguments);return this};
 sap.m.ListBase.prototype.addItemGroup=function(g,h,s){h=h||new sap.m.GroupHeaderListItem({title:g.text||g.key});this.addAggregation("items",h,s);return h};
 sap.m.ListBase.prototype.removeGroupHeaders=function(s){this.getItems().forEach(function(i){if(i instanceof sap.m.GroupHeaderListItem){i.destroy(s)}})};

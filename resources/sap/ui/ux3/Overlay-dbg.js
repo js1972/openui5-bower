@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -210,7 +210,7 @@ sap.ui.ux3.Overlay.M_EVENTS = {'close':'close','openNew':'openNew','open':'open'
  * Fire event close to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'id' of type <code>string</code> The Id of the Thing which is inspected in this ThingInspector instance</li>

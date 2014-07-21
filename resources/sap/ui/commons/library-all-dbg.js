@@ -365,7 +365,7 @@ jQuery.sap.declare("sap.ui.commons.ButtonRenderer");
 /**
  * @class
  * @author SAP AG
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  */
 sap.ui.commons.ButtonRenderer = {
@@ -933,11 +933,11 @@ sap.ui.commons.CarouselRenderer.render = function(oRenderManager, oControl) {
 		rm.write("&#9660");//Symbol for Base and HCB Theme (Must be hidden in other themes)
 	} else {
 		if (bRTL) {
-				rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
-			}
-			else{
-				rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
-			}
+			rm.write("&#9668");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
+		else{
+			rm.write("&#9658");//Symbol for Base and HCB Theme (Must be hidden in other themes)
+		}
 	}
 	rm.write("</div>");
 	// End Next button
@@ -1372,79 +1372,12 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploaderRenderer') ) {
 
 // Provides default renderer for control sap.ui.commons.FileUploader
 jQuery.sap.declare("sap.ui.commons.FileUploaderRenderer");
+jQuery.sap.require('sap.ui.core.Renderer'); // unlisted dependency retained
 
-/**
- * @class
- * @static
- */
-sap.ui.commons.FileUploaderRenderer = function() {
-};
+jQuery.sap.require('sap.ui.unified.FileUploaderRenderer'); // unlisted dependency retained
 
 
-/**
- * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
- *
- * @param {sap.ui.core.RenderManager} oRenderManager The RenderManager that can be used for writing to the render output buffer.
- * @param {sap.ui.core.Control} oControl An object representation of the control that should be rendered.
- */
-sap.ui.commons.FileUploaderRenderer.render = function(oRenderManager, oFileUploader) {
-
-	var rm = oRenderManager;
-	var accessibility = sap.ui.getCore().getConfiguration().getAccessibility();
-
-	// return immediately if control is invisible
-	if (!oFileUploader.getVisible()) {
-		return;
-	}
-
-	rm.write('<div');
-	rm.writeControlData(oFileUploader);
-	rm.addClass("sapUiFup");
-	rm.writeClasses();
-	rm.write('>');
-
-	// form
-	rm.write('<form style="display:inline-block" encType="multipart/form-data" method="post"');
-	rm.writeAttribute('id', oFileUploader.getId() + '-fu_form');
-	rm.writeAttributeEscaped('action', oFileUploader.getUploadUrl());
-	rm.writeAttribute('target', oFileUploader.getId() + '-frame');
-	rm.write('>');
-
-	// the SAPUI5 TextField and Button
-	rm.write('<div class="sapUiFupInp"');
-	if (accessibility) {
-		rm.writeAttribute("role", "textbox");
-		rm.writeAttribute("aria-readonly", "true");
-	}
-	rm.write('>');
-
-	rm.write('<div class="sapUiFupGroup" border="0" cellPadding="0" cellSpacing="0"><div><div>');
-	rm.renderControl(oFileUploader.oFilePath);
-	rm.write('</div><div>');  //-> per style margin
-	rm.renderControl(oFileUploader.oBrowse);
-	rm.write('</div></div></div>');
-
-	// hidden pure input type file (surrounded by a div which is responsible for giving the input the correct size)
-	var sName = oFileUploader.getName() || oFileUploader.getId();
-	rm.write('<div class="sapUiFupInputMask">');
-	rm.write('<input type="hidden" name="_charset_">');
-	rm.write('<input type="hidden" id="' + oFileUploader.getId() + '-fu_data"');
-	rm.writeAttributeEscaped('name', sName + '-data');
-	rm.writeAttributeEscaped('value', oFileUploader.getAdditionalData() || "");
-	rm.write('>');
-	jQuery.each(oFileUploader.getParameters(), function(iIndex, oParam) {
-		rm.write('<input type="hidden" ');
-		rm.writeAttributeEscaped('name', oParam.getName() || "");
-		rm.writeAttributeEscaped('value', oParam.getValue() || "");
-		rm.write('>');
-	});
-	rm.write('</div>');
-
-
-	rm.write('</div>');
-	rm.write('</form>');
-	rm.write('</div>');
-};
+sap.ui.commons.FileUploaderRenderer = sap.ui.core.Renderer.extend(sap.ui.unified.FileUploaderRenderer);
 }; // end of sap/ui/commons/FileUploaderRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FormattedTextViewRenderer') ) {
 /*!
@@ -2181,7 +2114,7 @@ jQuery.sap.require('jquery.sap.strings'); // unlisted dependency retained
  * @class ListBox Renderer
  *
  * @author d046011
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  */
 sap.ui.commons.ListBoxRenderer = {
@@ -2659,20 +2592,20 @@ jQuery.sap.require('sap.ui.core.Renderer'); // unlisted dependency retained
 
 /**
  * @class MenuButton renderer.
- * @static
  * For a common look&feel, the MenuButton extends the Button control,
  * just like the TextField ComboBox works.
+ * @static
  */
 sap.ui.commons.MenuButtonRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.ButtonRenderer);
 
 /**
+ * Hint: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
+ *       It is used to allow extensions to display content after the actual button content.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.MenuButton}
  *            oControl the MenuButton that should be rendered
  * @private
- * P.S.: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
- *       It is used to allow extensions to display content after the actual button content.
  */
 sap.ui.commons.MenuButtonRenderer.renderButtonAttributes = function(rm, oControl) {
 	//Add specific ARIA information for MenuButton
@@ -2682,18 +2615,55 @@ sap.ui.commons.MenuButtonRenderer.renderButtonAttributes = function(rm, oControl
 };
 
 /**
+ * Hint: "renderButtonContentAfter" is a reserved/hard-coded Button extending function!
+ *       It is used to allow extensions to display content after the actual button content.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.MenuButton}
  *            oControl the MenuButton that should be rendered
  * @private
- * P.S.: "renderButtonContentAfter" is a reserved/hard-coded Button extending function!
- *       It is used to allow extensions to display content after the actual button content.
  */
 sap.ui.commons.MenuButtonRenderer.renderButtonContentAfter = function(rm, oControl) {
 	rm.write("<span class=\"sapUiMenuButtonIco\"></span>");
 };
 }; // end of sap/ui/commons/MenuButtonRenderer.js
+if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItemBase') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ * 
+ * (c) Copyright 2009-2014 SAP AG. All rights reserved
+ */
+
+jQuery.sap.declare("sap.ui.commons.MenuItemBase");
+
+/**
+ * @class Provides the standard properties for menu items.
+ * @extends sap.ui.unified.MenuItemBase
+ *
+ * @author SAP AG 
+ *
+ * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.MenuItemBase of the library sap.ui.unified instead.
+ * @name sap.ui.commons.MenuItemBase
+ */
+
+(function(){
+
+try{
+	sap.ui.getCore().loadLibrary("sap.ui.unified");
+}catch(e){
+	alert("The controls/elements 'sap.ui.commons.Menu*' needs library 'sap.ui.unified'.");
+	throw(e);
+}
+
+jQuery.sap.require('sap.ui.unified.MenuItemBase'); // unlisted dependency retained
+
+
+sap.ui.commons.MenuItemBase = sap.ui.unified.MenuItemBase;
+
+})();
+}; // end of sap/ui/commons/MenuItemBase.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuRenderer') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -2703,120 +2673,12 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuRenderer') ) {
 
 // Provides default renderer for control sap.ui.commons.Menu
 jQuery.sap.declare("sap.ui.commons.MenuRenderer");
+jQuery.sap.require('sap.ui.core.Renderer'); // unlisted dependency retained
+
+jQuery.sap.require('sap.ui.unified.MenuRenderer'); // unlisted dependency retained
 
 
-/**
- * @class Menu renderer.
- * @author SAP - TD Core UI&AM UI Infra
- *
- * @version 1.20.10
- * @static
- */
-sap.ui.commons.MenuRenderer = {
-};
-
-/**
- * Renders the HTML for the given control, using the provided
- * {@link sap.ui.core.RenderManager}.
- *
- * @param {sap.ui.core.RenderManager}
- *            oRenderManager The RenderManager that can be used for writing to the render-output-buffer.
- * @param {sap.ui.core.Control}
- *            oMenu An object representation of the control that should be rendered
- */
-sap.ui.commons.MenuRenderer.render = function(oRenderManager,oMenu) {
-	var aItems = oMenu.getItems();
-	var rm = oRenderManager;
-	var colCount = 8;
-	
-	if(oMenu.oHoveredItem && oMenu.indexOfItem(oMenu.oHoveredItem) < 0){
-		//Hover item not valid anymore
-		oMenu.oHoveredItem = null;
-	}
-	
-	rm.write("<div tabindex=\"-1\" hideFocus=\"true\"");
-
-	if(oMenu.getTooltip_AsString()) {
-		rm.writeAttributeEscaped("title", oMenu.getTooltip_AsString());
-	}
-
-	// ARIA
-	var bAccessible = sap.ui.getCore().getConfiguration().getAccessibility();
-	if(bAccessible){
-		rm.writeAttribute("aria-orientation", "vertical");
-		rm.writeAttribute("role", "menu");
-
-		var _getText = function(sKey, aArgs) {
-			var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
-			if(rb) {
-				return rb.getText(sKey, aArgs);
-			}
-			return sKey;
-		};
-
-		rm.writeAttributeEscaped("aria-label", oMenu.getAriaDescription() ? oMenu.getAriaDescription() : _getText("MNU_ARIA_NAME"));
-		rm.writeAttribute("aria-level", oMenu.getMenuLevel());
-		if(oMenu.oHoveredItem) {
-			rm.writeAttribute("aria-activedescendant", oMenu.oHoveredItem.getId());
-		}
-	}
-
-	rm.addClass("sapUiMnu");
-	if(oMenu.getRootMenu().bUseTopStyle){
-		rm.addClass("sapUiMnuTop");
-	}
-	rm.writeClasses();
-	rm.writeControlData(oMenu);
-	rm.write("><ul class=\"sapUiMnuLst");
-
-	var bHasIcons = false;
-	var bHasSubMenus = false;
-	for(var idx=0; idx<aItems.length; idx++){
-		if(aItems[idx].getIcon && aItems[idx].getIcon()){
-			bHasIcons = true;
-		}
-		if(aItems[idx].getSubmenu()){
-			bHasSubMenus = true;
-		}
-	}
-
-	if(!bHasIcons) {
-		rm.write(" sapUiMnuNoIco");
-	}
-	if(!bHasSubMenus) {
-		rm.write(" sapUiMnuNoSbMnu");
-	}
-
-	rm.write("\">");
-
-	var iNumberOfVisibleItems = 0;
-	for (var i=0;i<aItems.length;i++) {
-		if(aItems[i].getVisible() && aItems[i].render){
-			iNumberOfVisibleItems++;
-		}
-	}
-
-	var index = 0;
-	// Menu items
-	for (var i=0;i<aItems.length;i++) {
-		var oItem = aItems[i];
-		if(oItem.getVisible() && oItem.render){
-			index++;
-
-			if(oItem.getStartsSection()){
-				rm.write("<li ");
-				if(bAccessible) {
-					rm.write("role=\"separator\" ");
-				}
-				rm.write("class=\"sapUiMnuDiv\"><div class=\"sapUiMnuDivL\"></div><hr><div class=\"sapUiMnuDivR\"></div></li>");
-			}
-
-			oItem.render(rm, oItem, oMenu, {bAccessible: bAccessible, iItemNo: index, iTotalItems: iNumberOfVisibleItems});
-		}
-	}
-
-	rm.write("</ul></div>");
-};
+sap.ui.commons.MenuRenderer = sap.ui.core.Renderer.extend(sap.ui.unified.MenuRenderer);
 }; // end of sap/ui/commons/MenuRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageBarRenderer') ) {
 /*!
@@ -4255,39 +4117,47 @@ sap.ui.commons.RichTooltipRenderer.render = function(rm, oRichTooltip){
 	}
 
 	// if the parent element has a set ValueState render the corresponding text and image
-	var valueStateText = sap.ui.core.ValueStateSupport.getAdditionalText(oRichTooltip.getParent());
-	if (valueStateText) {
-		var sValueState = oRichTooltip.getParent().getValueState();
-		var sValueStateImage = sValueState !== sap.ui.core.ValueState.None ? "ValueState_" + sValueState + ".png" : "";
-
+	var sValueStateText = sap.ui.core.ValueStateSupport.getAdditionalText(oRichTooltip.getParent());
+	
+	// render the individual ValueState text (if available) otherwise use the default text
+	var sIndividualText = oRichTooltip.getAggregation("individualStateText");
+	
+	// if there is any (from parent control or from RTT itself) value state text set
+	if (sValueStateText || sIndividualText) {
 		rm.write('<div class="sapUiRttValueStateContainer">');
 		
-		// if there is a proper value state -> render corresponding image
-		if (sValueStateImage !== "") {
-			sValueStateImage = jQuery.sap.getModulePath("sap.ui.commons", '/')
-			+ "themes/"
-			+ sap.ui.getCore().getConfiguration().getTheme()
-			+ "/img/richtooltip/" + sValueStateImage;
-			
-			rm.write('<img id="'+sId+'-valueStateImage" class="sapUiRttValueStateImage" src="');
-			rm.writeEscaped(sValueStateImage);
-			rm.write('"/>');
-		}
+		// only if the owner of the RTT has a value state - render state and image
+		if (sValueStateText) {
+			var sValueState = oRichTooltip.getParent().getValueState();
+			var sValueStateImage = sValueState !== sap.ui.core.ValueState.None ? "ValueState_" + sValueState + ".png" : "";
 
-		// render the individual ValueState text (if available) otherwise use the default text
-		var sIndividualText = oRichTooltip.getAggregation("individualStateText");
-		if (sIndividualText) {
+			// if there is a proper value state -> render corresponding image
+			if (sValueStateImage !== "") {
+				sValueStateImage = jQuery.sap.getModulePath("sap.ui.commons", '/')
+				+ "themes/"
+				+ sap.ui.getCore().getConfiguration().getTheme()
+				+ "/img/richtooltip/" + sValueStateImage;
+			
+				rm.write('<img id="'+ sId +'-valueStateImage" class="sapUiRttValueStateImage" src="');
+				rm.writeEscaped(sValueStateImage);
+				rm.write('"/>');
+			}
+		} 
+	
+	    if (sIndividualText) {
 			rm.renderControl(sIndividualText);
 		} else {
-			rm.write('<div id="'+sId+'-valueStateText" class="sapUiRttValueStateText">');
-			rm.writeEscaped(valueStateText);
+			rm.write('<div id="'+ sId +'-valueStateText" class="sapUiRttValueStateText">');
+			rm.writeEscaped(sValueStateText);
 			rm.write('</div>');
 		}
+		
 		rm.write('</div>');
 		
 		// render a separator between ValueState stuff and text of the RichTooltip
 		rm.write("<div class='sapUiRttSep'></div>");
-	}
+	}	
+	
 	
 	rm.write('<div class="sapUiRttContentContainer">');
 	// render image that might be set
@@ -5608,10 +5478,10 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	} else{
 		rm.addStyle("overflow", "hidden");
 	}
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		rm.addClass("sapUiVSplitterFirstPane");
 		rm.addStyle("width", position + "%");
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		rm.addClass("sapUiHSplitterFirstPane");
 		rm.addStyle("height", position + "%");
 	}
@@ -5630,14 +5500,14 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 
 	/*rendering the splitter bar*/
 	rm.write("<div  id=\"" + oControl.getId() + "_SB\" tabIndex=\"0\" role=\"separator\" title=\"" + oControl.getText("SPLITTER_MOVE") + "\""); 
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiVerticalSplitterBar");
 		} else {
 			rm.addClass("sapUiVerticalSplitterBarHidden");
 		}
 		rm.addStyle("width", 0 + "%");
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		if (oControl.getSplitterBarVisible()){
 			rm.addClass("sapUiHorizontalSplitterBar");
 		} else {
@@ -5657,10 +5527,10 @@ sap.ui.commons.SplitterRenderer.render = function(oRenderManager, oControl) {
 	} else{
 		rm.addStyle("overflow", "hidden");
 	}
-	if (orientation == sap.ui.commons.Orientation.Vertical) {
+	if (orientation == sap.ui.core.Orientation.Vertical) {
 		rm.addClass("sapUiVSplitterSecondPane");
 		rm.addStyle("width", dimensionSecPane + '%');
-	} else if (orientation == sap.ui.commons.Orientation.Horizontal) {
+	} else if (orientation == sap.ui.core.Orientation.Horizontal) {
 		rm.addClass("sapUiHSplitterSecondPane");
 		rm.addStyle("height", dimensionSecPane + '%');
 	}
@@ -5909,7 +5779,7 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
  * @class
  * @static
  * @author SAP
- * @version 1.20.10
+ * @version 1.22.4
  * @since 0.9.0
  */
 sap.ui.commons.TextFieldRenderer = {};
@@ -6516,13 +6386,13 @@ jQuery.sap.require('sap.ui.core.Renderer'); // unlisted dependency retained
 sap.ui.commons.ToggleButtonRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.ButtonRenderer);
 
 /**
+ * Hint: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
+ *       It is used to allow extensions to display content after the actual button content.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.ToggleButton}
  *            oToggleButton the ToggleButton that should be rendered
  * @private
- * P.S.: "renderButtonAttributes" is a reserved/hard-coded Button extending function!
- *       It is used to allow extensions to display content after the actual button content.
  */
 sap.ui.commons.ToggleButtonRenderer.renderButtonAttributes = function(rm, oToggleButton) {
 	rm.addClass("sapUiToggleBtn");
@@ -6961,7 +6831,7 @@ sap.ui.commons.TreeRenderer.renderNode = function(oRenderManager, oNode, iLevel,
 	rm.writeClasses(oNode);
 
 	//ARIA
-	var mProps = {role: 'treeitem', level: iLevel, setsize: iSize, posinset: iPos,};
+	var mProps = {role: 'treeitem', level: iLevel, setsize: iSize, posinset: iPos};
 
 	if(bExpanded){
 		mProps["expanded"] = true;
@@ -7200,20 +7070,20 @@ jQuery.sap.declare("sap.ui.commons.ValueHelpFieldRenderer");
 
 /**
  * @class ValueHelpField renderer.
- * @static
- * For a common look&feel, the ValueHelpFeild extends the TextField control,
+ * For a common look&feel, the ValueHelpField extends the TextField control,
  * just like the ComboBox does.
+ * @static
  */
 sap.ui.commons.ValueHelpFieldRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.TextFieldRenderer);
 
 /**
+ * Hint: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
+ *       It is used to allow extensions to display help icons.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.ValueHelpField}
  *            oControl the ValueHelpField whose "value help" should be rendered
  * @private
- * P.S.: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
- *       It is used to allow extensions to display help icons.
  */
 sap.ui.commons.ValueHelpFieldRenderer.renderOuterAttributes = function(rm, oControl) {
 	// To share the overall ComboBox styling:
@@ -8511,13 +8381,13 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.commons (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.commons (1.22.4)
  */
 jQuery.sap.declare("sap.ui.commons.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
 
 /**
- * SAPUI5 library with most common controls.
+ * Common basic controls, mainly intended for desktop scenarios
  *
  * @namespace
  * @name sap.ui.commons
@@ -8542,7 +8412,6 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.LabelDesign",
     "sap.ui.commons.MenuBarDesign",
     "sap.ui.commons.MessageType",
-    "sap.ui.commons.Orientation",
     "sap.ui.commons.PaginatorEvent",
     "sap.ui.commons.RatingIndicatorVisualMode",
     "sap.ui.commons.RowRepeaterDesign",
@@ -8552,6 +8421,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.core.TitleLevel",
     "sap.ui.commons.ToolbarDesign",
     "sap.ui.commons.ToolbarSeparatorDesign",
+    "sap.ui.commons.TreeSelectionMode",
     "sap.ui.commons.TriStateCheckBoxState",
     "sap.ui.commons.enums.AreaDesign",
     "sap.ui.commons.enums.BorderDesign",
@@ -8662,7 +8532,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.commons.layout.PositionContainer",
     "sap.ui.commons.layout.ResponsiveFlowLayoutData"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -8682,42 +8552,43 @@ jQuery.sap.declare("sap.ui.commons.ButtonStyle");
 /**
  * @class different styles for a button.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ButtonStyle = {
-  
-    /**
-     * Button is emphasized. 
-     * @public
-     */
-    Emph : "Emph",
 
-    /**
-     * Accept button (normally green). 
-     * @public
-     */
-    Accept : "Accept",
+	/**
+	 * Button is emphasized.
+	 * @public
+	 */
+	Emph : "Emph",
 
-    /**
-     * Reject button (normally red). 
-     * @public
-     */
-    Reject : "Reject",
+	/**
+	 * Accept button (normally green).
+	 * @public
+	 */
+	Accept : "Accept",
 
-    /**
-     * default style (no special styling). 
-     * @public
-     */
-    Default : "Default"
+	/**
+	 * Reject button (normally red).
+	 * @public
+	 */
+	Reject : "Reject",
 
-  };
+	/**
+	 * default style (no special styling).
+	 * @public
+	 */
+	Default : "Default"
+
+};
 /**
  * 
  *   		Marker interface for common controls which are suitable for use within a FormattedTextView.
  *   
  *
+ * @author SAP
  * @name sap.ui.commons.FormattedTextViewControl
  * @interface
  * @public
@@ -8741,37 +8612,37 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerHeight");
 /**
  * @class Enumeration of possible HorizontalDivider height settings.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.HorizontalDividerHeight = {
-  
-    /**
-     * Divider gets no top and bottom margin. 
-     * @public
-     */
-    Ruleheight : "Ruleheight",
 
-    /**
-     * Divider gets a small top and bottom margin. 
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * Divider gets no top and bottom margin.
+	 * @public
+	 */
+	Ruleheight : "Ruleheight",
 
-    /**
-     * Divider gets a medium top and bottom margin. 
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * Divider gets a small top and bottom margin.
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * Divider gets a large top and bottom margin. 
-     * @public
-     */
-    Large : "Large"
+	/**
+	 * Divider gets a medium top and bottom margin.
+	 * @public
+	 */
+	Medium : "Medium",
 
-  };
+	/**
+	 * Divider gets a large top and bottom margin.
+	 * @public
+	 */
+	Large : "Large"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -8790,25 +8661,25 @@ jQuery.sap.declare("sap.ui.commons.HorizontalDividerType");
 /**
  * @class Enumeration of possible HorizontalDivider types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.HorizontalDividerType = {
-  
-    /**
-     * Type Area 
-     * @public
-     */
-    Area : "Area",
 
-    /**
-     * Type Page 
-     * @public
-     */
-    Page : "Page"
+	/**
+	 * Type Area
+	 * @public
+	 */
+	Area : "Area",
 
-  };
+	/**
+	 * Type Page
+	 * @public
+	 */
+	Page : "Page"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -8827,25 +8698,25 @@ jQuery.sap.declare("sap.ui.commons.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.LabelDesign = {
-  
-    /**
-     * Displays the label in bold. 
-     * @public
-     */
-    Bold : "Bold",
 
-    /**
-     * Displays the label in normal mode. 
-     * @public
-     */
-    Standard : "Standard"
+	/**
+	 * Displays the label in bold.
+	 * @public
+	 */
+	Bold : "Bold",
 
-  };
+	/**
+	 * Displays the label in normal mode.
+	 * @public
+	 */
+	Standard : "Standard"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -8864,25 +8735,25 @@ jQuery.sap.declare("sap.ui.commons.MenuBarDesign");
 /**
  * @class Determines the visual design of a MenuBar. The feature might be not supported by all themes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.MenuBarDesign = {
-  
-    /**
-     * The MenuBar appears in standard design. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The MenuBar appears in header design. 
-     * @public
-     */
-    Header : "Header"
+	/**
+	 * The MenuBar appears in standard design.
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * The MenuBar appears in header design.
+	 * @public
+	 */
+	Header : "Header"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -8901,68 +8772,31 @@ jQuery.sap.declare("sap.ui.commons.MessageType");
 /**
  * @class [Enter description for MessageType]
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.MessageType = {
-  
-    /**
-     * Error message 
-     * @public
-     */
-    Error : "Error",
 
-    /**
-     * Warning message 
-     * @public
-     */
-    Warning : "Warning",
+	/**
+	 * Error message
+	 * @public
+	 */
+	Error : "Error",
 
-    /**
-     * Successful message 
-     * @public
-     */
-    Success : "Success"
+	/**
+	 * Warning message
+	 * @public
+	 */
+	Warning : "Warning",
 
-  };
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
+	/**
+	 * Successful message
+	 * @public
+	 */
+	Success : "Success"
 
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.type, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides enumeration sap.ui.commons.Orientation.
-jQuery.sap.declare("sap.ui.commons.Orientation");
-
-
-/**
- * @class Orientation of an UI element
- *
- * @version 1.20.10
- * @static
- * @public
- */
-sap.ui.commons.Orientation = {
-  
-    /**
-     * Arrange Horizontally 
-     * @public
-     */
-    Horizontal : "Horizontal",
-
-    /**
-     * Arrange Vertically 
-     * @public
-     */
-    Vertical : "Vertical"
-
-  };
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -8981,43 +8815,43 @@ jQuery.sap.declare("sap.ui.commons.PaginatorEvent");
 /**
  * @class Disctinct paginator event types
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.PaginatorEvent = {
-  
-    /**
-     * First page event 
-     * @public
-     */
-    First : "First",
 
-    /**
-     * Previous page event 
-     * @public
-     */
-    Previous : "Previous",
+	/**
+	 * First page event
+	 * @public
+	 */
+	First : "First",
 
-    /**
-     * Go to page event 
-     * @public
-     */
-    Goto : "Goto",
+	/**
+	 * Previous page event
+	 * @public
+	 */
+	Previous : "Previous",
 
-    /**
-     * Next page event 
-     * @public
-     */
-    Next : "Next",
+	/**
+	 * Go to page event
+	 * @public
+	 */
+	Goto : "Goto",
 
-    /**
-     * Last page event 
-     * @public
-     */
-    Last : "Last"
+	/**
+	 * Next page event
+	 * @public
+	 */
+	Next : "Next",
 
-  };
+	/**
+	 * Last page event
+	 * @public
+	 */
+	Last : "Last"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9036,31 +8870,31 @@ jQuery.sap.declare("sap.ui.commons.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.RatingIndicatorVisualMode = {
-  
-    /**
-     * Values are rounded to the nearest integer value (e.g. 1.7 -> 2). 
-     * @public
-     */
-    Full : "Full",
 
-    /**
-     * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5). 
-     * @public
-     */
-    Half : "Half",
+	/**
+	 * Values are rounded to the nearest integer value (e.g. 1.7 -> 2).
+	 * @public
+	 */
+	Full : "Full",
 
-    /**
-     * Values are not rounded. 
-     * @public
-     */
-    Continuous : "Continuous"
+	/**
+	 * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5).
+	 * @public
+	 */
+	Half : "Half",
 
-  };
+	/**
+	 * Values are not rounded.
+	 * @public
+	 */
+	Continuous : "Continuous"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9079,31 +8913,31 @@ jQuery.sap.declare("sap.ui.commons.RowRepeaterDesign");
 /**
  * @class Determines the visual design of a RowRepeater.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.RowRepeaterDesign = {
-  
-    /**
-     * The RowRepeater header and footer elements, as well as the row container background, appear solid. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The RowRepeater header and footer elements, as well as the row container background, appear transparent. 
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * The RowRepeater header and footer elements, as well as the row container background, appear solid.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * The RowRepeater will be displayed without header, toolbar or footer. Background will be transparent. 
-     * @public
-     */
-    BareShell : "BareShell"
+	/**
+	 * The RowRepeater header and footer elements, as well as the row container background, appear transparent.
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * The RowRepeater will be displayed without header, toolbar or footer. Background will be transparent.
+	 * @public
+	 */
+	BareShell : "BareShell"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9123,6 +8957,7 @@ jQuery.sap.require('sap.ui.base.DataType'); // unlisted dependency retained
 /**
  * @class A string type that represents subset of CSS size values. For the Splitter only px and % are allowed.
  *
+ * @author SAP AG
  * @static
  * @public
  */
@@ -9153,37 +8988,37 @@ jQuery.sap.declare("sap.ui.commons.TextViewColor");
 /**
  * @class Semantic Colors of a text.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.TextViewColor = {
-  
-    /**
-     * Default color 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Positive color 
-     * @public
-     */
-    Positive : "Positive",
+	/**
+	 * Default color
+	 * @public
+	 */
+	Default : "Default",
 
-    /**
-     * Negative color 
-     * @public
-     */
-    Negative : "Negative",
+	/**
+	 * Positive color
+	 * @public
+	 */
+	Positive : "Positive",
 
-    /**
-     * Critical color 
-     * @public
-     */
-    Critical : "Critical"
+	/**
+	 * Negative color
+	 * @public
+	 */
+	Negative : "Negative",
 
-  };
+	/**
+	 * Critical color
+	 * @public
+	 */
+	Critical : "Critical"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9202,85 +9037,85 @@ jQuery.sap.declare("sap.ui.commons.TextViewDesign");
 /**
  * @class Designs for TextView.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.TextViewDesign = {
-  
-    /**
-     * Displays the text in standard letters. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Displays the text in bold letters 
-     * @public
-     */
-    Bold : "Bold",
+	/**
+	 * Displays the text in standard letters.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * Displays the text in header 1 letters. 
-     * @public
-     */
-    H1 : "H1",
+	/**
+	 * Displays the text in bold letters
+	 * @public
+	 */
+	Bold : "Bold",
 
-    /**
-     * Displays the text in header 2 letters. 
-     * @public
-     */
-    H2 : "H2",
+	/**
+	 * Displays the text in header 1 letters.
+	 * @public
+	 */
+	H1 : "H1",
 
-    /**
-     * Displays the text in header 3 letters. 
-     * @public
-     */
-    H3 : "H3",
+	/**
+	 * Displays the text in header 2 letters.
+	 * @public
+	 */
+	H2 : "H2",
 
-    /**
-     * Displays the text in header 4 letters. 
-     * @public
-     */
-    H4 : "H4",
+	/**
+	 * Displays the text in header 3 letters.
+	 * @public
+	 */
+	H3 : "H3",
 
-    /**
-     * Displays the text in header 5 letters. 
-     * @public
-     */
-    H5 : "H5",
+	/**
+	 * Displays the text in header 4 letters.
+	 * @public
+	 */
+	H4 : "H4",
 
-    /**
-     * Displays the text in header 6 letters. 
-     * @public
-     */
-    H6 : "H6",
+	/**
+	 * Displays the text in header 5 letters.
+	 * @public
+	 */
+	H5 : "H5",
 
-    /**
-     * Displays the text in italic letters 
-     * @public
-     */
-    Italic : "Italic",
+	/**
+	 * Displays the text in header 6 letters.
+	 * @public
+	 */
+	H6 : "H6",
 
-    /**
-     * Displays the text in smaller letters. 
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * Displays the text in italic letters
+	 * @public
+	 */
+	Italic : "Italic",
 
-    /**
-     * Displays the text in monospace letters. 
-     * @public
-     */
-    Monospace : "Monospace",
+	/**
+	 * Displays the text in smaller letters.
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * underlined Text 
-     * @public
-     */
-    Underline : "Underline"
+	/**
+	 * Displays the text in monospace letters.
+	 * @public
+	 */
+	Monospace : "Monospace",
 
-  };
+	/**
+	 * underlined Text
+	 * @public
+	 */
+	Underline : "Underline"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9299,34 +9134,34 @@ jQuery.sap.declare("sap.ui.commons.ToolbarDesign");
 /**
  * @class Determines the visual design of a Toolbar.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ToolbarDesign = {
-  
-    /**
-     * The toolbar elements such as buttons for example have their normal visual design, and the toolbar appears solid.
-     * The feature might be not supported by all themes. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * The controls included in the toolbar have a normal visual design where the toolbar appears transparent.
-     * The feature might be not supported by all themes.
-     *  
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * The toolbar elements such as buttons for example have their normal visual design, and the toolbar appears solid.
+	 * The feature might be not supported by all themes.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * The included controls have a very light appearance. The feature might be not supported by all themes. 
-     * @public
-     */
-    Flat : "Flat"
+	/**
+	 * The controls included in the toolbar have a normal visual design where the toolbar appears transparent.
+	 * The feature might be not supported by all themes.
+	 * 
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * The included controls have a very light appearance. The feature might be not supported by all themes.
+	 * @public
+	 */
+	Flat : "Flat"
+
+};
 /**
  * 
  *   Marker interface for common controls which are suitable for use within a toolbar.
@@ -9337,6 +9172,7 @@ sap.ui.commons.ToolbarDesign = {
  *   "sapUiTb" to adjust their own theming when used inside a toolbar.
  *   
  *
+ * @author d029921
  * @name sap.ui.commons.ToolbarItem
  * @interface
  * @public
@@ -9360,25 +9196,68 @@ jQuery.sap.declare("sap.ui.commons.ToolbarSeparatorDesign");
 /**
  * @class Design of the Toolbar Separator.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.ToolbarSeparatorDesign = {
-  
-    /**
-     * Standard Separator between controls 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * 100% height Separator before and after specific controls 
-     * @public
-     */
-    FullHeight : "FullHeight"
+	/**
+	 * Standard Separator between controls
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * 100% height Separator before and after specific controls
+	 * @public
+	 */
+	FullHeight : "FullHeight"
+
+};
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.type, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides enumeration sap.ui.commons.TreeSelectionMode.
+jQuery.sap.declare("sap.ui.commons.TreeSelectionMode");
+
+
+/**
+ * @class Selection mode of the tree
+ *
+ * @version 1.22.4
+ * @static
+ * @public
+ */
+sap.ui.commons.TreeSelectionMode = {
+
+	/**
+	 * Select multiple rows at a time.
+	 * @public
+	 */
+	Multi : "Multi",
+
+	/**
+	 * Select one row at a time.
+	 * @public
+	 */
+	Single : "Single",
+
+	/**
+	 * No rows can be selected.
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9397,32 +9276,32 @@ jQuery.sap.declare("sap.ui.commons.TriStateCheckBoxState");
 /**
  * @class States for TriStateCheckBox
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.7.2
  */
 sap.ui.commons.TriStateCheckBoxState = {
-  
-    /**
-     * unchecked, default value for tri-state checkbox 
-     * @public
-     */
-    Unchecked : "Unchecked",
 
-    /**
-     * mixed state for tri-state checkbox 
-     * @public
-     */
-    Mixed : "Mixed",
+	/**
+	 * unchecked, default value for tri-state checkbox
+	 * @public
+	 */
+	Unchecked : "Unchecked",
 
-    /**
-     * checked value for tri-state checkbox 
-     * @public
-     */
-    Checked : "Checked"
+	/**
+	 * mixed state for tri-state checkbox
+	 * @public
+	 */
+	Mixed : "Mixed",
 
-  };
+	/**
+	 * checked value for tri-state checkbox
+	 * @public
+	 */
+	Checked : "Checked"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9441,31 +9320,31 @@ jQuery.sap.declare("sap.ui.commons.enums.AreaDesign");
 /**
  * @class Value set for the background design of areas
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.AreaDesign = {
-  
-    /**
-     * Shows the area in a plain look 
-     * @public
-     */
-    Plain : "Plain",
 
-    /**
-     * Shows the label in a filled look 
-     * @public
-     */
-    Fill : "Fill",
+	/**
+	 * Shows the area in a plain look
+	 * @public
+	 */
+	Plain : "Plain",
 
-    /**
-     * Shows the background as transparent 
-     * @public
-     */
-    Transparent : "Transparent"
+	/**
+	 * Shows the label in a filled look
+	 * @public
+	 */
+	Fill : "Fill",
 
-  };
+	/**
+	 * Shows the background as transparent
+	 * @public
+	 */
+	Transparent : "Transparent"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9484,25 +9363,25 @@ jQuery.sap.declare("sap.ui.commons.enums.BorderDesign");
 /**
  * @class Value set for the border design of areas
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.BorderDesign = {
-  
-    /**
-     * Draws the border as a box around the area 
-     * @public
-     */
-    Box : "Box",
 
-    /**
-     * Suppresses the border 
-     * @public
-     */
-    None : "None"
+	/**
+	 * Draws the border as a box around the area
+	 * @public
+	 */
+	Box : "Box",
 
-  };
+	/**
+	 * Suppresses the border
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9521,25 +9400,25 @@ jQuery.sap.declare("sap.ui.commons.enums.Orientation");
 /**
  * @class Orientation of a UI element
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.enums.Orientation = {
-  
-    /**
-     * Horizontal orientation 
-     * @public
-     */
-    horizontal : "horizontal",
 
-    /**
-     * Vertical orientation 
-     * @public
-     */
-    vertical : "vertical"
+	/**
+	 * Horizontal orientation
+	 * @public
+	 */
+	horizontal : "horizontal",
 
-  };
+	/**
+	 * Vertical orientation
+	 * @public
+	 */
+	vertical : "vertical"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9560,69 +9439,69 @@ jQuery.sap.declare("sap.ui.commons.layout.BackgroundDesign");
  * Background design (i.e. color), e.g. of a layout cell.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.BackgroundDesign = {
-  
-    /**
-     * 
-     * A background design suitable for borders.
-     *  
-     * @public
-     */
-    Border : "Border",
 
-    /**
-     * 
-     * An opaque background design that looks dark filled.
-     *  
-     * @public
-     */
-    Fill1 : "Fill1",
+	/**
+	 * 
+	 * A background design suitable for borders.
+	 * 
+	 * @public
+	 */
+	Border : "Border",
 
-    /**
-     * 
-     * An opaque background design that looks medium filled.
-     *  
-     * @public
-     */
-    Fill2 : "Fill2",
+	/**
+	 * 
+	 * An opaque background design that looks dark filled.
+	 * 
+	 * @public
+	 */
+	Fill1 : "Fill1",
 
-    /**
-     * 
-     * An opaque background design that looks light filled.
-     *  
-     * @public
-     */
-    Fill3 : "Fill3",
+	/**
+	 * 
+	 * An opaque background design that looks medium filled.
+	 * 
+	 * @public
+	 */
+	Fill2 : "Fill2",
 
-    /**
-     * 
-     * A background design suitable for headers.
-     *  
-     * @public
-     */
-    Header : "Header",
+	/**
+	 * 
+	 * An opaque background design that looks light filled.
+	 * 
+	 * @public
+	 */
+	Fill3 : "Fill3",
 
-    /**
-     * 
-     * A plain but opaque background design.
-     *  
-     * @public
-     */
-    Plain : "Plain",
+	/**
+	 * 
+	 * A background design suitable for headers.
+	 * 
+	 * @public
+	 */
+	Header : "Header",
 
-    /**
-     * 
-     * A transparent background.
-     *  
-     * @public
-     */
-    Transparent : "Transparent"
+	/**
+	 * 
+	 * A plain but opaque background design.
+	 * 
+	 * @public
+	 */
+	Plain : "Plain",
 
-  };
+	/**
+	 * 
+	 * A transparent background.
+	 * 
+	 * @public
+	 */
+	Transparent : "Transparent"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9641,43 +9520,43 @@ jQuery.sap.declare("sap.ui.commons.layout.BorderLayoutAreaTypes");
 /**
  * @class The type (=position) of a BorderLayoutArea
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.BorderLayoutAreaTypes = {
-  
-    /**
-     * Value to identify the top area. 
-     * @public
-     */
-    top : "top",
 
-    /**
-     * Value to identify the begin area. 
-     * @public
-     */
-    begin : "begin",
+	/**
+	 * Value to identify the top area.
+	 * @public
+	 */
+	top : "top",
 
-    /**
-     * Value to identify the center area. 
-     * @public
-     */
-    center : "center",
+	/**
+	 * Value to identify the begin area.
+	 * @public
+	 */
+	begin : "begin",
 
-    /**
-     * Value to identify the end area. 
-     * @public
-     */
-    end : "end",
+	/**
+	 * Value to identify the center area.
+	 * @public
+	 */
+	center : "center",
 
-    /**
-     * Value to identify the bottom area. 
-     * @public
-     */
-    bottom : "bottom"
+	/**
+	 * Value to identify the end area.
+	 * @public
+	 */
+	end : "end",
 
-  };
+	/**
+	 * Value to identify the bottom area.
+	 * @public
+	 */
+	bottom : "bottom"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9700,53 +9579,53 @@ jQuery.sap.declare("sap.ui.commons.layout.HAlign");
  * others do not.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.HAlign = {
-  
-    /**
-     * 
-     * Aligned towards the beginning of a line, in the current locale's writing direction.
-     *  
-     * @public
-     */
-    Begin : "Begin",
 
-    /**
-     * 
-     * Horizontally centered.
-     *  
-     * @public
-     */
-    Center : "Center",
+	/**
+	 * 
+	 * Aligned towards the beginning of a line, in the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * 
-     * Aligned towards the end of a line, in the current locale's writing direction.
-     *  
-     * @public
-     */
-    End : "End",
+	/**
+	 * 
+	 * Horizontally centered.
+	 * 
+	 * @public
+	 */
+	Center : "Center",
 
-    /**
-     * 
-     * Left aligned, regardless of the current locale's writing direction.
-     *  
-     * @public
-     */
-    Left : "Left",
+	/**
+	 * 
+	 * Aligned towards the end of a line, in the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * 
-     * Right aligned, regardless of the current locale's writing direction.
-     *  
-     * @public
-     */
-    Right : "Right"
+	/**
+	 * 
+	 * Left aligned, regardless of the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Left : "Left",
 
-  };
+	/**
+	 * 
+	 * Right aligned, regardless of the current locale's writing direction.
+	 * 
+	 * @public
+	 */
+	Right : "Right"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9770,59 +9649,59 @@ jQuery.sap.declare("sap.ui.commons.layout.Padding");
  * or end of a line, in the current locale's writing direction.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.Padding = {
-  
-    /**
-     * 
-     * No padding at all.
-     *  
-     * @public
-     */
-    None : "None",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards the beginning of a line, in the current locale's
-     * writing direction, but none towards its end.
-     *  
-     * @public
-     */
-    Begin : "Begin",
+	/**
+	 * 
+	 * No padding at all.
+	 * 
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards the end of a line, in the current locale's
-     * writing direction, but none towards its beginning.
-     *  
-     * @public
-     */
-    End : "End",
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards the beginning of a line, in the current locale's
+	 * writing direction, but none towards its end.
+	 * 
+	 * @public
+	 */
+	Begin : "Begin",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * Padding of 4px towards both the beginning and end of a line.
-     *  
-     * @public
-     */
-    Both : "Both",
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards the end of a line, in the current locale's
+	 * writing direction, but none towards its beginning.
+	 * 
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * 
-     * Top and bottom padding of 2px.
-     * No padding towards neither the beginning nor end of a line.
-     *  
-     * @public
-     */
-    Neither : "Neither"
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * Padding of 4px towards both the beginning and end of a line.
+	 * 
+	 * @public
+	 */
+	Both : "Both",
 
-  };
+	/**
+	 * 
+	 * Top and bottom padding of 2px.
+	 * No padding towards neither the beginning nor end of a line.
+	 * 
+	 * @public
+	 */
+	Neither : "Neither"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9844,69 +9723,69 @@ jQuery.sap.declare("sap.ui.commons.layout.Separation");
  * defined width, with or without a vertical line in its middle.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.Separation = {
-  
-    /**
-     * 
-     * No gutter at all (0px), and without a vertical line, of course.
-     *  
-     * @public
-     */
-    None : "None",
 
-    /**
-     * 
-     * A small (17px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * 
+	 * No gutter at all (0px), and without a vertical line, of course.
+	 * 
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * 
-     * A small (17px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    SmallWithLine : "SmallWithLine",
+	/**
+	 * 
+	 * A small (17px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * 
-     * A medium (31px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * 
+	 * A small (17px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	SmallWithLine : "SmallWithLine",
 
-    /**
-     * 
-     * A medium (31px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    MediumWithLine : "MediumWithLine",
+	/**
+	 * 
+	 * A medium (31px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Medium : "Medium",
 
-    /**
-     * 
-     * A large (63px) vertical gutter without a vertical line.
-     *  
-     * @public
-     */
-    Large : "Large",
+	/**
+	 * 
+	 * A medium (31px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	MediumWithLine : "MediumWithLine",
 
-    /**
-     * 
-     * A large (63px) vertical gutter with a vertical line in its middle.
-     *  
-     * @public
-     */
-    LargeWithLine : "LargeWithLine"
+	/**
+	 * 
+	 * A large (63px) vertical gutter without a vertical line.
+	 * 
+	 * @public
+	 */
+	Large : "Large",
 
-  };
+	/**
+	 * 
+	 * A large (63px) vertical gutter with a vertical line in its middle.
+	 * 
+	 * @public
+	 */
+	LargeWithLine : "LargeWithLine"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -9927,37 +9806,37 @@ jQuery.sap.declare("sap.ui.commons.layout.VAlign");
  * Vertical alignment, e.g. of a layout cell's content within the cell's borders.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.commons.layout.VAlign = {
-  
-    /**
-     * 
-     * Aligned at the bottom.
-     *  
-     * @public
-     */
-    Bottom : "Bottom",
 
-    /**
-     * 
-     * Vertically centered.
-     *  
-     * @public
-     */
-    Middle : "Middle",
+	/**
+	 * 
+	 * Aligned at the bottom.
+	 * 
+	 * @public
+	 */
+	Bottom : "Bottom",
 
-    /**
-     * 
-     * Aligned at the top.
-     *  
-     * @public
-     */
-    Top : "Top"
+	/**
+	 * 
+	 * Vertically centered.
+	 * 
+	 * @public
+	 */
+	Middle : "Middle",
 
-  };
+	/**
+	 * 
+	 * Aligned at the top.
+	 * 
+	 * @public
+	 */
+	Top : "Top"
+
+};
 
 // -----------------------------------------------------------------------------
 // Begin of Library Initialization coding, copied from shared.js
@@ -9966,9 +9845,16 @@ sap.ui.commons.layout.VAlign = {
 // lazy imports for MessageBox
 sap.ui.lazyRequire("sap.ui.commons.MessageBox", "alert confirm show");
 
-//map the Orientation enum to new enums with uppercase
-sap.ui.commons.Orientation.vertical = sap.ui.commons.Orientation.Vertical;
-sap.ui.commons.Orientation.horizontal = sap.ui.commons.Orientation.Horizontal;
+sap.ui.lazyRequire("sap.ui.commons.MenuItemBase", "new extend getMetadata");
+
+sap.ui.commons.Orientation = {
+	// Map the Orientation enum to new enums in core
+	"Vertical"   : sap.ui.core.Orientation.Vertical,
+	"Horizontal" : sap.ui.core.Orientation.Horizontal,
+	// Map the Orientation enum to new enums with uppercase
+	"vertical"   : sap.ui.core.Orientation.Vertical,
+	"horizontal" : sap.ui.core.Orientation.Horizontal
+};
 
 //map the old commons type to new ones after move
 sap.ui.commons.form.GridElementCells = sap.ui.layout.form.GridElementCells;
@@ -9999,6 +9885,41 @@ if (!sap.ui.layout.form.FormHelper || !sap.ui.layout.form.FormHelper.bFinal) {
 		bFinal: false /* to allow mobile to overwrite  */
 	};
 }
+
+//implement FileUploader helper factory with commons controls
+jQuery.sap.setObject("sap.ui.unified.FileUploaderHelper", {
+	createTextField: function(sId){
+		var oTextField = new sap.ui.commons.TextField(sId);
+		return oTextField;
+	},
+	setTextFieldContent: function(oTextField, sWidth){
+		oTextField.setWidth(sWidth);
+	},
+	createButton: function(){
+		var oButton = new sap.ui.commons.Button();
+		return oButton;
+	},
+	bFinal: false /* to allow mobile to overwrite  */
+});
+
+//implement table helper factory with m controls
+//possible is set before layout lib is loaded.
+jQuery.sap.setObject("sap.ui.table.TableHelper", {
+	createLabel: function(mConfig){
+		return new sap.ui.commons.Label(mConfig);
+	},
+	createTextView: function(mConfig){
+		return new sap.ui.commons.TextView(mConfig);
+	},
+	createTextField: function(mConfig){
+		return new sap.ui.commons.TextField(mConfig);
+	},
+	createImage: function(mConfig){
+		return new sap.ui.commons.Image(mConfig);
+	},
+	bFinal: false /* to allow mobile to overwrite  */
+});
+
 }; // end of sap/ui/commons/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Accordion') ) {
 /*!
@@ -10062,7 +9983,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -11367,7 +11288,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -11998,7 +11919,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -12218,7 +12139,7 @@ sap.ui.commons.ApplicationHeader.M_EVENTS = {'logoff':'logoff'};
 
 /**
  * Fire event logoff to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.ApplicationHeader} <code>this</code> to allow method chaining
  * @protected
@@ -12381,7 +12302,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -12616,7 +12537,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -13147,7 +13068,7 @@ sap.ui.commons.Button.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.Button} <code>this</code> to allow method chaining
  * @protected
@@ -13406,8 +13327,7 @@ jQuery.sap.require('sap.ui.core.TooltipBase'); // unlisted dependency retained
  * <li>{@link sap.ui.commons.CalloutBase#event:open open} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.ui.commons.CalloutBase#event:close close} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
  * <li>{@link sap.ui.commons.CalloutBase#event:beforeOpen beforeOpen} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.CalloutBase#event:opened opened} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.CalloutBase#event:closed closed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.ui.commons.CalloutBase#event:opened opened} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
  *
@@ -13423,7 +13343,7 @@ jQuery.sap.require('sap.ui.core.TooltipBase'); // unlisted dependency retained
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -13443,8 +13363,7 @@ sap.ui.core.TooltipBase.extend("sap.ui.commons.CalloutBase", { metadata : {
 		"open" : {}, 
 		"close" : {}, 
 		"beforeOpen" : {allowPreventDefault : true}, 
-		"opened" : {}, 
-		"closed" : {}
+		"opened" : {}
 	}
 }});
 
@@ -13465,7 +13384,7 @@ sap.ui.core.TooltipBase.extend("sap.ui.commons.CalloutBase", { metadata : {
  * @function
  */
 
-sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen':'beforeOpen','opened':'opened','closed':'closed'};
+sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen':'beforeOpen','opened':'opened'};
 
 
 /**
@@ -13581,7 +13500,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
 
 /**
  * Fire event close to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @protected
@@ -13642,7 +13561,7 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
  * Fire event beforeOpen to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'parent' of type <code>sap.ui.core.Control</code> Parent control that has this Callout as a tooltip</li>
@@ -13708,74 +13627,12 @@ sap.ui.commons.CalloutBase.M_EVENTS = {'open':'open','close':'close','beforeOpen
 
 /**
  * Fire event opened to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
  * @protected
  * @since 1.11.0
  * @name sap.ui.commons.CalloutBase#fireOpened
- * @function
- */
-
-
-/**
- * Is fired when the Callout has been closed 
- *
- * @name sap.ui.commons.CalloutBase#closed
- * @event
- * @since 1.11.0
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'closed' event of this <code>sap.ui.commons.CalloutBase</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself. 
- *  
- * Is fired when the Callout has been closed 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.CalloutBase</code>.<br/> itself.
- *
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @public
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#attachClosed
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'closed' event of this <code>sap.ui.commons.CalloutBase</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @public
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#detachClosed
- * @function
- */
-
-/**
- * Fire event closed to attached listeners.
-
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.CalloutBase} <code>this</code> to allow method chaining
- * @protected
- * @since 1.11.0
- * @name sap.ui.commons.CalloutBase#fireClosed
  * @function
  */
 
@@ -14152,7 +14009,7 @@ sap.ui.commons.CalloutBase.prototype.closePopup = function() {
 sap.ui.commons.CalloutBase.prototype.handleClosed = function(){
 	if (this.oPopup){
 		this.oPopup.detachEvent("closed", this.handleClosed, this);
-		this.fireEvent(sap.ui.core.Popup.M_EVENTS.closed);
+		this.fireClosed();
 	}
 };
 
@@ -14209,7 +14066,7 @@ sap.ui.commons.CalloutBase.prototype.handleOpened = function() {
 		this.bFocused = true; // Remember to set focus to parent on close
 	}
 	
-	this.fireEvent(sap.ui.core.Popup.M_EVENTS.opened);
+	this.fireOpened();
 	
 	// - listen to mouse over events outside
 	//   do always because the Callout can lose focus to child popup controls
@@ -14435,7 +14292,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -15572,7 +15429,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -15960,9 +15817,9 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {boolean} oControlEvent.getParameters.checked 
-					Checks whether the box is flagged or not flagged.
-					
+ * @param {boolean} oControlEvent.getParameters.checked
+ *         Checks whether the box is flagged or not flagged.
+ * 
  * @public
  */
  
@@ -16169,7 +16026,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -17856,6 +17713,36 @@ sap.ui.commons.ComboBoxRenderer.renderARIAInfo = function(rm, oCmb) {
 	rm.writeAccessibilityState(oCmb, mProps);
 
 };
+
+sap.ui.commons.ComboBoxRenderer.setEditable = function(oCmb, bEditable) {
+
+	if (oCmb.mobile) {
+		var $Select = oCmb.$("select");
+		if (bEditable && oCmb.getEnabled()) {
+			$Select.removeAttr("disabled");
+		} else {
+			$Select.attr("disabled", "disabled");
+		}
+	}
+
+	sap.ui.commons.TextFieldRenderer.setEditable.apply(this, arguments);
+
+};
+
+sap.ui.commons.ComboBoxRenderer.setEnabled = function(oCmb, bEnabled) {
+
+	if (oCmb.mobile) {
+		var $Select = oCmb.$("select");
+		if (bEnabled && oCmb.getEditable()) {
+			$Select.removeAttr("disabled");
+		} else {
+			$Select.attr("disabled", "disabled");
+		}
+	}
+
+	sap.ui.commons.TextFieldRenderer.setEnabled.apply(this, arguments);
+
+};
 }; // end of sap/ui/commons/ComboBoxRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Dialog') ) {
 /*!
@@ -17936,7 +17823,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.core.PopupInterface
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -19597,7 +19484,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploader') ) {
 // Provides control sap.ui.commons.FileUploader.
 jQuery.sap.declare("sap.ui.commons.FileUploader");
 
-jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
+jQuery.sap.require('sap.ui.unified.FileUploader'); // unlisted dependency retained
 
 
 
@@ -19616,88 +19503,46 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * The supported settings are:
  * <ul>
  * <li>Properties
- * <ul>
- * <li>{@link #getValue value} : string (default: '')</li>
- * <li>{@link #getEnabled enabled} : boolean (default: true)</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li>
- * <li>{@link #getUploadUrl uploadUrl} : sap.ui.core.URI (default: '')</li>
- * <li>{@link #getName name} : string</li>
- * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '')</li>
- * <li>{@link #getUploadOnChange uploadOnChange} : boolean (default: false)</li>
- * <li>{@link #getAdditionalData additionalData} : string</li>
- * <li>{@link #getSameFilenameAllowed sameFilenameAllowed} : boolean (default: false)</li>
- * <li>{@link #getButtonText buttonText} : string</li>
- * <li>{@link #getFileType fileType} : string[]</li>
- * <li>{@link #getMultiple multiple} : boolean (default: false)</li>
- * <li>{@link #getMaximumFileSize maximumFileSize} : float</li>
- * <li>{@link #getMimeType mimeType} : string[]</li></ul>
+ * <ul></ul>
  * </li>
  * <li>Aggregations
- * <ul>
- * <li>{@link #getParameters parameters} : sap.ui.commons.FileUploaderParameter[]</li></ul>
+ * <ul></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
  * </li>
  * <li>Events
- * <ul>
- * <li>{@link sap.ui.commons.FileUploader#event:change change} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.FileUploader#event:uploadComplete uploadComplete} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.FileUploader#event:typeMissmatch typeMissmatch} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
- * <li>{@link sap.ui.commons.FileUploader#event:fileSizeExceed fileSizeExceed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <ul></ul>
  * </li>
  * </ul> 
-
+ *
+ * 
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.FileUploader#constructor sap.ui.unified.FileUploader}
+ * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
  * The framework generates an input field and a button with text "Browse ...". The API supports features such as on change uploads (the upload starts immediately after a file has been selected), file uploads with explicit calls, adjustable control sizes, text display after uploads, or tooltips containing complete file paths.
- * @extends sap.ui.core.Control
+ * @extends sap.ui.unified.FileUploader
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.FileUploader of the library sap.ui.unified instead.
  * @name sap.ui.commons.FileUploader
  */
-sap.ui.core.Control.extend("sap.ui.commons.FileUploader", { metadata : {
+sap.ui.unified.FileUploader.extend("sap.ui.commons.FileUploader", { metadata : {
 
 	// ---- object ----
-	publicMethods : [
-		// methods
-		"upload"
-	],
+	deprecated : true,
 
 	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"value" : {type : "string", group : "Data", defaultValue : ''},
-		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"visible" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"uploadUrl" : {type : "sap.ui.core.URI", group : "Data", defaultValue : ''},
-		"name" : {type : "string", group : "Data", defaultValue : null},
-		"width" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : ''},
-		"uploadOnChange" : {type : "boolean", group : "Behavior", defaultValue : false},
-		"additionalData" : {type : "string", group : "Data", defaultValue : null},
-		"sameFilenameAllowed" : {type : "boolean", group : "Behavior", defaultValue : false},
-		"buttonText" : {type : "string", group : "Misc", defaultValue : null},
-		"fileType" : {type : "string[]", group : "Data", defaultValue : null},
-		"multiple" : {type : "boolean", group : "Behavior", defaultValue : false},
-		"maximumFileSize" : {type : "float", group : "Data", defaultValue : null},
-		"mimeType" : {type : "string[]", group : "Data", defaultValue : null}
-	},
-	aggregations : {
-    	"parameters" : {type : "sap.ui.commons.FileUploaderParameter", multiple : true, singularName : "parameter"}
-	},
-	events : {
-		"change" : {}, 
-		"uploadComplete" : {}, 
-		"typeMissmatch" : {}, 
-		"fileSizeExceed" : {}
-	}
+	library : "sap.ui.commons"
 }});
 
 
@@ -19717,1280 +19562,26 @@ sap.ui.core.Control.extend("sap.ui.commons.FileUploader", { metadata : {
  * @function
  */
 
-sap.ui.commons.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uploadComplete','typeMissmatch':'typeMissmatch','fileSizeExceed':'fileSizeExceed'};
-
-
-/**
- * Getter for property <code>value</code>.
- * Value of the path for file upload.
- *
- * Default value is <code>''</code>
- *
- * @return {string} the value of property <code>value</code>
- * @public
- * @name sap.ui.commons.FileUploader#getValue
- * @function
- */
-
-/**
- * Setter for property <code>value</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {string} sValue  new value for property <code>value</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setValue
- * @function
- */
-
-
-/**
- * Getter for property <code>enabled</code>.
- * Disabled controls have different colors, depending on customer settings.
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>enabled</code>
- * @public
- * @name sap.ui.commons.FileUploader#getEnabled
- * @function
- */
-
-/**
- * Setter for property <code>enabled</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bEnabled  new value for property <code>enabled</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setEnabled
- * @function
- */
-
-
-/**
- * Getter for property <code>visible</code>.
- * Invisible controls are not rendered.
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>visible</code>
- * @public
- * @name sap.ui.commons.FileUploader#getVisible
- * @function
- */
-
-/**
- * Setter for property <code>visible</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bVisible  new value for property <code>visible</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setVisible
- * @function
- */
-
-
-/**
- * Getter for property <code>uploadUrl</code>.
- * Used when URL address is on a remote server.
- *
- * Default value is <code>''</code>
- *
- * @return {sap.ui.core.URI} the value of property <code>uploadUrl</code>
- * @public
- * @name sap.ui.commons.FileUploader#getUploadUrl
- * @function
- */
-
-/**
- * Setter for property <code>uploadUrl</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {sap.ui.core.URI} sUploadUrl  new value for property <code>uploadUrl</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setUploadUrl
- * @function
- */
-
-
-/**
- * Getter for property <code>name</code>.
- * Unique control name for identification on the server side after sending data to the server.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>name</code>
- * @public
- * @name sap.ui.commons.FileUploader#getName
- * @function
- */
-
-/**
- * Setter for property <code>name</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sName  new value for property <code>name</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setName
- * @function
- */
-
-
-/**
- * Getter for property <code>width</code>.
- * Specifies the displayed control width.
- *
- * Default value is <code>''</code>
- *
- * @return {sap.ui.core.CSSSize} the value of property <code>width</code>
- * @public
- * @name sap.ui.commons.FileUploader#getWidth
- * @function
- */
-
-/**
- * Setter for property <code>width</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {sap.ui.core.CSSSize} sWidth  new value for property <code>width</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setWidth
- * @function
- */
-
-
-/**
- * Getter for property <code>uploadOnChange</code>.
- * If set to "true", the upload immediately starts after file selection. With the default setting, the upload needs to be explicitly triggered.
- *
- * Default value is <code>false</code>
- *
- * @return {boolean} the value of property <code>uploadOnChange</code>
- * @public
- * @name sap.ui.commons.FileUploader#getUploadOnChange
- * @function
- */
-
-/**
- * Setter for property <code>uploadOnChange</code>.
- *
- * Default value is <code>false</code> 
- *
- * @param {boolean} bUploadOnChange  new value for property <code>uploadOnChange</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setUploadOnChange
- * @function
- */
-
-
-/**
- * Getter for property <code>additionalData</code>.
- * Additional data that is sent to the back end service. Data will be transmitted as value of a hidden input where the name is derived from the name property with suffix -data.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>additionalData</code>
- * @public
- * @name sap.ui.commons.FileUploader#getAdditionalData
- * @function
- */
-
-/**
- * Setter for property <code>additionalData</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sAdditionalData  new value for property <code>additionalData</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setAdditionalData
- * @function
- */
-
-
-/**
- * Getter for property <code>sameFilenameAllowed</code>.
- * If the FileUploader is configured to upload the file directly after the file is selected it is not allowed to upload a file with the same name again. If a user should be allowed to upload a file with the same name again this parameter has to be "true". A typical use case would be if the files have different paths.
- *
- * Default value is <code>false</code>
- *
- * @return {boolean} the value of property <code>sameFilenameAllowed</code>
- * @public
- * @name sap.ui.commons.FileUploader#getSameFilenameAllowed
- * @function
- */
-
-/**
- * Setter for property <code>sameFilenameAllowed</code>.
- *
- * Default value is <code>false</code> 
- *
- * @param {boolean} bSameFilenameAllowed  new value for property <code>sameFilenameAllowed</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setSameFilenameAllowed
- * @function
- */
-
-
-/**
- * Getter for property <code>buttonText</code>.
- * The Button text can be overwritten using this property.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>buttonText</code>
- * @public
- * @name sap.ui.commons.FileUploader#getButtonText
- * @function
- */
-
-/**
- * Setter for property <code>buttonText</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sButtonText  new value for property <code>buttonText</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setButtonText
- * @function
- */
-
-
-/**
- * Getter for property <code>fileType</code>.
- * The chosen files will be checked against an array of file types. This property can be defined as a array of file endings to be checked against. If at least one file does not fit the file type restriction the upload is prevented. Example: fileType: "jpg,png,txt".
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string[]} the value of property <code>fileType</code>
- * @public
- * @name sap.ui.commons.FileUploader#getFileType
- * @function
- */
-
-/**
- * Setter for property <code>fileType</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string[]} aFileType  new value for property <code>fileType</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setFileType
- * @function
- */
-
-
-/**
- * Getter for property <code>multiple</code>.
- * Allows multiple files to be chosen and uploaded from the same folder. This property is not supported by Internet Explorer.
- *
- * Default value is <code>false</code>
- *
- * @return {boolean} the value of property <code>multiple</code>
- * @public
- * @name sap.ui.commons.FileUploader#getMultiple
- * @function
- */
-
-/**
- * Setter for property <code>multiple</code>.
- *
- * Default value is <code>false</code> 
- *
- * @param {boolean} bMultiple  new value for property <code>multiple</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setMultiple
- * @function
- */
-
-
-/**
- * Getter for property <code>maximumFileSize</code>.
- * A file size limit in megabytes which prevents the upload if at least one file exceeds it. This property is not supported by Internet Explorer.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {float} the value of property <code>maximumFileSize</code>
- * @public
- * @name sap.ui.commons.FileUploader#getMaximumFileSize
- * @function
- */
-
-/**
- * Setter for property <code>maximumFileSize</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {float} fMaximumFileSize  new value for property <code>maximumFileSize</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setMaximumFileSize
- * @function
- */
-
-
-/**
- * Getter for property <code>mimeType</code>.
- * The chosen files will be checked against an array of mime types. This property can be defined as a array of mime types to be checked against. If at least one file does not fit the mime type restriction the upload is prevented. This property is not supported by Internet Explorer. Example: fileType: "image,text". It is also possible to be more specific and set "image/png".
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string[]} the value of property <code>mimeType</code>
- * @public
- * @name sap.ui.commons.FileUploader#getMimeType
- * @function
- */
-
-/**
- * Setter for property <code>mimeType</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string[]} aMimeType  new value for property <code>mimeType</code>
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#setMimeType
- * @function
- */
-
-
-/**
- * Getter for aggregation <code>parameters</code>.<br/>
- * The parameters for the FileUploader which are rendered as a hidden inputfield.
- * 
- * @return {sap.ui.commons.FileUploaderParameter[]}
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#getParameters
- * @function
- */
-
-
-/**
- * Inserts a parameter into the aggregation named <code>parameters</code>.
- *
- * @param {sap.ui.commons.FileUploaderParameter}
- *          oParameter the parameter to insert; if empty, nothing is inserted
- * @param {int}
- *             iIndex the <code>0</code>-based index the parameter should be inserted at; for 
- *             a negative value of <code>iIndex</code>, the parameter is inserted at position 0; for a value 
- *             greater than the current size of the aggregation, the parameter is inserted at 
- *             the last position        
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#insertParameter
- * @function
- */
-
-/**
- * Adds some parameter <code>oParameter</code> 
- * to the aggregation named <code>parameters</code>.
- *
- * @param {sap.ui.commons.FileUploaderParameter}
- *            oParameter the parameter to add; if empty, nothing is inserted
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#addParameter
- * @function
- */
-
-/**
- * Removes an parameter from the aggregation named <code>parameters</code>.
- *
- * @param {int | string | sap.ui.commons.FileUploaderParameter} vParameter the parameter to remove or its index or id
- * @return {sap.ui.commons.FileUploaderParameter} the removed parameter or null
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#removeParameter
- * @function
- */
-
-/**
- * Removes all the controls in the aggregation named <code>parameters</code>.<br/>
- * Additionally unregisters them from the hosting UIArea.
- * @return {sap.ui.commons.FileUploaderParameter[]} an array of the removed elements (might be empty)
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#removeAllParameters
- * @function
- */
-
-/**
- * Checks for the provided <code>sap.ui.commons.FileUploaderParameter</code> in the aggregation named <code>parameters</code> 
- * and returns its index if found or -1 otherwise.
- *
- * @param {sap.ui.commons.FileUploaderParameter}
- *            oParameter the parameter whose index is looked for.
- * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#indexOfParameter
- * @function
- */
-	
-
-/**
- * Destroys all the parameters in the aggregation 
- * named <code>parameters</code>.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploader#destroyParameters
- * @function
- */
-
-
-/**
- * Event is fired when the value of the file path has been changed. 
- *
- * @name sap.ui.commons.FileUploader#change
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @param {string} oControlEvent.getParameters.newValue New file path value.
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'change' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
- *  
- * Event is fired when the value of the file path has been changed. 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
- *
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#attachChange
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'change' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#detachChange
- * @function
- */
-
-/**
- * Fire event change to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'newValue' of type <code>string</code> New file path value.</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.FileUploader#fireChange
- * @function
- */
-
-
-/**
- * Event is fired when the upload of the file is completed. However this covers only the client side of the Upload process and does not give any success status from the server. 
- *
- * @name sap.ui.commons.FileUploader#uploadComplete
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @param {string} oControlEvent.getParameters.response Response message which comes from the server. On the server side this response has to be put within the &quot;body&quot; tags of the response document of the iFrame. It can consist of a return code and an optional message. This does not work in cross-domain scenarios.
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'uploadComplete' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
- *  
- * Event is fired when the upload of the file is completed. However this covers only the client side of the Upload process and does not give any success status from the server. 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
- *
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#attachUploadComplete
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'uploadComplete' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#detachUploadComplete
- * @function
- */
-
-/**
- * Fire event uploadComplete to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'response' of type <code>string</code> Response message which comes from the server. On the server side this response has to be put within the &quot;body&quot; tags of the response document of the iFrame. It can consist of a return code and an optional message. This does not work in cross-domain scenarios.</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.FileUploader#fireUploadComplete
- * @function
- */
-
-
-/**
- * Event is fired when the type of a file does not match the mimeType or fileType property. 
- *
- * @name sap.ui.commons.FileUploader#typeMissmatch
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @param {string} oControlEvent.getParameters.fileName The name of a file to be uploaded.
- * @param {string} oControlEvent.getParameters.fileType The file ending of a file to be uploaded.
- * @param {string} oControlEvent.getParameters.mimeType The MIME type of a file to be uploaded.
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'typeMissmatch' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
- *  
- * Event is fired when the type of a file does not match the mimeType or fileType property. 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
- *
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#attachTypeMissmatch
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'typeMissmatch' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#detachTypeMissmatch
- * @function
- */
-
-/**
- * Fire event typeMissmatch to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'fileName' of type <code>string</code> The name of a file to be uploaded.</li>
- * <li>'fileType' of type <code>string</code> The file ending of a file to be uploaded.</li>
- * <li>'mimeType' of type <code>string</code> The MIME type of a file to be uploaded.</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.FileUploader#fireTypeMissmatch
- * @function
- */
-
-
-/**
- * Event is fired when the size of a file is above the maximumFileSize property. 
- *
- * @name sap.ui.commons.FileUploader#fileSizeExceed
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @param {string} oControlEvent.getParameters.fileName The name of a file to be uploaded.
- * @param {string} oControlEvent.getParameters.fileSize The size in MB of a file to be uploaded.
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'fileSizeExceed' event of this <code>sap.ui.commons.FileUploader</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.FileUploader</code>.<br/> itself. 
- *  
- * Event is fired when the size of a file is above the maximumFileSize property. 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.FileUploader</code>.<br/> itself.
- *
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#attachFileSizeExceed
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'fileSizeExceed' event of this <code>sap.ui.commons.FileUploader</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.FileUploader#detachFileSizeExceed
- * @function
- */
-
-/**
- * Fire event fileSizeExceed to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'fileName' of type <code>string</code> The name of a file to be uploaded.</li>
- * <li>'fileSize' of type <code>string</code> The size in MB of a file to be uploaded.</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.FileUploader} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.FileUploader#fireFileSizeExceed
- * @function
- */
-
-
-/**
- * Starts the upload (as defined by uploadUrl)
- *
- * @name sap.ui.commons.FileUploader.prototype.upload
- * @function
-
- * @type void
- * @public
- */
-
 
 // Start of sap\ui\commons\FileUploader.js
-/**
- * Initializes the control.
- * It is called from the constructor.
- * @private
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ * 
+ * (c) Copyright 2009-2014 SAP AG. All rights reserved
  */
-sap.ui.commons.FileUploader.prototype.init = function(){
 
-	// works fine with applySettings() after init() - most things are done in onAfterRendering
-	// IE8 should render a native file uploader and the SAPUI5 controls should be exactly behind
-	if (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8) {
-		this.oFilePath = new sap.ui.commons.TextField(this.getId() + "-fu_input",
-													{width: "225px"});
-	} else {
-		this.oFilePath = new sap.ui.commons.TextField(this.getId() + "-fu_input",
-													{width: this.getWidth()});
-	}
-	this.oFilePath.setParent(this);
-	if (this.getButtonText()) {
-		var sButtonText = this.getButtonText();
-	} else {
-		var sButtonText = this.getBrowseText();
-	}
-	if (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8) {
-		this.oBrowse = new sap.ui.commons.Button({enabled : this.getEnabled(),
-													text: sButtonText,
-													width: "0px",
-													height: "0px"});
+jQuery.sap.declare("sap.ui.commons.FileUploader");
 
-	} else {
-		this.oBrowse = new sap.ui.commons.Button({enabled : this.getEnabled(),
-													text: sButtonText});
-	}
-	this.oBrowse.setParent(this);
-	this.oFileUpload = null;
+(function(){
 
-//	var that = this;
-//	var oDelegate = {
-//		onfocusin : function(){
-//			var jFO = jQuery.sap.byId(that.getId() + "-fu");
-//			if(jFO.length > 0){
-//				jFO[0].focus();
-//			}
-//		}
-//	};
-//	this.oFilePath.addDelegate(oDelegate);
-//	this.oBrowse.addDelegate(oDelegate);
-
-};
-
-sap.ui.commons.FileUploader.prototype.getIdForLabel = function () {
-	return this.oBrowse.getId();
-};
-
-/**
- * Terminates the control when it has been destroyed.
- * @private
- */
-sap.ui.commons.FileUploader.prototype.exit = function(){
-
-	// destroy the nested controls
-	this.oFilePath.destroy();
-	this.oBrowse.destroy();
-
-	// remove the IFRAME
-	if (this.oIFrameRef) {
-		jQuery(this.oIFrameRef).unbind();
-		sap.ui.getCore().getStaticAreaRef().removeChild(this.oIFrameRef);
-		this.oIFrameRef = null;
+	try{
+		sap.ui.getCore().loadLibrary("sap.ui.unified");
+	}catch(e){
+		alert("The control 'sap.ui.commons.FileUploader' needs library 'sap.ui.unified'.");
+		throw(e);
 	}
 
-};
-
-/**
- * Clean up event listeners before rendering
- * @private
- */
-sap.ui.commons.FileUploader.prototype.onBeforeRendering = function() {
-
-	this._runOnce = false;
-
-	if (this.getButtonText()) {
-		this.oBrowse.setText(this.getButtonText());
-	} else {
-		this.oBrowse.setText(this.getBrowseText());
-	}
-
-	// store the file uploader outside in the static area
-	var oStaticArea = sap.ui.getCore().getStaticAreaRef();
-	jQuery(this.oFileUpload).appendTo(oStaticArea);
-
-	// unbind the custom event handlers in case of IE8
-	jQuery(this.oFileUpload).unbind();
-
-};
-
-/**
- * Prepare the upload processing, establish the change handler for the
- * pure html input object.
- * @private
- */
-sap.ui.commons.FileUploader.prototype.onAfterRendering = function() {
-
-	// prepare the file upload control and the upload iframe
-	this.prepareFileUploadAndIFrame();
-
-	// event listener registration for change event in IE8 because the change
-	// event is not bubbling for IE8 => so we do this for all browsers!
-	jQuery(this.oFileUpload).change(jQuery.proxy(this.handlechange, this));
-
-	// IE8 should render a native file uploader and don't need the witdh calculation
-	if ((!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 8)) {
-		this.oBrowse.getDomRef().style.padding = "0px";
-		this.oBrowse.getDomRef().style.visibility = "hidden";
-		this.oFilePath.getDomRef().style.height = "20px";
-		this.oFilePath.getDomRef().style.visibility = "hidden";
-		jQuery(this.oFilePath.getDomRef()).removeClass('sapUiTfBrd');
-	} else {
-		this.oFilePath.$().attr("tabindex", "-1");
-		// in case of IE9 we prevent the browse button from being focused because the
-		// native file uploader requires the focus for catching the keyboard events
-		if ((!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 9)) {
-			this.oBrowse.$().attr("tabindex", "-1");
-		}
-		// calculation of the width of the overlay for the original file upload
-		// !!!sap.ui.Device.browser.internet_explorer check: only for non IE browsers since there we need
-		// the button in front of the fileuploader
-		if (this.getWidth()) {
-
-			if (!this._runOnce) {
-				this._runOnce = true;
-				jQuery.sap.delayedCall(50, this, function(){
-					this.onAfterRendering();
-				});
-			} else {
-				// Recalculate the textfield width...
-				this._resizeDomElements();
-			}
-		}
-	}
-};
-
-/**
- * Returns the DOM element that should be focused when focus is set onto the control.
- */
-sap.ui.commons.FileUploader.prototype.getFocusDomRef = function() {
-	return this.$("fu").get(0);
-};
-
-sap.ui.commons.FileUploader.prototype._resizeDomElements = function() {
-	var sId = this.getId();
-	this._oBrowseDomRef = this.oBrowse.getDomRef();
-	var $b = jQuery(this._oBrowseDomRef);
-	var _buttonWidth = $b.parent().outerWidth(true);
-	this._oFilePathDomRef = this.oFilePath.getDomRef();
-	var oDomRef = this._oFilePathDomRef;
-	var sWidth = this.getWidth();
-
-	if (sWidth.substr(-1) == "%") {
-		// Special case - if the width is not in px, we only change the top element
-
-		// Resize all elements from the input field up to the control element itself.
-		while (oDomRef.id != sId) {
-			oDomRef.style.width = "100%";
-			oDomRef = oDomRef.parentNode;
-		}
-
-		oDomRef.style.width = sWidth;
-	} else {
-		oDomRef.style.width = sWidth;
-
-		// Now make sure the field including the button has the correct size
-		var $fp = jQuery(this._oFilePathDomRef);
-		var _newWidth = $fp.outerWidth() - _buttonWidth;
-		if (_newWidth < 0) {
-			this.oFilePath.getDomRef().style.width = "0px";
-			if (!!!sap.ui.Device.browser.internet_explorer) {
-				this.oFileUpload.style.width = $b.outerWidth(true);
-			}
-		} else {
-			this.oFilePath.getDomRef().style.width = _newWidth + "px";
-		}
-	}
-}
-
-sap.ui.commons.FileUploader.prototype.onresize = function() {
-	this.onAfterRendering();
-}
-
-sap.ui.commons.FileUploader.prototype.onThemeChanged = function() {
-	this.onAfterRendering();
-}
-
-sap.ui.commons.FileUploader.prototype.setEnabled = function(bEnabled){
-	this.setProperty("enabled", bEnabled, true);
-	this.oFilePath.setEnabled(bEnabled);
-	this.oBrowse.setEnabled(bEnabled);
-	if (bEnabled) {
-		this.$("fu").removeAttr('disabled');
-	} else {
-		this.$("fu").attr('disabled', 'disabled');
-	}
-	return this;
-};
-
-
-sap.ui.commons.FileUploader.prototype.setUploadUrl = function(sValue, bFireEvent) {
-	this.setProperty("uploadUrl", sValue, true);
-	var $uploadForm = this.$("fu_form");
-	$uploadForm.attr("action", this.getUploadUrl());
-	return this;
-};
-
-
-sap.ui.commons.FileUploader.prototype.setValue = function(sValue, bFireEvent) {
-	var oldValue = this.getValue();
-	if((oldValue != sValue) || this.getSameFilenameAllowed()) {
-		// only upload when a valid value is set
-		var bUpload = this.getUploadOnChange() && sValue;
-		// when we do not upload we re-render (cause some browsers don't like
-		// to change the value of file uploader INPUT elements)
-		this.setProperty("value", sValue, bUpload);
-		if (this.oFilePath) {
-			this.oFilePath.setValue(sValue);
-			if (!(!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8) && this.oFilePath.getFocusDomRef()) {
-				this.oFilePath.getFocusDomRef().focus();
-			}
-		}
-		if (this.oFileUpload && !sValue) {
-			// some browsers do not allow to clear the value of the fileuploader control
-			// therefore we utilize the form and reset the values inside this form and
-			// apply the additionalData again afterwards
-			this.getDomRef("fu_form").reset();
-			this.$("fu_data").val(this.getAdditionalData());
-		}
-		// only fire event when triggered by user interaction
-		if (bFireEvent) {
-			this.fireChange({id:this.getId(), newValue:sValue});
-		}
-		if (bUpload) {
-			this.upload();
-		}
-	}
-	return this;
-};
-
-sap.ui.commons.FileUploader.prototype.onmouseover = function () {
-	jQuery(this.oBrowse.getDomRef()).addClass('sapUiBtnStdHover');
-};
-
-sap.ui.commons.FileUploader.prototype.onmouseout = function () {
-	jQuery(this.oBrowse.getDomRef()).removeClass('sapUiBtnStdHover');
-};
-
-sap.ui.commons.FileUploader.prototype.onfocusin = function () {
-	jQuery(this.oBrowse.getDomRef()).addClass('sapUiBtnStdHover');
-};
-
-sap.ui.commons.FileUploader.prototype.onfocusout = function () {
-	jQuery(this.oBrowse.getDomRef()).removeClass('sapUiBtnStdHover');
-};
-
-sap.ui.commons.FileUploader.prototype.setAdditionalData = function(sAdditionalData) {
-	// set the additional data in the hidden input
-	this.setProperty("additionalData", sAdditionalData, true);
-	var oAdditionalData = this.getDomRef("fu_data");
-	if (oAdditionalData) {
-		var sAdditionalData = this.getAdditionalData() || "";
-		oAdditionalData.value = sAdditionalData;
-	}
-	return this;
-};
-
-
-sap.ui.commons.FileUploader.prototype.upload = function() {
-	var uploadForm = this.getDomRef("fu_form");
-
-	try {
-		if (uploadForm) {
-			this._bUploading = true;
-			uploadForm.submit();
-			jQuery.sap.log.info("File uploading to " + this.getUploadUrl());
-
-		}
-	} catch(oException) {
-		jQuery.sap.log.error("File upload failed:\n" + oException.message);
-	}
-};
-
-sap.ui.commons.FileUploader.prototype.onkeypress = function(oEvent) {
-	this.onkeydown(oEvent);
-};
-
-sap.ui.commons.FileUploader.prototype.onclick = function(oEvent) {
-	if (this.getSameFilenameAllowed()) {
-			this.setValue("", true);
-	}
-};
-
-//
-//Event Handling
-//
-sap.ui.commons.FileUploader.prototype.onkeydown = function(oEvent) {
-	if (!this.getEnabled()) {
-		return;
-	}
-	if (this.getSameFilenameAllowed()) {
-			this.setValue("", true);
-	}
-	var iKeyCode = oEvent.keyCode,
-		eKC = jQuery.sap.KeyCodes;
-	if (iKeyCode == eKC.DELETE || iKeyCode == eKC.BACKSPACE) {
-		if (this.oFileUpload) {
-			this.setValue("", true);
-		}
-	} else if (iKeyCode == eKC.SPACE || iKeyCode == eKC.ENTER) {
-		// this does not work for IE9 and downwards! TODO: check with IE10/11
-		// consider to always put the focus on the hidden file uploader
-		// and let the fileuploader manager the keyboard interaction
-		if (!(!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version <= 9) && this.oFileUpload) {
-			this.oFileUpload.click();
-			oEvent.preventDefault();
-			oEvent.stopPropagation();
-		}
-	} else if (iKeyCode != eKC.TAB &&
-				iKeyCode != eKC.SHIFT &&
-				iKeyCode != eKC.F6) {
-		oEvent.preventDefault();
-		oEvent.stopPropagation();
-	}
-};
-
-sap.ui.commons.FileUploader.prototype.handlechange = function(oEvent) {
-	if (this.oFileUpload && this.getEnabled()) {
-
-		var fMaxSize = this.getMaximumFileSize();
-		var sFileType = this.getFileType();
-		var sMimeType = this.getMimeType();
-		var sFileString = '';
-
-		if (!sap.ui.Device.browser.internet_explorer) {
-			var oFiles = oEvent.target.files;
-
-			for (var i = 0; i < oFiles.length; i++) {
-				var iCount = i + 1;
-				var sName = oFiles[i].name;
-				var sType = oFiles[i].type;
-				if (!sType) {
-					sType = "unknown";
-				}
-				var fSize = ((oFiles[i].size/1024)/1024);
-				if (fMaxSize && (fSize > fMaxSize)) {
-					jQuery.sap.log.info("File: " + sName + " is of size " + fSize + " MB which exceeds the file size limit of " + fMaxSize + " MB.");
-					this.fireFileSizeExceed({
-						fileName:sName,
-						fileSize:fSize
-					});
-					return;
-				}
-				if (sMimeType) {
-					var bWrongMime = true;
-					var aMimeCheck = sMimeType.split(",");
-					for (var j = 0; j < aMimeCheck.length; j++) {
-						if (sType.match(aMimeCheck[j])) {
-							bWrongMime = false;
-						}
-					}
-					if (bWrongMime) {
-						jQuery.sap.log.info("File: " + sName + " is of type " + sType + " .Allowed types are: "  + sMimeType + ".");
-						this.fireTypeMissmatch({
-							fileName:sName,
-							fileType:sType
-						});
-						return;
-					}
-				}
-				if (sFileType) {
-					var bWrongType = true;
-					var aTypeCheck = sFileType.split(",");
-					var iIdx = sName.lastIndexOf(".");
-					var sFileEnding = sName.substring(iIdx + 1);
-					for (var k = 0; k < aTypeCheck.length; k++) {
-						if (sFileEnding == aTypeCheck[k]) {
-							bWrongType = false;
-						}
-					}
-					if (bWrongType) {
-						jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
-						this.fireTypeMissmatch({
-							fileName:sName,
-							fileType:sFileEnding
-						});
-						return;
-					}
-				}
-				sFileString = sFileString + '"' + oFiles[i].name + '" ';
-			}
-		} else if (sFileType) {
-			var bWrongType = true;
-			var aTypeCheck = sFileType.split(",");
-			var sName = this.oFileUpload.value || "";
-			var iIdx = sName.lastIndexOf(".");
-			var sFileEnding = sName.substring(iIdx + 1);
-			for (var k = 0; k < aTypeCheck.length; k++) {
-				if (sFileEnding == aTypeCheck[k]) {
-					bWrongType = false;
-				}
-			}
-			if (bWrongType) {
-				jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
-				this.fireTypeMissmatch({
-					fileName:sName,
-					fileType:sFileEnding
-				});
-				return;
-			}
-		}
-
-		// due to new security mechanism modern browsers simply
-		// append a fakepath in front of the filename instead of
-		// returning the filename only - we strip this path now
-		var sValue = this.oFileUpload.value || "";
-		var iIndex = sValue.lastIndexOf("\\");
-		if (iIndex >= 0) {
-			sValue = sValue.substring(iIndex + 1);
-		}
-		if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
-			sValue = sFileString;
-		}
-
-		//sValue has to be filled to avoid clearing the FilePath by pressing cancel
-		if (sValue || sap.ui.Device.browser.chrome) { // in Chrome the file path has to be cleared as the upload will be avoided
-			this.setValue(sValue, true);
-		}
-	}
-};
-
-//
-//	Private
-//
-/**
- * Helper to retrieve the I18N texts for a button
- * @private
- * TODO what about RenderManager.translate?
- */
-sap.ui.commons.FileUploader.prototype.getBrowseText = function() {
-	var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
-	var sText = undefined;
-	if (rb) {
-		sText = rb.getText("FILEUPLOAD_BROWSE");
-	}
-	return sText ? sText : "Browse...";
-};
-
-/**
- * Setter for property <code>value</code>.<br/>
- * Default value is: <code>''</code><br/><br/>
- * @param sValue {string}
- * @private
- * @deprecated the value now is the short value (filename only)!
- */
-sap.ui.commons.FileUploader.prototype.getShortenValue = function() {
-	return this.getValue();
-};
-
-/**
- * Prepares the hidden IFrame for uploading the file (in static area).
- * @private
- */
-sap.ui.commons.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
-
-	if (!this.oFileUpload) {
-
-		// create the file uploader markup
-		var aFileUpload = [];
-		aFileUpload.push('<input ');
-		aFileUpload.push('type="file" ');
-		if (this.getName()) {
-			if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
-				aFileUpload.push('name="' + this.getName() + '[]" ');
-			} else {
-				aFileUpload.push('name="' + this.getName() + '" ');
-			}
-		} else {
-			if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
-				aFileUpload.push('name="' + this.getId() + '[]" ');
-			} else {
-				aFileUpload.push('name="' + this.getId() + '" ');
-			}
-		}
-		aFileUpload.push('id="' + this.getId() + '-fu" ');
-		if (!(!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8)) {
-			// for IE9 the file uploader itself gets the focus to make sure that the
-			// keyboard interaction works and there is no security issue - unfortunately
-			// this has the negative side effect that 2 tabs are required.
-			if (!(!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 9)) {
-				aFileUpload.push('tabindex="-1" ');
-			}
-			aFileUpload.push('size="1" ');
-		}
-		if (this.getTooltip_AsString() ) {
-			aFileUpload.push('title="' + jQuery.sap.escapeHTML(this.getTooltip_AsString()) + '" ');
-		} else if (this.getTooltip() ) {
-			// object tooltip, do nothing - tooltip will be displayed
-		} else if (this.getValue() != "") {
-			// only if there is no tooltip, then set value as fallback
-			aFileUpload.push('title="' + jQuery.sap.escapeHTML(this.getValue()) + '" ');
-		}
-		if (!this.getEnabled()) {
-			aFileUpload.push('disabled="disabled" ');
-		}
-		if (this.getMultiple() && !sap.ui.Device.browser.internet_explorer) {
-			aFileUpload.push('multiple ');
-		}
-		aFileUpload.push('>');
-
-		// add it into the control markup
-		this.oFileUpload = jQuery(aFileUpload.join("")).prependTo(this.$().find(".sapUiFupInputMask")).get(0);
-
-	} else {
-
-		// move the file uploader from the static area to the control markup
-		jQuery(this.oFileUpload).prependTo(this.$().find(".sapUiFupInputMask"));
-
-	}
-
-	if (!this.oIFrameRef) {
-
-		// create the upload iframe
-		var uploadForm = this.getDomRef("fu_form");
-		var oIFrameRef = document.createElement("iframe");
-		oIFrameRef.style.display = "none";
-		oIFrameRef.src = "javascript:''";
-		oIFrameRef.id = this.sId + "-frame";
-		sap.ui.getCore().getStaticAreaRef().appendChild(oIFrameRef);
-		oIFrameRef.contentWindow.name = this.sId + "-frame";
-
-		// sink the load event of the upload iframe
-		var that = this;
-		this._bUploading = false; // flag for uploading (because of IE8 to make sure that complete is only triggered after upload)
-		jQuery(oIFrameRef).load(function(oEvent) {
-			if (that._bUploading) {
-				jQuery.sap.log.info("File uploaded to " + that.getUploadUrl());
-				var sResponse;
-				try {
-					sResponse = that.oIFrameRef.contentDocument.body.innerHTML;
-				} catch (ex) {
-					// in case of cross-domain submit we get a permission denied exception
-					// when we try to access the body of the IFrame document
-				}
-				that.fireUploadComplete({"response": sResponse});
-				that._bUploading = false;
-			}
-		});
-
-		// keep the reference
-		this.oIFrameRef = oIFrameRef;
-
-	}
-};
+})();
 }; // end of sap/ui/commons/FileUploader.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploaderParameter') ) {
 /*!
@@ -21007,7 +19598,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.FileUploaderParameter') ) {
 // Provides control sap.ui.commons.FileUploaderParameter.
 jQuery.sap.declare("sap.ui.commons.FileUploaderParameter");
 
-jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
+jQuery.sap.require('sap.ui.unified.FileUploaderParameter'); // unlisted dependency retained
 
 
 
@@ -21026,9 +19617,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * The supported settings are:
  * <ul>
  * <li>Properties
- * <ul>
- * <li>{@link #getName name} : string</li>
- * <li>{@link #getValue value} : string</li></ul>
+ * <ul></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -21042,7 +19631,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * </ul> 
  *
  * 
- * In addition, all settings applicable to the base type {@link sap.ui.core.Element#constructor sap.ui.core.Element}
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.FileUploaderParameter#constructor sap.ui.unified.FileUploaderParameter}
  * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
@@ -21050,25 +19639,24 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  *
  * @class
  * Represents a parameter for the FileUploader which is rendered as a hidden inputfield.
- * @extends sap.ui.core.Element
+ * @extends sap.ui.unified.FileUploaderParameter
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the element sap.ui.unified.FileUploaderParameter of the library sap.ui.unified instead.
  * @name sap.ui.commons.FileUploaderParameter
  */
-sap.ui.core.Element.extend("sap.ui.commons.FileUploaderParameter", { metadata : {
+sap.ui.unified.FileUploaderParameter.extend("sap.ui.commons.FileUploaderParameter", { metadata : {
 
 	// ---- object ----
+	deprecated : true,
 
 	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"name" : {type : "string", group : "Data", defaultValue : null},
-		"value" : {type : "string", group : "Data", defaultValue : null}
-	}
+	library : "sap.ui.commons"
 }});
 
 
@@ -21089,62 +19677,25 @@ sap.ui.core.Element.extend("sap.ui.commons.FileUploaderParameter", { metadata : 
  */
 
 
-/**
- * Getter for property <code>name</code>.
- * The name of the hidden inputfield.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>name</code>
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#getName
- * @function
- */
-
-/**
- * Setter for property <code>name</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sName  new value for property <code>name</code>
- * @return {sap.ui.commons.FileUploaderParameter} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#setName
- * @function
- */
-
-
-/**
- * Getter for property <code>value</code>.
- * The value of the hidden inputfield.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>value</code>
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#getValue
- * @function
- */
-
-/**
- * Setter for property <code>value</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sValue  new value for property <code>value</code>
- * @return {sap.ui.commons.FileUploaderParameter} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#setValue
- * @function
- */
-
-
 // Start of sap\ui\commons\FileUploaderParameter.js
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ * 
+ * (c) Copyright 2009-2014 SAP AG. All rights reserved
+ */
 
+jQuery.sap.declare("sap.ui.commons.FileUploaderParameter");
+
+(function(){
+
+	try{
+		sap.ui.getCore().loadLibrary("sap.ui.unified");
+	}catch(e){
+		alert("The element 'sap.ui.commons.FileUploaderParameter' needs library 'sap.ui.unified'.");
+		throw(e);
+	}
+
+})();
 }; // end of sap/ui/commons/FileUploaderParameter.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.FormattedTextView') ) {
 /*!
@@ -21207,7 +19758,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -21556,8 +20107,7 @@ jQuery.sap.require('jquery.sap.encoder'); // unlisted dependency retained
 	 * @private
 	 * @param {string}
 	 *            inputHtml The HTML to sanitize.
-	 * @param {function(string,
-	 *            Array.<?string>)} tagPolicy A function that decides which
+	 * @param {function(string,string[])} tagPolicy A function that decides which
 	 *            tags to accept and sanitizes their attributes (see
 	 *            makeHtmlSanitizer above for details).
 	 * @return {string} The sanitized HTML.
@@ -21671,7 +20221,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -21878,7 +20428,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.commons.FormattedTextViewControl
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -22155,7 +20705,7 @@ sap.ui.commons.Image.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.Image} <code>this</code> to allow method chaining
  * @protected
@@ -22241,7 +20791,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -22465,7 +21015,7 @@ sap.ui.commons.ImageMap.M_EVENTS = {'press':'press'};
  * @function
  * @param {string[]} 
  *         aArea
- *         
+ * 
 
  * @type void
  * @public
@@ -22647,7 +21197,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.core.Label
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -23213,7 +21763,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem,sap.ui.commons.FormattedTextViewControl
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -23722,7 +22272,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -25635,7 +24185,7 @@ sap.ui.commons.ListBox.prototype._handleItemChanged = function(oEvent) {
 };
 
 }; // end of sap/ui/commons/ListBox.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItemBase') ) {
+if ( !jQuery.sap.isDeclared('sap.ui.commons.Menu') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -25647,15 +24197,111 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItemBase') ) {
  * source files only (*.control, *.js) or they will be lost after the next generation.
  * ---------------------------------------------------------------------------------- */
 
-// Provides control sap.ui.commons.MenuItemBase.
-jQuery.sap.declare("sap.ui.commons.MenuItemBase");
+// Provides control sap.ui.commons.Menu.
+jQuery.sap.declare("sap.ui.commons.Menu");
 
-jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
+jQuery.sap.require('sap.ui.unified.Menu'); // unlisted dependency retained
 
 
 
 /**
- * Constructor for a new MenuItemBase.
+ * Constructor for a new Menu.
+ * 
+ * Accepts an object literal <code>mSettings</code> that defines initial 
+ * property values, aggregated and associated objects as well as event handlers. 
+ * 
+ * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+ * then the framework assumes property, aggregation, association, event in that order. 
+ * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+ * or "event:" can be added to the name of the setting (such a prefixed name must be
+ * enclosed in single or double quotes).
+ *
+ * The supported settings are:
+ * <ul>
+ * <li>Properties
+ * <ul></ul>
+ * </li>
+ * <li>Aggregations
+ * <ul></ul>
+ * </li>
+ * <li>Associations
+ * <ul></ul>
+ * </li>
+ * <li>Events
+ * <ul></ul>
+ * </li>
+ * </ul> 
+ *
+ * 
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.Menu#constructor sap.ui.unified.Menu}
+ * can be used as well.
+ *
+ * @param {string} [sId] id for the new control, generated automatically if no id is given 
+ * @param {object} [mSettings] initial settings for the new control
+ *
+ * @class
+ * A container for menu items. When the space in the browser is not large enough to display all defined items, a scroll bar is provided.
+ * @extends sap.ui.unified.Menu
+ *
+ * @author SAP AG 
+ * @version 1.22.4
+ *
+ * @constructor   
+ * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.Menu of the library sap.ui.unified instead.
+ * @name sap.ui.commons.Menu
+ */
+sap.ui.unified.Menu.extend("sap.ui.commons.Menu", { metadata : {
+
+	// ---- object ----
+	deprecated : true,
+
+	// ---- control specific ----
+	library : "sap.ui.commons"
+}});
+
+
+/**
+ * Creates a new subclass of class sap.ui.commons.Menu with name <code>sClassName</code> 
+ * and enriches it with the information contained in <code>oClassInfo</code>.
+ * 
+ * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+ *   
+ * @param {string} sClassName name of the class to be created
+ * @param {object} [oClassInfo] object literal with informations about the class  
+ * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+ * @return {function} the created class / constructor function
+ * @public
+ * @static
+ * @name sap.ui.commons.Menu.extend
+ * @function
+ */
+
+
+// Start of sap\ui\commons\Menu.js
+ /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
+}; // end of sap/ui/commons/Menu.js
+if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuButton') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.control, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides control sap.ui.commons.MenuButton.
+jQuery.sap.declare("sap.ui.commons.MenuButton");
+
+
+
+
+/**
+ * Constructor for a new MenuButton.
  * 
  * Accepts an object literal <code>mSettings</code> that defines initial 
  * property values, aggregated and associated objects as well as event handlers. 
@@ -25670,64 +24316,64 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * <ul>
  * <li>Properties
  * <ul>
- * <li>{@link #getEnabled enabled} : boolean (default: true)</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li>
- * <li>{@link #getStartsSection startsSection} : boolean (default: false)</li></ul>
+ * <li>{@link #getDockButton dockButton} : string</li>
+ * <li>{@link #getDockMenu dockMenu} : string</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getSubmenu submenu} <strong>(default aggregation)</strong> : sap.ui.commons.Menu</li></ul>
+ * <li>{@link #getMenu menu} <strong>(default aggregation)</strong> : sap.ui.unified.Menu</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
  * </li>
  * <li>Events
  * <ul>
- * <li>{@link sap.ui.commons.MenuItemBase#event:select select} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.ui.commons.MenuButton#event:itemSelected itemSelected} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
  *
  * 
- * In addition, all settings applicable to the base type {@link sap.ui.core.Element#constructor sap.ui.core.Element}
+ * In addition, all settings applicable to the base type {@link sap.ui.commons.Button#constructor sap.ui.commons.Button}
  * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * Provides the standard properties for menu items.
- * @extends sap.ui.core.Element
+ * Common button control that opens a menu when clicked by the user. The control provides an API for configuring the docking position
+ * of the menu.
+ * 
+ * @extends sap.ui.commons.Button
  *
- * @author SAP AG 
- * @version 1.20.10
+ * @author  
+ * @version 1.22.4
  *
  * @constructor   
  * @public
- * @name sap.ui.commons.MenuItemBase
+ * @name sap.ui.commons.MenuButton
  */
-sap.ui.core.Element.extend("sap.ui.commons.MenuItemBase", { metadata : {
+sap.ui.commons.Button.extend("sap.ui.commons.MenuButton", { metadata : {
 
 	// ---- object ----
 
 	// ---- control specific ----
 	library : "sap.ui.commons",
 	properties : {
-		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"visible" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"startsSection" : {type : "boolean", group : "Behavior", defaultValue : false}
+		"dockButton" : {type : "string", group : "Misc", defaultValue : null},
+		"dockMenu" : {type : "string", group : "Misc", defaultValue : null}
 	},
-	defaultAggregation : "submenu",
+	defaultAggregation : "menu",
 	aggregations : {
-    	"submenu" : {type : "sap.ui.commons.Menu", multiple : false}
+    	"menu" : {type : "sap.ui.unified.Menu", multiple : false}
 	},
 	events : {
-		"select" : {}
+		"itemSelected" : {}
 	}
 }});
 
 
 /**
- * Creates a new subclass of class sap.ui.commons.MenuItemBase with name <code>sClassName</code> 
+ * Creates a new subclass of class sap.ui.commons.MenuButton with name <code>sClassName</code> 
  * and enriches it with the information contained in <code>oClassInfo</code>.
  * 
  * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
@@ -25738,165 +24384,131 @@ sap.ui.core.Element.extend("sap.ui.commons.MenuItemBase", { metadata : {
  * @return {function} the created class / constructor function
  * @public
  * @static
- * @name sap.ui.commons.MenuItemBase.extend
+ * @name sap.ui.commons.MenuButton.extend
  * @function
  */
 
-sap.ui.commons.MenuItemBase.M_EVENTS = {'select':'select'};
+sap.ui.commons.MenuButton.M_EVENTS = {'itemSelected':'itemSelected'};
 
 
 /**
- * Getter for property <code>enabled</code>.
+ * Getter for property <code>dockButton</code>.
+ * The position / edge (see sap.ui.core.Popup.Dock) of the button where the menu is docked. Default is 'begin bottom'.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string} the value of property <code>dockButton</code>
+ * @public
+ * @name sap.ui.commons.MenuButton#getDockButton
+ * @function
+ */
+
+/**
+ * Setter for property <code>dockButton</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string} sDockButton  new value for property <code>dockButton</code>
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.MenuButton#setDockButton
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>dockMenu</code>.
+ * The position / edge (see sap.ui.core.Popup.Dock) of the menu which is docked to the button. Default is 'begin top'.
+ *
+ * Default value is empty/<code>undefined</code>
+ *
+ * @return {string} the value of property <code>dockMenu</code>
+ * @public
+ * @name sap.ui.commons.MenuButton#getDockMenu
+ * @function
+ */
+
+/**
+ * Setter for property <code>dockMenu</code>.
+ *
+ * Default value is empty/<code>undefined</code> 
+ *
+ * @param {string} sDockMenu  new value for property <code>dockMenu</code>
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.MenuButton#setDockMenu
+ * @function
+ */
+
+
+/**
+ * Getter for aggregation <code>menu</code>.<br/>
+ * Menu that shall be opened when the button is clicked
  * 
- * Disabled items have different colors, depending on customer settings.
- * 
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>enabled</code>
+ * <strong>Note</strong>: this is the default aggregation for MenuButton.
+ * @return {sap.ui.unified.Menu}
  * @public
- * @name sap.ui.commons.MenuItemBase#getEnabled
- * @function
- */
-
-/**
- * Setter for property <code>enabled</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bEnabled  new value for property <code>enabled</code>
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItemBase#setEnabled
+ * @name sap.ui.commons.MenuButton#getMenu
  * @function
  */
 
 
 /**
- * Getter for property <code>visible</code>.
- * 
- * Invisible controls are not rendered.
- * 
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>visible</code>
+ * Setter for the aggregated <code>menu</code>.
+ * @param {sap.ui.unified.Menu} oMenu
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.MenuItemBase#getVisible
- * @function
- */
-
-/**
- * Setter for property <code>visible</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bVisible  new value for property <code>visible</code>
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItemBase#setVisible
- * @function
- */
-
-
-/**
- * Getter for property <code>startsSection</code>.
- * 
- * If set to true, a divider is displayed before the item
- * 
- *
- * Default value is <code>false</code>
- *
- * @return {boolean} the value of property <code>startsSection</code>
- * @public
- * @name sap.ui.commons.MenuItemBase#getStartsSection
- * @function
- */
-
-/**
- * Setter for property <code>startsSection</code>.
- *
- * Default value is <code>false</code> 
- *
- * @param {boolean} bStartsSection  new value for property <code>startsSection</code>
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItemBase#setStartsSection
- * @function
- */
-
-
-/**
- * Getter for aggregation <code>submenu</code>.<br/>
- * Aggregation of a menu item's sub menu.
- * 
- * <strong>Note</strong>: this is the default aggregation for MenuItemBase.
- * @return {sap.ui.commons.Menu}
- * @public
- * @name sap.ui.commons.MenuItemBase#getSubmenu
- * @function
- */
-
-
-/**
- * Setter for the aggregated <code>submenu</code>.
- * @param {sap.ui.commons.Menu} oSubmenu
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItemBase#setSubmenu
+ * @name sap.ui.commons.MenuButton#setMenu
  * @function
  */
 	
 
 /**
- * Destroys the submenu in the aggregation 
- * named <code>submenu</code>.
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
+ * Destroys the menu in the aggregation 
+ * named <code>menu</code>.
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.MenuItemBase#destroySubmenu
+ * @name sap.ui.commons.MenuButton#destroyMenu
  * @function
  */
 
 
 /**
- * Event is fired when an item is selected. The event is also available for items having a sub menu.
- * A mouse click or space bar click on a sub menu item fires the event.
- *  
+ * Event that is fired when a menu item is selected by the user 
  *
- * @name sap.ui.commons.MenuItemBase#select
+ * @name sap.ui.commons.MenuButton#itemSelected
  * @event
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item Represents the current item
+ * @param {string} oControlEvent.getParameters.itemId The ID of the selected item
+ * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item The selected item
  * @public
  */
  
 /**
- * Attach event handler <code>fnFunction</code> to the 'select' event of this <code>sap.ui.commons.MenuItemBase</code>.<br/>.
+ * Attach event handler <code>fnFunction</code> to the 'itemSelected' event of this <code>sap.ui.commons.MenuButton</code>.<br/>.
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.MenuItemBase</code>.<br/> itself. 
+ * otherwise to this <code>sap.ui.commons.MenuButton</code>.<br/> itself. 
  *  
- * Event is fired when an item is selected. The event is also available for items having a sub menu.
- * A mouse click or space bar click on a sub menu item fires the event.
- *  
+ * Event that is fired when a menu item is selected by the user 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
  * @param {function}
  *            fnFunction The function to call, when the event occurs.  
  * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.MenuItemBase</code>.<br/> itself.
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.MenuButton</code>.<br/> itself.
  *
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.MenuItemBase#attachSelect
+ * @name sap.ui.commons.MenuButton#attachItemSelected
  * @function
  */
 
 /**
- * Detach event handler <code>fnFunction</code> from the 'select' event of this <code>sap.ui.commons.MenuItemBase</code>.<br/>
+ * Detach event handler <code>fnFunction</code> from the 'itemSelected' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
  *
  * The passed function and listener object must match the ones used for event registration.
  *
@@ -25904,63 +24516,439 @@ sap.ui.commons.MenuItemBase.M_EVENTS = {'select':'select'};
  *            fnFunction The function to call, when the event occurs.
  * @param {object}
  *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.MenuItemBase#detachSelect
+ * @name sap.ui.commons.MenuButton#detachItemSelected
  * @function
  */
 
 /**
- * Fire event select to attached listeners.
+ * Fire event itemSelected to attached listeners.
  * 
  * Expects following event parameters:
  * <ul>
- * <li>'item' of type <code>sap.ui.commons.MenuItemBase</code> Represents the current item</li>
+ * <li>'itemId' of type <code>string</code> The ID of the selected item</li>
+ * <li>'item' of type <code>sap.ui.commons.MenuItemBase</code> The selected item</li>
  * </ul>
  *
  * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.MenuItemBase} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @protected
- * @name sap.ui.commons.MenuItemBase#fireSelect
+ * @name sap.ui.commons.MenuButton#fireItemSelected
  * @function
  */
 
 
-// Start of sap\ui\commons\MenuItemBase.js
-sap.ui.commons.MenuItemBase.prototype.init = function(){
-   // do something for initialization...
-};
+// Start of sap\ui\commons\MenuButton.js
+ /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
 
-sap.ui.commons.MenuItemBase.prototype.render = function(oRenderManager, oItem, oMenu){
-	// Subclasses have to override this
-	var rm = oRenderManager;
-	rm.write("<li");
-	rm.writeElementData(oItem);
-	rm.write("><div style=\"white-space:nowrap;display:inline-block;padding:1px;color:black;\" id=\""+this.getId()+"-txt\">");
-	rm.write(oItem.getId());
-	if(this.getSubmenu()){
-		rm.write("&nbsp;&nbsp;->");
-	}
-	rm.write("</div></li>");
+
+(function() {
+	
+sap.ui.commons.MenuButton.prototype.init = function() {
+	this.addStyleClass("sapUiMenuButton");
+	this.bWithKeyboard = false;
 };
 
 /**
- * @protected
+ * Function is called when button is clicked.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
  */
-sap.ui.commons.MenuItemBase.prototype.hover = function(bHovered, oMenu){
-	// Subclasses have to override this
-	this.$("txt").attr("style", bHovered ? "white-space:nowrap;display:inline-block;padding:1px;color:red;" : "white-space:nowrap;display:inline-block;padding:1px;color:black;");
+sap.ui.commons.MenuButton.prototype.onclick = function(oEvent) {
+	if(this.getEnabled() && !this._bSkipOpen){
+		var oTooltip = this.getTooltip();
+		if(oTooltip && oTooltip instanceof sap.ui.core.TooltipBase){
+			oTooltip._closeOrPreventOpen(); //CSN 1762131 2013
+		}
+		var sDockButton = this.getDockButton() ? this.getDockButton() : sap.ui.core.Popup.Dock.BeginBottom;
+		var sDockMenu = this.getDockMenu() ? this.getDockMenu() : sap.ui.core.Popup.Dock.BeginTop;
+		this.getMenu().open(this.bWithKeyboard, this, sDockMenu, sDockButton, this);
+	}
+	this.bWithKeyboard = false;
+	this._bSkipOpen = false;
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
+};
+
+/**
+ * Function is called when mouse key is clicked down.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuButton.prototype.onmousedown = function(oEvent) {
+	this.handleMouseDown(oEvent, false);
+	this._bSkipOpen = this.getMenu() && this.getMenu().bOpen;
 };
 
 
-sap.ui.commons.MenuItemBase.prototype.onmouseover = function(oEvent){
-	var oParent = this.getParent();
-	if(oParent && oParent instanceof sap.ui.commons.Menu && this.getTooltip() instanceof sap.ui.core.TooltipBase){
-		//TooltipBase stops the event propagation
-		oParent.onmouseover(oEvent);
+/**
+ * Function is called when mouse leaves the control.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuButton.prototype.onmouseout = function(oEvent) {
+	if(sap.ui.commons.Button.prototype.onmouseout){
+		sap.ui.commons.Button.prototype.onmouseout.apply(this, arguments);
+	}
+	if(this._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
+		this._bSkipOpen = false;
 	}
 };
-}; // end of sap/ui/commons/MenuItemBase.js
+
+
+/**
+ * Function is called when enter key is pressed.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuButton.prototype.onsapenter = function(oEvent){
+	//It is sufficient to set this flag here only. A click event to open the menu will follow.
+	this.bWithKeyboard = true;
+};
+
+/**
+ * Function is called when space key is pressed.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuButton.prototype.onsapspace = function(oEvent){
+	//It is sufficient to set this flag here only. A click event to open the menu will follow.
+	this.bWithKeyboard = true;
+};
+
+/**
+ * Function is called when down key is pressed with a modifier key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+//Requested by UX, see CSN 0120061532 0001379793 2011
+sap.ui.commons.MenuButton.prototype.onsapdownmodifiers = function(oEvent){
+	if(oEvent.altKey){
+		this.bWithKeyboard = true;
+		this.onclick(oEvent);
+	}
+};
+
+sap.ui.commons.MenuButton.prototype.clone = function(sIdSuffix, aLocalIds) {
+	//Deregister event listener before cloning
+	updateMenuEventRegistration(this);
+	var oClone = sap.ui.commons.Button.prototype.clone.apply(this, arguments);
+	updateMenuEventRegistration(this, this.getMenu());
+	return oClone;
+};
+
+/**
+ * Setter for the aggregated <code>menu</code>.
+ * @param oMenu {sap.ui.commons.Menu}
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ */
+sap.ui.commons.MenuButton.prototype.setMenu = function(oMenu) {
+	updateMenuEventRegistration(this, oMenu);
+	this.setAggregation("menu", oMenu);
+	return this;
+};
+
+/**
+ * Destroys the menu in the aggregation
+ * named <code>menu</code>.
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ */
+sap.ui.commons.MenuButton.prototype.destroyMenu = function() {
+	updateMenuEventRegistration(this, null);
+	this.destroyAggregation("menu");
+	return this;
+};
+
+//********** Private **********
+
+// Detaches the select event handler from the current menu and attaches it to the new menu
+var updateMenuEventRegistration = function(oThis, oNewMenu){
+	var oMenu = oThis.getMenu();
+	if(oMenu) {
+		oMenu.detachItemSelect(oThis._fItemSelectHandler);
+	}
+	oThis._fItemSelectHandler = jQuery.proxy(onItemSelected, oThis);
+	if(oNewMenu) {
+		oNewMenu.attachItemSelect(oThis._fItemSelectHandler);
+	}
+};
+
+//Function is called when an item in the menu was selected.
+var onItemSelected = function(oEvent){
+	var oItem = oEvent.getParameter("item");
+	this.fireItemSelected({itemId: oItem.getId(), item: oItem});
+	this.firePress({itemId: oItem.getId(), item: oItem});
+};
+
+}());
+
+// to overwrite JS doc for inherited press event
+
+/**
+ * Fired when an item from the menu was selected.
+ *
+ * @see sap.ui.commons.MenuButton#itemSelected
+ *
+ * @name sap.ui.commons.MenuButton#press
+ * @event
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+ *
+ * @param {string} oControlEvent.getParameters.itemId The id of the selected item
+ * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item The selected item
+ * @public
+ */
+
+/**
+ * Attach event-handler <code>fnFunction</code> to the 'press' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
+ *
+ * Event is fired when an item from the menu was selected.
+ *
+ * @see sap.ui.commons.MenuButton#attachItemSelected
+ *
+ * @param {object}
+ *            [oData] The object, that should be passed along with the event-object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs. This function will be called on the
+ *            oListener-instance (if present) or in a 'static way'.
+ * @param {object}
+ *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+ *
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ */
+
+/**
+ * Detach event-handler <code>fnFunction</code> from the 'press' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
+ *
+ * The passed function and listener object must match the ones previously used for event registration.
+ *
+ * @see sap.ui.commons.MenuButton#detachItemSelected
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Object on which the given function had to be called.
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @public
+ */
+
+/**
+ * Fire event press to attached listeners.
+ *
+ * @see sap.ui.commons.MenuButton#fireItemSelected
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
+ * @protected
+ */
+}; // end of sap/ui/commons/MenuButton.js
+if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItem') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.control, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides control sap.ui.commons.MenuItem.
+jQuery.sap.declare("sap.ui.commons.MenuItem");
+
+jQuery.sap.require('sap.ui.unified.MenuItem'); // unlisted dependency retained
+
+
+
+/**
+ * Constructor for a new MenuItem.
+ * 
+ * Accepts an object literal <code>mSettings</code> that defines initial 
+ * property values, aggregated and associated objects as well as event handlers. 
+ * 
+ * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+ * then the framework assumes property, aggregation, association, event in that order. 
+ * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+ * or "event:" can be added to the name of the setting (such a prefixed name must be
+ * enclosed in single or double quotes).
+ *
+ * The supported settings are:
+ * <ul>
+ * <li>Properties
+ * <ul></ul>
+ * </li>
+ * <li>Aggregations
+ * <ul></ul>
+ * </li>
+ * <li>Associations
+ * <ul></ul>
+ * </li>
+ * <li>Events
+ * <ul></ul>
+ * </li>
+ * </ul> 
+ *
+ * 
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.MenuItem#constructor sap.ui.unified.MenuItem}
+ * can be used as well.
+ *
+ * @param {string} [sId] id for the new control, generated automatically if no id is given 
+ * @param {object} [mSettings] initial settings for the new control
+ *
+ * @class
+ * Smallest unit in the menu hierarchy. An item can be a direct part of a menu bar, of a menu, or of a sub menu.
+ * 
+ * @extends sap.ui.unified.MenuItem
+ *
+ * @author SAP AG 
+ * @version 1.22.4
+ *
+ * @constructor   
+ * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.MenuItem of the library sap.ui.unified instead.
+ * @name sap.ui.commons.MenuItem
+ */
+sap.ui.unified.MenuItem.extend("sap.ui.commons.MenuItem", { metadata : {
+
+	// ---- object ----
+	deprecated : true,
+
+	// ---- control specific ----
+	library : "sap.ui.commons"
+}});
+
+
+/**
+ * Creates a new subclass of class sap.ui.commons.MenuItem with name <code>sClassName</code> 
+ * and enriches it with the information contained in <code>oClassInfo</code>.
+ * 
+ * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+ *   
+ * @param {string} sClassName name of the class to be created
+ * @param {object} [oClassInfo] object literal with informations about the class  
+ * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+ * @return {function} the created class / constructor function
+ * @public
+ * @static
+ * @name sap.ui.commons.MenuItem.extend
+ * @function
+ */
+
+
+// Start of sap\ui\commons\MenuItem.js
+ /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
+}; // end of sap/ui/commons/MenuItem.js
+if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuTextFieldItem') ) {
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.control, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides control sap.ui.commons.MenuTextFieldItem.
+jQuery.sap.declare("sap.ui.commons.MenuTextFieldItem");
+
+jQuery.sap.require('sap.ui.unified.MenuTextFieldItem'); // unlisted dependency retained
+
+
+
+/**
+ * Constructor for a new MenuTextFieldItem.
+ * 
+ * Accepts an object literal <code>mSettings</code> that defines initial 
+ * property values, aggregated and associated objects as well as event handlers. 
+ * 
+ * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
+ * then the framework assumes property, aggregation, association, event in that order. 
+ * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
+ * or "event:" can be added to the name of the setting (such a prefixed name must be
+ * enclosed in single or double quotes).
+ *
+ * The supported settings are:
+ * <ul>
+ * <li>Properties
+ * <ul></ul>
+ * </li>
+ * <li>Aggregations
+ * <ul></ul>
+ * </li>
+ * <li>Associations
+ * <ul></ul>
+ * </li>
+ * <li>Events
+ * <ul></ul>
+ * </li>
+ * </ul> 
+ *
+ * 
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.MenuTextFieldItem#constructor sap.ui.unified.MenuTextFieldItem}
+ * can be used as well.
+ *
+ * @param {string} [sId] id for the new control, generated automatically if no id is given 
+ * @param {object} [mSettings] initial settings for the new control
+ *
+ * @class
+ * Menu item which contains an text field. This menu item is e.g. helpful for filters.
+ * The aggregation 'submenu' (inherited from parent class) is not supported for this type of menu item.
+ * @extends sap.ui.unified.MenuTextFieldItem
+ *
+ * @author SAP AG 
+ * @version 1.22.4
+ *
+ * @constructor   
+ * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the control sap.ui.unified.MenuTextFieldItem of the library sap.ui.unified instead.
+ * @name sap.ui.commons.MenuTextFieldItem
+ */
+sap.ui.unified.MenuTextFieldItem.extend("sap.ui.commons.MenuTextFieldItem", { metadata : {
+
+	// ---- object ----
+	deprecated : true,
+
+	// ---- control specific ----
+	library : "sap.ui.commons"
+}});
+
+
+/**
+ * Creates a new subclass of class sap.ui.commons.MenuTextFieldItem with name <code>sClassName</code> 
+ * and enriches it with the information contained in <code>oClassInfo</code>.
+ * 
+ * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
+ *   
+ * @param {string} sClassName name of the class to be created
+ * @param {object} [oClassInfo] object literal with informations about the class  
+ * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
+ * @return {function} the created class / constructor function
+ * @public
+ * @static
+ * @name sap.ui.commons.MenuTextFieldItem.extend
+ * @function
+ */
+
+
+// Start of sap\ui\commons\MenuTextFieldItem.js
+ /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
+}; // end of sap/ui/commons/MenuTextFieldItem.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.Message') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -26021,7 +25009,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -26465,7 +25453,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -26752,7 +25740,7 @@ sap.ui.commons.MessageBar.prototype.ondragstart = function(oEvent){
 /**
  * Initializes drag and drop capabilities.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onmousedown = function (oEvent) {
@@ -26838,7 +25826,7 @@ sap.ui.commons.MessageBar.prototype.handleMove = function (event) {
 /**
  * Handle onmouseup event.
  * This does the cleanup after drag and move handling.
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onmouseup = function (oEvent) {
@@ -26880,7 +25868,7 @@ sap.ui.commons.MessageBar.prototype.onmouseup = function (oEvent) {
  * The 2 click-able areas are:
  *  1) The front Open/Close list button.
  *  2) The back GoHome button.
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onclick = function (oEvent) {
@@ -27410,12 +26398,12 @@ sap.ui.commons.MessageBar.prototype.deleteAllMessages = function() {
  *
  * Default value is <code>true</code>
  *
+ * The default implementation of function "setVisible()" is enhanced 
+ * in order to toggle the "visibility:hidden;" attribute over the control.
+ * 
  * @param {boolean} bVisible  new value for property <code>visible</code>
  * @return {sap.ui.commons.MessageBar} <code>this</code> to allow method chaining
  * @public
- *
- * The MessageBar.API.js "setVisible" function is enhanced in order to
- * toggle the "visibility:hidden;" attribute over the control.
  */
 sap.ui.commons.MessageBar.prototype.setVisible = function(bVisible) {
 	this.setProperty("visible", bVisible);
@@ -27491,7 +26479,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -27749,12 +26737,12 @@ sap.ui.commons.MessageList.prototype.setMessages = function(aMessages) {
  *
  * Default value is <code>true</code>
  *
+ * The default implementation of function "setVisible()" is overwritten 
+ * in order to invoke the open() and close() of the MessageList Popup.
+ * 
  * @param {boolean} bVisible  new value for property <code>visible</code>
  * @return {sap.ui.commons.MessageBar} <code>this</code> to allow method chaining
  * @public
- *
- * The MessageBar.API.js "setVisible" function is overwritten in order to
- * invoke the open() and close() the MessageList Popup.
  */
 sap.ui.commons.MessageList.prototype.setVisible = function(bVisible) {
 	this.setProperty("visible", bVisible);
@@ -27829,7 +26817,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -27950,7 +26938,7 @@ sap.ui.commons.MessageToast.M_EVENTS = {'next':'next'};
 
 /**
  * Fire event next to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.MessageToast} <code>this</code> to allow method chaining
  * @protected
@@ -28167,7 +27155,7 @@ sap.ui.commons.MessageToast.prototype.toast = function(oMessage, sAnchorId) {
 
 /**
  * Returns the idle state of the control.
- * @public ???
+ * @public
  */
 sap.ui.commons.MessageToast.prototype.isIdle = function() {
   return this.bIdle;
@@ -28232,7 +27220,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -28334,11 +27322,11 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
 
  * @param {int} oControlEvent.getParameters.srcPage The page which is the current one before the page event is fired (and another page is displayed)
  * @param {int} oControlEvent.getParameters.targetPage The page that shall be displayed next after the page event is fired.
-
-The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.
- * @param {sap.ui.commons.PaginatorEvent} oControlEvent.getParameters.type Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application 
-					how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly 
-					selected
+ * 
+ *         The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.
+ * @param {sap.ui.commons.PaginatorEvent} oControlEvent.getParameters.type Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application
+ *         how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly
+ *         selected
  * @public
  */
  
@@ -28839,7 +27827,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -29398,13 +28386,13 @@ sap.ui.core.Control.extend("sap.ui.commons.Panel", { metadata : {
  * @function
  * @param {sap.ui.core.CSSSize} 
  *         sWidth
- *         
- * Panel width as CSS size
+ * 
+ *         Panel width as CSS size
  * 
  * @param {sap.ui.core.CSSSize} 
  *         sHeight
- *         
- * Panel height as CSS size
+ * 
+ *         Panel height as CSS size
  * 
 
  * @type sap.ui.commons.Panel
@@ -30184,7 +29172,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -30707,7 +29695,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -31141,7 +30129,7 @@ sap.ui.commons.RadioButton.M_EVENTS = {'select':'select'};
 
 /**
  * Fire event select to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.RadioButton} <code>this</code> to allow method chaining
  * @protected
@@ -31382,7 +30370,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -32518,7 +31506,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -33394,7 +32382,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -33838,7 +32826,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -34044,7 +33032,7 @@ jQuery.sap.require('sap.ui.core.TooltipBase'); // unlisted dependency retained
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -34277,8 +33265,7 @@ sap.ui.commons.RichTooltip.prototype.setText = function(sText) {
 			htmlText : sText
 		}).addStyleClass("sapUiRttText");
 		this.setAggregation("formattedText", oText);
-		oText.setProperty("htmlText", sText, true); 
-		 this.setProperty("text", sText, true);
+		this.setProperty("text", sText, true);
 	}
 };
 
@@ -34396,7 +33383,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -35274,7 +34261,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -35779,7 +34766,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -38038,7 +37025,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -38220,7 +37207,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -38399,7 +37386,7 @@ jQuery.sap.require('sap.ui.core.search.OpenSearchProvider'); // unlisted depende
  * @extends sap.ui.core.search.OpenSearchProvider
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -38512,7 +37499,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -39077,7 +38064,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -39546,7 +38533,7 @@ sap.ui.commons.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {float} oControlEvent.getParameters.value Current value of the slider after a change. 
+ * @param {float} oControlEvent.getParameters.value Current value of the slider after a change.
  * @public
  */
  
@@ -39610,7 +38597,7 @@ sap.ui.commons.Slider.M_EVENTS = {'change':'change','liveChange':'liveChange'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {float} oControlEvent.getParameters.value Current value of the slider after a change. 
+ * @param {float} oControlEvent.getParameters.value Current value of the slider after a change.
  * @public
  */
  
@@ -41165,7 +40152,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <ul>
  * <li>Properties
  * <ul>
- * <li>{@link #getSplitterOrientation splitterOrientation} : sap.ui.commons.Orientation (default: sap.ui.commons.Orientation.Vertical)</li>
+ * <li>{@link #getSplitterOrientation splitterOrientation} : sap.ui.core.Orientation (default: sap.ui.core.Orientation.Vertical)</li>
  * <li>{@link #getSplitterPosition splitterPosition} : sap.ui.core.Percentage (default: '50%')</li>
  * <li>{@link #getMinSizeFirstPane minSizeFirstPane} : sap.ui.core.Percentage (default: '0%')</li>
  * <li>{@link #getMinSizeSecondPane minSizeSecondPane} : sap.ui.core.Percentage (default: '0%')</li>
@@ -41197,7 +40184,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -41210,7 +40197,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
 	// ---- control specific ----
 	library : "sap.ui.commons",
 	properties : {
-		"splitterOrientation" : {type : "sap.ui.commons.Orientation", group : "Behavior", defaultValue : sap.ui.commons.Orientation.Vertical},
+		"splitterOrientation" : {type : "sap.ui.core.Orientation", group : "Behavior", defaultValue : sap.ui.core.Orientation.Vertical},
 		"splitterPosition" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '50%'},
 		"minSizeFirstPane" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '0%'},
 		"minSizeSecondPane" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '0%'},
@@ -41250,7 +40237,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
  *
  * Default value is <code>Vertical</code>
  *
- * @return {sap.ui.commons.Orientation} the value of property <code>splitterOrientation</code>
+ * @return {sap.ui.core.Orientation} the value of property <code>splitterOrientation</code>
  * @public
  * @name sap.ui.commons.Splitter#getSplitterOrientation
  * @function
@@ -41261,7 +40248,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
  *
  * Default value is <code>Vertical</code> 
  *
- * @param {sap.ui.commons.Orientation} oSplitterOrientation  new value for property <code>splitterOrientation</code>
+ * @param {sap.ui.core.Orientation} oSplitterOrientation  new value for property <code>splitterOrientation</code>
  * @return {sap.ui.commons.Splitter} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.Splitter#setSplitterOrientation
@@ -41704,7 +40691,7 @@ sap.ui.commons.Splitter.prototype._recalculateInternals = function() {
 	// or in IE: >= the div height (vertical) or  != sbSize (horizontal)
 	// if any above is the case we have to set its height to a fixed pixel value
 	var splitterBarHeight = jQuery(this.splitterBar).height();
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical){
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical){
 		if (splitterBarHeight <= 0 || splitterBarHeight > jQuery(this.splitterDIV).height()){
 			this.fixHeight();
 		}
@@ -41732,7 +40719,7 @@ sap.ui.commons.Splitter.prototype.resizeSplitterElements = function() {
 	 * Calculate the equivalent percentage of the 4px : the width/height of the splitter bar
 	 */
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 
 		width = jQuery(this.splitterDIV).width();
 		if (width == 0) {
@@ -41796,7 +40783,7 @@ sap.ui.commons.Splitter.prototype.setSplitterPosition = function(sPos){
 sap.ui.commons.Splitter.prototype.setSplitterBarVisible = function(bVisible){
 	if (this.getDomRef()) {
 		this.setProperty("splitterBarVisible", bVisible, true);
-		var sClassPrefix = this.getSplitterOrientation() === sap.ui.commons.Orientation.Vertical ? "sapUiVertical" : "sapUiHorizontal";
+		var sClassPrefix = this.getSplitterOrientation() === sap.ui.core.Orientation.Vertical ? "sapUiVertical" : "sapUiHorizontal";
 		if (bVisible) {
 			jQuery.sap.byId(this.getId() + "_SB").removeClass(sClassPrefix + "SplitterBarHidden").addClass(sClassPrefix + "SplitterBar");
 		} else {
@@ -41842,7 +40829,7 @@ sap.ui.commons.Splitter.prototype.fixHeight = function() {
 	
 	// reset the splitter div height so that its contents fit inside...
 	jQuery(this.splitterDIV).css("height", splitterHeight + "px");
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		jQuery(this.splitterBar).css("height", splitterHeight + "px");
 	}
 	var oParent = this.splitterDIV.parentNode;
@@ -41889,14 +40876,14 @@ sap.ui.commons.Splitter.prototype.onresizespecial = function(oEvent) {
 	if (currentHeight != parentHeight){
 		// set bar height to the splitterDIV height value
 		$Splitter.css("height", parentHeight + "px");
-		if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+		if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 			jQuery(this.splitterBar).css("height", parentHeight + "px");
 		}
 	}
 	// if there is no parent height set the old height again. This might be the case if the parent doesn't have a height yet...
 	if (parentHeight <= 0) {
 		$Splitter.css("height", oldHeight + "px");
-		if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+		if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 			jQuery(this.splitterBar).css("height", oldHeight + "px");
 		}
 	}
@@ -41921,7 +40908,7 @@ sap.ui.commons.Splitter.prototype.onmousedown = function(oEvent) {
 	var cssClass;
 	var rtl = sap.ui.getCore().getConfiguration().getRTL();
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		cssClass = "sapUiVSBGhost";
 	}
 	else {
@@ -41976,7 +40963,7 @@ sap.ui.commons.Splitter.prototype.onGhostMouseRelease = function(oEvent) {
 	var splitterBarGhost = jQuery.sap.domById(this.getId() + "_ghost");
 	var rtl = sap.ui.getCore().getConfiguration().getRTL();
 
-	if ( this.spOrientation == sap.ui.commons.Orientation.Vertical){
+	if ( this.spOrientation == sap.ui.core.Orientation.Vertical){
 
 		if (!rtl)
 		{
@@ -42030,7 +41017,7 @@ sap.ui.commons.Splitter.prototype.onGhostMouseMove = function(oEvent) {
 	var w = jQuery(this.splitterDIV).width();
 	var leftSecondPane = jQuery(this.secondPane).offset().left;
 
-	if (this.getSplitterOrientation() == sap.ui.commons.Orientation.Vertical) {
+	if (this.getSplitterOrientation() == sap.ui.core.Orientation.Vertical) {
 
 		if (!rtl) {
 
@@ -42111,7 +41098,7 @@ sap.ui.commons.Splitter.prototype.onsapend = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onArrowKeys = function(oEvent,oInc) {
 	var width, height, sbSize, sbPosition, newSbPosition;
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		width = jQuery(this.splitterDIV).width();
 		sbPosition = jQuery(this.firstPane).width();
 		sbPosition = (sbPosition * 100) / width;
@@ -42151,7 +41138,7 @@ sap.ui.commons.Splitter.prototype.onsapupmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
 			
-			if (this.spOrientation == sap.ui.commons.Orientation.Horizontal) {
+			if (this.spOrientation == sap.ui.core.Orientation.Horizontal) {
 				this.onArrowKeys(oEvent,"false");
 			} else {
 				// move vertical splitter left
@@ -42173,7 +41160,7 @@ sap.ui.commons.Splitter.prototype.onsapupmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsapdownmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Horizontal) {
+			if (this.spOrientation == sap.ui.core.Orientation.Horizontal) {
 				this.onArrowKeys(oEvent,"true");				
 			} else {
 				// move vertical splitter right
@@ -42193,7 +41180,7 @@ sap.ui.commons.Splitter.prototype.onsapdownmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsapleftmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)){
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+			if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 				var rtl = sap.ui.getCore().getConfiguration().getRTL();
 				if (rtl) {
 					this.onArrowKeys(oEvent,"true");
@@ -42219,7 +41206,7 @@ sap.ui.commons.Splitter.prototype.onsapleftmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsaprightmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Vertical){
+			if (this.spOrientation == sap.ui.core.Orientation.Vertical){
 				var rtl = sap.ui.getCore().getConfiguration().getRTL();
 				if (rtl) {
 					this.onArrowKeys(oEvent,"false");
@@ -42522,7 +41509,7 @@ jQuery.sap.declare("sap.ui.commons.Tab");
  * @extends sap.ui.commons.Panel
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -42900,7 +41887,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -43930,7 +42917,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -44017,8 +43004,8 @@ sap.ui.commons.TextField.M_EVENTS = {'change':'change','liveChange':'liveChange'
  * @param {string} sValue  new value for property <code>value</code>
  * @return {sap.ui.commons.TextField} <code>this</code> to allow method chaining
  * @public
- * @SecSource {return} The 'value' property of the TextField control and its subclasses represents unfiltered user input. 
-		Applications must ensure that the data is either validated / cleansed or that it is not used in a context which is sensible to XSS attacks.
+ * @SecSource {return} The 'value' property of the TextField control and its subclasses represents unfiltered user input.
+ * Applications must ensure that the data is either validated / cleansed or that it is not used in a context which is sensible to XSS attacks.
  * @name sap.ui.commons.TextField#setValue
  * @function
  */
@@ -45299,7 +44286,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -45861,7 +44848,7 @@ jQuery.sap.require('sap.ui.core.Title'); // unlisted dependency retained
  * @extends sap.ui.core.Title
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -45985,7 +44972,7 @@ jQuery.sap.declare("sap.ui.commons.ToggleButton");
  * @extends sap.ui.commons.Button
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -46022,7 +45009,7 @@ sap.ui.commons.Button.extend("sap.ui.commons.ToggleButton", { metadata : {
 
 /**
  * Getter for property <code>pressed</code>.
- * true when button is pressed down.
+ * The property is “true” when the control is toggled. The default state of this property is "false".
  *
  * Default value is <code>false</code>
  *
@@ -46148,9 +45135,10 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * A horizontal row of items where in many cases the single toolbar items are buttons containing icons. Note that all controls with the
  * sap.ui.commons.ToolbarItem interface can be used as item: Button, ComboBox, TextField.
  * @extends sap.ui.core.Control
+ * @implements sap.ui.core.Toolbar
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -46159,6 +45147,9 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
 sap.ui.core.Control.extend("sap.ui.commons.Toolbar", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.ui.core.Toolbar"
+	],
 
 	// ---- control specific ----
 	library : "sap.ui.commons",
@@ -47404,7 +46395,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -47539,7 +46530,8 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <li>{@link #getShowHeader showHeader} : boolean (default: true)</li>
  * <li>{@link #getShowHeaderIcons showHeaderIcons} : boolean (default: true)</li>
  * <li>{@link #getShowHorizontalScrollbar showHorizontalScrollbar} : boolean (default: false)</li>
- * <li>{@link #getMinWidth minWidth} : sap.ui.core.CSSSize</li></ul>
+ * <li>{@link #getMinWidth minWidth} : sap.ui.core.CSSSize</li>
+ * <li>{@link #getSelectionMode selectionMode} : sap.ui.commons.TreeSelectionMode (default: sap.ui.commons.TreeSelectionMode.Single)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -47550,7 +46542,8 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * </li>
  * <li>Events
  * <ul>
- * <li>{@link sap.ui.commons.Tree#event:select select} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <li>{@link sap.ui.commons.Tree#event:select select} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li>
+ * <li>{@link sap.ui.commons.Tree#event:selectionChange selectionChange} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -47563,7 +46556,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -47586,14 +46579,16 @@ sap.ui.core.Control.extend("sap.ui.commons.Tree", { metadata : {
 		"showHeader" : {type : "boolean", group : "Misc", defaultValue : true},
 		"showHeaderIcons" : {type : "boolean", group : "Misc", defaultValue : true},
 		"showHorizontalScrollbar" : {type : "boolean", group : "Misc", defaultValue : false},
-		"minWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null}
+		"minWidth" : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : null},
+		"selectionMode" : {type : "sap.ui.commons.TreeSelectionMode", group : "Behavior", defaultValue : sap.ui.commons.TreeSelectionMode.Single}
 	},
 	defaultAggregation : "nodes",
 	aggregations : {
     	"nodes" : {type : "sap.ui.commons.TreeNode", multiple : true, singularName : "node", bindable : "bindable"}
 	},
 	events : {
-		"select" : {allowPreventDefault : true}
+		"select" : {allowPreventDefault : true}, 
+		"selectionChange" : {}
 	}
 }});
 
@@ -47614,7 +46609,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Tree", { metadata : {
  * @function
  */
 
-sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
+sap.ui.commons.Tree.M_EVENTS = {'select':'select','selectionChange':'selectionChange'};
 
 
 /**
@@ -47793,6 +46788,31 @@ sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
 
 
 /**
+ * Getter for property <code>selectionMode</code>.
+ * Selection mode of the Tree.
+ *
+ * Default value is <code>Single</code>
+ *
+ * @return {sap.ui.commons.TreeSelectionMode} the value of property <code>selectionMode</code>
+ * @public
+ * @name sap.ui.commons.Tree#getSelectionMode
+ * @function
+ */
+
+/**
+ * Setter for property <code>selectionMode</code>.
+ *
+ * Default value is <code>Single</code> 
+ *
+ * @param {sap.ui.commons.TreeSelectionMode} oSelectionMode  new value for property <code>selectionMode</code>
+ * @return {sap.ui.commons.Tree} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.Tree#setSelectionMode
+ * @function
+ */
+
+
+/**
  * Getter for aggregation <code>nodes</code>.<br/>
  * First level nodes
  * 
@@ -47950,7 +46970,7 @@ sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
  * Fire event select to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'node' of type <code>sap.ui.commons.TreeNode</code> The node which has been selected.</li>
@@ -47961,6 +46981,72 @@ sap.ui.commons.Tree.M_EVENTS = {'select':'select'};
  * @return {boolean} whether to prevent the default action
  * @protected
  * @name sap.ui.commons.Tree#fireSelect
+ * @function
+ */
+
+
+/**
+ * fired when the selection of the tree has been changed 
+ *
+ * @name sap.ui.commons.Tree#selectionChange
+ * @event
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @param {sap.ui.commons.TreeNode[]} oControlEvent.getParameters.nodes The nodes which has been selected.
+ * @param {object[]} oControlEvent.getParameters.nodeContexts The binding context of the selected nodes.
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'selectionChange' event of this <code>sap.ui.commons.Tree</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.ui.commons.Tree</code>.<br/> itself. 
+ *  
+ * fired when the selection of the tree has been changed 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Tree</code>.<br/> itself.
+ *
+ * @return {sap.ui.commons.Tree} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.Tree#attachSelectionChange
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'selectionChange' event of this <code>sap.ui.commons.Tree</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.ui.commons.Tree} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.Tree#detachSelectionChange
+ * @function
+ */
+
+/**
+ * Fire event selectionChange to attached listeners.
+ * 
+ * Expects following event parameters:
+ * <ul>
+ * <li>'nodes' of type <code>sap.ui.commons.TreeNode[]</code> The nodes which has been selected.</li>
+ * <li>'nodeContexts' of type <code>object[]</code> The binding context of the selected nodes.</li>
+ * </ul>
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.commons.Tree} <code>this</code> to allow method chaining
+ * @protected
+ * @name sap.ui.commons.Tree#fireSelectionChange
  * @function
  */
 
@@ -47997,6 +47083,11 @@ sap.ui.commons.Tree.prototype.init = function(){
    this.oSelectedNode = null;
    this.oSelectedContext = null;
 
+//STS
+   this.oSelectedNodeMap = {};
+   this.oSelectedContextMap = {}; 
+//STS
+      
    this.iOldScrollTop = null;
 
    //Create Buttons for Header
@@ -48025,6 +47116,13 @@ sap.ui.commons.Tree.prototype.exit = function(){
 		this.oExpandAllButton = null;
 	}
 };
+
+// Enumeration for different types of selection in the tree
+sap.ui.commons.Tree.SelectionType = {
+	Select: "Select",
+	Toggle: "Toggle",
+	Range: "Range"
+}
 
 /***********************************************************************************
 * EVENTS HANDLING
@@ -48357,19 +47455,25 @@ sap.ui.commons.Tree.prototype.adjustSelectionOnExpanding = function(oExpandingDo
  */
 sap.ui.commons.Tree.prototype.adjustSelectionOnCollapsing = function(oDomCollapsingNode){
 
-	var $DomCollapsingNode = jQuery(oDomCollapsingNode),
+	if (this.getSelectionMode() != sap.ui.commons.TreeSelectionMode.Multi) {
+		var $DomCollapsingNode = jQuery(oDomCollapsingNode),
 		sChildrenId = "#" + $DomCollapsingNode.attr("id") + "-children",
 		$DomActualSelSubNode = $DomCollapsingNode.siblings(sChildrenId).find(".sapUiTreeNodeSelected"),
 		$DomParentSelSubNode = $DomCollapsingNode.siblings(sChildrenId).find(".sapUiTreeNodeSelectedParent");
 
-	if($DomActualSelSubNode.length || $DomParentSelSubNode.length){
-		$DomCollapsingNode.addClass("sapUiTreeNodeSelectedParent");
+		if($DomActualSelSubNode.length || $DomParentSelSubNode.length){
+			$DomCollapsingNode.addClass("sapUiTreeNodeSelectedParent");
 
-		if($DomParentSelSubNode.length){
-			$DomParentSelSubNode.removeClass("sapUiTreeNodeSelectedParent");
+			if($DomParentSelSubNode.length){
+				$DomParentSelSubNode.removeClass("sapUiTreeNodeSelectedParent");
+			}
 		}
+	} else {
+		var $DomCollapsingNode = jQuery(oDomCollapsingNode),
+		sChildrenId = "#" + $DomCollapsingNode.attr("id") + "-children",
+		$DomActualSelSubNode = $DomCollapsingNode.siblings(sChildrenId).find(".sapUiTreeNodeSelected");
+		$DomActualSelSubNode.removeClass("sapUiTreeNodeSelected");		
 	}
-
 };
 
 /**
@@ -48443,25 +47547,25 @@ sap.ui.commons.Tree.prototype.getSelection = function(){
 /**Sets the selected node reference of the Tree
  * @private
  */
-sap.ui.commons.Tree.prototype.setSelection = function(oNode, bSuppressEvent){
-	var bDoSelect = true;
-
-	if (!bSuppressEvent) {
-		bDoSelect = this.fireSelect({
-			node: oNode,
-			nodeContext: oNode && oNode.getBindingContext()
-		});
-	}
-		
-	if (bDoSelect) {
-		if (this.oSelectedNode) {
-			this.oSelectedNode.deselect();
+sap.ui.commons.Tree.prototype.setSelection = function(oNode, sType, bSuppressEvent){
+	var bDoSelected = true;
+	switch (this.getSelectionMode()) {
+	case sap.ui.commons.TreeSelectionMode.Single:
+		this._setSelectedNode(oNode, bSuppressEvent)
+		break;	
+	case sap.ui.commons.TreeSelectionMode.Multi:
+		if (sType == sap.ui.commons.Tree.SelectionType.Range) {
+			this._setSelectedNodeMap(oNode, bSuppressEvent)
 		}
-		if (oNode) {
-			oNode.select(bSuppressEvent);
+		else if (sType == sap.ui.commons.Tree.SelectionType.Toggle) {
+			this._setSelectedNodeMap(oNode, bSuppressEvent)
 		}
-		this.oSelectedNode = oNode;
-		this.oSelectedContext = oNode && oNode.getBindingContext();
+		else {
+			this._setSelectedNode(oNode, bSuppressEvent)
+		}
+		break;
+	case sap.ui.commons.TreeSelectionMode.None:
+		break;	
 	}
 };
 
@@ -48481,6 +47585,64 @@ sap.ui.commons.Tree.prototype.onAfterRendering = function () {
 sap.ui.commons.Tree.prototype.onBeforeRendering = function() {
 	this.iOldScrollTop = this.$("TreeCont").scrollTop();
 };
+
+// STS
+sap.ui.commons.Tree.prototype._setSelectedNode = function(oNode, bSuppressEvent) {
+	var bDoSelect = true;
+	if (!bSuppressEvent) {
+		bDoSelect = this.fireSelect({node: oNode, nodeContext: oNode && oNode.getBindingContext()});
+	}	
+	if (bDoSelect) {
+		if (this.oSelectedNode) {
+			this.oSelectedNode.deselect();
+		}
+		if (oNode) {
+			oNode.select(bSuppressEvent, true);
+		}
+		this.oSelectedNode = oNode;
+		this.oSelectedContext = oNode && oNode.getBindingContext();
+		if (this.getSelectionMode() == sap.ui.commons.TreeSelectionMode.Multi) {
+			this.oSelectedNodeMap = {};
+			this.oSelectedNodeMap[this.oSelectedNode.getId()] = this.oSelectedNode;
+			this.oSelectedContextMap = {};
+			this.oSelectedContextMap[this.oSelectedNode.getId()] = this.oSelectedContext;
+		}
+//		this.fireSelectionChange({nodes: [this.oSelectedNode], nodeContexts: [this.oSelectedContext]});
+	}
+};
+
+sap.ui.commons.Tree.prototype._setSelectedNodeMap = function(oNode, bSuppressEvent) {
+	var aNodes = [], aNodeContexts = [];
+	this.oSelectedNode = oNode;
+	if (this.oSelectedNodeMap[this.oSelectedNode.getId()] != this.oSelectedNode) {
+		if (oNode) {
+			oNode.select(bSuppressEvent, false);
+		}
+		this.oSelectedNode = oNode;
+		this.oSelectedContext = oNode && oNode.getBindingContext();
+		this.oSelectedNodeMap[this.oSelectedNode.getId()] = this.oSelectedNode;
+		this.oSelectedContextMap[this.oSelectedNode.getId()] = this.oSelectedContext;
+	}
+	else {
+		delete this.oSelectedNodeMap[this.oSelectedNode.getId()];
+		delete this.oSelectedContextMap[this.oSelectedNode.getId()];
+		if (this.oSelectedNode) {
+			this.oSelectedNode.deselect();
+		}
+//		if (oNode) {
+//			oNode.select(bSuppressEvent)
+//		}
+//		this.oSelectedNode = oNode;
+//		this.oSelectedContext = oNode && oNode.getBindingContext();
+	}
+	if (!bSuppressEvent) {
+		jQuery.map(this.oSelectedNodeMap, function(sId, oNode) {aNodes.push(oNode)});
+		jQuery.map(this.oSelectedContextMap, function(sId, oNode) {aNodeContexts.push(oNode)});
+		this.fireSelectionChange({nodes: aNodes, nodeContexts: aNodeContexts});
+	}
+
+};
+// STS
 
 }; // end of sap/ui/commons/Tree.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.TreeNode') ) {
@@ -48553,7 +47715,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -49031,7 +48193,7 @@ sap.ui.commons.TreeNode.M_EVENTS = {'toggleOpenState':'toggleOpenState','selecte
 
 /**
  * Fire event selected to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.TreeNode} <code>this</code> to allow method chaining
  * @protected
@@ -49091,7 +48253,6 @@ sap.ui.core.CustomStyleClassSupport.apply(sap.ui.commons.TreeNode.prototype);
 sap.ui.commons.TreeNode.prototype.expand = function(bExpandChildren){
 
 	var oDomNode = this.$();
-
 	if(oDomNode.hasClass("sapUiTreeNodeCollapsed")){
 		//If not, not an expandable node
 		oDomNode.toggleClass("sapUiTreeNodeCollapsed");
@@ -49157,7 +48318,7 @@ sap.ui.commons.TreeNode.prototype.collapse = function(bCollapseChildren){
 /**Select the node, and if any, deselects the previously selected node
  * @public
  */
-sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent) {
+sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent, bDeselectOtherNodes) {
 	var oTree = this.getTree(),
 		$Tree;
 
@@ -49172,7 +48333,13 @@ sap.ui.commons.TreeNode.prototype.select = function(bSuppressEvent) {
 
 	//Remove selection elsewhere
 	var oDomSelectedNode = $Tree.find(".sapUiTreeNodeSelected");
-	oDomSelectedNode.removeClass("sapUiTreeNodeSelected").removeAttr("aria-selected");
+	
+//STS
+	if (bDeselectOtherNodes) {
+		oDomSelectedNode.removeClass("sapUiTreeNodeSelected").removeAttr("aria-selected");
+	} 
+//STS
+
 	$Tree.find(".sapUiTreeNodeSelectedParent").removeClass("sapUiTreeNodeSelectedParent");
 
 	if(oDomSelectedNode.length){
@@ -49281,9 +48448,8 @@ sap.ui.commons.TreeNode.prototype.setSelectable = function(bSelectable) {
  * @private
  */
 sap.ui.commons.TreeNode.prototype.onclick = function(oEvent){
-
 	var oDomClicked = oEvent.target,
-		oTree = this.getTree();
+	oTree = this.getTree();
 
 	if(jQuery(oDomClicked).is(".sapUiTreeNode") || jQuery(oDomClicked).is(".sapUiTreeNodeNotSelectable") ){
 		//When user click a Not-Selectable node text, it behaves as clicking on the node itself
@@ -49304,15 +48470,22 @@ sap.ui.commons.TreeNode.prototype.onclick = function(oEvent){
 
 	}
 	else if(jQuery(oDomClicked).is(".sapUiTreeNodeContent") || jQuery(oDomClicked).is(".sapUiTreeIcon")){
-
-		oTree.setSelection(this);
+		var sSelectionType = sap.ui.commons.Tree.SelectionType.Select;
+		if (oTree.getSelectionMode() == sap.ui.commons.TreeSelectionMode.Multi) {
+			if (oEvent.shiftKey) {
+				sSelectionType = sap.ui.commons.Tree.SelectionType.Range;
+			}
+			if (oEvent.metaKey || oEvent.ctrlKey) {
+				sSelectionType = sap.ui.commons.Tree.SelectionType.Toggle;
+			}
+		}
+		oTree.setSelection(this, sSelectionType);
 
 		//Set focus
 		oDomClicked = jQuery(oDomClicked).closest(".sapUiTreeNode")[0];
 		oTree.placeFocus(oDomClicked);
 		oDomClicked.focus();
 	}
-
 };
 
 
@@ -49598,7 +48771,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -49861,9 +49034,9 @@ sap.ui.commons.TriStateCheckBox.M_EVENTS = {'change':'change'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {string} oControlEvent.getParameters.selectionState 
-					Checks whether the box is flagged or not flagged.
-					
+ * @param {string} oControlEvent.getParameters.selectionState
+ *         Checks whether the box is flagged or not flagged.
+ * 
  * @public
  */
  
@@ -49931,8 +49104,8 @@ sap.ui.commons.TriStateCheckBox.M_EVENTS = {'change':'change'};
  * @function
  * @param {string} 
  *         sDestState
- *         
- * destined selection state of checkbox
+ * 
+ *         destined selection state of checkbox
  * 
 
  * @type void
@@ -50080,7 +49253,7 @@ jQuery.sap.declare("sap.ui.commons.ValueHelpField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -50249,7 +49422,7 @@ sap.ui.commons.ValueHelpField.M_EVENTS = {'valueHelpRequest':'valueHelpRequest'}
 
 /**
  * Fire event valueHelpRequest to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.commons.ValueHelpField} <code>this</code> to allow method chaining
  * @protected
@@ -50447,7 +49620,7 @@ jQuery.sap.require('sap.ui.layout.form.Form'); // unlisted dependency retained
  * @extends sap.ui.layout.form.Form
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -50576,7 +49749,7 @@ jQuery.sap.require('sap.ui.layout.form.FormContainer'); // unlisted dependency r
  * @extends sap.ui.layout.form.FormContainer
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -50704,7 +49877,7 @@ jQuery.sap.require('sap.ui.layout.form.FormElement'); // unlisted dependency ret
  * @extends sap.ui.layout.form.FormElement
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -50832,7 +50005,7 @@ jQuery.sap.require('sap.ui.layout.form.FormLayout'); // unlisted dependency reta
  * @extends sap.ui.layout.form.FormLayout
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -50934,7 +50107,7 @@ jQuery.sap.require('sap.ui.layout.form.GridContainerData'); // unlisted dependen
  * @extends sap.ui.layout.form.GridContainerData
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51039,7 +50212,7 @@ jQuery.sap.require('sap.ui.layout.form.GridElementData'); // unlisted dependency
  * @extends sap.ui.layout.form.GridElementData
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51145,7 +50318,7 @@ jQuery.sap.require('sap.ui.layout.form.GridLayout'); // unlisted dependency reta
  * @extends sap.ui.layout.form.GridLayout
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51245,7 +50418,7 @@ jQuery.sap.require('sap.ui.layout.form.ResponsiveLayout'); // unlisted dependenc
  * @extends sap.ui.layout.form.ResponsiveLayout
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51345,7 +50518,7 @@ jQuery.sap.require('sap.ui.layout.form.SimpleForm'); // unlisted dependency reta
  * @extends sap.ui.layout.form.SimpleForm
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51479,7 +50652,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -51823,7 +50996,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
  * @param {int} 
  *         iIndex
  *         Specifies the index where the controls shall be added. For a negative value of iIndex, the content is inserted at
- * position '0'; for a value greater than the current size of the aggregation, the content is inserted at the last position.
+ *         position '0'; for a value greater than the current size of the aggregation, the content is inserted at the last position.
  * @param {sap.ui.core.Control} 
  *         oControl
  *         N controls can be submitted to be added. Each control is submitted as one argument.
@@ -51944,10 +51117,10 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.BorderLayout", { metadata : {
  * @function
  * @param {sap.ui.commons.layout.BorderLayoutAreaTypes} 
  *         oAreaId
- *         
+ * 
  * @param {boolean} 
  *         bCreate
- *         
+ * 
 
  * @type sap.ui.commons.layout.BorderLayoutAreaTypes
  * @public
@@ -52165,7 +51338,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -52533,7 +51706,7 @@ jQuery.sap.require('sap.ui.layout.HorizontalLayout'); // unlisted dependency ret
  * @extends sap.ui.layout.HorizontalLayout
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -52636,8 +51809,8 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * 
  * @extends sap.ui.core.Element
  *
- * @author d029921 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -53104,8 +52277,8 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * 
  * @extends sap.ui.core.Element
  *
- * @author d029921 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -53401,7 +52574,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -53639,10 +52812,10 @@ sap.ui.core.Element.extend("sap.ui.commons.layout.PositionContainer", { metadata
  * @name sap.ui.commons.layout.PositionContainer.prototype.updatePosition
  * @function
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control in the absolute layout. The object is expected
- * to have one or more out of the attributes top, bottom, left, right (each with a value of type sap.ui.core.CSSSize). If no object
- * is given, nothing is updated.
+ *         to have one or more out of the attributes top, bottom, left, right (each with a value of type sap.ui.core.CSSSize). If no object
+ *         is given, nothing is updated.
 
  * @type void
  * @public
@@ -54060,8 +53233,8 @@ jQuery.sap.require('sap.ui.layout.ResponsiveFlowLayout'); // unlisted dependency
  * This is a layout where several controls can be added. These controls are blown up to fit a whole line. If the window resizes the controls are moved between the lines and resized again.
  * @extends sap.ui.layout.ResponsiveFlowLayout
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -54158,8 +53331,8 @@ jQuery.sap.require('sap.ui.layout.ResponsiveFlowLayoutData'); // unlisted depend
  * This is a LayoutData Element that can be added to a control if this control is used within a ResponsiveFlowLayout
  * @extends sap.ui.layout.ResponsiveFlowLayoutData
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -54285,8 +53458,8 @@ jQuery.sap.require('sap.ui.layout.VerticalLayout'); // unlisted dependency retai
  * In this layout the elemnts are orderd one below the other
  * @extends sap.ui.layout.VerticalLayout
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -54449,7 +53622,7 @@ jQuery.sap.declare("sap.ui.commons.Callout");
  * @extends sap.ui.commons.CalloutBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -54637,7 +53810,7 @@ jQuery.sap.declare("sap.ui.commons.ComboBox");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -56645,10 +55818,12 @@ jQuery.sap.declare("sap.ui.commons.DatePicker");
  * Allows end users to interact with dates.
  * Entries can directly be written in, or selected from a calendar pad.
  * Note: Dates can always be manually entered in the fix YYYYMMDD format, on top of the flexible "locale" format.
+ * If the value is provided via data binding, using a Date.type the formatter of the Date.type is used.
+ * Since version 1.22 the unified.Calendar is used inside the datePicker. So applications using the DatePicker should load the unified library. Otherwise it will be loaded the first time a DatePicker is opened.
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -56686,8 +55861,7 @@ sap.ui.commons.TextField.extend("sap.ui.commons.DatePicker", { metadata : {
 
 /**
  * Getter for property <code>locale</code>.
- * 
- * Defines the locale (language and country), e.g. "en-US", whose translations should be used to render the DatePicker.
+ * Defines the locale (language and country), e.g. "en-US", whose translations and Date formatters should be used to render the DatePicker.If the value property is bound to a model using a Date type the locale will be ignored, because the locale information of the model are used.
  * 
  *
  * Default value is empty/<code>undefined</code>
@@ -56737,1380 +55911,609 @@ sap.ui.commons.TextField.extend("sap.ui.commons.DatePicker", { metadata : {
 
 
 // Start of sap\ui\commons\DatePicker.js
-jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-core'); // unlisted dependency retained
-
-jQuery.sap.require('sap.ui.thirdparty.jqueryui.jquery-ui-datepicker'); // unlisted dependency retained
-
 jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 
-/**
- * This code should run only once!
-**/
-(function(){
-	// Call-back function to record the closure.
-	// If someone clicks on the window, that closes the DatePicker.
-	// Our controller wants to be informed about such state-change.
-	var fOnClose = function(dateText, inst) {
-		// "this" refers to the associated input field.
-		var sInputId   = this.id;
-		var sControlID = sInputId.replace(/-input/, '');
-		var oControl   = sap.ui.getCore().getControl(sControlID);
-		if (oControl) {
-			if (oControl.oPrivate.bVerboseMode) {
-				jQuery.sap.log.debug("DATEPICKER: JQUERY ONCLOSE CALLBACK");
-			}
-			oControl._hide();
+(function() {
+
+	sap.ui.commons.DatePicker.prototype.init = function(){
+
+		sap.ui.commons.TextField.prototype.init.apply(this, arguments);
+
+		this._oFormatYyyymmdd = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyyMMdd"});
+
+		if (sap.ui.Device.browser.mobile) {
+			this._bMobile = true;
+			this._oFormatMobile = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyy-MM-dd"});
 		}
-	};
-	// Call-back function used to override jQuery's setting of the focus
-	// on the alternate DDLB, for those DDLBs to behave like all other ones.
-	// Used since our Keyboard Navigator is without effect on those ENTER events.
-	// Also used for focusing into the Calendar Pad after Month Previous/Next
-	// (PageUp/PageDown) events.
-	var fOnChangeMonthYear = function(year, month, inst) {
-		// "this" refers to the associated input field.
-		if (document.activeElement) {
-			if (document.activeElement.className == "ui-datepicker-month") {
-				// User expects focus to stay on (changed) Month DDLB.
-				setTimeout(sap.ui.commons.DatePicker._focusMonth, 100);
-			} else if (document.activeElement.className == "ui-datepicker-year") {
-				// User expects focus to stay on (changed) Year DDLB.
-				setTimeout(sap.ui.commons.DatePicker._focusYear, 100);
-			}
-			else {
-				// Assuming Calendar Pad focus needed, for Previous/Next Month button support.
-				// However jQuery may also be calling us because it is internally initializing
-				// the Month while the picker is still closed.
-				// "_focusCalendar()" will check for that!
-//				jQuery.sap.log.debug("DATEPICKER: CalendarPad CALLBACK");
-				var oParent = jQuery(this).parent(); // outer DIV of DatePicker
-				var oDatePicker = sap.ui.getCore().byId(oParent.attr("id"));
-				if (oDatePicker.oPrivate.bIsVisible) {
-					//only if datepicker is shown
-					setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
-				}
-			}
-		}
+
 	};
 
-//	Defining the Language-independent, SAP-specific jQuery settings:
-	jQuery.datepicker.regional[''] = {
-//			buttonImage       : "icon.gif",	// Works as shown below...
-			changeMonth       : true,		// For rendering the DDLB allowing month changes.
-			changeYear        : true,		// For rendering the DDLB allowing year changes.
-//			disabled          : true,		// Does not seem to work...
-			isRTL             : sap.ui.getCore().getConfiguration().getRTL(),
-			onChangeMonthYear : fOnChangeMonthYear,
-			onClose           : fOnClose,	// For reacting to picker closing.
-//			onSelect          : fOnSelect,	// For reacting to date selection.
-			showOn            : 'button',	// Works as shown below... Not useful to us.
-			showOtherMonths   : true,		// For rendering the days outside the current month.
-			selectOtherMonths : true,		// Allow to select dates from other monts
-			showWeek          : true,		// For rendering the week numbers.
-			weekHeader        : ''			// For rendering no header (e.g. 'Wk') on top of the week numbers.
-	};
-	// Default settings for ALL DatePickers!:
-	jQuery.datepicker.setDefaults(jQuery.datepicker.regional['']);
-}());
+	sap.ui.commons.DatePicker.prototype.exit = function() {
 
-/*
- * if the first day of the week is a Sunday the week number is sometimes wrong
- * because the week number calculation uses monday as first day, so for sunday
- * it returns the previous week
- * so just use next day for week number calculation
- */
-sap.ui.commons.DatePicker.weekNumWithSundayFirst = function(date){
+		this._oDate = undefined;
+		this._oLocale = undefined;
 
-	var checkDate = new Date(date.getTime());
-	if (checkDate.getDay() == 0) {
-		checkDate.setDate(checkDate.getDate() + 1);
-	}
-	return jQuery.datepicker.iso8601Week(checkDate);
+		if(this._oPopup) {
+			if (this._oPopup.isOpen()) {
+				this._oPopup.close();
+			}
+			delete this._oPopup;
+		}
 
-};
+		if (this._oCalendar) {
+			this._oCalendar.destroy();
+			delete this._oCalendar;
+		}
 
-/*
- * in US the week starts with Sunday
- * The first week of the year starts with January 1st. But Dec. 31 is still in the last year
- * So the week beginning in December and ending in January has 2 week numbers
- * Displayed it the number of the first week day, like in outlook
- */
-sap.ui.commons.DatePicker.weekNumUS = function(date){
-
-	var checkDate = new Date(date.getTime());
-	// Find Sunday of this week starting on Sunday
-	checkDate.setDate(checkDate.getDate() - checkDate.getDay());
-	if (date.getMonth() == 0 && checkDate.getMonth == 11) {
-		// special case 1. week of year. If day is in January week number for it is 1
-		return 1;
-	}
-	var time = checkDate.getTime();
-	var firstDate = new Date(checkDate.getTime());
-	firstDate.setMonth(0); // Compare with sunday before Jan 1
-	firstDate.setDate(1);
-	firstDate.setDate(firstDate.getDate() - firstDate.getDay());
-	return Math.floor(Math.round((checkDate - firstDate) / 86400000) / 7) + 1;
-
-};
-
-/**
- * Initializes the control.
- * It is called from the constructor.
- * @private
- */
-sap.ui.commons.DatePicker.prototype.init = function(){
-
-	sap.ui.commons.TextField.prototype.init.apply(this, arguments);
-
-	// The <INPUT> part of the DatePicker should look like that of the ComboBox.
-	// (to share same look&feel)
-
-	// There is no point really in setting the "maxLength" attribute for the DatePicker,
-	// as jQuery already parses the input according to the configured language-dependent dateFormat.
-	// Anyway, such maxLength would be language-dependent!
-	// this.setMaxLength(10);
-
-	this.oPrivate = {
-	  bIsVisible: false,    // "visibility:hidden" allows not to display the jQuery
-							// DatePicker on INPUT-focus!  :-)
-	  tLastTimeStamp: "",   // Used to avoid re-opening on double-clicks.
-	  sValue: "",			// VALUE saved on KEYUP for IE to use next if ONKEYDOWN = ENTER,
-							// for processing YYYYMMDD entries before jQuery kicks in.
-	  bVerboseMode: false   // When set to "true", prints console logs.
 	};
 
-	this._oFormatYyyymmdd = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyyMMdd"});
+	sap.ui.commons.DatePicker.prototype.onAfterRendering = function() {
 
-	if (sap.ui.Device.browser.mobile) {
-		this.mobile = true;
-		this._oFormatMobile = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyy-MM-dd"});
-	}
-
-};
-
-/**
- * Small utility.
- */
-sap.ui.commons.DatePicker.prototype._getInputId = function(){
-	// To follow the ComboBox behavior, the <INPUT> ID = control ID + "-input":
-	return this.getId() + "-input";
-};
-
-/**
- * Adds the jQuery DatePicker onAfterRendering.
- * Another possibility would be to wait until INPUT-focus or BUTTON-click,
- * if performance becomes an issue with multiple instances.
- */
-sap.ui.commons.DatePicker.prototype.onAfterRendering = function(){
-	var sInputId  = this._getInputId();
-
-	// Attaching our onKeydown non-jQuery handler before the jQuery DatePicker binds
-	// its own, as we want to be invoked first for parsing entries in the YYYYMMDD format!
-	// The SAPUI5 "sapOnEnter" and "onKeydown" handlers are of no use since the DatePicker
-	// onENTER handler kicks-in before those two (and event intercepts the ENTER events).
-	// jQuery "INPUT.bind('keydown',...)" can't be used without causing jQuery JavaScript errors.
-	// So we are left with the basic JavaScript event registering mechanisms.
-	var oInput = jQuery.sap.domById(sInputId);
-	jQuery(oInput).bind('keydown', jQuery.proxy(sap.ui.commons.DatePicker.prototype._handleKeydown, this));
-
-	var oBindingInfo = this.getBindingInfo("value");
-	var sLocale   = this.getRenderedLocale();
-
-	// if DatePicker is bound to a model of date type use the defined pattern.
-	if (oBindingInfo && oBindingInfo.type && oBindingInfo.type instanceof sap.ui.model.type.Date) {
-		var sOldPattern = this.pattern;
-		this.pattern = oBindingInfo.type.getOutputPattern();
-		this._bValidateViaBinding = true;
-		if (sOldPattern != this.pattern) {
-			var oLocale = new sap.ui.core.Locale(sLocale);
-			this._oFormat = sap.ui.core.format.DateFormat.getInstance({pattern: this.pattern}, oLocale);
-		}
-	}
-
-	// in mobile mode don't attach the jQuery datePicker to the field
-	// don't use jQuery date pattern because only native one (yyyy-mm-dd) filled by the device datepicker
-	if (!this.mobile){
-		// Attaching a jQuery DatePicker to the <INPUT> element, with the supported locale:
-		var oSelector = jQuery.sap.byId(sInputId);
-		oSelector.datepicker(jQuery.datepicker.regional[sLocale]);
-		oSelector.removeAttr("title"); // because otherwise JAWS reads Tooltip sometimes twice (its additional in description text)
-
-		// Attaching our CSS classes to the jQuery DatePicker for styling and visibility.
-		var oPicker = jQuery('#ui-datepicker-div');
-		oPicker.addClass('sapUi-jQdatePicker sapUi-visibilityHidden sapUiShd');
-
-		// add disalog role an a description to popup because otherwise user will not recognize where he is
-		// full aria support not yet available for jQuery datepicker
-		var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons");
-		oPicker.attr('role', 'dialog').attr('aria-label', rb.getText("DATEPICKER_DIALOG"));
-
-		// if DatePicker is bound to a model of date type use the defined pattern.
-		if (this._bValidateViaBinding) {
-			oSelector.datepicker( "option", "dateFormat", this._convertDatePattern(this.pattern));
-			// as jQueryDatePicker tries to parse the date from the old pattern, what fails in this case
-			// we have to set it again. (But only of already formatted)
-			if (!this._bSetYyyymmddAfterRendering && !this._bSetValueAfterRendering ) {
-				oSelector.datepicker( "setDate" , this.getValue() );
+		if (this._bMobile) {
+			// convert output to mobile format
+			if (this._oDate) {
+				var $Input = jQuery(this.getInputDomRef());
+				var sOutputValue = this._oFormatMobile.format(this._oDate);
+				$Input.val(sOutputValue);
 			}
 		}
-	}
 
-	// Now that we have the jQuery DatePicker attached, we can convert YYYYDDMM to VALUE
-	// or VALUE to YYYYMMDD!
-	// Only one of the two YYYYMMDD and VALUE attributes can be set.
-	// (Setting one resets the other. So the last in wins.)
-	if (this._bSetYyyymmddAfterRendering) {
-		this.setYyyymmdd(this.getYyyymmdd());
-	} else if(this._bSetValueAfterRendering){
-		this.setValue(this.getValue());
-	}
-	this._bSetYyyymmddAfterRendering = undefined;
-	this._bSetValueAfterRendering = undefined;
-
-};
-
-/**
- * The "_show()" and "_hide()" utilities are for opening/closing the DatePicker.
- * "visibility:hidden" is applied, not to render the Picker on INPUT-focus.
- * Own Keyboard Handler is required for overriding jQuery navigation.
- */
-sap.ui.commons.DatePicker.prototype._show = function(){
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: ._show()");
-	}
-
-	// if the DatePicker is inside the popup a higher z-index is needed to prevent
-	// that popup sets focus back to input field if clicked somewhere in the DatePicker-popup.
-	if (sap.ui.core.Popup) {
-		// if not in a popup and no popup on page sap.ui.core.Popup not loaded
-		sap.ui.core.Popup.getNextZIndex();
-	}
-
-	// Opening the DatePicker!
-	var oSelector = jQuery.sap.byId(this._getInputId());
-	var oPicker = jQuery('#ui-datepicker-div');
-	oPicker.removeClass('sapUi-visibilityHidden sapUi-DP-top');
-	oSelector.datepicker( "show" );
-
-	// to show borders datepicker must know if its on top or below the input field
-	if (oPicker.offset().top < oSelector.offset().top) {
-		oPicker.addClass('sapUi-DP-top');
-	}
-
-	// workaound for jQuery-DatePicker bug in fixed ares
-	if(oPicker.css('position') == 'fixed'){
-		if((oPicker.position().top - jQuery(document).scrollTop() + oPicker.outerHeight()) > document.documentElement.clientHeight){
-			var sNewTop = (oPicker.position().top - jQuery(document).scrollTop() - oPicker.outerHeight() - oSelector.outerHeight()) + 'px';
-			oPicker.css('top', sNewTop);
-		}
-	}
-
-	// Taking note of that state.
-	this.oPrivate.bIsVisible = true;
-	// Making sure this DatePicker has our keydown handler:
-	this._setKeyboardNavigation();
-	// Focusing onto the selected or current day:
-	// Can't focus right-away in IE8/9! (No issue with Firefox and Safari.)
-	//this._focusCalendar();
-	// Therefore adding a delay for the Picker to have time to render.
-	// Anyway, this can only make this code more robust for future jQuery releases!
-	setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
-
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: open");
-	}
-};
-
-/**
- * Functionality to close the DatePicker
- */
-sap.ui.commons.DatePicker.prototype._hide = function(){
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: ._hide()");
-	}
-
-	if (this.oPrivate.bIsVisible) {
-		// Record time of closing:
-		var currentTime = new Date().getTime();
-		this.oPrivate.tLastTimeStamp = currentTime;
-
-		// Proceeding with the closing.
-		jQuery('#ui-datepicker-div').addClass('sapUi-visibilityHidden');
-		this.oPrivate.bIsVisible = false;
-		var oSelector = jQuery.sap.byId(this._getInputId());
-		oSelector.datepicker( "hide" );
-
-		var oInput = this.getInputDomRef();
-		if (oInput.value != this.getValue()) {
-			this._checkChange();
-		}
-		// By default (ENTER, ESC, Picker-CLICK, ...) focusing back onto the INPUT field.
-		// However, clicking anywhere else will override this default behavior.
-		if (oInput) {
-			oInput.focus();
-		}
-	}
-
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: closed");
-	}
-};
-
-/**
- * BUTTON-click is to toggle the DatePicker.
- */
-sap.ui.commons.DatePicker.prototype.onclick = function(oEvent){
-	var target = oEvent.target;
-
-	if (this.mobile && target.nodeName != "INPUT") {
-		return;
-	}
-
-	// Do not react if disabled/nonEditable, in case defined as such by inheritance.
-	if ( !this.getEnabled() || !this.getEditable()) {
-		if (target.nodeName != "INPUT") {
-			// button clicked -> focus complete field.
-			this.$().focus();
-		}
-		return;
-	}
-
-	if (target.nodeName != "INPUT") {
-		// The button must have been clicked!
-		// DIV#myDatePickerId              <-- DIV container
-		//   INPUT#myDatePickerId-input    <-- INPUT field
-		//   DIV#myDatePickerId-icon       <-- BUTTON field
-		if (this.oPrivate.bIsVisible) {
-			if (this.oPrivate.bVerboseMode) {
-				jQuery.sap.log.debug("DATEPICKER: BUTTON-CLICK HIDE");
-			}
-			this._hide();
-		} else {
-			// Discard double-events:
-			// Scenario: When clicking outside of the DatePicker and of its INPUT field,
-			//           jQuery closes the DatePicker.
-			//           Now, if one happens to be clicking on the DatePicker button,
-			//           jQuery will first close the DatePicker, then, we will get this
-			//           button-click event that we will have to discard, not to immediately
-			//           re-open the DatePicker!
-			//           The time interval between these two events typically range between
-			//           50 and 170 msec.
-			var currentTime = new Date().getTime();
-			var timeLapse   = currentTime - this.oPrivate.tLastTimeStamp;
-			// Assuming that anything received within 300msec interval is invalid.
-			if (timeLapse && timeLapse < 300) {
-				if (this.oPrivate.bVerboseMode) {
-					jQuery.sap.log.debug("DATEPICKER: BUTTON-D-CLICK IGNORED: " + timeLapse + "msec");
-				}
-				this.getInputDomRef().focus();
-			} else {
-				if (this.oPrivate.bVerboseMode) {
-					jQuery.sap.log.debug("DATEPICKER: BUTTON-CLICK SHOW");
-				}
-				if (!sap.ui.Device.support.input.placeholder) {
-					// simulate focus on input field to remove placeholder
-					this.onfocusin(oEvent);
-				}
-				this._show();
-			}
-		}
-	}
-};
-
-sap.ui.commons.DatePicker.prototype.onmousedown = function(oEvent){
-
-	if (this.oPrivate.bIsVisible) {
-		// stop propagation of event, otherwise if the DatePicker is in a dialog (popup) this will move in front of the calendar
-		oEvent.stopPropagation();
-	}
-
-};
-
-/**
- * Pseudo event for pseudo 'show' event (F4, Alt + down-Arrow).
- * Used for opening the DatePicker.
- */
-sap.ui.commons.DatePicker.prototype.onsapshow = function(oEvent){
-	// Do not react if disabled/nonEditable, in case defined as such by inheritance.
-	if ( !this.getEnabled || !this.getEditable() || this.mobile) {
-		return;
-	}
-
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: .onsapshow()");
-	}
-	this._checkChange(oEvent);
-	this._show();
-
-	// Would be nice if Framework could intercept the F4 event, so that IE would not open its
-	// URL history...
-	// Doing it here for now.
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.DatePicker.prototype._handleKeydown = function(oEvent){
-
-	if (this.mobile) {
-		// no keyboard support for mobile devices (no jQuery DatePicker assigned)
-		return;
-	}
-
-	if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_UP && !oEvent.ctrlKey && !oEvent.shiftKey) {
-		// increase by one day
-		this._increaseDate("day", 1, oEvent);
-	}else if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_DOWN && !oEvent.ctrlKey && !oEvent.shiftKey) {
-		// decrease by one day
-		this._increaseDate("day", -1, oEvent);
-	}else if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_UP && !oEvent.ctrlKey && oEvent.shiftKey) {
-		// increase by one month
-		this._increaseDate("month", 1, oEvent);
-	}else if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_DOWN && !oEvent.ctrlKey && oEvent.shiftKey) {
-		// decrease by one month
-		this._increaseDate("month", -1, oEvent);
-	}else if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_UP && oEvent.ctrlKey && oEvent.shiftKey) {
-		// increase by one year
-		this._increaseDate("year", 1, oEvent);
-	}else if (oEvent.keyCode == jQuery.sap.KeyCodes.PAGE_DOWN && oEvent.ctrlKey && oEvent.shiftKey) {
-		// decrease by one year
-		this._increaseDate("year", -1, oEvent);
-	}
-
-};
-
-/*
- * increase or decrease date by i sUnit
- */
-sap.ui.commons.DatePicker.prototype._increaseDate = function(sUnit, i, oEvent){
-
-	var oSelector = jQuery.sap.byId(this._getInputId());
-	// current displayed date is stored in DatePicker
-	var oDate = oSelector.datepicker( "getDate" );
-
-	if (!oDate) {
-		// empty datePicker -> just lets type
-		return;
-	}
-
-	switch (sUnit) {
-	case "day":
-		oDate.setDate(oDate.getDate()+i);
-		break;
-	case "month":
-		oDate.setMonth(oDate.getMonth()+i);
-		break;
-	case "year":
-		oDate.setFullYear(oDate.getFullYear()+i);
-		break;
-	default:
-		break;
-	}
-	oSelector.datepicker( "setDate", oDate )
-	// this updates the input field too
-
-	oEvent.preventDefault(); // otherwise in safari "+" or "-" will be added
-};
-
-/**
- * Event handler for saving DATEs when FOCUS is lost.
- * Handles TABs as well.
- */
-sap.ui.commons.DatePicker.prototype.onsapfocusleave = function(oEvent){
-	// Ignore event if DatePicker is opening.
-	if (this.oPrivate.bIsVisible) {
-		return;
-	}
-
-	if (this.oPrivate.bVerboseMode) {
-		jQuery.sap.log.debug("DATEPICKER: .onsapfocusleave()");
-	}
-
-	sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
-};
-
-/**
- * On opening of the DatePicker, the requirement is to:
- * - focus on a move-to day, as done via arrow keys (Up, Right, Down, Left).
- * - focus on the already "selected" date, if one has already been set, or else:
- * - focus on the current date, or else (if having selected a new Month):
- * - focus on the 1st of the Month.
- * Meant to be called if the Picker is already open or just opening.
- * However the use of "setTimeout()" means we will have to make sure the picker
- * is still open before proceeding!
- * Also, can be called "any time" via our OnChangeMonthYear() callback function!
- * Not "prototype" since instance-independent.
-*/
-sap.ui.commons.DatePicker._focusCalendar = function() {
-	var oPicker       = jQuery('#ui-datepicker-div');
-	var sControlID    = oPicker.attr('associatedControlId');
-	// Return if called back for a Picker that has not even reached the opening state:
-	if (!sControlID) {
-		return;
-	}
-	var oControl      = sap.ui.getCore().getControl(sControlID);
-	if (!oControl) {
-		return;
-	}
-
-	// Return if the Picker is now closed. May happen after setTimeout():
-	if (!oControl.oPrivate.bIsVisible) {
-		oPicker.attr('restoreFocusOnDay', "");
-		return;
-	}
-	var oDivContainer = jQuery.sap.domById(sControlID);
-	var oFocusCell    = null;
-	var oFocusDay     = null;
-
-	// Were we to restore the focus against a particular day?
-	var sDay = oPicker.attr('restoreFocusOnDay');
-	if (sDay) {
-		oFocusCell = jQuery('a.ui-state-default');
-		var day = Number(sDay);
-		if (day <= 0) {day += oFocusCell.length;}
-		oFocusDay = oFocusCell[day-1];
-		if (oFocusDay && oFocusDay.offsetHeight) {
-			// Can only focus on "in-the-month" Anchors (not on "out-of-the-month" SPANs),
-			// and can only focus if the calendar day has been rendered (height check).
-			oFocusDay.focus();
-			jQuery(oFocusDay).mouseover();
-			// Although we just focused into the Calendar, having our INPUT field
-			// still look "in-focus", like a ComboBox would do when open:
-			if (oDivContainer.className.indexOf("sapUiTfFoc") == -1) {
-				oDivContainer.className += " sapUiTfFoc";
-			}
-			oPicker.attr('restoreFocusOnDay', "");
-			return;
-		}
-	}
-
-	// Currently hovered/focused day
-	oFocusDay = jQuery('a.ui-state-default.ui-state-hover').get(0);
-
-	// Currently selected date:
-	if (!oFocusDay){
-		oFocusCell = jQuery('td.ui-datepicker-current-day');
-		oFocusDay  = (oFocusCell[0]) ? oFocusCell[0].firstChild : null;
-	}
-
-	// Today:
-	if (!oFocusDay){
-		oFocusCell = jQuery('td.ui-datepicker-today');
-		oFocusDay  = (oFocusCell[0]) ? oFocusCell[0].firstChild : null;
-	}
-
-	// 1st of the Month:
-	if (!oFocusDay){
-		var aDays = jQuery("a.ui-state-default");
-		for ( var iDay = 0; iDay < aDays.length; iDay++) {
-			var oDay = aDays[iDay];
-			if (!jQuery(oDay).hasClass('ui-priority-secondary')) {
-				// first Day of month found
-				oFocusDay = oDay;
-				break;
-			}
-		}
-	}
-
-	if (oFocusDay && oFocusDay.nodeName == "A" && oFocusDay.offsetHeight) {
-		oFocusDay.focus();
-		jQuery(oFocusDay).mouseover();
-		if (oDivContainer.className.indexOf("sapUiTfFoc") == -1) {
-			oDivContainer.className += " sapUiTfFoc";
-		}
-		return;
-	}
-
-	// Just to be on the safe side, in case more time is needed on IE to render
-	// the inner calendar, we will try again in 100msec.
-	// Infinite loops are avoided by stopping if no open picker is found.
-	setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
-};
-
-/**
- * Similar, but simpler, utilities for focusing onto the DDLBs.
- * Can only be called if the Picker is already rendered.
- * Not "prototype" since instance-independent.
-*/
-sap.ui.commons.DatePicker._focusMonth = function() {
-	jQuery('select.ui-datepicker-year')[0].focus(); // Focussing elsewhere closes the month DDLB.
-	jQuery('select.ui-datepicker-month')[0].focus();
-};
-
-sap.ui.commons.DatePicker._focusYear = function() {
-	jQuery('select.ui-datepicker-month')[0].focus(); // Focussing elsewhere closes the year DDLB.
-	jQuery('select.ui-datepicker-year')[0].focus();
-};
-
-/**
- * Keyboard Navigation:
- * - Tab						: For navigating between the 3 selectors (2 DDLBs + 1 Calendar).
- * - Arrows					: For navigating within a selector.
- * - Enter or Space	: For making a selection.
- * - Esc						: For closing with no selection.
- * - Home						: For navigating to the first day.
- * - End						: For navigating to the last day.
- * - PageUp					: For rendering the previous month.
- * - PageDown				: For rendering the next month.
- *
- * BEWARE: "this" points to the jQuery Picker, as this handler got bound against it.
- *         Use "oControl" for pointing to "this" controller!
- *
- * JAWS: Please do not forget to change cursor modes, as by default, JAWS
- *       uses some keys for its own usage, e.g. RightArrow = "SayNextCharacter".
- *       INSERT-Z will toggle you in and out of normal arrow keyboard navigation mode.
- *       Arrow navigation can be used within the Calendar part of the DatePicker.
- *       Otherwise one can still use Alt-LeftArrow and Alt-RightArrow for navigation.
- *
- * Not "prototype" since instance-independent.
-*/
-sap.ui.commons.DatePicker._keyboardHandler = function(event) {
-	// Sub-function for focusing onto a given calendar day, i.e. 1 through 31.
-	// use mouseover function to allow mouse/keyboard interaction using class ui-state-hover
-	function focusDay(nDay) {
-		// Retrieving all possible day cells within the calendar:
-		var days = jQuery("a.ui-state-default");
-		var bOtherMonth = jQuery(days[nDay-1]).hasClass('ui-priority-secondary');
-		if ((nDay > 0) && (nDay <= days.length) && !bOtherMonth) {
-			// Focussing within the current month:
-			days[nDay-1].focus(); // Day 1 is at index 0...
-			jQuery(days[nDay-1]).mouseover();
-		} else if ((nDay <= 0) || (bOtherMonth && nDay < 7)) {
-			// Focussing within the previous month:
-			var iShiftDays = 0;
-			if (jQuery(days[0]).hasClass('ui-priority-secondary')) {
-				// previous months days displayed
-				iShiftDays = 7;
-			}
-			jQuery("a.ui-datepicker-prev").focus();
-			jQuery("a.ui-datepicker-prev").click();
-			var aNewDays = jQuery("a.ui-state-default");
-			jQuery(aNewDays[aNewDays.length-1-iShiftDays+nDay]).mouseover();
-			jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(aNewDays.length-iShiftDays+nDay));
-
-		} else {
-			// Focussing within the next month:
-			var iShiftDays = 0;
-			var iNewDay = nDay - days.length;
-			if (jQuery(days[days.length-1]).hasClass('ui-priority-secondary')) {
-				// previous months days displayed
-				iShiftDays = 7;
-			}
-			jQuery("a.ui-datepicker-next").focus();
-			jQuery("a.ui-datepicker-next").click();
-			var aNewDays = jQuery("a.ui-state-default");
-			jQuery(aNewDays[iShiftDays+iNewDay-1]).mouseover();
-			jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(iShiftDays+iNewDay));
-		}
-	}
-
-	// Sub-function for focusing onto the last calendar day.
-	function focusLastDayOfMonth() {
-		var aDays = jQuery("a.ui-state-default");
-		// find last day of month
-		for ( var iDay = aDays.length - 1; iDay >= 0; iDay--) {
-			var oDay = aDays[iDay];
-			if (!jQuery(oDay).hasClass('ui-priority-secondary')) {
-				// last Day of month found
-				oDay.focus();
-				jQuery(oDay).mouseover();
-				return(iDay);
-			}
-		}
-	}
-
-	function focusFirstDayOfMonth(bFocus) {
-		var aDays = jQuery("a.ui-state-default");
-		for ( var iDay = 0; iDay < aDays.length; iDay++) {
-			var oDay = aDays[iDay];
-			if (!jQuery(oDay).hasClass('ui-priority-secondary')) {
-				// first Day of month found
-				oDay.focus();
-				jQuery(oDay).mouseover();
-				return(iDay);
-			}
-		}
-	}
-
-	// Sub-function for focusing onto the 1st day of the week, given a day within the week.
-	function focusFirstDayOfWeek(nDay) {
-		var days = jQuery("a.ui-state-default");
-		// Fetching the current Calendar Row. Going up from "A" to "TD" to "TR":
-		var currentRow = days[nDay-1].parentNode.parentNode;
-		// Looking for the 1st Calendar day found within that row:
-		for (var i=0, len=days.length; i<len; i++) {
-			if (days[i].parentNode.parentNode == currentRow) {
-				if (!jQuery(days[i]).hasClass('ui-priority-secondary')) {
-					days[i].focus();
-					jQuery(days[i]).mouseover();
-				}else{
-					// day is in previous month
-					jQuery("a.ui-datepicker-prev").focus();
-					jQuery("a.ui-datepicker-prev").click();
-					var aNewDays = jQuery("a.ui-state-default");
-					jQuery(aNewDays[aNewDays.length-7]).mouseover();
-					jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(aNewDays.length-6));
-				}
-				return;
-			}
-		}
-	}
-
-	// Sub-function for focusing onto the last day of the week, given a day within the week.
-	function focusLastDayOfWeek(nDay) {
-		var days = jQuery("a.ui-state-default");
-		var currentRow = days[nDay-1].parentNode.parentNode;
-		// Looking for the last Calendar day found within that row:
-		for (var i=days.length-1; i>=0; i--) {
-			if (days[i].parentNode.parentNode == currentRow) {
-				if (!jQuery(days[i]).hasClass('ui-priority-secondary')) {
-					days[i].focus();
-					jQuery(days[i]).mouseover();
-				}else{
-					// day is in next month
-					jQuery("a.ui-datepicker-next").focus();
-					jQuery("a.ui-datepicker-next").click();
-					var aNewDays = jQuery("a.ui-state-default");
-					jQuery(aNewDays[6]).mouseover();
-					jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(7));
-				}
-				return;
-			}
-		}
-	}
-
-	// Retrieving some current data:
-	var key              = event.keyCode;
-	var target           = event.target;
-	var currentFocusDay  = Number(target.innerHTML);
-	var bIsHeaderEvent   = (target.nodeName == "SELECT"); // DDLB event
-	var bIsCalendarEvent = (target.nodeName == "A");      // Day-cell event
-	if (!bIsHeaderEvent && !bIsCalendarEvent) {
-		jQuery.sap.log.debug("ERROR: DatePicker.prototype._keyboardHandler()");
-		return;
-	}
-
-	// as days of previous or next month are focusable the number of the day is not the
-	// focusable number. So the current day must be found from all days.
-	for ( var iDay = 0; iDay < jQuery("a.ui-state-default").length; iDay++) {
-		var oDay = jQuery("a.ui-state-default")[iDay];
-		if (target == oDay) {
-			// current day found
-			currentFocusDay = iDay + 1;
-			break;
-		}
-	}
-
-	switch (key){
-	case jQuery.sap.KeyCodes.TAB: /* 9 */
-		// Moving between DDLBs and Calendar areas.
-		if (bIsHeaderEvent) {
-			if ((target.className.indexOf("year")!=-1 && !event.shiftKey) ||
-					(target.className.indexOf("month")!=-1 && event.shiftKey)) {
-				setTimeout(sap.ui.commons.DatePicker._focusCalendar, 100);
-			} else {
-				if (target.className.indexOf("year")!=-1) {
-					setTimeout(sap.ui.commons.DatePicker._focusMonth, 100);
-				}
-				else {
-					setTimeout(sap.ui.commons.DatePicker._focusYear, 100);
-				}
-				return;
-			} // Native TABing between DDLBs.
-		} else {
-			if (event.shiftKey) {
-				jQuery("select.ui-datepicker-year")[0].focus();
-			}
-			else                {
-				jQuery("select.ui-datepicker-month")[0].focus();
-			}
-		}
-		break;
-	case jQuery.sap.KeyCodes.ENTER: /* 13 */
-		if (document.activeElement) {
-			// Oddly enough, on IE, have to stop jQuery from doing a 2nd selection back!
-			if (document.activeElement.className == "ui-datepicker-month"){
-				setTimeout(sap.ui.commons.DatePicker._focusMonth, 100);
-				break;  // Intercept this event from jQuery.
-			} else if (document.activeElement.className == "ui-datepicker-year" ){
-				setTimeout(sap.ui.commons.DatePicker._focusYear, 100);
-				break;  // Intercept this event from jQuery.
-			}
-		}
-		return; // Leave this event to jQuery to handle.
-		break;
-	case jQuery.sap.KeyCodes.ESCAPE: /* 27 */
-		// Closing the current DatePicker:
-		// jQuery('#ui-datepicker-div').hide(); <- Does not work as jQuery will not invoke
-		//                                         our supplied onClose() callback function
-		//                                         since we are the ones triggering this closure!
-		// So, invoking our "_hide()" function instead, as our Controller needs to register this.
-		var oPicker    = jQuery('#ui-datepicker-div');
-		var sControlID = oPicker.attr('associatedControlId');
-		var oControl   = sap.ui.getCore().getControl(sControlID);
-		oControl._hide();
-		break;
-	case jQuery.sap.KeyCodes.SPACE: /* 32 */
-		// Select the current day. jQuery handler is on parent TD.
-		if (bIsCalendarEvent) {
-			jQuery(target.offsetParent).click();
-		}
-		else {
-			return;
-		}
-		break;
-	case jQuery.sap.KeyCodes.PAGE_UP: /* 33 */
-		// Activate the "Previous" button:
-		jQuery("a.ui-datepicker-prev").click();
-		jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(focusFirstDayOfMonth()+1));
-		break;
-	case jQuery.sap.KeyCodes.PAGE_DOWN: /* 34 */
-		// Activate the "Next" button:
-		jQuery("a.ui-datepicker-next").click();
-		jQuery('#ui-datepicker-div').attr('restoreFocusOnDay', String(focusFirstDayOfMonth()+1));
-		break;
-	case jQuery.sap.KeyCodes.END: /* 35 */
-		// Focus on last day of...
-		if (bIsCalendarEvent) {
-			if (event.ctrlKey) {
-				focusLastDayOfMonth();
-			}
-			else               {
-				focusLastDayOfWeek(currentFocusDay);
-			}
-		} else {
-			return;
-		}
-		break;
-	case jQuery.sap.KeyCodes.HOME: /* 36 */
-		// Focus on first day of...
-		if (bIsCalendarEvent) {
-			if (event.ctrlKey) {
-				focusFirstDayOfMonth();
-			}
-			else               {
-				focusFirstDayOfWeek(currentFocusDay);
-			}
-		} else {
-			return;
-		}
-		break;
-	case jQuery.sap.KeyCodes.ARROW_LEFT: /* 37 */
-		// Focus onto "day-1", if possible.
-		if (bIsCalendarEvent) {
-			if (sap.ui.getCore().getConfiguration().getRTL()) {
-				focusDay(currentFocusDay+1);
-			}
-			else {
-				focusDay(currentFocusDay-1);
-			}
-		}
-		else {
-			return;
-		} // Allow native DDLB selection
-		break;
-	case jQuery.sap.KeyCodes.ARROW_UP: /* 38 */
-		// Focus onto "day-7", if possible.
-		if (bIsCalendarEvent) {
-			focusDay(currentFocusDay-7);
-		}
-		else {
-			return;
-		} // Allow native DDLB selection
-		break;
-	case jQuery.sap.KeyCodes.ARROW_RIGHT: /* 39 */
-		// Focus onto "day+1", if possible.
-		if (bIsCalendarEvent) {
-			if (sap.ui.getCore().getConfiguration().getRTL()) {
-				focusDay(currentFocusDay-1);
-			}
-			else {
-				focusDay(currentFocusDay+1);
-			}
-		}
-		else {
-			return;
-		} // Allow native DDLB selection
-		break;
-	case jQuery.sap.KeyCodes.ARROW_DOWN: /* 40 */
-		// Focus onto "day+7", if possible.
-		if (bIsCalendarEvent) {
-			focusDay(currentFocusDay+7);
-		}
-		else                  {
-			return;
-		} // Allow native DDLB selection
-		break;
-	default:
-		return;
-	}
-
-	// If we did not return, then this event was ours. Intercept!
-	event.preventDefault();
-	event.stopPropagation();
-};
-
-/**
- * Registering our DatePicker Keyboard Navigation handler over that of jQuery.
- * Also records the Control ID, as a means to reach it given a jQuery Picker.
- * @private
- */
-sap.ui.commons.DatePicker.prototype._setKeyboardNavigation = function() {
-	var oPicker = jQuery('#ui-datepicker-div');
-	if (oPicker) {
-		// BEWARE: Do not register the KeyDown Event Handler more than once!
-		//         Avoid multiple eventing and memory gobbler.
-		var registeredCtrlId = oPicker.attr('associatedControlId');
-		if (!registeredCtrlId) {
-			oPicker.bind('keydown', jQuery.proxy(sap.ui.commons.DatePicker._keyboardHandler, this));
-		}
-		// Note that jQuery uses only 1 picker for all instances, so we always
-		// need to update our current Control ID:
-		oPicker.attr('associatedControlId', this.getId());
-	} else {
-		jQuery.sap.log.debug("ERROR: DatePicker ._setKeyboardNavigation() fails.");
-	}
-};
-
-/**
- * Returns the "locale" (e.g. "en-US") to use for rendering a DatePicker.
- * Checks with the controller, the page, the navigator, until a match is found.
- * If no match is found, return the SAP 'en' default supported locale-language.
- * @private
- */
-sap.ui.commons.DatePicker.prototype.getRenderedLocale = function() {
-	// Fetch and check if the Control locale can be supported:
-	var sLocale = this.getLocale();
-	if (sLocale) {
-		var oLocale = new sap.ui.core.Locale(sLocale);
-		sLocale = oLocale.toString();
-	}else {
-		sLocale = sap.ui.getCore().getConfiguration().getFormatSettings().getFormatLocale().toString();
-		this.setLocaleTexts(sLocale);
-	}
-
-	if (!sLocale) {
-		// As Fallback, using the SAP-default "en" locale:
-		sLocale = "en";
-		this.setLocaleTexts(sLocale);
-	}
-
-	return sLocale;
-};
-
-// #############################################################################
-// Overwritting methods that are generated in DatePicker.API.js
-// #############################################################################
-
-/*
- * Setter for property <code>yyyymmdd</code>.
- * Required for handling application inputs (mainly onLoad).
- *
- * @param {string} sYyyymmdd  new value for property <code>yyyymmdd</code>
- * @return {sap.ui.commons.DatePicker} <code>this</code> to allow method chaining
- * @public
- */
-sap.ui.commons.DatePicker.prototype.setYyyymmdd = function(sYyyymmdd) {
-
-	// Quickly saving this non-validated YYYYMMDD as is, in case getter is called
-	// before we are done.
-	// "true" to suppress rendering. Rendering done on VALUE change.
-	this.setProperty("yyyymmdd", sYyyymmdd, true);
-
-	// No need to process this YYYYMMDD before control is rendered.
-	// (Propection against multiple qUnit-test YYYYMMDD changes.)
-	// Attribute will be processed onAfterRendering.
-	var oInput = this.getInputDomRef();
-	if (!oInput) {
-		this._bSetYyyymmddAfterRendering = true;
-		this._bSetValueAfterRendering = false;
-		return this;
-	}
-
-	var oSelector = jQuery.sap.byId(this._getInputId());
-	var sValue;
-	try{
-		var oDate = this._oFormatYyyymmdd.parse(sYyyymmdd);
-		if (this.mobile) {
-			// on mobile devices the date is displayed in native pattern, so it must be
-			// converted into control pattern for value property
-			var sOutputValue = "";
-			if (oDate) {
-				sValue = this._oFormat.format(oDate);
-				sOutputValue = this._oFormatMobile.format(oDate);
-			}else{
-				sValue = "";
-			}
-			oSelector.val(sOutputValue);
-		}else{
-			// Building a date object with the fix-format received date:
-			// Updating the DatePicker:
-			oSelector.datepicker( "setDate" , oDate );
-			// Saving the current date value:
-			sValue = oInput.value;
-		}
-	} catch (e) {
-		// Maybe YYYYMMDD was not supplied in the YYYYDDMM format!?
-		jQuery.sap.log.error("Error: DATEPICKER setYyyymmdd(" + sYyyymmdd + ") failed! Maybe the format is wrong.");
-		return this;
 	};
-	// "true" to suppress rendering. Not needed since we just read it from the DOM!
-	this.setProperty("value", sValue, true);
 
-	return this;
-};
+	sap.ui.commons.DatePicker.prototype.invalidate = function(oOrigin) {
 
-/*
- * Setter for property <code>value</code>.
- * Required for handling user manual inputs.
- *
- * @param {string} sValue new value for property <code>value</code>
- * @return {sap.ui.commons.DatePicker} <code>this</code> to allow method chaining
- * @public
- */
-sap.ui.commons.DatePicker.prototype.setValue = function(sValue) {
+		if(!oOrigin || oOrigin != this._oCalendar){
+			// Calendar is only invalidated by DatePicker itself -> so don't invalidate DatePicker
+			sap.ui.core.Control.prototype.invalidate.apply(this, arguments);
+		}
 
-	// No need to process this VALUE before control is rendered.
-	// (Propection against multiple qUnit-test VALUE changes.)
-	// Attribute will be processed onAfterRendering.
-	var oInput = this.getInputDomRef();
-	if (!oInput) {
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsapshow = function(oEvent) {
+
+		var that = this;
+
+		_toggleOpen(that);
+
+		oEvent.preventDefault(); // otherwise IE opens the address bar history
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsappageup = function(oEvent){
+
+		//increase by one day
+		var that = this;
+		_incraseDate(that, 1, "day");
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsappageupmodifiers = function(oEvent){
+
+		var that = this;
+		if (!oEvent.ctrlKey && oEvent.shiftKey) {
+			// increase by one month
+			_incraseDate(that, 1, "month");
+		} else {
+			// increase by one year
+			_incraseDate(that, 1, "year");
+		}
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsappagedown = function(oEvent){
+
+		//decrease by one day
+		var that = this;
+		_incraseDate(that, -1, "day");
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsappagedownmodifiers = function(oEvent){
+
+		var that = this;
+		if (!oEvent.ctrlKey && oEvent.shiftKey) {
+			// decrease by one month
+			_incraseDate(that, -1, "month");
+		} else {
+			// decrease by one year
+			_incraseDate(that, -1, "year");
+		}
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onclick = function(oEvent) {
+
+		if (jQuery(oEvent.target).hasClass("sapUiTfDateIcon") && !this._bMobile) {
+			var that = this;
+			_toggleOpen(that);
+		}
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.onsapfocusleave = function(oEvent){
+
+		// Ignore event if DatePicker is opening or clicked on opener.
+		if(this._oCalendar && oEvent.relatedControlId &&
+		  (jQuery.sap.containsOrEquals(this._oCalendar.getDomRef(), sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef()) ||
+		  this.getId() == oEvent.relatedControlId)){
+			return;
+		}
+
+		sap.ui.commons.TextField.prototype.onsapfocusleave.apply(this, arguments);
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.setValue = function(sValue) {
+
+		var sOldValue = this.getValue();
+		if (sValue == sOldValue) {
+			return;
+		}
+
+		var that = this;
+		_checkLocaleAllowed(that);
+
 		this.setProperty("value", sValue, true);
-		this._bSetValueAfterRendering = true;
-		this._bSetYyyymmddAfterRendering = false;
-		return this;
-	}
+		this._bValueSet = true;
 
-	// jQuery needed to compute yyyymmdd.
-	var oSelector = jQuery.sap.byId(this._getInputId());
-	var oDate;
-	try{
-		if (this.mobile) {
-			// on mobile devices the date is displayed in native pattern, so it must be
-			// converted into control pattern fpr value property
-			var sOutputValue = "";
-			oDate = this._oFormat.parse(sValue);
-			if (oDate) {
-				sOutputValue = this._oFormatMobile.format(oDate);
-			}
-			oSelector.val(sOutputValue);
-		}else{
-			// Updating the DatePicker with the raw VALUE:
-			oSelector.datepicker( "setDate" , sValue );
-			// Using a date object, asking jQuery to reformat it in our fix-YYYYMMDD format:
-			oDate = oSelector.datepicker( "getDate" );
-			// Checking how jQuery interpreted the supplied DATE:
-			sValue = oInput.value;
+		if (sValue) {
+			this._oDate = this._parseValue(sValue);
+		} else {
+			this._oDate = undefined;
 		}
+
 		var sYyyymmdd = "";
-		if (oDate) {
-			sYyyymmdd = this._oFormatYyyymmdd.format(oDate);
+		if (this._oDate) {
+			sYyyymmdd = this._oFormatYyyymmdd.format(this._oDate);
 		}
-	} catch (e) {
-		// Maybe VALUE was not supplied in the appropriate LOCALE format!?
-		jQuery.sap.log.error("Error: DATEPICKER setValue(" + sValue + ") failed! Maybe VALUE was not supplied in the appropriate LOCALE format!");
-		//however set property to allow checks from Datatbinding or application
+
+		this.setProperty("yyyymmdd", sYyyymmdd, true);
+
+		if (this.getDomRef()) {
+			// update value in input field
+			var sOutputValue = "";
+			var $Input = jQuery(this.getInputDomRef());
+			if (this._bMobile && this._oDate) {
+				// on mobile devices the date is displayed in native pattern, so it must be
+				// converted into control pattern for value property
+				sOutputValue = this._oFormatMobile.format(this._oDate);
+			}else{
+				// format date again - maybe value uses not the right pattern ???
+				sOutputValue = sValue;
+			}
+			$Input.val(sOutputValue);
+		}
+
+		return this;
+
+	};
+
+	sap.ui.commons.DatePicker.prototype.setYyyymmdd = function(sYyyymmdd) {
+
+		var sOldYyyymmdd = this.getYyyymmdd();
+		if (sYyyymmdd == sOldYyyymmdd) {
+			return;
+		}
+
+		this.setProperty("yyyymmdd", sYyyymmdd, true);
+		this._bValueSet = false;
+
+		var sValue = "";
+
+		if (sYyyymmdd) {
+			this._oDate = this._oFormatYyyymmdd.parse(sYyyymmdd);
+		} else {
+			this._oDate = undefined;
+		}
+
+		if (this._oDate) {
+			sValue = this._formatValue(this._oDate);
+		}
 		this.setProperty("value", sValue, true);
+
+		if (this.getDomRef()) {
+			// update value in input field
+			var sOutputValue = "";
+			var $Input = jQuery(this.getInputDomRef());
+			if (this._bMobile && this._oDate) {
+				// on mobile devices the date is displayed in native pattern, so it must be
+				// converted into control pattern for value property
+				sOutputValue = this._oFormatMobile.format(this._oDate);
+			}else{
+				// format date again - maybe value uses not the right pattern ???
+				sOutputValue = sValue;
+			}
+			$Input.val(sOutputValue);
+		}
+
 		return this;
-	}
-	// set property only once after formatatting
-	// "true" to suppress rendering. jQuery DatePicker handles that.
-	this.setProperty("value", sValue, true);
-	// Saving the concurrent date attribute:
-	// "true" to suppress rendering. Rendering done on VALUE change.
-	this.setProperty("yyyymmdd", sYyyymmdd, true);
 
-	jQuery.sap.log.debug("DATEPICKER(" + this.getId() + "): setValue: value= " + this.getValue() + " yyyymmdd= " + this.getYyyymmdd());
-	return this;
-};
+	};
 
-/**
- * Setter for property <code>locale</code>.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @param {string} sLocale  new value for property <code>locale</code>
- * @public
- */
-sap.ui.commons.DatePicker.prototype.setLocale = function(sLocale) {
-	// Worth checking if there is any change to process:
-	var oldLoc = this.getLocale();
-	if(sLocale == oldLoc) {
-		return this;
-	}
+	sap.ui.commons.DatePicker.prototype.setLocale = function(sLocale) {
 
-	// Saving the supplied locale:
-	// "true" to suppress rendering. Rendering done on VALUE change.
-	this.setProperty("locale", sLocale, true);
+		// Worth checking if there is any change to process:
+		var sOldLoc = this.getLocale();
+		if(sLocale == sOldLoc) {
+			return this;
+		}
 
-	// If control has not been rendered, there is no point rendering a new one now!
-	var oInput = this.getInputDomRef();
-	if (!oInput) {
-		this.setLocaleTexts(sLocale);
-		return this;
-	}
+		// Saving the supplied locale:
+		// "true" to suppress rendering. Rendering done on VALUE change.
+		this.setProperty("locale", sLocale, true);
 
-	// Retrieving the supported translations, to give jQuery:
-	sLocale = this.getRenderedLocale();
-	var oSelector = jQuery.sap.byId(this._getInputId());
-	if(!this.mobile){
-		// Have to instantiate a new jQuery DatePicker for reformating the rendered Date!
-		// Updating the new jQuery DatePicker and ourselves via a JavaScript Date object.
-		this.setLocaleTexts(sLocale);
-		var oDate = oSelector.datepicker( "getDate" );
-		// Only way to reformat VALUE on the fly, according to the new LOCALE:
-		oSelector.datepicker( "destroy" );
-		oSelector.datepicker(jQuery.datepicker.regional[sLocale]);
-		oSelector.datepicker( "setDate" , oDate );
-		this.setValue(oInput.value);
-	}else{
-		// on mobile devices only change value property to new pattern
-		// Yyyymmdd and rendered value are not changed
-		var sValue = this.getValue();
-		oDate = this._oFormat.parse(sValue);
-		this.setLocaleTexts(sLocale);
-		if (oDate) {
-			sValue = this._oFormat.format(oDate);
+		var that = this;
+		_checkLocaleAllowed(that);
+
+		// get locale object and save it as it is used in the formatter
+		this._oLocale = new sap.ui.core.Locale(sLocale);
+
+		// to create new formatter according to locale
+		this._sUsedPattern = undefined;
+
+		// format value according to new locale
+		var sValue = "";
+		if (this._bValueSet) {
+			// value was set, maybe locale set later -> parse again
+			sValue = this.getValue();
+
+			if (sValue) {
+				this._oDate = this._parseValue(sValue);
+			} else {
+				this._oDate = undefined;
+			}
+
+			var sYyyymmdd = "";
+			if (this._oDate) {
+				sYyyymmdd = this._oFormatYyyymmdd.format(this._oDate);
+			}
+
+			this.setProperty("yyyymmdd", sYyyymmdd, true);
+		}else{
+			// yyyymmdd set or date set by calendar -> format to value again
+			if (this._oDate) {
+				sValue = this._formatValue(this._oDate);
+			}
 			this.setProperty("value", sValue, true);
 		}
-	}
 
-	return this;
-};
-
-/*
- * Setter for texts of <code>locale</code>.
- *
- * @param {string} sLocale  new value for property <code>locale</code>
- * @private
- */
-sap.ui.commons.DatePicker.prototype.setLocaleTexts = function(sLocale) {
-
-	// normalize locale and use data from CLDR
-	var oLocale = new sap.ui.core.Locale(sLocale);
-	var oLocaleData = sap.ui.core.LocaleData.getInstance(oLocale);
-	sLocale = oLocale.toString();
-
-	// jQuery datepicker texts not needed in mobile case
-	// check if texts already loaded
-	var oRegional = jQuery.datepicker.regional[sLocale];
-	if(!oRegional || !oRegional.closeText){
-		oRegional = oRegional || (jQuery.datepicker.regional[sLocale] = {}); 
-
-		//language dependend fields
-		var rb = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons", sLocale);
-
-		oRegional.closeText = rb.getText("DATEPICKER_CLOSE_TEXT");
-		oRegional.prevText = rb.getText("DATEPICKER_PREV_TEXT");
-		oRegional.nextText = rb.getText("DATEPICKER_NEXT_TEXT");
-		oRegional.currentText = rb.getText("DATEPICKER_CURRENT_TEXT");
-		oRegional.monthNames = oLocaleData.getMonths("wide");
-		oRegional.monthNamesShort = oLocaleData.getMonths("abbreviated");
-		oRegional.dayNames = oLocaleData.getDays("wide");
-		oRegional.dayNamesShort = oLocaleData.getDays("abbreviated");
-		if (oLocale.sLanguage == "zh" || oLocaleData.getDaysStandAlone("abbreviated")[0].length > 2) {
-			// weekdays are too large -> use short ones
-			oRegional.dayNamesMin = oLocaleData.getDaysStandAlone("narrow");
-		}else{
-			oRegional.dayNamesMin = oLocaleData.getDaysStandAlone("abbreviated");
+		if (this.getDomRef()) {
+			// update value in input field
+			var sOutputValue = "";
+			var $Input = jQuery(this.getInputDomRef());
+			if (this._bMobile && this._oDate) {
+				// on mobile devices the date is displayed in native pattern, so it must be
+				// converted into control pattern for value property
+				sOutputValue = this._oFormatMobile.format(this._oDate);
+			}else{
+				// format date again - maybe value uses not the right pattern ???
+				sOutputValue = sValue;
+			}
+			$Input.val(sOutputValue);
 		}
 
-		oRegional.dateFormat = this._convertDatePattern(oLocaleData.getDatePattern("medium"));
-		oRegional.showMonthAfterYear = this._getOrderMonthYear(oRegional.dateFormat);
-		oRegional.firstDay = oLocaleData.getFirstDayOfWeek();
-		if (sLocale == "en-US"){
-			oRegional.calculateWeek = sap.ui.commons.DatePicker.weekNumUS;
-		} else if (oRegional.firstDay == 0) {
-			oRegional.calculateWeek = sap.ui.commons.DatePicker.weekNumWithSundayFirst;
+		return this;
+
+	};
+
+	/*
+	 * Overwrites the method in TextField to add additional YYYYMMDD parameter
+	 */
+	sap.ui.commons.DatePicker.prototype._checkChange = function(oEvent) {
+
+		var oInput = this.getInputDomRef();
+		var sNewValue = oInput && oInput.value;
+
+		if (this._bMobile && sNewValue != "") {
+			// on mobile devices the date is displayed in native pattern, so it must be
+			// converted into control pattern for value property
+			this._oDate = this._oFormatMobile.parse(sNewValue);
+			sNewValue = this._formatValue(this._oDate);
 		}
-	}
 
-	// if pattern not defined by databinding use the one of the locale
-	if (!this._bValidateViaBinding) {
-		var sOldPattern = this.pattern;
-		this.pattern = oLocaleData.getDatePattern("medium");
-		if (sOldPattern != this.pattern) {
-			this._oFormat = sap.ui.core.format.DateFormat.getInstance({pattern: this.pattern}, oLocale);
+		if(this.getEditable() && this.getEnabled() && sNewValue != this.getValue()) {
+			// check if input in valid pattern
+			var bWrong = false;
+			if (sNewValue != "") {
+				if (!this._bMobile) {
+					// in mobile case no wrong input is possible
+					this._oDate = this._parseValue(sNewValue);
+					if (this._oDate) {
+						// just format date to right pattern, because maybe a fallback pattern is used in the parsing
+						sNewValue = this._formatValue(this._oDate);
+						oInput.value = sNewValue;
+						if(this._oPopup && this._oPopup.isOpen()) {
+							this._oCalendar.focusDate(this._oDate);
+							if (!this._oDateRange.getStartDate() || this._oDateRange.getStartDate().getTime() != this._oDate.getTime()) {
+								this._oDateRange.setStartDate(new Date(this._oDate.getTime()));
+							}
+						}
+					}else{
+						bWrong = true;
+					}
+				}
+			}else{
+				this._oDate = undefined;
+			}
+
+			// set the value in any case
+			// in DataBinding case a parsing error is thrown if date can not be parsed
+			this.setProperty("value", sNewValue, true);
+			this._bValueSet = false;
+			if (!bWrong) {
+				var sYyyymmdd = "";
+				if (this._oDate) {
+					sYyyymmdd = this._oFormatYyyymmdd.format(this._oDate);
+				}
+
+				this.setProperty("yyyymmdd", sYyyymmdd, true);
+			}
+
+			this.fireChange( bWrong );
+		}else if(this.getEditable() && this.getEnabled() && sNewValue == this.getYyyymmdd()){
+			// the same date is entered as yyyymmdd again -> just set converted value to input field
+			oInput.value = this.getValue();
 		}
-	}
 
-};
+	};
 
-/*
- * Converts the date pattern from OLCR to the one of the jQuery datePicker
- * Month is coded in the different way
- */
-sap.ui.commons.DatePicker.prototype._convertDatePattern = function(sPattern) {
+	/**
+	 * Fire event change to attached listeners.
+	 *
+	 * Expects following event parameters:
+	 * <ul>
+	 * <li>'newValue' of type <code>string</code> The new / changed value of the DatePicker.</li>
+	 * <li>'newYyyymmdd' of type <code>string</code> The new / changed Yyyymmdd of the DatePicker. </li>
+	 * <li>'invalidValue' of type <code>boolean</code> The new / changed value of the DatePicker is not a valid date. </li>
+	 * </ul>
+	 *
+	 * @param {Map} [mArguments] the arguments to pass along with the event.
+	 * @return {sap.ui.commons.DatePicker} <code>this</code> to allow method chaining
+	 * @protected
+	 * @name sap.ui.commons.DatePicker#fireChange
+	 * @function
+	 */
+	sap.ui.commons.DatePicker.prototype.fireChange = function(bInvalidValue) {
 
-	var aFormatArray = sap.ui.core.format.DateFormat.prototype.parseJavaDateFormat(sPattern);
-	var aBuffer = [];
-	var oPart;
-	var sFormat;
-	var bNotSupported = false;
+		this.fireEvent("change", {newValue:this.getValue(),
+			newYyyymmdd: this.getYyyymmdd(),
+			invalidValue: bInvalidValue});
 
-	for (var i = 0; i < aFormatArray.length; i++) {
-		oPart = aFormatArray[i];
-		switch (oPart.sType) {
-			case "text":
-				aBuffer.push(oPart.sValue);
-				break;
-			case "day":
-				if (oPart.iDigits == 1) {
-					aBuffer.push("d");
-				}else {
-					aBuffer.push("dd");
-				}
-				break;
-			case "dayNameInWeek":
-			case "dayNameInWeekStandalone":
-				if (oPart.iDigits < 4) {
-					aBuffer.push("D");
-				} else if (oPart.iDigits >= 4){
-					aBuffer.push("DD");
-				}
-				break;
-			case "dayInYear":
-				if (oPart.iDigits < 4) {
-					aBuffer.push("o");
-				} else if (oPart.iDigits >= 4){
-					aBuffer.push("oo");
-				}
-				break;
-			case "dayNumberOfWeek":
-				bNotSupported = true;
-				break;
-			case "month":
-			case "monthStandalone":
-				if (oPart.iDigits == 1) {
-					aBuffer.push("m");
-				} else if (oPart.iDigits == 2){
-					aBuffer.push("mm");
-				} else if (oPart.iDigits == 3){
-					aBuffer.push("M");
-				} else if (oPart.iDigits == 4){
-					aBuffer.push("MM");
-				} else {
-					// not supported -> just use short one
-					aBuffer.push("m");
-				}
-				break;
-			case "era":
-				aBuffer.push("AD");
-				break;
-			case "year":
-			case "weekYear":
-				if (oPart.iDigits == 2) {
-					aBuffer.push("y");
-				}else {
-					aBuffer.push("yy");
-				}
-				break;
-			case "weekInYear":
-				bNotSupported = true;
-				break;
-			default:
-				bNotSupported = true;
-				break;
+		return this;
+
+	};
+
+	sap.ui.commons.DatePicker.prototype._parseValue = function(sValue) {
+
+		var that = this;
+
+		var oFormat = _getFormatter(that);
+
+		// convert to date object
+		var oDate = oFormat.parse(sValue);
+		return oDate;
+
+	};
+
+	sap.ui.commons.DatePicker.prototype._formatValue = function(oDate) {
+
+		var that = this;
+
+		var oFormat = _getFormatter(that);
+
+		// convert to date object
+		var sValue = oFormat.format(oDate);
+		return sValue;
+
+	};
+
+	function _getFormatter(oThis){
+
+		var sPattern = "";
+		var oBinding = oThis.getBinding("value");
+		var oLocale;
+
+		if (oBinding && oBinding.oType && (oBinding.oType instanceof sap.ui.model.type.Date)) {
+			sPattern = oBinding.oType.getOutputPattern();
 		}
-	}
 
-	sFormat = aBuffer.join("");
+		if (!sPattern) {
+			// no databinding is used -> use pattern from locale
+			oLocale = _getUsedLocale(oThis);
+			var oLocaleData = sap.ui.core.LocaleData.getInstance(oLocale);
+			sPattern = oLocaleData.getDatePattern("medium");
+		}
 
-	if (bNotSupported) {
-		jQuery.sap.log.warning("Date pattern \""+ sPattern + "\" not supported by DatePicker", "_convertDatePattern", "DatePicker");
-	}
+		if (sPattern != this._sUsedPattern) {
+			oThis._sUsedPattern = sPattern;
 
-	return sFormat;
-
-};
-
-/*
- * Checks the order of month an year in pattern to decide the
- * order of the month/year dropdown in DatePicker
- */
-sap.ui.commons.DatePicker.prototype._getOrderMonthYear = function(sFormat) {
-	var iIndex1 = sFormat.indexOf('M'),
-	    iIndex2 = sFormat.lastIndexOf('y');
-	if (iIndex1 == -1) {
-		iIndex1 = sFormat.indexOf('m');
-	}
-
-	if (iIndex1 > iIndex2) {
-		return true;
-	}else{
-		return false;
-	}
-};
-
-/**
- * Fire event change to attached listeners.
- *
- * Expects following event parameters:
- * <ul>
- * <li>'newValue' of type <code>string</code> The new / changed value of the DatePicker.</li>
- * <li>'newYyyymmdd' of type <code>string</code> The new / changed Yyyymmdd of the DatePicker. </li>
- * <li>'invalidValue' of type <code>boolean</code> The new / changed value of the DatePicker is not a valid date. </li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.DatePicker} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.DatePicker#fireChange
- * @function
- */
-sap.ui.commons.DatePicker.prototype.fireChange = function( bInvalidValue ) {
-	this.fireEvent("change", {newValue:this.getValue(),
-							  newYyyymmdd:this.getYyyymmdd(),
-							  invalidValue: bInvalidValue});
-	return this;
-};
-
-/*
- * Overwrites the mehod in TextField to add additional YYYYMMDD parameter
- */
-sap.ui.commons.DatePicker.prototype._checkChange = function(oEvent) {
-	var oInput = this.getInputDomRef(),
-		newVal = oInput && oInput.value;
-
-	if (this.mobile && newVal != "") {
-		// on mobile devices the date is displayed in native pattern, so it must be
-		// converted into control pattern fpr value property
-		var oDate = this._oFormatMobile.parse(newVal);
-		newVal = this._oFormat.format(oDate);
-	}
-
-	if(this.getEditable() && this.getEnabled() && newVal != this.getValue()) {
-		// check if input in valid pattern
-		var sLocale  = this.getRenderedLocale();
-		var oDate;
-		var bWrong = false;
-		if (!this.mobile) {
-			// in mobile case no wrong input is possible
-			if (newVal != "") {
-				oDate = this._oFormat.parse(newVal);
-				if (oDate) {
-					// just format date to right pattern, because maybe a fallback pattern is used in the parsing
-					newVal = this._oFormat.format(oDate);
-				}else{
-					bWrong = true;
-				}
+			if (sPattern == "short" || sPattern == "medium" || sPattern == "long") {
+				oThis._oFormat = sap.ui.core.format.DateFormat.getInstance({style: sPattern}, oLocale);
+			} else {
+				oThis._oFormat = sap.ui.core.format.DateFormat.getInstance({pattern: sPattern}, oLocale);
 			}
 		}
 
-		if (bWrong) {
-			// date can not be parsed -> just set it without try to compute Yyyymmdd
-			// in DataBinding case a parsing error is thrown
-			this.setProperty("value", newVal, true);
-		}else{
-			this.setValue(newVal);
+		return oThis._oFormat;
+
+	};
+
+	function _getUsedLocale(oThis) {
+
+		// Fetch and check if the Control locale can be supported:
+		var sLocale = oThis.getLocale();
+		var oLocale;
+		if (sLocale) {
+			oLocale = oThis._oLocale;
+		}else {
+			oLocale = sap.ui.getCore().getConfiguration().getFormatSettings().getFormatLocale();
 		}
 
-		this.fireChange( bWrong );
-	}else if(this.getEditable() && this.getEnabled() && newVal == this.getYyyymmdd()){
-		// the same date is entered as yyyymmdd again -> just set converted value to input field
-		oInput.value = this.getValue();
-	}
-};
+		return oLocale;
+
+	};
+
+	function _checkLocaleAllowed(oThis) {
+
+		var oBinding = oThis.getBinding("value");
+		var sLocale = oThis.getLocale();
+
+		if (oBinding && oBinding.oType && (oBinding.oType instanceof sap.ui.model.type.Date) && sLocale) {
+			jQuery.sap.log.warning("DatePicker " + oThis.getId() + ": Using a locale and Databinding at the same time is not supported");
+			oThis._bIgnoreLocale = true;
+		}
+
+	};
+
+	function _open(oThis){
+
+		if(!oThis._oPopup) {
+			jQuery.sap.require("sap.ui.core.Popup");
+			oThis._oPopup = new sap.ui.core.Popup();
+			oThis._oPopup.setAutoClose(true);
+			oThis._oPopup.setDurations(0, 0); // no animations
+			oThis._oPopup.attachClosed(_handleClosed, oThis);
+		}
+
+		if (!oThis._oCalendar) {
+			sap.ui.getCore().loadLibrary("sap.ui.unified");
+			jQuery.sap.require("sap.ui.unified.library");
+			oThis._oCalendar = new sap.ui.unified.Calendar(oThis.getId()+"-cal");
+			oThis._oDateRange = new sap.ui.unified.DateRange();
+			oThis._oCalendar.addSelectedDate(oThis._oDateRange);
+			oThis._oCalendar.attachSelect(_selectDate, oThis);
+			oThis._oCalendar.attachCancel(_cancel, oThis);
+			oThis._oPopup.setContent(oThis._oCalendar);
+			// use compact design in commons
+			oThis._oCalendar.addStyleClass("sapUiSizeCompact");
+			oThis._oCalendar.setPopupMode(true);
+			oThis._oCalendar.setParent(oThis, undefined, true); // don't invalidate DatePicker
+		}
+
+		oThis._checkChange(); // to prove is something was typed in manually
+
+		var oDate = oThis._oDate;
+
+		if (oDate) {
+			oThis._oCalendar.focusDate(oDate);
+			if (!oThis._oDateRange.getStartDate() || oThis._oDateRange.getStartDate().getTime() != oDate.getTime()) {
+				oThis._oDateRange.setStartDate(new Date(oDate.getTime()));
+			}
+		} else {
+			if (oThis._oDateRange.getStartDate()) {
+				oThis._oDateRange.setStartDate(undefined);
+			}
+		}
+
+		if (!this._bIgnoreLocale) {
+			oThis._oCalendar.setLocale(oThis.getLocale());
+		}
+
+		oThis._oPopup.setAutoCloseAreas([oThis.getDomRef()]);
+
+		var eDock = sap.ui.core.Popup.Dock;
+		oThis._oPopup.open(0, eDock.BeginTop, eDock.BeginBottom, oThis, null, null, true);
+
+	};
+
+	function _toggleOpen(oThis){
+
+		if (oThis.getEditable() && oThis.getEnabled()) {
+			if(!oThis._oPopup || !oThis._oPopup.isOpen()) {
+				_open(oThis);
+			} else {
+				oThis._oPopup.close();
+				oThis.focus();
+			}
+		}
+
+	};
+
+	function _selectDate(oEvent){
+
+		var aSelectedDates = this._oCalendar.getSelectedDates();
+		var sOutputValue = "";
+
+		if (aSelectedDates.length > 0) {
+			this._oDate = aSelectedDates[0].getStartDate();
+			sOutputValue = this._formatValue(this._oDate);
+		}
+
+		this._oPopup.close();
+		this.focus();
+		// do not call this._checkChange(); because we already have the date object and no wrong entry is possible
+		var sNewValue = this._formatValue(this._oDate);
+		this.setProperty("value", sNewValue, true);
+		this._bValueSet = false;
+		var sYyyymmdd = this._oFormatYyyymmdd.format(this._oDate);
+		this.setProperty("yyyymmdd", sYyyymmdd, true);
+
+		// set inputs value after properties because of placeholder logic for IE
+		var $Input = this.$("input");
+		if ($Input.val() !== sOutputValue) {
+			$Input.val(sOutputValue);
+			this._curpos = sOutputValue.length;
+			$Input.cursorPos(this._curpos);
+		}
+
+		this.fireChange();
+
+	};
+
+	function _cancel(oEvent) {
+
+		if(this._oPopup && this._oPopup.isOpen()) {
+			this._oPopup.close();
+			this.focus();
+		}
+
+	};
+
+	function _handleClosed(oEvent) {
+
+		// remove focus from DatePicker field
+		if(!jQuery.sap.containsOrEquals(this.getDomRef(), document.activeElement) && this.getRenderer().onblur) {
+			this.getRenderer().onblur(this);
+		}
+
+	};
+
+	function _incraseDate(oThis, iNumber, sUnit) {
+
+		var oOldDate = oThis._oDate;
+
+		if (oOldDate && oThis.getEditable() && oThis.getEnabled()) {
+			// use a new date object to have a real updated property
+			var oDate = new Date (oOldDate.getTime());
+
+			switch (sUnit) {
+			case "day":
+				oDate.setDate(oDate.getDate() + iNumber);
+				break;
+			case "month":
+				oDate.setMonth(oDate.getMonth() + iNumber);
+				break;
+			case "year":
+				oDate.setFullYear(oDate.getFullYear() + iNumber);
+				break;
+
+			default:
+				break;
+			}
+
+			oThis._oDate = oDate;
+
+			// update value in input field
+			var $Input = jQuery(oThis.getInputDomRef());
+			var sOutputValue = oThis._formatValue(oDate);
+			$Input.val(sOutputValue);
+
+		}
+
+	};
+
+}());
 
 }; // end of sap/ui/commons/DatePicker.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.DatePickerRenderer') ) {
@@ -58126,25 +56529,6 @@ jQuery.sap.declare("sap.ui.commons.DatePickerRenderer");
 
 
 /**
- * Registers our SAP-defined locales for jQuery to use (DatePicker and DateNavigator).
- * Examples can be found at: http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/
- */
-(function($){
-
-	var regional = $.datepicker.regional;
-	function define(sLocale, oSettings) {
-		regional[sLocale] = jQuery.extend(regional[sLocale] || {}, oSettings);
-	}
-
-// SAP-defined English (DEFAULT) grammar:
-	define('en', {
-		firstDay : 0, // CLDR has both 1 (default) and 0 (alternative). How to handle this?
-		yearSuffix : ''
-	});
-
-}(jQuery));
-
-/**
  * @class DatePicker renderer.
  * @static
  * For a common look&feel, the DatePicker extends the TextField control,
@@ -58153,13 +56537,14 @@ jQuery.sap.declare("sap.ui.commons.DatePickerRenderer");
 sap.ui.commons.DatePickerRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.TextFieldRenderer);
 
 /**
+ * Hint: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
+ *       It is used to allow extensions to display help icons.
+ *
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.DatePicker}
  *            oControl the DatePicker whose "value help" should be rendered
  * @private
- * P.S.: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
- *       It is used to allow extensions to display help icons.
  */
 sap.ui.commons.DatePickerRenderer.renderOuterAttributes = function(rm, oControl) {
 	// To share the overall ComboBox styling:
@@ -58186,6 +56571,7 @@ sap.ui.commons.DatePickerRenderer.renderOuterContentBefore = function(rm, oContr
 
 	rm.write("<div");
 	rm.writeAttribute('id', oControl.getId() + '-icon');
+	rm.writeAttribute('tabindex', '-1'); // to do not close popup by click on it
 	// As mentioned above, a more generic "sapUiTfIcon" className could have been used...
 	// One would just have had to add its own icon className!
 	// Using "sapUiTfDateIcon" for now, as it proved easier to define instead of overwriting
@@ -58220,7 +56606,7 @@ sap.ui.commons.DatePickerRenderer.renderOuterContentBefore = function(rm, oContr
  */
 sap.ui.commons.DatePickerRenderer.renderInnerAttributes = function(rm, oDatePicker) {
 
-	if (oDatePicker.mobile) {
+	if (oDatePicker._bMobile) {
 		rm.writeAttribute('type', 'date');
 		rm.addStyle('position', 'absolute'); // to lay input field over expander icon
 	}
@@ -58270,10 +56656,7 @@ sap.ui.commons.DatePickerRenderer.convertPlaceholder = function(oDatePicker) {
 	if (sPlaceholder.length == 8 && !isNaN(sPlaceholder)) {
 		var oDate = oDatePicker._oFormatYyyymmdd.parse(sPlaceholder);
 		if (oDate) {
-			if (!oDatePicker._oFormat) {
-				oDatePicker.getRenderedLocale();
-			}
-			sPlaceholder = oDatePicker._oFormat.format(oDate);
+			sPlaceholder = oDatePicker._formatValue(oDate);
 		}
 	}
 
@@ -58346,7 +56729,7 @@ jQuery.sap.declare("sap.ui.commons.DropdownBox");
  * @extends sap.ui.commons.ComboBox
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -59561,7 +57944,12 @@ sap.ui.commons.DropdownBox.prototype._doTypeAhead = function(oValue, oNewChar, b
 	this._doSelect(oValue.length + iMove, oText.length);
 
 	oLB.setSelectedIndex(i);
-	oLB.scrollToIndex(i);
+	if(oSHI && i == 2){
+		// special case -> search help item exist and first real item selected -> show search help too
+		oLB.scrollToIndex(0);
+	}else{
+		oLB.scrollToIndex(i);
+	}
 	this._iClosedUpDownIdx = i;
 
 	if (!bValid){
@@ -60221,7 +58609,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -61414,7 +59802,7 @@ jQuery.sap.require('sap.ui.core.ValueStateSupport'); // unlisted dependency reta
 
 }());
 }; // end of sap/ui/commons/InPlaceEdit.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.Menu') ) {
+if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuBar') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -61426,15 +59814,15 @@ if ( !jQuery.sap.isDeclared('sap.ui.commons.Menu') ) {
  * source files only (*.control, *.js) or they will be lost after the next generation.
  * ---------------------------------------------------------------------------------- */
 
-// Provides control sap.ui.commons.Menu.
-jQuery.sap.declare("sap.ui.commons.Menu");
+// Provides control sap.ui.commons.MenuBar.
+jQuery.sap.declare("sap.ui.commons.MenuBar");
 
 jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
 
 
 
 /**
- * Constructor for a new Menu.
+ * Constructor for a new MenuBar.
  * 
  * Accepts an object literal <code>mSettings</code> that defines initial 
  * property values, aggregated and associated objects as well as event handlers. 
@@ -61450,18 +59838,19 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * <li>Properties
  * <ul>
  * <li>{@link #getEnabled enabled} : boolean (default: true)</li>
- * <li>{@link #getAriaDescription ariaDescription} : string</li></ul>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li>
+ * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '100%')</li>
+ * <li>{@link #getDesign design} : sap.ui.commons.MenuBarDesign (default: sap.ui.commons.MenuBarDesign.Standard)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.MenuItemBase[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.unified.MenuItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
  * </li>
  * <li>Events
- * <ul>
- * <li>{@link sap.ui.commons.Menu#event:itemSelect itemSelect} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
+ * <ul></ul>
  * </li>
  * </ul> 
 
@@ -61470,42 +59859,41 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @param {object} [mSettings] initial settings for the new control
  *
  * @class
- * A container for menu items. When the space in the browser is not large enough to display all defined items, a scroll bar is provided.
+ * Represents a user interface area which is the entry point for menus with their menu items. MenuBar is useful for applications which shall offer a
+ * set of actions that shall be provided in a structured way. The MenuBar contains the menu titles from where users navigate to the single items. The control supports
+ * for example long menu item texts, automated scrolling for menu items when the browser space is not large enough to display all items, defining images for single
+ * or all items in a menu, automated layouting of items with or w/o image, and active/non-active items.
+ * 
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
- * @name sap.ui.commons.Menu
+ * @name sap.ui.commons.MenuBar
  */
-sap.ui.core.Control.extend("sap.ui.commons.Menu", { metadata : {
+sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 
 	// ---- object ----
-	publicMethods : [
-		// methods
-		"open", "close"
-	],
 
 	// ---- control specific ----
 	library : "sap.ui.commons",
 	properties : {
 		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"ariaDescription" : {type : "string", group : "Accessibility", defaultValue : null}
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
+		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : '100%'},
+		"design" : {type : "sap.ui.commons.MenuBarDesign", group : "Appearance", defaultValue : sap.ui.commons.MenuBarDesign.Standard}
 	},
 	defaultAggregation : "items",
 	aggregations : {
-    	"items" : {type : "sap.ui.commons.MenuItemBase", multiple : true, singularName : "item"}
-	},
-	events : {
-		"itemSelect" : {}
+    	"items" : {type : "sap.ui.unified.MenuItem", multiple : true, singularName : "item"}
 	}
 }});
 
 
 /**
- * Creates a new subclass of class sap.ui.commons.Menu with name <code>sClassName</code> 
+ * Creates a new subclass of class sap.ui.commons.MenuBar with name <code>sClassName</code> 
  * and enriches it with the information contained in <code>oClassInfo</code>.
  * 
  * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
@@ -61516,24 +59904,20 @@ sap.ui.core.Control.extend("sap.ui.commons.Menu", { metadata : {
  * @return {function} the created class / constructor function
  * @public
  * @static
- * @name sap.ui.commons.Menu.extend
+ * @name sap.ui.commons.MenuBar.extend
  * @function
  */
-
-sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
 
 
 /**
  * Getter for property <code>enabled</code>.
- * 
- * Disabled menus have other colors than enabled ones, depending on customer settings.
- * 
+ * When the MenuBar is not enabled, automatically all single menu items are also displayed as 'disabled'.
  *
  * Default value is <code>true</code>
  *
  * @return {boolean} the value of property <code>enabled</code>
  * @public
- * @name sap.ui.commons.Menu#getEnabled
+ * @name sap.ui.commons.MenuBar#getEnabled
  * @function
  */
 
@@ -61543,47 +59927,96 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
  * Default value is <code>true</code> 
  *
  * @param {boolean} bEnabled  new value for property <code>enabled</code>
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.Menu#setEnabled
+ * @name sap.ui.commons.MenuBar#setEnabled
  * @function
  */
 
 
 /**
- * Getter for property <code>ariaDescription</code>.
- * 
- * The label/description provided for screen readers
+ * Getter for property <code>visible</code>.
+ * Invisible controls are not rendered.
  *
- * Default value is empty/<code>undefined</code>
+ * Default value is <code>true</code>
  *
- * @return {string} the value of property <code>ariaDescription</code>
+ * @return {boolean} the value of property <code>visible</code>
  * @public
- * @name sap.ui.commons.Menu#getAriaDescription
+ * @name sap.ui.commons.MenuBar#getVisible
  * @function
  */
 
 /**
- * Setter for property <code>ariaDescription</code>.
+ * Setter for property <code>visible</code>.
  *
- * Default value is empty/<code>undefined</code> 
+ * Default value is <code>true</code> 
  *
- * @param {string} sAriaDescription  new value for property <code>ariaDescription</code>
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
+ * @param {boolean} bVisible  new value for property <code>visible</code>
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.Menu#setAriaDescription
+ * @name sap.ui.commons.MenuBar#setVisible
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>width</code>.
+ * Specifies the width of the MenuBar
+ *
+ * Default value is <code>100%</code>
+ *
+ * @return {sap.ui.core.CSSSize} the value of property <code>width</code>
+ * @public
+ * @name sap.ui.commons.MenuBar#getWidth
+ * @function
+ */
+
+/**
+ * Setter for property <code>width</code>.
+ *
+ * Default value is <code>100%</code> 
+ *
+ * @param {sap.ui.core.CSSSize} sWidth  new value for property <code>width</code>
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.MenuBar#setWidth
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>design</code>.
+ * Available design options are Header and Standard. Note that design settings are theme-dependent.
+ *
+ * Default value is <code>Standard</code>
+ *
+ * @return {sap.ui.commons.MenuBarDesign} the value of property <code>design</code>
+ * @public
+ * @name sap.ui.commons.MenuBar#getDesign
+ * @function
+ */
+
+/**
+ * Setter for property <code>design</code>.
+ *
+ * Default value is <code>Standard</code> 
+ *
+ * @param {sap.ui.commons.MenuBarDesign} oDesign  new value for property <code>design</code>
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
+ * @public
+ * @name sap.ui.commons.MenuBar#setDesign
  * @function
  */
 
 
 /**
  * Getter for aggregation <code>items</code>.<br/>
- * Aggregation of menu items
+ * Aggregation of menu items.
  * 
- * <strong>Note</strong>: this is the default aggregation for Menu.
- * @return {sap.ui.commons.MenuItemBase[]}
+ * <strong>Note</strong>: this is the default aggregation for MenuBar.
+ * @return {sap.ui.unified.MenuItem[]}
  * @public
- * @name sap.ui.commons.Menu#getItems
+ * @name sap.ui.commons.MenuBar#getItems
  * @function
  */
 
@@ -61591,16 +60024,16 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
 /**
  * Inserts a item into the aggregation named <code>items</code>.
  *
- * @param {sap.ui.commons.MenuItemBase}
+ * @param {sap.ui.unified.MenuItem}
  *          oItem the item to insert; if empty, nothing is inserted
  * @param {int}
  *             iIndex the <code>0</code>-based index the item should be inserted at; for 
  *             a negative value of <code>iIndex</code>, the item is inserted at position 0; for a value 
  *             greater than the current size of the aggregation, the item is inserted at 
  *             the last position        
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.Menu#insertItem
+ * @name sap.ui.commons.MenuBar#insertItem
  * @function
  */
 
@@ -61608,42 +60041,42 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
  * Adds some item <code>oItem</code> 
  * to the aggregation named <code>items</code>.
  *
- * @param {sap.ui.commons.MenuItemBase}
+ * @param {sap.ui.unified.MenuItem}
  *            oItem the item to add; if empty, nothing is inserted
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.Menu#addItem
+ * @name sap.ui.commons.MenuBar#addItem
  * @function
  */
 
 /**
  * Removes an item from the aggregation named <code>items</code>.
  *
- * @param {int | string | sap.ui.commons.MenuItemBase} vItem the item to remove or its index or id
- * @return {sap.ui.commons.MenuItemBase} the removed item or null
+ * @param {int | string | sap.ui.unified.MenuItem} vItem the item to remove or its index or id
+ * @return {sap.ui.unified.MenuItem} the removed item or null
  * @public
- * @name sap.ui.commons.Menu#removeItem
+ * @name sap.ui.commons.MenuBar#removeItem
  * @function
  */
 
 /**
  * Removes all the controls in the aggregation named <code>items</code>.<br/>
  * Additionally unregisters them from the hosting UIArea.
- * @return {sap.ui.commons.MenuItemBase[]} an array of the removed elements (might be empty)
+ * @return {sap.ui.unified.MenuItem[]} an array of the removed elements (might be empty)
  * @public
- * @name sap.ui.commons.Menu#removeAllItems
+ * @name sap.ui.commons.MenuBar#removeAllItems
  * @function
  */
 
 /**
- * Checks for the provided <code>sap.ui.commons.MenuItemBase</code> in the aggregation named <code>items</code> 
+ * Checks for the provided <code>sap.ui.unified.MenuItem</code> in the aggregation named <code>items</code> 
  * and returns its index if found or -1 otherwise.
  *
- * @param {sap.ui.commons.MenuItemBase}
+ * @param {sap.ui.unified.MenuItem}
  *            oItem the item whose index is looked for.
  * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
  * @public
- * @name sap.ui.commons.Menu#indexOfItem
+ * @name sap.ui.commons.MenuBar#indexOfItem
  * @function
  */
 	
@@ -61651,202 +60084,97 @@ sap.ui.commons.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
 /**
  * Destroys all the items in the aggregation 
  * named <code>items</code>.
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
+ * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
- * @name sap.ui.commons.Menu#destroyItems
+ * @name sap.ui.commons.MenuBar#destroyItems
  * @function
  */
 
 
-/**
- * 
- * Provides the application an alternative option to listen to select events. This event is only fired on the root menu of a menu hierarchy.
- * Note that there is also a select event available for MenuItem; if the current event is used, the select event of a MenuItem becomes redundant.
- *  
- *
- * @name sap.ui.commons.Menu#itemSelect
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
+// Start of sap\ui\commons\MenuBar.js
+ /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
 
- * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item The selected item
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'itemSelect' event of this <code>sap.ui.commons.Menu</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.Menu</code>.<br/> itself. 
- *  
- * 
- * Provides the application an alternative option to listen to select events. This event is only fired on the root menu of a menu hierarchy.
- * Note that there is also a select event available for MenuItem; if the current event is used, the select event of a MenuItem becomes redundant.
- *  
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.Menu</code>.<br/> itself.
- *
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.Menu#attachItemSelect
- * @function
- */
 
-/**
- * Detach event handler <code>fnFunction</code> from the 'itemSelect' event of this <code>sap.ui.commons.Menu</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.Menu#detachItemSelect
- * @function
- */
 
-/**
- * Fire event itemSelect to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'item' of type <code>sap.ui.commons.MenuItemBase</code> The selected item</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.Menu} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.Menu#fireItemSelect
- * @function
- */
+sap.ui.commons.MenuItem.extend("sap.ui.commons._DelegatorMenuItem", {
+  constructor : function(oAlterEgoItm) {
+    sap.ui.commons.MenuItem.apply(this);
+    this.oAlterEgoItm = oAlterEgoItm;
+    var that = this;
+    this.oAlterEgoItm.getSubmenu().getRootMenu = function(){
+    	return that.getParent();
+    }
+  },
+  exit : function () {
+	this.oAlterEgoItm.getSubmenu().getRootMenu = sap.ui.commons.Menu.prototype.getRootMenu;
+    this.oAlterEgoItm = null;
+  },
+  getText : function() {
+    return this.oAlterEgoItm.getText();
+  },
+  getIcon : function() {
+	  return this.oAlterEgoItm.getIcon();
+  },
+  getEnabled : function() {
+	  return this.oAlterEgoItm.getEnabled();
+  },
+  getVisible : function() {
+	  return this.oAlterEgoItm.getVisible();
+  },
+  getSubmenu : function() {
+	  return this.oAlterEgoItm.getSubmenu();
+  }
+});
+
+(function() {
 
 
 /**
- * Opens the menu
- *
- * @name sap.ui.commons.Menu.prototype.open
- * @function
- * @param {boolean} 
- *         bWithKeyboard
- *         
- * An indicator whether the first item shall be highlighted, or not. It is highlighted in the case that the menu is opened via keyboard.
- * 
- * @param {object} 
- *         oOpenerRef
- *         
- * DOMNode or sap.ui.core.Element that opens the menu; the DOMNode or sap.ui.core.Element will be focused again after the menu is closed. This parameter is optional.
- * 
- * @param {sap.ui.core.Dock} 
- *         sMy
- *         
- * The popup content's reference position for docking.
- * See also sap.ui.core.Popup.Dock and sap.ui.core.Popup.open.
- * 
- * @param {sap.ui.core.Dock} 
- *         sAt
- *         
- * The 'of' element's reference point for docking to.
- * See also sap.ui.core.Popup.Dock and sap.ui.core.Popup.open.
- * 
- * @param {object} 
- *         oOf
- *         
- * The DOM element or sap.ui.core.Element to dock to.
- * See also sap.ui.core.Popup.open.
- * 
- * @param {string} 
- *         sOffset
- *         
- * The offset relative to the docking point, specified as a string with space-separated pixel values (e.g. "0 10" to move the popup 10 pixels to the right).
- * See also sap.ui.core.Popup.open.
- * 
- * @param {sap.ui.core.Collision} 
- *         sCollision
- *         
- * The collision defines how the position of an element should be adjusted in case it overflows the window in some direction.
- * See also sap.ui.core.Popup.open.
- * 
-
- * @type void
- * @public
+ * Initialize this control.
+ * @private
  */
-
-
-/**
- * Closes the menu
- *
- * @name sap.ui.commons.Menu.prototype.close
- * @function
-
- * @type void
- * @public
- */
-
-
-// Start of sap\ui\commons\Menu.js
-(function(window, undefined) {
-
-
-jQuery.sap.require('sap.ui.core.Popup'); // unlisted dependency retained
-
-
-sap.ui.commons.Menu.prototype.init = function(){
-	var that = this;
-	this.bOpen = false;
-	this.oOpenedSubMenu = null;
-	this.oHoveredItem = null;
-	this.oPopup = null; // Will be created lazily
-	this.fAnyEventHandlerProxy = jQuery.proxy(this.onAnyEvent, this);
-	this.fOrientationChangeHandler = function(){
-		that.close();
-	};
-	this.bUseTopStyle = false;
+sap.ui.commons.MenuBar.prototype.init = function() {
+	this.oOvrFlwMnu = null;
+	this.sCurrentFocusedItemRefId = null;
 };
 
+
 /**
- * Does all the cleanup when the Menu is to be destroyed.
+ * Does all the cleanup when the control is to be destroyed.
  * Called from Element's destroy() method.
  * @private
  */
-sap.ui.commons.Menu.prototype.exit = function(){
-	if(this.oPopup){
-		this.oPopup.detachOpened(this._menuOpened, this);
-		this.oPopup.detachClosed(this._menuClosed, this);
-		this.oPopup.destroy();
-		delete this.oPopup;
+sap.ui.commons.MenuBar.prototype.exit = function (){
+	if(this.oOvrFlwMnu) {
+		this.oOvrFlwMnu.destroy();
 	}
-	
-	jQuery.sap.unbindAnyEvent(this.fAnyEventHandlerProxy);
-	if(this._bOrientationChangeBound){
-		jQuery(window).unbind("orientationchange", this.fOrientationChangeHandler);
-		this._bOrientationChangeBound = false;
-	}
-	
+	this.oOvrFlwMnu = null;
 	// Cleanup resize event registration
 	if(this.sResizeListenerId){
 		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
 		this.sResizeListenerId = null;
 	}
-	
-	// if a parent popup was registered just delete the reference and keep the popup as is
-	if (this._sParentPopupId) {
-		delete this._sParentPopupId;
-		delete this._bBubbleAutoClose;
-	}
 };
+
 
 /**
  * Called before rendering starts by the renderer
+ * (This is not the onBeforeRendering method which would be not called for the first rendering)
  * @private
  */
-sap.ui.commons.Menu.prototype.onBeforeRendering = function() {
+sap.ui.commons.MenuBar.prototype.doBeforeRendering = function() {
+	var aItems = this.getItems();
+	for(var i=0; i<aItems.length; i++){
+		var oMenu = aItems[i].getSubmenu();
+		if(oMenu) {
+			oMenu.setRootMenuTopStyle(this.getDesign() == sap.ui.commons.MenuBarDesign.Header);
+		}
+	}
+
+	if(this.oOvrFlwMnu) {
+		this.oOvrFlwMnu.setRootMenuTopStyle(this.getDesign() == sap.ui.commons.MenuBarDesign.Header);
+	}
+
 	// Cleanup resize event registration before re-rendering
 	if(this.sResizeListenerId){
 		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
@@ -61854,1120 +60182,68 @@ sap.ui.commons.Menu.prototype.onBeforeRendering = function() {
 	}
 };
 
+
 /**
  * Called when the rendering is complete
  * @private
  */
-sap.ui.commons.Menu.prototype.onAfterRendering = function() {
-	if(this.oHoveredItem) {
-		this.oHoveredItem.hover(true, this);
-	}
-	
-	//Might be in the end not a good idea to listen for resizing the body / window because the body might change its size
-	//during a menu is opened (which then closes the menu again):
+sap.ui.commons.MenuBar.prototype.onAfterRendering = function() {
+	//Listen to resizing
+	this.sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef(), jQuery.proxy(this.onresize, this));
 
-	//Listen to resizing of the document
-	//if(this.getRootMenu() == this)
-	//	this.sResizeListenerId = sap.ui.core.ResizeHandler.register(!!sap.ui.Device.browser.internet_explorer ? window : jQuery("body").get(0), jQuery.proxy(this.onresize, this));
+	//Calculate the overflow
+	this.onresize();
 };
 
-///**
-// * Called when the control is resized
-// * @private
-// */
-//sap.ui.commons.Menu.prototype.onresize = function(oEvent) {
-//	if(!this.bOpen) return;
-//	this.close();
-//};
-
-
-//****** API Methods ******
-
-sap.ui.commons.Menu.prototype.open = function(bWithKeyboard, oOpenerRef, my, at, of, offset, collision){
-	if(this.bOpen) {
-		return;
-	}
-
-	this.bOpen = true;
-	this.oOpenerRef = oOpenerRef;
-
-	// Open the sap.ui.core.Popup
-	this.getPopup().open(0, my, at, of, offset || "0 0", collision || "_sapUiCommonsMenuFlip _sapUiCommonsMenuFlip", true);
-
-	// Set the tab index of the menu and focus
-	var oDomRef = this.getDomRef();
-	jQuery(oDomRef).attr("tabIndex", 0).focus();
-	
-	// Mark the first item when using the keyboard
-	if (bWithKeyboard) {
-		this.setHoveredItem(this.getNextVisibleItem(-1));
-	}
-
-	jQuery.sap.bindAnyEvent(this.fAnyEventHandlerProxy);
-	if(sap.ui.Device.support.orientation && this.getRootMenu() === this){
-		jQuery(window).bind("orientationchange", this.fOrientationChangeHandler);
-		this._bOrientationChangeBound = true;
-	}
-};
 
 /**
- * This function is called when the Menu was opened. If there is a proper opener set
- * the Menu checks if the opener (or menu) runs within another popup.
- * If so the menu gesiters itself at the popup as an additional focusable content.
- *
- * This is needed since CSS: 0120061532 0002682049 2013 found out that if a menu
- * is used within a ToolBar overflow the Menu can't be used at all. Since the overflow
- * is an autoclose popup and when the Menu is opened the focus is set within the opened menu.
- * And thus the focus is lost within the ToolBar overflow and therefore it closes.
- *
- * @since 1.17.0
- * @private
- */ 
-sap.ui.commons.Menu.prototype._menuOpened = function() {
-	if (this.oOpenerRef) {
-		var $Opener = this.oOpenerRef instanceof sap.ui.core.Control ? this.oOpenerRef.$() : jQuery(this.oOpenerRef);
-		// get the corresponding Popup of the opener if the menu is opened within a popup
-		var $ParentPopup = $Opener.closest("[data-sap-ui-popup]"); 
-		
-		// get the corresponding Popup-id
-		var sParentPopupId = $ParentPopup.attr("data-sap-ui-popup");
-		if (sParentPopupId) { 
-			this._sParentPopupId = sParentPopupId;
-			
-			var oObject = {
-					id : this.getId()	
-			};
-			
-			// register id of Menu-Popup to parent-Popup to make the menu as focusable
-			var sEventId = "sap.ui.core.Popup.addFocusableContent-" + this._sParentPopupId;
-			sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, oObject);
-		}	
-	}
-	
-	fnIe8RepaintBug(this);
-};
-
-sap.ui.commons.Menu.prototype.close = function() {
-	if(!this.bOpen || sap.ui.commons.Menu._dbg /*Avoid closing for debugging purposes*/) {
-		return;
-	}
-	
-	// Remove fixed flag if it existed
-	delete this._bFixed;
-
-
-	jQuery.sap.unbindAnyEvent(this.fAnyEventHandlerProxy);
-	if(this._bOrientationChangeBound){
-		jQuery(window).unbind("orientationchange", this.fOrientationChangeHandler);
-		this._bOrientationChangeBound = false;
-	}
-
-	this.bOpen = false;
-	// Close all sub menus if there are any
-	if(this.oOpenedSubMenu) {
-		this.oOpenedSubMenu.close();
-	}
-
-	// Reset the hover state
-	this.setHoveredItem();
-
-	// Reset the tab index of the menu and focus the opener (if there is any)
-	jQuery(this.getDomRef()).attr("tabIndex", -1);
-	if(this.oOpenerRef && !this.ignoreOpenerDOMRef) {
-		this.oOpenerRef.focus();
-	}
-	this.oOpenerRef = undefined;
-
-	// Close the sap.ui.core.Popup
-	this.getPopup().close(0);
-
-	//Remove the Menus DOM after it is closed
-	this.onBeforeRendering();
-	this.$().remove();
-	this.bOutput = false;
-
-	if(this.isSubMenu()){
-		this.getParent().getParent().oOpenedSubMenu = null;
-	}
-};
-
-/**
- * This function is called when the Menu was closed. If the menu was closed via the Menu's
- * autoclose-mechanism the variable 'this._bBubbleAutoClose' has to be set to <b>true</b>
- *
- * @since 1.17.0
- * @private
- */ 
-sap.ui.commons.Menu.prototype._menuClosed = function() {
-	if (this._sParentPopupId) {
-		var oObject = {
-			id : this.getId(),
-			bAutoClose : this._bBubbleAutoClose
-		};
-		
-		// de-register id of Menu-Popup from parent-Popup
-		var sEventId = "sap.ui.core.Popup.removeFocusableContent-" + this._sParentPopupId;
-		sap.ui.getCore().getEventBus().publish("sap.ui", sEventId, oObject);
-	}
-	// delete the saved id to reset everything because the Menu might be opened
-	// differently when it will be opened next time
-	delete this._sParentPopupId;
-	delete this._bBubbleAutoClose;
-};
-
-//****** Event Handlers ******
-
-sap.ui.commons.Menu.prototype.onclick = function(oEvent){
-	this.selectItem(this.getItemByDomRef(oEvent.target), false, !!(oEvent.metaKey || oEvent.ctrlKey));
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-
-sap.ui.commons.Menu.prototype.onsapnext = function(oEvent){
-	//right or down (RTL: left or down)
-	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_DOWN){
-		//Go to sub menu if available
-		if(this.oHoveredItem && this.oHoveredItem.getSubmenu() && this.checkEnabled(this.oHoveredItem)){
-			this.openSubmenu(this.oHoveredItem, true);
-			return;
-		}
-	}
-
-	//Go to the next visible item
-	var iIdx = this.oHoveredItem ? this.indexOfAggregation("items", this.oHoveredItem) : -1;
-	this.setHoveredItem(this.getNextVisibleItem(iIdx));
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsapprevious = function(oEvent){
-	//left or up (RTL: right or up)
-	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_UP){
-		//Go to parent menu if this is a sub menu
-		if(this.isSubMenu()){
-			this.close();
-			oEvent.preventDefault();
-			oEvent.stopPropagation();
-			return;
-		}
-	}
-
-	//Go to the previous visible item
-	var iIdx = this.oHoveredItem ? this.indexOfAggregation("items", this.oHoveredItem) : -1;
-	this.setHoveredItem(this.getPreviousVisibleItem(iIdx));
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsaphome = function(oEvent){
-	//Go to the first visible item
-	var aItems = this.getItems();
-	var oItem = null;
-	for(var i=0; i<aItems.length; i++){
-		if(aItems[i].getVisible()){
-			oItem = aItems[i];
-			break;
-		}
-	}
-
-	this.setHoveredItem(oItem);
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsapend = function(oEvent){
-	//Go to the last visible item
-	var aItems = this.getItems();
-	var oItem = null;
-	for(var i=aItems.length-1; i>=0; i--){
-		if(aItems[i].getVisible()){
-			oItem = aItems[i];
-			break;
-		}
-	}
-
-	this.setHoveredItem(oItem);
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsapselect = function(oEvent){
-	this._sapSelectOnKeyDown = true;
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onkeyup = function(oEvent){
-	//like sapselect but on keyup:
-	//Using keydown has the following side effect:
-	//If the selection leads to a close of the menu and the focus is restored to the caller (e.g. a button)
-	//the keyup is fired on the caller (in case of a button a click event is fired there in FF -> Bad!)
-	//The attribute _sapSelectOnKeyDown is used to avoid the problem the other way round (Space is pressed
-	//on Button which opens the menu and the space keyup immediately selects the first item)
-	if(!this._sapSelectOnKeyDown){
-		return;
-	}else{
-		this._sapSelectOnKeyDown = false;
-	}
-	if(!jQuery.sap.PseudoEvents.sapselect.fnCheck(oEvent)) {
-		return;
-	}
-	this.selectItem(this.oHoveredItem, true, false);
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsapbackspace = function(oEvent){
-	if(jQuery(oEvent.target).prop("tagName") != "INPUT"){
-		oEvent.preventDefault(); //CSN 4537657 2012: Stop browser history navigation
-	}
-};
-sap.ui.commons.Menu.prototype.onsapbackspacemodifiers = sap.ui.commons.Menu.prototype.onsapbackspace;
-
-sap.ui.commons.Menu.prototype.onsapescape = function(oEvent){
-	this.close();
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-sap.ui.commons.Menu.prototype.onsaptabnext = sap.ui.commons.Menu.prototype.onsapescape;
-sap.ui.commons.Menu.prototype.onsaptabprevious = sap.ui.commons.Menu.prototype.onsapescape;
-
-sap.ui.commons.Menu.prototype.onmouseover = function(oEvent){
-	var oItem = this.getItemByDomRef(oEvent.target);
-	if(!this.bOpen || !oItem || oItem == this.oHoveredItem) {
-		return;
-	}
-
-	if(this.oOpenedSubMenu && jQuery.sap.containsOrEquals(this.oOpenedSubMenu.getDomRef(), oEvent.target)) {
-		return;
-	}
-
-	this.setHoveredItem(oItem);
-
-	if (this.oOpenedSubMenu && !this.oOpenedSubMenu._bFixed) {
-		this.oOpenedSubMenu.close();
-		this.oOpenedSubMenu = null;
-	}
-
-	if(jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
-		this.getDomRef().focus();
-	}
-
-	if(this.checkEnabled(oItem)) {
-		this.openSubmenu(oItem, false, true);
-	}
-};
-
-sap.ui.commons.Menu.prototype.onmouseout = function(oEvent){
-	fnIe8RepaintBug(this);
-	
-	if(jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
-		if(!this.oOpenedSubMenu || !this.oOpenedSubMenu.getParent() === this.oHoveredItem) {
-			this.setHoveredItem(null);
-		}
-	}
-};
-
-/**
- * Handles the outer event of the popup.
- * @param {sap.ui.core.Event} oControlEvent The event
+ * Called when the control is resized
  * @private
  */
-sap.ui.commons.Menu.prototype.onAnyEvent = function(oEvent){
-	if(!this.bOpen || oEvent.type != "mousedown") {
-		return;
-	}
-	var oSource = oEvent.target, oDomRef = this.getDomRef();
-
-	if(!jQuery.sap.containsOrEquals(oDomRef, oSource) || oSource.tagName=="BODY"){
-		this.getRootMenu().handleOuterEvent(this.getId(), oEvent);
-	}
+sap.ui.commons.MenuBar.prototype.onresize = function(oEvent) {
+	updateAfterResize(this);
 };
-
-/**
- * Handles the onsapfocusleave event
- * @param {jQuery.Event} oEvent The browser event
- * @private
- */
-sap.ui.commons.Menu.prototype.onsapfocusleave = function(oEvent){
-	// Only the deepest opened sub menu should handle the event or ignore the event from an item
-	if(this.oOpenedSubMenu || !this.bOpen) {
-		return;
-	}
-	this.getRootMenu().handleOuterEvent(this.getId(), oEvent);
-};
-
-//****** Helper Methods ******
-
-sap.ui.commons.Menu.prototype.handleOuterEvent = function(oMenuId, oEvent){
-	var isInMenuHierarchy = false;
-	if (oEvent.type == "mousedown"){
-		var currentMenu = this;
-		while(currentMenu){
-			if(jQuery.sap.containsOrEquals(currentMenu.getDomRef(), oEvent.target)){
-				isInMenuHierarchy = true;
-			}
-			currentMenu = currentMenu.oOpenedSubMenu;
-		}
-	}else if (oEvent.type == "sapfocusleave"){
-		if(oEvent.relatedControlId){
-			var currentMenu = this;
-			while(currentMenu){
-				if((currentMenu.oOpenedSubMenu && currentMenu.oOpenedSubMenu.getId() == oEvent.relatedControlId)
-						|| jQuery.sap.containsOrEquals(currentMenu.getDomRef(), jQuery.sap.byId(oEvent.relatedControlId).get(0))){
-					isInMenuHierarchy = true;
-				}
-				currentMenu = currentMenu.oOpenedSubMenu;
-			}
-		}
-	}
-
-	if(!isInMenuHierarchy) {
-		this.ignoreOpenerDOMRef = true;
-		// bubble autoClose to the parent popup if Menu runs within another popup
-		this._bBubbleAutoClose = !!this._sParentPopupId; 
-		
-		this.close();
-		this.ignoreOpenerDOMRef = false;
-	}
-};
-
-sap.ui.commons.Menu.prototype.getItemByDomRef = function(oDomRef){
-	var oItems = this.getItems(),
-		iLength = oItems.length;
-	for(var i=0;i<iLength;i++){
-		var oItem = oItems[i],
-			oItemRef = oItem.getDomRef();
-		if(jQuery.sap.containsOrEquals(oItemRef, oDomRef)) {
-			return oItem;
-		}
-	}
-	return null;
-};
-
-sap.ui.commons.Menu.prototype.selectItem = function(oItem, bWithKeyboard, bCtrlKey){
-	if(!oItem || !(oItem instanceof sap.ui.commons.MenuItemBase && this.checkEnabled(oItem))) {
-		return;
-	}
-
-	var oSubMenu = oItem.getSubmenu();
-
-	if(!oSubMenu){
-		// This is a normal item -> Close all menus and fire event.
-		this.getRootMenu().close();
-	}else{
-		// Item with sub menu was triggered -> Open sub menu and fire event.
-		this.openSubmenu(oItem, bWithKeyboard);
-	}
-
-	oItem.fireSelect({item: oItem, ctrlKey: bCtrlKey});
-	this.getRootMenu().fireItemSelect({item: oItem});
-};
-
-sap.ui.commons.Menu.prototype.isSubMenu = function(){
-	return this.getParent() && this.getParent().getParent && this.getParent().getParent() instanceof sap.ui.commons.Menu;
-};
-
-sap.ui.commons.Menu.prototype.getRootMenu = function(){
-	var oMenu = this;
-	while(oMenu.isSubMenu()){
-		oMenu = oMenu.getParent().getParent();
-	}
-	return oMenu;
-};
-
-sap.ui.commons.Menu.prototype.getMenuLevel = function(){
-	var iLevel = 1;
-	var oMenu = this;
-	while(oMenu.isSubMenu()){
-		oMenu = oMenu.getParent().getParent();
-		iLevel++;
-	}
-	return iLevel;
-};
-
-sap.ui.commons.Menu.prototype.getPopup = function (){
-	if(!this.oPopup){
-		this.oPopup = new sap.ui.core.Popup(this, false, true); // content, modal, shadow
-		this.oPopup.attachOpened(this._menuOpened, this);
-		this.oPopup.attachClosed(this._menuClosed, this);
-	}
-	return this.oPopup;
-};
-
-sap.ui.commons.Menu.prototype.setHoveredItem = function(oItem){
-	if(this.oHoveredItem) {
-		this.oHoveredItem.hover(false, this);
-	}
-
-	if(!oItem){
-		this.oHoveredItem = null;
-		jQuery(this.getDomRef()).removeAttr("aria-activedescendant");
-		return;
-	}
-
-	this.oHoveredItem = oItem;
-	oItem.hover(true, this);
-	if(sap.ui.getCore().getConfiguration().getAccessibility()) {
-		jQuery(this.getDomRef()).attr("aria-activedescendant", oItem.getId());
-	}
-};
-
-sap.ui.commons.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard, bWithHover){
-	var oSubMenu = oItem.getSubmenu();
-	if(!oSubMenu) {
-		return;
-	}
-
-	if(this.oOpenedSubMenu && this.oOpenedSubMenu !== oSubMenu){
-		// Another sub menu is open and has not been fixed. Close it at first.
-		this.oOpenedSubMenu.close();
-		this.oOpenedSubMenu = null;
-	}
-	
-	if (this.oOpenedSubMenu) {
-		// Already open. Keep open, bring to front and fix/unfix menu...
-
-		// Fix/Unfix Menu if clicked. Do not change status if just hovering over
-		this.oOpenedSubMenu._bFixed = 
-			   (bWithHover && this.oOpenedSubMenu._bFixed) 
-			|| (!bWithHover && !this.oOpenedSubMenu._bFixed);
-		
-		this.oOpenedSubMenu._bringToFront();
-	} else {
-		// Open the sub menu
-		this.oOpenedSubMenu = oSubMenu;
-		var eDock = sap.ui.core.Popup.Dock;
-		oSubMenu.open(bWithKeyboard, this, eDock.BeginTop, eDock.EndTop, oItem, "0 0");
-	}
-};
-
-/**
- * Brings this menu to the front of the menu stack.
- * This simulates a mouse-event and raises the z-index which is internally tracked by the Popup.
- * 
- * @private
- */
-sap.ui.commons.Menu.prototype._bringToFront = function() {
-	// This is a hack. We "simulate" a mouse-down-event on the submenu so that it brings itself
-	// to the front.
-	this.getPopup().onmousedown();
-};
-
-sap.ui.commons.Menu.prototype.checkEnabled = function(oItem){
-	fnIe8RepaintBug(this);
-	return oItem && oItem.getEnabled() && this.getEnabled();
-};
-
-sap.ui.commons.Menu.prototype.getNextVisibleItem = function(iIdx){
-	var oItem = null;
-	var aItems = this.getItems();
-
-	// At first, start with the next index
-	for(var i=iIdx+1; i<aItems.length; i++){
-		if(aItems[i].getVisible()){
-			oItem = aItems[i];
-			break;
-		}
-	}
-
-	// If nothing found, start from the beginning
-	if(!oItem){
-		for(var i=0; i<=iIdx; i++){
-			if(aItems[i].getVisible()){
-				oItem = aItems[i];
-				break;
-			}
-		}
-	}
-
-	return oItem;
-};
-
-sap.ui.commons.Menu.prototype.getPreviousVisibleItem = function(iIdx){
-	var oItem = null;
-	var aItems = this.getItems();
-
-	// At first, start with the previous index
-	for(var i=iIdx-1; i>=0; i--){
-		if(aItems[i].getVisible()){
-			oItem = aItems[i];
-			break;
-		}
-	}
-
-	// If nothing found, start from the end
-	if(!oItem){
-		for(var i=aItems.length-1; i>=iIdx; i--){
-			if(aItems[i].getVisible()){
-				oItem = aItems[i];
-				break;
-			}
-		}
-	}
-
-	return oItem;
-};
-
-sap.ui.commons.Menu.prototype.setRootMenuTopStyle = function(bUseTopStyle){
-	this.getRootMenu().bUseTopStyle = bUseTopStyle;
-	sap.ui.commons.Menu.rerenderMenu(this.getRootMenu());
-};
-
-
-sap.ui.commons.Menu.rerenderMenu = function(oMenu){
-	var aItems = oMenu.getItems();
-	for(var i=0; i<aItems.length; i++){
-		var oSubMenu = aItems[i].getSubmenu();
-		if(oSubMenu) {
-			sap.ui.commons.Menu.rerenderMenu(oSubMenu);
-		}
-	}
-
-	oMenu.invalidate();
-	oMenu.rerender();
-};
-
-
-///////////////////////////////////////// Hidden Functions /////////////////////////////////////////
-
-
-//IE 8 repainting bug when hovering over MenuItems with IconFont
-var fnIe8RepaintBug = function() {};
-if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 9) {
-	fnIe8RepaintBug = function(oMenu, iDelay) {
-		if (iDelay === undefined) {
-			iDelay = 50;
-		}
-		
-		
-		/* In case of perdormance issues, the commented code around the delayedCall might help:
-		jQuery.sap.clearDelayedCall(oMenu.data("delayedRepaintId"));
-		var iDelayedId =  */ 
-		jQuery.sap.delayedCall(iDelay, oMenu, function() {
-			var $Elem = this.$(); // this is the Menu instance from the oMenu argument
-			if ($Elem.length > 0) {
-				var oDomRef = $Elem[0].firstChild;
-				sap.ui.core.RenderManager.forceRepaint(oDomRef);
-			}
-		});
-		/* oMenu.data("delayedRepaintId", iDelayedId); */
-	};
-}
-
-
-//**********************************************
-
-/*!
- * The following code is taken from 
- * jQuery UI 1.10.3 - 2013-11-18
- * jquery.ui.position.js
- *
- * http://jqueryui.com
- * Copyright 2013 jQuery Foundation and other contributors; Licensed MIT
- */
-
-//TODO: Get rid of this coding when jQuery UI 1.8 is no longer supported and the framework was switched to jQuery UI 1.9 ff. 
-
-function _migrateDataTojQueryUI110(data){
-	var withinElement = jQuery(window);
-	data.within = {
-		element: withinElement,
-		isWindow: true,
-		offset: withinElement.offset() || { left: 0, top: 0 },
-		scrollLeft: withinElement.scrollLeft(),
-		scrollTop: withinElement.scrollTop(),
-		width: withinElement.width(),
-		height: withinElement.height()
-	};
-	data.collisionPosition = {
-		marginLeft: 0,
-		marginTop: 0
-	};
-	return data;
-};
-
-var _pos_jQueryUI110 = {
-	fit: {
-		left: function( position, data ) {
-			var within = data.within,
-				withinOffset = within.isWindow ? within.scrollLeft : within.offset.left,
-				outerWidth = within.width,
-				collisionPosLeft = position.left - data.collisionPosition.marginLeft,
-				overLeft = withinOffset - collisionPosLeft,
-				overRight = collisionPosLeft + data.collisionWidth - outerWidth - withinOffset,
-				newOverRight;
-
-			// element is wider than within
-			if ( data.collisionWidth > outerWidth ) {
-				// element is initially over the left side of within
-				if ( overLeft > 0 && overRight <= 0 ) {
-					newOverRight = position.left + overLeft + data.collisionWidth - outerWidth - withinOffset;
-					position.left += overLeft - newOverRight;
-				// element is initially over right side of within
-				} else if ( overRight > 0 && overLeft <= 0 ) {
-					position.left = withinOffset;
-				// element is initially over both left and right sides of within
-				} else {
-					if ( overLeft > overRight ) {
-						position.left = withinOffset + outerWidth - data.collisionWidth;
-					} else {
-						position.left = withinOffset;
-					}
-				}
-			// too far left -> align with left edge
-			} else if ( overLeft > 0 ) {
-				position.left += overLeft;
-			// too far right -> align with right edge
-			} else if ( overRight > 0 ) {
-				position.left -= overRight;
-			// adjust based on position and margin
-			} else {
-				position.left = Math.max( position.left - collisionPosLeft, position.left );
-			}
-		},
-		top: function( position, data ) {
-			var within = data.within,
-				withinOffset = within.isWindow ? within.scrollTop : within.offset.top,
-				outerHeight = data.within.height,
-				collisionPosTop = position.top - data.collisionPosition.marginTop,
-				overTop = withinOffset - collisionPosTop,
-				overBottom = collisionPosTop + data.collisionHeight - outerHeight - withinOffset,
-				newOverBottom;
-
-			// element is taller than within
-			if ( data.collisionHeight > outerHeight ) {
-				// element is initially over the top of within
-				if ( overTop > 0 && overBottom <= 0 ) {
-					newOverBottom = position.top + overTop + data.collisionHeight - outerHeight - withinOffset;
-					position.top += overTop - newOverBottom;
-				// element is initially over bottom of within
-				} else if ( overBottom > 0 && overTop <= 0 ) {
-					position.top = withinOffset;
-				// element is initially over both top and bottom of within
-				} else {
-					if ( overTop > overBottom ) {
-						position.top = withinOffset + outerHeight - data.collisionHeight;
-					} else {
-						position.top = withinOffset;
-					}
-				}
-			// too far up -> align with top
-			} else if ( overTop > 0 ) {
-				position.top += overTop;
-			// too far down -> align with bottom edge
-			} else if ( overBottom > 0 ) {
-				position.top -= overBottom;
-			// adjust based on position and margin
-			} else {
-				position.top = Math.max( position.top - collisionPosTop, position.top );
-			}
-		}
-	},
-	flip: {
-		left: function( position, data ) {
-			var within = data.within,
-				withinOffset = within.offset.left + within.scrollLeft,
-				outerWidth = within.width,
-				offsetLeft = within.isWindow ? within.scrollLeft : within.offset.left,
-				collisionPosLeft = position.left - data.collisionPosition.marginLeft,
-				overLeft = collisionPosLeft - offsetLeft,
-				overRight = collisionPosLeft + data.collisionWidth - outerWidth - offsetLeft,
-				myOffset = data.my[ 0 ] === "left" ?
-					-data.elemWidth :
-					data.my[ 0 ] === "right" ?
-						data.elemWidth :
-						0,
-				atOffset = data.at[ 0 ] === "left" ?
-					data.targetWidth :
-					data.at[ 0 ] === "right" ?
-						-data.targetWidth :
-						0,
-				offset = -2 * data.offset[ 0 ],
-				newOverRight,
-				newOverLeft;
-
-			if ( overLeft < 0 ) {
-				newOverRight = position.left + myOffset + atOffset + offset + data.collisionWidth - outerWidth - withinOffset;
-				if ( newOverRight < 0 || newOverRight < Math.abs( overLeft ) ) {
-					position.left += myOffset + atOffset + offset;
-				}
-			}
-			else if ( overRight > 0 ) {
-				newOverLeft = position.left - data.collisionPosition.marginLeft + myOffset + atOffset + offset - offsetLeft;
-				if ( newOverLeft > 0 || Math.abs( newOverLeft ) < overRight ) {
-					position.left += myOffset + atOffset + offset;
-				}
-			}
-		},
-		top: function( position, data ) {
-			var within = data.within,
-				withinOffset = within.offset.top + within.scrollTop,
-				outerHeight = within.height,
-				offsetTop = within.isWindow ? within.scrollTop : within.offset.top,
-				collisionPosTop = position.top - data.collisionPosition.marginTop,
-				overTop = collisionPosTop - offsetTop,
-				overBottom = collisionPosTop + data.collisionHeight - outerHeight - offsetTop,
-				top = data.my[ 1 ] === "top",
-				myOffset = top ?
-					-data.elemHeight :
-					data.my[ 1 ] === "bottom" ?
-						data.elemHeight :
-						0,
-				atOffset = data.at[ 1 ] === "top" ?
-					data.targetHeight :
-					data.at[ 1 ] === "bottom" ?
-						-data.targetHeight :
-						0,
-				offset = -2 * data.offset[ 1 ],
-				newOverTop,
-				newOverBottom;
-			if ( overTop < 0 ) {
-				newOverBottom = position.top + myOffset + atOffset + offset + data.collisionHeight - outerHeight - withinOffset;
-				if ( ( position.top + myOffset + atOffset + offset) > overTop && ( newOverBottom < 0 || newOverBottom < Math.abs( overTop ) ) ) {
-					position.top += myOffset + atOffset + offset;
-				}
-			}
-			else if ( overBottom > 0 ) {
-				newOverTop = position.top -  data.collisionPosition.marginTop + myOffset + atOffset + offset - offsetTop;
-				if ( ( position.top + myOffset + atOffset + offset) > overBottom && ( newOverTop > 0 || Math.abs( newOverTop ) < overBottom ) ) {
-					position.top += myOffset + atOffset + offset;
-				}
-			}
-		}
-	},
-	flipfit: {
-		left: function() {
-			_pos_jQueryUI110.flip.left.apply( this, arguments );
-			_pos_jQueryUI110.fit.left.apply( this, arguments );
-		},
-		top: function() {
-			_pos_jQueryUI110.flip.top.apply( this, arguments );
-			_pos_jQueryUI110.fit.top.apply( this, arguments );
-		}
-	}
-};
-
-jQuery.ui.position._sapUiCommonsMenuFlip = {
-	left: function(position, data){
-		
-		if(jQuery.ui.position.flipfit){ //jQuery UI 1.9 ff.
-			jQuery.ui.position.flipfit.left.apply(this, arguments);
-			return;
-		}
-		
-		//jQuery UI 1.8
-		data = _migrateDataTojQueryUI110(data);
-		_pos_jQueryUI110.flipfit.left.apply(this, arguments);
-	},
-	top: function(position, data){
-		
-		if(jQuery.ui.position.flipfit){ //jQuery UI 1.9 ff.
-			jQuery.ui.position.flipfit.top.apply(this, arguments);
-			return;
-		}
-		
-		//jQuery UI 1.8
-		data = _migrateDataTojQueryUI110(data);
-		_pos_jQueryUI110.flipfit.top.apply(this, arguments);
-	}
-};
-
-//******************** jQuery UI 1.10.3 End **************************
-
-
-})(window);
-}; // end of sap/ui/commons/Menu.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuButton') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.control, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides control sap.ui.commons.MenuButton.
-jQuery.sap.declare("sap.ui.commons.MenuButton");
-
-
 
 
 /**
- * Constructor for a new MenuButton.
- * 
- * Accepts an object literal <code>mSettings</code> that defines initial 
- * property values, aggregated and associated objects as well as event handlers. 
- * 
- * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
- * then the framework assumes property, aggregation, association, event in that order. 
- * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
- * or "event:" can be added to the name of the setting (such a prefixed name must be
- * enclosed in single or double quotes).
- *
- * The supported settings are:
- * <ul>
- * <li>Properties
- * <ul>
- * <li>{@link #getDockButton dockButton} : string</li>
- * <li>{@link #getDockMenu dockMenu} : string</li></ul>
- * </li>
- * <li>Aggregations
- * <ul>
- * <li>{@link #getMenu menu} <strong>(default aggregation)</strong> : sap.ui.commons.Menu</li></ul>
- * </li>
- * <li>Associations
- * <ul></ul>
- * </li>
- * <li>Events
- * <ul>
- * <li>{@link sap.ui.commons.MenuButton#event:itemSelected itemSelected} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
- * </li>
- * </ul> 
- *
- * 
- * In addition, all settings applicable to the base type {@link sap.ui.commons.Button#constructor sap.ui.commons.Button}
- * can be used as well.
- *
- * @param {string} [sId] id for the new control, generated automatically if no id is given 
- * @param {object} [mSettings] initial settings for the new control
- *
- * @class
- * Common button control that opens a menu when clicked by the user. The control provides an API for configuring the docking position
- * of the menu.
- * 
- * @extends sap.ui.commons.Button
- *
- * @author  
- * @version 1.20.10
- *
- * @constructor   
- * @public
- * @name sap.ui.commons.MenuButton
- */
-sap.ui.commons.Button.extend("sap.ui.commons.MenuButton", { metadata : {
-
-	// ---- object ----
-
-	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"dockButton" : {type : "string", group : "Misc", defaultValue : null},
-		"dockMenu" : {type : "string", group : "Misc", defaultValue : null}
-	},
-	defaultAggregation : "menu",
-	aggregations : {
-    	"menu" : {type : "sap.ui.commons.Menu", multiple : false}
-	},
-	events : {
-		"itemSelected" : {}
-	}
-}});
-
-
-/**
- * Creates a new subclass of class sap.ui.commons.MenuButton with name <code>sClassName</code> 
- * and enriches it with the information contained in <code>oClassInfo</code>.
- * 
- * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
- *   
- * @param {string} sClassName name of the class to be created
- * @param {object} [oClassInfo] object literal with informations about the class  
- * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
- * @return {function} the created class / constructor function
- * @public
- * @static
- * @name sap.ui.commons.MenuButton.extend
- * @function
- */
-
-sap.ui.commons.MenuButton.M_EVENTS = {'itemSelected':'itemSelected'};
-
-
-/**
- * Getter for property <code>dockButton</code>.
- * The position / edge (see sap.ui.core.Popup.Dock) of the button where the menu is docked. Default is 'begin bottom'.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>dockButton</code>
- * @public
- * @name sap.ui.commons.MenuButton#getDockButton
- * @function
- */
-
-/**
- * Setter for property <code>dockButton</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sDockButton  new value for property <code>dockButton</code>
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#setDockButton
- * @function
- */
-
-
-/**
- * Getter for property <code>dockMenu</code>.
- * The position / edge (see sap.ui.core.Popup.Dock) of the menu which is docked to the button. Default is 'begin top'.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>dockMenu</code>
- * @public
- * @name sap.ui.commons.MenuButton#getDockMenu
- * @function
- */
-
-/**
- * Setter for property <code>dockMenu</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sDockMenu  new value for property <code>dockMenu</code>
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#setDockMenu
- * @function
- */
-
-
-/**
- * Getter for aggregation <code>menu</code>.<br/>
- * Menu that shall be opened when the button is clicked
- * 
- * <strong>Note</strong>: this is the default aggregation for MenuButton.
- * @return {sap.ui.commons.Menu}
- * @public
- * @name sap.ui.commons.MenuButton#getMenu
- * @function
- */
-
-
-/**
- * Setter for the aggregated <code>menu</code>.
- * @param {sap.ui.commons.Menu} oMenu
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#setMenu
- * @function
- */
-	
-
-/**
- * Destroys the menu in the aggregation 
- * named <code>menu</code>.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#destroyMenu
- * @function
- */
-
-
-/**
- * Event that is fired when a menu item is selected by the user 
- *
- * @name sap.ui.commons.MenuButton#itemSelected
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
-
- * @param {string} oControlEvent.getParameters.itemId The ID of the selected item
- * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item The selected item
- * @public
- */
- 
-/**
- * Attach event handler <code>fnFunction</code> to the 'itemSelected' event of this <code>sap.ui.commons.MenuButton</code>.<br/>.
- * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
- * otherwise to this <code>sap.ui.commons.MenuButton</code>.<br/> itself. 
- *  
- * Event that is fired when a menu item is selected by the user 
- *
- * @param {object}
- *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs.  
- * @param {object}
- *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.commons.MenuButton</code>.<br/> itself.
- *
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#attachItemSelected
- * @function
- */
-
-/**
- * Detach event handler <code>fnFunction</code> from the 'itemSelected' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
- *
- * The passed function and listener object must match the ones used for event registration.
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Context object on which the given function had to be called.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuButton#detachItemSelected
- * @function
- */
-
-/**
- * Fire event itemSelected to attached listeners.
- * 
- * Expects following event parameters:
- * <ul>
- * <li>'itemId' of type <code>string</code> The ID of the selected item</li>
- * <li>'item' of type <code>sap.ui.commons.MenuItemBase</code> The selected item</li>
- * </ul>
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @protected
- * @name sap.ui.commons.MenuButton#fireItemSelected
- * @function
- */
-
-
-// Start of sap\ui\commons\MenuButton.js
-
-
-(function() {
-	
-sap.ui.commons.MenuButton.prototype.init = function() {
-	this.addStyleClass("sapUiMenuButton");
-	this.bWithKeyboard = false;
-};
-
-/**
- * Function is called when button is clicked.
+ * Behavior implementation which is executed when the focus comes into the control or on one of its children.
  *
  * @param {jQuery.Event} oEvent
  * @private
  */
-sap.ui.commons.MenuButton.prototype.onclick = function(oEvent) {
-	if(this.getEnabled() && !this._bSkipOpen){
-		var oTooltip = this.getTooltip();
-		if(oTooltip && oTooltip instanceof sap.ui.core.TooltipBase){
-			oTooltip._closeOrPreventOpen(); //CSN 1762131 2013
-		}
-		var sDockButton = this.getDockButton() ? this.getDockButton() : sap.ui.core.Popup.Dock.BeginBottom;
-		var sDockMenu = this.getDockMenu() ? this.getDockMenu() : sap.ui.core.Popup.Dock.BeginTop;
-		this.getMenu().open(this.bWithKeyboard, this, sDockMenu, sDockButton, this);
+sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
+	var sId = this.getId();
+	var jTarget = jQuery(oEvent.target);
+	var jTargetId = jTarget.attr("id");
+	if(!jTargetId || jTargetId == sId || jTargetId == sId + "-area"){
+		var jItems = this.$("area").children();
+		this.sCurrentFocusedItemRefId = jItems.length == 0 ? null : jQuery(jItems.get(0)).attr("id");
+	} else {
+		// Make sure the parent menu item get the focus when a menu is closed via
+		// keyboard in order to keep keyboard navigation working
+		this.sCurrentFocusedItemRefId = jTargetId;
 	}
-	this.bWithKeyboard = false;
-	this._bSkipOpen = false;
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
+
+	var oFocusElement = jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0);
+	if(oFocusElement) {
+		oFocusElement.focus();
+	}
+	
+	this.$().attr("tabindex", "-1");
 };
+
+
+/**
+ * Behavior implementation which is executed when the focus leaves the control or one of its children.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuBar.prototype.onfocusout = function(oEvent){
+	//Add the control to tab chain again to make tab in working (see onfocusin)
+	this.$().attr("tabindex", "0");
+};
+
 
 /**
  * Function is called when mouse key is clicked down.
@@ -62975,9 +60251,14 @@ sap.ui.commons.MenuButton.prototype.onclick = function(oEvent) {
  * @param {jQuery.Event} oEvent
  * @private
  */
-sap.ui.commons.MenuButton.prototype.onmousedown = function(oEvent) {
-	this.handleMouseDown(oEvent, false);
-	this._bSkipOpen = this.getMenu() && this.getMenu().bOpen;
+sap.ui.commons.MenuBar.prototype.onmousedown = function(oEvent) {
+	var oMenuItem = _getMenuItem(this, oEvent);
+	if(oMenuItem === "ovrflw"){
+		this._bOvrFlwMnuSkipOpen = this.oOvrFlwMnu && this.oOvrFlwMnu.bOpen;
+	}else if(oMenuItem){
+		var oMenu = oMenuItem.getSubmenu();
+		oMenuItem._bSkipOpen = oMenu && oMenu.bOpen;
+	}
 };
 
 
@@ -62988,36 +60269,53 @@ sap.ui.commons.MenuButton.prototype.onmousedown = function(oEvent) {
  * @private
  */
 sap.ui.commons.MenuButton.prototype.onmouseout = function(oEvent) {
-	if(sap.ui.commons.Button.prototype.onmouseout){
-		sap.ui.commons.Button.prototype.onmouseout.apply(this, arguments);
-	}
-	if(this._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
-		this._bSkipOpen = false;
+	var oMenuItem = _getMenuItem(this, oEvent);
+	if(oMenuItem === "ovrflw"){
+		var jRef = get$Item(this, oEvent);
+		if(this._bOvrFlwMnuSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, jRef[0])){
+			this._bOvrFlwMnuSkipOpen = false;
+		}
+	}else if(oMenuItem){
+		var jRef = get$Item(this, oEvent);
+		if(oMenuItem._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, jRef[0])){
+			oMenuItem._bSkipOpen = false;
+		}
 	}
 };
 
 
 /**
- * Function is called when enter key is pressed.
+ * Behavior implementation which is executed when the user clicks.
  *
  * @param {jQuery.Event} oEvent
  * @private
  */
-sap.ui.commons.MenuButton.prototype.onsapenter = function(oEvent){
-	//It is sufficient to set this flag here only. A click event to open the menu will follow.
-	this.bWithKeyboard = true;
+sap.ui.commons.MenuBar.prototype.onclick = function(oEvent) {
+	openItemMenu(this, oEvent, false);
 };
 
+
 /**
- * Function is called when space key is pressed.
+ * Behavior implementation which is executed when the user presses the space or enter key.
  *
  * @param {jQuery.Event} oEvent
  * @private
  */
-sap.ui.commons.MenuButton.prototype.onsapspace = function(oEvent){
-	//It is sufficient to set this flag here only. A click event to open the menu will follow.
-	this.bWithKeyboard = true;
+sap.ui.commons.MenuBar.prototype.onsapselect = function(oEvent){
+	openItemMenu(this, oEvent, true);
 };
+
+
+/**
+ * Function is called when down key is pressed without a modifier key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuBar.prototype.onsapdown = function(oEvent){
+	openItemMenu(this, oEvent, true);
+};
+
 
 /**
  * Function is called when down key is pressed with a modifier key.
@@ -63025,767 +60323,270 @@ sap.ui.commons.MenuButton.prototype.onsapspace = function(oEvent){
  * @param {jQuery.Event} oEvent
  * @private
  */
-//Requested by UX, see CSN 0120061532 0001379793 2011
-sap.ui.commons.MenuButton.prototype.onsapdownmodifiers = function(oEvent){
-	if(oEvent.altKey){
-		this.bWithKeyboard = true;
-		this.onclick(oEvent);
+sap.ui.commons.MenuBar.prototype.onsapdownmodifiers = function(oEvent){
+	if(oEvent.altKey) {
+		openItemMenu(this, oEvent, true);
 	}
 };
 
-sap.ui.commons.MenuButton.prototype.clone = function(sIdSuffix, aLocalIds) {
-	//Deregister event listener before cloning
-	updateMenuEventRegistration(this);
-	var oClone = sap.ui.commons.Button.prototype.clone.apply(this, arguments);
-	updateMenuEventRegistration(this, this.getMenu());
-	return oClone;
-};
 
 /**
- * Setter for the aggregated <code>menu</code>.
- * @param oMenu {sap.ui.commons.Menu}
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
+ * Behavior implementation which is executed when the user presses the arrow left (RTL: arrow right) key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
  */
-sap.ui.commons.MenuButton.prototype.setMenu = function(oMenu) {
-	updateMenuEventRegistration(this, oMenu);
-	this.setAggregation("menu", oMenu);
-	return this;
+sap.ui.commons.MenuBar.prototype.onsapprevious = function(oEvent){
+	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_UP) {//Ignore arrow up
+		focusStep(this, oEvent, "prev");
+	}
 };
+
 
 /**
- * Destroys the menu in the aggregation
- * named <code>menu</code>.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
+ * Behavior implementation which is executed when the user presses the arrow right (RTL: arrow left) key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
  */
-sap.ui.commons.MenuButton.prototype.destroyMenu = function() {
-	updateMenuEventRegistration(this, null);
-	this.destroyAggregation("menu");
-	return this;
-};
-
-//********** Private **********
-
-// Detaches the select event handler from the current menu and attaches it to the new menu
-var updateMenuEventRegistration = function(oThis, oNewMenu){
-	var oMenu = oThis.getMenu();
-	if(oMenu) {
-		oMenu.detachItemSelect(oThis._fItemSelectHandler);
-	}
-	oThis._fItemSelectHandler = jQuery.proxy(onItemSelected, oThis);
-	if(oNewMenu) {
-		oNewMenu.attachItemSelect(oThis._fItemSelectHandler);
+sap.ui.commons.MenuBar.prototype.onsapnext = function(oEvent){
+	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_DOWN) {//Ignore arrow down
+		focusStep(this, oEvent, "next");
 	}
 };
 
-//Function is called when an item in the menu was selected.
-var onItemSelected = function(oEvent){
-	var oItem = oEvent.getParameter("item");
-	this.fireItemSelected({itemId: oItem.getId(), item: oItem});
-	this.firePress({itemId: oItem.getId(), item: oItem});
+
+/**
+ * Behavior implementation which is executed when the user presses the home/pos1 key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuBar.prototype.onsaphome = function(oEvent){
+	focusStep(this, oEvent, "first");
 };
+
+
+/**
+ * Behavior implementation which is executed when the user presses the end key.
+ *
+ * @param {jQuery.Event} oEvent
+ * @private
+ */
+sap.ui.commons.MenuBar.prototype.onsapend = function(oEvent){
+	focusStep(this, oEvent, "last");
+};
+
+
+//********* Private *********
+
+
+//Opens the corresponding menu of the selected menu item
+var openItemMenu = function(oThis, oEvent, bWithKeyboard) {
+	oEvent.preventDefault();
+	oEvent.stopPropagation();
+	
+	if(oThis.getEnabled()){
+		var oMenuItem = _getMenuItem(oThis, oEvent);
+		if(oMenuItem === "ovrflw"){
+			var jRef = get$Item(oThis, oEvent);
+			if(oThis.oOvrFlwMnu && !oThis._bOvrFlwMnuSkipOpen){
+				var eDock = sap.ui.core.Popup.Dock;
+				oThis.oOvrFlwMnu.open(bWithKeyboard, jRef.get(0), eDock.EndTop, eDock.EndBottom, jRef.get(0));
+			}
+		}else if(oMenuItem){
+			if(oMenuItem.getEnabled()) {
+				var jRef = get$Item(oThis, oEvent);
+				var oMenu = oMenuItem.getSubmenu();
+				if(oMenu && !oMenuItem._bSkipOpen){
+					var eDock = sap.ui.core.Popup.Dock;
+					oMenu.open(bWithKeyboard, jRef.get(0), eDock.BeginTop, eDock.BeginBottom, jRef.get(0));
+				}
+			}
+		}
+	}
+	
+	//Resets all skip open flags
+	oThis._bOvrFlwMnuSkipOpen = false;
+	var aItems = oThis.getItems();
+	for(var i=0; i<aItems.length; i++){
+		aItems[i]._bSkipOpen = false;
+	}
+};
+
+
+//Returns the jQuery Object of the item which was the target of the event (if exists)
+var get$Item = function(oThis, oEvent){
+	var jRef = jQuery(oEvent.target);
+	if(!jRef.attr("itemidx")) {
+		jRef = jRef.parent();
+	}
+	return jRef.attr("itemidx") ? jRef : null;
+};
+
+
+//Returns the item which was the target of the event (if exists) or "ovrflow" for the overflow
+var _getMenuItem = function(oThis, oEvent) {
+	var jRef = get$Item(oThis, oEvent);
+	if(jRef){
+		var sItemIdx = jRef.attr("itemidx");
+		if(sItemIdx){
+			if(sItemIdx == "ovrflw"){
+				return "ovrflw";
+			}else{
+				var iIdx = parseInt(sItemIdx, 10);
+				var oMenuItem = oThis.getItems()[iIdx];
+				return oMenuItem;
+			}
+		}
+	}
+	return null;
+};
+
+
+//Compute actual number of items currently hidden due to overflow
+var getVisibleItemCount = function(oThis){
+	var iVisibleItems = 0;
+
+	var jAreaRef = oThis.$("area");
+	var jItems = jAreaRef.children();
+
+	var bRtl = sap.ui.getCore().getConfiguration().getRTL();
+	var lastOffsetLeft = (bRtl ? 100000 : 0);
+
+	jItems.each(function(iIdx) {
+		if(iIdx == 0) {
+			return true;
+		}
+
+		var currentOffsetLeft = this.offsetLeft;
+		var bLineBreak = (bRtl ? (currentOffsetLeft >= lastOffsetLeft) : (currentOffsetLeft <= lastOffsetLeft));
+
+		if(bLineBreak){
+			iVisibleItems = iIdx;
+			return false;
+		}else if(jQuery(this).attr("id") == oThis.getId()+"-ovrflw"){
+			// This is the overflow button, there was no line break
+			iVisibleItems = iIdx;
+			return false;
+		}else{
+			// Regular item, to the right of the last one, so just proceed
+			lastOffsetLeft = currentOffsetLeft;
+			return true;
+		}
+	});
+
+	return iVisibleItems;
+};
+
+
+//Handle the resize of the menubar
+var updateAfterResize = function(oThis){
+	var iVisibleItems = getVisibleItemCount(oThis);
+	var _iVisibleItems = iVisibleItems;
+
+	var jAreaRef = oThis.$("area");
+	var jItems = jAreaRef.children();
+	var jOvrFlwRef = oThis.$("ovrflw");
+
+	var bUpdateFocus = false;
+
+	if(iVisibleItems < jItems.length-1){
+		jOvrFlwRef.attr("style", "display:block;");
+		if(!oThis.oOvrFlwMnu){
+			oThis.oOvrFlwMnu = new sap.ui.commons.Menu(oThis.getId()+"-ovrflwmnu");
+			oThis.oOvrFlwMnu.bUseTopStyle = oThis.getDesign() == sap.ui.commons.MenuBarDesign.Header;
+			oThis.oOvrFlwMnu.attachItemSelect(function(oEvent){
+				var oItem = oEvent.getParameter("item");
+				if(!(oItem instanceof sap.ui.commons._DelegatorMenuItem)){
+					var oItemRootMenu = sap.ui.commons.Menu.prototype.getRootMenu.apply(oItem.getParent());
+					oItemRootMenu.fireItemSelect({item: oItem});
+				}
+			});
+		}
+		oThis.oOvrFlwMnu.destroyItems();
+		var aItems = oThis.getItems();
+		for(var i=0; i<aItems.length; i++){
+			var oItem = aItems[i];
+			if(iVisibleItems != 0){
+				if(oItem.getVisible()) {
+					iVisibleItems--;
+				}
+				if(iVisibleItems == 0) {
+					oThis.sLastVisibleItemId = oItem.getId();
+				}
+			}else{
+				oThis.oOvrFlwMnu.addItem(new sap.ui.commons._DelegatorMenuItem(oItem));
+				if(oItem.getId() == oThis.sCurrentFocusedItemRefId){
+					bUpdateFocus = true;
+				}
+			}
+		}
+		if(sap.ui.getCore().getConfiguration().getAccessibility()){
+			jItems.attr("aria-setsize", _iVisibleItems+1);
+			jOvrFlwRef.attr("aria-posinset", _iVisibleItems+1);
+		}
+	}else{
+		jOvrFlwRef.attr("style", "display:none;");
+		if(oThis.oOvrFlwMnu) {
+			oThis.oOvrFlwMnu.destroyItems();
+		}
+		oThis.sLastVisibleItemId = null;
+		if(sap.ui.getCore().getConfiguration().getAccessibility()){
+			jItems.attr("aria-setsize", _iVisibleItems);
+			jOvrFlwRef.attr("aria-posinset", 0);
+		}
+	}
+
+	jAreaRef.scrollTop(0);
+
+	if(bUpdateFocus){
+		oThis.sCurrentFocusedItemRefId = oThis.sLastVisibleItemId;
+		jQuery.sap.byId(oThis.sLastVisibleItemId).get(0).focus();
+	}
+};
+
+
+//Focus the next (depending on the given direction) step
+var focusStep = function(oThis, oEvent, sDir){
+	oEvent.stopPropagation();
+	oEvent.preventDefault();
+
+	if(!oThis.sCurrentFocusedItemRefId) {
+		return;
+	}
+
+	var sFollowingFocusItemId = null;
+	if(oThis.sLastVisibleItemId && ((oThis.sCurrentFocusedItemRefId == oThis.sLastVisibleItemId && sDir == "next") || sDir == "last")){
+		sFollowingFocusItemId = oThis.getId()+"-ovrflw";
+	}else if(oThis.sLastVisibleItemId && oThis.sCurrentFocusedItemRefId == oThis.getId()+"-ovrflw" && sDir == "prev"){
+		sFollowingFocusItemId = oThis.sLastVisibleItemId;
+	}else{
+		var sFoo = sDir+"All";
+		var bIsJumpToEnd = false;
+		if(sDir == "first"){
+			sFoo = "prevAll";
+			bIsJumpToEnd = true;
+		}else if(sDir == "last"){
+			sFoo = "nextAll";
+			bIsJumpToEnd = true;
+		}
+
+		var jCurrentFocusItem = jQuery.sap.byId(oThis.sCurrentFocusedItemRefId);
+		var jFollowingItems = jCurrentFocusItem[sFoo](":visible");
+
+		sFollowingFocusItemId = jQuery(jFollowingItems.get(bIsJumpToEnd ? jFollowingItems.length-1 : 0)).attr("id");
+	}
+	if(sFollowingFocusItemId){
+		oThis.sCurrentFocusedItemRefId = sFollowingFocusItemId;
+		jQuery.sap.byId(sFollowingFocusItemId).get(0).focus();
+	}
+};
+
 
 }());
 
-// to overwrite JS doc for inherited press event
-
-/**
- * Fired when an item from the menu was selected.
- *
- * @see sap.ui.commons.MenuButton#itemSelected
- *
- * @name sap.ui.commons.MenuButton#press
- * @event
- * @param {sap.ui.base.Event} oControlEvent
- * @param {sap.ui.base.EventProvider} oControlEvent.getSource
- * @param {object} oControlEvent.getParameters
- *
- * @param {string} oControlEvent.getParameters.itemId The id of the selected item
- * @param {sap.ui.commons.MenuItemBase} oControlEvent.getParameters.item The selected item
- * @public
- */
-
-/**
- * Attach event-handler <code>fnFunction</code> to the 'press' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
- *
- * Event is fired when an item from the menu was selected.
- *
- * @see sap.ui.commons.MenuButton#attachItemSelected
- *
- * @param {object}
- *            [oData] The object, that should be passed along with the event-object when firing the event.
- * @param {function}
- *            fnFunction The function to call, when the event occurs. This function will be called on the
- *            oListener-instance (if present) or in a 'static way'.
- * @param {object}
- *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
- *
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- */
-
-/**
- * Detach event-handler <code>fnFunction</code> from the 'press' event of this <code>sap.ui.commons.MenuButton</code>.<br/>
- *
- * The passed function and listener object must match the ones previously used for event registration.
- *
- * @see sap.ui.commons.MenuButton#detachItemSelected
- *
- * @param {function}
- *            fnFunction The function to call, when the event occurs.
- * @param {object}
- *            oListener Object on which the given function had to be called.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @public
- */
-
-/**
- * Fire event press to attached listeners.
- *
- * @see sap.ui.commons.MenuButton#fireItemSelected
- *
- * @param {Map} [mArguments] the arguments to pass along with the event.
- * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
- * @protected
- */
-}; // end of sap/ui/commons/MenuButton.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuItem') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.control, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides control sap.ui.commons.MenuItem.
-jQuery.sap.declare("sap.ui.commons.MenuItem");
-
-
-
-
-/**
- * Constructor for a new MenuItem.
- * 
- * Accepts an object literal <code>mSettings</code> that defines initial 
- * property values, aggregated and associated objects as well as event handlers. 
- * 
- * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
- * then the framework assumes property, aggregation, association, event in that order. 
- * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
- * or "event:" can be added to the name of the setting (such a prefixed name must be
- * enclosed in single or double quotes).
- *
- * The supported settings are:
- * <ul>
- * <li>Properties
- * <ul>
- * <li>{@link #getText text} : string (default: '')</li>
- * <li>{@link #getIcon icon} : sap.ui.core.URI (default: '')</li></ul>
- * </li>
- * <li>Aggregations
- * <ul></ul>
- * </li>
- * <li>Associations
- * <ul></ul>
- * </li>
- * <li>Events
- * <ul></ul>
- * </li>
- * </ul> 
- *
- * 
- * In addition, all settings applicable to the base type {@link sap.ui.commons.MenuItemBase#constructor sap.ui.commons.MenuItemBase}
- * can be used as well.
- *
- * @param {string} [sId] id for the new control, generated automatically if no id is given 
- * @param {object} [mSettings] initial settings for the new control
- *
- * @class
- * Smallest unit in the menu hierarchy. An item can be a direct part of a menu bar, of a menu, or of a sub menu.
- * 
- * @extends sap.ui.commons.MenuItemBase
- *
- * @author SAP AG 
- * @version 1.20.10
- *
- * @constructor   
- * @public
- * @name sap.ui.commons.MenuItem
- */
-sap.ui.commons.MenuItemBase.extend("sap.ui.commons.MenuItem", { metadata : {
-
-	// ---- object ----
-
-	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"text" : {type : "string", group : "Appearance", defaultValue : ''},
-		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : ''}
-	}
-}});
-
-
-/**
- * Creates a new subclass of class sap.ui.commons.MenuItem with name <code>sClassName</code> 
- * and enriches it with the information contained in <code>oClassInfo</code>.
- * 
- * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
- *   
- * @param {string} sClassName name of the class to be created
- * @param {object} [oClassInfo] object literal with informations about the class  
- * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
- * @return {function} the created class / constructor function
- * @public
- * @static
- * @name sap.ui.commons.MenuItem.extend
- * @function
- */
-
-
-/**
- * Getter for property <code>text</code>.
- * 
- * Item text
- * 
- *
- * Default value is <code>''</code>
- *
- * @return {string} the value of property <code>text</code>
- * @public
- * @name sap.ui.commons.MenuItem#getText
- * @function
- */
-
-/**
- * Setter for property <code>text</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {string} sText  new value for property <code>text</code>
- * @return {sap.ui.commons.MenuItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItem#setText
- * @function
- */
-
-
-/**
- * Getter for property <code>icon</code>.
- * 
- * Icon to be displayed
- * 
- *
- * Default value is <code>''</code>
- *
- * @return {sap.ui.core.URI} the value of property <code>icon</code>
- * @public
- * @name sap.ui.commons.MenuItem#getIcon
- * @function
- */
-
-/**
- * Setter for property <code>icon</code>.
- *
- * Default value is <code>''</code> 
- *
- * @param {sap.ui.core.URI} sIcon  new value for property <code>icon</code>
- * @return {sap.ui.commons.MenuItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuItem#setIcon
- * @function
- */
-
-
-// Start of sap\ui\commons\MenuItem.js
-sap.ui.commons.MenuItem.prototype.render = function(oRenderManager, oItem, oMenu, oInfo){
-	var rm = oRenderManager;
-	var oSubMenu = oItem.getSubmenu();
-	rm.write("<li ");
-	rm.writeAttribute("class", "sapUiMnuItm" + (oMenu.checkEnabled(oItem) ? "" : " sapUiMnuItmDsbl"));
-	if(oItem.getTooltip_AsString()) {
-		rm.writeAttributeEscaped("title", oItem.getTooltip_AsString());
-	}
-	rm.writeElementData(oItem);
-
-	// ARIA
-	if(oInfo.bAccessible){
-		rm.writeAttribute("role", "menuitem");
-		rm.writeAttribute("aria-labelledby", oMenu.getId()+" "+this.getId()+"-txt "+this.getId()+"-scuttxt");
-		rm.writeAttribute("aria-disabled", !oMenu.checkEnabled(oItem));
-		rm.writeAttribute("aria-posinset", oInfo.iItemNo);
-		rm.writeAttribute("aria-setsize", oInfo.iTotalItems);
-		if (oSubMenu) {
-			rm.writeAttribute("aria-haspopup", true);
-			rm.writeAttribute("aria-owns", oSubMenu.getId());
-		}
-	}
-
-	// Left border
-	rm.write("><div class=\"sapUiMnuItmL\"></div>");
-
-	// icon/check column
-	rm.write("<div class=\"sapUiMnuItmIco\">");
-	if (oItem.getIcon()) {
-		rm.writeIcon(oItem.getIcon());
-	}
-	rm.write("</div>");
-
-	// Text column
-	rm.write("<div id=\""+this.getId()+"-txt\" class=\"sapUiMnuItmTxt\">");
-	rm.writeEscaped(oItem.getText());
-	rm.write("</div>");
-
-	// Shortcut column
-	rm.write("<div id=\""+this.getId()+"-scuttxt\" class=\"sapUiMnuItmSCut\"></div>");
-
-	// Submenu column
-	rm.write("<div class=\"sapUiMnuItmSbMnu\">");
-	if(oSubMenu) {
-		rm.write("<div>&nbsp;</div>");
-	}
-	rm.write("</div>");
-
-	// Right border
-	rm.write("<div class=\"sapUiMnuItmR\"></div>");
-
-	rm.write("</li>");
-};
-
-/**
- * @protected
- */
-sap.ui.commons.MenuItem.prototype.hover = function(bHovered, oMenu){
-	if(bHovered){
-		jQuery(this.getDomRef()).addClass("sapUiMnuItmHov");
-	}else{
-		jQuery(this.getDomRef()).removeClass("sapUiMnuItmHov");
-	}
-};
-}; // end of sap/ui/commons/MenuItem.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuTextFieldItem') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.control, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides control sap.ui.commons.MenuTextFieldItem.
-jQuery.sap.declare("sap.ui.commons.MenuTextFieldItem");
-
-
-
-
-/**
- * Constructor for a new MenuTextFieldItem.
- * 
- * Accepts an object literal <code>mSettings</code> that defines initial 
- * property values, aggregated and associated objects as well as event handlers. 
- * 
- * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
- * then the framework assumes property, aggregation, association, event in that order. 
- * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
- * or "event:" can be added to the name of the setting (such a prefixed name must be
- * enclosed in single or double quotes).
- *
- * The supported settings are:
- * <ul>
- * <li>Properties
- * <ul>
- * <li>{@link #getLabel label} : string</li>
- * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
- * <li>{@link #getValue value} : string</li></ul>
- * </li>
- * <li>Aggregations
- * <ul></ul>
- * </li>
- * <li>Associations
- * <ul></ul>
- * </li>
- * <li>Events
- * <ul></ul>
- * </li>
- * </ul> 
- *
- * 
- * In addition, all settings applicable to the base type {@link sap.ui.commons.MenuItemBase#constructor sap.ui.commons.MenuItemBase}
- * can be used as well.
- *
- * @param {string} [sId] id for the new control, generated automatically if no id is given 
- * @param {object} [mSettings] initial settings for the new control
- *
- * @class
- * Menu item which contains an text field. This menu item is e.g. helpful for filters.
- * The aggregation 'submenu' (inherited from parent class) is not supported for this type of menu item.
- * @extends sap.ui.commons.MenuItemBase
- *
- * @author SAP AG 
- * @version 1.20.10
- *
- * @constructor   
- * @public
- * @name sap.ui.commons.MenuTextFieldItem
- */
-sap.ui.commons.MenuItemBase.extend("sap.ui.commons.MenuTextFieldItem", { metadata : {
-
-	// ---- object ----
-
-	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"label" : {type : "string", group : "Appearance", defaultValue : null},
-		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : null},
-		"value" : {type : "string", group : "Misc", defaultValue : null}
-	},
-	aggregations : {
-    	"_label" : {type : "sap.ui.commons.Label", multiple : false, visibility : "hidden"}, 
-    	"_textfield" : {type : "sap.ui.commons.TextField", multiple : false, visibility : "hidden"}
-	}
-}});
-
-
-/**
- * Creates a new subclass of class sap.ui.commons.MenuTextFieldItem with name <code>sClassName</code> 
- * and enriches it with the information contained in <code>oClassInfo</code>.
- * 
- * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
- *   
- * @param {string} sClassName name of the class to be created
- * @param {object} [oClassInfo] object literal with informations about the class  
- * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
- * @return {function} the created class / constructor function
- * @public
- * @static
- * @name sap.ui.commons.MenuTextFieldItem.extend
- * @function
- */
-
-
-/**
- * Getter for property <code>label</code>.
- * The label of the contained text field.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>label</code>
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#getLabel
- * @function
- */
-
-/**
- * Setter for property <code>label</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sLabel  new value for property <code>label</code>
- * @return {sap.ui.commons.MenuTextFieldItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#setLabel
- * @function
- */
-
-
-/**
- * Getter for property <code>icon</code>.
- * Icon to be displayed.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {sap.ui.core.URI} the value of property <code>icon</code>
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#getIcon
- * @function
- */
-
-/**
- * Setter for property <code>icon</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {sap.ui.core.URI} sIcon  new value for property <code>icon</code>
- * @return {sap.ui.commons.MenuTextFieldItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#setIcon
- * @function
- */
-
-
-/**
- * Getter for property <code>value</code>.
- * Value of the contained text field.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>value</code>
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#getValue
- * @function
- */
-
-/**
- * Setter for property <code>value</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sValue  new value for property <code>value</code>
- * @return {sap.ui.commons.MenuTextFieldItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#setValue
- * @function
- */
-
-
-// Start of sap\ui\commons\MenuTextFieldItem.js
-
-
-
-
-(function() {
-
-/**
- * Does the setup when the item is created.
- * @private
- */
-sap.ui.commons.MenuTextFieldItem.prototype.init = function(){
-	sap.ui.commons.MenuItemBase.prototype.init.apply(this, arguments);
-	var that = this;
-	var oDelegate = {
-		onAfterRendering : function(){
-			var $tf = that._tf.$();
-			var $lbl = that._lbl.$();
-			var offsetLeft = $lbl.length ? $lbl.get(0).offsetLeft : 0;
-			
-			$tf.attr("tabIndex", -1);
-			
-			if(sap.ui.getCore().getConfiguration().getRTL()){
-				$tf.parent().css({"width": "auto", "right": (that.$().outerWidth(true) - offsetLeft + ($lbl.outerWidth(true) - $lbl.outerWidth()))+"px"});
-			}else{
-				$tf.parent().css({"width": "auto", "left": (offsetLeft + $lbl.outerWidth(true))+"px"});
-			}
-		},
-		onclick: function(oEvent){
-			if(!that._tf.getEnabled() && !!sap.ui.Device.browser.internet_explorer){
-				that.getParent().focus();
-			}
-		}
-	};
-	this._tf = new sap.ui.commons.TextField(this.getId()+"-tf");
-	this._tf.addDelegate(oDelegate);
-	this.setAggregation("_textfield", this._tf);
-	this._lbl = new sap.ui.commons.Label(this.getId()+"-lbl", {labelFor: this._tf});
-	this._lbl.addDelegate(oDelegate);
-	this.setAggregation("_label", this._lbl);
-};
-
-
-/**
- * Does all the cleanup when the item is to be destroyed.
- * Called from Element's destroy() method.
- * @private
- */
-sap.ui.commons.MenuTextFieldItem.prototype.exit = function(){
-	this._lbl = null;
-	this._tf = null;
-};
-
-
-/**
- * Called by the Menu renderer when the item should be rendered.
- * @private
- */
-sap.ui.commons.MenuTextFieldItem.prototype.render = function(oRenderManager, oItem, oMenu, oInfo){
-	var rm = oRenderManager;
-	rm.write("<li "); 
-	rm.writeAttribute("class", "sapUiMnuItm sapUiMnuTfItm" + (oMenu.checkEnabled(oItem) ? "" : " sapUiMnuItmDsbl"));
-	if(oItem.getTooltip_AsString()) {
-		rm.writeAttributeEscaped("title", oItem.getTooltip_AsString());
-	}	
-	rm.writeElementData(oItem);
-	
-	// ARIA
-	if(oInfo.bAccessible){
-		rm.writeAttribute("role", "menuitem");
-		rm.writeAttribute("aria-labelledby", oMenu.getId()+" "+this.getId()+"-txt "+this.getId()+"-scuttxt");
-		rm.writeAttribute("aria-disabled", !oMenu.checkEnabled(oItem));
-		rm.writeAttribute("aria-posinset", oInfo.iItemNo);
-		rm.writeAttribute("aria-setsize", oInfo.iTotalItems);
-	}
-	
-	// Left border
-	rm.write("><div class=\"sapUiMnuItmL\"></div>");
-	
-	// icon/check column 
-	rm.write("<div class=\"sapUiMnuItmIco\">");
-	if (oItem.getIcon()) {
-		rm.write("<img");
-		rm.writeAttributeEscaped("src", oItem.getIcon());
-		rm.write("/>");
-	}
-	rm.write("</div>");
-	
-	// Text filed column 
-	rm.write("<div id=\""+this.getId()+"-txt\" class=\"sapUiMnuItmTxt\">");
-	rm.renderControl(this._lbl);
-	rm.write("<div id=\""+this.getId()+"-str\" class=\"sapUiMnuTfItmStretch\"></div>"); // Helper to strech the width if needed
-	this._tf.setValue(this.getValue()); //Ensure the correct value is rendered
-	this._tf.setEnabled(this.getEnabled() && this.getParent().getEnabled()); //Ensure the correct state is rendered
-	rm.write("<div class=\"sapUiMnuTfItemWrppr\">");
-	rm.renderControl(this._tf);
-	rm.write("</div></div>");
-	
-	// Right border
-	rm.write("<div class=\"sapUiMnuItmR\"></div>");
-
-	rm.write("</li>");
-};
-
-
-/**
- * Called by the Menu renderer when the item is hovered.
- * @private
- */
-sap.ui.commons.MenuTextFieldItem.prototype.hover = function(bHovered, oMenu){
-	if(bHovered){
-		jQuery(this.getDomRef()).addClass("sapUiMnuItmHov");
-		jQuery(this._tf.getDomRef()).addClass("sapUiTfFoc");
-		if(this.getEnabled()){
-			var that = this;
-			function focusTF() { that._tf.focus(); };
-			if(jQuery("html").attr("data-sap-ui-browser") === "ie8"){
-				setTimeout(focusTF, 0);
-			}else{
-				focusTF();
-			}
-		}
-	}else{
-		jQuery(this.getDomRef()).removeClass("sapUiMnuItmHov");
-		jQuery(this._tf.getDomRef()).removeClass("sapUiTfFoc");
-	}
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsapup = function(oEvent){
-	this.getParent().focus();
-	this.getParent().onsapprevious(oEvent);
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsapdown = function(oEvent){
-	this.getParent().focus();
-	this.getParent().onsapnext(oEvent);
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsaphome = function(oEvent){
-	this.getParent().focus();
-	this.getParent().onsaphome(oEvent);
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsapend = function(oEvent){
-	this.getParent().focus();
-	this.getParent().onsapend(oEvent);
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsapescape = function(oEvent){
-	this.getParent().onsapescape(oEvent);
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onkeydown = function(oEvent){
-	oEvent.stopPropagation();
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onclick = function(oEvent){
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.onsapenter = function(oEvent){
-	var sValue = oEvent.target.value;
-	this.setValue(sValue, true);
-	this.getParent().selectItem(this);
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-};
-
-
-// ************ Overridden API functions *************
-
-/**
- * Getter for aggregation <code>submenu</code>.<br/>
- * Aggregation of a menu item's sub menu.
- * 
- * @return {sap.ui.commons.Menu}
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#getSubmenu
- * @deprecated The aggregation 'submenu' (inherited from parent class) is not supported for this type of menu item.
- * @function
- */
- 
-/**
- * Destroys the submenu in the aggregation 
- * named <code>submenu</code>.
- * @return {sap.ui.commons.MenuTextFieldItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#destroySubmenu
- * @deprecated The aggregation 'submenu' (inherited from parent class) is not supported for this type of menu item.
- * @function
- */
-
-/**
- * Setter for the aggregated <code>submenu</code>.
- * @param oSubmenu {sap.ui.commons.Menu}
- * @return {sap.ui.commons.MenuTextFieldItem} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuTextFieldItem#setSubmenu
- * @deprecated The aggregation 'submenu' (inherited from parent class) is not supported for this type of menu item.
- * @function
- */
-sap.ui.commons.MenuTextFieldItem.prototype.setSubmenu = function(oMenu){
-	jQuery.sap.log.warning("The aggregation 'submenu' is not supported for this type of menu item.", "", "sap.ui.commons.MenuTextFieldItem");
-	return this;
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.setLabel = function(sLabel){
-	this._lbl.setText(sLabel);
-	return this;
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.getLabel = function(){
-	return this._lbl.getText();
-};
-
-
-sap.ui.commons.MenuTextFieldItem.prototype.setValue = function(sValue, bSupR){
-	this.setProperty("value", sValue, bSupR);
-	this._tf.setValue(sValue);
-	return this;
-};
-
-sap.ui.commons.MenuTextFieldItem.prototype.setValueState = function(sValueState){
-	this._tf.setValueState(sValueState);
-	return this;
-};
-
-}());
-
-}; // end of sap/ui/commons/MenuTextFieldItem.js
+}; // end of sap/ui/commons/MenuBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.PasswordField') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -63844,7 +60645,7 @@ jQuery.sap.declare("sap.ui.commons.PasswordField");
  * @extends sap.ui.commons.TextField
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -63962,7 +60763,7 @@ jQuery.sap.declare("sap.ui.commons.RangeSlider");
  * @extends sap.ui.commons.Slider
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -65081,7 +61882,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -66634,7 +63435,7 @@ jQuery.sap.declare("sap.ui.commons.TextArea");
  * @extends sap.ui.commons.TextField
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -67219,7 +64020,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -67479,13 +64280,13 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.setPositionOfChild
  * @function
  * @param {sap.ui.core.Control} 
- *         oOControl
+ *         oControl
  *         The child control for which to change the position information; if empty or not aggregated, nothing is changed
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control. The object is expected to have one or more from the attribute set
- * top, bottom, left, right; each with a value of type sap.ui.core.CSSSize.
- * If no object is given, the default is used which is left=0px,right=0px.
+ *         top, bottom, left, right; each with a value of type sap.ui.core.CSSSize.
+ *         If no object is given, the default is used which is left=0px,right=0px.
 
  * @type boolean
  * @public
@@ -67510,7 +64311,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.indexOfContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content of which the index is looked for
 
  * @type int
@@ -67535,7 +64336,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.removeContent
  * @function
  * @param {object} 
- *         oVContent
+ *         oContent
  *         The content control to remove, its ID, or the index of the corresponding position container in the 'positions' aggregation.
 
  * @type sap.ui.core.Control
@@ -67549,16 +64350,16 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.insertContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content to insert; if empty, nothing is inserted
  * @param {int} 
- *         iIIndex
+ *         iIndex
  *         The '0'-based index where the content shall be inserted at. For a negative value of iIndex, the content is inserted at position '0';
- * for a value greater than the current size of the aggregation, the content is inserted at the last position.
+ *         for a value greater than the current size of the aggregation, the content is inserted at the last position.
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control within the layout. The object is expected to have one or more
- * from the attribute set top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px.
+ *         from the attribute set top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px.
 
  * @type sap.ui.commons.layout.AbsoluteLayout
  * @public
@@ -67571,12 +64372,12 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.AbsoluteLayout", { metadata : 
  * @name sap.ui.commons.layout.AbsoluteLayout.prototype.addContent
  * @function
  * @param {sap.ui.core.Control} 
- *         oOContent
+ *         oContent
  *         The content to add; if empty, nothing is inserted.
  * @param {object} 
- *         oOPos
+ *         oPos
  *         JSON-like object which defines the position of the child control in the layout. The object is expected to have one or more from the attribute set
- * top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px
+ *         top, bottom, left, right; each with a value of type sap.ui.core.CSSSize. If no object is given, the default is left=0px,right=0px
 
  * @type sap.ui.commons.layout.AbsoluteLayout
  * @public
@@ -67936,11 +64737,11 @@ var adaptControlSize = function(oControl){
 	if(oControl.getParent() && oControl.getParent().getComputedPosition) {
 		var oPos = oControl.getParent().getComputedPosition();
 		if(oPos.top && oPos.bottom || oPos.height){
-			jQuery(oControl.getDomRef()).height("100%");
+			jQuery(oControl.getDomRef()).css("height", "100%");
 			bAdapted = true;
 		}
 		if(oPos.left && oPos.right || oPos.width){
-			jQuery(oControl.getDomRef()).width("100%");
+			jQuery(oControl.getDomRef()).css("width", "100%");
 			bAdapted = true;
 		}
 		if(bAdapted) {
@@ -68051,8 +64852,8 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * 
  * @extends sap.ui.core.Control
  *
- * @author d029921 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -68351,7 +65152,7 @@ sap.ui.core.Control.extend("sap.ui.commons.layout.MatrixLayout", { metadata : {
  * @param {sap.ui.core.Control} 
  *         oControls
  *         Each argument must be either a matrix layout cell, which is added to the row "as is", or an arbitrary content control, which is wrapped with a new (default) matrix layout cell first and then added to the row.
- * Supports a variable number of arguments!
+ *         Supports a variable number of arguments!
 
  * @type sap.ui.commons.layout.MatrixLayout
  * @public
@@ -68494,7 +65295,7 @@ jQuery.sap.declare("sap.ui.commons.AutoComplete");
  * @implements sap.ui.commons.ToolbarItem
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -68648,6 +65449,9 @@ jQuery.sap.require('jquery.sap.strings'); // unlisted dependency retained
 
 
 sap.ui.commons.AutoComplete._DEFAULTFILTER = function(sValue, oItem){
+	if(this._skipFilter){ //Easy (currently internal) way to skip auto filtering
+		return true;
+	}
 	return jQuery.sap.startsWithIgnoreCase(oItem.getText(), sValue);
 };
 
@@ -68809,6 +65613,37 @@ sap.ui.commons.AutoComplete.prototype._doTypeAhead = function(){
 	this._sTypedChars = jQuery(this.getInputDomRef()).val();
 
 	refreshListBoxItems(this);
+};
+
+
+sap.ui.commons.AutoComplete.prototype.refreshItems = function(sReason){
+	var oBinding = this.getBinding("items");
+	if(sReason == "filter" && oBinding){
+		oBinding.getContexts(); //Avoid update of aggregation when filter not yet applied (filter request triggered by this call)
+	}else{
+		sap.ui.commons.AutoComplete.prototype.updateItems.apply(this, arguments);
+	}
+};
+
+//see sap.ui.commons.ComboBox.prototype._handleItemsChanged
+sap.ui.commons.AutoComplete.prototype._handleItemsChanged = function(oEvent, bDelayed){
+	if (this.bNoItemCheck) {
+		return;
+	}
+
+	if (bDelayed) {
+		this._sHandleItemsChanged = null;
+	}
+
+	var aItems = [];
+	if (this._getExistingListBox()) {
+		aItems = this._getListBox().getItems();
+	}
+
+	var oDomRef = this.getDomRef();
+	if( oDomRef){
+		jQuery(this.getInputDomRef()).attr("aria-setsize", aItems.length);
+	}
 };
 
 
@@ -68982,790 +65817,6 @@ sap.ui.commons.AutoComplete.prototype.setSelectedItemId = function(){
 	return this;
 };
 }; // end of sap/ui/commons/AutoComplete.js
-if ( !jQuery.sap.isDeclared('sap.ui.commons.MenuBar') ) {
-/*!
- * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
- * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
- * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
- */
-
-/* ----------------------------------------------------------------------------------
- * Hint: This is a derived (generated) file. Changes should be done in the underlying 
- * source files only (*.control, *.js) or they will be lost after the next generation.
- * ---------------------------------------------------------------------------------- */
-
-// Provides control sap.ui.commons.MenuBar.
-jQuery.sap.declare("sap.ui.commons.MenuBar");
-
-jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
-
-
-
-/**
- * Constructor for a new MenuBar.
- * 
- * Accepts an object literal <code>mSettings</code> that defines initial 
- * property values, aggregated and associated objects as well as event handlers. 
- * 
- * If the name of a setting is ambiguous (e.g. a property has the same name as an event), 
- * then the framework assumes property, aggregation, association, event in that order. 
- * To override this automatic resolution, one of the prefixes "aggregation:", "association:" 
- * or "event:" can be added to the name of the setting (such a prefixed name must be
- * enclosed in single or double quotes).
- *
- * The supported settings are:
- * <ul>
- * <li>Properties
- * <ul>
- * <li>{@link #getEnabled enabled} : boolean (default: true)</li>
- * <li>{@link #getVisible visible} : boolean (default: true)</li>
- * <li>{@link #getWidth width} : sap.ui.core.CSSSize (default: '100%')</li>
- * <li>{@link #getDesign design} : sap.ui.commons.MenuBarDesign (default: sap.ui.commons.MenuBarDesign.Standard)</li></ul>
- * </li>
- * <li>Aggregations
- * <ul>
- * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.MenuItem[]</li></ul>
- * </li>
- * <li>Associations
- * <ul></ul>
- * </li>
- * <li>Events
- * <ul></ul>
- * </li>
- * </ul> 
-
- *
- * @param {string} [sId] id for the new control, generated automatically if no id is given 
- * @param {object} [mSettings] initial settings for the new control
- *
- * @class
- * Represents a user interface area which is the entry point for menus with their menu items. MenuBar is useful for applications which shall offer a
- * set of actions that shall be provided in a structured way. The MenuBar contains the menu titles from where users navigate to the single items. The control supports
- * for example long menu item texts, automated scrolling for menu items when the browser space is not large enough to display all items, defining images for single
- * or all items in a menu, automated layouting of items with or w/o image, and active/non-active items.
- * 
- * @extends sap.ui.core.Control
- *
- * @author SAP AG 
- * @version 1.20.10
- *
- * @constructor   
- * @public
- * @name sap.ui.commons.MenuBar
- */
-sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
-
-	// ---- object ----
-
-	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"enabled" : {type : "boolean", group : "Behavior", defaultValue : true},
-		"visible" : {type : "boolean", group : "Appearance", defaultValue : true},
-		"width" : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : '100%'},
-		"design" : {type : "sap.ui.commons.MenuBarDesign", group : "Appearance", defaultValue : sap.ui.commons.MenuBarDesign.Standard}
-	},
-	defaultAggregation : "items",
-	aggregations : {
-    	"items" : {type : "sap.ui.commons.MenuItem", multiple : true, singularName : "item"}
-	}
-}});
-
-
-/**
- * Creates a new subclass of class sap.ui.commons.MenuBar with name <code>sClassName</code> 
- * and enriches it with the information contained in <code>oClassInfo</code>.
- * 
- * <code>oClassInfo</code> might contain the same kind of informations as described in {@link sap.ui.core.Element.extend Element.extend}.
- *   
- * @param {string} sClassName name of the class to be created
- * @param {object} [oClassInfo] object literal with informations about the class  
- * @param {function} [FNMetaImpl] constructor function for the metadata object. If not given, it defaults to sap.ui.core.ElementMetadata.
- * @return {function} the created class / constructor function
- * @public
- * @static
- * @name sap.ui.commons.MenuBar.extend
- * @function
- */
-
-
-/**
- * Getter for property <code>enabled</code>.
- * When the MenuBar is not enabled, automatically all single menu items are also displayed as 'disabled'.
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>enabled</code>
- * @public
- * @name sap.ui.commons.MenuBar#getEnabled
- * @function
- */
-
-/**
- * Setter for property <code>enabled</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bEnabled  new value for property <code>enabled</code>
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#setEnabled
- * @function
- */
-
-
-/**
- * Getter for property <code>visible</code>.
- * Invisible controls are not rendered.
- *
- * Default value is <code>true</code>
- *
- * @return {boolean} the value of property <code>visible</code>
- * @public
- * @name sap.ui.commons.MenuBar#getVisible
- * @function
- */
-
-/**
- * Setter for property <code>visible</code>.
- *
- * Default value is <code>true</code> 
- *
- * @param {boolean} bVisible  new value for property <code>visible</code>
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#setVisible
- * @function
- */
-
-
-/**
- * Getter for property <code>width</code>.
- * Specifies the width of the MenuBar
- *
- * Default value is <code>100%</code>
- *
- * @return {sap.ui.core.CSSSize} the value of property <code>width</code>
- * @public
- * @name sap.ui.commons.MenuBar#getWidth
- * @function
- */
-
-/**
- * Setter for property <code>width</code>.
- *
- * Default value is <code>100%</code> 
- *
- * @param {sap.ui.core.CSSSize} sWidth  new value for property <code>width</code>
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#setWidth
- * @function
- */
-
-
-/**
- * Getter for property <code>design</code>.
- * Available design options are Header and Standard. Note that design settings are theme-dependent.
- *
- * Default value is <code>Standard</code>
- *
- * @return {sap.ui.commons.MenuBarDesign} the value of property <code>design</code>
- * @public
- * @name sap.ui.commons.MenuBar#getDesign
- * @function
- */
-
-/**
- * Setter for property <code>design</code>.
- *
- * Default value is <code>Standard</code> 
- *
- * @param {sap.ui.commons.MenuBarDesign} oDesign  new value for property <code>design</code>
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#setDesign
- * @function
- */
-
-
-/**
- * Getter for aggregation <code>items</code>.<br/>
- * Aggregation of menu items.
- * 
- * <strong>Note</strong>: this is the default aggregation for MenuBar.
- * @return {sap.ui.commons.MenuItem[]}
- * @public
- * @name sap.ui.commons.MenuBar#getItems
- * @function
- */
-
-
-/**
- * Inserts a item into the aggregation named <code>items</code>.
- *
- * @param {sap.ui.commons.MenuItem}
- *          oItem the item to insert; if empty, nothing is inserted
- * @param {int}
- *             iIndex the <code>0</code>-based index the item should be inserted at; for 
- *             a negative value of <code>iIndex</code>, the item is inserted at position 0; for a value 
- *             greater than the current size of the aggregation, the item is inserted at 
- *             the last position        
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#insertItem
- * @function
- */
-
-/**
- * Adds some item <code>oItem</code> 
- * to the aggregation named <code>items</code>.
- *
- * @param {sap.ui.commons.MenuItem}
- *            oItem the item to add; if empty, nothing is inserted
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#addItem
- * @function
- */
-
-/**
- * Removes an item from the aggregation named <code>items</code>.
- *
- * @param {int | string | sap.ui.commons.MenuItem} vItem the item to remove or its index or id
- * @return {sap.ui.commons.MenuItem} the removed item or null
- * @public
- * @name sap.ui.commons.MenuBar#removeItem
- * @function
- */
-
-/**
- * Removes all the controls in the aggregation named <code>items</code>.<br/>
- * Additionally unregisters them from the hosting UIArea.
- * @return {sap.ui.commons.MenuItem[]} an array of the removed elements (might be empty)
- * @public
- * @name sap.ui.commons.MenuBar#removeAllItems
- * @function
- */
-
-/**
- * Checks for the provided <code>sap.ui.commons.MenuItem</code> in the aggregation named <code>items</code> 
- * and returns its index if found or -1 otherwise.
- *
- * @param {sap.ui.commons.MenuItem}
- *            oItem the item whose index is looked for.
- * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
- * @public
- * @name sap.ui.commons.MenuBar#indexOfItem
- * @function
- */
-	
-
-/**
- * Destroys all the items in the aggregation 
- * named <code>items</code>.
- * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
- * @public
- * @name sap.ui.commons.MenuBar#destroyItems
- * @function
- */
-
-
-// Start of sap\ui\commons\MenuBar.js
-
-
-
-sap.ui.commons.MenuItem.extend("sap.ui.commons._DelegatorMenuItem", {
-  constructor : function(oAlterEgoItm) {
-    sap.ui.commons.MenuItem.apply(this);
-    this.oAlterEgoItm = oAlterEgoItm;
-    var that = this;
-    this.oAlterEgoItm.getSubmenu().getRootMenu = function(){
-    	return that.getParent();
-    }
-  },
-  exit : function () {
-	this.oAlterEgoItm.getSubmenu().getRootMenu = sap.ui.commons.Menu.prototype.getRootMenu;
-    this.oAlterEgoItm = null;
-  },
-  getText : function() {
-    return this.oAlterEgoItm.getText();
-  },
-  getIcon : function() {
-	  return this.oAlterEgoItm.getIcon();
-  },
-  getEnabled : function() {
-	  return this.oAlterEgoItm.getEnabled();
-  },
-  getVisible : function() {
-	  return this.oAlterEgoItm.getVisible();
-  },
-  getSubmenu : function() {
-	  return this.oAlterEgoItm.getSubmenu();
-  }
-});
-
-(function() {
-
-
-/**
- * Initialize this control.
- * @private
- */
-sap.ui.commons.MenuBar.prototype.init = function() {
-	this.oOvrFlwMnu = null;
-	this.sCurrentFocusedItemRefId = null;
-};
-
-
-/**
- * Does all the cleanup when the control is to be destroyed.
- * Called from Element's destroy() method.
- * @private
- */
-sap.ui.commons.MenuBar.prototype.exit = function (){
-	if(this.oOvrFlwMnu) {
-		this.oOvrFlwMnu.destroy();
-	}
-	this.oOvrFlwMnu = null;
-	// Cleanup resize event registration
-	if(this.sResizeListenerId){
-		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
-		this.sResizeListenerId = null;
-	}
-};
-
-
-/**
- * Called before rendering starts by the renderer
- * (This is not the onBeforeRendering method which would be not called for the first rendering)
- * @private
- */
-sap.ui.commons.MenuBar.prototype.doBeforeRendering = function() {
-	var aItems = this.getItems();
-	for(var i=0; i<aItems.length; i++){
-		var oMenu = aItems[i].getSubmenu();
-		if(oMenu) {
-			oMenu.setRootMenuTopStyle(this.getDesign() == sap.ui.commons.MenuBarDesign.Header);
-		}
-	}
-
-	if(this.oOvrFlwMnu) {
-		this.oOvrFlwMnu.setRootMenuTopStyle(this.getDesign() == sap.ui.commons.MenuBarDesign.Header);
-	}
-
-	// Cleanup resize event registration before re-rendering
-	if(this.sResizeListenerId){
-		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
-		this.sResizeListenerId = null;
-	}
-};
-
-
-/**
- * Called when the rendering is complete
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onAfterRendering = function() {
-	//Listen to resizing
-	this.sResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef(), jQuery.proxy(this.onresize, this));
-
-	//Calculate the overflow
-	this.onresize();
-};
-
-
-/**
- * Called when the control is resized
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onresize = function(oEvent) {
-	updateAfterResize(this);
-};
-
-
-/**
- * Behavior implementation which is executed when the focus comes into the control or on one of its children.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onfocusin = function(oEvent){
-	var sId = this.getId();
-	var jTarget = jQuery(oEvent.target);
-	var jTargetId = jTarget.attr("id");
-	if(!jTargetId || jTargetId == sId || jTargetId == sId + "-area"){
-		var jItems = this.$("area").children();
-		this.sCurrentFocusedItemRefId = jItems.length == 0 ? null : jQuery(jItems.get(0)).attr("id");
-	} else {
-		// Make sure the parent menu item get the focus when a menu is closed via
-		// keyboard in order to keep keyboard navigation working
-		this.sCurrentFocusedItemRefId = jTargetId;
-	}
-
-	var oFocusElement = jQuery.sap.byId(this.sCurrentFocusedItemRefId).get(0);
-	if(oFocusElement) {
-		oFocusElement.focus();
-	}
-	
-	this.$().attr("tabindex", "-1");
-};
-
-
-/**
- * Behavior implementation which is executed when the focus leaves the control or one of its children.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onfocusout = function(oEvent){
-	//Add the control to tab chain again to make tab in working (see onfocusin)
-	this.$().attr("tabindex", "0");
-};
-
-
-/**
- * Function is called when mouse key is clicked down.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onmousedown = function(oEvent) {
-	var oMenuItem = _getMenuItem(this, oEvent);
-	if(oMenuItem === "ovrflw"){
-		this._bOvrFlwMnuSkipOpen = this.oOvrFlwMnu && this.oOvrFlwMnu.bOpen;
-	}else if(oMenuItem){
-		var oMenu = oMenuItem.getSubmenu();
-		oMenuItem._bSkipOpen = oMenu && oMenu.bOpen;
-	}
-};
-
-
-/**
- * Function is called when mouse leaves the control.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuButton.prototype.onmouseout = function(oEvent) {
-	var oMenuItem = _getMenuItem(this, oEvent);
-	if(oMenuItem === "ovrflw"){
-		var jRef = get$Item(this, oEvent);
-		if(this._bOvrFlwMnuSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, jRef[0])){
-			this._bOvrFlwMnuSkipOpen = false;
-		}
-	}else if(oMenuItem){
-		var jRef = get$Item(this, oEvent);
-		if(oMenuItem._bSkipOpen && jQuery.sap.checkMouseEnterOrLeave(oEvent, jRef[0])){
-			oMenuItem._bSkipOpen = false;
-		}
-	}
-};
-
-
-/**
- * Behavior implementation which is executed when the user clicks.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onclick = function(oEvent) {
-	openItemMenu(this, oEvent, false);
-};
-
-
-/**
- * Behavior implementation which is executed when the user presses the space or enter key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapselect = function(oEvent){
-	openItemMenu(this, oEvent, true);
-};
-
-
-/**
- * Function is called when down key is pressed without a modifier key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapdown = function(oEvent){
-	openItemMenu(this, oEvent, true);
-};
-
-
-/**
- * Function is called when down key is pressed with a modifier key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapdownmodifiers = function(oEvent){
-	if(oEvent.altKey) {
-		openItemMenu(this, oEvent, true);
-	}
-};
-
-
-/**
- * Behavior implementation which is executed when the user presses the arrow left (RTL: arrow right) key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapprevious = function(oEvent){
-	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_UP) {//Ignore arrow up
-		focusStep(this, oEvent, "prev");
-	}
-};
-
-
-/**
- * Behavior implementation which is executed when the user presses the arrow right (RTL: arrow left) key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapnext = function(oEvent){
-	if(oEvent.keyCode != jQuery.sap.KeyCodes.ARROW_DOWN) {//Ignore arrow down
-		focusStep(this, oEvent, "next");
-	}
-};
-
-
-/**
- * Behavior implementation which is executed when the user presses the home/pos1 key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsaphome = function(oEvent){
-	focusStep(this, oEvent, "first");
-};
-
-
-/**
- * Behavior implementation which is executed when the user presses the end key.
- *
- * @param {jQuery.Event} oEvent
- * @private
- */
-sap.ui.commons.MenuBar.prototype.onsapend = function(oEvent){
-	focusStep(this, oEvent, "last");
-};
-
-
-//********* Private *********
-
-
-//Opens the corresponding menu of the selected menu item
-var openItemMenu = function(oThis, oEvent, bWithKeyboard) {
-	oEvent.preventDefault();
-	oEvent.stopPropagation();
-	
-	if(oThis.getEnabled()){
-		var oMenuItem = _getMenuItem(oThis, oEvent);
-		if(oMenuItem === "ovrflw"){
-			var jRef = get$Item(oThis, oEvent);
-			if(oThis.oOvrFlwMnu && !oThis._bOvrFlwMnuSkipOpen){
-				var eDock = sap.ui.core.Popup.Dock;
-				oThis.oOvrFlwMnu.open(bWithKeyboard, jRef.get(0), eDock.EndTop, eDock.EndBottom, jRef.get(0));
-			}
-		}else if(oMenuItem){
-			if(oMenuItem.getEnabled()) {
-				var jRef = get$Item(oThis, oEvent);
-				var oMenu = oMenuItem.getSubmenu();
-				if(oMenu && !oMenuItem._bSkipOpen){
-					var eDock = sap.ui.core.Popup.Dock;
-					oMenu.open(bWithKeyboard, jRef.get(0), eDock.BeginTop, eDock.BeginBottom, jRef.get(0));
-				}
-			}
-		}
-	}
-	
-	//Resets all skip open flags
-	oThis._bOvrFlwMnuSkipOpen = false;
-	var aItems = oThis.getItems();
-	for(var i=0; i<aItems.length; i++){
-		aItems[i]._bSkipOpen = false;
-	}
-};
-
-
-//Returns the jQuery Object of the item which was the target of the event (if exists)
-var get$Item = function(oThis, oEvent){
-	var jRef = jQuery(oEvent.target);
-	if(!jRef.attr("itemidx")) {
-		jRef = jRef.parent();
-	}
-	return jRef.attr("itemidx") ? jRef : null;
-};
-
-
-//Returns the item which was the target of the event (if exists) or "ovrflow" for the overflow
-var _getMenuItem = function(oThis, oEvent) {
-	var jRef = get$Item(oThis, oEvent);
-	if(jRef){
-		var sItemIdx = jRef.attr("itemidx");
-		if(sItemIdx){
-			if(sItemIdx == "ovrflw"){
-				return "ovrflw";
-			}else{
-				var iIdx = parseInt(sItemIdx, 10);
-				var oMenuItem = oThis.getItems()[iIdx];
-				return oMenuItem;
-			}
-		}
-	}
-	return null;
-};
-
-
-//Compute actual number of items currently hidden due to overflow
-var getVisibleItemCount = function(oThis){
-	var iVisibleItems = 0;
-
-	var jAreaRef = oThis.$("area");
-	var jItems = jAreaRef.children();
-
-	var bRtl = sap.ui.getCore().getConfiguration().getRTL();
-	var lastOffsetLeft = (bRtl ? 100000 : 0);
-
-	jItems.each(function(iIdx) {
-		if(iIdx == 0) {
-			return true;
-		}
-
-		var currentOffsetLeft = this.offsetLeft;
-		var bLineBreak = (bRtl ? (currentOffsetLeft >= lastOffsetLeft) : (currentOffsetLeft <= lastOffsetLeft));
-
-		if(bLineBreak){
-			iVisibleItems = iIdx;
-			return false;
-		}else if(jQuery(this).attr("id") == oThis.getId()+"-ovrflw"){
-			// This is the overflow button, there was no line break
-			iVisibleItems = iIdx;
-			return false;
-		}else{
-			// Regular item, to the right of the last one, so just proceed
-			lastOffsetLeft = currentOffsetLeft;
-			return true;
-		}
-	});
-
-	return iVisibleItems;
-};
-
-
-//Handle the resize of the menubar
-var updateAfterResize = function(oThis){
-	var iVisibleItems = getVisibleItemCount(oThis);
-	var _iVisibleItems = iVisibleItems;
-
-	var jAreaRef = oThis.$("area");
-	var jItems = jAreaRef.children();
-	var jOvrFlwRef = oThis.$("ovrflw");
-
-	var bUpdateFocus = false;
-
-	if(iVisibleItems < jItems.length-1){
-		jOvrFlwRef.attr("style", "display:block;");
-		if(!oThis.oOvrFlwMnu){
-			oThis.oOvrFlwMnu = new sap.ui.commons.Menu(oThis.getId()+"-ovrflwmnu");
-			oThis.oOvrFlwMnu.bUseTopStyle = oThis.getDesign() == sap.ui.commons.MenuBarDesign.Header;
-			oThis.oOvrFlwMnu.attachItemSelect(function(oEvent){
-				var oItem = oEvent.getParameter("item");
-				if(!(oItem instanceof sap.ui.commons._DelegatorMenuItem)){
-					var oItemRootMenu = sap.ui.commons.Menu.prototype.getRootMenu.apply(oItem.getParent());
-					oItemRootMenu.fireItemSelect({item: oItem});
-				}
-			});
-		}
-		oThis.oOvrFlwMnu.destroyItems();
-		var aItems = oThis.getItems();
-		for(var i=0; i<aItems.length; i++){
-			var oItem = aItems[i];
-			if(iVisibleItems != 0){
-				if(oItem.getVisible()) {
-					iVisibleItems--;
-				}
-				if(iVisibleItems == 0) {
-					oThis.sLastVisibleItemId = oItem.getId();
-				}
-			}else{
-				oThis.oOvrFlwMnu.addItem(new sap.ui.commons._DelegatorMenuItem(oItem));
-				if(oItem.getId() == oThis.sCurrentFocusedItemRefId){
-					bUpdateFocus = true;
-				}
-			}
-		}
-		if(sap.ui.getCore().getConfiguration().getAccessibility()){
-			jItems.attr("aria-setsize", _iVisibleItems+1);
-			jOvrFlwRef.attr("aria-posinset", _iVisibleItems+1);
-		}
-	}else{
-		jOvrFlwRef.attr("style", "display:none;");
-		if(oThis.oOvrFlwMnu) {
-			oThis.oOvrFlwMnu.destroyItems();
-		}
-		oThis.sLastVisibleItemId = null;
-		if(sap.ui.getCore().getConfiguration().getAccessibility()){
-			jItems.attr("aria-setsize", _iVisibleItems);
-			jOvrFlwRef.attr("aria-posinset", 0);
-		}
-	}
-
-	jAreaRef.scrollTop(0);
-
-	if(bUpdateFocus){
-		oThis.sCurrentFocusedItemRefId = oThis.sLastVisibleItemId;
-		jQuery.sap.byId(oThis.sLastVisibleItemId).get(0).focus();
-	}
-};
-
-
-//Focus the next (depending on the given direction) step
-var focusStep = function(oThis, oEvent, sDir){
-	oEvent.stopPropagation();
-	oEvent.preventDefault();
-
-	if(!oThis.sCurrentFocusedItemRefId) {
-		return;
-	}
-
-	var sFollowingFocusItemId = null;
-	if(oThis.sLastVisibleItemId && ((oThis.sCurrentFocusedItemRefId == oThis.sLastVisibleItemId && sDir == "next") || sDir == "last")){
-		sFollowingFocusItemId = oThis.getId()+"-ovrflw";
-	}else if(oThis.sLastVisibleItemId && oThis.sCurrentFocusedItemRefId == oThis.getId()+"-ovrflw" && sDir == "prev"){
-		sFollowingFocusItemId = oThis.sLastVisibleItemId;
-	}else{
-		var sFoo = sDir+"All";
-		var bIsJumpToEnd = false;
-		if(sDir == "first"){
-			sFoo = "prevAll";
-			bIsJumpToEnd = true;
-		}else if(sDir == "last"){
-			sFoo = "nextAll";
-			bIsJumpToEnd = true;
-		}
-
-		var jCurrentFocusItem = jQuery.sap.byId(oThis.sCurrentFocusedItemRefId);
-		var jFollowingItems = jCurrentFocusItem[sFoo](":visible");
-
-		sFollowingFocusItemId = jQuery(jFollowingItems.get(bIsJumpToEnd ? jFollowingItems.length-1 : 0)).attr("id");
-	}
-	if(sFollowingFocusItemId){
-		oThis.sCurrentFocusedItemRefId = sFollowingFocusItemId;
-		jQuery.sap.byId(sFollowingFocusItemId).get(0).focus();
-	}
-};
-
-
-}());
-
-}; // end of sap/ui/commons/MenuBar.js
 if ( !jQuery.sap.isDeclared('sap.ui.commons.MessageBox') ) {
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)

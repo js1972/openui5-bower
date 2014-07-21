@@ -12,7 +12,7 @@
 // Provides control sap.ui.commons.FileUploaderParameter.
 jQuery.sap.declare("sap.ui.commons.FileUploaderParameter");
 jQuery.sap.require("sap.ui.commons.library");
-jQuery.sap.require("sap.ui.core.Element");
+jQuery.sap.require("sap.ui.unified.FileUploaderParameter");
 
 
 /**
@@ -30,9 +30,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * The supported settings are:
  * <ul>
  * <li>Properties
- * <ul>
- * <li>{@link #getName name} : string</li>
- * <li>{@link #getValue value} : string</li></ul>
+ * <ul></ul>
  * </li>
  * <li>Aggregations
  * <ul></ul>
@@ -46,7 +44,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * </ul> 
  *
  * 
- * In addition, all settings applicable to the base type {@link sap.ui.core.Element#constructor sap.ui.core.Element}
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.FileUploaderParameter#constructor sap.ui.unified.FileUploaderParameter}
  * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
@@ -54,25 +52,24 @@ jQuery.sap.require("sap.ui.core.Element");
  *
  * @class
  * Represents a parameter for the FileUploader which is rendered as a hidden inputfield.
- * @extends sap.ui.core.Element
+ * @extends sap.ui.unified.FileUploaderParameter
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
+ * @deprecated Since version 1.21.0. 
+ * Please use the element sap.ui.unified.FileUploaderParameter of the library sap.ui.unified instead.
  * @name sap.ui.commons.FileUploaderParameter
  */
-sap.ui.core.Element.extend("sap.ui.commons.FileUploaderParameter", { metadata : {
+sap.ui.unified.FileUploaderParameter.extend("sap.ui.commons.FileUploaderParameter", { metadata : {
 
 	// ---- object ----
+	deprecated : true,
 
 	// ---- control specific ----
-	library : "sap.ui.commons",
-	properties : {
-		"name" : {type : "string", group : "Data", defaultValue : null},
-		"value" : {type : "string", group : "Data", defaultValue : null}
-	}
+	library : "sap.ui.commons"
 }});
 
 
@@ -93,58 +90,22 @@ sap.ui.core.Element.extend("sap.ui.commons.FileUploaderParameter", { metadata : 
  */
 
 
-/**
- * Getter for property <code>name</code>.
- * The name of the hidden inputfield.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>name</code>
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#getName
- * @function
- */
-
-/**
- * Setter for property <code>name</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sName  new value for property <code>name</code>
- * @return {sap.ui.commons.FileUploaderParameter} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#setName
- * @function
- */
-
-
-/**
- * Getter for property <code>value</code>.
- * The value of the hidden inputfield.
- *
- * Default value is empty/<code>undefined</code>
- *
- * @return {string} the value of property <code>value</code>
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#getValue
- * @function
- */
-
-/**
- * Setter for property <code>value</code>.
- *
- * Default value is empty/<code>undefined</code> 
- *
- * @param {string} sValue  new value for property <code>value</code>
- * @return {sap.ui.commons.FileUploaderParameter} <code>this</code> to allow method chaining
- * @public
- * @since 1.12.2
- * @name sap.ui.commons.FileUploaderParameter#setValue
- * @function
- */
-
-
 // Start of sap\ui\commons\FileUploaderParameter.js
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5)
+ * 
+ * (c) Copyright 2009-2014 SAP AG. All rights reserved
+ */
+
+jQuery.sap.declare("sap.ui.commons.FileUploaderParameter");
+
+(function(){
+
+	try{
+		sap.ui.getCore().loadLibrary("sap.ui.unified");
+	}catch(e){
+		alert("The element 'sap.ui.commons.FileUploaderParameter' needs library 'sap.ui.unified'.");
+		throw(e);
+	}
+
+})();

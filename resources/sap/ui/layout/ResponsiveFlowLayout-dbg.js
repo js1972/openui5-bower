@@ -53,8 +53,8 @@ jQuery.sap.require("sap.ui.core.Control");
  * This is a layout where several controls can be added. These controls are blown up to fit a whole line. If the window resizes the controls are moved between the lines and resized again.
  * @extends sap.ui.core.Control
  *
- * @author SAP 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public

@@ -36,7 +36,7 @@ jQuery.sap.require("sap.ui.commons.Button");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getMenu menu} <strong>(default aggregation)</strong> : sap.ui.commons.Menu</li></ul>
+ * <li>{@link #getMenu menu} <strong>(default aggregation)</strong> : sap.ui.unified.Menu</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.commons.Button");
  * @extends sap.ui.commons.Button
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -79,7 +79,7 @@ sap.ui.commons.Button.extend("sap.ui.commons.MenuButton", { metadata : {
 	},
 	defaultAggregation : "menu",
 	aggregations : {
-    	"menu" : {type : "sap.ui.commons.Menu", multiple : false}
+    	"menu" : {type : "sap.ui.unified.Menu", multiple : false}
 	},
 	events : {
 		"itemSelected" : {}
@@ -161,7 +161,7 @@ sap.ui.commons.MenuButton.M_EVENTS = {'itemSelected':'itemSelected'};
  * Menu that shall be opened when the button is clicked
  * 
  * <strong>Note</strong>: this is the default aggregation for MenuButton.
- * @return {sap.ui.commons.Menu}
+ * @return {sap.ui.unified.Menu}
  * @public
  * @name sap.ui.commons.MenuButton#getMenu
  * @function
@@ -170,7 +170,7 @@ sap.ui.commons.MenuButton.M_EVENTS = {'itemSelected':'itemSelected'};
 
 /**
  * Setter for the aggregated <code>menu</code>.
- * @param {sap.ui.commons.Menu} oMenu
+ * @param {sap.ui.unified.Menu} oMenu
  * @return {sap.ui.commons.MenuButton} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.MenuButton#setMenu
@@ -255,6 +255,7 @@ sap.ui.commons.MenuButton.M_EVENTS = {'itemSelected':'itemSelected'};
 
 
 // Start of sap\ui\commons\MenuButton.js
+jQuery.sap.require("sap.ui.commons.MenuItemBase"); /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
 jQuery.sap.require("sap.ui.commons.Menu");
 
 (function() {

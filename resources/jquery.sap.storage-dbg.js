@@ -50,7 +50,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * should be deleted the method {@link #removeAll} should be used.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 * @public
 	 * @name jQuery.sap.storage.Storage
@@ -60,7 +60,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * 
 	 * Constructor for an instance of jQuery.sap.storage.Storage
 	 *
-	 * @param {jQuery.sap.storage.Type || Storage} [pStorage=jQuery.sap.storage.Type.session] the type this storage should be of or an Object implementing the typical Storage API for direct usage.
+	 * @param {jQuery.sap.storage.Type | Storage} [pStorage=jQuery.sap.storage.Type.session] the type this storage should be of or an Object implementing the typical Storage API for direct usage.
 	 * @param {string} [sStorageKeyPrefix='state.key_'] the prefix to use in this storage.
 	 * 
 	 * @private
@@ -234,7 +234,7 @@ sap.ui.define(['jquery.sap.global'],
 
 		/**
 		 * Returns the type of the storage.
-		 * @returns {jQuery.sap.storage.Type || string} the type of the storage or "unknown"
+		 * @returns {jQuery.sap.storage.Type | string} the type of the storage or "unknown"
 		 * @public
 		 */
 		this.getType = function(){
@@ -266,7 +266,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * @param {string} [sIdPrefix] Prefix used for the Ids. If not set a default prefix is used.    
 	 * @returns {jQuery.sap.storage.Storage}
 	 * 
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 * @namespace
 	 * @public
@@ -304,7 +304,7 @@ sap.ui.define(['jquery.sap.global'],
 	 * @class
 	 * @static
 	 * @public
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.11.0
 	 */
 	jQuery.sap.storage.Type = {

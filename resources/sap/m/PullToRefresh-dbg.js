@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -287,7 +287,7 @@ sap.m.PullToRefresh.M_EVENTS = {'refresh':'refresh'};
 
 /**
  * Fire event refresh to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.PullToRefresh} <code>this</code> to allow method chaining
  * @protected

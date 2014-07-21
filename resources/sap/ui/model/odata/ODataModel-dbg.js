@@ -13,8 +13,8 @@
  */
 
 // Provides class sap.ui.model.odata.ODataModel
-sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODataContextBinding', './ODataListBinding', './ODataMetadata', './ODataPropertyBinding', './ODataTreeBinding', 'sap/ui/thirdparty/URI', 'sap/ui/thirdparty/datajs'],
-	function(jQuery, Model, CountMode, ODataContextBinding, ODataListBinding, ODataMetadata, ODataPropertyBinding, ODataTreeBinding, URI1, datajs) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './ODataUtils', './CountMode', './ODataContextBinding', './ODataListBinding', './ODataMetadata', './ODataPropertyBinding', './ODataTreeBinding', 'sap/ui/thirdparty/URI', 'sap/ui/thirdparty/datajs'],
+	function(jQuery, Model, ODataUtils, CountMode, ODataContextBinding, ODataListBinding, ODataMetadata, ODataPropertyBinding, ODataTreeBinding, URI1, datajs) {
 	"use strict";
 
 
@@ -43,29 +43,32 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 *
 	 * @class
 	 * Model implementation for oData format
-	 *
+	 * Binding to V4 metadata annotations is experimental!
+	 * 
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.odata.ODataModel
 	 */
-	var ODataModel = Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.model.odata.ODataModel */ {
-	
+	var ODataModel = Model.extend("sap.ui.model.odata.ODataModel", /** @lends sap.ui.model.odata.ODataModel.prototype */ {
+
 		constructor : function(sServiceUrl, bJSON, sUser, sPassword, mHeaders, bTokenHandling, bWithCredentials, bLoadMetadataAsync) {
 			Model.apply(this, arguments);
-	
+
 			var bUseBatch,
 				bRefreshAfterChange,
 				sMaxDataServiceVersion,
 				sAnnotationURI = null,
 				bLoadAnnotationsJoined,
 				bCountSupported,
-				sDefaultCountMode;
-	
+				mMetadataNamespaces,
+				sDefaultCountMode,
+				that = this;
+
 			if (typeof bJSON === "object") {
 				sUser = bJSON.user;
 				sPassword = bJSON.password;
@@ -79,9 +82,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 				sAnnotationURI = bJSON.annotationURI;
 				bLoadAnnotationsJoined = bJSON.loadAnnotationsJoined;
 				sDefaultCountMode = bJSON.defaultCountMode;
+				mMetadataNamespaces = bJSON.metadataNamespaces;
 				bJSON = bJSON.json;
 			}
-	
+			
 			this.sDefaultBindingMode = sap.ui.model.BindingMode.OneWay;
 			this.mSupportedBindingModes = {"OneWay": true, "OneTime": true, "TwoWay":true};
 			this.bCountSupported = true;
@@ -100,20 +104,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			this.bLoadAnnotationsJoined = bLoadAnnotationsJoined === undefined ? true : bLoadAnnotationsJoined ;
 			this.sAnnotationURI = sAnnotationURI;
 			this.sDefaultCountMode = sDefaultCountMode || CountMode.Both;
-	
+			this.oMetadataLoadEvent = null;
+			this.oMetadataFailedEvent = null;
 			// Load annotations support on demand
 			if (this.sAnnotationURI) {
 				jQuery.sap.require("sap.ui.model.odata.ODataAnnotations");
 			}
-	
-	
+
+
 			// prepare variables for request headers, data and metadata
 			this.oHeaders = {};
 			this.setHeaders(mHeaders);
 			this.oData = {};
 			this.oMetadata = null;
 			this.oAnnotations = null;
-	
+
 			// determine the service base url and the url parameters
 			if (sServiceUrl.indexOf("?") == -1) {
 				this.sServiceUrl = sServiceUrl;
@@ -122,7 +127,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 				this.sServiceUrl = aUrlParts[0];
 				this.sUrlParams = aUrlParts[1];
 			}
-	
+
 			if (sap.ui.getCore().getConfiguration().getStatistics()) {
 				// add statistics parameter to every request (supported only on Gateway servers)
 				if (this.sUrlParams) {
@@ -131,7 +136,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 					this.sUrlParams = "sap-statistics=true";
 				}
 			}
-	
+
 			// Remove trailing slash (if any)
 			this.sServiceUrl = this.sServiceUrl.replace(/\/$/, "");
 			
@@ -141,42 +146,45 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 				ODataModel.mServiceData[this.sServiceUrl] = {};
 				this.oServiceData = ODataModel.mServiceData[this.sServiceUrl];
 			}
-	
+
 			// Get CSRF token, if already available
 			if (this.bTokenHandling && this.oServiceData.securityToken) {
 				this.oHeaders["x-csrf-token"] = this.oServiceData.securityToken;
 			}
-			
+
 			// store user and password
 			this.sUser = sUser;
 			this.sPassword = sPassword;
-	
+
 			this.oHeaders["Accept-Language"] = sap.ui.getCore().getConfiguration().getLanguage();
-	
-			// load the metadata before setting accept headers because metadata is only available as XML
-			if (this.sAnnotationURI && !this.bLoadMetadataAsync) {
-				// In case we need to load annotations synchronously, we need to first load the metadata
-				// and then load the annotations which need that metadata...
-				this.oMetadata = new ODataMetadata(this, /* async: */ false);
-				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this, this.sAnnotationURI, /* async: */ false);
-			} else if(this.sAnnotationURI) {
-				// In case we load metadata and annotations (which depend on metadata) asynchronously,
-				// we need to first load the metadata and then parse the annotations when that is
-				// available.
-	
-				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this, this.sAnnotationURI, /* async: */ true);
-				this.oMetadata = new ODataMetadata(this, /* async: */ true);
-	
-				// In case bLoadAnnotationsJoined is true, we also need to delay the firing of the
-				// metadataLoaded-event until after both are loaded.
-				// If the annotations are malformed or do not load, the metadataloaded event is
-				// never fired in this case.
+
+			if (!this.oServiceData.oMetadata) {
+				//create Metadata object
+				this.oMetadata = new sap.ui.model.odata.ODataMetadata(this._createRequestUrl("$metadata"), { async: this.bLoadMetadataAsync, user: this.sUser, password: this.sPassword, namespaces: mMetadataNamespaces});
+				that.oServiceData.oMetadata = that.oMetadata;
 			} else {
-				// We do not need annotations, load metadata according to bLoadMetadataAsync
-				this.oMetadata = new ODataMetadata(this, this.bLoadMetadataAsync);
+				this.oMetadata = this.oServiceData.oMetadata;
 			}
-	
-			// set the the header for the accepted content types
+			
+			if(!this.oMetadata.isLoaded()) {
+				this.oMetadata.attachLoaded(function(oEvent){
+					that._initializeMetadata();
+				}, this);
+				this.oMetadata.attachFailed(this.fireMetadataFailed, this);
+			}
+
+			if (this.sAnnotationURI) {
+				this.oAnnotations = new sap.ui.model.odata.ODataAnnotations(this.sAnnotationURI, this.oMetadata, { async: this.bLoadMetadataAsync });
+				this.oAnnotations.attachFailed(this.fireAnnotationsFailed, this);
+				this.oAnnotations.attachLoaded(this.fireAnnotationsLoaded, this);
+			}
+
+			if (this.oMetadata.isLoaded()) {
+				this._initializeMetadata(true);
+			}
+
+
+			// set the header for the accepted content types
 			if (this.bJSON) {
 				if (this.sMaxDataServiceVersion === "3.0") {
 					this.oHeaders["Accept"] = "application/json;odata=fullmetadata";
@@ -205,7 +213,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	
 			publicMethods : ["create", "remove", "update", "submitChanges", "getServiceMetadata", "read", "hasPendingChanges", "refresh", "resetChanges",
 			                 "isCountSupported", "setCountSupported", "setDefaultCountMode", "getDefaultCountMode", "forceNoCache", "setProperty", "refreshSecurityToken", "setHeaders", "getHeaders",
-			                 "formatValue, setUseBatch"]
+			                 "setUseBatch"]
 		}
 	});
 	
@@ -225,7 +233,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @name sap.ui.model.odata.ODataModel.extend
 	 * @function
 	 */
-	
+
 	//
 	ODataModel.M_EVENTS = {
 			RejectChange: "rejectChange",
@@ -233,18 +241,30 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			 * Event is fired if the metadata document was successfully loaded
 			 */
 			MetadataLoaded: "metadataLoaded",
-	
+
 			/**
-			 * Event is fired if the metadata document was not successfully loaded
+			 * Event is fired if the metadata document has failed to load
 			 */
-			MetadataFailed: "metadataFailed"
+			MetadataFailed: "metadataFailed",
+
+			/**
+			 * Event is fired if the annotations document was successfully loaded
+			 */
+			AnnotationsLoaded: "annotationsLoaded",
+
+			/**
+			 * Event is fired if the annotations document has failed to load
+			 */
+			AnnotationsFailed: "annotationsFailed"
+
 	};
-	
+
+
 	// Keep a map of service specific data, which can be shared across different model instances
 	// on the same OData service
 	ODataModel.mServiceData = {
 	};
-	
+
 	ODataModel.prototype.fireRejectChange = function(mArguments) {
 		this.fireEvent("rejectChange", mArguments);
 		return this;
@@ -259,69 +279,55 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.detachEvent("rejectChange", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * Allows the metadata to set itself onto the model. This is needed so the Metadata is available
-	 * on the model in case of synchronous loading when the event is fired from the constructor
-	 * of the metadata object.
-	 *
 	 * @private
-	 * @name sap.ui.model.odata.ODataModel#_setMetadata
+	 * @name sap.ui.model.odata.ODataModel#_initializeMetadata
 	 * @function
 	 */
-	ODataModel.prototype._setMetadata = function(oMetadata) {
-		this.oMetadata = oMetadata;
-		this.fireInternalMetadataLoaded();
-	};
-	
-	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
-	 * @name sap.ui.model.odata.ODataModel#attachInternalMetadataLoaded
-	 * @function
-	 */
-	ODataModel.prototype.attachInternalMetadataLoaded = function(oData, fnFunction, oListener) {
-		this.attachEvent("internalMetadataLoaded", oData, fnFunction, oListener);
-		return this;
-	};
-	
-	/**
-	 * Internal metadata loaded event, so the model can update itself before annotations are loaded
-	 * and parsed.
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
-	 * @name sap.ui.model.odata.ODataModel#fireInternalMetadataLoaded
-	 * @function
-	 */
-	ODataModel.prototype.fireInternalMetadataLoaded = function(mArguments) {
-		this.fireEvent("internalMetadataLoaded", mArguments);
-	
+	ODataModel.prototype._initializeMetadata = function(bDelayEvent) {
+		var that = this;
+		this.bUseBatch = this.bUseBatch || this.oMetadata.getUseBatch();
+		var doFire = function(bInitialize, bDelay){
+			if(!!bDelay){
+				that.metadataLoadEvent = jQuery.sap.delayedCall(0, that, doFire, [that.bLoadMetadataAsync]);
+			} else {
+				that.fireMetadataLoaded({metadata: that.oMetadata});
+				jQuery.sap.log.debug("ODataModel fired metadataloaded");
+				if(bInitialize){
+					that.initialize();
+				}
+			}
+		};
+
 		if (this.bLoadMetadataAsync && this.sAnnotationURI && this.bLoadAnnotationsJoined) {
 			// In case of joined loading, wait for the annotations before firing the event
 			// This is also tested in the fireMetadataLoaded-method and no event is fired in case
 			// of joined loading.
-			var that = this;
-	
 			if (this.oAnnotations && this.oAnnotations.bInitialized) {
-				this.fireMetadataLoaded(mArguments);
+				doFire(true);
 			} else {
-				this.attachAnnotationsLoaded(function() {
+				this.oAnnotations.attachLoaded(function() {
 					// Now metadata was loaded and the annotations have been parsed
-					this.fireMetadataLoaded(mArguments);
-				});
+					doFire(true);
+				}, this);
 			}
 		} else {
 			// In case of synchronous or asynchronous non-joined loading, or if no annotations are
 			// loaded at all, the events are fired individually
-			this.fireMetadataLoaded(mArguments);
+				doFire(this.bLoadMetadataAsync, bDelayEvent);
 		}
-	
-		return this;
 	};
-	
+
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
-	 * @private
+	 * Fire event annotationsLoaded to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {sap.ui.model.odata.ODataAnnotations} [mArguments.annotations]  the annotations object.
+	 * 
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @protected
 	 * @name sap.ui.model.odata.ODataModel#fireAnnotationsLoaded
 	 * @function
 	 */
@@ -329,9 +335,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.fireEvent("annotationsLoaded", mArguments);
 		return this;
 	};
-	
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
+	 * Attach event-handler <code>fnFunction</code> to the 'annotationsLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 * @experimental The API is NOT stable yet. Use at your own risk.
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
 	 * @name sap.ui.model.odata.ODataModel#attachAnnotationsLoaded
 	 * @function
 	 */
@@ -339,9 +357,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.attachEvent("annotationsLoaded", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * @experimental This feature has not been tested due to the lack of OData testing infrastructure. The API is NOT stable yet. Use at your own risk.
+	 * Detach event-handler <code>fnFunction</code> from the 'annotationsLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 * @experimental The API is NOT stable yet. Use at your own risk.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
 	 * @name sap.ui.model.odata.ODataModel#detachAnnotationsLoaded
 	 * @function
 	 */
@@ -349,9 +375,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.detachEvent("annotationsLoaded", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
-	 * Fire event metadataLoaded to attached listeners.
+	 * Fire event annotationsFailed to attached listeners.
 	 *
 	 * @param {object} [mArguments] the arguments to pass along with the event.
 	 * @param {string} [mArguments.message]  A text that describes the failure.
@@ -361,6 +387,60 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 *
 	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
 	 * @protected
+	 * @name sap.ui.model.odata.ODataModel#fireAnnotationsFailed
+	 * @function
+	 */
+	ODataModel.prototype.fireAnnotationsFailed = function(mArguments) {
+		this.fireEvent("annotationsFailed", mArguments);
+		jQuery.sap.log.debug("ODataModel fired annotationsfailed");
+		return this;
+	};
+
+	/**
+	 * Attach event-handler <code>fnFunction</code> to the 'annotationsFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 *
+	 *
+	 * @param {object}
+	 *            [oData] The object, that should be passed along with the event-object when firing the event.
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs. This function will be called on the
+	 *            oListener-instance (if present) or in a 'static way'.
+	 * @param {object}
+	 *            [oListener] Object on which to call the given function. If empty, the global context (window) is used.
+	 *
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataModel.prototype.attachAnnotationsFailed = function(oData, fnFunction, oListener) {
+		this.attachEvent("annotationsFailed", oData, fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Detach event-handler <code>fnFunction</code> from the 'annotationsFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
+	 *
+	 * The passed function and listener object must match the ones previously used for event registration.
+	 *
+	 * @param {function}
+	 *            fnFunction The function to call, when the event occurs.
+	 * @param {object}
+	 *            oListener Object on which the given function had to be called.
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @public
+	 */
+	ODataModel.prototype.detachAnnotationsFailed = function(fnFunction, oListener) {
+		this.detachEvent("annotationsFailed", fnFunction, oListener);
+		return this;
+	};
+
+	/**
+	 * Fire event metadataLoaded to attached listeners.
+	 *
+	 * @param {object} [mArguments] the arguments to pass along with the event.
+	 * @param {sap.ui.model.odata.ODataMetadata} [mArguments.metadata]  the metadata object.
+	 * 
+	 * @return {sap.ui.model.odata.ODataModel} <code>this</code> to allow method chaining
+	 * @protected
 	 * @name sap.ui.model.odata.ODataModel#fireMetadataLoaded
 	 * @function
 	 */
@@ -368,7 +448,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.fireEvent("metadataLoaded", mArguments);
 		return this;
 	};
-	
+
 	/**
 	 * Attach event-handler <code>fnFunction</code> to the 'metadataLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -390,7 +470,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.attachEvent("metadataLoaded", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Detach event-handler <code>fnFunction</code> from the 'metadataLoaded' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -409,7 +489,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.detachEvent("metadataLoaded", fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Fire event metadataFailed to attached listeners.
 	 *
@@ -428,7 +508,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.fireEvent("metadataFailed", mArguments);
 		return this;
 	};
-	
+
 	/**
 	 * Attach event-handler <code>fnFunction</code> to the 'metadataFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -450,7 +530,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.attachEvent("metadataFailed", oData, fnFunction, oListener);
 		return this;
 	};
-	
+
 	/**
 	 * Detach event-handler <code>fnFunction</code> from the 'metadataFailed' event of this <code>sap.ui.model.odata.ODataModel</code>.
 	 *
@@ -469,6 +549,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		this.detachEvent("metadataFailed", fnFunction, oListener);
 		return this;
 	};
+
 	/**
 	 * creates a request url
 	 * @private
@@ -476,15 +557,15 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @function
 	 */
 	ODataModel.prototype._createRequestUrl = function(sPath, oContext, oUrlParams, bBatch, bCache) {
-	
+
 		// create the url for the service
-		var aUrlParams = [],
+		var aUrlParams,
 			sResolvedPath,
 			sUrlParams,
 			sUrl = "";
 		
 		//we need to handle url params that can be passed from the manual CRUD methods due to compatibility
-		if (sPath.indexOf('?') != -1 ) {
+		if (sPath && sPath.indexOf('?') != -1 ) {
 			sUrlParams = sPath.substr(sPath.indexOf('?')+1);
 			sPath = sPath.substr(0, sPath.indexOf('?'));
 		}
@@ -496,22 +577,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		} else {
 			sUrl = sResolvedPath.substr(sResolvedPath.indexOf('/')+1);
 		}
-	
-		if (jQuery.type(oUrlParams) === "string") {
-			aUrlParams.push(oUrlParams);
-		} else if (jQuery.isArray(oUrlParams)) {
-			// compatibility with old aUrlParams array
-			aUrlParams = oUrlParams;
-		} else if (oUrlParams) {
-			// convert parameter map into parameter array as needed by read function
-			jQuery.each(oUrlParams, function (sParameterName, oParameterValue) {
-				if (jQuery.type(oParameterValue) === "string") {
-					oParameterValue = jQuery.sap.encodeURL(oParameterValue);
-				}
-				aUrlParams.push(jQuery.sap.encodeURL(sParameterName) + "=" + oParameterValue);
-			});
-		}
-	
+
+		aUrlParams = ODataUtils._createUrlParamsArray(oUrlParams);
+
 		if (this.sUrlParams) {
 			aUrlParams.push(this.sUrlParams);
 		}
@@ -616,7 +684,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 				if (that.sChangeKey && mChangedEntities) {
 					var sEntry = that.sChangeKey.substr(that.sChangeKey.lastIndexOf('/') + 1);
 					if (mChangedEntities[sEntry]) {
-						that.sChangeKey = null;						
+						delete that.oRequestQueue[that.sChangeKey];
+						that.sChangeKey = null;
 					}
 				}
 				
@@ -647,7 +716,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			var mParameters = that._handleError(oError);
 	
 			if (fnError) {
-				fnError(oError);
+				fnError(oError, oRequestHandle && oRequestHandle.bAborted);
 			}
 	
 			that.fireRequestCompleted({url : oRequest.requestUri, type : "GET", async : oRequest.async, 
@@ -822,15 +891,31 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	ODataModel.prototype.removeData = function(){
 		this.oData = {};
 	};
+
+	/**
+	 * Initialize the model.
+	 * This will call initialize on all bindings. This is done if metadata is loaded asynchronously.
+	 *
+	 * @private
+	 * @name sap.ui.model.odata.ODataModel#initialize
+	 * @function
+	 */
+	ODataModel.prototype.initialize = function() {
+		// Call initialize on all bindings in case metadata was not available when they were created
+		var aBindings = this.aBindings.slice(0);
+		jQuery.each(aBindings, function(iIndex, oBinding) {
+			oBinding.initialize();
+		});
+	};
 	
 	/**
 	 * Refresh the model.
 	 * This will check all bindings for updated data and update the controls if data has been changed.
 	 *
-	 * @param {boolean} bForceUpdate Update controls even if data has not been changed
+	 * @param {boolean} bForceUpdate Update controlsODataModelanged
 	 * @param {object} mChangedEntities
 	 * @param {string} [sEntityType]
-	 * 
+	 *
 	 * @public
 	 * @name sap.ui.model.odata.ODataModel#refresh
 	 * @function
@@ -1186,38 +1271,47 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @function
 	 */
 	ODataModel.prototype._getObject = function(sPath, oContext) {
-		var oNode = this.isLegacySyntax() ? this.oData : null,
+		var oNode = this.isLegacySyntax() ? this.oData : null, sResolvedPath,
 			sKey;
-		if (oContext) {
-			sKey = oContext.getPath();
-			// remove starting slash
-			sKey = sKey.substr(1);
-			oNode = this.oData[sKey];
-		}
-		if (!sPath) {
-			return oNode;
-		}
-		var aParts = sPath.split("/"),
-			iIndex = 0;
-		if (!aParts[0]) {
-			// absolute path starting with slash
-			oNode = this.oData;
-			iIndex++;
-		}
-		while(oNode && aParts[iIndex]) {
-			oNode = oNode[aParts[iIndex]];
-			if (oNode) {
-				if (oNode.__ref) {
-					oNode = this.oData[oNode.__ref];
-				}
-				else if (oNode.__list) {
-					oNode = oNode.__list;
-				}
-				else if (oNode.__deferred) {
-					oNode = null;
-				}
+		
+		//check for metadata path
+		if (this.oMetadata && sPath && sPath.indexOf('#') > -1)  {
+			sResolvedPath = this.resolve(sPath, oContext);
+			if (sResolvedPath) {
+				oNode = this.oMetadata._getAnnotation(sResolvedPath);
 			}
-			iIndex++;
+		} else {
+			if (oContext) {
+				sKey = oContext.getPath();
+				// remove starting slash
+				sKey = sKey.substr(1);
+				oNode = this.oData[sKey];
+			}
+			if (!sPath) {
+				return oNode;
+			}
+			var aParts = sPath.split("/"),
+				iIndex = 0;
+			if (!aParts[0]) {
+				// absolute path starting with slash
+				oNode = this.oData;
+				iIndex++;
+			}
+			while(oNode && aParts[iIndex]) {
+				oNode = oNode[aParts[iIndex]];
+				if (oNode) {
+					if (oNode.__ref) {
+						oNode = this.oData[oNode.__ref];
+					}
+					else if (oNode.__list) {
+						oNode = oNode.__list;
+					}
+					else if (oNode.__deferred) {
+						oNode = null;
+					}
+				}
+				iIndex++;
+			}
 		}
 		return oNode;
 	};
@@ -1319,8 +1413,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @name sap.ui.model.odata.ODataModel#_submitRequest
 	 * @function
 	 */
-	ODataModel.prototype._submitRequest = function(oRequest, bBatch, fnSuccess, fnError, bHandleBatchErrors){
-		var that = this, oResponseData;
+	ODataModel.prototype._submitRequest = function(oRequest, bBatch, fnSuccess, fnError, bHandleBatchErrors, bImportData){
+		var that = this, oResponseData, mChangedEntities = {};
 	
 		function _handleSuccess(oData, oResponse) {
 			// check if embedded errors occurred in success request. We don't do that for manual batch requests
@@ -1343,7 +1437,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 				}
 				oData = oResponseData;
 			}
-	
+			
+			if (bImportData) {
+				if (oData && oData.__batchResponses) {
+					jQuery.each(oData.__batchResponses, function(iIndex, oResponse) {
+						if (oResponse && oResponse.data) {
+							that._importData(oResponse.data, mChangedEntities);
+						}
+					});
+				}
+			}
+			
 			that._handleETag(oRequest, oResponse, bBatch);
 	
 			that._updateRequestQueue(oRequest, bBatch)
@@ -1643,8 +1747,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			else if(sPath){
 				sEntry = sPath.replace(this.sServiceUrl+'/','');
 				iIndex = sEntry.indexOf("?");
-				if (iIndex > -1) {
-					sEntry = sEntry.substr(0,iIndex);
+				if (iIndex > -1){
+					sEntry = sEntry.substr(0, iIndex);
 				}
 				if (this.oData.hasOwnProperty(sEntry)){
 					sETagHeader = this.getProperty('/' + sEntry +'/__metadata/etag');
@@ -1664,18 +1768,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	ODataModel.prototype._createRequest = function(sUrl, sMethod, bAsync, oPayload, sETag) {
 		var oChangeHeader = {}, sETagHeader;
 		jQuery.extend(oChangeHeader, this.mCustomHeaders, this.oHeaders);
-	
+
 		sETagHeader = this._getETag(sUrl, oPayload, sETag);
-	
-		if(sETagHeader  && sMethod != "GET"){
+
+		if(sETagHeader && sMethod != "GET"){
 			oChangeHeader["If-Match"] = sETagHeader;
 		}
+
 		// make sure to set content type header for POST/PUT requests when using JSON format to prevent datajs to add "odata=verbose" to the content-type header
 		// may be removed as later gateway versions support this
 		if (this.bJSON && sMethod != "DELETE" && this.sMaxDataServiceVersion === "2.0") {
 			oChangeHeader["Content-Type"] = "application/json";
 		}
-	
+
 		if (sMethod == "MERGE" && !this.bUseBatch) {
 			oChangeHeader["x-http-method"] = "MERGE";
 			sMethod = "POST";
@@ -1822,7 +1927,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		} else {
 			oRequest = this._createRequest(sUrl, "PUT", bAsync, oData, sETag);
 		}
-		
+
 		sPath = this._normalizePath(sPath, oContext);
 		oStoredEntry = this._getObject(sPath);
 		oRequest.keys = {};
@@ -1830,7 +1935,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			sKey = this._getKey(oStoredEntry);
 			oRequest.keys[sKey] = true;
 		}
-		
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -1839,7 +1944,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		}
 		return oRequestHandle;
 	};
-	
+
 	/**
 	 * Trigger a POST request to the odata service that was specified in the model constructor. Please note that deep creates are not supported
 	 * and may not work.
@@ -1884,17 +1989,17 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			fnSuccess	= arguments[3];
 			fnError		= arguments[4];
 		}
-		
+
 		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "POST", bAsync, oData);
-		
+
 		sPath = this._normalizePath(sPath, oContext);
 		oEntityMetadata = this.oMetadata._getEntityTypeByPath(sPath);
 		oRequest.entityTypes = {};
 		if (oEntityMetadata) {
 			oRequest.entityTypes[oEntityMetadata.entityType] = true;
 		}
-			
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -1971,7 +2076,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	
 		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "DELETE", bAsync, oPayload, sETag);
-	
+
 		sPath = this._normalizePath(sPath, oContext);
 		oStoredEntry = this._getObject(sPath);
 		oRequest.keys = {};
@@ -1979,7 +2084,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			sKey = this._getKey(oStoredEntry);
 			oRequest.keys[sKey] = true;
 		}
-		
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([{__changeRequests:[oRequest]}], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, _fnSuccess, fnError, true);
@@ -1987,9 +2092,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			oRequestHandle = this._submitRequest(oRequest, this.bUseBatch, _fnSuccess, fnError);
 		}
 		return oRequestHandle;
-	
+
 	};
-	
+
 	/**
 	 * Trigger a request to the function import odata service that was specified in the model constructor.
 	 *
@@ -2054,7 +2159,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 					});
 					if (matchingParameters != null && matchingParameters.length > 0) {
 						var matchingParameter = matchingParameters[0];
-						oUrlParams[sParameterName] = that.formatValue(oParameterValue, matchingParameter.type);
+						oUrlParams[sParameterName] = ODataUtils.formatValue(oParameterValue, matchingParameter.type);
 					}
 					else {
 						jQuery.sap.log.warning("Parameter " + sParameterName + " is not defined for function call " + sFunctionName + "!");
@@ -2082,7 +2187,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			}
 		}
 	};
-	
+
 	/**
 	 * Trigger a GET request to the odata service that was specified in the model constructor.
 	 * The data will not be stored in the model. The requested data is returned with the response.
@@ -2095,6 +2200,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * 		given with the context.
 	 * @param {map} [mParameters.urlParameters] A map containing the parameters that will be passed as query strings 
 	 * @param {boolean} [mParameters.async=true] true for asynchronous requests.
+	 * @param {array} [mParameter.filters] an array of sap.ui.model.Filter to be included in the request URL
+	 * @param {array} [mParameter.sorters] an array of sap.ui.model.Sorter to be included in the request URL
 	 * @param {function} [mParameters.success] a callback function which is called when the data has
 	 *		been successfully retrieved. The handler can have the
 	 *		following parameters: oData and response.
@@ -2111,6 +2218,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	ODataModel.prototype.read = function(sPath, mParameters) {
 		var oRequest, sUrl, oRequestHandle, oBatchRequest,
 			oContext, mUrlParams, bAsync, fnSuccess, fnError,
+			aFilters, aSorters, sFilterParams, sSorterParams,
+			oEntityType, sResolvedPath,
+			aUrlParams,
 			that = this;
 		
 		if (mParameters && typeof(mParameters) == "object" && !(mParameters instanceof sap.ui.model.Context)) {
@@ -2120,6 +2230,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			bAsync     = mParameters.async !== false; // Defaults to true...
 			fnSuccess  = mParameters.success;
 			fnError    = mParameters.error;
+			aFilters   = mParameters.filters;
+			aSorters   = mParameters.sorters;
 		} else {
 			// Legacy parameter syntax is used
 			oContext   = mParameters;
@@ -2127,15 +2239,29 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			bAsync     = arguments[3] !== false; // Defaults to true...
 			fnSuccess  = arguments[4];
 			fnError    = arguments[5];
-			
 		}
-	
+
 		// bAsync default is true ?!
 		bAsync = bAsync !== false;
-	
-		sUrl = this._createRequestUrl(sPath, oContext, mUrlParams, this.bUseBatch);
+
+		aUrlParams = ODataUtils._createUrlParamsArray(mUrlParams);
+
+		// Add filter/sorter to URL parameters
+		sSorterParams = ODataUtils.createSortParams(aSorters);
+		if (sSorterParams) { aUrlParams.push(sSorterParams) };
+
+		if (aFilters && !this.oMetadata) {
+			jQuery.sap.log.fatal("Tried to use filters in read method before metadata is available.")
+		} else {
+			sResolvedPath = this._normalizePath(sPath, oContext);
+			oEntityType = this.oMetadata && this.oMetadata._getEntityTypeByPath(sResolvedPath);
+			sFilterParams = ODataUtils.createFilterParams(aFilters, this.oMetadata, oEntityType);
+			if (sFilterParams) { aUrlParams.push(sFilterParams) };
+		}
+		
+		sUrl = this._createRequestUrl(sPath, oContext, aUrlParams, this.bUseBatch);
 		oRequest = this._createRequest(sUrl, "GET", bAsync);
-	
+
 		if (this.bUseBatch) {
 			oBatchRequest = this._createBatchRequest([oRequest], bAsync);
 			oRequestHandle = this._submitRequest(oBatchRequest, this.bUseBatch, fnSuccess, fnError, true);
@@ -2144,7 +2270,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		}
 		return oRequestHandle;
 	};
-	
+
 	/**
 	 * Creates a single batch operation (read or change operation) which can be used in a batch request.
 	 *
@@ -2202,7 +2328,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 		}
 		
 		if (sMethod != "GET" && sMethod != "POST"){
-			if (sPath.indexOf("/") != 0) {
+			if (sPath && sPath.indexOf("/") != 0) {
 				sPath = '/' + sPath;
 			}
 			oStoredEntry = this._getObject(sPath);
@@ -2301,7 +2427,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @name sap.ui.model.odata.ODataModel#submitBatch
 	 * @function
 	 */
-	ODataModel.prototype.submitBatch = function(fnSuccess, fnError, bAsync) {
+	ODataModel.prototype.submitBatch = function(fnSuccess, fnError, bAsync, bImportData) {
 		var oRequest, sUrl, oRequestHandle, that = this;
 	
 		function _handleSuccess(oData, oResponse) {
@@ -2327,7 +2453,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			return false;
 		}
 		oRequest = this._createBatchRequest(this.aBatchOperations, bAsync);
-		oRequestHandle = this._submitRequest(oRequest, true, _handleSuccess, fnError, false);
+		oRequestHandle = this._submitRequest(oRequest, true, _handleSuccess, fnError, false, bImportData);
 		this.clearBatch();
 		return oRequestHandle;
 	};
@@ -2343,7 +2469,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @function
 	 */
 	ODataModel.prototype.getServiceMetadata = function() {
-		if (this.oMetadata && this.oMetadata.getServiceMetadata) {
+		if (this.oMetadata && this.oMetadata.isLoaded()) {
 			return this.oMetadata.getServiceMetadata();
 		}
 	};
@@ -2771,60 +2897,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	 * @function
 	 */
 	ODataModel.prototype.formatValue = function(vValue, sType) {
-		// Lazy creation of format objects
-		if (!this.oDateTimeFormat) {
-			this.oDateTimeFormat = sap.ui.core.format.DateFormat.getDateInstance({
-				pattern: "'datetime'''yyyy-MM-dd'T'HH:mm:ss''"
-			});
-			this.oDateTimeOffsetFormat = sap.ui.core.format.DateFormat.getDateInstance({
-				pattern: "'datetimeoffset'''yyyy-MM-dd'T'HH:mm:ss'Z'''"
-			});
-			this.oTimeFormat = sap.ui.core.format.DateFormat.getTimeInstance({
-				pattern: "'time'''HH:mm:ss''"
-			});
-		}
-	
-		// null values should return the null literal
-		if (vValue === null || vValue === undefined) {
-			return "null";
-		}
-	
-		// Format according to the given type
-		var sValue;
-		switch(sType) {
-			case "Edm.String":
-				// quote
-				sValue = "'" + String(vValue).replace(/'/g, "''") + "'";
-				break;
-			case "Edm.Time":
-				sValue = "time'" + vValue + "'";
-				break;
-			case "Edm.DateTime":
-				sValue = this.oDateTimeFormat.format(new Date(vValue), true);
-				break;
-			case "Edm.DateTimeOffset":
-				sValue = this.oDateTimeOffsetFormat.format(new Date(vValue), true);
-				break;
-			case "Edm.Guid":
-				sValue = "guid'" + vValue + "'";
-				break;
-			case "Edm.Decimal":
-				sValue = vValue + "M";
-				break;
-			case "Edm.Int64":
-				sValue = vValue + "L";
-				break;
-			case "Edm.Single":
-				sValue = vValue + "f";
-				break;
-			case "Edm.Binary":
-				sValue = "binary'" + vValue + "'";
-				break;
-			default:
-				sValue = new String(vValue);
-				break;
-		}
-		return sValue;
+		return ODataUtils.formatValue(vValue, sType);
 	};
 	
 	/**
@@ -2978,7 +3051,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 	ODataModel.prototype._normalizePath = function(sPath, oContext) {
 		
 		// remove query params from path if any
-		if (sPath.indexOf('?') != -1 ) {
+		if (sPath && sPath.indexOf('?') != -1 ) {
 			sPath = sPath.substr(0, sPath.indexOf('?'));
 		}
 	
@@ -3078,13 +3151,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/Model', './CountMode', './ODat
 			}
 			delete this.aPendingRequestHandles;
 		}
-	
+		if(!!this.oMetadataLoadEvent){
+			jQuery.sap.clearDelayedCall(this.oMetadataLoadEvent);
+		}
+		if(!!this.oMetadataFailedEvent){
+			jQuery.sap.clearDelayedCall(this.oMetadataFailedEvent);
+		}
+
 		if (this.oMetadata) {
 			this.oMetadata.destroy();
 			delete this.oMetadata;
 		}
-	
-	
+
+
 		if (this.oAnnotations) {
 			this.oAnnotations.destroy();
 			delete this.oAnnotations;

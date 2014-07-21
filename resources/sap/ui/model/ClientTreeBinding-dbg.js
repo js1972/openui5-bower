@@ -23,7 +23,7 @@ sap.ui.define(['jquery.sap.global', './TreeBinding'],
 	 * @name sap.ui.model.ClientTreeBinding
 	 * @extends sap.ui.model.TreeBinding
 	 */
-	var ClientTreeBinding = TreeBinding.extend("sap.ui.model.ClientTreeBinding", /** @lends sap.ui.model.ClientTreeBinding */ {
+	var ClientTreeBinding = TreeBinding.extend("sap.ui.model.ClientTreeBinding", /** @lends sap.ui.model.ClientTreeBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, aFilters, mParameters){
 			TreeBinding.apply(this, arguments);

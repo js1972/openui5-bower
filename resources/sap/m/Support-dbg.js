@@ -7,38 +7,38 @@
 jQuery.sap.declare("sap.m.Support");
 
 /**
- * @class
+ * <pre>
  * <code>sap.m.Support</code> shows the technical information for SAPUI5 Mobile Applications.
  * This technical information includes
- *  * SAPUI5 Version
- *  * User Agent
- *  * Configurations (Bootstrap and Computed)
- *  * URI parameters
- *  * All loaded module names
+ * 	* SAPUI5 Version
+ * 	* User Agent
+ * 	* Configurations (Bootstrap and Computed)
+ * 	* URI parameters
+ * 	* All loaded module names
  *
  * In order to show the device information, the user must follow the following gestures.
  * 	1 - Hold the device in "landscape" mode
  * 	2 - Tap on any element (possibly element which does not have touch event e.g text or header (because of the stopPropagation))
  * 	3 - Hold finger minimum 2 seconds, up to 5 seconds
  * 	4 - Change device rotation to "portrait" mode
- *  5 - Release finger
+ * 	5 - Release finger
  *
  * NOTE: This class is internal and all its functions must not be used by an application
  *
  * As <code>sap.m.Support</code> is a static class, a <code>jQuery.sap.require("sap.m.Support");</code>
  * statement must be implicitly executed before the class is used.
  *
+ *
  * Enable Support:
- * <pre>
+ * --------------------------------------------------
  * //import library
  * jQuery.sap.require("sap.m.Support");
  *
  * //By default after require, support is enabled but implicitly we can call
  * sap.m.Support.on();
- * </pre>
  *
  * Disable Support:
- * <pre>
+ * --------------------------------------------------
  * sap.m.Support.off();
  * </pre>
  *
@@ -47,7 +47,6 @@ jQuery.sap.declare("sap.m.Support");
  *
  * @static
  * @protected
- * @namespace
  * @name sap.m.Support
  */
 sap.m.Support = (function($, document) {
@@ -180,7 +179,7 @@ sap.m.Support = (function($, document) {
 				sap.m.Support.on();
 			}
 		}).addStyleClass("sapMSupport");
-		
+
 		return dialog;
 	}
 
@@ -195,7 +194,7 @@ sap.m.Support = (function($, document) {
 	function onTouchEnd() {
 		var timeDiff = Date.now() - startTime,
 			orientation = $.event.special.orientationchange.orientation();
-		
+
 		document.removeEventListener('touchend', onTouchEnd);
 		if (orientation == orientations.end && timeDiff > timeMinLimit && timeDiff < timeMaxLimit) {
 			show();
@@ -213,7 +212,7 @@ sap.m.Support = (function($, document) {
 		/**
 		 * Enables support.
 		 *
-		 * @return {object} sap.m.Support
+		 * @returns {sap.m.Support} this to allow method chaining
 		 * @protected
 		 * @name sap.m.Support.on
 		 * @function
@@ -229,7 +228,7 @@ sap.m.Support = (function($, document) {
 		/**
 		 * Disables support.
 		 *
-		 * @return {object} sap.m.Support
+		 * @returns {sap.m.Support} this to allow method chaining
 		 * @protected
 		 * @name sap.m.Support.off
 		 * @function
@@ -241,7 +240,7 @@ sap.m.Support = (function($, document) {
 			}
 			return this;
 		},
-		
+
 		open : function() {
 			show();
 		}

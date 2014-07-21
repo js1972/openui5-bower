@@ -19,8 +19,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	 *
 	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 1.9.2
 	 * @name sap.ui.core.ComponentMetadata
 	 */
@@ -47,26 +47,35 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	};
 	
 	ComponentMetadata.prototype.applySettings = function(oClassInfo) {
-	
+		
 		var oStaticInfo = oClassInfo.metadata;
 	
-		ManagedObjectMetadata.prototype.applySettings.call(this, oClassInfo);
-	
-		// if the component specifies the metadata property: loadFromFile then
+		// if the component metadata loadFromFile feature is active then
 		// the component metadata will be loaded from the specified file 
 		// which needs to be located next to the Component.js file.
 		var sName = this.getName(),
-		    sPackage = sName.replace(/\.\w+?$/, "");
+	    sPackage = sName.replace(/\.\w+?$/, "");
 		if (oStaticInfo._src) {
-			jQuery.sap.log.warning("The metadata of the component " + sName + " is loaded from file " + oStaticInfo._src + ". This is a design time feature and not for productive usage!");
-			var sUrl = jQuery.sap.getModulePath(sPackage, "/" + oStaticInfo._src);
-			var oResponse = jQuery.sap.syncGetJSON(sUrl);
-			if (oResponse.success) {
-				jQuery.extend(oStaticInfo, oResponse.data);
-			} else {
-				jQuery.sap.log.error("Failed to load component metadata from \"" + oStaticInfo._src + "\"! Reason: " + oResponse.error);
+			if(oStaticInfo._src == "component.json"){
+				jQuery.sap.log.warning("Usage of declacation \"metadata: 'component.json'\" is deprecated (component " + sName + "). Use \"metadata: 'json'\" instead.");
+			}else if(oStaticInfo._src != "json"){
+				throw new Error("Invalid metadata declaration for component " + sName + ": \"" + oStaticInfo._src + "\"! Use \"metadata: 'json'\" to load metadata from component.json.");
+			}
+			
+			var sResource = sPackage.replace(/\./g, "/") + "/component.json";
+			jQuery.sap.log.info("The metadata of the component " + sName + " is loaded from file " + sResource + ".");
+			try{
+				var oResponse = jQuery.sap.loadResource(sResource, {
+					dataType: "json",
+					failOnError : false
+				});
+				jQuery.extend(oStaticInfo, oResponse);
+			}catch(err){
+				jQuery.sap.log.error("Failed to load component metadata from \"" + sResource + "\" (component " + sName + ")! Reason: " + err);
 			}
 		}
+		
+		ManagedObjectMetadata.prototype.applySettings.call(this, oClassInfo);
 		
 		// keep the infor about the component name (for customizing)
 		this._sComponentName = sPackage;
@@ -98,6 +107,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 			this._mModels = jQuery.extend(true, {}, oParent._mModels, this._mModels);
 			this._mServices = jQuery.extend(true, {}, oParent._mServices, this._mServices);
 		}
+		
+		// Store the static metadata for later usage (see getCustomConfiguration)
+		this._oStaticInfo = oStaticInfo;
 		
 	};
 	
@@ -180,6 +192,51 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 				sap.ui.core.CustomizingConfiguration.deactivateForComponent(this._sComponentName);
 			}
 		}
+	};
+	
+	/**
+	 * Returns the custom Component configuration entry with the specified key (Must be a JSON object).
+	 * If no key is specified, the return value is null.
+	 * 
+	 * Example:
+	 * <code>
+	 *   sap.ui.core.Component.extend("sample.Component", {
+	 *       metadata: {
+	 *           "my.custom.config" : {
+	 *               "property1" : true,
+	 *               "property2" : "Something else"
+	 *           }
+	 *       }
+	 *   });
+	 * </code>
+	 * 
+	 * The configuration above can be accessed via <code>sample.Component.getMetadata().getCustomEntry("my.custom.config")</code>.
+	 * 
+	 * @param {string} sKey key of the custom configuration (must be prefixed with a namespace)
+	 * @param {boolean} bMerged whether the custom configuration should be merged with components parent custom configuration.
+	 * @return {Object} custom Component configuration with the specified key. 
+	 * @public
+	 * @name sap.ui.core.ComponentMetadata#getCustomEntry
+	 * @function
+	 */
+	ComponentMetadata.prototype.getCustomEntry = function(sKey, bMerged){
+		if(!sKey || sKey.indexOf(".") <= 0){
+			jQuery.sap.log.warning("Component Metadata entries with keys without namespace prefix can not be read via getCustomEntry. Key: " + sKey + ", Component: " + this.getName());
+			return null;
+		}
+		
+		var oData = this._oStaticInfo[sKey] || {};
+		
+		if(!jQuery.isPlainObject(oData)){
+			jQuery.sap.log.warning("Custom Component Metadata entry with key '"+sKey+"' must be an object. Component: " + this.getName());
+			return null;
+		}
+		
+		var oParent = this.getParent();
+		if (bMerged && oParent instanceof ComponentMetadata) {
+			return jQuery.extend(true, {}, oParent.getCustomEntry(sKey, bMerged), oData);
+		}
+		return jQuery.extend(true, {}, oData);
 	};
 	
 	/**

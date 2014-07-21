@@ -43,11 +43,11 @@ sap.ui.define("sap/ui/debug/ControlTree",['jquery.sap.global', 'sap/ui/base/Even
 	 * @class Control Tree used for the Debug Environment
 	 * @extends sap.ui.base.EventProvider
 	 * @author Martin Schaus, Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.debug.ControlTree
 	 * @private
 	 */
-	var ControlTree = EventProvider.extend("sap.ui.debug.ControlTree", /** @lends sap.ui.debug.ControlTree */ {
+	var ControlTree = EventProvider.extend("sap.ui.debug.ControlTree", /** @lends sap.ui.debug.ControlTree.prototype */ {
 		constructor: function(oCore, oWindow, oParentDomRef, bRunsEmbedded) {
 			EventProvider.apply(this,arguments);
 			this.oWindow = oWindow;
@@ -766,7 +766,7 @@ sap.ui.define("sap/ui/debug/PropertyList",['jquery.sap.global', 'sap/ui/base/Dat
 	 *
 	 * @extends sap.ui.base.EventProvider
 	 * @author Martin Schaus
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {sap.ui.core.Core}
 	 *            oCore the core instance to use for analysis
@@ -779,7 +779,7 @@ sap.ui.define("sap/ui/debug/PropertyList",['jquery.sap.global', 'sap/ui/base/Dat
 	 * @name sap.ui.debug.PropertyList
 	 * @private
 	 */
-	var PropertyList = EventProvider.extend("sap.ui.debug.PropertyList", /** @lends sap.ui.debug.PropertyList */ {
+	var PropertyList = EventProvider.extend("sap.ui.debug.PropertyList", /** @lends sap.ui.debug.PropertyList.prototype */ {
 		constructor: function(oCore, oWindow, oParentDomRef) {
 			EventProvider.apply(this,arguments);
 			this.oWindow = oWindow;
@@ -1305,7 +1305,7 @@ sap.ui.define("sap/ui/debug/DebugEnv",['jquery.sap.global', './ControlTree', './
 	 * @class Central Class for the Debug Environment
 	 *
 	 * @author Martin Schaus, Frank Weigel
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @private
 	 * @name sap.ui.debug.DebugEnv
 	 */

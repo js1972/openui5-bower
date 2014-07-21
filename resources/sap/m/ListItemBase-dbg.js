@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -85,8 +85,8 @@ sap.ui.core.Control.extend("sap.m.ListItemBase", { metadata : {
 		"counter" : {type : "int", group : "Misc", defaultValue : null}
 	},
 	events : {
-		"tap" : {}, 
-		"detailTap" : {}, 
+		"tap" : {deprecated: true}, 
+		"detailTap" : {deprecated: true}, 
 		"press" : {}, 
 		"detailPress" : {}
 	}
@@ -241,10 +241,12 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
 
 
 /**
- * tap event (This event is deprecated, use the press event instead) 
+ * tap event 
  *
  * @name sap.m.ListItemBase#tap
  * @event
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -257,7 +259,7 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ListItemBase</code>.<br/> itself. 
  *  
- * tap event (This event is deprecated, use the press event instead) 
+ * tap event 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -268,6 +270,8 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  *
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.ListItemBase#attachTap
  * @function
  */
@@ -283,26 +287,32 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  *            oListener Context object on which the given function had to be called.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.ListItemBase#detachTap
  * @function
  */
 
 /**
  * Fire event tap to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @protected
+ * @deprecated Since version 1.20.0. 
+ * This event is deprecated, use the press event instead.
  * @name sap.m.ListItemBase#fireTap
  * @function
  */
 
 
 /**
- * detail tap event (This event is deprecated, use the detailPress event instead) 
+ * detail tap event 
  *
  * @name sap.m.ListItemBase#detailTap
  * @event
+ * @deprecated Since version 7.20.0. 
+ * This event is deprecated, use the detailPress event instead.
  * @param {sap.ui.base.Event} oControlEvent
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
@@ -315,7 +325,7 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ListItemBase</code>.<br/> itself. 
  *  
- * detail tap event (This event is deprecated, use the detailPress event instead) 
+ * detail tap event 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -326,6 +336,8 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  *
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 7.20.0. 
+ * This event is deprecated, use the detailPress event instead.
  * @name sap.m.ListItemBase#attachDetailTap
  * @function
  */
@@ -341,16 +353,20 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
  *            oListener Context object on which the given function had to be called.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @public
+ * @deprecated Since version 7.20.0. 
+ * This event is deprecated, use the detailPress event instead.
  * @name sap.m.ListItemBase#detachDetailTap
  * @function
  */
 
 /**
  * Fire event detailTap to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @protected
+ * @deprecated Since version 7.20.0. 
+ * This event is deprecated, use the detailPress event instead.
  * @name sap.m.ListItemBase#fireDetailTap
  * @function
  */
@@ -405,7 +421,7 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @protected
@@ -463,7 +479,7 @@ sap.m.ListItemBase.M_EVENTS = {'tap':'tap','detailTap':'detailTap','press':'pres
 
 /**
  * Fire event detailPress to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ListItemBase} <code>this</code> to allow method chaining
  * @protected
@@ -781,7 +797,7 @@ sap.m.ListItemBase.prototype.ontap = function(oEvent) {
 };
 
 sap.m.ListItemBase.prototype.ontouchstart = function(oEvent) {
-	this._eventHandledByControl = oEvent.originalEvent._sapui_handledByControl;
+	this._eventHandledByControl = oEvent.isMarked();
 
 	this._touchedY = oEvent.targetTouches[0].clientY;
 	this._touchedX = oEvent.targetTouches[0].clientX;
@@ -799,6 +815,7 @@ sap.m.ListItemBase.prototype.ontouchstart = function(oEvent) {
 				case "DetailAndActive":
 
 					if (this._isActivationHandled(oEvent) && !this._eventHandledByControl) {
+						oEvent.setMarked();
 						this.setActive(true);
 					}
 
@@ -997,8 +1014,13 @@ sap.m.ListItemBase.prototype.onkeydown = function(oEvent) {
 		return;
 	}
 
+	// handle only the events that are coming from ListItem
+	if (oEvent.srcControl !== this) {
+		return;
+	}
+
 	// Ctrl + A to select all
-	if (oEvent.srcControl === this && oEvent.ctrlKey && oEvent.which == mKeyCodes.A) {
+	if (oEvent.which == mKeyCodes.A && (oEvent.metaKey || oEvent.ctrlKey)) {
 		sap.ui.getCore().byId(this._listId).selectAll(true);
 		oEvent.preventDefault();
 		oEvent.setMarked();

@@ -46,39 +46,47 @@ sap.ui.commons.RichTooltipRenderer.render = function(rm, oRichTooltip){
 	}
 
 	// if the parent element has a set ValueState render the corresponding text and image
-	var valueStateText = sap.ui.core.ValueStateSupport.getAdditionalText(oRichTooltip.getParent());
-	if (valueStateText) {
-		var sValueState = oRichTooltip.getParent().getValueState();
-		var sValueStateImage = sValueState !== sap.ui.core.ValueState.None ? "ValueState_" + sValueState + ".png" : "";
-
+	var sValueStateText = sap.ui.core.ValueStateSupport.getAdditionalText(oRichTooltip.getParent());
+	
+	// render the individual ValueState text (if available) otherwise use the default text
+	var sIndividualText = oRichTooltip.getAggregation("individualStateText");
+	
+	// if there is any (from parent control or from RTT itself) value state text set
+	if (sValueStateText || sIndividualText) {
 		rm.write('<div class="sapUiRttValueStateContainer">');
 		
-		// if there is a proper value state -> render corresponding image
-		if (sValueStateImage !== "") {
-			sValueStateImage = jQuery.sap.getModulePath("sap.ui.commons", '/')
-			+ "themes/"
-			+ sap.ui.getCore().getConfiguration().getTheme()
-			+ "/img/richtooltip/" + sValueStateImage;
-			
-			rm.write('<img id="'+sId+'-valueStateImage" class="sapUiRttValueStateImage" src="');
-			rm.writeEscaped(sValueStateImage);
-			rm.write('"/>');
-		}
+		// only if the owner of the RTT has a value state - render state and image
+		if (sValueStateText) {
+			var sValueState = oRichTooltip.getParent().getValueState();
+			var sValueStateImage = sValueState !== sap.ui.core.ValueState.None ? "ValueState_" + sValueState + ".png" : "";
 
-		// render the individual ValueState text (if available) otherwise use the default text
-		var sIndividualText = oRichTooltip.getAggregation("individualStateText");
-		if (sIndividualText) {
+			// if there is a proper value state -> render corresponding image
+			if (sValueStateImage !== "") {
+				sValueStateImage = jQuery.sap.getModulePath("sap.ui.commons", '/')
+				+ "themes/"
+				+ sap.ui.getCore().getConfiguration().getTheme()
+				+ "/img/richtooltip/" + sValueStateImage;
+			
+				rm.write('<img id="'+ sId +'-valueStateImage" class="sapUiRttValueStateImage" src="');
+				rm.writeEscaped(sValueStateImage);
+				rm.write('"/>');
+			}
+		} 
+	
+	    if (sIndividualText) {
 			rm.renderControl(sIndividualText);
 		} else {
-			rm.write('<div id="'+sId+'-valueStateText" class="sapUiRttValueStateText">');
-			rm.writeEscaped(valueStateText);
+			rm.write('<div id="'+ sId +'-valueStateText" class="sapUiRttValueStateText">');
+			rm.writeEscaped(sValueStateText);
 			rm.write('</div>');
 		}
+		
 		rm.write('</div>');
 		
 		// render a separator between ValueState stuff and text of the RichTooltip
 		rm.write("<div class='sapUiRttSep'></div>");
-	}
+	}	
+	
 	
 	rm.write('<div class="sapUiRttContentContainer">');
 	// render image that might be set

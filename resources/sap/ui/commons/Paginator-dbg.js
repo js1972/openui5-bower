@@ -55,7 +55,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -157,11 +157,11 @@ sap.ui.commons.Paginator.M_EVENTS = {'page':'page'};
 
  * @param {int} oControlEvent.getParameters.srcPage The page which is the current one before the page event is fired (and another page is displayed)
  * @param {int} oControlEvent.getParameters.targetPage The page that shall be displayed next after the page event is fired.
-
-The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.
- * @param {sap.ui.commons.PaginatorEvent} oControlEvent.getParameters.type Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application 
-					how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly 
-					selected
+ * 
+ *         The page number is 1-based: the first page has index 1, not 0, to match the number visible in the UI.
+ * @param {sap.ui.commons.PaginatorEvent} oControlEvent.getParameters.type Provides the values 'First', 'Last', 'Next', 'Previous', 'Goto'. The event parameter informs the application
+ *         how the user navigated to the new page: Whether the 'Next' button was used, or another button, or whether the page was directly
+ *         selected
  * @public
  */
  

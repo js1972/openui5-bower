@@ -31,7 +31,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * <ul>
  * <li>Properties
  * <ul>
- * <li>{@link #getSplitterOrientation splitterOrientation} : sap.ui.commons.Orientation (default: sap.ui.commons.Orientation.Vertical)</li>
+ * <li>{@link #getSplitterOrientation splitterOrientation} : sap.ui.core.Orientation (default: sap.ui.core.Orientation.Vertical)</li>
  * <li>{@link #getSplitterPosition splitterPosition} : sap.ui.core.Percentage (default: '50%')</li>
  * <li>{@link #getMinSizeFirstPane minSizeFirstPane} : sap.ui.core.Percentage (default: '0%')</li>
  * <li>{@link #getMinSizeSecondPane minSizeSecondPane} : sap.ui.core.Percentage (default: '0%')</li>
@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -76,7 +76,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
 	// ---- control specific ----
 	library : "sap.ui.commons",
 	properties : {
-		"splitterOrientation" : {type : "sap.ui.commons.Orientation", group : "Behavior", defaultValue : sap.ui.commons.Orientation.Vertical},
+		"splitterOrientation" : {type : "sap.ui.core.Orientation", group : "Behavior", defaultValue : sap.ui.core.Orientation.Vertical},
 		"splitterPosition" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '50%'},
 		"minSizeFirstPane" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '0%'},
 		"minSizeSecondPane" : {type : "sap.ui.core.Percentage", group : "Behavior", defaultValue : '0%'},
@@ -116,7 +116,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
  *
  * Default value is <code>Vertical</code>
  *
- * @return {sap.ui.commons.Orientation} the value of property <code>splitterOrientation</code>
+ * @return {sap.ui.core.Orientation} the value of property <code>splitterOrientation</code>
  * @public
  * @name sap.ui.commons.Splitter#getSplitterOrientation
  * @function
@@ -127,7 +127,7 @@ sap.ui.core.Control.extend("sap.ui.commons.Splitter", { metadata : {
  *
  * Default value is <code>Vertical</code> 
  *
- * @param {sap.ui.commons.Orientation} oSplitterOrientation  new value for property <code>splitterOrientation</code>
+ * @param {sap.ui.core.Orientation} oSplitterOrientation  new value for property <code>splitterOrientation</code>
  * @return {sap.ui.commons.Splitter} <code>this</code> to allow method chaining
  * @public
  * @name sap.ui.commons.Splitter#setSplitterOrientation
@@ -565,7 +565,7 @@ sap.ui.commons.Splitter.prototype._recalculateInternals = function() {
 	// or in IE: >= the div height (vertical) or  != sbSize (horizontal)
 	// if any above is the case we have to set its height to a fixed pixel value
 	var splitterBarHeight = jQuery(this.splitterBar).height();
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical){
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical){
 		if (splitterBarHeight <= 0 || splitterBarHeight > jQuery(this.splitterDIV).height()){
 			this.fixHeight();
 		}
@@ -593,7 +593,7 @@ sap.ui.commons.Splitter.prototype.resizeSplitterElements = function() {
 	 * Calculate the equivalent percentage of the 4px : the width/height of the splitter bar
 	 */
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 
 		width = jQuery(this.splitterDIV).width();
 		if (width == 0) {
@@ -657,7 +657,7 @@ sap.ui.commons.Splitter.prototype.setSplitterPosition = function(sPos){
 sap.ui.commons.Splitter.prototype.setSplitterBarVisible = function(bVisible){
 	if (this.getDomRef()) {
 		this.setProperty("splitterBarVisible", bVisible, true);
-		var sClassPrefix = this.getSplitterOrientation() === sap.ui.commons.Orientation.Vertical ? "sapUiVertical" : "sapUiHorizontal";
+		var sClassPrefix = this.getSplitterOrientation() === sap.ui.core.Orientation.Vertical ? "sapUiVertical" : "sapUiHorizontal";
 		if (bVisible) {
 			jQuery.sap.byId(this.getId() + "_SB").removeClass(sClassPrefix + "SplitterBarHidden").addClass(sClassPrefix + "SplitterBar");
 		} else {
@@ -703,7 +703,7 @@ sap.ui.commons.Splitter.prototype.fixHeight = function() {
 	
 	// reset the splitter div height so that its contents fit inside...
 	jQuery(this.splitterDIV).css("height", splitterHeight + "px");
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		jQuery(this.splitterBar).css("height", splitterHeight + "px");
 	}
 	var oParent = this.splitterDIV.parentNode;
@@ -750,14 +750,14 @@ sap.ui.commons.Splitter.prototype.onresizespecial = function(oEvent) {
 	if (currentHeight != parentHeight){
 		// set bar height to the splitterDIV height value
 		$Splitter.css("height", parentHeight + "px");
-		if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+		if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 			jQuery(this.splitterBar).css("height", parentHeight + "px");
 		}
 	}
 	// if there is no parent height set the old height again. This might be the case if the parent doesn't have a height yet...
 	if (parentHeight <= 0) {
 		$Splitter.css("height", oldHeight + "px");
-		if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+		if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 			jQuery(this.splitterBar).css("height", oldHeight + "px");
 		}
 	}
@@ -782,7 +782,7 @@ sap.ui.commons.Splitter.prototype.onmousedown = function(oEvent) {
 	var cssClass;
 	var rtl = sap.ui.getCore().getConfiguration().getRTL();
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		cssClass = "sapUiVSBGhost";
 	}
 	else {
@@ -837,7 +837,7 @@ sap.ui.commons.Splitter.prototype.onGhostMouseRelease = function(oEvent) {
 	var splitterBarGhost = jQuery.sap.domById(this.getId() + "_ghost");
 	var rtl = sap.ui.getCore().getConfiguration().getRTL();
 
-	if ( this.spOrientation == sap.ui.commons.Orientation.Vertical){
+	if ( this.spOrientation == sap.ui.core.Orientation.Vertical){
 
 		if (!rtl)
 		{
@@ -891,7 +891,7 @@ sap.ui.commons.Splitter.prototype.onGhostMouseMove = function(oEvent) {
 	var w = jQuery(this.splitterDIV).width();
 	var leftSecondPane = jQuery(this.secondPane).offset().left;
 
-	if (this.getSplitterOrientation() == sap.ui.commons.Orientation.Vertical) {
+	if (this.getSplitterOrientation() == sap.ui.core.Orientation.Vertical) {
 
 		if (!rtl) {
 
@@ -972,7 +972,7 @@ sap.ui.commons.Splitter.prototype.onsapend = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onArrowKeys = function(oEvent,oInc) {
 	var width, height, sbSize, sbPosition, newSbPosition;
 
-	if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+	if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 		width = jQuery(this.splitterDIV).width();
 		sbPosition = jQuery(this.firstPane).width();
 		sbPosition = (sbPosition * 100) / width;
@@ -1012,7 +1012,7 @@ sap.ui.commons.Splitter.prototype.onsapupmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
 			
-			if (this.spOrientation == sap.ui.commons.Orientation.Horizontal) {
+			if (this.spOrientation == sap.ui.core.Orientation.Horizontal) {
 				this.onArrowKeys(oEvent,"false");
 			} else {
 				// move vertical splitter left
@@ -1034,7 +1034,7 @@ sap.ui.commons.Splitter.prototype.onsapupmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsapdownmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Horizontal) {
+			if (this.spOrientation == sap.ui.core.Orientation.Horizontal) {
 				this.onArrowKeys(oEvent,"true");				
 			} else {
 				// move vertical splitter right
@@ -1054,7 +1054,7 @@ sap.ui.commons.Splitter.prototype.onsapdownmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsapleftmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)){
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Vertical) {
+			if (this.spOrientation == sap.ui.core.Orientation.Vertical) {
 				var rtl = sap.ui.getCore().getConfiguration().getRTL();
 				if (rtl) {
 					this.onArrowKeys(oEvent,"true");
@@ -1080,7 +1080,7 @@ sap.ui.commons.Splitter.prototype.onsapleftmodifiers = function(oEvent) {
 sap.ui.commons.Splitter.prototype.onsaprightmodifiers = function(oEvent) {
 	if (this.checkModifierKey(oEvent, false, false, true)) {
 		if (oEvent.target == this.splitterBar){
-			if (this.spOrientation == sap.ui.commons.Orientation.Vertical){
+			if (this.spOrientation == sap.ui.core.Orientation.Vertical){
 				var rtl = sap.ui.getCore().getConfiguration().getRTL();
 				if (rtl) {
 					this.onArrowKeys(oEvent,"false");

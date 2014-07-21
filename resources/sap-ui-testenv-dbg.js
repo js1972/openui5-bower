@@ -421,8 +421,8 @@ sap.ui.define("jquery.sap.strings",['jquery.sap.global'],
 	 *            closing curly brace. Nested placeholdes are not accepted!
 	 * Group 4: captures any remaining curly braces and indicates syntax errors
 	 *
-	 * @private
 	 *                    [-1] [----- quoted string -----] [------ placeholder ------] [--]
+	 * @private
 	 */
 	var rMessageFormat = /('')|'([^']+(?:''[^']*)*)(?:'|$)|\{([0-9]+(?:\s*,[^{}]*)?)\}|[{}]/g;
 
@@ -445,7 +445,7 @@ sap.ui.define("sap/ui/test/ControlTree",['jquery.sap.global', 'sap/ui/core/Eleme
 	 *
 	 * @class Control Tree used for the Test Environment
 	 * @author SAPUI5 Designtime
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {sap.ui.core.Core}
 	 *            oCore the core instance to use for analysis
@@ -596,7 +596,7 @@ sap.ui.define("sap/ui/test/TestEnv",['jquery.sap.global', 'sap/ui/debug/Highligh
 	 * @class Central Class for the Test Environment
 	 *
 	 * @author SAPUI5 Designtime
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @private
 	 * @name sap.ui.test.TestEnv

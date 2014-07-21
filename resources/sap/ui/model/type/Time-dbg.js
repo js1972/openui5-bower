@@ -19,7 +19,7 @@ sap.ui.define(['jquery.sap.global', './Date'],
 	 * @extends sap.ui.model.type.Date
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -30,7 +30,7 @@ sap.ui.define(['jquery.sap.global', './Date'],
 	 * @param {object} [oConstraints] value constraints. Supports the same kind of constraints as its base type Date, but note the different format options (Date vs. Time) 
 	 * @name sap.ui.model.type.Time
 	 */
-	var Time = Date.extend("sap.ui.model.type.Time", /** @lends sap.ui.model.type.Time */ {
+	var Time = Date.extend("sap.ui.model.type.Time", /** @lends sap.ui.model.type.Time.prototype */ {
 		
 		constructor : function () {
 			Date.apply(this, arguments);

@@ -39,7 +39,11 @@ sap.m.ProgressIndicatorRenderer.render = function(oRm, oC) {
 	if (fWidthBar > 50) {
 		oRm.addClass("sapMPIValueGreaterHalf");
 	}
-	oRm.writeAttribute("style", "width:" + iWidthControl + "; height:" + iHeightControl);
+	oRm.addStyle("width", iWidthControl);
+	if(iHeightControl){
+		oRm.addStyle("height", iHeightControl);
+	}
+	oRm.writeStyles();
 
 	if (oC.getEnabled()) {
 		oRm.writeAttribute('tabIndex', '-1');

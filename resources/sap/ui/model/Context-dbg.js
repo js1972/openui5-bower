@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * @public
 	 * @name sap.ui.model.Context
 	 */
-	var Context = sap.ui.base.Object.extend("sap.ui.model.Context", /** @lends sap.ui.model.Context */ {
+	var Context = sap.ui.base.Object.extend("sap.ui.model.Context", /** @lends sap.ui.model.Context.prototype */ {
 		
 		constructor : function(oModel, sPath){
 	

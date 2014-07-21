@@ -30,12 +30,12 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 	 * @class Base Class for UI Component.
 	 * @extends sap.ui.core.Component
 	 * @abstract
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @name sap.ui.core.UIComponent
-	 * @experimental Since 1.9.2. The Component concept is still under construction, so some implementation details can be changed in future.
+	 * @since 1.9.2
 	 */
-	var UIComponent = Component.extend("sap.ui.core.UIComponent", /** @lends sap.ui.core.UIComponent */
+	var UIComponent = Component.extend("sap.ui.core.UIComponent", /** @lends sap.ui.core.UIComponent.prototype */
 	
 	{
 		constructor : function(sId, mSettings) {
@@ -215,7 +215,6 @@ sap.ui.define(['jquery.sap.global', './Component', './UIComponentMetadata', './m
 	 * prefixing.
 	 * 
 	 * @since 1.15.1
-	 * @experimental Since 1.15.1. This feature might be changed in future.
 	 * @return {boolean} true, if the controls IDs should be prefixed automatically
 	 * @protected
 	 * @name sap.ui.core.UIComponent#getAutoPrefixId

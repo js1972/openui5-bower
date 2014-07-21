@@ -9,8 +9,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	function(jQuery, Device, Global, DataType, EventProvider, Component, Configuration, Control, Element, ElementMetadata, FocusHandler, RenderManager, ResizeHandler, ThemeCheck, UIArea, Template/* , jQuerySap6, jQuerySap, jQuerySap1, jQuerySap2, jQuerySap3, jQuerySap4, jQuerySap5 */) {
 	"use strict";
 
-
-	
 	/**
 	 * @class Core Class of the SAP UI Library.
 	 *
@@ -32,13 +30,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	 *
 	 * @extends sap.ui.base.EventProvider
 	 * @final
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @constructor
 	 * @name sap.ui.core.Core 
 	 * @public
 	 */
-	var Core = EventProvider.extend("sap.ui.core.Core", /** @lends sap.ui.core.Core */ {
+	var Core = EventProvider.extend("sap.ui.core.Core", /** @lends sap.ui.core.Core.prototype */ {
 		constructor : function() {
 		
 			//make this class only available once
@@ -87,7 +85,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 			/**
 			 * Currently created UIAreas keyed by their id.
 			 * @private
-			 * FIXME how can a UI area ever be removed?
+			 * @todo FIXME how can a UI area ever be removed?
 			 */
 			this.mUIAreas = {};
 		
@@ -110,7 +108,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 			 * destroy method.
 			 *
 			 * @private
-			 * TODO get rid of this collection as it represents a candidate for memory leaks
+			 * @todo get rid of this collection as it represents a candidate for memory leaks
 			 */
 			this.mElements = {};
 		
@@ -122,7 +120,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 			 * destroy method.
 			 * 
 			 * @private
-			 * TODO get rid of this collection as it represents a candidate for memory leaks
+			 * @todo get rid of this collection as it represents a candidate for memory leaks
 			 */
 			this.mObjects = {
 				"component": {}, 
@@ -555,14 +553,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	Core.prototype._updateThemeUrls = function(sThemeName) {
 		var that = this,
 		sRTL = this.oConfiguration.getRTL() ? "-RTL" : "";
-	
 		// select "our" stylesheets
 		jQuery("link[id^=sap-ui-theme-]").each(function() {
 			var sLibName = this.id.slice(13), // length of "sap-ui-theme-"
 				sLibFileName = this.href.slice(this.href.lastIndexOf("/") + 1),
 				sStandardLibFilePrefix = "library", 
 				sHref,
-				pos;
+				pos,
+				$this = jQuery(this);
 			
 			// handle 'variants'
 			if ((pos = sLibName.indexOf("-[")) > 0) { // assumes that "-[" does not occur as part of a library name
@@ -575,11 +573,16 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 				sLibFileName = sStandardLibFilePrefix + sRTL + ".css"; 
 			}
 			
+			// remove additional css files (ie9 rule limit fix)
+			if ($this.attr("sap-ui-css-count")) {
+				$this.remove();
+			}
+
 			// set new URL
 			sHref = that._getThemePath(sLibName, sThemeName) + sLibFileName
 			if ( sHref != this.href ) {
 				this.href = sHref;
-				jQuery(this).removeAttr("sap-ui-ready");
+				$this.removeAttr("sap-ui-ready");
 			}
 		});
 	};
@@ -786,7 +789,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 			jQuery.each(aCallbacks, function(i,f) { f(); }); 
 		}
 	
-		this._rerenderAllUIAreas(); // directly render without setTimeout, so rendering is guaranteed to be finished when init() ends
+		this.renderPendingUIUpdates(); // directly render without setTimeout, so rendering is guaranteed to be finished when init() ends
 	};
 	
 	/**
@@ -1273,6 +1276,37 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	};
 	
 	/**
+	 * Retrieves a resource bundle for the given library and locale.
+	 *
+	 * If only one argument is given, it is assumed to be the libraryName. The locale
+	 * then falls back to the current {@link sap.ui.core.Configuration.prototype.getLanguage session locale}.
+	 * If no argument is given, the library also falls back to a default: "sap.ui.core".
+	 *
+	 * @param {string} [sLibraryName='sap.ui.core'] name of the library to retrieve the bundle for
+	 * @param {string} [sLocale] locale to retrieve the resource bundle for
+	 * @return {jQuery.sap.util.ResourceBundle} the best matching resource bundle for the given parameters or undefined
+	 * @public
+	 * @name sap.ui.core.Core#getLibraryResourceBundle
+	 * @function
+	 */
+	Core.prototype.getLibraryResourceBundle = function(sLibraryName, sLocale) {
+		jQuery.sap.assert((sLibraryName === undefined && sLocale === undefined) || typeof sLibraryName === "string", "sLibraryName must be a string or there is no argument given at all");
+		jQuery.sap.assert(sLocale === undefined || typeof sLocale === "string", "sLocale must be a string or omitted");
+	
+		// TODO move implementation together with similar stuff to a new class "UILibrary"?
+		sLibraryName = sLibraryName || "sap.ui.core";
+		sLocale = sLocale || this.getConfiguration().getLanguage();
+		var sKey = sLibraryName + "/" + sLocale;
+		if (!this.mResourceBundles[sKey]) {
+			var sURL = sap.ui.resource(sLibraryName, 'messagebundle.properties');
+			this.mResourceBundles[sKey] = jQuery.sap.resources({url : sURL, locale : sLocale});
+		}
+		return this.mResourceBundles[sKey];
+	};
+
+	// ---- UIArea and Rendering -------------------------------------------------------------------------------------
+
+	/**
 	 * Implicitly creates a new <code>UIArea</code> (or reuses an exiting one) for the given DOM reference and
 	 * adds the given control reference to the UIAreas content (existing content will be removed).
 	 *
@@ -1368,7 +1402,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	
 		return null;
 	};
-	
+
+	// share the rendering log with the UIArea
+	var oRenderLog = UIArea._oRenderLog;
+
 	/**
 	 * Informs the core about an UIArea that just became invalid.
 	 *
@@ -1383,87 +1420,94 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	 * @function
 	 */
 	Core.prototype.addInvalidatedUIArea = function(oUIArea) {
-		this.rerenderAllUIAreas(); // TODO: document why immediately rerender all??
+		if ( !this._sRerenderTimer ) {
+			oRenderLog.debug("Registering timer for delayed re-rendering");
+			this._sRerenderTimer = jQuery.sap.delayedCall(0,this,"renderPendingUIUpdates"); // decoupled for collecting several invalidations into one redraw
+		}
 	};
+
+	Core.MAX_RENDERING_ITERATIONS = 20;
 	
 	/**
-	 * Retrieves a resource bundle for the given library and locale.
-	 *
-	 * If only one argument is given, it is assumed to be the libraryName. The locale
-	 * then falls back to the current {@link sap.ui.core.Configuration.prototype.getLanguage session locale}.
-	 * If no argument is given, the library also falls back to a default: "sap.ui.core".
-	 *
-	 * @param {string} [sLibraryName='sap.ui.core'] name of the library to retrieve the bundle for
-	 * @param {string} [sLocale] locale to retrieve the resource bundle for
-	 * @return {jQuery.sap.util.ResourceBundle} the best matching resource bundle for the given parameters or undefined
-	 * @public
-	 * @name sap.ui.core.Core#getLibraryResourceBundle
-	 * @function
+	 * Asks all UIAreas to execute any pending rendering tasks.
+	 * 
+	 * The execution of rendering tasks might require multiple iterations
+	 * until either no more rendering tasks are produced or until 
+	 * MAX_RENDERING_ITERATIONS are reached. 
+	 * 
+	 * With a value of MAX_RENDERING_ITERATIONS=0 the loop can be avoided
+	 * and the remaining tasks are executed after another timeout. 
+	 * 
+	 * @private
 	 */
-	Core.prototype.getLibraryResourceBundle = function(sLibraryName, sLocale) {
-		jQuery.sap.assert((sLibraryName === undefined && sLocale === undefined) || typeof sLibraryName === "string", "sLibraryName must be a string or there is no argument given at all");
-		jQuery.sap.assert(sLocale === undefined || typeof sLocale === "string", "sLocale must be a string or omitted");
-	
-		// TODO move implementation together with similar stuff to a new class "UILibrary"?
-		sLibraryName = sLibraryName || "sap.ui.core";
-		sLocale = sLocale || this.getConfiguration().getLanguage();
-		var sKey = sLibraryName + "/" + sLocale;
-		if (!this.mResourceBundles[sKey]) {
-			var sURL = sap.ui.resource(sLibraryName, 'messagebundle.properties');
-			this.mResourceBundles[sKey] = jQuery.sap.resources({url : sURL, locale : sLocale});
-		}
-		return this.mResourceBundles[sKey];
-	};
-	
-	Core.prototype.rerenderAllUIAreas = function() {
-		if ( !this._sRerenderTimer ) {
-			jQuery.sap.log.info("registering timer for delayed re-rendering");
-			this._sRerenderTimer = jQuery.sap.delayedCall(0,this,"_rerenderAllUIAreas"); // decoupled for collecting several invalidations into one redraw
-		}
-	};
-	
-	Core.prototype._rerenderAllUIAreas = function() {
+	Core.prototype.renderPendingUIUpdates = function() {
 	
 		// start performance measurement
-		jQuery.sap.measure.start("rerenderAllUIAreas","Rerendering of all UIAreas");
+		oRenderLog.debug("Render pending UI updates: start");
+		
+		jQuery.sap.measure.start("renderPendingUIUpdates","Render pending UI updates in all UIAreas");
 	
-		// clear the timer so that the next call to re-render will create a new timer
-		if (this._sRerenderTimer) {
-			jQuery.sap.clearDelayedCall(this._sRerenderTimer); // explicitly stop the timer, as this call might be synchronous while still a timer is running
-			this._sRerenderTimer = undefined;
-		}
-	
-		var bUIUpdated = false;
-		// avoid 'concurrent modifications' as IE8 can't handle them
-		var mUIAreas = this.mUIAreas;
-		for (var sId in mUIAreas) {
-			bUIUpdated = mUIAreas[sId].rerender() || bUIUpdated;
-		}
-	
-		// TODO this only covers parts of the relevant changes, 
-		// A full solution requires changes in UIArea.rerender, see TODO about rendering infos there
-		jQuery.sap.assert(!this._sRerenderTimer, "invalidate() while rendering");
-	
+		var bUIUpdated = false,
+			bLooped = Core.MAX_RENDERING_ITERATIONS > 0,
+			iLoopCount = 0;
+
+		this._bRendering = true;
+		
+		do {
+			
+			if ( bLooped ) {
+				// try to detect long running ('endless') rendering loops
+				iLoopCount++;
+				// if we run another iteration despite the tracking mode, we complain ourselves 
+				if ( iLoopCount > Core.MAX_RENDERING_ITERATIONS ) {
+					this._bRendering = false;
+					throw new Error("Rendering has been re-started too many times (" + iLoopCount + "). Add URL parameter sap-ui-xx-debugRendering=true for a detailed analysis.");
+				}
+				
+				if ( iLoopCount > 1 ) {
+					oRenderLog.debug("Render pending UI updates: iteration " + iLoopCount);
+				}
+			}
+			
+			// clear a pending timer so that the next call to re-render will create a new timer
+			if (this._sRerenderTimer) {
+				jQuery.sap.clearDelayedCall(this._sRerenderTimer); // explicitly stop the timer, as this call might be a synchronous call (applyChanges) while still a timer is running
+				this._sRerenderTimer = undefined;
+			}
+		
+			// avoid 'concurrent modifications' as IE8 can't handle them
+			var mUIAreas = this.mUIAreas;
+			for (var sId in mUIAreas) {
+				bUIUpdated = mUIAreas[sId].rerender() || bUIUpdated;
+			}
+		
+		} while ( bLooped && this._sRerenderTimer ); // iterate if there are new rendering tasks
+
+		this._bRendering = false;
+
 		// TODO: Provide information on what actually was re-rendered...
-		if(bUIUpdated) {
+		if (bUIUpdated) {
 			this.fireUIUpdated();
 		}
-	
+
+		oRenderLog.debug("Render pending UI updates: finished");
+
 		// end performance measurement
-		jQuery.sap.measure.end("rerenderAllUIAreas");
+		jQuery.sap.measure.end("renderPendingUIUpdates");
 	};
 	
 	
 	/**
-	 * Returns "true" if the UI is marked as dirty and will be cleaned/re-rendered after a certain small timeout.
+	 * Returns <code>true</code> if there are any pending rendering tasks or when 
+	 * such rendering tasks are currently being executed.
 	 *
-	 * @return {boolean} true if some UI part is marked as dirty and will be cleaned up/re-rendered
+	 * @return {boolean} true if there are pending (or executing) rendering tasks.
 	 * @public
 	 * @name sap.ui.core.Core#getUIDirty
 	 * @function
 	 */
 	Core.prototype.getUIDirty = function() {
-		return !!this._sRerenderTimer;
+		return !!(this._sRerenderTimer || this._bRendering);
 	};
 	
 	/**
@@ -1702,7 +1746,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device', 'sap/ui/Global', 'sap/ui/ba
 	 * @function
 	 */
 	Core.prototype.applyChanges = function() {
-		this._rerenderAllUIAreas();
+		this.renderPendingUIUpdates();
 	};
 	
 	/**

@@ -87,7 +87,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -609,8 +609,8 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 /**
  * Getter for property <code>growingTriggerText</code>.
- * This text is displayed on the trigger button which is responsible to load new page at the end of the list. The default is a translated text ("Load More Data") coming from the message bundle.
- * This property can be used only if "growing" property is set "true" and scrollToLoad property is set "false".
+ * This text is displayed on the trigger button which is responsible to load new page at the end of the list. The default is a translated text ("More") coming from the message bundle.
+ * This property can be used only if "growing" property is set "true"
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -1158,7 +1158,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * Fire event swipe to attached listeners.
  *
  * Listeners may prevent the default action of this event using the preventDefault-method on the event object.
- * * 
+ * 
  * Expects following event parameters:
  * <ul>
  * <li>'listItem' of type <code>sap.m.ListItemBase</code> The listitem which fired the swipe.</li>
@@ -1331,7 +1331,8 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 
 /**
- * This event is called before binding is updated. 
+ * This event is called before items binding is updated.
+ * Note: Event handler should not invalidate the control. 
  *
  * @name sap.m.ListBase#updateStarted
  * @event
@@ -1351,7 +1352,8 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ListBase</code>.<br/> itself. 
  *  
- * This event is called before binding is updated. 
+ * This event is called before items binding is updated.
+ * Note: Event handler should not invalidate the control. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -1403,7 +1405,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
 
 
 /**
- * This event is called after binding and DOM is updated. 
+ * This event is called after items binding and afterwards related DOM is updated. 
  *
  * @name sap.m.ListBase#updateFinished
  * @event
@@ -1423,7 +1425,7 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
  * otherwise to this <code>sap.m.ListBase</code>.<br/> itself. 
  *  
- * This event is called after binding and DOM is updated. 
+ * This event is called after items binding and afterwards related DOM is updated. 
  *
  * @param {object}
  *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
@@ -1486,8 +1488,8 @@ sap.m.ListBase.M_EVENTS = {'select':'select','selectionChange':'selectionChange'
  * @param {object} oControlEvent.getParameters
 
  * @param {sap.m.ListItemBase} oControlEvent.getParameters.listItem The list item which fired the pressed event.
-NOTE: This event is fired also for "GroupHeaderListItem" which does not have binding context.
-					
+ *         NOTE: This event is fired also for "GroupHeaderListItem" which does not have binding context.
+ * 
  * @param {sap.ui.core.Control} oControlEvent.getParameters.srcControl The control which caused the press event within the container.
  * @public
  */
@@ -1613,8 +1615,7 @@ NOTE: This event is fired also for "GroupHeaderListItem" which does not have bin
  * @function
  * @param {boolean} 
  *         bAll
-
- * @since 1.16.3 *         This control keeps old selections after filter or sorting. Set this parameter "true" to remove all selections.
+ *         Since version 1.16.3. This control keeps old selections after filter or sorting. Set this parameter "true" to remove all selections.
 
  * @type sap.m.ListBase
  * @public
@@ -1681,7 +1682,7 @@ NOTE: This event is fired also for "GroupHeaderListItem" which does not have bin
  * @param {boolean} 
  *         bAll
  *         Set true to include even invisible selected items(e.g. the selections from the previous filters).
- * Note: In single selection modes, only the last selected item's binding context is returned in array.
+ *         Note: In single selection modes, only the last selected item's binding context is returned in array.
 
  * @type object[]
  * @public
@@ -1730,7 +1731,7 @@ sap.m.ListBase.prototype.exit = function () {
 
 // this gets called only with oData Model when first load or filter/sort
 sap.m.ListBase.prototype.refreshItems = function(sReason) {
-	// show the loading mask first
+	// show loading mask first
 	this._showBusyIndicator();
 
 	if (this._oGrowingDelegate) {
@@ -1746,7 +1747,7 @@ sap.m.ListBase.prototype.refreshItems = function(sReason) {
 		}
 
 		// for flat list get all data
-		this.getBinding("items").getContexts();
+		this.refreshAggregation("items");
 	}
 };
 
@@ -2564,7 +2565,7 @@ sap.m.ListBase.prototype.getSwipedItem = function() {
 sap.m.ListBase.prototype.setSwipeContent = function(oControl) {
 	this._bRerenderSwipeContent = true;
 
-	this.addStyleClass("sapMListSwipable");
+	this.toggleStyleClass("sapMListSwipable", !!oControl);
 
 	// prevent list from re-rendering on setSwipeContent
 	return this.setAggregation("swipeContent", oControl, true);

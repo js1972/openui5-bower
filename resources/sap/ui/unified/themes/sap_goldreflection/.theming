@@ -1,4 +1,5 @@
 {
   "sEntity" : "Theme",
-  "sId" : "base"
+  "sId" : "sap_goldreflection",
+  "oExtends" : "UI5.sap/ui/unified.base"
 }

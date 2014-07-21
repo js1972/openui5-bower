@@ -60,8 +60,8 @@ sap.ui.define(['./library','./Control'], function() {
  * For further hints about usage restrictions for this control, see also the documentation of the 'content' property.
  * @extends sap.ui.core.Control
  *
- * @author Frank Weigel 
- * @version 1.20.10
+ * @author SAP AG 
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -133,9 +133,9 @@ sap.ui.core.HTML.M_EVENTS = {'afterRendering':'afterRendering'};
  * @param {string} sContent  new value for property <code>content</code>
  * @return {sap.ui.core.HTML} <code>this</code> to allow method chaining
  * @public
- * @SecSink {,XSS} The content of the 'content' property is rendered 1:1 to allow the full flexibility of HTML in UI5 applications. 
-		Applications therefore must ensure, that they don't set malicious content (e.g. derived from user input). UI5 does not provide an HTML validation function. 
-		jQuery.sap.encodeHTML will encode any HTML relevant character, but this is in nearly all cases not what applications want here.
+ * @SecSink {,XSS} The content of the 'content' property is rendered 1:1 to allow the full flexibility of HTML in UI5 applications.
+ * Applications therefore must ensure, that they don't set malicious content (e.g. derived from user input). UI5 does not provide an HTML validation function.
+ * jQuery.sap.encodeHTML will encode any HTML relevant character, but this is in nearly all cases not what applications want here.
  * @name sap.ui.core.HTML#setContent
  * @function
  */

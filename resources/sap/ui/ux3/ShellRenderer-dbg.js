@@ -67,13 +67,8 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 
 	// write header
 	rm.write("<img id='" + sId + "-hdrImg' class='sapUiUx3ShellHeaderImg' src='");
-	var sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellHeaderImageURL');
-	sImage = oControl._convertImageParameter(sImage);
-	if (sImage) {
-		rm.writeEscaped(sImage);
-	} else {
-		rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	var sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellHeaderImageURL', true);
+	rm.writeEscaped(sImage);
 	rm.write("' />");
 	rm.write("<header id='" + sId + "-hdr' class='sapUiUx3ShellHeader' role='banner'>");
 	var tabIndex = oControl._topSyncRefId ? " tabindex='0'" : "";
@@ -87,13 +82,8 @@ sap.ui.ux3.ShellRenderer.render = function(oRenderManager, oControl) {
 	// write page background
 	rm.write("<div id='", sId, "-bg' class='sapUiUx3ShellBg'></div>");
 	rm.write("<img id='", sId, "-bgImg' class='sapUiUx3ShellBgImg' src='");
-	sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellBackgroundImageURL');
-	sImage = oControl._convertImageParameter(sImage);
-	if (sImage) {
-		rm.writeEscaped(sImage);
-	} else {
-		rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-	}
+	sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellBackgroundImageURL', true);
+	rm.writeEscaped(sImage);
 	rm.write("'/>");
 
 
@@ -188,13 +178,8 @@ sap.ui.ux3.ShellRenderer.renderHeader = function(rm, oControl) {
 	if (appIcon) {
 		rm.writeEscaped(oControl.getAppIcon());
 	} else {
-		var sImage = sap.ui.core.theming.Parameters.get('sapUiUx3ShellApplicationImageURL');
-		sImage = oControl._convertImageParameter(sImage);
-		if (sImage) {
-			rm.writeEscaped(sImage);
-		} else {
-			rm.write(sap.ui.resource('sap.ui.core', 'themes/base/img/1x1.gif'));
-		}
+		var sImage = sap.ui.core.theming.Parameters._getThemeImage('sapUiUx3ShellApplicationImageURL', true);
+		rm.writeEscaped(sImage);
 	}
 	rm.write("'");
 

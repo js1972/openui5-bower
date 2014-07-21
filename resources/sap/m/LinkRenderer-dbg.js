@@ -31,6 +31,14 @@ sap.m.LinkRenderer.render = function(rm, oControl) {
 	rm.writeControlData(oControl);
 
 	rm.addClass("sapMLnk");
+	if(oControl.getSubtle()){
+		rm.addClass("sapMLnkSubtle");
+	}
+
+	if(oControl.getEmphasized()){
+		rm.addClass("sapMLnkEmphasized");
+	}
+
 	if (!oControl.getEnabled()) {
 		rm.addClass("sapMLnkDsbl");
 		rm.writeAttribute("disabled", "true");

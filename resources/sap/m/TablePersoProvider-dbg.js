@@ -19,7 +19,7 @@ jQuery.sap.require("sap.ui.base.ManagedObject");
  * @extends sap.ui.base.ManagedObject
  * @abstract
  * @author SAP
- * @version 1.20.10
+ * @version 1.22.4
  * @name sap.m.TablePersoProvider
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoProvider", /** @lends sap.m.TablePersoProvider */
@@ -100,12 +100,42 @@ sap.m.TablePersoProvider.prototype.delPersData = function() {
  * If the callback delivers null for a column (which is the default implementation), the default
  * texts described above are displayed for that column in the TablePersoDialog. 
  * 
- * In case neither the callback delovers null and neither 'text' nor ' title' property are at hand,
+ * In case neither the callback delivers null and neither 'text' nor ' title' property are at hand,
  * the TablePersoDialog will display the column id and a warning message is logged.
  * 
- * @param oColumn column control instance whose caption shall be determined
+ * @param oColumn sap.m.Column control instance whose caption shall be determined
  * @public
  */
 sap.m.TablePersoProvider.prototype.getCaption = function(oColumn) {
 	return null;
 };
+
+/**
+ * Callback function which can be used to determine the group of a given column
+ * within the TablePersoDialog. As a default, the columns are not assigned to a group. 
+ * 
+ * This information is used to group the columns within the TablePersoDialog if the TablePersoController's
+ * 'group' flag is set, otherwise, the groups are ignored. 
+ * 
+ * @param oColumn sap.m.Column control instance whose group shall be determined
+ * @public
+ */
+sap.m.TablePersoProvider.prototype.getGroup = function(oColumn) {
+	return null;
+};
+
+
+/**
+* Resets user’s personalization for a given table so that ‘getPersData’ will
+* deliver its initial state. If no table is specified, all personalizations
+* of the currently logged on user are reset.
+*
+* This must return a jQuery promise (see http://api.jquery.com/promise/)
+ * @public
+*/
+sap.m.TablePersoProvider.prototype.resetPersData = function() {
+
+	jQuery.sap.log.debug("TablePersoProvider resetPersData");
+
+};
+

@@ -19,7 +19,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	 * @extends sap.ui.model.SimpleType
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @constructor
 	 * @public
@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	 * @param {object} [oConstraints] value constraints. Boolean doesn't support additional constraints
 	 * @name sap.ui.model.type.Boolean
 	 */
-	var Boolean = SimpleType.extend("sap.ui.model.type.Boolean", /** @lends sap.ui.model.type.Boolean */ {
+	var Boolean = SimpleType.extend("sap.ui.model.type.Boolean", /** @lends sap.ui.model.type.Boolean.prototype */ {
 		
 		constructor : function () {
 			SimpleType.apply(this, arguments);

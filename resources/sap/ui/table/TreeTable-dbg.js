@@ -59,7 +59,7 @@ jQuery.sap.require("sap.ui.table.Table");
  * @extends sap.ui.table.Table
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -298,6 +298,19 @@ sap.ui.table.TreeTable.M_EVENTS = {'toggleOpenState':'toggleOpenState'};
 sap.ui.table.TreeTable.prototype.init = function() {
 	sap.ui.table.Table.prototype.init.apply(this, arguments);
 	this._iLastFixedColIndex = 0;
+	
+	// adopting properties and load icon fonts for bluecrystal
+	if (sap.ui.getCore().getConfiguration().getTheme() === "sap_bluecrystal") {
+	
+		// add the icon fonts
+		jQuery.sap.require("sap.ui.core.IconPool");
+		sap.ui.core.IconPool.insertFontFaceStyle();
+		
+		// defaulting the rowHeight
+		this.setRowHeight(32);
+		
+	}
+	
 };
 
 

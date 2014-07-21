@@ -357,7 +357,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.suite.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.suite (1.20.10)
+ * Initialization Code and shared classes of library sap.ui.suite (1.22.4)
  */
 jQuery.sap.declare("sap.ui.suite.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -388,7 +388,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.suite.VerticalProgressIndicator"
   ],
   elements: [],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -408,37 +408,37 @@ jQuery.sap.declare("sap.ui.suite.TaskCircleColor");
 /**
  * @class Defined color values for the Task Circle Control
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.ui.suite.TaskCircleColor = {
-  
-    /**
-     * Red 
-     * @public
-     */
-    Red : "Red",
 
-    /**
-     * Yellow 
-     * @public
-     */
-    Yellow : "Yellow",
+	/**
+	 * Red
+	 * @public
+	 */
+	Red : "Red",
 
-    /**
-     * Green 
-     * @public
-     */
-    Green : "Green",
+	/**
+	 * Yellow
+	 * @public
+	 */
+	Yellow : "Yellow",
 
-    /**
-     * Default value 
-     * @public
-     */
-    Gray : "Gray"
+	/**
+	 * Green
+	 * @public
+	 */
+	Green : "Green",
 
-  };
+	/**
+	 * Default value
+	 * @public
+	 */
+	Gray : "Gray"
+
+};
 
 }; // end of sap/ui/suite/library.js
 if ( !jQuery.sap.isDeclared('sap.ui.suite.TaskCircle') ) {
@@ -504,7 +504,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author Svetozar Buzdumovic 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -780,7 +780,7 @@ sap.ui.suite.TaskCircle.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.suite.TaskCircle} <code>this</code> to allow method chaining
  * @protected
@@ -895,7 +895,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author Svetozar Buzdumovic 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -1093,7 +1093,7 @@ sap.ui.suite.VerticalProgressIndicator.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.suite.VerticalProgressIndicator} <code>this</code> to allow method chaining
  * @protected

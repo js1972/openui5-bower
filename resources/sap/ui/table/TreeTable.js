@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 jQuery.sap.declare("sap.ui.table.TreeTable");jQuery.sap.require("sap.ui.table.library");jQuery.sap.require("sap.ui.table.Table");sap.ui.table.Table.extend("sap.ui.table.TreeTable",{metadata:{publicMethods:["expand","collapse","isExpanded"],library:"sap.ui.table",properties:{"expandFirstLevel":{type:"boolean",group:"",defaultValue:false},"useGroupMode":{type:"boolean",group:"Appearance",defaultValue:false},"groupHeaderProperty":{type:"string",group:"Data",defaultValue:null}},events:{"toggleOpenState":{}}}});sap.ui.table.TreeTable.M_EVENTS={'toggleOpenState':'toggleOpenState'};
-sap.ui.table.TreeTable.prototype.init=function(){sap.ui.table.Table.prototype.init.apply(this,arguments);this._iLastFixedColIndex=0};
+sap.ui.table.TreeTable.prototype.init=function(){sap.ui.table.Table.prototype.init.apply(this,arguments);this._iLastFixedColIndex=0;if(sap.ui.getCore().getConfiguration().getTheme()==="sap_bluecrystal"){jQuery.sap.require("sap.ui.core.IconPool");sap.ui.core.IconPool.insertFontFaceStyle();this.setRowHeight(32)}};
 sap.ui.table.TreeTable.prototype.setFixedRowCount=function(r){jQuery.sap.log.warning("TreeTable: the property \"fixedRowCount\" is not supported and will be ignored!");return this};
 sap.ui.table.TreeTable.prototype.onAfterRendering=function(){sap.ui.table.Table.prototype.onAfterRendering.apply(this,arguments);this.$().find("[role=grid]").attr("role","treegrid")};
 sap.ui.table.TreeTable.prototype.isTreeBinding=function(n){n=n||"rows";if(n==="rows"){return true}return sap.ui.core.Element.prototype.isTreeBinding.apply(this,n)};

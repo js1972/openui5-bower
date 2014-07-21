@@ -8,7 +8,7 @@
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -31,7 +31,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.10";
+		var apiVersion = "1.22.4";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -85,7 +85,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.10";
+		var v = "1.22.4";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -3585,7 +3585,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -3978,7 +3978,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @static
@@ -4510,10 +4510,11 @@ return URI;
 		});
 
 		/**
-		 * Deprecated duplicate of {@link jQuery.sap.log.Level}.
+		 * Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * 
 		 * @deprecated Since 1.1.2. To streamline the Logging API a bit, the separation between Level and LogLevel has been given up.
 		 * Use the (enriched) enumeration {@link jQuery.sap.log.Level} instead.
-		 * @namespace Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * @namespace
 		 * @public
 		 */
 		jQuery.sap.log.LogLevel = jQuery.sap.log.Level;
@@ -4552,7 +4553,7 @@ return URI;
 		// against all our rules: use side effect of assert to differentiate between optimized and productive code
 		jQuery.sap.assert( !!(mMaxLevel[''] = DEBUG), "will be removed in optimized version");
 		// evaluate configuration
-		oCfgData.loglevel = oCfgData.loglevel || (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}());
+		oCfgData.loglevel = (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}()) || oCfgData.loglevel;
 		if ( oCfgData.loglevel ) {
 			jQuery.sap.log.setLevel(jQuery.sap.log.Level[oCfgData.loglevel.toUpperCase()] || parseInt(oCfgData.loglevel,10));
 		}
@@ -4780,7 +4781,7 @@ return URI;
 		 * @private
 		 */
 		var log = jQuery.sap.log.getLogger("sap.ui.ModuleSystem",
-				(oCfgData["xx-debugModuleLoading"] || /sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search)) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
+				(/sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search) || oCfgData["xx-debugModuleLoading"]) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
 			),
 
 		/**
@@ -5197,7 +5198,7 @@ return URI;
 					oModule.state = FAILED;
 					oModule.error = ((err.toString && err.toString()) || err.message) + (err.line ? "(line " + err.line + ")" : "" );
 					oModule.data = undefined;
-					if ( window["sap-ui-debug"] && (oCfgData["xx-showloaderrors"] || /sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search)) ) {
+					if ( window["sap-ui-debug"] && (/sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search) || oCfgData["xx-showloaderrors"]) ) {
 						log.error("error while evaluating " + sModuleName + ", embedding again via script tag to enforce a stack trace (see below)");
 						jQuery.sap.includeScript(oModule.url);
 						return;
@@ -5395,7 +5396,7 @@ return URI;
 		 * namespace for that object exists (by calling jQuery.sap.getObject).
 		 * If such an object creation is not desired, <code>bCreateNamespace</code> must be set to false.
 		 *
-		 * @param {string || object} sModuleName name of the module to be declared
+		 * @param {string | object}  sModuleName name of the module to be declared
 		 *                           or in case of an object {modName: "...", type: "..."}
 		 *                           where modName is the name of the module and the type
 		 *                           could be a specific dot separated extension e.g.
@@ -5442,7 +5443,7 @@ return URI;
 		 * Any required and not yet loaded script will be loaded and execute synchronously.
 		 * Already loaded modules will be skipped.
 		 *
-		 * @param {string... || object} sModuleName one or more names of modules to be loaded
+		 * @param {string... | object}  sModuleName one or more names of modules to be loaded
 		 *                              or in case of an object {modName: "...", type: "..."}
 		 *                              where modName is the name of the module and the type
 		 *                              could be a specific dot separated extension e.g.
@@ -6051,7 +6052,11 @@ return URI;
 				jQuery.support[detectionName] = true;
 				// If one of the flex layout properties is supported without the prefix, set the flexBoxPrefixed to false
 				if(propName === "boxFlex" || propName === "flexOrder" || propName === "flexGrow") {
-					jQuery.support.flexBoxPrefixed = false;
+					// Exception for Chrome up to version 28
+					// because some versions implemented the non-prefixed properties without the functionality
+					if(!sap.ui.Device.browser.chrome || sap.ui.Device.browser.version > 28) {
+						jQuery.support.flexBoxPrefixed = false;
+					}
 				}
 				return;
 				
@@ -6670,8 +6675,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iPos The cursor position to set (or no parameter to retrieve the cursor position)
 	 * @return {int | jQuery} The cursor position (or the jQuery collection if the position has been set)
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name cursorPos
+	 * @name jQuery#cursorPos
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6777,8 +6781,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iEnd End position of the selection (exclusive)
 	 * @return {jQuery} The jQuery collection
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name selectText
+	 * @name jQuery#selectText
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6786,19 +6789,27 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	jQuery.fn.selectText = function selectText(iStart, iEnd) {
 		var oDomRef = this.get(0);
 
-		if (oDomRef) {
-			if (typeof(oDomRef.selectionStart) == "number") { // Firefox and IE9+
+		if (!oDomRef) {
+			return this;
+		}
+
+		try {
+			if (typeof(oDomRef.selectionStart) === "number") { // Firefox and IE9+
+
 				// sanity checks
 				if (iStart < 0) {
 					iStart = 0;
 				}
+
 				if (iEnd > oDomRef.value.length) {
 					iEnd = oDomRef.value.length;
 				}
+
 				if (!iEnd || iStart > iEnd) {
 					iStart = 0;
 					iEnd = 0;
 				}
+
 				oDomRef.selectionStart = iStart; // TODO: maybe need to decouple via setTimeout?
 				oDomRef.selectionEnd = iEnd;
 			} else if(oDomRef.createTextRange) { // IE
@@ -6808,7 +6819,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 				oTextEditRange.moveEnd('character', iEnd - iStart);
 				oTextEditRange.select();
 			}
-		}
+		} catch (e) {}	// note: some browsers fail to read the "selectionStart" and "selectionEnd" properties from HTMLInputElement: The input element's type "number" does not support selection.
 
 		return this;
 	};
@@ -6819,8 +6830,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {string} outer HTML
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name outerHTML
+	 * @name jQuery#outerHTML
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6870,8 +6880,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {object} An object with left, top, width and height
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rect
+	 * @name jQuery#rect
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6907,10 +6916,9 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @param {int} iPosX
 	 * @param {int} iPosY
-	 * @return Whether X and Y are inside this Rectangle's boundaries
+	 * @return {boolean} Whether X and Y are inside this Rectangle's boundaries
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rectContains
+	 * @name jQuery#rectContains
 	 * @author SAP AG
 	 * @since 0.18.0
 	 * @function
@@ -6938,8 +6946,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {boolean} If the first element has a set tabindex
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name hasTabIndex
+	 * @name jQuery#hasTabIndex
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6955,8 +6962,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name firstFocusableDomRef
+	 * @name jQuery#firstFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -6997,8 +7003,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The last domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name lastFocusableDomRef
+	 * @name jQuery#lastFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -7046,8 +7051,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {jQuery | int} The jQuery collection if iPos is given, otherwise the scroll position, counted from the leftmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollLeftRTL
+	 * @name jQuery#scrollLeftRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -7090,8 +7094,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {int} The scroll position, counted from the rightmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollRightRTL
+	 * @name jQuery#scrollRightRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -7324,8 +7327,7 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {string} sValue Value of the attribute (optional)
 	 * @return {Element} null or the DOM reference
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name parentByAttribute
+	 * @name jQuery#parentByAttribute
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -7419,11 +7421,49 @@ sap.ui.define("jquery.sap.dom",['jquery.sap.global', 'sap/ui/Device'],
 
 		return _oScrollbarSize[sKey];
 	};
+	
+	/**
+	 * Search ancestors of the given source DOM element for the specified CSS class name.
+	 * If the class name is found, set it to the root DOM element of the target control.
+	 * If the class name is not found, it is also removed from the target DOM element.
+	 *
+	 * @param {string} sStyleClass CSS class name
+	 * @param {jQuery|Control|string} vSource jQuery object, control or an id of the source element.
+	 * @param {jQuery|Control} vDestination target jQuery object or a control.
+	 * @return {jQuery|Element} Target element
+	 * @name jQuery.sap.syncStyleClass
+	 * @public
+	 * @since 1.22
+	 */
+	jQuery.sap.syncStyleClass = function(sStyleClass, vSource, vDestination) {
+
+		if(!sStyleClass) return vDestination;
+
+		if (vSource instanceof sap.ui.core.Control) {
+			vSource = vSource.$();
+		} else if (typeof vSource === "string") {
+			vSource = jQuery.sap.byId(vSource);
+		} else if (!(vSource instanceof jQuery)) {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vSource must be a jQuery object or a Control or a string');
+			return vDestination;
+		}
+
+		var bClassFound = !!vSource.closest("." + sStyleClass).length;
+
+		if (vDestination instanceof jQuery) {
+			vDestination.toggleClass(sStyleClass, bClassFound);
+		} else if (vDestination instanceof sap.ui.core.Control) {
+			vDestination.toggleStyleClass(sStyleClass, bClassFound);
+		} else {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vDestination must be a jQuery object or a Control');
+		}
+
+		return vDestination;
+	};
 
 	return jQuery;
 
 }, /* bExport= */ false);
-
 }; // end of jquery.sap.dom.js
 if ( !jQuery.sap.isDeclared('jquery.sap.events') ) {
 /*!
@@ -8283,6 +8323,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	jQuery.sap.ControlEvents = [  // IMPORTANT: update the public documentation when extending this list
 		"click",
 		"dblclick",
+		"contextmenu",
 		"focusin",
 		"focusout",
 		"keydown",
@@ -8301,7 +8342,11 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 		"dragend",
 		"drop",
 		"paste",
-		"cut"
+		"cut",
+		
+		/* input event is fired synchronously on IE9+ when the value of an <input> or <textarea> element is changed */
+		/* for more details please see : https://developer.mozilla.org/en-US/docs/Web/Reference/Events/input */
+		"input"
 	];
 
 	// touch events natively supported
@@ -8852,7 +8897,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 						fnHandler(oEvent, oAdditionalConfig);
 					};
 
-					$this.data(sHandlerKey + oHandle.guid, fnHandlerWrapper);
+					oHandle.__sapSimulatedEventHandler = fnHandlerWrapper;
 					for(var i=0; i<aOrigEvents.length; i++){
 						$this.on(aOrigEvents[i], fnHandlerWrapper);
 					}
@@ -8862,7 +8907,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 				// to the original events.
 				remove: function(oHandle) {
 					var $this = jQuery(this);
-					var fnHandler = $this.data(sHandlerKey + oHandle.guid);
+					var fnHandler = oHandle.__sapSimulatedEventHandler;
 					$this.removeData(sHandlerKey + oHandle.guid);
 					for(var i=0; i<aOrigEvents.length; i++){
 						jQuery.event.remove(this, aOrigEvents[i], fnHandler);
@@ -9022,8 +9067,10 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 				 * @param {object} oConfig Additional configuration passed from createSimulatedEvent function
 				 */
 				var fnTouchToMouseHandler = function(oEvent, oConfig) {
-					var oTouch = oEvent.originalEvent.touches[0];
-					if(oEvent.type === "touchstart"){
+					var oTouch = oEvent.originalEvent.touches[0],
+						bEventHandledByUIArea;
+
+					if (oEvent.type === "touchstart") {
 						bFingerIsMoved = false;
 						iStartX = oTouch.pageX;
 						iStartY = oTouch.pageY;
@@ -9057,10 +9104,12 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 					oNewEvent.altKey = oMappedEvent.altKey;
 					oNewEvent.shiftKey = oMappedEvent.shiftKey;
 
+					bEventHandledByUIArea = oNewEvent.isMarked("handledByUIArea");
+
 					oConfig.eventHandle.handler.call(oConfig.domRef, oNewEvent);
 
 					// also call the onclick event handler when touchend event is received and the movement is within threshold
-					if(oEvent.type === "touchend" && !bFingerIsMoved){
+					if(oEvent.type === "touchend" && !bEventHandledByUIArea && !bFingerIsMoved){
 						oNewEvent.type = "click";
 						oNewEvent.setMark("handledByUIArea", false);
 						oNewEvent.offsetX = iOffsetX; // use offset from touchstart
@@ -9314,7 +9363,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetX of Event. In jQuery there is a bug. In IE the value is in offsetX, in FF in layerX
 	 *
-	 * @returns offsetX
+	 * @returns {int} offsetX
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetX = function() {
@@ -9337,7 +9386,7 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	/**
 	 * Returns OffsetY of Event. In jQuery there is a bug. in IE the value is in offsetY, in FF in layerY.
 	 *
-	 * @returns offsetY
+	 * @returns {int} offsetY
 	 * @public
 	 */
 	jQuery.Event.prototype.getOffsetY = function() {
@@ -9425,7 +9474,6 @@ sap.ui.define("jquery.sap.events",['jquery.sap.global', 'jquery.sap.keycodes'],
 	return jQuery;
 
 }, /* bExport= */ false);
-
 }; // end of jquery.sap.events.js
 if ( !jQuery.sap.isDeclared('jquery.sap.mobile') ) {
 /*!
@@ -9763,8 +9811,11 @@ sap.ui.define("jquery.sap.mobile",['jquery.sap.global', 'sap/ui/Device', 'jquery
 					if (bIsIOS7Safari && Device.system.phone) {
 						//if the softkeyboard is open in orientation change, we have to do this to solve the zoom bug on the phone -
 						//the phone zooms into the view although it shouldn't so these two lines will zoom out again see orientation change below
-						//the important part seems to be setting the device height.
+						//the important part seems to be removing the device width
 						sMeta = 'minimal-ui, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+					} else if(bIsIOS7Safari && Device.system.tablet){
+						//remove the width = device width since it will not work correctly if the webside is embedded in a webview
+						sMeta = 'initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 					} else if ($.device.is.iphone && (Math.max(window.screen.height, window.screen.width) === 568)) {
 						// iPhone 5
 						sMeta = "user-scalable=0, initial-scale=1.0";
@@ -9773,7 +9824,6 @@ sap.ui.define("jquery.sap.mobile",['jquery.sap.global', 'sap/ui/Device', 'jquery
 					} else if (Device.os.winphone){
 						sMeta = "width=320, user-scalable=no";
 					} else {
-	
 						// all other devices
 						sMeta = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 					}
@@ -10156,7 +10206,7 @@ sap.ui.define("jquery.sap.properties",['jquery.sap.global', 'jquery.sap.sjax'],
 	 * currently in the list.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.Properties
 	 * @public
@@ -10708,8 +10758,8 @@ sap.ui.define("jquery.sap.strings",['jquery.sap.global'],
 	 *            closing curly brace. Nested placeholdes are not accepted!
 	 * Group 4: captures any remaining curly braces and indicates syntax errors
 	 *
-	 * @private
 	 *                    [-1] [----- quoted string -----] [------ placeholder ------] [--]
+	 * @private
 	 */
 	var rMessageFormat = /('')|'([^']+(?:''[^']*)*)(?:'|$)|\{([0-9]+(?:\s*,[^{}]*)?)\}|[{}]/g;
 
@@ -10755,7 +10805,7 @@ sap.ui.define("jquery.sap.resources",['jquery.sap.global', 'jquery.sap.propertie
 	 * Exception: Fallback for "zh_HK" is "zh_TW" before zh.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.ResourceBundle
 	 * @public
@@ -11257,7 +11307,7 @@ sap.ui.define("jquery.sap.script",['jquery.sap.global'],
 	 * Use {@link jQuery.sap.getUriParameters} to create an instance of jQuery.sap.util.UriParameters.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @since 0.9.0
 	 * @name jQuery.sap.util.UriParameters
 	 * @public
@@ -12195,6 +12245,29 @@ sap.ui.define("jquery.sap.encoder",['jquery.sap.global'],
 	jQuery.sap.encodeURL = function(sString) {
 		return sString.replace(rURL, fURL);
 	};
+	
+	/**
+	 * Encode a map of parameters into a combined URL parameter string
+	 * 
+	 * @param {object} mParams The map of parameters to encode
+	 * @return The URL encoded parameters
+	 * @type {string}
+	 * @public
+	 * @SecValidate {0|return|XSS} validates the given string for a CSS context
+	 */
+	jQuery.sap.encodeURLParameters = function(mParams) {
+		if (!mParams) {
+			return "";
+		}
+		var aUrlParams = [];
+		jQuery.each(mParams, function (sName, oValue) {
+			if (jQuery.type(oValue) === "string") {
+				oValue = jQuery.sap.encodeURL(oValue);
+			}
+			aUrlParams.push(jQuery.sap.encodeURL(sName) + "=" + oValue);
+		});
+		return aUrlParams.join("&");
+	};
 
 	/**
 	 * RegExp and escape function for CSS escaping
@@ -12223,7 +12296,7 @@ sap.ui.define("jquery.sap.encoder",['jquery.sap.global'],
 	jQuery.sap.encodeCSS = function(sString) {
 		return sString.replace(rCSS, fCSS);
 	};
-
+	
 	/**
 	 * WhitelistEntry object
 	 * @param {string} protocol The protocol of the URL

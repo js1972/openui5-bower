@@ -58,7 +58,7 @@ sap.ui.define(['./library','./Control'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -296,7 +296,7 @@ sap.ui.core.ComponentContainer.prototype.getComponentInstance = function () {
  * question which was not answered before - what to do here when exchanging
  * the component - destroy or not? Right now we at least unlink the container. 
  */
-sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent) {
+sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent, bSupressInvalidate) {
 	// unlink the old component from the container
 	var oOldComponent = this.getComponentInstance();
 	if (oOldComponent) {
@@ -304,7 +304,7 @@ sap.ui.core.ComponentContainer.prototype.setComponent = function(oComponent) {
 		oOldComponent.setContainer(undefined);
 	}
 	// set the new component
-	this.setAssociation("component", oComponent);
+	this.setAssociation("component", oComponent, bSupressInvalidate);
 	// cross link the new component and propagate the properties (models)
 	oComponent = this.getComponentInstance();
 	if (oComponent) {
@@ -334,7 +334,7 @@ sap.ui.core.ComponentContainer.prototype.onBeforeRendering = function(){
 				url: this.getUrl(),
 				settings: this.getSettings() 
 			});
-			this.setComponent(oComponent);
+			this.setComponent(oComponent, true);
 		}
 	}
 

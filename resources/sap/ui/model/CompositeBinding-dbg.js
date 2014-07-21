@@ -21,7 +21,7 @@ sap.ui.define(['jquery.sap.global', './PropertyBinding', './SimpleType'],
 	 * @name sap.ui.model.CompositeBinding
 	 */
 	
-	var CompositeBinding = PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding */ {
+	var CompositeBinding = PropertyBinding.extend("sap.ui.model.CompositeBinding", /** @lends sap.ui.model.CompositeBinding.prototype */ {
 	
 		constructor : function (aBindings, bRawValues) {
 			PropertyBinding.apply(this, [null,""]);

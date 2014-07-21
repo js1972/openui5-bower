@@ -24,7 +24,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ContextBinding'],
 	 * @public
 	 * @name sap.ui.model.odata.ODataContextBinding
 	 */
-	var ODataContextBinding = ContextBinding.extend("sap.ui.model.odata.ODataContextBinding", /** @lends sap.ui.model.odata.ODataContextBinding */ {
+	var ODataContextBinding = ContextBinding.extend("sap.ui.model.odata.ODataContextBinding", /** @lends sap.ui.model.odata.ODataContextBinding.prototype */ {
 	
 		constructor : function(oModel, sPath, oContext, mParameters, oEvents){
 			ContextBinding.call(this, oModel, sPath, oContext, mParameters, oEvents);
@@ -49,6 +49,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ContextBinding'],
 	 */
 	
 	/**
+	 * Initializes the binding, will create the binding context.
+	 * If metadata is not yet available, do nothing, method will be called again when
+	 * metadata is loaded.
 	 * @see sap.ui.model.Binding.prototype.initialize
 	 * @name sap.ui.model.odata.ODataContextBinding#initialize
 	 * @function
@@ -58,17 +61,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ContextBinding'],
 			sResolvedPath = this.oModel.resolve(this.sPath, this.oContext),
 			oData = this.oModel._getObject(this.sPath, this.oContext),
 			bReloadNeeded = this.oModel._isReloadNeeded(sResolvedPath, oData, this.mParameters);
-	
-		if (bReloadNeeded) {
-			this.fireDataRequested();
-		}
-		this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
-			that.oElementContext = oContext;
-			that._fireChange(); 
+		
+		// don't fire any requests if metadata is not loaded yet.
+		if (this.oModel.oMetadata.isLoaded()) {
 			if (bReloadNeeded) {
-				that.fireDataReceived();
+				this.fireDataRequested();
 			}
-		}, bReloadNeeded);
+			this.oModel.createBindingContext(this.sPath, this.oContext, this.mParameters, function(oContext) {
+				that.oElementContext = oContext;
+				that._fireChange(); 
+				if (bReloadNeeded) {
+					that.fireDataReceived();
+				}
+			}, bReloadNeeded);
+		}
+		
 	};
 	
 	/**

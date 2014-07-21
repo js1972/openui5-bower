@@ -71,7 +71,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -375,9 +375,9 @@ sap.m.SelectDialog.M_EVENTS = {'confirm':'confirm','search':'search','liveChange
 
  * @param {sap.m.StandardListItem} oControlEvent.getParameters.selectedItem Returns the selected list item. When no item is selected, "null" is returned. When multi-selection is enabled and multiple items are selected, only the first selected item is returned.
  * @param {sap.m.StandardListItem[]} oControlEvent.getParameters.selectedItems Returns an array containing the visible selected list items. If no items are selected, an empty array is returned.
- * @param {string} oControlEvent.getParameters.selectedContexts Returns the binding contexts of the selected items including the non-visible items. 
-NOTE: In contrast to the parameter "selectedItems", this parameter will also include the selected but NOT visible items (e.g. due to list filtering). An empty array will be set for this parameter if no Databinding is used.
-NOTE: When the list binding is pre-filtered and there are items in the selection that are not visible upon opening the dialog the contexts are not loaded. Therefore, these items will not be included in the selectedContexts array unless they are displayed at least once.
+ * @param {string} oControlEvent.getParameters.selectedContexts Returns the binding contexts of the selected items including the non-visible items.
+ *         NOTE: In contrast to the parameter "selectedItems", this parameter will also include the selected but NOT visible items (e.g. due to list filtering). An empty array will be set for this parameter if no Databinding is used.
+ *         NOTE: When the list binding is pre-filtered and there are items in the selection that are not visible upon opening the dialog the contexts are not loaded. Therefore, these items will not be included in the selectedContexts array unless they are displayed at least once.
  * @public
  */
  
@@ -617,7 +617,7 @@ NOTE: When the list binding is pre-filtered and there are items in the selection
 
 /**
  * Fire event cancel to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.SelectDialog} <code>this</code> to allow method chaining
  * @protected
@@ -818,7 +818,7 @@ sap.m.SelectDialog.prototype.exit = function () {
 
 /*
 * Is called after renderer is finished to show the busy state
-* @overwrite
+* @override
 * @protected
 * @returns {this} this pointer for chaining
 */
@@ -834,7 +834,7 @@ sap.m.SelectDialog.prototype.onAfterRendering = function () {
 
 /*
 * Invalidates the dialog instead of this control (we don't have a renderer)
-* @overwrite
+* @override
 * @protected
 * @returns {this} this pointer for chaining
 */
@@ -905,7 +905,7 @@ sap.m.SelectDialog.prototype.setGrowingThreshold = function (iValue) {
 
 /**
  * Enable/Disable multi selection mode.
- * @overwrite
+ * @override
  * @public
  * @param {boole} bMulti flag for multi selection mode
  * @returns {this} this pointer for chaining
@@ -927,7 +927,7 @@ sap.m.SelectDialog.prototype.setMultiSelect = function (bMulti) {
 
 /**
  * Set the title of the internal dialog
- * @overwrite
+ * @override
  * @public
  * @param {string} sTitle the title text for the dialog
  * @returns {this} this pointer for chaining
@@ -941,7 +941,7 @@ sap.m.SelectDialog.prototype.setTitle = function (sTitle) {
 
 /**
  * Reflector for the internal List's no data text property
- * @overwrite
+ * @override
  * @public
  * @param {string} sNoDataText the no data text for the list
  * @returns {this} this pointer for chaining
@@ -954,7 +954,7 @@ sap.m.SelectDialog.prototype.setNoDataText = function (sNoDataText) {
 
 /**
  * Reflector for the internal List's no data text property
- * @overwrite
+ * @override
  * @public
  * @returns {string} the current no data text
  */
@@ -964,7 +964,7 @@ sap.m.SelectDialog.prototype.getNoDataText = function () {
 
 /**
  * Reflector for the internal Dialog's contentWidth property
- * @overwrite
+ * @override
  * @public
  * @returns {sap.ui.core.CSSSize} sWidth the content width of the internal dialog
  */
@@ -976,14 +976,70 @@ sap.m.SelectDialog.prototype.getContentWidth = function () {
  * Reflector for the internal Dialog's contentWidth property
  * @param {sap.ui.core.CSSSize} sWidth the new content width value for the dialog
  * @public
- * @overwrite
- * 
+ * @override
  * @returns {this} this pointer for chaining
  */
 sap.m.SelectDialog.prototype.setContentWidth = function (sWidth) {
 	this._oDialog.setContentWidth(sWidth);
 
 	return this;
+};
+
+/**
+ * Forward method to the inner dialog: addStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.SelectDialog.prototype.addStyleClass = function () {
+	this._oDialog.addStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: removeStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.SelectDialog.prototype.removeStyleClass = function () {
+	this._oDialog.removeStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: toggleStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.SelectDialog.prototype.toggleStyleClass = function () {
+	this._oDialog.toggleStyleClass.apply(this._oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: hasStyleClass
+ * @public
+ * @override
+ * @returns {boolean} true if the class is set, false otherwise
+ */
+sap.m.SelectDialog.prototype.hasStyleClass = function () {
+	return this._oDialog.hasStyleClass.apply(this._oDialog, arguments);
+};
+
+/**
+ * Forward method to the inner dialog: getDomRef
+ * @public
+ * @override
+ * @return {Element} The Element's DOM Element sub DOM Element or null
+ */
+sap.m.SelectDialog.prototype.getDomRef = function () {
+	if(this._oDialog) {
+		return this._oDialog.getDomRef.apply(this._oDialog, arguments);
+	} else {
+		return null;
+	}
 };
 
 /* =========================================================== */
@@ -993,7 +1049,7 @@ sap.m.SelectDialog.prototype.setContentWidth = function (sWidth) {
 /*
  * Set the model for the internal list AND the current control so that 
  * both controls can be used with data binding
- * @overwrite
+ * @override
  * @public
  * @param {sap.ui.Model} oModel the model that holds the data for the list
  * @param {string} sModelName the optional model name
@@ -1042,7 +1098,7 @@ sap.m.SelectDialog.prototype._callMethodInManagedObject = function (sFunctionNam
 
 /**
  * Forwards aggregations with the name of items to the internal list.
- * @overwrite
+ * @override
  * @public
  * @param {string} sAggregationName the name for the binding
  * @param {object} oBindingInfo the configuration parameters for the binding
@@ -1116,7 +1172,7 @@ sap.m.SelectDialog.prototype.getBindingContext = function (sModelName) {
 /*
  * Set the binding context for the internal list AND the current control so that 
  * both controls can be used with the context
- * @overwrite
+ * @override
  * @public
  * @param {sap.ui.model.Context} oContext the new context 
  * @param {string} sModelName the optional model name

@@ -25,7 +25,7 @@ sap.ui.define(['jquery.sap.global', './Binding'],
 	 * @public
 	 * @name sap.ui.model.ContextBinding
 	 */
-	var ContextBinding = Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding */ {
+	var ContextBinding = Binding.extend("sap.ui.model.ContextBinding", /** @lends sap.ui.model.ContextBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters, oEvents){
 			Binding.call(this, oModel, sPath, oContext, mParameters, oEvents);

@@ -27,14 +27,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ClientModel', './XMLListBindin
 	 * @extends sap.ui.model.Model
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 *
 	 * @param {object} oData either the URL where to load the XML from or a XML
 	 * @constructor
 	 * @public
 	 * @name sap.ui.model.xml.XMLModel
 	 */
-	var XMLModel = ClientModel.extend("sap.ui.model.xml.XMLModel", /** @lends sap.ui.model.xml.XMLModel */ {
+	var XMLModel = ClientModel.extend("sap.ui.model.xml.XMLModel", /** @lends sap.ui.model.xml.XMLModel.prototype */ {
 		
 		constructor : function (oData) {
 			ClientModel.apply(this, arguments);

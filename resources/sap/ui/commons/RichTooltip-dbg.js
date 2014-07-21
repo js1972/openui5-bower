@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.TooltipBase");
  * @extends sap.ui.core.TooltipBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -294,8 +294,7 @@ sap.ui.commons.RichTooltip.prototype.setText = function(sText) {
 			htmlText : sText
 		}).addStyleClass("sapUiRttText");
 		this.setAggregation("formattedText", oText);
-		oText.setProperty("htmlText", sText, true); 
-		 this.setProperty("text", sText, true);
+		this.setProperty("text", sText, true);
 	}
 };
 

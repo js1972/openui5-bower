@@ -116,8 +116,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iPos The cursor position to set (or no parameter to retrieve the cursor position)
 	 * @return {int | jQuery} The cursor position (or the jQuery collection if the position has been set)
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name cursorPos
+	 * @name jQuery#cursorPos
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -223,8 +222,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {int} iEnd End position of the selection (exclusive)
 	 * @return {jQuery} The jQuery collection
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name selectText
+	 * @name jQuery#selectText
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -232,19 +230,27 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	jQuery.fn.selectText = function selectText(iStart, iEnd) {
 		var oDomRef = this.get(0);
 
-		if (oDomRef) {
-			if (typeof(oDomRef.selectionStart) == "number") { // Firefox and IE9+
+		if (!oDomRef) {
+			return this;
+		}
+
+		try {
+			if (typeof(oDomRef.selectionStart) === "number") { // Firefox and IE9+
+
 				// sanity checks
 				if (iStart < 0) {
 					iStart = 0;
 				}
+
 				if (iEnd > oDomRef.value.length) {
 					iEnd = oDomRef.value.length;
 				}
+
 				if (!iEnd || iStart > iEnd) {
 					iStart = 0;
 					iEnd = 0;
 				}
+
 				oDomRef.selectionStart = iStart; // TODO: maybe need to decouple via setTimeout?
 				oDomRef.selectionEnd = iEnd;
 			} else if(oDomRef.createTextRange) { // IE
@@ -254,7 +260,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 				oTextEditRange.moveEnd('character', iEnd - iStart);
 				oTextEditRange.select();
 			}
-		}
+		} catch (e) {}	// note: some browsers fail to read the "selectionStart" and "selectionEnd" properties from HTMLInputElement: The input element's type "number" does not support selection.
 
 		return this;
 	};
@@ -265,8 +271,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {string} outer HTML
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name outerHTML
+	 * @name jQuery#outerHTML
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -316,8 +321,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {object} An object with left, top, width and height
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rect
+	 * @name jQuery#rect
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -353,10 +357,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @param {int} iPosX
 	 * @param {int} iPosY
-	 * @return Whether X and Y are inside this Rectangle's boundaries
+	 * @return {boolean} Whether X and Y are inside this Rectangle's boundaries
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name rectContains
+	 * @name jQuery#rectContains
 	 * @author SAP AG
 	 * @since 0.18.0
 	 * @function
@@ -384,8 +387,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {boolean} If the first element has a set tabindex
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name hasTabIndex
+	 * @name jQuery#hasTabIndex
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -401,8 +403,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name firstFocusableDomRef
+	 * @name jQuery#firstFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -443,8 +444,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {Element} The last domRef
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name lastFocusableDomRef
+	 * @name jQuery#lastFocusableDomRef
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -492,8 +492,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {jQuery | int} The jQuery collection if iPos is given, otherwise the scroll position, counted from the leftmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollLeftRTL
+	 * @name jQuery#scrollLeftRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -536,8 +535,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 *
 	 * @return {int} The scroll position, counted from the rightmost position
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name scrollRightRTL
+	 * @name jQuery#scrollRightRTL
 	 * @author SAP AG
 	 * @since 0.20.0
 	 * @function
@@ -770,8 +768,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 	 * @param {string} sValue Value of the attribute (optional)
 	 * @return {Element} null or the DOM reference
 	 * @public
-	 * @methodOf jQuery.prototype
-	 * @name parentByAttribute
+	 * @name jQuery#parentByAttribute
 	 * @author SAP AG
 	 * @since 0.9.0
 	 * @function
@@ -864,6 +861,45 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Device'],
 		_oScrollbarSize[sKey] = {width: iWidth, height: iHeight};
 
 		return _oScrollbarSize[sKey];
+	};
+	
+	/**
+	 * Search ancestors of the given source DOM element for the specified CSS class name.
+	 * If the class name is found, set it to the root DOM element of the target control.
+	 * If the class name is not found, it is also removed from the target DOM element.
+	 *
+	 * @param {string} sStyleClass CSS class name
+	 * @param {jQuery|Control|string} vSource jQuery object, control or an id of the source element.
+	 * @param {jQuery|Control} vDestination target jQuery object or a control.
+	 * @return {jQuery|Element} Target element
+	 * @name jQuery.sap.syncStyleClass
+	 * @public
+	 * @since 1.22
+	 */
+	jQuery.sap.syncStyleClass = function(sStyleClass, vSource, vDestination) {
+
+		if(!sStyleClass) return vDestination;
+
+		if (vSource instanceof sap.ui.core.Control) {
+			vSource = vSource.$();
+		} else if (typeof vSource === "string") {
+			vSource = jQuery.sap.byId(vSource);
+		} else if (!(vSource instanceof jQuery)) {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vSource must be a jQuery object or a Control or a string');
+			return vDestination;
+		}
+
+		var bClassFound = !!vSource.closest("." + sStyleClass).length;
+
+		if (vDestination instanceof jQuery) {
+			vDestination.toggleClass(sStyleClass, bClassFound);
+		} else if (vDestination instanceof sap.ui.core.Control) {
+			vDestination.toggleStyleClass(sStyleClass, bClassFound);
+		} else {
+			jQuery.sap.assert(false, 'jQuery.sap.syncStyleClass(): vDestination must be a jQuery object or a Control');
+		}
+
+		return vDestination;
 	};
 
 	return jQuery;

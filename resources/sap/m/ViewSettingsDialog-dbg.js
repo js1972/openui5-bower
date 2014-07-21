@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -812,7 +812,7 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
 
 /**
  * Fire event cancel to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ViewSettingsDialog} <code>this</code> to allow method chaining
  * @protected
@@ -870,7 +870,7 @@ sap.m.ViewSettingsDialog.M_EVENTS = {'confirm':'confirm','cancel':'cancel','rese
 
 /**
  * Fire event resetFilters to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.ViewSettingsDialog} <code>this</code> to allow method chaining
  * @protected
@@ -1077,6 +1077,73 @@ sap.m.ViewSettingsDialog.prototype.invalidate = function() {
 		this._dialog.invalidate(arguments);
 	} else {
 		sap.ui.core.Control.prototype.invalidate.apply(this, arguments);
+	}
+};
+
+
+/**
+ * Forward method to the inner dialog: addStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.ViewSettingsDialog.prototype.addStyleClass = function () {
+	var oDialog = this._getDialog();
+
+	oDialog.addStyleClass.apply(oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: removeStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.ViewSettingsDialog.prototype.removeStyleClass = function () {
+	var oDialog = this._getDialog();
+
+	oDialog.removeStyleClass.apply(oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: toggleStyleClass
+ * @public
+ * @override
+ * @returns {this} this pointer for chaining
+ */
+sap.m.ViewSettingsDialog.prototype.toggleStyleClass = function () {
+	var oDialog = this._getDialog();
+
+	oDialog.toggleStyleClass.apply(oDialog, arguments);
+	return this;
+};
+
+/**
+ * Forward method to the inner dialog: hasStyleClass
+ * @public
+ * @override
+ * @returns {boolean} true if the class is set, false otherwise
+ */
+sap.m.ViewSettingsDialog.prototype.hasStyleClass = function () {
+	var oDialog = this._getDialog();
+
+	return oDialog.hasStyleClass.apply(oDialog, arguments);
+};
+
+/**
+ * Forward method to the inner dialog: getDomRef
+ * @public
+ * @override
+ * @return {Element} The Element's DOM Element sub DOM Element or null
+ */
+sap.m.ViewSettingsDialog.prototype.getDomRef = function () {
+	// this is also called on destroy to remove the DOM element, therefore we directly check the reference instead of the internal getter
+	if(this._dialog) {
+		return this._dialog.getDomRef.apply(this._dialog, arguments);
+	} else {
+		return null;
 	}
 };
 

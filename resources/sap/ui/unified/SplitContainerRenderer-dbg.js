@@ -21,9 +21,12 @@ sap.ui.unified.SplitContainerRenderer = {};
 sap.ui.unified.SplitContainerRenderer.render = function(rm, oControl){
 	var sId = oControl.getId();
 
+	var bVertical = oControl.getOrientation() == sap.ui.core.Orientation.Vertical;
+	
 	rm.write("<div");
 	rm.writeControlData(oControl);
 	rm.addClass("sapUiUfdSpltCont");
+	rm.addClass("sapUiUfdSpltCont" + (bVertical ? "V" : "H"));
 	if(sap.ui.getCore().getConfiguration().getAnimation()){
 		rm.addClass("sapUiUfdSpltContAnim");
 	}
@@ -42,7 +45,7 @@ sap.ui.unified.SplitContainerRenderer.render = function(rm, oControl){
 	
 	var sSidePaneId = sId + "-pane";
 
-	var sWidth = oControl.getShowSecondaryContent() ? oControl.getSecondaryContentWidth() : "0";
+	var sWidth = oControl.getShowSecondaryContent() ? oControl.getSecondaryContentSize() : "0";
 	rm.write("<aside id='", sSidePaneId, "' style='width:", sWidth, "'");
 	rm.addClass("sapUiUfdSpltContPane");
 	if(!oControl.getShowSecondaryContent()){

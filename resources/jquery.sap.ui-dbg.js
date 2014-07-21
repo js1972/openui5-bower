@@ -32,7 +32,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global'],
 //	/**
 //	 * Root Namespace for the jQuery UI-Layer plugin provided by SAP AG.
 //	 *
-//	 * @version 1.20.10
+//	 * @version 1.22.4
 //	 * @namespace
 //	 * @public
 //	 */
@@ -49,8 +49,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global'],
 	}
 
 	/**
+	 * @name jQuery#root
+	 * @function
 	 * @public
-	 * @author SAP AG
 	 */
 	jQuery.fn.root = function(oRootControl) {
 		var tmp;
@@ -80,6 +81,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global'],
 	};
 
 	/**
+	 * @name jQuery#uiarea
+	 * @function
 	 * @public
 	 */
 	jQuery.fn.uiarea = function(iIdx) {
@@ -113,8 +116,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/Global'],
 	 * Extension function to the jQuery.fn which identifies SAPUI5 controls in the given jQuery context.
 	 *
 	 * @param {int} [idx] optional parameter to return the control instance at the given idx's position in the array.
-	 * @methodOf jQuery.prototype
 	 * @returns {sap.ui.core.Control[] | sap.ui.core.Control | null} depending on the given context and idx parameter an array of controls, an instance or null.
+	 * @name jQuery#control
+	 * @function
 	 * @public
 	 */
 	jQuery.fn.control = function(idx) {

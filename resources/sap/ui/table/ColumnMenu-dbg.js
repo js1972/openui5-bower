@@ -12,7 +12,7 @@
 // Provides control sap.ui.table.ColumnMenu.
 jQuery.sap.declare("sap.ui.table.ColumnMenu");
 jQuery.sap.require("sap.ui.table.library");
-jQuery.sap.require("sap.ui.commons.Menu");
+jQuery.sap.require("sap.ui.unified.Menu");
 
 
 /**
@@ -44,7 +44,7 @@ jQuery.sap.require("sap.ui.commons.Menu");
  * </ul> 
  *
  * 
- * In addition, all settings applicable to the base type {@link sap.ui.commons.Menu#constructor sap.ui.commons.Menu}
+ * In addition, all settings applicable to the base type {@link sap.ui.unified.Menu#constructor sap.ui.unified.Menu}
  * can be used as well.
  *
  * @param {string} [sId] id for the new control, generated automatically if no id is given 
@@ -52,16 +52,16 @@ jQuery.sap.require("sap.ui.commons.Menu");
  *
  * @class
  * The column menu provides all common actions that can be performed on a column.
- * @extends sap.ui.commons.Menu
+ * @extends sap.ui.unified.Menu
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
  * @name sap.ui.table.ColumnMenu
  */
-sap.ui.commons.Menu.extend("sap.ui.table.ColumnMenu", { metadata : {
+sap.ui.unified.Menu.extend("sap.ui.table.ColumnMenu", { metadata : {
 
 	// ---- object ----
 
@@ -89,9 +89,8 @@ sap.ui.commons.Menu.extend("sap.ui.table.ColumnMenu", { metadata : {
 
 // Start of sap\ui\table\ColumnMenu.js
 jQuery.sap.require("sap.ui.core.RenderManager");
-jQuery.sap.require("sap.ui.commons.Menu");
-jQuery.sap.require("sap.ui.commons.MenuItem");
-jQuery.sap.require("sap.ui.commons.TextField");
+jQuery.sap.require("sap.ui.unified.Menu");
+jQuery.sap.require("sap.ui.unified.MenuItem");
 
 /**
  * This file defines behavior for the control,
@@ -136,8 +135,8 @@ sap.ui.table.ColumnMenu.prototype.onThemeChanged = function() {
 
 
 /**
- * Overwrite of {@link sap.ui.commons.Menu#setParent} method.
- * @see {sap.ui.commons.Menu#setParent}
+ * Overwrite of {@link sap.ui.unified.Menu#setParent} method.
+ * @see {sap.ui.unified.Menu#setParent}
  * @private
  */
 sap.ui.table.ColumnMenu.prototype.setParent = function(oParent) {
@@ -153,7 +152,7 @@ sap.ui.table.ColumnMenu.prototype.setParent = function(oParent) {
 		}
 	}
 	this._attachEvents();
-	return sap.ui.commons.Menu.prototype.setParent.apply(this, arguments);
+	return sap.ui.unified.Menu.prototype.setParent.apply(this, arguments);
 };
 
 
@@ -212,8 +211,8 @@ sap.ui.table.ColumnMenu.prototype._attachPopupClosed = function() {
 
 
 /**
- * Overwrite of {@link sap.ui.commons.Menu#open} method.
- * @see {sap.ui.commons.Menu#open}
+ * Overwrite of {@link sap.ui.unified.Menu#open} method.
+ * @see {sap.ui.unified.Menu#open}
  * @private
  */
 sap.ui.table.ColumnMenu.prototype.open = function() {
@@ -224,7 +223,7 @@ sap.ui.table.ColumnMenu.prototype.open = function() {
 	}
 
 	if (this.getItems().length > 0) {
-		sap.ui.commons.Menu.prototype.open.apply(this, arguments);
+		sap.ui.unified.Menu.prototype.open.apply(this, arguments);
 	}
 };
 
@@ -239,6 +238,7 @@ sap.ui.table.ColumnMenu.prototype._addMenuItems = function() {
 		this._addSortMenuItem(true);
 		this._addFilterMenuItem();
 		this._addGroupMenuItem();
+		this._addFreezeMenuItem();
 		this._addColumnVisibilityMenuItem();
 	}
 };
@@ -253,11 +253,12 @@ sap.ui.table.ColumnMenu.prototype._addSortMenuItem = function(bDesc) {
 	var oColumn = this._oColumn;
 
 	var sDir = bDesc ? "desc" : "asc";
+	var sIcon = bDesc ? "sort-descending" : "sort-ascending";
 	if (oColumn.getSortProperty() && oColumn.getShowSortMenuEntry()) {
 		this.addItem(this._createMenuItem(
 			sDir,
 			"TBL_SORT_" + sDir.toUpperCase(),
-			"ico12_sort_" + sDir + ".gif",
+			sIcon,
 			function(oEvent) {
 				oColumn.sort(bDesc, oEvent.getParameter("ctrlKey") === true);
 			}
@@ -277,7 +278,7 @@ sap.ui.table.ColumnMenu.prototype._addFilterMenuItem = function() {
 		this.addItem(this._createMenuTextFieldItem(
 			"filter",
 			"TBL_FILTER",
-			"ico12_filter.gif",
+			"filter",
 			oColumn.getFilterValue(),
 			function(oEvent) {
 				oColumn.filter(this.getValue());
@@ -308,6 +309,42 @@ sap.ui.table.ColumnMenu.prototype._addGroupMenuItem = function() {
 
 
 /**
+ * Adds the freeze menu item to the menu.
+ * @private
+ */
+sap.ui.table.ColumnMenu.prototype._addFreezeMenuItem = function() {
+	var oColumn = this._oColumn;
+	var oTable = this._oTable;
+	if (oTable && oTable.getEnableColumnFreeze()) {
+		var iColumnIndex = jQuery.inArray(oColumn, oTable.getColumns());
+		var bIsFixedColumn = iColumnIndex + 1 == oTable.getFixedColumnCount();
+		this.addItem(this._createMenuItem(
+			"freeze",
+			bIsFixedColumn ? "TBL_UNFREEZE" : "TBL_FREEZE",
+			null,
+			function(oEvent) {
+				
+				// forward the event
+				var bExecuteDefault = oTable.fireColumnFreeze({
+					column: oColumn
+				});
+
+				// execute the column freezing
+				if (bExecuteDefault) {
+					if (bIsFixedColumn) {
+						oTable.setFixedColumnCount(0);
+					} else {
+						oTable.setFixedColumnCount(iColumnIndex + 1);
+					}
+				}
+				
+			}
+		));
+	}
+};
+
+
+/**
  * Adds the column visibility menu item to the menu.
  * @private
  */
@@ -318,11 +355,19 @@ sap.ui.table.ColumnMenu.prototype._addColumnVisibilityMenuItem = function() {
 		var oColumnVisibiltyMenuItem = this._createMenuItem("column-visibilty", "TBL_COLUMNS");
 		this.addItem(oColumnVisibiltyMenuItem);
 
-		var oColumnVisibiltyMenu = new sap.ui.commons.Menu(oColumnVisibiltyMenuItem.getId() + "-menu");
+		var oColumnVisibiltyMenu = new sap.ui.unified.Menu(oColumnVisibiltyMenuItem.getId() + "-menu");
 		oColumnVisibiltyMenu.addStyleClass("sapUiTableColumnVisibilityMenu");
 		oColumnVisibiltyMenuItem.setSubmenu(oColumnVisibiltyMenu);
 
 		var aColumns = oTable.getColumns();
+		
+		if (oTable.getColumnVisibilityMenuSorter && typeof oTable.getColumnVisibilityMenuSorter === "function") {
+			var oSorter = oTable.getColumnVisibilityMenuSorter();
+			if (typeof oSorter === "function") {
+				aColumns = aColumns.sort(oSorter);
+			}
+		}
+		
 		for (var i = 0, l = aColumns.length; i < l; i++) {
 			var oMenuItem = this._createColumnVisibilityMenuItem(oColumnVisibiltyMenu.getId() + "-item-" + i, aColumns[i]);
 			oColumnVisibiltyMenu.addItem(oMenuItem);
@@ -335,20 +380,30 @@ sap.ui.table.ColumnMenu.prototype._addColumnVisibilityMenuItem = function() {
  * Factory method for the column visibility menu item.
  * @param {string} sId the id of the menu item.
  * @param {sap.ui.table.Column} oColumn the associated column to the menu item.
- * @return {sap.ui.commons.MenuItem} the created menu item.
+ * @return {sap.ui.unified.MenuItem} the created menu item.
  * @private
  */
 sap.ui.table.ColumnMenu.prototype._createColumnVisibilityMenuItem = function(sId, oColumn) {
 	var sText = oColumn.getName() || (oColumn.getLabel() && oColumn.getLabel().getText ? oColumn.getLabel().getText() : null); 
-	return new sap.ui.commons.MenuItem(sId, {
+	return new sap.ui.unified.MenuItem(sId, {
 		text: sText,
-		icon: oColumn.getVisible() ? this._getThemedIcon("ico_tick.png") : null,
+		icon: oColumn.getVisible() ? "sap-icon://accept" : null,
 		select: jQuery.proxy(function(oEvent) {
 			var oMenuItem = oEvent.getSource();
 			var bVisible = !oColumn.getVisible();
 			if (bVisible || this._oTable._getVisibleColumnCount() > 1) {
-				oColumn.setVisible(bVisible);
-				oMenuItem.setIcon(bVisible ? this._getThemedIcon("ico_tick.png") : null);
+				var oTable = oColumn.getParent();
+				var bExecuteDefault = true;
+				if (oTable && oTable instanceof sap.ui.table.Table) {
+					bExecuteDefault = oTable.fireColumnVisibility({
+						column: oColumn,
+						newVisible: bVisible
+					});
+				}
+				if (bExecuteDefault) {
+					oColumn.setVisible(bVisible);
+				}
+				oMenuItem.setIcon(bVisible ? "sap-icon://accept" : null);
 			}
 		}, this)
 	});
@@ -361,13 +416,13 @@ sap.ui.table.ColumnMenu.prototype._createColumnVisibilityMenuItem = function(sId
  * @param {string} sTextI18nKey the i18n key that should be used for the menu item text.
  * @param {string} sIcon the icon name
  * @param {function} fHandler the handler function to call when the item gets selected.
- * @return {sap.ui.commons.MenuItem} the created menu item.
+ * @return {sap.ui.unified.MenuItem} the created menu item.
  * @private
  */
 sap.ui.table.ColumnMenu.prototype._createMenuItem = function(sId, sTextI18nKey, sIcon, fHandler) {
-	return new sap.ui.commons.MenuItem(this.getId() + "-" + sId, {
+	return new sap.ui.unified.MenuItem(this.getId() + "-" + sId, {
 		text: this.oResBundle.getText(sTextI18nKey),
-		icon: sIcon ? this._getThemedIcon(sIcon) : null,
+		icon: sIcon ? "sap-icon://" + sIcon : null,
 		select: fHandler || function() {}
 	});
 };
@@ -380,30 +435,18 @@ sap.ui.table.ColumnMenu.prototype._createMenuItem = function(sId, sTextI18nKey, 
  * @param {string} sIcon the icon name
  * @param {string} sValue the default value of the text field
  * @param {function} fHandler the handler function to call when the item gets selected.
- * @return {sap.ui.commons.MenuTextFieldItem} the created menu text field item.
+ * @return {sap.ui.unified.MenuTextFieldItem} the created menu text field item.
  * @private
  */
 sap.ui.table.ColumnMenu.prototype._createMenuTextFieldItem = function(sId, sTextI18nKey, sIcon, sValue, fHandler) {
-	jQuery.sap.require("sap.ui.commons.MenuTextFieldItem");
+	jQuery.sap.require("sap.ui.unified.MenuTextFieldItem");
 	fHandler = fHandler || function() {};
-	return new sap.ui.commons.MenuTextFieldItem(this.getId() + "-" + sId, {
+	return new sap.ui.unified.MenuTextFieldItem(this.getId() + "-" + sId, {
 		label: this.oResBundle.getText(sTextI18nKey),
-		icon: sIcon ? this._getThemedIcon(sIcon) : null,
+		icon: sIcon ? "sap-icon://" + sIcon : null,
 		value: sValue,
 		select: fHandler || function() {}
 	});
-};
-
-
-/**
- * Returns the path to the themed icon for a given icon.
- * @param {string} sIcon the icon name
- * @return {string} the path to the themed icon.
- * @private
- */
-sap.ui.table.ColumnMenu.prototype._getThemedIcon = function(sIcon) {
-	var sCurrentTheme = sap.ui.getCore().getConfiguration().getTheme();
-	return sap.ui.resource("sap.ui.table", "themes/" + sCurrentTheme + "/img/" + sIcon);
 };
 
 

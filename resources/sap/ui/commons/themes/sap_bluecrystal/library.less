@@ -3,9 +3,10 @@
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  * 
- *//* Global CSS for 'base' theme */
+ */@import "../../../../../../Base/baseLib/baseTheme/base.less";
+@import "../../../../../../Base/baseLib/sap_bluecrystal/base.less";
+/* Global CSS for 'base' theme */
 
-@import "../../../../../../Base/baseLib/baseTheme/base.less";
 
 
 // Semantic Theming Mapping
@@ -278,7 +279,6 @@
 /* Global CSS for 'sap_bluecrystal' theme */
 /* ====================================== */
 
-@import "../../../../../../Base/baseLib/sap_bluecrystal/base.less";
 
 
 /* ===================================== */
@@ -475,9 +475,9 @@
 @sapUiExtraLightBG: @sapUiBaseBG;                  // #f2f2f2 rgb(242, 242, 242)
 @sapUiLightBG:      lighten(@sapBaseColor, 39.7);  // #e5e5e5 rgb(229, 229, 229)
 @sapUiMediumBG:     lighten(@sapBaseColor, 36.5);  // #dddddd  --- not used in Fiori!
-@sapUiDarkBG:       darken(@sapBaseColor, 10.3);   // #666666  --- not used in Fiori!
+@sapUiDarkBG:       darken(@sapBaseColor, 3.7);    // #777777
 @sapUiExtraDarkBG:  darken(@sapBaseColor, 30.2);   // #333333 rgb(51, 51, 51)
-@sapUiDarkestBG:    darken(@sapBaseColor, 100);   // #000000
+@sapUiDarkestBG:    darken(@sapBaseColor, 100);    // #000000
 
 
 /* Tinted Backgrounds                    */
@@ -605,7 +605,7 @@
 /* HOVER COLORS             */
 /* ===================================== */
 
-@sapUiLightestBGHover: contrast(@sapUiLightestBG, darken(@sapUiLightestBG, 3), lighten(@sapUiLightestBG, 6));
+@sapUiLightestBGHover: contrast(@sapUiLightestBG, darken(@sapUiLightestBG, 6), lighten(@sapUiLightestBG, 6));
 @sapUIActiveBGHover: contrast(@sapUiActiveBG, darken(@sapUiActiveBG, 3), lighten(@sapUiActiveBG, 6));
 
 /* ===================================== */
@@ -652,11 +652,16 @@
 // Themable Background Images
 //-----------------------------------------------------
 
-// [Label "Background Image"]
-// [Description "The global background image appearing behind each application"]
+// [Label "Background Variant"]
+// [Description "The background style variant which should be used. Currently the values 1 and 2 are allowed."]
+// [Tags "Variant"]
+@sapUiGlobalBackgroundVariant: 2;
+
+// [Label "Logo"]
+// [Description "A logo image which can be used for branding. It may only appear in desktop browsers when the screen/window is large enough."]
 // [Tags "Quick", "Image", "CSSURI"]
-@sapUiGlobalBackgroundImage: '';
-@sapUiGlobalBackgroundImageDefault: url(../../../../../sap/ui/core/themes/sap_bluecrystal/img/bg_white_transparent.png);
+@sapUiGlobalLogo: @sapUiGlobalLogoDefault;
+@sapUiGlobalLogoDefault: '';
 
 // [Label "Background Image Repeat"]
 // [Description "Whether the global background image should be repeated (otherwise it is tiled); possible values are: true and false"]
@@ -669,25 +674,40 @@
 @sapUiGlobalBackgroundImageOpacity: @sapUiGlobalBackgroundImageOpacityDefault;
 @sapUiGlobalBackgroundImageOpacityDefault: 1;
 
+/*Please also not the mixins in shared.css which deal with the following background parameters*/
+
+@sapUiGlobalBackgroundImageDefault: extract(url(../../../../../sap/ui/core/themes/sap_bluecrystal/img/bg_white_transparent.png) '', @sapUiGlobalBackgroundVariant);
+
+// [Label "Background Image"]
+// [Description "The global background image appearing behind each application"]
+// [Tags "Quick", "Image", "CSSURI"]
+@sapUiGlobalBackgroundImage: extract('' @sapUiGlobalBackgroundImageDefault, @sapUiGlobalBackgroundVariant);
+
 // [Label "Image Background Color"]
 // [Description "The color appearing behind the global background image, potentially shining through. Leave empty to apply the default gradient."]
 // [Tags "Quick", "Image", "Color"]
 @sapUiGlobalBackgroundColor: ''; // needed to detect at runtime whether there has been a theme modification
 @sapUiGlobalBackgroundColorDefault: @sapUiLightestBG;
 
-// [Label "Logo"]
-// [Description "A logo image which can be used for branding. It may only appear in desktop browsers when the screen/window is large enough."]
-// [Tags "Quick", "Image", "CSSURI"]
-@sapUiGlobalLogo: @sapUiGlobalLogoDefault;
-@sapUiGlobalLogoDefault: '';
+// [Label "Background Gradient Start Color"]
+// [Description "The start color used in the default gradient."]
+// [Tags "Image", "Color"]
+@sapUiGlobalBackgroundGradientStartColor: extract(@sapUiWhite #2DABB3, @sapUiGlobalBackgroundVariant);
 
+// [Label "Background Gradient Middle Color"]
+// [Description "The middle color used in the default gradient."]
+// [Tags "Image", "Color"]
+@sapUiGlobalBackgroundGradientMiddleColor: extract('' #178299, @sapUiGlobalBackgroundVariant);
 
-@sapUiGlobalBackgroundGradientStart: fade(@sapUiGlobalBackgroundColorDefault, 30);
-@sapUiGlobalBackgroundGradientEnd: fade(@sapUiHighlight, 20);
+// [Label "Background Gradient End Color"]
+// [Description "The end color used in the default gradient."]
+// [Tags "Image", "Color"]
+@sapUiGlobalBackgroundGradientEndColor: extract(@sapUiHighlight #1A4D80, @sapUiGlobalBackgroundVariant);
 
-// calculation required for IE9
-@sapUiGlobalBackgroundGradientStartIE9: fade(@sapUiBackgroundGradientStart, 100%); // no transparency in IE9 filter string
-@sapUiGlobalBackgroundGradientEndIE9: mix(white, @sapUiHighlight, 80%);
+// [Label "Background Gradient Contrast Text Color"]
+// [Description "The color used for texts on the strong background (defined by the gradient colors). A suitable value is computed automatically based on the background settings. But the value may be adapted."]
+// [Tags "Font", "Color"]
+@sapUiGlobalStrongBackgroundTextContrastColor: '';
 
 
 /* ---------------------------------------------------------------------------------------- */
@@ -781,7 +801,7 @@
 
 @sapUiUx3ShellHeaderImageURL: ~"";
 
-@sapUiUx3ShellApplicationImageURL: @sapCompanyLogo;			// "Quick"
+@sapUiUx3ShellApplicationImageURL: @sapUiGlobalLogo;			// "Quick"
 
 
 
@@ -794,10 +814,6 @@
 @sapUiActionSheetOnDesktopBG: @sapUiFooterOnDesktopBG;
 @sapUiActionSheetBorder: @sapUiExtraLightBorder;
 @sapUiActionSheetButtonText: @sapUiTextInverted;
-
-/* App                         */
-@sapUiBackgroundGradientStart: fade(@sapUiWhite, 30);
-@sapUiBackgroundGradientEnd: fade(@sapUiHighlight, 20);
 
 /* Bar                         */
 // [Label "Bar Background Color"]
@@ -839,7 +855,7 @@
 @sapUiBtnTextTransparentDisabled: fade(@sapUiDarkText, 50%);
 @sapUiBtnIconHeader: @sapUiBarText; // #666
 @sapUiBtnTextHeader: @sapUiBarText; // #666
-@sapUiBtnTextHeaderDisabled: fade(@sapUiDarkText, 50%);
+@sapUiBtnTextHeaderDisabled: @sapUiDarkText; /* fade(@sapUiDarkText, 50%); */
 @sapUiBtnTextShadowHeader: fade(@sapUiLightShadowTint, 50%);
 @sapUiBtnTextFooterDisabled: fade(@sapUiTextInverted, 50%);
 @sapUiBtnTextShadowFooter: fade(@sapUiDarkShadowTint, 50%);
@@ -852,35 +868,50 @@
 
 @sapUiBtnTextPositiveDisabled: fadeout(@sapUiTextInverted, 50%);
 @sapUiBtnBGPositive: @sapUiPositiveElement;
+@sapUiBtnBGPositiveBorder: darken(@sapUiPositiveElement, 5%);
 @sapUiBtnBGPositiveHover: darken(@sapUiPositiveElement, 5%);
 @sapUiBtnBGPositiveDown: darken(@sapUiPositiveElement, 10%);
 @sapUiBtnBGPositiveDisabled: fadeout(@sapUiPositiveElement, 50%);
 
 @sapUiBtnTextNegativeDisabled: fadeout(@sapUiTextInverted, 50%);
 @sapUiBtnBGNegative: @sapUiNegativeElement;
+@sapUiBtnBGNegativeBorder: darken(@sapUiNegativeElement, 5%);
 @sapUiBtnBGNegativeHover: darken(@sapUiNegativeElement, 5%);
 @sapUiBtnBGNegativeDown: darken(@sapUiNegativeElement, 10%);
 @sapUiBtnBGNegativeDisabled: fadeout(@sapUiNegativeElement, 50%);
 
 @sapUiBtnTextEmphasizedDisabled: fadeout(@sapUiTextInverted, 50%);
 @sapUiBtnBGEmphasized: @sapUiButtonEmphasizedBG;
+@sapUiBtnBGEmphasizedBorder: darken(@sapUiButtonEmphasizedBG, 5%);
 @sapUiBtnBGEmphasizedHover: darken(@sapUiButtonEmphasizedBG, 5%);
 @sapUiBtnBGEmphasizedDown: darken(@sapUiButtonEmphasizedBG, 10%);
 @sapUiBtnBGEmphasizedDisabled: fadeout(@sapUiButtonEmphasizedBG, 50%);
 @sapUiBtnTextShadowEmphasized: fade(@sapUiDarkShadowTint, 50%);
 
 @sapUiBtnBGTransparent: transparent;
-@sapUiBtnBGTransparentHover: fadeout(@sapUiBtnBGStandardHover, 50%);
+@sapUiBtnBGTransparentHover: fadeout(darken(@sapUiButtonStandardBG, 10%), 50%);
 @sapUiBtnBGTransparentDown: @sapUiHighlight;
 
 @sapUiBtnFooterBGStandardHover: fadeout(@sapUiBtnBGStandardHover, 90%);
 
 @sapUiBtnActionSelectBG: @sapUiFooterBG;
 @sapUiBtnActionSelectBorderColor: contrast(@sapUiBtnActionSelectBG, darken(@sapUiBtnActionSelectBG, 10), lighten(@sapUiBtnActionSelectBG,20));
-@sapUiBtnActionSelectBGTransparentHover: contrast(@sapUiBtnActionSelectBG, darken(@sapUiBtnActionSelectBG, 3), lighten(@sapUiBtnActionSelectBG,6));
+@sapUiBtnActionSelectBGTransparentHover: contrast(@sapUiBtnActionSelectBG, darken(@sapUiBtnActionSelectBG, 6), lighten(@sapUiBtnActionSelectBG,6));
 
 /* --------------------------- */
 /* Button                  END */
+/* --------------------------- */
+
+/* --------------------------- */
+/* ToggleButton          START */
+/* --------------------------- */
+
+@sapUiToggleBtnPressed: @sapUiHighlight;
+@sapUiToggleBtnBorder: darken(@sapUiHighlight, 5%);
+@sapUiToggleBtnPressedHover: darken(@sapUiHighlight, 5%);
+
+/* --------------------------- */
+/* ToggleButton            END */
 /* --------------------------- */
 
 /* CheckBox                     */
@@ -895,7 +926,7 @@
 @sapUiDTICustomWidth: 64;
 @sapUiDTICustomHeight: 48;
 @sapUiDTICustomShowLabel: false;
-@sapUiDTICustomHeaderText: true;
+@sapUiDTICustomHeaderText: false;
 @sapUiDTICustomMode: scroller;			/* mixed, scroller, clickpick */
 @sapUiDTICustomDesktopMode: mixed;		/* mixed, scroller, clickpick */
 @sapUiDTICustomDisplay: bubble;			/* modal, bubble, bottom, top */
@@ -946,20 +977,21 @@
 
 /* List                        */
 @sapUiListBGHeader: @sapUiActiveBG;
-@sapUiListBGFooter: @sapUiExtraLightBG;
+@sapUiListBGFooter: lighten(@sapUiExtraLightBG,2);
 @sapUiListBG: @sapUiLightestBG;
 @sapUiListHeaderText: @sapUiLightText;
-@sapUiListFooterText: @sapUiDarkText;
+@sapUiListFooterText: @sapUiLightText;
 @sapUiListSingleSelectMasterAsActive: false;
 @sapUiListHeaderBorder: @sapUiLightBorder;
 @sapUiListTextColor: @sapUiDarkText;
-@sapUiGroupHeaderBG: mix(@sapUiHighlight, white, 5%);
+@sapUiGroupHeaderBG: lighten(@sapUiExtraLightBG,2);
+@sapUiListNoDataTextColor: @sapUiDarkText;
 
 /* List as Table               */
 @sapUiListTblBG: fade(@sapUiListBG, 80%);
 @sapUiListTblHeaderBorder: @sapUiLightBorder;
 @sapUiListTblTextColor: @sapUiDarkText;
-@sapUiListTblPopinHeaderTextColor: @sapUiMediumText;
+@sapUiListTblPopinHeaderTextColor: @sapUiLightText;
 @sapUiListTblPopinValueTextColor: @sapUiStandardText;
 @sapUiListTblPopinBG: fade(@sapUiListBG, 80%);
 @sapUiListTblPopinActiveBG: @sapUiLIActive;
@@ -1032,29 +1064,26 @@
 
 
 /* SegmentedButton                */
-@sapUiSegmentedBtnBG: @sapUiButtonStandardBG;
+@sapUiSegmentedBtnBG: lighten(@sapUiButtonStandardBG,3);
 @sapUiSegmentedBtnBGSelected: @sapUiHighlight;
 @sapUiSegmentedBtnBGSelectedHover: darken(@sapUiHighlight, 5%);
-@sapUiSegmentedBtnBGHover: darken(@sapUiButtonStandardBG, 5%);
-@sapUiSegmentedBtnFooterHover: fadeout(@sapUiSegmentedBtnBGHover, 90%);
+@sapUiSegmentedBtnBGHover: fade(darken(@sapUiButtonStandardBG, 20%), 50);
 @sapUiSegmentedBtnBGActive: @sapUiHighlight;
-@sapUiSegmentedBtnBorder: @sapUiDarkBorder;
-@sapUiSegmentedBtnBorderFooter: contrast(@sapUiFooterBG, darken(@sapUiFooterBG, 10), lighten(@sapUiFooterBG, 20));
+@sapUiSegmentedBtnBorder: darken(@sapUiButtonStandardBG,10);
 @sapUiSegmentedBtnIconDark: @sapUiElement;
 @sapUiSegmentedBtnIconLight: @sapUiInvertedElement;
-@sapUiSegmentedBtnTextShadowFooter:  fade(@sapUiDarkShadowTint, 50);
-@sapUiSegmentedBtnTextShadowHeader: fade(@sapUiLightShadowTint, 50);
-@sapUiSegmentedBtnText:  @sapUiDarkText;
-@sapUiSegmentedBtnTextFooter: @sapUiTextInverted;
-@sapUiSegmentedBtnTextHeader:  @sapUiLightText;
+@sapUiSegmentedBtnText:  @sapUiLink;
 @sapUiSegmentedBtnTextActive: @sapUiTextInverted;
+@sapUiSegmentedBtnTextFooter: @sapUiTextInverted;
+@sapUiSegmentedBtnFooterHover: fade(darken(@sapUiButtonStandardBG, 5%), 10);
+@sapUiSegmentedBtnBorderFooter: contrast(@sapUiFooterBG, darken(@sapUiFooterBG, 10), lighten(@sapUiFooterBG, 20));
 
 /* Select                       */
 @sapUiSelectBG: @sapUiLightestBG;
 @sapUiSelectBorderColor: @sapUiDarkBorder;
 @sapUiSelectBorderColorHeader: @sapUiLightBorder;
 @sapUiSelectBorderColorPressed: @sapUiHighlight;
-@sapUiSelectLabelTextColor: @sapUiLightText;
+@sapUiSelectLabelTextColor: @sapUiStandardText;
 @sapUiSelectBGActive: @sapUiHighlight;
 @sapUiSelectLabelTextColorPressed: @sapUiTextInverted;
 @sapUiSelectLabelTextColorFooter: @sapUiTextInverted;
@@ -1064,15 +1093,15 @@
 @sapUiSelectArrowBGActive: @sapUiHighlight;
 @sapUiSelectFooterSeperator: contrast(@sapUiFooterBG, darken(@sapUiFooterBG, 10%), lighten(@sapUiFooterBG, 20%));
 @sapUiSelectFooterSeperatorOnDesktop: contrast(@sapUiFooterOnDesktopBG, darken(@sapUiFooterOnDesktopBG, 10%), lighten(@sapUiFooterOnDesktopBG, 20%));
-
 @sapUiSelectIconColor: @sapUiLightText;
 @sapUiSelectIconColorActive: @sapUiInvertedElement;
 @sapUiSelectIconBGHover: @sapUiBtnBGStandardHover;
 @sapUiSelectIconBGPressed: @sapUiHighlight;
 @sapUiSelectIconBorderColor: @sapUiDarkBorder;
-
 @sapUiSelectFooterBGHover: @sapUiBtnFooterBGStandardHover;
 @sapUiSelectBGTransparentHover: @sapUiBtnBGTransparentHover;
+
+/* ComboBox */
 
 /* Shell                        */
 @sapMShellContentBGOpacity: 30;
@@ -1100,28 +1129,32 @@
 
 /* Switch                       */
 @sapUiSwitchOnBG: @sapUiHighlight;
+@sapUiSwitchOnHoverBG: darken(@sapUiHighlight, 5);
 @sapUiSwitchOffBG: @sapUiLightestBG;
 @sapUiSwitchHandleOnBG: @sapUiInvertedElement;
 @sapUiSwitchHandleOffBG: @sapUiExtraDarkBorder;
 @sapUiSwitchOnBorder: @sapUiHighlight;
 @sapUiSwitchOffBorder: @sapUiExtraDarkBorder;
+@sapUiSwitchBorderColorHover: @sapUiHighlight;
 @sapUiSwitchTextOn: @sapUiTextInverted;
 @sapUiSwitchTextOff: @sapUiLightText;
 @sapUiSwitchAcceptRejectBG: @sapUiLightestBG;
-
 
 /* RatingIndicator                 */
 @sapUiRIIconPadding: 0.25rem;
 @sapUiRIIconColor: @sapUiAccent1;
 
 /* Toolbar 				*/
-@sapUiToolbarBG: fade(@sapUiLightestBG, 0%);
-@sapUiToolbarBorder: @sapUiLightBorder;
+@sapUiToolbarBG: fade(@sapUiLightBG, 0%);
+@sapUiToolbarSolidBG: @sapUiLightBG;
+@sapUiToolbarBorder: @sapUiMediumBorder;
 @sapUiToolbarInfoBG: mix(@sapUiAccent7, @sapUiWhite, 73%);
 @sapUiToolbarInfoHoverBG: mix(@sapUiAccent7, @sapUiWhite, 83%);
 @sapUiToolbarInfoActiveBG: mix(@sapUiAccent7, @sapUiWhite, 93%);
 @sapUiToolbarInfoBorder: @sapUiExtraLightBorder;
 
+/* FeedInput                    */
+@sapUiFeedInputBG: @sapUiLightestBG;
 
 //-----------------------------------------------------
 // sap.me Library
@@ -1956,7 +1989,7 @@ html[data-sap-ui-browser^="cr"] .sapUiBtnS.sapUiBtnIconOnly > .sapUiBtnIco{
 	color: @sapUiButtonLiteTextColor;
 }
 
-.sapUiBtnS.sapUiBtnLite.sapUiBtnStd > span.sapUiBtnIco, 
+.sapUiBtnS.sapUiBtnLite.sapUiBtnStd > span.sapUiBtnIco,
 .sapUiBtnS.sapUiBtnLite.sapUiBtnDsbl > span.sapUiBtnIco{
 	color: @sapUiBtnIcon;
 }
@@ -2899,6 +2932,11 @@ html[data-sap-ui-browser^="cr"] .sapUiGrid td > .sapUiCb{
 	margin: 0px;
 }
 
+html[data-sap-ui-browser="ie8"] .sapUiColorPicker-ColorPickerAlphaSlider.sapUiSliHori .sapUiSliBar,
+html[data-sap-ui-browser="ie9"] .sapUiColorPicker-ColorPickerAlphaSlider.sapUiSliHori .sapUiSliBar {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/ColorPicker/Alphaslider_BG.png') progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#FF000000',GradientType=1 ); /* IE6-9 */
+}
+
 .sapUiColorPicker-ColorPickerSlider.sapUiSliHori .sapUiSliBar, 
 .sapUiColorPicker-ColorPickerSlider.sapUiSliHori .sapUiSliBar .sapUiSliHiLi
 	{
@@ -3017,14 +3055,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 /*                       Base DATEPICKER                        */
 /****************************************************************/
 
-.sapUi-visibilityHidden {
-	visibility: hidden;
-	/* to avoid scollbars */
-	position: absolute;
-	top: -1000px;
-	left: -1000px;
-}
-
 /* calendar icon */
 .sapUiTfCombo > .sapUiTfDateIcon {
 	background-image: url(img/datepicker/icon_cal.png);
@@ -3049,122 +3079,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 	background-image: url(img/datepicker/icon_cal_disabled.png);
 }
 
-/* hide trigger button */
-.sapUiTfCombo > .ui-datepicker-trigger{
-	display: none;
-}
-
-/*********************** Picker container. ***********************/
-.sapUi-jQdatePicker.ui-datepicker{
-	background: none repeat scroll 0 0 @sapUiFieldBackground;
-	border-color: @sapUiFieldBorderColor;
-	margin-left: -1px; /* To account for the outer DIV    */
-	margin-top: 1px;   /* DatePicker must be under the border */
-	width: 14em;       /* For Calendar pad to reach about 168px */
-}
-
-.sapUi-jQdatePicker.ui-datepicker.sapUi-DP-top{
-	margin-top: -1px;   /* DatePicker must be over the border */
-}
-
-/* Picker Header */
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-header{
-	background: none repeat scroll 0 0 transparent;
-	border: none;
-}
-
-/* Picker Previous and Next month buttons */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover {
-	cursor: pointer;
-}
-
-/* Picker Previous month arrow */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon {
-	background-image: url(img/datepicker/v_remove.gif);
-	background-position: 4px 2px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	background-image: url(img/datepicker/v_add.gif);
-	background-position: 1px 2px;
-}
-
-/* Picker Month & Year DDLB selectors */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	font-size: 0.9em;
-	font-family: @sapUiFontFamily;
-}
-
-/* Picker Text cells */
-.sapUi-jQdatePicker.ui-datepicker th {
-	border:1px solid @sapUiFieldBorderColor;
-	border-width: 1px;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	overflow: hidden; /* maybe weekdays are too large*/
-}
-
-/* Picker Number cells */
-.sapUi-jQdatePicker.ui-datepicker td {
-	border:1px solid @sapUiFieldBorderColor;
-	border-width: 1px;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	text-align: center;
-}
-
-/* Picker cell contents (span or a) */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	background: none repeat scroll 0 0 @sapUiFieldBackground;
-	border: none;
-	color: @sapUiBaseText;
-	font-family: @sapUiFontFamily;
-	font-size: @sapUiFontSize;
-	text-align: center;
-}
-
-/* Picker Wk# column */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col {
-	color: @sapUiLink;
-	border: none;
-}
-
-/* Picker Days outside of the month */
-.sapUi-jQdatePicker .ui-datepicker-other-month > .ui-state-default {
-	color: @sapUiContentDisabledTextColor;
-	opacity: 1;
-}
-
-/* Picker OnHover Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	background-color: @sapUiDarkBG;
-}
-
-/* Picker Today */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiMediumBG;
-}
-
-/* Picker Currently-Selected Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day >.ui-state-default {
-	background-color: @sapUiHighlight;
-}
-
-/* "Previous" and "Next" onHover buttons */
-.sapUi-jQdatePicker .ui-state-hover,
-.sapUi-jQdatePicker .ui-widget-content .ui-state-hover,
-.sapUi-jQdatePicker .ui-widget-header .ui-state-hover,
-.sapUi-jQdatePicker .ui-state-focus, .ui-widget-content .ui-state-focus,
-.sapUi-jQdatePicker .ui-widget-header .ui-state-focus {
-	border-color: transparent;
-	background: none;
-}
-
 .sapUiTableCellEdit .sapUiTfStd > .sapUiTfDateIcon:hover,
 .sapUiTableCellEdit .sapUiTfFoc > .sapUiTfDateIcon {
 	background-color: @sapUiWhiteBG;
@@ -3180,11 +3094,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 	background-image: url(img/datepicker/icon_cal.png), -webkit-gradient(linear, left top, left bottom, from(@sapUiWhiteBG), color-stop(0.05, @sapUiWhiteBG), color-stop(0.75, @sapUiWhiteBG), color-stop(0.95, @sapUiWhiteBG),  to(@sapUiWhiteBG));
 	border-width: 0px;
 }
-
-/* .sapUi-jQdatePicker .dev-datepicker{
-	color: @sapUiBaseText;
-	border: 1px solid blue;
-} */
 /* ================================================= */
 /* CSS for control sap.ui.commons/DatePicker.control */
 /* BlueCrystal theme                                 */
@@ -3219,236 +3128,6 @@ html[data-sap-ui-browser="ie10"] .sapUiGrid td > .sapUiTfBrd > div{
 html[data-sap-ui-os^="iOS6"] .sapUiTfDsbl > .sapUiTfInner.sapUiTf[type="date"]{
 	/* On iPad with iOS6 for disabled input fields an opacity is set.*/
 	color: darken(@sapUiContentDisabledTextColor, 25); /* looks better than original color because this is nor readable*/
-}
-
-/**************** DatePicker ****************/
-.sapUi-jQdatePicker.ui-datepicker {
-	border: 4px solid @sapUiFieldBackground;
-	padding: 0;
-	width: 190px;
-}
-
-.sapUi-jQdatePicker.ui-corner-all,
-.sapUi-jQdatePicker .ui-corner-all {
-	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;
-	border-radius: 0px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-header {
-	padding: 0 0 9px 0;
-}
-
-/* Previous and Next arrows */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next {
-	height: 22px;
-	width: 22px;
-	top: 0;
-	border: none;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev{
-	left: 0;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next{
-	right: 0;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover {
-	background-color: @sapUiHighlight;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
-	margin: 0;
-	background-position: center center;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev > .ui-icon {
-	background-image: url(img/arrow_left.png);
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-prev-hover > .ui-icon {
-	background-image: url(img/arrow_left_hover.png);
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next > .ui-icon {
-	background-image: url(img/arrow_right.png);
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-next-hover > .ui-icon {
-	background-image: url(img/arrow_right_hover.png);
-}
-
-/* Month and Year selectors */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title{
-	margin: 0 22px;
-	line-height: 12px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	font-weight: bold;
-	font-size: 12px;
-	color:@sapUiExtraDarkText;
-	margin: 0 1px;
-	width: 47%;
-	border: 1px solid @sapUiExtraLightBG;
-	height: 22px;
-}
-
-html[data-sap-ui-browser="sf5"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select {
-	margin: 0;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select:hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select:focus {
-	background-color: @sapUiHighlight;
-	color: @sapUiTextSelection;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-title > select option {
-	background-color: @sapUiFieldBackground;
-	color:@sapUiExtraDarkText;
-}
-
-/* Table */
-.sapUi-jQdatePicker.ui-datepicker > .ui-datepicker-calendar{
-	width: auto;
-	margin: 0;
-}
-
-/* Header */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col,
-.sapUi-jQdatePicker.ui-datepicker th > span,
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	display: block;
-	width: 18px;
-	height: 18px;
-	line-height: 18px;
-	padding: 1px;
-	border: 1px solid transparent;
-}
-
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-week-col,
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker th > span,
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	line-height: 19px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker td.ui-datepicker-week-col {
-	color: @sapUiHighlight;
-	font-size: 11px;
-	font-weight: bold;
-	background: transparent;
-	padding-top: 2px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker th {
-	font-family: @sapUiDesktopFontFamily;
-	font-size: @sapUiDesktopFontSize;
-	border-color: @sapUiFieldBackground;
-	border-width: 0 0 0 2px;
-	padding: 0;
-	color: @sapUiHighlight;
-	font-size: 11px;
-	font-weight: bold;
-}
-
-/* Pad */
-.sapUi-jQdatePicker.ui-datepicker td {
-	font-family: @sapUiDesktopFontFamily;
-	font-size: @sapUiDesktopFontSize;
-	border-color: @sapUiFieldBackground;
-	border-width: 2px 0 0 2px;
-	font-size: 12px;
-	padding: 0;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default {
-	font-family: @sapUiDesktopFontFamily;
-	font-size: @sapUiDesktopFontSize;
-	color: @sapUiExtraDarkText;
-	background-color: @sapUiLightestBG;
-}
-
-/* Picker OnHover Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default.ui-state-hover,
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	background-color: @sapUiHighlight;
-	color: @sapUiTextSelection;
-}
-
-/* Picker Days outside of the month */
-.sapUi-jQdatePicker .ui-datepicker-other-month > .ui-state-default {
-	color: @sapUiLightText;
-}
-
-html[data-sap-ui-browser^="ie"] .sapUi-jQdatePicker .ui-datepicker-other-month{
-	filter: Alpha(Opacity=100); opacity: 100;
-}
-
-/* Picker Today */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiFieldBackground;
-	border-color: @sapUiHighlight;
-	border-width: 2px;
-	width: 16px;
-	height: 16px;
-	line-height: 16px;
-}
-
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	line-height: 15px;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default.ui-state-hover{
-	border-color: @sapUiHighlight;
-}
-
-html[data-sap-ui-browser="ie8"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today > .ui-state-default {
-	background-color: @sapUiListSelectionBackgroundColor; /*As IE8 don't support shadows - complete filled*/
-}
-
-/* Picker Currently-Selected Day */
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day > .ui-state-default{
-	border-color: @sapUiListSelectionBackgroundColor;
-	background-color: @sapUiListSelectionBackgroundColor;
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	background-color: @sapUiListSelectionBackgroundColor;
-	border-color: @sapUiHighlight;
-	border-width: 2px;
-	width: 16px;
-	height: 16px;
-	line-height: 16px;
-}
-
-html[data-sap-ui-browser="ie9"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	line-height: 19px;
-}
-
-html[data-sap-ui-browser="ie8"] .sapUi-jQdatePicker.ui-datepicker .ui-datepicker-today.ui-datepicker-current-day > .ui-state-default {
-	background-color: @sapUiListSelectionBackgroundColor; /*As IE8 don't support shadows - complete filled*/
-}
-
-.sapUi-jQdatePicker.ui-datepicker .ui-datepicker-current-day.ui-datepicker-today > .ui-state-default.ui-state-hover{
-	/*border-color: transparent;*/
-	background-color: @sapUiHighlight;
-	color: @sapUiTextSelection;
-}
-
-/* Hide outline for focused day */
-.sapUi-jQdatePicker.ui-datepicker .ui-state-default:focus {
-	outline: none;
 }
 .sapUiDlg {
 	position: absolute; /*relative;/* enable positioning for children */
@@ -3728,69 +3407,6 @@ html[data-sap-ui-browser="ie8"] .sapUiDlgGrip {
 /* =================================================== */
 /* CSS for control sap.ui.commons/FileUploader.control */
 /* =================================================== */
-
-.sapUiFup {
-	display: inline-block;
-}
-
-.sapUiFupGroup {
-	display: table;
-}
-
-.sapUiFupGroup > div {
-	display: table-row;
-}
-
-.sapUiFupGroup > div > div {
-	display: table-cell;
-}
-
-.sapUiFupGroup > div > div:last-child {
-	padding-left: 1px;
-}
-
-.sapUiFup > form {
-	display: inline-block;
-}
-
-.sapUiFup > form > div {
-	position: relative;
-	display: inline-block;
-}
-
-.sapUiFupInputMask {  /* the element masking the real (but hidden) file input, so the clickable area has exactly the same size as the visible control */
-	display: inline-block;
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	overflow: hidden;
-}
-
-.sapUiFupInputMask > input { /* the real, but hidden file input */
-	position: absolute;
-	opacity: 0;
-	top: 0px;
-	bottom: 0px;
-	cursor: pointer;
-	cursor: hand;
-	left: -4em;       /* avoid the input field behind the file chooser */
-	font-size: 500px; /* to make the field high enough for most themes; for themes with very large fonts this needs to be increased further */
-}
-
-html[data-sap-ui-browser="ie8"] .sapUiFupInputMask > input { /* for IE8 the file input should be native */
-	position: relative;
-	left: auto;
-	font-size: small;
-}
-
-html[data-sap-ui-browser^="sf"] .sapUiFupInputMask > input, /* for Safari and Chrome the file input is not clickable with opacity "0" */
-html[data-sap-ui-browser^="cr"] .sapUiFupInputMask > input {
-	position: relative;
-	left: auto;
-	opacity: 0.01;
-}
 .sapUiFupGroup > div > div:last-child {
 	padding-left: 4px;
 }
@@ -5179,270 +4795,6 @@ html[dir=rtl][data-sap-ui-browser=ff3] .sapUiLbx.sapUiLbxFlexWidth > ul > li > s
 .sapUiLbxIIcoFont{
 	font-size: 16px;
 	line-height: 16px;
-}
-@sapUiMnuItmHeight: 20px;
-
-.sapUiMnu {
-	/* initially hidden off the screen */
-	position: absolute;
-	top: -10000px;
-	display: block;
-	min-width: 80px;
-	border: 1px solid @sapUiMediumBorder; /* the regular popup menu border */
-	background-color: @sapUiLightBG; /* the popup menu's main background */
-	cursor: default;
-	outline: none;
-	overflow: hidden;
-	padding: 1px;
-}
-
-.sapUiMnuLst {
-	padding: 0;
-	margin: 0;
-	display: block;
-	cursor: default;
-	color: @sapUiBaseText;
-	font-size: @sapUiFontSize;
-	font-family: @sapUiFontFamily;
-}
-
-.sapUiMnuItm {
-	display: block;
-	height: @sapUiMnuItmHeight;
-	line-height: @sapUiMnuItmHeight;
-	white-space: nowrap;
-	position: relative;
-}
-
-.sapUiMnuItm.sapUiMnuItmDsbl,
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmDsbl > .sapUiMnuItmTxt > label,
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmDsbl.sapUiMnuItmHov > .sapUiMnuItmTxt > label {
-	color: @sapUiContentDisabledTextColor;
-}
-
-.sapUiMnuItm.sapUiMnuItmHov {
-	color: @sapUiTextSelection;
-	background-color: @sapUiHighlight;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm.sapUiMnuItmHov > .sapUiMnuItmTxt > label {
-	color: @sapUiTextSelection;
-}
-
-.sapUiMnuItm.sapUiMnuItmDsbl.sapUiMnuItmHov {
-	background-color: darken(@sapUiWhiteBG, 24.7);
-	color: @sapUiContentDisabledTextColor;
-}
-
-.sapUiMnuItmL,
-.sapUiMnuItmIco,
-.sapUiMnuItmTxt,
-.sapUiMnuItmSCut,
-.sapUiMnuItmSbMnu,
-.sapUiMnuItmR {
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
-	overflow: hidden;
-	outline: none;
-}
-
-.sapUiMnuItmSCut,
-.sapUiMnuItmSbMnu,
-.sapUiMnuItmR {
-	position: absolute;
-	top: 0px;
-}
-
-.sapUiMnuItmL{
-	width: 2px;
-}
-
-.sapUiMnuItmIco {
-	width: 20px;
-}
-
-.sapUiMnuItmIco > img{
-	max-width: 16px;
-	max-height: 16px;
-	padding-left: 2px;
-	vertical-align: middle;
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmIco > img {
-	opacity: 0.5;
-	filter: alpha(opacity=50);
-}
-
-.sapUiMnuNoIco > .sapUiMnuItm > .sapUiMnuItmIco {
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmTxt {
-	padding-right: 27px; /*22+5*/
-	white-space: nowrap;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt {
-	padding-right: 5px;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > label {
-	margin-right: 5px;
-	line-height: @sapUiMnuItmHeight;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr {
-	position: absolute;
-	right: 5px;
-	top: 0;
-	width: 22ex;
-	display: inline-block;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr > input {
-	width: 100%;
-}
-
-.sapUiMnuTfItmStretch {
-	display: inline-block;
-	width: 22ex;
-	height: 1px;
-}
-
-.sapUiMnuNoSbMnu > .sapUiMnuItm > .sapUiMnuItmTxt {
-	padding-right: 7px; /*2+5*/
-}
-
-.sapUiMnuItmSCut {
-	white-space: nowrap;
-	right: 22px;
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmSbMnu {
-	right: 2px;
-	width: 20px;
-}
-
-.sapUiMnuItmSbMnu > div {
-	width: 18px;
-	background-image: url("img/menu/menuitem-sub.gif");
-	background-repeat: no-repeat;
-	background-position: center center;
-	outline: none;
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-dis.gif");
-}
-
-.sapUiMnuNoSbMnu > .sapUiMnuItm > .sapUiMnuItmSbMnu {
-	width: 0px;
-	display: none;
-}
-
-.sapUiMnuItmR {
-	width: 2px;
-	right: 0px;
-}
-
-.sapUiMnuDiv{
-	position: relative;
-	height: 3px;
-}
-
-.sapUiMnuDiv > hr {
-	display: inline-block;
-	margin: 0;
-	position: absolute;
-	left: 5px;
-	right: 5px;
-	margin-top: 1px;
-	margin-bottom: 1px;
-	border-width: 0;
-	border-top: 1px solid @sapUiMediumBorder;
-	height: 1px;
-}
-
-.sapUiMnuDivL,
-.sapUiMnuDivR{
-	display: inline-block;
-	position: absolute;
-	width: 5px;
-	height: 100%;
-}
-
-.sapUiMnuDivR{
-	right: 0;
-}
-
-.sapUiMnuDivL{
-	left: 0;
-}
-@sapUiMnuItmHeight: 25px;
-
-.sapUiMnu {
-	font-family: @sapUiDesktopFontFamily;
-	font-size: @sapUiDesktopFontSize;
-	padding: 0px;
-	background-color: @sapUiLightestBG;
-	border: 1px solid @sapUiDarkBorder;
-	color: @sapUiDarkText;
-}
-
-.sapUiMnuLst {
-	font-family: @sapUiDesktopFontFamily;
-	font-size: @sapUiDesktopFontSize;
-}
-
-/*.sapUiMnuItm.sapUiMnuItmHov {
-	border-color: @sapUiHighlight;
-}*/
-
-.sapUiMnuItm.sapUiMnuItmDsbl.sapUiMnuItmHov {
-	background-color: transparent;
-}
-
-.sapUiMnuItmL,
-.sapUiMnuItmR {
-	width: 0px;
-}
-
-.sapUiMnuItmIco {
-	padding-left: 5px;
-	width: 16px;
-}
-
-.sapUiMnuItmIco > img {
-	padding-bottom: 1px;
-	padding-left: 0;
-}
-
-.sapUiMnuItmTxt {
-	padding-left: 5px;
-}
-
-.sapUiMnuItm.sapUiMnuTfItm > .sapUiMnuItmTxt > .sapUiMnuTfItemWrppr > input {
-	margin-top: 2px;
-	height: 21px;
-}
-
-.sapUiMnuItmSbMnu > div {
-	width: 9px;
-	margin-left: 4px;
-	background-image: url("img/menu/menuitem-sub.png");
-}
-
-.sapUiMnuItm.sapUiMnuItmHov > .sapUiMnuItmSbMnu > div {
-	background-image: url("img/menu/menuitem-sub-hov.png");
-}
-
-.sapUiMnuItmDsbl > .sapUiMnuItmSbMnu > div,
-.sapUiMnuItmDsbl.sapUiMnuItmHov > .sapUiMnuItmSbMnu > div {
-	background-image: url(img/menu/menuitem-sub-dis.png);
 }
 .sapUiMnuBar {
 	border: 1px solid black;
@@ -10333,6 +9685,7 @@ html[data-sap-ui-browser="ie8"] .sapUiTreeNode{
 	font-size: 0;
 	position: absolute;
 	right: 0;
+	line-height: 100%;
 }
 
 .sapUiTfCombo > span.sapUiTfValueHelpIcon {

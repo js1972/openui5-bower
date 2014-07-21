@@ -27,7 +27,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', './ChangeReason
 	 * @public
 	 * @name sap.ui.model.Binding
 	 */
-	var Binding = EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model.Binding */ {
+	var Binding = EventProvider.extend("sap.ui.model.Binding", /** @lends sap.ui.model.Binding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext, mParameters){
 			EventProvider.apply(this);

@@ -10299,7 +10299,7 @@ $.ui.position = {
 /** 
  * Device and Feature Detection API of the SAP UI5 Library.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @namespace
  * @name sap.ui.Device
  * @public
@@ -10322,7 +10322,7 @@ if(typeof window.sap.ui !== "object"){
 
 	//Skip initialization if API is already available
 	if(typeof window.sap.ui.Device === "object" || typeof window.sap.ui.Device === "function" ){
-		var apiVersion = "1.20.10";
+		var apiVersion = "1.22.4";
 		window.sap.ui.Device._checkAPIVersion(apiVersion);
 		return;
 	}
@@ -10376,7 +10376,7 @@ if(typeof window.sap.ui !== "object"){
 	
 	//Only used internal to make clear when Device API is loaded in wrong version
 	device._checkAPIVersion = function(sVersion){
-		var v = "1.20.10";
+		var v = "1.22.4";
 		if(v != sVersion){
 			logger.log(WARNING, "Device API version differs: "+v+" <-> "+sVersion);
 		}
@@ -13876,7 +13876,7 @@ return URI;
 	 * @class Represents a version consisting of major, minor, patch version and suffix, e.g. '1.2.7-SNAPSHOT'.
 	 *
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @since 1.15.0
@@ -14269,7 +14269,7 @@ return URI;
 	/**
 	 * Root Namespace for the jQuery plug-in provided by SAP AG.
 	 *
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @namespace
 	 * @public
 	 * @static
@@ -14801,10 +14801,11 @@ return URI;
 		});
 
 		/**
-		 * Deprecated duplicate of {@link jQuery.sap.log.Level}.
+		 * Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * 
 		 * @deprecated Since 1.1.2. To streamline the Logging API a bit, the separation between Level and LogLevel has been given up.
 		 * Use the (enriched) enumeration {@link jQuery.sap.log.Level} instead.
-		 * @namespace Enumeration of levels that can be used in a call to {@link jQuery.sap.log.Logger#setLevel}(iLevel, sComponent).
+		 * @namespace
 		 * @public
 		 */
 		jQuery.sap.log.LogLevel = jQuery.sap.log.Level;
@@ -14843,7 +14844,7 @@ return URI;
 		// against all our rules: use side effect of assert to differentiate between optimized and productive code
 		jQuery.sap.assert( !!(mMaxLevel[''] = DEBUG), "will be removed in optimized version");
 		// evaluate configuration
-		oCfgData.loglevel = oCfgData.loglevel || (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}());
+		oCfgData.loglevel = (function() { var m=/(?:\?|&)sap-ui-log(?:L|-l)evel=([^&]*)/.exec(window.location.search); return m && m[1];}()) || oCfgData.loglevel;
 		if ( oCfgData.loglevel ) {
 			jQuery.sap.log.setLevel(jQuery.sap.log.Level[oCfgData.loglevel.toUpperCase()] || parseInt(oCfgData.loglevel,10));
 		}
@@ -15071,7 +15072,7 @@ return URI;
 		 * @private
 		 */
 		var log = jQuery.sap.log.getLogger("sap.ui.ModuleSystem",
-				(oCfgData["xx-debugModuleLoading"] || /sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search)) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
+				(/sap-ui-xx-debug(M|-m)odule(L|-l)oading=(true|x|X)/.test(location.search) || oCfgData["xx-debugModuleLoading"]) ? jQuery.sap.log.Level.DEBUG : jQuery.sap.log.Level.INFO
 			),
 
 		/**
@@ -15488,7 +15489,7 @@ return URI;
 					oModule.state = FAILED;
 					oModule.error = ((err.toString && err.toString()) || err.message) + (err.line ? "(line " + err.line + ")" : "" );
 					oModule.data = undefined;
-					if ( window["sap-ui-debug"] && (oCfgData["xx-showloaderrors"] || /sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search)) ) {
+					if ( window["sap-ui-debug"] && (/sap-ui-xx-show(L|-l)oad(E|-e)rrors=(true|x|X)/.test(location.search) || oCfgData["xx-showloaderrors"]) ) {
 						log.error("error while evaluating " + sModuleName + ", embedding again via script tag to enforce a stack trace (see below)");
 						jQuery.sap.includeScript(oModule.url);
 						return;
@@ -15686,7 +15687,7 @@ return URI;
 		 * namespace for that object exists (by calling jQuery.sap.getObject).
 		 * If such an object creation is not desired, <code>bCreateNamespace</code> must be set to false.
 		 *
-		 * @param {string || object} sModuleName name of the module to be declared
+		 * @param {string | object}  sModuleName name of the module to be declared
 		 *                           or in case of an object {modName: "...", type: "..."}
 		 *                           where modName is the name of the module and the type
 		 *                           could be a specific dot separated extension e.g.
@@ -15733,7 +15734,7 @@ return URI;
 		 * Any required and not yet loaded script will be loaded and execute synchronously.
 		 * Already loaded modules will be skipped.
 		 *
-		 * @param {string... || object} sModuleName one or more names of modules to be loaded
+		 * @param {string... | object}  sModuleName one or more names of modules to be loaded
 		 *                              or in case of an object {modName: "...", type: "..."}
 		 *                              where modName is the name of the module and the type
 		 *                              could be a specific dot separated extension e.g.
@@ -16342,7 +16343,11 @@ return URI;
 				jQuery.support[detectionName] = true;
 				// If one of the flex layout properties is supported without the prefix, set the flexBoxPrefixed to false
 				if(propName === "boxFlex" || propName === "flexOrder" || propName === "flexGrow") {
-					jQuery.support.flexBoxPrefixed = false;
+					// Exception for Chrome up to version 28
+					// because some versions implemented the non-prefixed properties without the functionality
+					if(!sap.ui.Device.browser.chrome || sap.ui.Device.browser.version > 28) {
+						jQuery.support.flexBoxPrefixed = false;
+					}
 				}
 				return;
 				

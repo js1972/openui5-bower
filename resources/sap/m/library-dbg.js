@@ -10,7 +10,7 @@
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.m (1.20.10)
+ * Initialization Code and shared classes of library sap.m (1.22.4)
  */
 jQuery.sap.declare("sap.m.library");
 jQuery.sap.require("sap.ui.core.Core");
@@ -32,6 +32,7 @@ sap.ui.getCore().initLibrary({
   dependencies : ["sap.ui.core"],
   types: [
     "sap.m.BackgroundDesign",
+    "sap.m.BarDesign",
     "sap.m.ButtonType",
     "sap.m.DateTimeInputType",
     "sap.m.DialogType",
@@ -42,6 +43,7 @@ sap.ui.getCore().initLibrary({
     "sap.m.FlexJustifyContent",
     "sap.m.FlexRendertype",
     "sap.m.HeaderLevel",
+    "sap.m.IBarHTMLTag",
     "sap.m.IconTabFilterDesign",
     "sap.m.InputType",
     "sap.m.LabelDesign",
@@ -62,7 +64,9 @@ sap.ui.getCore().initLibrary({
     "sap.m.ToolbarDesign"
   ],
   interfaces: [
-    "sap.m.IconTab"
+    "sap.m.IBar",
+    "sap.m.IconTab",
+    "sap.m.ObjectHeaderContainer"
   ],
   controls: [
     "sap.m.ActionListItem",
@@ -76,20 +80,26 @@ sap.ui.getCore().initLibrary({
     "sap.m.Carousel",
     "sap.m.CheckBox",
     "sap.m.ColumnListItem",
+    "sap.m.ComboBox",
+    "sap.m.ComboBoxBase",
     "sap.m.CustomListItem",
     "sap.m.CustomTile",
+    "sap.m.DatePicker",
+    "sap.m.DateRangeSelection",
     "sap.m.DateTimeInput",
     "sap.m.Dialog",
     "sap.m.DisplayListItem",
     "sap.m.FacetFilter",
     "sap.m.FacetFilterItem",
     "sap.m.FacetFilterList",
+    "sap.m.FeedInput",
     "sap.m.FeedListItem",
     "sap.m.FlexBox",
     "sap.m.GroupHeaderListItem",
     "sap.m.GrowingList",
     "sap.m.HBox",
     "sap.m.IconTabBar",
+    "sap.m.IconTabHeader",
     "sap.m.Image",
     "sap.m.Input",
     "sap.m.InputBase",
@@ -99,6 +109,8 @@ sap.ui.getCore().initLibrary({
     "sap.m.List",
     "sap.m.ListBase",
     "sap.m.ListItemBase",
+    "sap.m.MultiComboBox",
+    "sap.m.MultiInput",
     "sap.m.NavContainer",
     "sap.m.ObjectAttribute",
     "sap.m.ObjectHeader",
@@ -132,6 +144,9 @@ sap.ui.getCore().initLibrary({
     "sap.m.TextArea",
     "sap.m.Tile",
     "sap.m.TileContainer",
+    "sap.m.ToggleButton",
+    "sap.m.Token",
+    "sap.m.Tokenizer",
     "sap.m.Toolbar",
     "sap.m.ToolbarSpacer",
     "sap.m.VBox",
@@ -147,7 +162,7 @@ sap.ui.getCore().initLibrary({
     "sap.m.ViewSettingsFilterItem",
     "sap.m.ViewSettingsItem"
   ],
-  version: "1.20.10"});
+  version: "1.22.4"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -167,31 +182,81 @@ jQuery.sap.declare("sap.m.BackgroundDesign");
 /**
  * @class Available Background Design.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.BackgroundDesign = {
-  
-    /**
-     * A solid background color dependent on the theme. 
-     * @public
-     */
-    Solid : "Solid",
 
-    /**
-     * Transparent background. 
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * A solid background color dependent on the theme.
+	 * @public
+	 */
+	Solid : "Solid",
 
-    /**
-     * A translucent background depending on the opacity value of the theme. 
-     * @public
-     */
-    Translucent : "Translucent"
+	/**
+	 * Transparent background.
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * A translucent background depending on the opacity value of the theme.
+	 * @public
+	 */
+	Translucent : "Translucent"
+
+};
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.type, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides enumeration sap.m.BarDesign.
+jQuery.sap.declare("sap.m.BarDesign");
+
+
+/**
+ * @class Types of the Bar design
+ *
+ * @version 1.22.4
+ * @static
+ * @public
+ * @since 1.20
+ */
+sap.m.BarDesign = {
+
+	/**
+	 * The Bar can be inserted into other controls and if the design is "Auto" then it inherits the design from parent control.
+	 * @public
+	 */
+	Auto : "Auto",
+
+	/**
+	 * The bar will be styled like a header of the page.
+	 * @public
+	 */
+	Header : "Header",
+
+	/**
+	 * The bar will be styled like a subheader of the page.
+	 * @public
+	 */
+	SubHeader : "SubHeader",
+
+	/**
+	 * The bar will be styled like a footer of the page.
+	 * @public
+	 */
+	Footer : "Footer"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -210,61 +275,61 @@ jQuery.sap.declare("sap.m.ButtonType");
 /**
  * @class Different types for a button (predefined types)
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.ButtonType = {
-  
-    /**
-     * default type (no special styling) 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * back type (back navigation button for header) 
-     * @public
-     */
-    Back : "Back",
+	/**
+	 * default type (no special styling)
+	 * @public
+	 */
+	Default : "Default",
 
-    /**
-     * accept type (blue button) 
-     * @public
-     */
-    Accept : "Accept",
+	/**
+	 * back type (back navigation button for header)
+	 * @public
+	 */
+	Back : "Back",
 
-    /**
-     * reject style (red button) 
-     * @public
-     */
-    Reject : "Reject",
+	/**
+	 * accept type (blue button)
+	 * @public
+	 */
+	Accept : "Accept",
 
-    /**
-     * transparent type 
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * reject style (red button)
+	 * @public
+	 */
+	Reject : "Reject",
 
-    /**
-     * up type (up navigation button for header) 
-     * @public
-     */
-    Up : "Up",
+	/**
+	 * transparent type
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-    /**
-     * Unstyled type (no styling) 
-     * @public
-     */
-    Unstyled : "Unstyled",
+	/**
+	 * up type (up navigation button for header)
+	 * @public
+	 */
+	Up : "Up",
 
-    /**
-     * emphasized type 
-     * @public
-     */
-    Emphasized : "Emphasized"
+	/**
+	 * Unstyled type (no styling)
+	 * @public
+	 */
+	Unstyled : "Unstyled",
 
-  };
+	/**
+	 * emphasized type
+	 * @public
+	 */
+	Emphasized : "Emphasized"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -283,31 +348,33 @@ jQuery.sap.declare("sap.m.DateTimeInputType");
 /**
  * @class A subset of DateTimeInput types that fit to a simple API returning one string.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.DateTimeInputType = {
-  
-    /**
-     * An input control for specifying a date value. The user can select a month, day of the month, and year. 
-     * @public
-     */
-    Date : "Date",
 
-    /**
-     * An input control for specifying a date and time value. The user can select a month, day of the month, year, and time of day. 
-     * @public
-     */
-    DateTime : "DateTime",
+	/**
+	 * An input control for specifying a date value. The user can select a month, day of the month, and year.
+	 * @public
+	 * @deprecated Since version 1.22. 
+	 * Instead, use dedicated sap.m.DatePicker control.
+	 */
+	Date : "Date",
 
-    /**
-     * An input control for specifying a time value. The user can select the hour, minute, and optionally AM or PM. 
-     * @public
-     */
-    Time : "Time"
+	/**
+	 * An input control for specifying a date and time value. The user can select a month, day of the month, year, and time of day.
+	 * @public
+	 */
+	DateTime : "DateTime",
 
-  };
+	/**
+	 * An input control for specifying a time value. The user can select the hour, minute, and optionally AM or PM.
+	 * @public
+	 */
+	Time : "Time"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -326,25 +393,25 @@ jQuery.sap.declare("sap.m.DialogType");
 /**
  * @class Enum for the type of sap.m.Dialog control.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.DialogType = {
-  
-    /**
-     * This is the default value for Dialog type. Stardard dialog in iOS has a header on the top and the left, right buttons are put inside the header. In android, the left, right buttons are put to the bottom of the Dialog. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Dialog with type Message looks the same as the Stardard Dialog in Android. And it puts the left, right buttons to the bottom of the Dialog in iOS. 
-     * @public
-     */
-    Message : "Message"
+	/**
+	 * This is the default value for Dialog type. Stardard dialog in iOS has a header on the top and the left, right buttons are put inside the header. In android, the left, right buttons are put to the bottom of the Dialog.
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * Dialog with type Message looks the same as the Stardard Dialog in Android. And it puts the left, right buttons to the bottom of the Dialog in iOS.
+	 * @public
+	 */
+	Message : "Message"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -364,25 +431,25 @@ jQuery.sap.declare("sap.m.FacetFilterType");
  * @class Used by the FacetFilter control to adapt its design according to type.
  * 
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FacetFilterType = {
-  
-    /**
-     * Forces FacetFilter to display facet lists as a row of buttons, one button per facet. The FacetFilter will automatically adapt to the Light type when it detects smart phone sized displays. 
-     * @public
-     */
-    Simple : "Simple",
 
-    /**
-     * Forces FacetFilter to display in light mode. 
-     * @public
-     */
-    Light : "Light"
+	/**
+	 * Forces FacetFilter to display facet lists as a row of buttons, one button per facet. The FacetFilter will automatically adapt to the Light type when it detects smart phone sized displays.
+	 * @public
+	 */
+	Simple : "Simple",
 
-  };
+	/**
+	 * Forces FacetFilter to display in light mode.
+	 * @public
+	 */
+	Light : "Light"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -401,49 +468,49 @@ jQuery.sap.declare("sap.m.FlexAlignItems");
 /**
  * @class Available options for the layout of all elements along the cross axis of the flexbox layout.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FlexAlignItems = {
-  
-    /**
-     * The cross-start margin edges of the box items are placed flush with the cross-start edge of the line. 
-     * @public
-     */
-    Start : "Start",
 
-    /**
-     * The cross-start margin edges of the box items are placed flush with the cross-end edge of the line. 
-     * @public
-     */
-    End : "End",
+	/**
+	 * The cross-start margin edges of the box items are placed flush with the cross-start edge of the line.
+	 * @public
+	 */
+	Start : "Start",
 
-    /**
-     * The box items' margin boxes are centered in the cross axis within the line. 
-     * @public
-     */
-    Center : "Center",
+	/**
+	 * The cross-start margin edges of the box items are placed flush with the cross-end edge of the line.
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * If the box items' inline axes are the same as the cross axis, this value is identical to ?start?. Otherwise, it participates in baseline alignment: all participating box items on the line are aligned such that their baselines align, and the item with the largest distance between its baseline and its cross-start margin edge is placed flush against the cross-start edge of the line. 
-     * @public
-     */
-    Baseline : "Baseline",
+	/**
+	 * The box items' margin boxes are centered in the cross axis within the line.
+	 * @public
+	 */
+	Center : "Center",
 
-    /**
-     * Make the cross size of the items' margin boxes as close to the same size as the line as possible. 
-     * @public
-     */
-    Stretch : "Stretch",
+	/**
+	 * If the box items' inline axes are the same as the cross axis, this value is identical to ?start?. Otherwise, it participates in baseline alignment: all participating box items on the line are aligned such that their baselines align, and the item with the largest distance between its baseline and its cross-start margin edge is placed flush against the cross-start edge of the line.
+	 * @public
+	 */
+	Baseline : "Baseline",
 
-    /**
-     * Inherits the value from its parent. 
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * Make the cross size of the items' margin boxes as close to the same size as the line as possible.
+	 * @public
+	 */
+	Stretch : "Stretch",
 
-  };
+	/**
+	 * Inherits the value from its parent.
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -462,55 +529,55 @@ jQuery.sap.declare("sap.m.FlexAlignSelf");
 /**
  * @class Available options for the layout of individual elements along the cross axis of the flexbox layout overriding the default alignment.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FlexAlignSelf = {
-  
-    /**
-     * Takes up the value of alignItems from the parent FlexBox 
-     * @public
-     */
-    Auto : "Auto",
 
-    /**
-     * The cross-start margin edges of the box item is placed flush with the cross-start edge of the line. 
-     * @public
-     */
-    Start : "Start",
+	/**
+	 * Takes up the value of alignItems from the parent FlexBox
+	 * @public
+	 */
+	Auto : "Auto",
 
-    /**
-     * The cross-start margin edges of the box item is placed flush with the cross-end edge of the line. 
-     * @public
-     */
-    End : "End",
+	/**
+	 * The cross-start margin edges of the box item is placed flush with the cross-start edge of the line.
+	 * @public
+	 */
+	Start : "Start",
 
-    /**
-     * The box item's margin box is centered in the cross axis within the line. 
-     * @public
-     */
-    Center : "Center",
+	/**
+	 * The cross-start margin edges of the box item is placed flush with the cross-end edge of the line.
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * If the box item's inline axis is the same as the cross axis, this value is identical to ?start?. Otherwise, it participates in baseline alignment: all participating box items on the line are aligned such that their baselines align, and the item with the largest distance between its baseline and its cross-start margin edge is placed flush against the cross-start edge of the line. 
-     * @public
-     */
-    Baseline : "Baseline",
+	/**
+	 * The box item's margin box is centered in the cross axis within the line.
+	 * @public
+	 */
+	Center : "Center",
 
-    /**
-     * Make the cross size of the item's margin box as close to the same size as the line as possible. 
-     * @public
-     */
-    Stretch : "Stretch",
+	/**
+	 * If the box item's inline axis is the same as the cross axis, this value is identical to ?start?. Otherwise, it participates in baseline alignment: all participating box items on the line are aligned such that their baselines align, and the item with the largest distance between its baseline and its cross-start margin edge is placed flush against the cross-start edge of the line.
+	 * @public
+	 */
+	Baseline : "Baseline",
 
-    /**
-     * Inherits the value from its parent. 
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * Make the cross size of the item's margin box as close to the same size as the line as possible.
+	 * @public
+	 */
+	Stretch : "Stretch",
 
-  };
+	/**
+	 * Inherits the value from its parent.
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -529,43 +596,43 @@ jQuery.sap.declare("sap.m.FlexDirection");
 /**
  * @class Available directions for flex layouts.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FlexDirection = {
-  
-    /**
-     * Elements are layed out along the direction of the inline axis (text direction). 
-     * @public
-     */
-    Row : "Row",
 
-    /**
-     * Elements are layed out along the direction of the block axis (usually top to bottom). 
-     * @public
-     */
-    Column : "Column",
+	/**
+	 * Elements are layed out along the direction of the inline axis (text direction).
+	 * @public
+	 */
+	Row : "Row",
 
-    /**
-     * Elements are layed out along the reverse direction of the inline axis (against the text direction). 
-     * @public
-     */
-    RowReverse : "RowReverse",
+	/**
+	 * Elements are layed out along the direction of the block axis (usually top to bottom).
+	 * @public
+	 */
+	Column : "Column",
 
-    /**
-     * Elements are layed out along the reverse direction of the block axis (usually bottom to top). 
-     * @public
-     */
-    ColumnReverse : "ColumnReverse",
+	/**
+	 * Elements are layed out along the reverse direction of the inline axis (against the text direction).
+	 * @public
+	 */
+	RowReverse : "RowReverse",
 
-    /**
-     * Inherits the value from its parent. 
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * Elements are layed out along the reverse direction of the block axis (usually bottom to top).
+	 * @public
+	 */
+	ColumnReverse : "ColumnReverse",
 
-  };
+	/**
+	 * Inherits the value from its parent.
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -584,49 +651,49 @@ jQuery.sap.declare("sap.m.FlexJustifyContent");
 /**
  * @class Available options for the layout of elements along the main axis of the flexbox layout.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FlexJustifyContent = {
-  
-    /**
-     * Box items are packed toward the start of the line. 
-     * @public
-     */
-    Start : "Start",
 
-    /**
-     * Box items are packed toward the end of the line. 
-     * @public
-     */
-    End : "End",
+	/**
+	 * Box items are packed toward the start of the line.
+	 * @public
+	 */
+	Start : "Start",
 
-    /**
-     * Box items are packed toward the center of the line. 
-     * @public
-     */
-    Center : "Center",
+	/**
+	 * Box items are packed toward the end of the line.
+	 * @public
+	 */
+	End : "End",
 
-    /**
-     * Box items are evenly distributed in the line. 
-     * @public
-     */
-    SpaceBetween : "SpaceBetween",
+	/**
+	 * Box items are packed toward the center of the line.
+	 * @public
+	 */
+	Center : "Center",
 
-    /**
-     * Box items are evenly distributed in the line, with half-size spaces on either end. 
-     * @public
-     */
-    SpaceAround : "SpaceAround",
+	/**
+	 * Box items are evenly distributed in the line.
+	 * @public
+	 */
+	SpaceBetween : "SpaceBetween",
 
-    /**
-     * Inherits the value from its parent. 
-     * @public
-     */
-    Inherit : "Inherit"
+	/**
+	 * Box items are evenly distributed in the line, with half-size spaces on either end.
+	 * @public
+	 */
+	SpaceAround : "SpaceAround",
 
-  };
+	/**
+	 * Inherits the value from its parent.
+	 * @public
+	 */
+	Inherit : "Inherit"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -645,25 +712,25 @@ jQuery.sap.declare("sap.m.FlexRendertype");
 /**
  * @class Determines the type of HTML elements used for rendering controls.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.FlexRendertype = {
-  
-    /**
-     * DIV elements are used for rendering 
-     * @public
-     */
-    Div : "Div",
 
-    /**
-     * Unordered lists are used for rendering. 
-     * @public
-     */
-    List : "List"
+	/**
+	 * DIV elements are used for rendering
+	 * @public
+	 */
+	Div : "Div",
 
-  };
+	/**
+	 * Unordered lists are used for rendering.
+	 * @public
+	 */
+	List : "List"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -682,55 +749,113 @@ jQuery.sap.declare("sap.m.HeaderLevel");
 /**
  * @class Different levels for headers
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.HeaderLevel = {
-  
-    /**
-     * Header level 1 
-     * @public
-     */
-    H1 : "H1",
 
-    /**
-     * Header level 2 
-     * @public
-     */
-    H2 : "H2",
+	/**
+	 * Header level 1
+	 * @public
+	 */
+	H1 : "H1",
 
-    /**
-     * Header level 3 
-     * @public
-     */
-    H3 : "H3",
+	/**
+	 * Header level 2
+	 * @public
+	 */
+	H2 : "H2",
 
-    /**
-     * Header level 4 
-     * @public
-     */
-    H4 : "H4",
+	/**
+	 * Header level 3
+	 * @public
+	 */
+	H3 : "H3",
 
-    /**
-     * Header level 5 
-     * @public
-     */
-    H5 : "H5",
+	/**
+	 * Header level 4
+	 * @public
+	 */
+	H4 : "H4",
 
-    /**
-     * Header level 6 
-     * @public
-     */
-    H6 : "H6"
+	/**
+	 * Header level 5
+	 * @public
+	 */
+	H5 : "H5",
 
-  };
+	/**
+	 * Header level 6
+	 * @public
+	 */
+	H6 : "H6"
+
+};
+/**
+ * 
+ *   Interface for controls which are suitable as a Header, Subheader or Footer of a Page.
+ *   If the control does not want to get a context base style class, it has to implement the isContextSensitive method and return false
+ *   
+ *
+ * @author SAP AG
+ * @since 1.22
+ * @name sap.m.IBar
+ * @interface
+ * @public
+ */
+
+/*!
+ * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
+ * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+
+/* ----------------------------------------------------------------------------------
+ * Hint: This is a derived (generated) file. Changes should be done in the underlying 
+ * source files only (*.type, *.js) or they will be lost after the next generation.
+ * ---------------------------------------------------------------------------------- */
+
+// Provides enumeration sap.m.IBarHTMLTag.
+jQuery.sap.declare("sap.m.IBarHTMLTag");
+
+
+/**
+ * @class Allowed tags for the implementation of the IBar interface.
+ *
+ * @version 1.22.4
+ * @static
+ * @public
+ * @since 1.22
+ */
+sap.m.IBarHTMLTag = {
+
+	/**
+	 * Renders as a div element.
+	 * @public
+	 */
+	Div : "Div",
+
+	/**
+	 * Renders as a header element.
+	 * @public
+	 */
+	Header : "Header",
+
+	/**
+	 * Renders as a footer element.
+	 * @public
+	 */
+	Footer : "Footer"
+
+};
 /**
  * 
  *   Marker interface for controls which are suitable as items for the IconTabBar.
  *   These controls must implement a method isSelectable().
  *   
  *
+ * @author SAP AG
  * @name sap.m.IconTab
  * @interface
  * @public
@@ -754,25 +879,25 @@ jQuery.sap.declare("sap.m.IconTabFilterDesign");
 /**
  * @class Available Filter Item Design.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.IconTabFilterDesign = {
-  
-    /**
-     * A horizontally layouted design providing more space for texts. 
-     * @public
-     */
-    Horizontal : "Horizontal",
 
-    /**
-     * A vertically layouted design using minimum horizontal space. 
-     * @public
-     */
-    Vertical : "Vertical"
+	/**
+	 * A horizontally layouted design providing more space for texts.
+	 * @public
+	 */
+	Horizontal : "Horizontal",
 
-  };
+	/**
+	 * A vertically layouted design using minimum horizontal space.
+	 * @public
+	 */
+	Vertical : "Vertical"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -792,97 +917,97 @@ jQuery.sap.declare("sap.m.InputType");
  * @class A subset of input types that fit to a simple API returning one string.
  * Not available on purpose: button, checkbox, hidden, image, password, radio, range, reset, search, submit.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.InputType = {
-  
-    /**
-     * default (text) 
-     * @public
-     */
-    Text : "Text",
 
-    /**
-     * An input control for specifying a date value. The user can select a month, day of the month, and year. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * Please use sap.m.DateTimeInput control with type "Date" to create date input.
-     */
-    Date : "Date",
+	/**
+	 * default (text)
+	 * @public
+	 */
+	Text : "Text",
 
-    /**
-     * An input control for specifying a date and time value. The user can select a month, day of the month, year, and time of day. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * Please use dedicated sap.m.DateTimeInput control with type "DateTime" to create date-time input.
-     */
-    Datetime : "Datetime",
+	/**
+	 * An input control for specifying a date value. The user can select a month, day of the month, and year.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * Please use sap.m.DateTimeInput control with type "Date" to create date input.
+	 */
+	Date : "Date",
 
-    /**
-     * An input control for specifying a date and time value where the format depends on the locale. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * Please use dedicated sap.m.DateTimeInput control with type "DateTime" to create date-time input.
-     */
-    DatetimeLocale : "DatetimeLocale",
+	/**
+	 * An input control for specifying a date and time value. The user can select a month, day of the month, year, and time of day.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * Please use dedicated sap.m.DateTimeInput control with type "DateTime" to create date-time input.
+	 */
+	Datetime : "Datetime",
 
-    /**
-     * A text field for specifying an email address. Brings up a keyboard optimized for email address entry. 
-     * @public
-     */
-    Email : "Email",
+	/**
+	 * An input control for specifying a date and time value where the format depends on the locale.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * Please use dedicated sap.m.DateTimeInput control with type "DateTime" to create date-time input.
+	 */
+	DatetimeLocale : "DatetimeLocale",
 
-    /**
-     * An input control for selecting a month. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * There is no cross-platform support. Please do not use this Input type.
-     */
-    Month : "Month",
+	/**
+	 * A text field for specifying an email address. Brings up a keyboard optimized for email address entry.
+	 * @public
+	 */
+	Email : "Email",
 
-    /**
-     * A text field for specifying a number. Brings up a number pad keyboard. Specifying an input type of \d* or [0-9]* is equivalent to using this type. 
-     * @public
-     */
-    Number : "Number",
+	/**
+	 * An input control for selecting a month.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * There is no cross-platform support. Please do not use this Input type.
+	 */
+	Month : "Month",
 
-    /**
-     * A text field for specifying a phone number. Brings up a phone pad keyboard. 
-     * @public
-     */
-    Tel : "Tel",
+	/**
+	 * A text field for specifying a number. Brings up a number pad keyboard. Specifying an input type of \d* or [0-9]* is equivalent to using this type.
+	 * @public
+	 */
+	Number : "Number",
 
-    /**
-     * An input control for specifying a time value. The user can select the hour, minute, and optionally AM or PM. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * Please use dedicated sap.m.DateTimeInput control with type "Time" to create time input.
-     */
-    Time : "Time",
+	/**
+	 * A text field for specifying a phone number. Brings up a phone pad keyboard.
+	 * @public
+	 */
+	Tel : "Tel",
 
-    /**
-     * A text field for specifying a URL. Brings up a keyboard optimized for URL entry. 
-     * @public
-     */
-    Url : "Url",
+	/**
+	 * An input control for specifying a time value. The user can select the hour, minute, and optionally AM or PM.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * Please use dedicated sap.m.DateTimeInput control with type "Time" to create time input.
+	 */
+	Time : "Time",
 
-    /**
-     * An input control for selecting a week. 
-     * @public
-     * @deprecated Since version 1.9.1. 
-     * There is no cross-platform support. Please do not use this Input type.
-     */
-    Week : "Week",
+	/**
+	 * A text field for specifying a URL. Brings up a keyboard optimized for URL entry.
+	 * @public
+	 */
+	Url : "Url",
 
-    /**
-     * Password input where the user entry cannot be seen. 
-     * @public
-     */
-    Password : "Password"
+	/**
+	 * An input control for selecting a week.
+	 * @public
+	 * @deprecated Since version 1.9.1. 
+	 * There is no cross-platform support. Please do not use this Input type.
+	 */
+	Week : "Week",
 
-  };
+	/**
+	 * Password input where the user entry cannot be seen.
+	 * @public
+	 */
+	Password : "Password"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -901,25 +1026,25 @@ jQuery.sap.declare("sap.m.LabelDesign");
 /**
  * @class Available label display modes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.LabelDesign = {
-  
-    /**
-     * Displays the label in bold. 
-     * @public
-     */
-    Bold : "Bold",
 
-    /**
-     * Displays the label in normal mode. 
-     * @public
-     */
-    Standard : "Standard"
+	/**
+	 * Displays the label in bold.
+	 * @public
+	 */
+	Bold : "Bold",
 
-  };
+	/**
+	 * Displays the label in normal mode.
+	 * @public
+	 */
+	Standard : "Standard"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -938,27 +1063,27 @@ jQuery.sap.declare("sap.m.ListHeaderDesign");
 /**
  * @class Defines the differnet header styles.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @deprecated Since version 1.16. 
  * Has no functionality since 1.16.
  */
 sap.m.ListHeaderDesign = {
-  
-    /**
-     * Standard header style 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Plain header style 
-     * @public
-     */
-    Plain : "Plain"
+	/**
+	 * Standard header style
+	 * @public
+	 */
+	Standard : "Standard",
 
-  };
+	/**
+	 * Plain header style
+	 * @public
+	 */
+	Plain : "Plain"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -977,49 +1102,49 @@ jQuery.sap.declare("sap.m.ListMode");
 /**
  * @class Different modes for the list selection (predefined modes)
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.ListMode = {
-  
-    /**
-     * default mode (no selection) 
-     * @public
-     */
-    None : "None",
 
-    /**
-     * right positioned single selection mode (only one list item can be selected) 
-     * @public
-     */
-    SingleSelect : "SingleSelect",
+	/**
+	 * default mode (no selection)
+	 * @public
+	 */
+	None : "None",
 
-    /**
-     * multi selection mode (whole list item including checkbox will be selected) 
-     * @public
-     */
-    MultiSelect : "MultiSelect",
+	/**
+	 * right positioned single selection mode (only one list item can be selected)
+	 * @public
+	 */
+	SingleSelect : "SingleSelect",
 
-    /**
-     * delete mode (only one list item can be deleted) 
-     * @public
-     */
-    Delete : "Delete",
+	/**
+	 * multi selection mode (whole list item including checkbox will be selected)
+	 * @public
+	 */
+	MultiSelect : "MultiSelect",
 
-    /**
-     * Single selection master mode (only one list item can be selected), selected item is highlighted but no radiobutton is visible. 
-     * @public
-     */
-    SingleSelectMaster : "SingleSelectMaster",
+	/**
+	 * delete mode (only one list item can be deleted)
+	 * @public
+	 */
+	Delete : "Delete",
 
-    /**
-     * left positioned single selection mode (only one list item can be selected) 
-     * @public
-     */
-    SingleSelectLeft : "SingleSelectLeft"
+	/**
+	 * Single selection master mode (only one list item can be selected), selected item is highlighted but no radiobutton is visible.
+	 * @public
+	 */
+	SingleSelectMaster : "SingleSelectMaster",
 
-  };
+	/**
+	 * left positioned single selection mode (only one list item can be selected)
+	 * @public
+	 */
+	SingleSelectLeft : "SingleSelectLeft"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1036,33 +1161,33 @@ jQuery.sap.declare("sap.m.ListSeparators");
 
 
 /**
- * @class Defines which separator style will be taken.
+ * @class Defines which separator style will be applied for the items.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.ListSeparators = {
-  
-    /**
-     * Separators around all items. 
-     * @public
-     */
-    All : "All",
 
-    /**
-     * Separators only between the items. 
-     * @public
-     */
-    Inner : "Inner",
+	/**
+	 * Separators around the items.
+	 * @public
+	 */
+	All : "All",
 
-    /**
-     * No Separators are used. 
-     * @public
-     */
-    None : "None"
+	/**
+	 * Separators between the items when there is no footer. Note: This enumeration depends on the theme. Please check design documentation for more details.
+	 * @public
+	 */
+	Inner : "Inner",
 
-  };
+	/**
+	 * No item separators.
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1081,43 +1206,52 @@ jQuery.sap.declare("sap.m.ListType");
 /**
  * @class List types
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.ListType = {
-  
-    /**
-     * Inactive 
-     * @public
-     */
-    Inactive : "Inactive",
 
-    /**
-     * Detail 
-     * @public
-     */
-    Detail : "Detail",
+	/**
+	 * Inactive
+	 * @public
+	 */
+	Inactive : "Inactive",
 
-    /**
-     * Navigation 
-     * @public
-     */
-    Navigation : "Navigation",
+	/**
+	 * Detail
+	 * @public
+	 */
+	Detail : "Detail",
 
-    /**
-     * Active 
-     * @public
-     */
-    Active : "Active",
+	/**
+	 * Navigation
+	 * @public
+	 */
+	Navigation : "Navigation",
 
-    /**
-     * DetailAndActive 
-     * @public
-     */
-    DetailAndActive : "DetailAndActive"
+	/**
+	 * Active
+	 * @public
+	 */
+	Active : "Active",
 
-  };
+	/**
+	 * DetailAndActive
+	 * @public
+	 */
+	DetailAndActive : "DetailAndActive"
+
+};
+/**
+ * Marker interface for controls which are suitable as items for the ObjectHeader.
+ *
+ * @author SAP
+ * @name sap.m.ObjectHeaderContainer
+ * @interface
+ * @public
+ */
+
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1136,37 +1270,37 @@ jQuery.sap.declare("sap.m.PageBackgroundDesign");
 /**
  * @class Available Page Background Design.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.PageBackgroundDesign = {
-  
-    /**
-     * Standard Page background color. 
-     * @public
-     */
-    Standard : "Standard",
 
-    /**
-     * Page background color when a List is set as the Page content. 
-     * @public
-     */
-    List : "List",
+	/**
+	 * Standard Page background color.
+	 * @public
+	 */
+	Standard : "Standard",
 
-    /**
-     * A solid background color dependent on the theme. 
-     * @public
-     */
-    Solid : "Solid",
+	/**
+	 * Page background color when a List is set as the Page content.
+	 * @public
+	 */
+	List : "List",
 
-    /**
-     * Transparent background for the page. 
-     * @public
-     */
-    Transparent : "Transparent"
+	/**
+	 * A solid background color dependent on the theme.
+	 * @public
+	 */
+	Solid : "Solid",
 
-  };
+	/**
+	 * Transparent background for the page.
+	 * @public
+	 */
+	Transparent : "Transparent"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1185,55 +1319,55 @@ jQuery.sap.declare("sap.m.PlacementType");
 /**
  * @class Types for the placement of popover control.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.PlacementType = {
-  
-    /**
-     * Popover will be placed at the left side of the reference control. 
-     * @public
-     */
-    Left : "Left",
 
-    /**
-     * Popover will be placed at the right side of the reference control. 
-     * @public
-     */
-    Right : "Right",
+	/**
+	 * Popover will be placed at the left side of the reference control.
+	 * @public
+	 */
+	Left : "Left",
 
-    /**
-     * Popover will be placed at the top of the reference control. 
-     * @public
-     */
-    Top : "Top",
+	/**
+	 * Popover will be placed at the right side of the reference control.
+	 * @public
+	 */
+	Right : "Right",
 
-    /**
-     * Popover will be placed at the bottom of the reference control. 
-     * @public
-     */
-    Bottom : "Bottom",
+	/**
+	 * Popover will be placed at the top of the reference control.
+	 * @public
+	 */
+	Top : "Top",
 
-    /**
-     * Popover will be placed at the top or bottom of the reference control. 
-     * @public
-     */
-    Vertical : "Vertical",
+	/**
+	 * Popover will be placed at the bottom of the reference control.
+	 * @public
+	 */
+	Bottom : "Bottom",
 
-    /**
-     * Popover will be placed at the right or left side of the reference control. 
-     * @public
-     */
-    Horizontal : "Horizontal",
+	/**
+	 * Popover will be placed at the top or bottom of the reference control.
+	 * @public
+	 */
+	Vertical : "Vertical",
 
-    /**
-     * Popover will be placed automatically at the reference control. 
-     * @public
-     */
-    Auto : "Auto"
+	/**
+	 * Popover will be placed at the right or left side of the reference control.
+	 * @public
+	 */
+	Horizontal : "Horizontal",
 
-  };
+	/**
+	 * Popover will be placed automatically at the reference control.
+	 * @public
+	 */
+	Auto : "Auto"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1252,26 +1386,26 @@ jQuery.sap.declare("sap.m.PopinDisplay");
 /**
  * @class Defines the display of table pop-ins
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.13.2
  */
 sap.m.PopinDisplay = {
-  
-    /**
-     * Inside the table popin, header is displayed in first line and value field is displayed in next line. 
-     * @public
-     */
-    Block : "Block",
 
-    /**
-     * Inside the table popin, value field is displayed next to the header in the same line. Note: If there is no enough space for the value field then goes to next line. 
-     * @public
-     */
-    Inline : "Inline"
+	/**
+	 * Inside the table popin, header is displayed in first line and value field is displayed in next line.
+	 * @public
+	 */
+	Block : "Block",
 
-  };
+	/**
+	 * Inside the table popin, value field is displayed next to the header in the same line. Note: If there is no enough space for the value field then goes to next line.
+	 * @public
+	 */
+	Inline : "Inline"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1290,25 +1424,25 @@ jQuery.sap.declare("sap.m.RatingIndicatorVisualMode");
 /**
  * @class Possible values for the visualization of float values in the RatingIndicator Control.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.RatingIndicatorVisualMode = {
-  
-    /**
-     * Values are rounded to the nearest integer value (e.g. 1.7 -> 2). 
-     * @public
-     */
-    Full : "Full",
 
-    /**
-     * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5). 
-     * @public
-     */
-    Half : "Half"
+	/**
+	 * Values are rounded to the nearest integer value (e.g. 1.7 -> 2).
+	 * @public
+	 */
+	Full : "Full",
 
-  };
+	/**
+	 * Values are rounded to the nearest half value (e.g. 1.7 -> 1.5).
+	 * @public
+	 */
+	Half : "Half"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1327,73 +1461,73 @@ jQuery.sap.declare("sap.m.ScreenSize");
 /**
  * @class Breakpoint names for different screen sizes.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.ScreenSize = {
-  
-    /**
-     * 240px wide 
-     * @public
-     */
-    Phone : "Phone",
 
-    /**
-     * 600px wide 
-     * @public
-     */
-    Tablet : "Tablet",
+	/**
+	 * 240px wide
+	 * @public
+	 */
+	Phone : "Phone",
 
-    /**
-     * 1024px wide 
-     * @public
-     */
-    Desktop : "Desktop",
+	/**
+	 * 600px wide
+	 * @public
+	 */
+	Tablet : "Tablet",
 
-    /**
-     * 240px wide 
-     * @public
-     */
-    XXSmall : "XXSmall",
+	/**
+	 * 1024px wide
+	 * @public
+	 */
+	Desktop : "Desktop",
 
-    /**
-     * 320px wide 
-     * @public
-     */
-    XSmall : "XSmall",
+	/**
+	 * 240px wide
+	 * @public
+	 */
+	XXSmall : "XXSmall",
 
-    /**
-     * 480px wide 
-     * @public
-     */
-    Small : "Small",
+	/**
+	 * 320px wide
+	 * @public
+	 */
+	XSmall : "XSmall",
 
-    /**
-     * 560px wide 
-     * @public
-     */
-    Medium : "Medium",
+	/**
+	 * 480px wide
+	 * @public
+	 */
+	Small : "Small",
 
-    /**
-     * 768px wide 
-     * @public
-     */
-    Large : "Large",
+	/**
+	 * 560px wide
+	 * @public
+	 */
+	Medium : "Medium",
 
-    /**
-     * 960px wide 
-     * @public
-     */
-    XLarge : "XLarge",
+	/**
+	 * 768px wide
+	 * @public
+	 */
+	Large : "Large",
 
-    /**
-     * 1120px wide 
-     * @public
-     */
-    XXLarge : "XXLarge"
+	/**
+	 * 960px wide
+	 * @public
+	 */
+	XLarge : "XLarge",
 
-  };
+	/**
+	 * 1120px wide
+	 * @public
+	 */
+	XXLarge : "XXLarge"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1412,26 +1546,26 @@ jQuery.sap.declare("sap.m.SelectType");
 /**
  * @class Enumeration for different Select types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.16
  */
 sap.m.SelectType = {
-  
-    /**
-     * Will show the text. 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Will show only the specified icon. 
-     * @public
-     */
-    IconOnly : "IconOnly"
+	/**
+	 * Will show the text.
+	 * @public
+	 */
+	Default : "Default",
 
-  };
+	/**
+	 * Will show only the specified icon.
+	 * @public
+	 */
+	IconOnly : "IconOnly"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1450,37 +1584,37 @@ jQuery.sap.declare("sap.m.SplitAppMode");
 /**
  * @class The mode of SplitContainer or SplitApp control to show/hide the master area.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.SplitAppMode = {
-  
-    /**
-     * Master will automatically be hidden in portrait mode. 
-     * @public
-     */
-    ShowHideMode : "ShowHideMode",
 
-    /**
-     * Master will always be shown but in a compressed version when in portrait mode. 
-     * @public
-     */
-    StretchCompressMode : "StretchCompressMode",
+	/**
+	 * Master will automatically be hidden in portrait mode.
+	 * @public
+	 */
+	ShowHideMode : "ShowHideMode",
 
-    /**
-     * Master will be shown inside a Popover when in portrait mode 
-     * @public
-     */
-    PopoverMode : "PopoverMode",
+	/**
+	 * Master will always be shown but in a compressed version when in portrait mode.
+	 * @public
+	 */
+	StretchCompressMode : "StretchCompressMode",
 
-    /**
-     * Master area is hidden initially both in portrait and landscape. Master area can be opened by clicking on the top left corner button or swiping right. Swipe is only enabled on mobile devices. Master will keep the open state when changing the orientation of the device. 
-     * @public
-     */
-    HideMode : "HideMode"
+	/**
+	 * Master will be shown inside a Popover when in portrait mode
+	 * @public
+	 */
+	PopoverMode : "PopoverMode",
 
-  };
+	/**
+	 * Master area is hidden initially both in portrait and landscape. Master area can be opened by clicking on the top left corner button or swiping right. Swipe is only enabled on mobile devices. Master will keep the open state when changing the orientation of the device.
+	 * @public
+	 */
+	HideMode : "HideMode"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1499,31 +1633,31 @@ jQuery.sap.declare("sap.m.StandardTileType");
 /**
  * @class Types for StandardTile
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.StandardTileType = {
-  
-    /**
-     * Tile representing that something needs to be created 
-     * @public
-     */
-    Create : "Create",
 
-    /**
-     * Monitor tile 
-     * @public
-     */
-    Monitor : "Monitor",
+	/**
+	 * Tile representing that something needs to be created
+	 * @public
+	 */
+	Create : "Create",
 
-    /**
-     * Default type 
-     * @public
-     */
-    None : "None"
+	/**
+	 * Monitor tile
+	 * @public
+	 */
+	Monitor : "Monitor",
 
-  };
+	/**
+	 * Default type
+	 * @public
+	 */
+	None : "None"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1542,31 +1676,31 @@ jQuery.sap.declare("sap.m.SwipeDirection");
 /**
  * @class Directions for swipe event.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.SwipeDirection = {
-  
-    /**
-     * Swipe from left to right 
-     * @public
-     */
-    LeftToRight : "LeftToRight",
 
-    /**
-     * Swipe from right to left. 
-     * @public
-     */
-    RightToLeft : "RightToLeft",
+	/**
+	 * Swipe from left to right
+	 * @public
+	 */
+	LeftToRight : "LeftToRight",
 
-    /**
-     * Both directions (left to right or right to left) 
-     * @public
-     */
-    Both : "Both"
+	/**
+	 * Swipe from right to left.
+	 * @public
+	 */
+	RightToLeft : "RightToLeft",
 
-  };
+	/**
+	 * Both directions (left to right or right to left)
+	 * @public
+	 */
+	Both : "Both"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1585,25 +1719,25 @@ jQuery.sap.declare("sap.m.SwitchType");
 /**
  * @class Enumaration for different switch types.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  */
 sap.m.SwitchType = {
-  
-    /**
-     * Will show "ON" and "OFF" translated to the current language or the custom text if provided 
-     * @public
-     */
-    Default : "Default",
 
-    /**
-     * Switch with accept and reject icons 
-     * @public
-     */
-    AcceptReject : "AcceptReject"
+	/**
+	 * Will show "ON" and "OFF" translated to the current language or the custom text if provided
+	 * @public
+	 */
+	Default : "Default",
 
-  };
+	/**
+	 * Switch with accept and reject icons
+	 * @public
+	 */
+	AcceptReject : "AcceptReject"
+
+};
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
  * (c) Copyright 2009-2014 SAP AG or an SAP affiliate company. 
@@ -1620,34 +1754,41 @@ jQuery.sap.declare("sap.m.ToolbarDesign");
 
 
 /**
- * @class Types of the Toolbar Design
+ * @class Types of the Toolbar Design.
  *
- * @version 1.20.10
+ * @version 1.22.4
  * @static
  * @public
  * @since 1.16.8
  */
 sap.m.ToolbarDesign = {
-  
-    /**
-     * The toolbar can be inserted into other controls and if the design is "Auto" then it inherits the design from parent control. 
-     * @public
-     */
-    Auto : "Auto",
 
-    /**
-     * The toolbar and its content will be displayed transparent. 
-     * @public
-     */
-    Transparent : "Transparent",
+	/**
+	 * The toolbar can be inserted into other controls and if the design is "Auto" then it inherits the design from parent control.
+	 * @public
+	 */
+	Auto : "Auto",
 
-    /**
-     * The toolbar appears smaller than the regular size to show information(e.g: text, icon). 
-     * @public
-     */
-    Info : "Info"
+	/**
+	 * The toolbar and its content will be displayed transparent.
+	 * @public
+	 */
+	Transparent : "Transparent",
 
-  };
+	/**
+	 * The toolbar appears smaller than the regular size to show information(e.g: text, icon).
+	 * @public
+	 */
+	Info : "Info",
+
+	/**
+	 * The toolbar has a solid background. Its content will be rendered in a standard way.
+	 * @public
+	 * @since 1.22
+	 */
+	Solid : "Solid"
+
+};
 
 // -----------------------------------------------------------------------------
 // Begin of Library Initialization coding, copied from shared.js
@@ -1672,6 +1813,18 @@ sap.ui.lazyRequire("sap.m.MessageToast", "show");
 jQuery.sap.require("sap.ui.Device");
 if (sap.ui.Device.os.ios && sap.ui.Device.os.version >= 7 && sap.ui.Device.os.version < 8 && sap.ui.Device.browser.name === "sf") {
 	jQuery.sap.require("sap.m.ios7");
+}
+
+//Internal: test the whole page with compact design
+if(/sap-ui-xx-formfactor=compact/.test(location.search)){
+	jQuery("html").addClass("sapUiSizeCompact");
+	sap.m._bSizeCompact = true;
+}
+
+//Internal: test the whole page with compact design
+if(/sap-ui-xx-formfactor=condensed/.test(location.search)){
+	jQuery("html").addClass("sapUiSizeCondensed");
+	sap.m._bSizeCondensed = true;
 }
 
 // central mobile functionality that should not go into the UI5 Core can go from here
@@ -1945,9 +2098,7 @@ sap.m.touch.countContained = function(oTouchList, vElement) {
 		}
 	};
 
-
 }(sap.m);
-
 
 
 /**
@@ -2175,8 +2326,8 @@ sap.m.BackgroundHelper = (function($, window) {
 		 * @name sap.m.BackgroundHelper#addBackgroundColorStyles
 		 * @function
 		 */
-		addBackgroundColorStyles: function(rm, sBgColor, sBgImgUrl) {
-			rm.addClass("sapMGlobalBackgroundColor");
+		addBackgroundColorStyles: function(rm, sBgColor, sBgImgUrl, sCustomBGClass) {
+			rm.addClass(sCustomBGClass || "sapMGlobalBackgroundColor");
 
 			if (sBgColor || sBgImgUrl) { // when an image or color is configured, the gradient needs to be removed, so the color can be seen behind the image
 				rm.addStyle("background-image", "none");
@@ -2392,6 +2543,226 @@ sap.m.PopupHelper = (function(){
 	};
 }());
 
+/**
+ * Suggestion helper for sap.m.Input fields: Creates a multi column suggest list for a sap.m.Input field based on a ValueList 
+ * annotation. The ValueList annotation will be resolved via the binding information of the Input field.
+ * 
+ * If the annotation describes multiple input parameter the suggest provider will resolve all of these relative to the 
+ * context of the Input filed and use them for the suggestion query. The suggest provider will write all values that are
+ * described as output parameters back to the model (relative to the context of the Input field). This can only be done if 
+ * the model runs in "TwoWay" binding mode. Both features can be switched of via the bResolveInput/bResolveOutput parameter
+ * of the suggest function:
+ *
+ * @param {event} oEvent
+ * @param {boolean} bResolveInput SuggestProvider resolves all input parameters for the data query
+ * @param {boolean} bResolveOutput SuggestProvider writes back all output parameters.
+ * @param {int} iLength If iLength is provided only these number of entries will be requested.
+ * 
+ * @name sap.m.InputODataSuggestProvider
+ * @since 1.21.2
+ * 
+ * @public
+ *
+ */
+sap.m.InputODataSuggestProvider = (function(){
+	var _fnSuggestionItemSelected = function(oEvent) {
+		var oCtrl = oEvent.getSource();
+		var mValueListAnnotation = oCtrl.data(oCtrl.getId()+"-#valueListAnnotation");
+		
+		if (!mValueListAnnotation) {
+			return;
+		}
+		var oRow = oEvent.getParameter("selectedRow");
+		jQuery.each(oRow.getCells(), function(iIndex, oCell) {
+			jQuery.each(mValueListAnnotation.outParameters, function(sKey, oObj) {
+				if (!oObj.displayOnly && oObj.value == oCell.getBinding("text").getPath()) {
+					var oValue = oCell.getBinding("text").getValue();
+					if (oValue)  oCtrl.getModel().setProperty(sKey,oValue,oCtrl.getBinding("value").getContext());
+				}
+			});
+		});
+		return true;
+	};
+	var _setValueListAnnotationData = function(oCtrl, bResolveOutput) {
+		var oModel = oCtrl.getModel();
+		var oServiceMetadata = oModel.getServiceMetadata();
+		var oMetadata = oModel.oMetadata;
+		
+		var sPath = oModel.resolve(oCtrl.getBindingPath("value"), oCtrl.getBindingContext());
+		
+		var oEntityType = oMetadata._getEntityTypeByPath(sPath);
+		var sTarget = oEntityType.entityType + "/" + oCtrl.getBindingPath("value");
+		
+		var mValueListAnnotation = {};
+		mValueListAnnotation.searchSupported = false;
+		mValueListAnnotation.collectionPath = "";
+		mValueListAnnotation.outParameters = {};
+		mValueListAnnotation.inParameters = {};
+		mValueListAnnotation.selection = [];
+		
+		var oAnnotation = oModel.getProperty(sPath+"/#com.sap.vocabularies.Common.v1.ValueList");
+		if (!oAnnotation) {
+			return false;
+		}
+		var sProperty = sPath.substr(sPath.lastIndexOf('/')+1);
+		mValueListAnnotation.inProperty = sProperty;
+		
+		jQuery.each(oAnnotation.record, function(i, aPropertyValues){
+			jQuery.each(aPropertyValues, function(j, oPropertyValue){
+				if(oPropertyValue.property === "SearchSupported" && oPropertyValue.bool){
+					mValueListAnnotation.searchSupported = true;
+				}
+				if(oPropertyValue.property === "CollectionPath"){
+					mValueListAnnotation.collectionPath = oPropertyValue.string;
+				}
+				if (oPropertyValue.property === "Parameters"){
+					jQuery.each(oPropertyValue.collection.record, function(k, oRecord) {
+						if (oRecord.type === "com.sap.vocabularies.Common.v1.ValueListParameterIn") {
+							var sLocalProperty;
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "LocalDataProperty") {
+									sLocalProperty = oPropVal.propertyPath;
+								}
+							});
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "ValueListProperty") {
+									mValueListAnnotation.inParameters[sLocalProperty] = {value:oPropVal.string};
+								}
+							});
+						}else if (oRecord.type === "com.sap.vocabularies.Common.v1.ValueListParameterInOut") {
+							var sLocalProperty;
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "LocalDataProperty") {
+									sLocalProperty = oPropVal.propertyPath;
+								}
+							});
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "ValueListProperty") {
+									mValueListAnnotation.outParameters[sLocalProperty] = {value:oPropVal.string};
+									mValueListAnnotation.inParameters[sLocalProperty] = {value:oPropVal.string};
+								}
+							});
+						} else if (oRecord.type === "com.sap.vocabularies.Common.v1.ValueListParameterOut") {
+							var sLocalProperty;
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "LocalDataProperty") {
+									sLocalProperty = oPropVal.propertyPath;
+								}
+							});
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "ValueListProperty") {
+									mValueListAnnotation.outParameters[sLocalProperty] = {value:oPropVal.string};
+								}
+							});
+						} else if (oRecord.type === "com.sap.vocabularies.Common.v1.ValueListParameterDisplayOnly") {
+							var sLocalProperty;
+							jQuery.each(oRecord.propertyValue, function(m, oPropVal) {
+								if (oPropVal.property === "ValueListProperty") {
+									mValueListAnnotation.outParameters[oPropVal.string] = {value:oPropVal.string, displayOnly:true};
+								}
+							});
+						}
+					});
+				}
+			});
+		});
+		mValueListAnnotation.resultEntity = oMetadata._getEntityTypeByPath("/"+mValueListAnnotation.collectionPath);
+		mValueListAnnotation.listItem = new sap.m.ColumnListItem();
+		jQuery.each(mValueListAnnotation.outParameters, function(sKey, oObj) {
+			mValueListAnnotation.listItem.addCell(new sap.m.Text({text:"{"+ oObj.value+"}", wrapping:false}));
+			oCtrl.addSuggestionColumn(new sap.m.Column({header: new sap.m.Text({text:"{/#"+mValueListAnnotation.resultEntity.name+"/"+oObj.value+"/@sap:label}", wrapping:false})}));
+			mValueListAnnotation.selection.push(oObj.value);
+		});
+		oCtrl.data(oCtrl.getId()+"-#valueListAnnotation",mValueListAnnotation);
+		if (bResolveOutput) {
+			oCtrl.attachSuggestionItemSelected(_fnSuggestionItemSelected);
+		}
+	};
+	return {
+		suggest: function(oEvent, bResolveInput, bResolveOutput, iLength){
+			var mValueListAnnotation,
+				oCtrl = oEvent.getSource();
+			
+			bResolveInput = bResolveInput === undefined ? true : bResolveInput;
+			bResolveOutput = bResolveOutput === undefined ? true : bResolveOutput;
+			
+			if (!oCtrl.data(oCtrl.getId()+"-#valueListAnnotation")){
+				_setValueListAnnotationData(oCtrl, bResolveOutput);
+			}
+			mValueListAnnotation = oCtrl.data(oCtrl.getId()+"-#valueListAnnotation");
+			
+			if (!mValueListAnnotation) {
+				return;
+			}
+			var _fnButtonHandler = function(oEvent) {
+				var iBindingLength = this.getLength();
+				if (iBindingLength && iBindingLength <= iLength) {
+					oCtrl.setShowTableSuggestionValueHelp(false);
+				} else {
+					oCtrl.setShowTableSuggestionValueHelp(true);
+				}
+			};
+			if(mValueListAnnotation.searchSupported){
+				var aFilters = [];
+				var sSearchFocus;
+				if (bResolveInput) {
+					jQuery.each(mValueListAnnotation.inParameters, function(sKey, oObj) {
+						if (sKey == mValueListAnnotation.inProperty) {
+							sSearchFocus = oObj.value;
+						} else if (bResolveInput){
+							var oValue = oCtrl.getModel().getProperty(sKey,oCtrl.getBinding("value").getContext());
+							if (oValue) {
+								aFilters.push(new sap.ui.model.Filter(oObj.value, sap.ui.model.FilterOperator.StartsWith,oValue));
+							}
+						}
+					});
+				}
+				oCtrl.bindAggregation("suggestionRows",{
+					path:"/" + mValueListAnnotation.collectionPath,
+					length: iLength,
+					filters: aFilters,
+					parameters: {
+						select: mValueListAnnotation.selection.join(','),
+						custom: {
+							"search-focus": sSearchFocus,
+							search: oEvent.getParameter("suggestValue")
+						}
+					},
+					events: {
+						dataReceived: _fnButtonHandler
+					},
+					template: mValueListAnnotation.listItem
+				});
+			} else {
+				//create filter array
+				var aFilters = [];
+				jQuery.each(mValueListAnnotation.inParameters, function(sKey, oObj) {
+					if (sKey == mValueListAnnotation.inProperty) {
+						aFilters.push(new sap.ui.model.Filter(oObj.value, sap.ui.model.FilterOperator.StartsWith,oEvent.getParameter("suggestValue")));
+					} else if (bResolveInput){
+						var oValue = oCtrl.getModel().getProperty(sKey,oCtrl.getBinding("value").getContext());
+						if (oValue) {
+							aFilters.push(new sap.ui.model.Filter(oObj.value, sap.ui.model.FilterOperator.StartsWith,oValue));
+						}
+					}
+				});
+				oCtrl.bindAggregation("suggestionRows",{
+					path:"/" + mValueListAnnotation.collectionPath,
+					filters: aFilters,
+					template: mValueListAnnotation.listItem,
+					length: iLength,
+					parameters: {
+						select: mValueListAnnotation.selection.join(',')
+					},
+					events: {
+						dataReceived: _fnButtonHandler
+					}
+				});
+			}
+		}
+	};
+}());
+
 // implement Form helper factory with m controls
 // possible is set before layout lib is loaded.
 jQuery.sap.setObject("sap.ui.layout.form.FormHelper", {
@@ -2413,3 +2784,38 @@ jQuery.sap.setObject("sap.ui.layout.form.FormHelper", {
 	bArrowKeySupport: false, /* disables the keyboard support for arrow keys */
 	bFinal: true
 });
+
+//implement FileUploader helper factory with m controls
+jQuery.sap.setObject("sap.ui.unified.FileUploaderHelper", {
+	createTextField: function(sId){
+		var oTextField = new sap.m.Input(sId);
+		return oTextField;
+	},
+	setTextFieldContent: function(oTextField, sWidth){
+		oTextField.setWidth(sWidth);
+	},
+	createButton: function(){
+		var oButton = new sap.m.Button();
+		return oButton;
+	},
+	bFinal: true
+});
+
+//implement table helper factory with m controls
+//possible is set before layout lib is loaded.
+jQuery.sap.setObject("sap.ui.table.TableHelper", {
+	createLabel: function(mConfig){
+		return new sap.m.Label(mConfig);
+	},
+	createTextView: function(mConfig){
+		return new sap.m.Label(mConfig);
+	},
+	createTextField: function(mConfig){
+		return new sap.m.Input(mConfig);
+	},
+	createImage: function(mConfig){
+		return new sap.m.Image(mConfig);
+	},
+	bFinal: true
+});
+

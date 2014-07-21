@@ -25,7 +25,7 @@ sap.m.ObjectStatusRenderer.render = function(oRm, oObjStatus){
 	if (!oObjStatus.getVisible()) {
 		return;
 	}
-	
+
 	if(!oObjStatus._isEmpty()) {
 		oRm.write("<div");
 		oRm.writeControlData(oObjStatus);
@@ -34,12 +34,21 @@ sap.m.ObjectStatusRenderer.render = function(oRm, oObjStatus){
 		if (sTooltip) {
 			oRm.writeAttributeEscaped("title", sTooltip);
 		}
-		
+
 		oRm.addClass("sapMObjStatus"); 
 		oRm.addClass("sapMObjStatus" + oObjStatus.getState());
 		oRm.writeClasses();
 		oRm.write(">");
-				
+
+		if (oObjStatus.getTitle()) {
+			oRm.write("<span");
+			oRm.addClass("sapMObjStatusTitle");
+			oRm.writeClasses();
+			oRm.write(">");
+			oRm.writeEscaped(oObjStatus.getTitle() + ":");
+			oRm.write("</span>");
+		}
+
 		if (oObjStatus.getIcon()) {
 			oRm.write("<span");
 			oRm.addClass("sapMObjStatusIcon");
@@ -57,6 +66,7 @@ sap.m.ObjectStatusRenderer.render = function(oRm, oObjStatus){
 			oRm.writeEscaped(oObjStatus.getText());
 			oRm.write("</span>");
 		}
-		oRm.write("</div>");			
+
+		oRm.write("</div>");
 	}
 };

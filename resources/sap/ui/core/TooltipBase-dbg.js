@@ -47,7 +47,8 @@ sap.ui.define(['./library','./Control','./Popup'], function() {
  * <ul></ul>
  * </li>
  * <li>Events
- * <ul></ul>
+ * <ul>
+ * <li>{@link sap.ui.core.TooltipBase#event:closed closed} : fnListenerFunction or [fnListenerFunction, oListenerObject] or [oData, fnListenerFunction, oListenerObject]</li></ul>
  * </li>
  * </ul> 
 
@@ -60,7 +61,7 @@ sap.ui.define(['./library','./Control','./Popup'], function() {
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -83,6 +84,9 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
 		"collision" : {type : "sap.ui.core.Collision", group : "Behavior", defaultValue : 'flip'},
 		"openDelay" : {type : "int", group : "Misc", defaultValue : 500},
 		"closeDelay" : {type : "int", group : "Misc", defaultValue : 100}
+	},
+	events : {
+		"closed" : {}
 	}
 }});
 
@@ -102,6 +106,8 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
  * @name sap.ui.core.TooltipBase.extend
  * @function
  */
+
+sap.ui.core.TooltipBase.M_EVENTS = {'closed':'closed'};
 
 
 /**
@@ -330,6 +336,68 @@ sap.ui.core.Control.extend("sap.ui.core.TooltipBase", { metadata : {
  */
 
 
+/**
+ * This event is fired when the Tooltip has been closed 
+ *
+ * @name sap.ui.core.TooltipBase#closed
+ * @event
+ * @since 1.11.0
+ * @param {sap.ui.base.Event} oControlEvent
+ * @param {sap.ui.base.EventProvider} oControlEvent.getSource
+ * @param {object} oControlEvent.getParameters
+
+ * @public
+ */
+ 
+/**
+ * Attach event handler <code>fnFunction</code> to the 'closed' event of this <code>sap.ui.core.TooltipBase</code>.<br/>.
+ * When called, the context of the event handler (its <code>this</code>) will be bound to <code>oListener<code> if specified
+ * otherwise to this <code>sap.ui.core.TooltipBase</code>.<br/> itself. 
+ *  
+ * This event is fired when the Tooltip has been closed 
+ *
+ * @param {object}
+ *            [oData] An application specific payload object, that will be passed to the event handler along with the event object when firing the event.
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.  
+ * @param {object}
+ *            [oListener] Context object to call the event handler with. Defaults to this <code>sap.ui.core.TooltipBase</code>.<br/> itself.
+ *
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#attachClosed
+ * @function
+ */
+
+/**
+ * Detach event handler <code>fnFunction</code> from the 'closed' event of this <code>sap.ui.core.TooltipBase</code>.<br/>
+ *
+ * The passed function and listener object must match the ones used for event registration.
+ *
+ * @param {function}
+ *            fnFunction The function to call, when the event occurs.
+ * @param {object}
+ *            oListener Context object on which the given function had to be called.
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#detachClosed
+ * @function
+ */
+
+/**
+ * Fire event closed to attached listeners.
+ *
+ * @param {Map} [mArguments] the arguments to pass along with the event.
+ * @return {sap.ui.core.TooltipBase} <code>this</code> to allow method chaining
+ * @protected
+ * @since 1.11.0
+ * @name sap.ui.core.TooltipBase#fireClosed
+ * @function
+ */
+
+
 // Start of sap/ui/core/TooltipBase.js
 
 /**
@@ -539,7 +607,7 @@ sap.ui.core.TooltipBase.prototype.closePopup = function() {
 
 sap.ui.core.TooltipBase.prototype.handleClosed = function(){
 	this._getPopup().detachClosed(jQuery.proxy(this.handleClosed, this));
-	this.fireEvent(sap.ui.core.Popup.M_EVENTS.closed);
+	this.fireClosed();
 };
 
 

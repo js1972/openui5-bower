@@ -376,10 +376,12 @@
 @sapUiContentDisabledTextColor: #666666;
 @sapUiButtonBackground: #000000;
 @sapUiButtonBorderColor: #FFFFFF;
+@sapUiButtonTextColor: #FFFFFF;
 @sapUiButtonDisabledBackground: #000000;
 @sapUiButtonDisabledBorderColor: #666666;
 @sapUiButtonHoverBackground: #7A5100;
 @sapUiButtonHoverBorderColor: #FFFFFF;
+@sapUiButtonHoverTextColor: #FFFFFF;
 @sapUiFieldBackground: #000000;
 @sapUiFieldBorderColor: #FFFFFF;
 @sapUiFieldHoverBorderColor: #FFFFFF;
@@ -497,6 +499,51 @@
 
 @sapUiDatePickerTableBackground: lighten(desaturate(spin(@sapUiHighlightColor,165),18),8);
 @sapUiDatePickerTableBorderColor: @sapUiDatePickerTableBackground;
+
+/* ============================================= */
+/* CSS for control sap.ui.analytics/AnalyticalColumnMenu.control */
+/* ============================================= */
+
+.sapUiAnalyticsAnalyticalColumnMenu{
+  color: @sapUiTextColor;
+  border: 1px solid blue;
+}
+/* ======================================================== */
+/* CSS for control sap.ui.analytics/AnalyticalTable.control */
+/* ======================================================== */
+
+.sapUiAnalyticalTable tr.sapUiAnalyticalTableDummy td {
+	border-right-width: 0;
+}
+
+.sapUiAnalyticalTable tr.sapUiAnalyticalTableDummy td:last-child {
+	border-right-width: 1px;
+}
+
+.sapUiAnalyticalTable .sapUiAnalyticalTableLoading {
+	margin-left: 40px;
+}
+
+/*******************************************************************************
+ * CHILD CONTROL STYLES
+ ******************************************************************************/
+
+.sapUiAnalyticalTable .sapUiTableCol .sapMLabel,
+.sapUiAnalyticalTable .sapUiTableCell > .sapMLabel {
+	border: none;
+	background: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+
+.sapUiAnalyticalTable .sapUiTableCell > .sapMText {
+	width: 100%;
+}
+
+.sapUiSizeCompact .sapUiAnalyticalTable .sapUiTableGroupIcon::before {
+	line-height: @sapUiTableRowHeight;
+}
 /*******************************************************************************
  * TABLE PARAMETERS
  ******************************************************************************/
@@ -562,6 +609,7 @@
 
 .sapUiTable {
 	color: @sapUiBaseText;
+	position: relative;
 }
 
 .sapUiTable > div {
@@ -821,7 +869,12 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 	bottom: 0;
 	text-align: center;
 	background-color: @sapUiExtraLightBG;
+	padding-right: @sapUiTableRowHdrWidth; /* text will be aligned in real center of the table*/
 	/* z-index: 1; */
+}
+
+.sapUiTableSelModeNone .sapUiTableCtrlEmpty {
+	padding-right: 0;
 }
 
 .sapUiTableCtrlEmptyMsg {
@@ -1005,6 +1058,13 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 	padding-top: 8px;
 }
 
+.sapUiSizeCompact .sapUiTableTreeIcon {
+	background-image: none;
+	width: 25px;
+	margin-right: 5px;
+	padding: 0;
+}
+
 .sapUiTableGroupIcon {
 	background-position: center left;
 	background-repeat: no-repeat;
@@ -1014,9 +1074,45 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 	cursor: pointer;
 }
 
+.sapUiSizeCompact .sapUiTableGroupIcon {
+	padding-left: 0;
+	margin-left: 0;
+	background-image: none;
+}
+
+.sapUiSizeCompact .sapUiTableGroupIcon::before,
+.sapUiSizeCompact .sapUiTableTreeIcon::before {
+	font-family: "SAP-icons";
+	font-size: 12px;
+	font-weight: normal;
+	display: inline-block;
+	width: @sapUiTableRowHdrWidth;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.sapUiSizeCompact .sapUiTableGroupIcon::before {
+	line-height: @sapUiTableRowHeight;
+}
+
+.sapUiSizeCompact .sapUiTableGroupIcon.sapUiTableGroupIconOpen::before,
+.sapUiSizeCompact .sapUiTableTreeIconNodeOpen::before {
+	content: '\e1e2';
+}
+
+.sapUiSizeCompact .sapUiTableGroupIcon.sapUiTableGroupIconClosed::before,
+.sapUiSizeCompact .sapUiTableTreeIconNodeClosed::before {
+	content: '\e066';
+}
+
 .sapUiTableRowHdr.sapUiTableGroupHeader {
 	border-right: none;
 }
+
+.sapUiSizeCompact .sapUiTableRowHdr.sapUiTableGroupHeader {
+	position: relative;
+}
+
 .sapUiTableRowHdr.sapUiTableGroupHeader > div {
 	position: absolute;
 	left: 3px;
@@ -1025,10 +1121,23 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 	z-index: 1;
 }
 
-.sapUiTableColumnVisibilityMenu {
-	max-height:400px;
-	overflow-y:auto;
-	padding-bottom: 3px;
+.sapUiSizeCompact .sapUiTableRowHdr.sapUiTableGroupHeader > div {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	padding-right: 15px;
+	font-weight: normal;
+	margin-top: 0;
+	left: 0;
+	color: @sapUiBaseText;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 60px;
+}
+
+.sapUiSizeCompact .sapUiTableTr > td {
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
 
 .sapUiTableColumnVisibilityMenu .sapUiMnuItm {
@@ -1063,6 +1172,13 @@ html[data-sap-ui-browser="ie8"] .sapUiTable {
 /* FIX for IE fixed columns */
 html[data-sap-ui-browser^="ie"] .sapUiTableColHdrCnt {
 	width: 100%;
+}
+
+.sapUiTableHiddenSizeDetector{
+	position: absolute;
+	left: -1000px;
+	visibility: hidden;
+	display: inline-block;
 }
 /*******************************************************************************
  * TABLE SECTIONS

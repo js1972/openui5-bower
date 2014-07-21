@@ -20,7 +20,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/PropertyBinding'],
 	 * @name sap.ui.model.control.ControlPropertyBinding
 	 * @extends sap.ui.model.PropertyBinding
 	 */
-	var ControlPropertyBinding = PropertyBinding.extend("sap.ui.model.control.ControlPropertyBinding", /** @lends sap.ui.model.control.ControlPropertyBinding */ {
+	var ControlPropertyBinding = PropertyBinding.extend("sap.ui.model.control.ControlPropertyBinding", /** @lends sap.ui.model.control.ControlPropertyBinding.prototype */ {
 		
 		constructor : function(oModel, sPath, oContext){
 			PropertyBinding.apply(this, arguments);

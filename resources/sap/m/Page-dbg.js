@@ -44,9 +44,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Aggregations
  * <ul>
  * <li>{@link #getContent content} <strong>(default aggregation)</strong> : sap.ui.core.Control[]</li>
- * <li>{@link #getCustomHeader customHeader} : sap.m.Bar</li>
- * <li>{@link #getFooter footer} : sap.m.Bar</li>
- * <li>{@link #getSubHeader subHeader} : sap.m.Bar</li>
+ * <li>{@link #getCustomHeader customHeader} : sap.m.IBar</li>
+ * <li>{@link #getFooter footer} : sap.m.IBar</li>
+ * <li>{@link #getSubHeader subHeader} : sap.m.IBar</li>
  * <li>{@link #getHeaderContent headerContent} : sap.ui.core.Control[]</li></ul>
  * </li>
  * <li>Associations
@@ -68,7 +68,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -98,11 +98,11 @@ sap.ui.core.Control.extend("sap.m.Page", { metadata : {
 	defaultAggregation : "content",
 	aggregations : {
     	"content" : {type : "sap.ui.core.Control", multiple : true, singularName : "content"}, 
-    	"customHeader" : {type : "sap.m.Bar", multiple : false}, 
-    	"footer" : {type : "sap.m.Bar", multiple : false}, 
-    	"subHeader" : {type : "sap.m.Bar", multiple : false}, 
+    	"customHeader" : {type : "sap.m.IBar", multiple : false}, 
+    	"footer" : {type : "sap.m.IBar", multiple : false}, 
+    	"subHeader" : {type : "sap.m.IBar", multiple : false}, 
     	"headerContent" : {type : "sap.ui.core.Control", multiple : true, singularName : "headerContent"}, 
-    	"_internalHeader" : {type : "sap.m.Bar", multiple : false, visibility : "hidden"}
+    	"_internalHeader" : {type : "sap.m.IBar", multiple : false, visibility : "hidden"}
 	},
 	events : {
 		"navButtonTap" : {deprecated: true}, 
@@ -464,7 +464,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
  * Use this aggregation only when a custom header is constructed where the default header consisting of title text + nav button is not sufficient.
  * If this aggregation is set, the simple properties "title", "showNavButton", "NavButtonText" and "icon" are not used.
  * 
- * @return {sap.m.Bar}
+ * @return {sap.m.IBar}
  * @public
  * @name sap.m.Page#getCustomHeader
  * @function
@@ -473,7 +473,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
 
 /**
  * Setter for the aggregated <code>customHeader</code>.
- * @param {sap.m.Bar} oCustomHeader
+ * @param {sap.m.IBar} oCustomHeader
  * @return {sap.m.Page} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Page#setCustomHeader
@@ -495,7 +495,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
  * Getter for aggregation <code>footer</code>.<br/>
  * The (optional) footer of this page. It is always located at the bottom of the page
  * 
- * @return {sap.m.Bar}
+ * @return {sap.m.IBar}
  * @public
  * @name sap.m.Page#getFooter
  * @function
@@ -504,7 +504,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
 
 /**
  * Setter for the aggregated <code>footer</code>.
- * @param {sap.m.Bar} oFooter
+ * @param {sap.m.IBar} oFooter
  * @return {sap.m.Page} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Page#setFooter
@@ -526,7 +526,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
  * Getter for aggregation <code>subHeader</code>.<br/>
  * a subHeader will be rendered directly under the header
  * 
- * @return {sap.m.Bar}
+ * @return {sap.m.IBar}
  * @public
  * @name sap.m.Page#getSubHeader
  * @function
@@ -535,7 +535,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
 
 /**
  * Setter for the aggregated <code>subHeader</code>.
- * @param {sap.m.Bar} oSubHeader
+ * @param {sap.m.IBar} oSubHeader
  * @return {sap.m.Page} <code>this</code> to allow method chaining
  * @public
  * @name sap.m.Page#setSubHeader
@@ -690,7 +690,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
 
 /**
  * Fire event navButtonTap to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.Page} <code>this</code> to allow method chaining
  * @protected
@@ -753,7 +753,7 @@ sap.m.Page.M_EVENTS = {'navButtonTap':'navButtonTap','navButtonPress':'navButton
 
 /**
  * Fire event navButtonPress to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.Page} <code>this</code> to allow method chaining
  * @protected
@@ -1029,6 +1029,7 @@ sap.m.Page.prototype._updateHeaderContent = function (oContent, sContentPosition
 
 /**
  * Create internal header
+ * @returns {sap.m.IBar}
  * @private
  */
 
@@ -1037,7 +1038,6 @@ sap.m.Page.prototype._getInternalHeader= function() {
 	if (!oInternalHeader){
 		this.setAggregation('_internalHeader', new sap.m.Bar(this.getId() + "-intHeader"));
 		oInternalHeader = this.getAggregation("_internalHeader");
-		oInternalHeader._context = 'header';
 		if(sap.ui.Device.os.ios){
 			if (this.getShowNavButton() && this._navBtn){
 				this._updateHeaderContent(this._navBtn, 'left', 0);
@@ -1071,16 +1071,17 @@ sap.m.Page.prototype._getInternalHeader= function() {
 /**
  * Returns the custom or internal header
  * @private
+ * @returns {sap.m.IBar}
  */
 sap.m.Page.prototype._getAnyHeader = function() {
 	var oCustomHeader = this.getCustomHeader();
+
 	if (oCustomHeader) {
-		oCustomHeader._context = 'header';
 		// return aggregated header, if it exists
-		return oCustomHeader.addStyleClass("sapMPageHeader sapMHeader-CTX");
-	} else {
-		return this._getInternalHeader().addStyleClass("sapMPageHeader sapMHeader-CTX");
+		return oCustomHeader.addStyleClass("sapMPageHeader");
 	}
+
+	return this._getInternalHeader().addStyleClass("sapMPageHeader");
 };
 
 /**

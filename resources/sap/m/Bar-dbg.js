@@ -32,7 +32,9 @@ jQuery.sap.require("sap.ui.core.Control");
  * <li>Properties
  * <ul>
  * <li>{@link #getEnableFlexBox enableFlexBox} : boolean (default: false)</li>
- * <li>{@link #getTranslucent translucent} : boolean (default: false)</li></ul>
+ * <li>{@link #getTranslucent translucent} : boolean (default: false)</li>
+ * <li>{@link #getDesign design} : sap.m.BarDesign (default: sap.m.BarDesign.Auto)</li>
+ * <li>{@link #getVisible visible} : boolean (default: true)</li></ul>
  * </li>
  * <li>Aggregations
  * <ul>
@@ -55,9 +57,10 @@ jQuery.sap.require("sap.ui.core.Control");
  * @class
  * A bar that may be used as a header of a page. It has the capability to center a content like a title, while having few controls on the left and right side.
  * @extends sap.ui.core.Control
+ * @implements sap.m.IBar
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -66,12 +69,17 @@ jQuery.sap.require("sap.ui.core.Control");
 sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 	// ---- object ----
+	interfaces : [
+		"sap.m.IBar"
+	],
 
 	// ---- control specific ----
 	library : "sap.m",
 	properties : {
 		"enableFlexBox" : {type : "boolean", group : "Misc", defaultValue : false, deprecated: true},
-		"translucent" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true}
+		"translucent" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
+		"design" : {type : "sap.m.BarDesign", group : "Appearance", defaultValue : sap.m.BarDesign.Auto},
+		"visible" : {type : "boolean", group : "Appearance", defaultValue : true}
 	},
 	aggregations : {
     	"contentLeft" : {type : "sap.ui.core.Control", multiple : true, singularName : "contentLeft"}, 
@@ -155,6 +163,60 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
  * @deprecated Since version 1.18.6. 
  * This property has no effect since release 1.18.6 and should not be used. Translucent bar may overlay an input and make it difficult to edit.
  * @name sap.m.Bar#setTranslucent
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>design</code>.
+ * The design of the bar. If set to auto it is dependent on the place, where the bar is placed.
+ *
+ * Default value is <code>Auto</code>
+ *
+ * @return {sap.m.BarDesign} the value of property <code>design</code>
+ * @public
+ * @since 1.22
+ * @name sap.m.Bar#getDesign
+ * @function
+ */
+
+/**
+ * Setter for property <code>design</code>.
+ *
+ * Default value is <code>Auto</code> 
+ *
+ * @param {sap.m.BarDesign} oDesign  new value for property <code>design</code>
+ * @return {sap.m.Bar} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Bar#setDesign
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>visible</code>.
+ * Determines whether the control is visible or not. If set to false, the bar will be rendered invisible.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>visible</code>
+ * @public
+ * @since 1.22
+ * @name sap.m.Bar#getVisible
+ * @function
+ */
+
+/**
+ * Setter for property <code>visible</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bVisible  new value for property <code>visible</code>
+ * @return {sap.m.Bar} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22
+ * @name sap.m.Bar#setVisible
  * @function
  */
 
@@ -403,10 +465,11 @@ sap.ui.core.Control.extend("sap.m.Bar", { metadata : {
 
 
 // Start of sap\m\Bar.js
+jQuery.sap.require("sap.m.BarInPageEnabler");
+
 /**
  * @private
  */
-
 sap.m.Bar.prototype.onBeforeRendering = function() {
 	this._removeAllListeners();
 };
@@ -417,7 +480,8 @@ sap.m.Bar.prototype.onAfterRendering = function() {
 
 /**
  * Called when the control is destroyed.
- *
+ * Clean up resize listeners and destroy flexbox,
+ * emties cache
  * @private
  */
 sap.m.Bar.prototype.exit = function() {
@@ -470,7 +534,7 @@ sap.m.Bar.prototype._removeListenerFailsave = function(sListenerName) {
 };
 
 /**
- * Invoked, when bar is rerendered, its size changed, or the size of one for the content bars changed
+ * Invoked, when bar is rerendered, its size changed, or the size of one for the content bars changed.
  * @private
  */
 sap.m.Bar.prototype._handleResize = function() {
@@ -593,6 +657,7 @@ sap.m.Bar.prototype._updatePosition = function(bContentLeft, bContentMiddle, bCo
  * @param iBarWidth the width in pixel
  * @param iLeftBarWidth the width in pixel
  * @returns {object} the new _$MidBarPlaceHolder css value
+ * @private
  */
 sap.m.Bar.prototype._getMidBarCss = function(iRightBarWidth, iBarWidth, iLeftBarWidth) {
 	var iMidBarPlaceholderWidth = this._$MidBarPlaceHolder.outerWidth(true),
@@ -648,10 +713,11 @@ sap.m.Bar.prototype._getMidBarCss = function(iRightBarWidth, iBarWidth, iLeftBar
 };
 
 /**
- * Gets the width of a container
+ * Gets the width of a container.
  * @static
  * @param $Container a container with children
  * @returns {number} the width of one of the bar containers
+ * @private
  */
 sap.m.Bar.prototype._getBarContainerWidth = function($Container) {
 	var i,
@@ -714,3 +780,36 @@ sap.m.Bar.prototype._getBarContainerWidth = function($Container) {
 
 	return iContainerWidth;
 };
+
+/////////////////
+//Bar in page delegation
+/////////////////
+/**
+ * Determines whether the bar is sensitive to the container context.
+ * 
+ * Implementation of the IBar interface.
+ * @returns {boolean} isContextSensitive
+ * @protected
+ */
+sap.m.Bar.prototype.isContextSensitive = sap.m.BarInPageEnabler.prototype.isContextSensitive;
+
+/**
+ * Sets the HTML tag of the root element.
+ * @param {sap.m.IBarHTMLTag} sTag
+ * @returns {sap.m.IBar} this for chaining
+ * @protected
+ */
+sap.m.Bar.prototype.setHTMLTag = sap.m.BarInPageEnabler.prototype.setHTMLTag;
+/**
+ * Gets the HTML tag of the root element.
+ * @returns {sap.m.IBarHTMLTag} the HTML-tag
+ * @protected
+ */
+sap.m.Bar.prototype.getHTMLTag  = sap.m.BarInPageEnabler.prototype.getHTMLTag;
+
+/**
+ * Sets classes and tag according to the context in the page. Possible contexts are header, footer, subheader.
+ * @returns {sap.m.IBar} this for chaining
+ * @protected
+ */
+sap.m.Bar.prototype.applyTagAndContextClassFor  = sap.m.BarInPageEnabler.prototype.applyTagAndContextClassFor;

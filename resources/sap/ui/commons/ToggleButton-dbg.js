@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.commons.Button");
  * @extends sap.ui.commons.Button
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -93,7 +93,7 @@ sap.ui.commons.Button.extend("sap.ui.commons.ToggleButton", { metadata : {
 
 /**
  * Getter for property <code>pressed</code>.
- * true when button is pressed down.
+ * The property is “true” when the control is toggled. The default state of this property is "false".
  *
  * Default value is <code>false</code>
  *

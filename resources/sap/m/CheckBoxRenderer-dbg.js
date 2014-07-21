@@ -29,13 +29,14 @@ sap.m.CheckBoxRenderer.render = function(oRm, oCheckBox){
 
 	// get control properties
 	var bEnabled = oCheckBox.getEnabled();
-	var iTabIndex = bEnabled ? 0 : -1;
 
 	// CheckBox wrapper
 	oRm.write("<div");
 	oRm.addClass("sapMCb");
 	if(bEnabled) {
 		oRm.addClass("sapMPointer");
+	} else {
+		oRm.addClass("sapMCbBgDis");
 	}
 	oRm.writeControlData(oCheckBox);
 	oRm.writeClasses();
@@ -54,16 +55,18 @@ sap.m.CheckBoxRenderer.render = function(oRm, oCheckBox){
 	// CheckBox style class
 	oRm.addClass("sapMCbBg");
 
-	if (!bEnabled) {
-		oRm.addClass("sapMCbBgDis");
-	} else if(sap.ui.Device.system.desktop) {
+	if(bEnabled && sap.ui.Device.system.desktop) {
 		oRm.addClass("sapMCbHoverable");
 	}
 
 	if (!oCheckBox.getActiveHandling()){
 		oRm.addClass("sapMCbActiveStateOff");
 	}
-	oRm.writeAttribute("tabindex", oCheckBox.hasOwnProperty("_iTabIndex") ? oCheckBox._iTabIndex : iTabIndex);
+
+	if(bEnabled) {
+		oRm.writeAttribute("tabindex", oCheckBox.getTabIndex());
+	}
+
 	oRm.addClass("sapMCbMark"); // TODO: sapMCbMark is redundant, remove it and simplify CSS
 
 	if (oCheckBox.getSelected()) {
@@ -73,7 +76,7 @@ sap.m.CheckBoxRenderer.render = function(oRm, oCheckBox){
 
 	oRm.write(">");		// DIV element
 
-	oRm.write("<input type='CheckBox' tabindex='-1' id='");
+	oRm.write("<input type='CheckBox' id='");
 	oRm.write(oCheckBox.getId() + "-CB'");
 
 	if (oCheckBox.getSelected()) {

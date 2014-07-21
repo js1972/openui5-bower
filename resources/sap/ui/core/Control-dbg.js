@@ -18,6 +18,16 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 	 * subclass and is described there. See {@link sap.ui.core.Element} for a general description of this
 	 * argument.
 	 *
+	 * The settings supported by Control are:
+	 * <ul>
+	 * <li>Properties
+	 * <ul>
+	 * <li>{@link #getBusy busy} : boolean (default: false)</li>
+	 * <li>{@link #getBusyIndicatorDelay busyIndicatorDelay} : int (default: 1000)</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 *  
 	 * @param {string} [sId] optional id for the new control; generated automatically if no non-empty id is given
 	 *      Note: this can be omitted, no matter whether <code>mSettings</code> will be given or not!
 	 * @param {object} [mSettings] optional map/JSON-object with initial settings for the new control
@@ -27,7 +37,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 	 * @extends sap.ui.core.Element
 	 * @abstract
 	 * @author Martin Schaus, Daniel Brinkmann
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @name sap.ui.core.Control
 	 */
 	var Control = Element.extend("sap.ui.core.Control", /* @lends sap.ui.core.Control */ {
@@ -82,6 +92,32 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 	 * @function
 	 */
 	
+	/**
+	 * Getter for property <code>busy</code>.
+	 * 
+	 * Whether the control is currently in busy state.
+	 * 
+	 * Default value is <code>false</code>
+	 *
+	 * @return {boolean} the value of property <code>busy</code>
+	 * @public
+	 * @name sap.ui.core.Control#getBusy
+	 * @function
+	 */
+
+	/**
+	 * Getter for property <code>busyIndicatorDelay</code>.
+	 * 
+	 * The time in milliseconds after which the control displays a busy indicator after becoming busy.
+	 * 
+	 * Default value is <code>1000</code> ms.
+	 *
+	 * @return {int} the value of property <code>busyIndicatorDelay</code>
+	 * @public
+	 * @name sap.ui.core.Control#getBusyIndicatorDelay
+	 * @function
+	 */
+
 	/**
 	 * Overrides {@link sap.ui.core.Element#clone Element.clone} to clone additional 
 	 * internal state.
@@ -148,7 +184,15 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 			// The check for bOutput is necessary as the control
 			// re-rendering needs to identify the previous rendering results.
 			// Otherwise it wouldn't be able to replace them.
-			oUIArea.addInvalidatedControl(this);
+			//
+			// Note about destroy(): when this control is currently in the process of being 
+			// destroyed, registering it for an autonomous re-rendering doesn't make sense. 
+			// In most cases, invalidation of the parent also doesn't make sense, 
+			// but there might be composite controls that rely on being invalidated when 
+			// a child is destroyed, so we keep the invalidation propagation untouched.
+			if ( !this._bIsBeingDestroyed ) {
+				oUIArea.addInvalidatedControl(this);
+			}
 		} else {
 			// else we bubble up the hierarchy
 			var oParent = this.getParent();
@@ -549,6 +593,8 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 	};
 	
 	Control.prototype.destroy = function(bSuppressInvalidate) {
+		// avoid rerendering
+		this._bIsBeingDestroyed = true;
 		//Cleanup Busy Indicator
 		this._cleanupBusyIndicator();
 		
@@ -567,7 +613,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 				}
 			},
 			fnAppendBusyIndicator = function() {
-				var $this = this.$(),
+				var $this = this.$(this._sBusySection),
 					aForbiddenTags = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"];
 				
 	
@@ -604,7 +650,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 			},
 			fnHandleInteraction = function(bBusy) {
 				if (bBusy) {
-					var $this = this.$(),
+					var $this = this.$(this._sBusySection),
 						$TabRefs = $this.find('[tabindex]'),
 						that = this;
 					this._busyTabIndices = [];
@@ -636,7 +682,7 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 				oEvent.stopImmediatePropagation();
 			},
 			fnAnimate = function() {
-				var $bubbles = this.$().children('.sapUiLocalBusyIndicator').children('.sapUiLocalBusyIndicatorAnimation');
+				var $bubbles = this.$(this._sBusySection).children('.sapUiLocalBusyIndicator').children('.sapUiLocalBusyIndicatorAnimation');
 				var that = this;
 				that._busyAnimationTimer1 = setTimeout(function() {
 					$bubbles.children(":eq(0)").addClass('active');
@@ -657,16 +703,17 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 			};
 	
 		/**
-		 * Set the controls busy state
+		 * Set the controls busy state.
 		 * 
+		 * @param {boolean} bBusy The new busy state to be set
+		 * @return {sap.ui.core.Control} <code>this</code> to allow method chaining
 		 * @public
-		 * @param boolean The state to be set
-		 * @return {Control} reference to control for chaining
 		 * @name sap.ui.core.Control#setBusy
 		 * @function
 		 */
-		Control.prototype.setBusy = function (bBusy) {
-			var $this = this.$();
+		Control.prototype.setBusy = function (bBusy, sBusySection /* this is an internal parameter to apply partial local busy indicator for a specific section of the control */) {
+			this._sBusySection = sBusySection;
+			var $this = this.$(this._sBusySection);
 	
 			//If the new state is already set, we don't need to do anything
 			if (bBusy == this.getProperty("busy")) {
@@ -733,8 +780,8 @@ sap.ui.define(['jquery.sap.global', './CustomStyleClassSupport', './Element'],
 		 * Define the delay, after which the busy indicator will show up
 		 * 
 		 * @public
-		 * @param int The delay in ms
-		 * @return {Control} reference to control for chaining
+		 * @param {int} iDelay The delay in ms
+		 * @return {sap.ui.core.Control} <code>this</code> to allow method chaining
 		 * @name sap.ui.core.Control#setBusyIndicatorDelay
 		 * @function
 		 */

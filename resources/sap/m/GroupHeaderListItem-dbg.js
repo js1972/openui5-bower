@@ -63,7 +63,7 @@ jQuery.sap.require("sap.m.ListItemBase");
  * @extends sap.m.ListItemBase
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -188,10 +188,6 @@ sap.m.GroupHeaderListItem.prototype.isSelectable = function() {
 
 sap.m.GroupHeaderListItem.prototype.shouldClearLastValue = function() {
 	return true;
-};
-
-sap.m.GroupHeaderListItem.prototype.ontouchstart = function(oEvent) {
-	oEvent.setMarked();
 };
 
 sap.m.GroupHeaderListItem.prototype.onBeforeRendering = function() {

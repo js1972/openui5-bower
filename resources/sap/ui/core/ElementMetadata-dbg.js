@@ -17,8 +17,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	 * @param {object} oStaticInfo static info to construct the metadata from
 	 *
 	 * @class
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @since 0.8.6
 	 * @name sap.ui.core.ElementMetadata
 	 */

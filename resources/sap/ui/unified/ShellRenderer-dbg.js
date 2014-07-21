@@ -27,6 +27,9 @@ sap.ui.unified.ShellRenderer.render = function(rm, oShell){
 	if(oShell._animation){
 		rm.addClass("sapUiUfdShellAnim");
 	}
+	if(oShell.getSearch()){
+		rm.addClass("sapUiUfdShellWithSearch");
+	}
 	rm.addClass("sapUiUfdShellHead"+ (oShell._showHeader ? "Visible" : "Hidden"));
 	if(oShell.getShowCurtain()){
 		rm.addClass("sapUiUfdShellCurtainVisible");
@@ -52,7 +55,9 @@ sap.ui.unified.ShellRenderer.render = function(rm, oShell){
 	rm.write("<span id='", id, "-curt-focusDummyOut' tabindex='0'></span>");
 	rm.write("</section>");
 	
-	rm.write("<div id='", id, "-cntnt' class='sapUiUfdShellCntnt sapUiUfdShellCanvas'>");
+	rm.write("<div id='", id, "-cntnt' class='sapUiUfdShellCntnt sapUiUfdShellCanvas sapUiUfdShellBackground'>");
+	rm.write("<div id='", id, "-strgbg' class='sapUiUfdShellBG"+(oShell._useStrongBG ? " sapMGlobalBackgroundColorStrong" : "")+"'></div>");
+	rm.write("<div class='sapMGlobalBackgroundImage sapUiUfdShellBG'></div>");
 	rm.renderControl(oShell._cont);
 	rm.write("</div>");
 	
@@ -78,15 +83,14 @@ sap.ui.unified.ShellRenderer._renderHeaderContent = function(rm, oShell){
 };
 
 sap.ui.unified.ShellRenderer.renderSearch = function(rm, oShell) {
-	var oSearch = oShell.getSearch(),
-		bShowSearch = oShell.getSearchVisible() && !!oSearch;
+	var oSearch = oShell.getSearch();
 	rm.write("<div id='", oShell.getId(), "-hdr-search'");
-	rm.writeAttribute("class", "sapUiUfdShellSearch" + (bShowSearch ? "" : " sapUiUfdShellHidden"));
-	rm.write(">");
+	rm.writeAttribute("class", "sapUiUfdShellSearch" + (oShell.getSearchVisible() ? "" : " sapUiUfdShellHidden"));
+	rm.write("><div>");
 	if(oSearch){
 		rm.renderControl(oSearch);
 	}
-	rm.write("</div>");
+	rm.write("</div></div>");
 };
 
 sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
@@ -115,6 +119,25 @@ sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
 			rm.writeAttributeEscaped("title", tooltip);
 		}
 		rm.write("><span></span><div class='sapUiUfdShellHeadItmMarker'><div></div></div></a>");
+	}
+	
+	var oUser = oShell.getUser();
+	if(!begin && oUser){
+		rm.write("<a tabindex='0' href='javascript:void(0);'");
+		rm.writeElementData(oUser);
+		rm.addClass("sapUiUfdShellHeadUsrItm");
+		rm.writeClasses();
+		var tooltip = oUser.getTooltip_AsString();
+		if(tooltip){
+			rm.writeAttributeEscaped("title", tooltip);
+		}
+		rm.write("><span id='", oUser.getId(), "-img' class='sapUiUfdShellHeadUsrItmImg'></span>");
+		rm.write("<span id='"+oUser.getId()+"-name' class='sapUiUfdShellHeadUsrItmName'");
+		var sUserName = oUser.getUsername() || "";
+		rm.writeAttributeEscaped("title", sUserName);
+		rm.write(">");
+		rm.writeEscaped(sUserName);
+		rm.write("</span><span class='sapUiUfdShellHeadUsrItmExp'></span></a>");
 	}
 	
 	rm.write("</div>");

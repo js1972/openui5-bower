@@ -10,20 +10,20 @@ jQuery.sap.require("sap.ui.commons.TextFieldRenderer");
 
 /**
  * @class ValueHelpField renderer.
- * @static
- * For a common look&feel, the ValueHelpFeild extends the TextField control,
+ * For a common look&feel, the ValueHelpField extends the TextField control,
  * just like the ComboBox does.
+ * @static
  */
 sap.ui.commons.ValueHelpFieldRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.TextFieldRenderer);
 
 /**
+ * Hint: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
+ *       It is used to allow extensions to display help icons.
  * @param {sap.ui.core.RenderManager}
  *            rm the RenderManager currently rendering this control
  * @param {sap.ui.commons.ValueHelpField}
  *            oControl the ValueHelpField whose "value help" should be rendered
  * @private
- * P.S.: "renderOuterAttributes" is a reserved/hard-coded TextField extending function!
- *       It is used to allow extensions to display help icons.
  */
 sap.ui.commons.ValueHelpFieldRenderer.renderOuterAttributes = function(rm, oControl) {
 	// To share the overall ComboBox styling:

@@ -51,11 +51,12 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 	 *
 	 * @class Base Class for managed objects.
 	 * @extends sap.ui.base.EventProvider
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.base.ManagedObject
-	 * @experimental Since 1.11.2. support for the optional parameter oScope is still experimental 
+	 * @experimental Since 1.11.2. ManagedObject as such is public and usable. Only the support for the optional parameter 
+	 * oScope in the constructor is still experimental and might change in future versions. Applications should not rely on it.
 	 */
 	var ManagedObject = EventProvider.extend("sap.ui.base.ManagedObject", {
 	
@@ -307,9 +308,8 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 	 * @param {object} [oScope] Scope object to resolve types and formatters
 	 * @return {sap.ui.base.ManagedObject} Returns <code>this</code> to allow method chaining
 	 * @public
-	 * @experimental Since 1.11.2. support for complex string binding syntax as well as the 
-	 * 				scope object for resolving string based type and formatter references 
-	 * 				in bindings is still experimental
+	 * @experimental Since 1.11.2 support for the scope object for resolving string based type 
+	 * and formatter references in bindings is still experimental
 	 * @name sap.ui.base.ManagedObject#applySettings
 	 * @function
 	 */
@@ -1937,26 +1937,8 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 			oPropertyInfo = this.getMetadata().getJSONKeys()[sName], // TODO fix handling of hidden entitites?
 			that = this,
 			aBindings = [],
-			fModelChangeHandler = function() {
-				try {			
-					var oValue = oBinding.getExternalValue();
-					oBindingInfo.skipModelUpdate = true;
-					that[oPropertyInfo._sMutator](oValue);
-					oBindingInfo.skipModelUpdate = false;
-				}catch (oException) {
-					if (oException instanceof sap.ui.model.FormatException) {
-						that.fireFormatError({
-							element : that,
-							property : sName,
-							type : oBinding.getType(),
-							newValue : oBinding.getValue(),
-							oldValue : that.getProperty(sName),
-							exception: oException
-						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}else {
-						throw oException;
-					}
-				}
+			fModelChangeHandler = function(oEvent){
+				that.updateProperty(sName);
 			};
 	
 		// Only use context for bindings on the primary model
@@ -2008,7 +1990,6 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 		oBinding.setFormatter(jQuery.proxy(oBindingInfo.formatter, this));  
 		
 		// Set additional information on the binding info
-		oBindingInfo.skipModelUpdate = false;
 		oBindingInfo.binding = oBinding;
 		oBindingInfo.modelChangeHandler = fModelChangeHandler;
 		
@@ -2047,6 +2028,44 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 		}
 		return this;
 	};
+
+	/**
+	 * Generic method which is called, whenever an property binding is changed.
+	 * This method gets the external format from the property binding and applies
+	 * it to the setter.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#updateProperty
+	 * @function
+	 */
+	ManagedObject.prototype.updateProperty = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding,
+			oPropertyInfo = this.getMetadata().getJSONKeys()[sName];
+		
+		// If model change was triggered by the property itself, don't call the setter again
+		if (oBindingInfo.skipPropertyUpdate) return;
+		
+		try {			
+			var oValue = oBinding.getExternalValue();
+			oBindingInfo.skipModelUpdate = true;
+			this[oPropertyInfo._sMutator](oValue);
+			oBindingInfo.skipModelUpdate = false;
+		} catch (oException) {
+			if (oException instanceof sap.ui.model.FormatException) {
+				this.fireFormatError({
+					element : this,
+					property : sName,
+					type : oBinding.getType(),
+					newValue : oBinding.getValue(),
+					oldValue : this.getProperty(sName),
+					exception: oException
+				}, false, true); // bAllowPreventDefault, bEnableEventBubbling
+			} else {
+				throw oException;
+			}
+		}
+	};
 	
 	/**
 	 * Update the property in the model if two way data binding mode is enabled
@@ -2061,11 +2080,25 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 		if (this.isBound(sName)){
 			var oBindingInfo = this.mBindingInfos[sName],
 				oBinding = oBindingInfo.binding;
+			
+			// If property change was triggered by the model, don't update the model again
+			if (oBindingInfo.skipModelUpdate) return;
+			
 			// only one property binding should work with two way mode...composite binding does not work with two way binding 
-			if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay
-					&& !oBindingInfo.skipModelUpdate) {
+			if (oBinding && oBinding.getBindingMode() == sap.ui.model.BindingMode.TwoWay) {
 				try {
+					// Set flag to avoid originating propery to be updated from the model
+					oBindingInfo.skipPropertyUpdate = true;
 					oBinding.setExternalValue(oValue);
+					oBindingInfo.skipPropertyUpdate = false;
+					
+					// If external value differs from own value after model update,
+					// update property again
+					var oExternalValue = oBinding.getExternalValue();
+					if (oValue != oExternalValue) {
+						this.updateProperty(sName);
+					}
+					
 					// Only fire validation success, if a type is used
 					if (oBinding.getType()) {
 						this.fireValidationSuccess({
@@ -2076,8 +2109,7 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 							oldValue : oOldValue
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
 					}
-				}
-				catch (oException) {
+				} catch (oException) {
 					if (oException instanceof sap.ui.model.ParseException) {
 						this.fireParseError({
 							element : this,
@@ -2087,7 +2119,7 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 							oldValue : oOldValue,
 							exception: oException
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}else if (oException instanceof sap.ui.model.ValidateException) {
+					} else if (oException instanceof sap.ui.model.ValidateException) {
 						this.fireValidationError({
 							element : this,
 							property : sName,
@@ -2096,8 +2128,7 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 							oldValue : oOldValue,
 							exception: oException
 						}, false, true); // bAllowPreventDefault, bEnableEventBubbling
-					}
-					else {
+					} else {
 						throw oException;
 					}
 				}
@@ -2273,6 +2304,87 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 		}
 		return this;
 	};
+
+	/**
+	 * Generic method which is called, whenever an aggregation binding is changed.
+	 * This method deletes all elements in this aggregation and recreates them
+	 * according to the data model.
+	 * In case a managed object needs special handling for a aggregation binding, it can create
+	 * a typed update-method (e.g. "updateRows") which will be used instead of the
+	 * default behaviour.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#updateAggregation
+	 * @function
+	 */
+	ManagedObject.prototype.updateAggregation = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding,
+			fnFactory = oBindingInfo.factory,
+			oAggregationInfo = this.getMetadata().getJSONKeys()[sName],  // TODO fix handling of hidden aggregations
+			oClone,
+			oNewGroup = null,
+			sGroupFunction = null,
+			bGrouped = null,
+			sGroup = null,
+			that = this;
+		this[oAggregationInfo._sDestructor]();
+		if (this.isTreeBinding(sName)) {
+			var iNodeIndex = 0,
+				update = function(aContexts, fnFactory, oBinding, oParent){
+					jQuery.each(aContexts, function(iIndex, oContext) {
+						var sId = that.getId() + "-" + iNodeIndex++;
+						oClone = fnFactory(sId, oContext);
+						oClone.setBindingContext(oContext, oBindingInfo.model);
+						oParent[oAggregationInfo._sMutator](oClone); // also sets the Parent
+						update(oBinding.getNodeContexts(oContext), fnFactory, oBinding, oClone);
+					});
+				};
+			update(oBinding.getRootContexts(), fnFactory, oBinding, this);
+		} 
+		else {
+			sGroupFunction = oAggregationInfo._sMutator + "Group";
+			bGrouped = oBinding.isGrouped() && this[sGroupFunction];
+			jQuery.each(oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length), function(iIndex, oContext) {
+				if (bGrouped && oBinding.aSorters.length > 0) {
+					oNewGroup = oBinding.aSorters[0].fnGroup(oContext);
+					if (typeof oNewGroup == "string") {
+						oNewGroup = {
+							key: oNewGroup
+						};
+					} 
+					if (oNewGroup.key !== sGroup) {
+						var oGroupHeader;
+						//If factory is defined use it
+						if (oBindingInfo.groupHeaderFactory) {
+							oGroupHeader = oBindingInfo.groupHeaderFactory(oNewGroup);
+						}
+						that[sGroupFunction](oNewGroup, oGroupHeader);
+						sGroup = oNewGroup.key;
+					}
+				}
+				var sId = that.getId() + "-" + iIndex;
+				oClone = fnFactory(sId, oContext);
+				oClone.setBindingContext(oContext, oBindingInfo.model);
+				that[oAggregationInfo._sMutator](oClone);
+			});
+		}
+	};
+	
+	/**
+	 * Generic method which can be called, when an aggregation needs to be refreshed.
+	 * This method does not make any change on the aggregtaion, but just calls the
+	 * getContexts method to trigger fetching of new data.
+	 *
+	 * @private
+	 * @name sap.ui.base.ManagedObject#refreshAggregation
+	 * @function
+	 */
+	ManagedObject.prototype.refreshAggregation = function(sName) {
+		var oBindingInfo = this.mBindingInfos[sName],
+			oBinding = oBindingInfo.binding;
+		oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length);
+	};
 	
 	/**
 	 *  This method is used internally and should only be overridden by a tree managed object which utilizes the tree binding.
@@ -2386,71 +2498,6 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 		
 	};
 	
-	/**
-	 * Generic method which is called, whenever an aggregation binding is changed.
-	 * This method deletes all elements in this aggregation and recreates them
-	 * according to the data model.
-	 * In case a managed object needs special handling for a aggregation binding, it can create
-	 * a typed update-method (e.g. "updateRows") which will be used instead of the
-	 * default behaviour.
-	 *
-	 * @private
-	 * @name sap.ui.base.ManagedObject#updateAggregation
-	 * @function
-	 */
-	ManagedObject.prototype.updateAggregation = function(sName) {
-		var oBindingInfo = this.mBindingInfos[sName],
-			oBinding = oBindingInfo.binding,
-			fnFactory = oBindingInfo.factory,
-			oAggregationInfo = this.getMetadata().getJSONKeys()[sName],  // TODO fix handling of hidden aggregations
-			oClone,
-			oNewGroup = null,
-			sGroupFunction = null,
-			bGrouped = null,
-			sGroup = null,
-			that = this;
-		this[oAggregationInfo._sDestructor]();
-		if (this.isTreeBinding(sName)) {
-			var iNodeIndex = 0,
-				update = function(aContexts, fnFactory, oBinding, oParent){
-					jQuery.each(aContexts, function(iIndex, oContext) {
-						var sId = that.getId() + "-" + iNodeIndex++;
-						oClone = fnFactory(sId, oContext);
-						oClone.setBindingContext(oContext, oBindingInfo.model);
-						oParent[oAggregationInfo._sMutator](oClone); // also sets the Parent
-						update(oBinding.getNodeContexts(oContext), fnFactory, oBinding, oClone);
-					});
-				};
-			update(oBinding.getRootContexts(), fnFactory, oBinding, this);
-		} 
-		else {
-			sGroupFunction = oAggregationInfo._sMutator + "Group";
-			bGrouped = oBinding.isGrouped() && this[sGroupFunction];
-			jQuery.each(oBinding.getContexts(oBindingInfo.startIndex, oBindingInfo.length), function(iIndex, oContext) {
-				if (bGrouped && oBinding.aSorters.length > 0) {
-					oNewGroup = oBinding.aSorters[0].fnGroup(oContext);
-					if (typeof oNewGroup == "string") {
-						oNewGroup = {
-							key: oNewGroup
-						};
-					} 
-					if (oNewGroup.key !== sGroup) {
-						var oGroupHeader;
-						//If factory is defined use it
-						if (oBindingInfo.groupHeaderFactory) {
-							oGroupHeader = oBindingInfo.groupHeaderFactory(oNewGroup);
-						}
-						that[sGroupFunction](oNewGroup, oGroupHeader);
-						sGroup = oNewGroup.key;
-					}
-				}
-				var sId = that.getId() + "-" + iIndex;
-				oClone = fnFactory(sId, oContext);
-				oClone.setBindingContext(oContext, oBindingInfo.model);
-				that[oAggregationInfo._sMutator](oClone);
-			});
-		}
-	};
 	
 	/**
 	 * Find out whether a property or aggregation is bound
@@ -2585,10 +2632,10 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 				if (oModel && oBoundObject && oBoundObject.sBindingPath && !bSkipLocal) {
 					if(!oBoundObject.binding) {
 						this._bindObject(sModelName, oBoundObject);
-					} else {
+					} else { 
 						oParentContext = null;
 						if (this.oParent && oModel == this.oParent.getModel(sModelName)) {
-							oParentContext= this.oParent.getBindingContext(sModelName); 
+							oParentContext = this.oParent.getBindingContext(sModelName); 
 						}
 						if (oParentContext !== oBoundObject.binding.getContext()) {
 							oBoundObject.binding.setContext(oParentContext);
@@ -2910,13 +2957,19 @@ sap.ui.define(['jquery.sap.global', './BindingParser', './DataType', './EventPro
 			mSettings = {},
 			mProps = this.mProperties,
 			sKey,
-			oClone;
+			oClone,
+			escape = ManagedObject.bindingParser.escape;
 		
 		// Clone properties (only those with non-default value)
 		for(sKey in mProps) {
 			//do not clone properties if property is bound and bindings are cloned; Property is set on update
 			if ( mProps.hasOwnProperty(sKey) && !(this.isBound(sKey) && bCloneBindings)){
-				mSettings[sKey] = mProps[sKey];
+				// Note: to avoid double resolution of binding expressions, we have to escape string values once again 
+				if (typeof mProps[sKey] === "string") {
+					mSettings[sKey] = escape(mProps[sKey]);	
+				} else {
+					mSettings[sKey] = mProps[sKey];
+				}
 			}
 		}
 		

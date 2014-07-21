@@ -18,7 +18,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @public
 	 * @name sap.ui.core.LocaleData
@@ -193,6 +193,36 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './
 			jQuery.sap.assert(sType == "decimal" || sType == "group" || sType == "plusSign" || sType == "minusSign", "sType must be decimal, group, plusSign or minusSign");
 			return this._get("symbols-latn-" + sType);
 		},
+		
+		/**
+		 * Get decimal format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getDecimalPattern : function() {
+			return this._get("decimalFormat").standard;
+		},
+		
+		/**
+		 * Get currency format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getCurrencyPattern : function() {
+			return this._get("currencyFormat").standard;
+		},
+		
+		/**
+		 * Get percent format pattern
+		 *
+		 * @returns {string} The pattern
+		 * @public
+		 */
+		getPercentPattern : function() {
+			return this._get("percentFormat").standard;
+		},
 
 		/**
 		 * Returns the day that usually is regarded as the first day 
@@ -259,6 +289,40 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './
 		 */
 		getIntervalPattern : function(sId) {
 			return (sId && this._get("intervalFormat-" + sId)) || this._get("intervalFormatFallback"); 
+		},
+		
+		/**
+		 * Returns the number of digits of the specified currency
+		 *
+		 * @param {string} sCurrency ISO 4217 currency code
+		 * @returns {int} digits of the currency
+		 * @public
+		 * @since 1.21.1
+		 */
+		getCurrencyDigits : function(sCurrency) {
+			var oCurrencyDigits = this._get("currencyDigits");
+			var iDigits = 2;
+			if (oCurrencyDigits) {
+				if (oCurrencyDigits[sCurrency] != undefined) {
+					iDigits = oCurrencyDigits[sCurrency];
+				} else {
+					iDigits = oCurrencyDigits["DEFAULT"];
+				}
+			}
+			return iDigits;
+		},
+		
+		/**
+		 * Returns the currency symbol for the specified currency, if no symbol is found the ISO 4217 currency code is returned
+		 *
+		 * @param {string} sCurrency ISO 4217 currency code
+		 * @returns {string} the currency symbol
+		 * @public
+		 * @since 1.21.1
+		 */
+		getCurrencySymbol : function(sCurrency) {
+			var oCurrencySymbols = this._get("currencySymbols");
+			return (oCurrencySymbols && oCurrencySymbols[sCurrency]) || sCurrency;
 		}
 		
 	});
@@ -285,6 +349,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './
 			"dateTimeFormat-long":"{1} 'at' {0}",
 			"dateTimeFormat-medium":"{1}, {0}",
 			"dateTimeFormat-short":"{1}, {0}",
+			"decimalFormat": { "standard": "#,##0.###" },
+			"currencyFormat": { "standard": "¤#,##0.00"},
+			"percentFormat": { "standard": "#,##0%"},
 			"months-format-abbreviated":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
 			"months-format-wide":["January","February","March","April","May","June","July","August","September","October","November","December"],
 			"months-format-narrow":["1","2","3","4","5","6","7","8","9","10","11","12"],
@@ -336,7 +403,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', './Configuration', './
 		var LOCALES = "ar,ar_AE,ar_EG,ar_SA,bg,bg_BG,br,ca_ES,cs,cs_CZ,da,da_DK,de,de_AT,de_BE,de_CH,de_DE,de_LU,el,el_CY,el_GR,en,en_AU,en_CA,en_GB,en_HK,en_IE,en_IN,en_NZ,en_PG,en_SG,en_US,en_ZA,es,es_AR,es_BO,es_CL,es_CO,es_ES,es_MX,es_PE,es_UY,es_VE,et,et_EE,fa,fa_IR,fi,fi_FI,fr,fr_BE,fr_CA,fr_CH,fr_FR,fr_LU,he,he_IL,hi,hi_IN,hr,hr_HR,hu,hu_HU,id,id_ID,it,it_CH,it_IT,ja,ja_JP,ko,ko_KR,lt,lt_LT,lv,lv_LV,nb,nb_NO,nl,nl_BE,nl_NL,nn,nn_NO,pl,pl_PL,pt,pt_BR,pt_PT,ro,ro_RO,ru,ru_KZ,ru_RU,ru_UA,sk_SK,sl,sl_SI,sr,sv,sv_SE,th,th_TH,tr,tr_CY,tr_TR,uk,uk_UA,vi,vi_VN,zh_CN,zh_HK,zh_SG,zh_TW".split(","), 
 			i,result;
 		
-		if ( LOCALES.length != 1 || LOCALES[0].indexOf("@") < 0) { // check that list has been substituted 
+		if ( LOCALES.length != 1 || (LOCALES[0] && LOCALES[0].indexOf("@") < 0) ) { // check that list has been substituted 
 			result = {};
 			for(i=0; i<LOCALES.length; i++) {
 				result[LOCALES[i]] = true;

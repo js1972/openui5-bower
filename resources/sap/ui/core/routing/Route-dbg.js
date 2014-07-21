@@ -35,7 +35,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider', 'sap/ui/thirdpa
 		 * @public
 		 * @name sap.ui.core.routing.Route
 		 */
-		var Route = EventProvider.extend("sap.ui.core.routing.Route", /** @lends sap.ui.core.routing.Route */ {
+		var Route = EventProvider.extend("sap.ui.core.routing.Route", /** @lends sap.ui.core.routing.Route.prototype */ {
 	
 			constructor : function(oRouter, oConfig, oParent) {
 				if (!oConfig.name) {

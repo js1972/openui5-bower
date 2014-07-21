@@ -38,7 +38,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * </li>
  * <li>Aggregations
  * <ul>
- * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.commons.MenuItem[]</li></ul>
+ * <li>{@link #getItems items} <strong>(default aggregation)</strong> : sap.ui.unified.MenuItem[]</li></ul>
  * </li>
  * <li>Associations
  * <ul></ul>
@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -81,7 +81,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 	},
 	defaultAggregation : "items",
 	aggregations : {
-    	"items" : {type : "sap.ui.commons.MenuItem", multiple : true, singularName : "item"}
+    	"items" : {type : "sap.ui.unified.MenuItem", multiple : true, singularName : "item"}
 	}
 }});
 
@@ -208,7 +208,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
  * Aggregation of menu items.
  * 
  * <strong>Note</strong>: this is the default aggregation for MenuBar.
- * @return {sap.ui.commons.MenuItem[]}
+ * @return {sap.ui.unified.MenuItem[]}
  * @public
  * @name sap.ui.commons.MenuBar#getItems
  * @function
@@ -218,7 +218,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 /**
  * Inserts a item into the aggregation named <code>items</code>.
  *
- * @param {sap.ui.commons.MenuItem}
+ * @param {sap.ui.unified.MenuItem}
  *          oItem the item to insert; if empty, nothing is inserted
  * @param {int}
  *             iIndex the <code>0</code>-based index the item should be inserted at; for 
@@ -235,7 +235,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
  * Adds some item <code>oItem</code> 
  * to the aggregation named <code>items</code>.
  *
- * @param {sap.ui.commons.MenuItem}
+ * @param {sap.ui.unified.MenuItem}
  *            oItem the item to add; if empty, nothing is inserted
  * @return {sap.ui.commons.MenuBar} <code>this</code> to allow method chaining
  * @public
@@ -246,8 +246,8 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 /**
  * Removes an item from the aggregation named <code>items</code>.
  *
- * @param {int | string | sap.ui.commons.MenuItem} vItem the item to remove or its index or id
- * @return {sap.ui.commons.MenuItem} the removed item or null
+ * @param {int | string | sap.ui.unified.MenuItem} vItem the item to remove or its index or id
+ * @return {sap.ui.unified.MenuItem} the removed item or null
  * @public
  * @name sap.ui.commons.MenuBar#removeItem
  * @function
@@ -256,17 +256,17 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 /**
  * Removes all the controls in the aggregation named <code>items</code>.<br/>
  * Additionally unregisters them from the hosting UIArea.
- * @return {sap.ui.commons.MenuItem[]} an array of the removed elements (might be empty)
+ * @return {sap.ui.unified.MenuItem[]} an array of the removed elements (might be empty)
  * @public
  * @name sap.ui.commons.MenuBar#removeAllItems
  * @function
  */
 
 /**
- * Checks for the provided <code>sap.ui.commons.MenuItem</code> in the aggregation named <code>items</code> 
+ * Checks for the provided <code>sap.ui.unified.MenuItem</code> in the aggregation named <code>items</code> 
  * and returns its index if found or -1 otherwise.
  *
- * @param {sap.ui.commons.MenuItem}
+ * @param {sap.ui.unified.MenuItem}
  *            oItem the item whose index is looked for.
  * @return {int} the index of the provided control in the aggregation if found, or -1 otherwise
  * @public
@@ -286,6 +286,7 @@ sap.ui.core.Control.extend("sap.ui.commons.MenuBar", { metadata : {
 
 
 // Start of sap\ui\commons\MenuBar.js
+jQuery.sap.require("sap.ui.commons.MenuItemBase"); /*Ensure MenuItemBase is loaded (incl. loading of unified library)*/
 jQuery.sap.require("sap.ui.commons.Menu");
 jQuery.sap.require("sap.ui.commons.MenuItem");
 

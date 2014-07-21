@@ -62,7 +62,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -92,7 +92,8 @@ sap.ui.core.Control.extend("sap.m.BusyDialog", { metadata : {
 	aggregations : {
     	"_busyLabel" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}, 
     	"_busyIndicator" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}, 
-    	"_busyButton" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
+    	"_toolbar" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}, 
+    	"_cancelButton" : {type : "sap.ui.core.Control", multiple : false, visibility : "hidden"}
 	},
 	events : {
 		"close" : {}
@@ -397,7 +398,7 @@ sap.m.BusyDialog.M_EVENTS = {'close':'close'};
 
 /**
  * Fire event close to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.m.BusyDialog} <code>this</code> to allow method chaining
  * @protected
@@ -551,7 +552,7 @@ sap.m.BusyDialog.prototype.open = function(){
 	}
 	// Open popup
 	oPopup.setContent(this);
-	oPopup.attachEvent(sap.ui.core.Popup.M_EVENTS.opened, this._handleOpened, this);
+	oPopup.attachOpened(this._handleOpened, this);
 	oPopup.setPosition("center center", "center center", document, "0 0", "fit");
 
 	this._bOpenRequested = true;
@@ -588,7 +589,7 @@ sap.m.BusyDialog.prototype.close = function(){
 
 	var eOpenState = this._oPopup.getOpenState();
 	if(!(eOpenState === sap.ui.core.OpenState.CLOSED || eOpenState === sap.ui.core.OpenState.CLOSING)){
-		oPopup.attachEvent(sap.ui.core.Popup.M_EVENTS.closed, this._handleClosed, this);
+		oPopup.attachClosed(this._handleClosed, this);
 		jQuery.sap.log.debug("sap.m.BusyDialog.close called at " + new Date().getTime());
 		oPopup.close();
 		this.fireClose();
@@ -668,7 +669,19 @@ sap.m.BusyDialog.prototype._createCancelButton = function(){
 					self.close();
 				}
 		}).addStyleClass("sapMDialogBtn");
-		this.setAggregation("_busyButton", this._oButton, true);
+
+		if (sap.ui.Device.system.phone) {
+			this._oButton.addStyleClass("sapMDialogBtnPhone");
+			this.setAggregation("_cancelButton", this._oButton, true);
+		} else {
+			this._oButtonToolBar = new sap.m.Toolbar(this.getId() + "-toolbar", {
+				content: [
+					new sap.m.ToolbarSpacer(this.getId() + "-toolbarspacer"),
+					this._oButton
+				]
+			}).addStyleClass("sapMTBNoBorders").applyTagAndContextClassFor("footer");
+			this.setAggregation("_toolbar", this._oButtonToolBar, true);
+		}		
 	}
 };
 
@@ -682,7 +695,7 @@ sap.m.BusyDialog.prototype._reposition = function() {
 };
 
 sap.m.BusyDialog.prototype._handleOpened = function(){
-	this._oPopup.detachEvent(sap.ui.core.Popup.M_EVENTS.opened, this._handleOpened, this);
+	this._oPopup.detachOpened(this._handleOpened, this);
 	// bind to window resize
 	// In android, the orientationchange fires before the size of the window changes
 	//  that's why the resize event is used here.
@@ -690,7 +703,7 @@ sap.m.BusyDialog.prototype._handleOpened = function(){
 };
 
 sap.m.BusyDialog.prototype._handleClosed = function(){
-	this._oPopup.detachEvent(sap.ui.core.Popup.M_EVENTS.closed, this._handleClosed, this);
+	this._oPopup.detachClosed(this._handleClosed, this);
 	this._$window.unbind("resize", this._fOrientationChange);
 };
 

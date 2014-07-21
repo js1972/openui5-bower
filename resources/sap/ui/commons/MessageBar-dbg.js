@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -344,7 +344,7 @@ sap.ui.commons.MessageBar.prototype.ondragstart = function(oEvent){
 /**
  * Initializes drag and drop capabilities.
  *
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onmousedown = function (oEvent) {
@@ -430,7 +430,7 @@ sap.ui.commons.MessageBar.prototype.handleMove = function (event) {
 /**
  * Handle onmouseup event.
  * This does the cleanup after drag and move handling.
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onmouseup = function (oEvent) {
@@ -472,7 +472,7 @@ sap.ui.commons.MessageBar.prototype.onmouseup = function (oEvent) {
  * The 2 click-able areas are:
  *  1) The front Open/Close list button.
  *  2) The back GoHome button.
- * @param {jQuery.EventObject} oEvent The event object
+ * @param {jQuery.Event} oEvent The event object
  * @private
  */
 sap.ui.commons.MessageBar.prototype.onclick = function (oEvent) {
@@ -1002,12 +1002,12 @@ sap.ui.commons.MessageBar.prototype.deleteAllMessages = function() {
  *
  * Default value is <code>true</code>
  *
+ * The default implementation of function "setVisible()" is enhanced 
+ * in order to toggle the "visibility:hidden;" attribute over the control.
+ * 
  * @param {boolean} bVisible  new value for property <code>visible</code>
  * @return {sap.ui.commons.MessageBar} <code>this</code> to allow method chaining
  * @public
- *
- * The MessageBar.API.js "setVisible" function is enhanced in order to
- * toggle the "visibility:hidden;" attribute over the control.
  */
 sap.ui.commons.MessageBar.prototype.setVisible = function(bVisible) {
 	this.setProperty("visible", bVisible);

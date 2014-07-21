@@ -55,8 +55,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject', './Core', './El
 	 *
 	 * @class Base Class for Elements.
 	 * @extends sap.ui.base.ManagedObject
-	 * @author SAP
-	 * @version 1.20.10
+	 * @author SAP AG
+	 * @version 1.22.4
 	 * @public
 	 * @name sap.ui.core.Element
 	 */

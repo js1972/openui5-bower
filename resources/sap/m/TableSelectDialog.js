@@ -20,6 +20,11 @@ sap.m.TableSelectDialog.prototype.setNoDataText=function(n){this._oTable.setNoDa
 sap.m.TableSelectDialog.prototype.getNoDataText=function(){return this._oTable.getNoDataText()};
 sap.m.TableSelectDialog.prototype.getContentWidth=function(){return this._oDialog.getContentWidth()};
 sap.m.TableSelectDialog.prototype.setContentWidth=function(w){this._oDialog.setContentWidth(w);return this};
+sap.m.TableSelectDialog.prototype.addStyleClass=function(){this._oDialog.addStyleClass.apply(this._oDialog,arguments);return this};
+sap.m.TableSelectDialog.prototype.removeStyleClass=function(){this._oDialog.removeStyleClass.apply(this._oDialog,arguments);return this};
+sap.m.TableSelectDialog.prototype.toggleStyleClass=function(){this._oDialog.toggleStyleClass.apply(this._oDialog,arguments);return this};
+sap.m.TableSelectDialog.prototype.hasStyleClass=function(){return this._oDialog.hasStyleClass.apply(this._oDialog,arguments)};
+sap.m.TableSelectDialog.prototype.getDomRef=function(){if(this._oDialog){return this._oDialog.getDomRef.apply(this._oDialog,arguments)}else{return null}};
 sap.m.TableSelectDialog.prototype._setModel=sap.m.TableSelectDialog.prototype.setModel;
 sap.m.TableSelectDialog.prototype.setModel=function(m,M){var a=Array.prototype.slice.call(arguments);this._setBusy(false);this._bInitBusy=false;this._iTableUpdateRequested+=1;this._oTable.attachUpdateStarted(this._updateStarted,this);this._oTable.attachUpdateFinished(this._updateFinished,this);this._oTable.setModel(m,M);sap.m.TableSelectDialog.prototype._setModel.apply(this,a);this._updateSelectionIndicator();return this};
 sap.m.TableSelectDialog.prototype._callMethodInManagedObject=function(f,a){var A=Array.prototype.slice.call(arguments);if(a==="items"){return this._oTable[f].apply(this._oTable,A.slice(1))}else if(a==="columns"){return this._oTable[f].apply(this._oTable,A.slice(1))}else{return sap.ui.base.ManagedObject.prototype[f].apply(this,A.slice(1))}};

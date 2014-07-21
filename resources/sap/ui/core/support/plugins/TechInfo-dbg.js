@@ -19,7 +19,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin', 'jquery.sap.en
 		 *
 		 * @abstract
 		 * @extends sap.ui.base.Object
-		 * @version 1.20.10
+		 * @version 1.22.4
 		 * @constructor
 		 * @private
 		 * @name sap.ui.core.support.plugins.TechInfo
@@ -62,6 +62,15 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin', 'jquery.sap.en
 			            "<div><div class='sapUiSupportTechInfoCntnt'>",
 			            "<table border='0' cellpadding='3'>"];
 			line(html, true, true, "SAPUI5 Version", function(buffer){
+				try {
+					var oVersionInfo = sap.ui.getVersionInfo();
+					var sVersion = "<a href='" + sap.ui.resource("", "sap-ui-version.json") + "' target='_blank' title='Open Version Info'>" + oVersionInfo.version + "</a>";
+					buffer.push(sVersion, " (built at ", oVersionInfo.buildTimestamp, ", last change ", oVersionInfo.scmRevision, ")");
+				} catch (ex) {
+					buffer.push("not available");
+				}
+			});
+			line(html, true, true, "Core Version", function(buffer){
 				buffer.push(oData.version, " (built at ", oData.build, ", last change ", oData.change, ")");
 			});
 			line(html, true, true, "User Agent", function(buffer){
@@ -73,7 +82,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin', 'jquery.sap.en
 			line(html, true, true, "Application", oData.appurl);
 			multiline(html, true, true, "Configuration (bootstrap)", oData.bootconfig);
 			multiline(html, true, true, "Configuration (computed)", oData.config);
-			multiline(html, true, true, "Loaded Libraries", oData.libraries);
+			if (!jQuery.isEmptyObject(oData.libraries)) {
+				multiline(html, true, true, "Libraries", oData.libraries);
+			}
+			multiline(html, true, true, "Loaded Libraries", oData.loadedLibraries);
 			line(html, true, true, "Loaded Modules", function(buffer){
 				jQuery.each(oData.modules, function(i,v){
 					if(v.indexOf("sap.ui.core.support") < 0){
@@ -240,10 +252,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin', 'jquery.sap.en
 				"noDuplicateIds": ""+oCfg.getNoDuplicateIds()
 			};
 	
-			var oLibs = {
-			};
+			var oLibs = {};
+			var oRequest = jQuery.sap.syncGetJSON(sap.ui.resource("", "sap-ui-version.json"));
+			if (oRequest.success) {
+				var oAppInfo = oRequest.data;
+				var aLibs = oAppInfo && oAppInfo.libraries;
+				jQuery.each(aLibs, function(iIndex, oLib) {
+					oLibs[oLib.name] = oLib.version;
+				});
+			}
+			
+			var oLoadedLibs = {};
 			jQuery.each(sap.ui.getCore().getLoadedLibraries(), function(sName, oLibInfo) {
-				oLibs[sName] = oLibInfo.version;
+				oLoadedLibs[sName] = oLibInfo.version;
 			});
 	
 			var oData = {
@@ -256,6 +277,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin', 'jquery.sap.en
 				"bootconfig": window["sap-ui-config"] || {},
 				"config": oConfig,
 				"libraries": oLibs,
+				"loadedLibraries": oLoadedLibs,
 				"modules": jQuery.sap.getAllDeclaredModules(),
 				"uriparams": jQuery.sap.getUriParameters().mParams,
 				"appurl": window.location.href,

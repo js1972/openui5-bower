@@ -4,13 +4,13 @@
  * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
  */
 
-// Provides default renderer for control sap.ui.commons.ComboBox
+// Provides default renderer for control sap.ui.table.ColumnMenuRenderer
 jQuery.sap.declare("sap.ui.table.ColumnMenuRenderer");
 jQuery.sap.require("sap.ui.core.Renderer");
-jQuery.sap.require("sap.ui.commons.MenuRenderer");
+jQuery.sap.require("sap.ui.unified.MenuRenderer");
 
 /**
- * @class Renderer for the sap.ui.commons.ComboBox
+ * @class Renderer for the sap.ui.table.ColumnMenuRendere
  * @static
  */
-sap.ui.table.ColumnMenuRenderer = sap.ui.core.Renderer.extend(sap.ui.commons.MenuRenderer);
+sap.ui.table.ColumnMenuRenderer = sap.ui.core.Renderer.extend(sap.ui.unified.MenuRenderer);

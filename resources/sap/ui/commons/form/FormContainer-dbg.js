@@ -56,7 +56,7 @@ jQuery.sap.require("sap.ui.layout.form.FormContainer");
  * @extends sap.ui.layout.form.FormContainer
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public

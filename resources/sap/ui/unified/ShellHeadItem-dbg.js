@@ -61,7 +61,7 @@ jQuery.sap.require("sap.ui.core.Element");
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -290,7 +290,7 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
 
 /**
  * Fire event press to attached listeners.
-
+ *
  * @param {Map} [mArguments] the arguments to pass along with the event.
  * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
  * @protected
@@ -349,13 +349,16 @@ sap.ui.unified.ShellHeadItem.prototype.setIcon = function(sIcon){
 sap.ui.unified.ShellHeadItem.prototype._refreshIcon = function(){
 	var $Ico = jQuery(this.$().children()[0]);
 	var sIco = this.getIcon();
-	$Ico.html("").css("style", "");
 	if(sap.ui.core.IconPool.isIconURI(sIco)){
 		var oIconInfo = sap.ui.core.IconPool.getIconInfo(sIco);
+		$Ico.html("").css("style", "");
 		if(oIconInfo){
 			$Ico.text(oIconInfo.content).css("font-family", "'" + oIconInfo.fontFamily + "'");
 		}
 	}else{
-		$Ico.html("<img src='" + jQuery.sap.encodeHTML(sIco) + "'></img>");
+		var $Image = this.$("img-inner");
+		if($Image.length == 0 || $Image.attr("src") != sIco){
+			$Ico.css("style", "").html("<img id='" + this.getId() + "-img-inner' src='" + jQuery.sap.encodeHTML(sIco) + "'></img>");
+		}
 	}
 };

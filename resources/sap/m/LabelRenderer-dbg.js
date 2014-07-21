@@ -56,6 +56,8 @@ sap.m.LabelRenderer.render = function(rm, oLabel){
 			rm.write(oLabel.getLabelForRendering());
 		}
 		rm.write("\"");
+	} else if(oLabel.getParent() instanceof sap.m.Toolbar) {
+		rm.addClass("sapMLabelTBHeader");
 	}
 
 	// Text direction

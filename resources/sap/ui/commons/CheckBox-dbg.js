@@ -65,7 +65,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -453,9 +453,9 @@ sap.ui.commons.CheckBox.M_EVENTS = {'change':'change'};
  * @param {sap.ui.base.EventProvider} oControlEvent.getSource
  * @param {object} oControlEvent.getParameters
 
- * @param {boolean} oControlEvent.getParameters.checked 
-					Checks whether the box is flagged or not flagged.
-					
+ * @param {boolean} oControlEvent.getParameters.checked
+ *         Checks whether the box is flagged or not flagged.
+ * 
  * @public
  */
  

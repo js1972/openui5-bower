@@ -60,7 +60,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -491,7 +491,7 @@ sap.m.Switch.prototype.ontouchstart = function(oEvent) {
 		return;
 	}
 
-	jQuery.sap.delayedCall(0, this._$Handle[0], "focus");
+	jQuery.sap.delayedCall(0, this._$Switch[0], "focus");
 
 	this._$Switch.addClass(CSS_CLASS + "Pressed")
 				.removeClass(CSS_CLASS + "Trans");
@@ -620,7 +620,7 @@ sap.m.Switch.prototype.onsapselect = function(oEvent) {
 /* =========================================================== */
 
 sap.m.Switch.prototype.getFocusDomRef = function() {
-	return this.getDomRef() ? this._$Handle[0] : null;
+	return this.getDomRef("switch");
 };
 
 /**

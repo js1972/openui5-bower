@@ -16,7 +16,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 	 *
 	 * @extends sap.ui.base.Object
 	 * @author SAP AG
-	 * @version 1.20.10
+	 * @version 1.22.4
 	 * @constructor
 	 * @private
 	 * @name sap.ui.core.util.LibraryInfo
@@ -38,7 +38,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 	});
 	
 	
-	LibraryInfo.prototype._getLibraryInfo = function(sLibraryName, fnCallback) {
+	LibraryInfo.prototype._loadLibraryMetadata = function(sLibraryName, fnCallback) {
 		sLibraryName = sLibraryName.replace(/\//g, ".");
 		
 		if(this._oLibInfos[sLibraryName]){
@@ -65,8 +65,25 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 	};
 	
 	
+	LibraryInfo.prototype._getLibraryInfo = function(sLibraryName, fnCallback) {
+		this._loadLibraryMetadata(sLibraryName, function(oData){
+			var result = {libs: [], library: oData.name, libraryUrl: oData.url};
+	
+			if(oData.data){
+				var $data = jQuery(oData.data);
+				result.vendor = $data.find("vendor").text();
+				result.copyright = $data.find("copyright").text();
+				result.version = $data.find("version").text();
+				result.documentation = $data.find("documentation").text();
+			}
+			
+			fnCallback(result);
+		});
+	};
+	
+	
 	LibraryInfo.prototype._getThirdPartyInfo = function(sLibraryName, fnCallback) {
-		this._getLibraryInfo(sLibraryName, function(oData){
+		this._loadLibraryMetadata(sLibraryName, function(oData){
 			var result = {libs: [], library: oData.name, libraryUrl: oData.url};
 	
 			if(oData.data){
@@ -94,7 +111,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/Object', 'jquery.sap.script'],
 	
 	
 	LibraryInfo.prototype._getDocuIndex = function(sLibraryName, fnCallback) {
-		this._getLibraryInfo(sLibraryName, function(oData){
+		this._loadLibraryMetadata(sLibraryName, function(oData){
 			var lib = oData.name,
 				libUrl = oData.url,
 				result = {"docu": {}, library: lib, libraryUrl: libUrl};

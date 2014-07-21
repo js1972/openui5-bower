@@ -16,12 +16,16 @@ sap.ui.define(['jquery.sap.global', './FilterOperator'],
 	 * 
 	 * Using object:
 	 * new sap.ui.model.Filter({
-	 *   sPath: ...,
-	 *   sOperator: ...,
-	 *   oValue1: ...,
-	 *   oValue2: ...,
-	 *   aFilters: ...,
-	 *   bAnd: ...
+	 *   path: "...",
+	 *   operator: "...",
+	 *   value1: "...",
+	 *   value2: "..."
+	 * })
+	 * 
+	 * OR:
+	 * new sap.ui.model.Filter({
+	 *   filters: [...],
+	 *   and: true|false
 	 * })
 	 * 
 	 * You can only pass sPath, sOperator and their values OR aFilters and bAnd. You will get an error if you define an invalid combination of filters parameters.
@@ -43,7 +47,7 @@ sap.ui.define(['jquery.sap.global', './FilterOperator'],
 	 * @public
 	 * @name sap.ui.model.Filter
 	 */
-	var Filter = sap.ui.base.Object.extend("sap.ui.model.Filter", /** @lends sap.ui.model.Filter */ {
+	var Filter = sap.ui.base.Object.extend("sap.ui.model.Filter", /** @lends sap.ui.model.Filter.prototype */ {
 		constructor : function(sPath, sOperator, oValue1, oValue2){
 			//There are two different ways of specifying a filter
 			//If can be passed in only one object or defined with parameters
@@ -53,8 +57,8 @@ sap.ui.define(['jquery.sap.global', './FilterOperator'],
 				this.sOperator = oFilterData.operator;
 				this.oValue1 = oFilterData.value1;
 				this.oValue2 = oFilterData.value2;
-				this.aFilters = oFilterData.aFilters;
-				this.bAnd = oFilterData.bAnd;
+				this.aFilters = oFilterData.filters || oFilterData.aFilters;
+				this.bAnd = oFilterData.and || oFilterData.bAnd;
 			} else {
 				//If parameters are used we have to check weather a regular or a multi filter is speficied
 				if (jQuery.isArray(sPath)) {
@@ -70,14 +74,14 @@ sap.ui.define(['jquery.sap.global', './FilterOperator'],
 				this.oValue1 = oValue1;
 				this.oValue2 = oValue2;
 			}
-			if (jQuery.isArray(this.aFilters) && this.bAnd != undefined && !this.sPath && !this.sOperator && !this.oValue1 && !this.oValue2) {
+			if (jQuery.isArray(this.aFilters) && !this.sPath && !this.sOperator && !this.oValue1 && !this.oValue2) {
 				this._bMultiFilter = true;
 				jQuery.each(this.aFilters, function(iIndex, oFilter) {
 					if (!(oFilter instanceof Filter)) {
 						jQuery.sap.log.error("Filter in Aggregation of Multi filter has to be instance of sap.ui.model.Filter");
 					}
 				});
-			} else if (!this.aFilters && !this.bAnd && this.sPath !== undefined && this.sOperator && this.oValue1 !== undefined) {
+			} else if (!this.aFilters && this.sPath !== undefined && this.sOperator && this.oValue1 !== undefined) {
 				this._bMultiFilter = false;
 			} else {
 				jQuery.sap.log.error("Wrong parameters defined for filter.");

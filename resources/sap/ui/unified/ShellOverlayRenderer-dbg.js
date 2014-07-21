@@ -60,12 +60,12 @@ sap.ui.unified.ShellOverlayRenderer.renderSearch = function(rm, oControl) {
 		sStyle = "style='width:"+iWidth+"px'";
 	}
 	
-	rm.write("<div id='"+oControl.getId()+"-search' class='sapUiUfdShellOvrlySearch' "+sStyle+">");
+	rm.write("<div id='"+oControl.getId()+"-search' class='sapUiUfdShellOvrlySearch' "+sStyle+"><div>");
 	var oSearch = oControl.getSearch();
 	if(oSearch){
 		rm.renderControl(oSearch);
 	}
-	rm.write("</div>");
+	rm.write("</div></div>");
 };
 
 sap.ui.unified.ShellOverlayRenderer.renderContent = function(rm, oControl) {

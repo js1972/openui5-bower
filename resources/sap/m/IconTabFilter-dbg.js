@@ -64,7 +64,7 @@ jQuery.sap.require("sap.ui.core.Item");
  * @implements sap.m.IconTab
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -394,7 +394,7 @@ sap.ui.core.Item.extend("sap.m.IconTabFilter", { metadata : {
  * @private
  */
 sap.m.IconTabFilter.prototype._getImageControl = function(aCssClassesToAdd, oParent, aCssClassesToRemove) {
-	var mProperties = { 
+	var mProperties = {
 		src : this.getIcon(),
 		densityAware : this.getIconDensityAware()
 	};
@@ -411,7 +411,6 @@ sap.m.IconTabFilter.prototype._getImageControl = function(aCssClassesToAdd, oPar
  * @private
  */
 sap.m.IconTabFilter.prototype.exit = function(oEvent) {
-	
 	if (this._oImageControl) {
 		this._oImageControl.destroy();
 	}
@@ -421,3 +420,28 @@ sap.m.IconTabFilter.prototype.exit = function(oEvent) {
 	}
 };
 
+sap.m.IconTabFilter.prototype.invalidate = function() {
+	var oIconTabBar,
+		oObjectHeader;
+
+	// the iconTabHeader is rendered by the IconTabBar or the ObjectHeader or standalone, we treat these cases here
+	if (this.getParent() instanceof sap.m.IconTabHeader && this.getParent().getParent() instanceof sap.m.IconTabBar) {
+		oIconTabBar = this.getParent().getParent();
+		if (!arguments.length) {
+			// only invalidate the header if invalidate was not called from a child control (content)
+			this.getParent().invalidate();
+		} else {
+			if (oIconTabBar.getParent() instanceof sap.m.ObjectHeader) {
+				// invalidate the object header to re-render IconTabBar content and header
+				oObjectHeader = oIconTabBar.getParent();
+				oObjectHeader.invalidate();
+			} else {
+				// invalidate the IconTabBar to re-render the content (this will not update the header)
+				oIconTabBar.invalidate();
+			}
+		}
+	} else {
+		// if used standalone just invalidate this filter element
+		sap.ui.core.Element.prototype.invalidate.apply(this, arguments);
+	}
+};

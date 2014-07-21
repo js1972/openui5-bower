@@ -28,7 +28,7 @@ sap.m.ShellRenderer.render = function(rm, oControl) {
 		rm.addClass("sapMShellAppWidthLimited");
 	}
 	
-	sap.m.BackgroundHelper.addBackgroundColorStyles(rm, oControl.getBackgroundColor(),  oControl.getBackgroundImage());
+	sap.m.BackgroundHelper.addBackgroundColorStyles(rm, oControl.getBackgroundColor(),  oControl.getBackgroundImage(), "sapMShellGlobalOuterBackground");
 	
 	rm.writeClasses();
 	rm.writeStyles();
@@ -86,7 +86,7 @@ sap.m.ShellRenderer.render = function(rm, oControl) {
 	
 	
 	// content
-	rm.write("<section class='sapMShellContent' id='" + oControl.getId() + "-content' data-sap-ui-root-content='true'>");
+	rm.write("<section class='sapMShellContent sapMShellGlobalInnerBackground' id='" + oControl.getId() + "-content' data-sap-ui-root-content='true'>");
 
 	rm.renderControl(oControl.getApp());
 	
@@ -97,15 +97,7 @@ sap.m.ShellRenderer.getLogoImageHtml = function(oControl) {
 	var sImage = oControl.getLogo(); // configured logo
 	if (!sImage) {
 		jQuery.sap.require("sap.ui.core.theming.Parameters");
-		sImage = sap.ui.core.theming.Parameters.get('sapUiGlobalLogo'); // theme logo
-		if (sImage) {
-			var match = /url[\s]*\('?"?([^\'")]*)'?"?\)/.exec(sImage);
-			if (match) {
-				sImage = match[1];
-			} else if (sImage === "''"){ // theme default
-				sImage = null;
-			}
-		}
+		sImage = sap.ui.core.theming.Parameters._getThemeImage(); // theme logo
 	}
 	
 	var result = "";

@@ -27,7 +27,7 @@ jQuery.sap.require("sap.m.TablePersoDialog");
  * @class Table Personalization Controller
  * @extends sap.ui.base.ManagedObject
  * @author SAP
- * @version 1.20.10
+ * @version 1.22.4
  * @name sap.m.TablePersoController
  */
 sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.TablePersoController */
@@ -42,7 +42,11 @@ sap.ui.base.ManagedObject.extend("sap.m.TablePersoController", /** @lends sap.m.
 	metadata: {
 		properties: {
 			"contentWidth": {type: "sap.ui.core.CSSSize"},
-			"componentName": {type: "string", since: "1.20.2"}
+			"contentHeight": {type: "sap.ui.core.CSSSize", defaultValue: "20rem", since: "1.22"},
+			"componentName": {type: "string", since: "1.20.2"},
+			"hasGrouping": {type: "boolean", defaultValue: false, since: "1.22"},
+			"showSelectAll": {type: "boolean", defaultValue: true, since: "1.22"},
+			"showResetAll": {type: "boolean", defaultValue: true, since: "1.22"},
 		},
 		aggregations: {
 			"_tablePersoDialog": {
@@ -93,6 +97,8 @@ sap.m.TablePersoController.prototype.init = function() {
 	this._mDelegateMap = {};
 	//Initialize table personalization map
 	this._mTablePersMap = {};
+	//Initialize map to contain initial states of all tables
+	this._mInitialTableStateMap = {};
 	//Internal flag which may be checked by clients which
 	//have workaround for missing event in place
 	this._triggersPersDoneEvent = true;
@@ -113,10 +119,9 @@ sap.m.TablePersoController.prototype.exit = function() {
 		oTable.removeDelegate(this._mDelegateMap[oTable]);
 	}, this));
 	
-	
-	delete this._oPersService;
 	delete this._mDelegateMap;
 	delete this._mTablePersMap;
+	delete this._mInitialTableStateMap;
 };
 
 /**
@@ -128,8 +133,8 @@ sap.m.TablePersoController.prototype.exit = function() {
  */
 sap.m.TablePersoController.prototype.activate = function() {
 
-	// Instantiate persistence service
-	this._oPersService = this.getPersoService();
+	//Remember initial table columns states before personalization
+	this._callFunctionForAllTables(this._rememberInitialTableStates);
 	// Add 'onBeforeRendering' delegates to all tables
 	this._callFunctionForAllTables(this._createAndAddDelegateForTable);
 	
@@ -154,10 +159,12 @@ sap.m.TablePersoController.prototype.getTablePersoDialog = function() {
  * @public
  */
 sap.m.TablePersoController.prototype.applyPersonalizations = function(oTable) {
-	var oReadPromise = this._oPersService.getPersData();
+	var oReadPromise = this.getPersoService().getPersData();
 	var that = this;
 	oReadPromise.done(function(oPersData) {
-		that._adjustTable(oPersData, oTable);
+		if(!!oPersData) {
+			that._adjustTable(oPersData, oTable);
+		}
 	});
 	oReadPromise.fail(function() {
 		jQuery.sap.log.error("Problem reading persisted personalization data.");
@@ -165,7 +172,7 @@ sap.m.TablePersoController.prototype.applyPersonalizations = function(oTable) {
 };
 
 /**
- * Creates 'onBeforeRendering' delegate for geiven table and adds it to the controller'
+ * Creates 'onBeforeRendering' delegate for given table and adds it to the controller'
  * '_mDelegateMap'
  *
  * @private
@@ -174,48 +181,60 @@ sap.m.TablePersoController.prototype._createAndAddDelegateForTable = function(oT
 	if(!this._mDelegateMap[oTable]) {
 		//Use 'jQuery.proxy' to conveniently use 'this' within the
 		//delegate function
-		var fnTableOnBeforeRenderingDel = jQuery.proxy(function () {
+		var oTableOnBeforeRenderingDel = {onBeforeRendering : jQuery.proxy(function () {
 			// Try to retrieve existing persisted personalizations
 			// and adjust the table
 			this.applyPersonalizations(oTable);
 			// This function will be called whenever its table is rendered or
 			// re-rendered. The TablePersoDialog only needs to be created once, though!
 			if(!this.getAggregation("_tablePersoDialog")) {
-				// Create a new TablePersoDialog control for the associated table
-				var oTablePersoDialog = new sap.m.TablePersoDialog({
-					persoDialogFor: oTable,
-					persoMap : this._getPersoColumnMap(oTable),
-					persoService: this._oPersService,
-					contentWidth : this.getContentWidth(),
-				});
-
-				// Link to this new TablePersoDialog via the aggregation
-				this.setAggregation("_tablePersoDialog", oTablePersoDialog);
-
-				// When the TablePersoDialog closes, we want to retrieve the personalizations
-				// made, amend the table, and also persist them
-				oTablePersoDialog.attachConfirm(jQuery.proxy(function() {
-					this._oPersonalizations = oTablePersoDialog.retrievePersonalizations();
-					this._callFunctionForAllTables(this._personalizeTable);
-					this.savePersonalizations();
-					this.firePersonalizationsDone();
-				}, this));
+				this._createTablePersoDialog(oTable);
 			}
-		}, this);
+		}, this)};
 		//By adding our function as a delegate to the table's 'beforeRendering' event,
 		//this._fnTableOnBeforeRenderingDel will be executed whenever the table is
 		//rendered or re-rendered
-		oTable.addDelegate({onBeforeRendering : fnTableOnBeforeRenderingDel});
+		
+		oTable.addDelegate(oTableOnBeforeRenderingDel);
 		//Finally add delegate to map to enable proper housekeeping, i.e. cleaning
 		//up delegate when TablePersoController instance is destroyed
-		this._mDelegateMap[oTable] = fnTableOnBeforeRenderingDel;
+		this._mDelegateMap[oTable] = oTableOnBeforeRenderingDel;
 	}
 };
 
+/**
+ * Creation of the TablePersoDialog based on the content of oTable and
+ * save the personalizations
+ *
+ */
+sap.m.TablePersoController.prototype._createTablePersoDialog = function(oTable) {
+	// Create a new TablePersoDialog control for the associated table
+		var oTablePersoDialog = new sap.m.TablePersoDialog({
+				persoDialogFor: oTable,
+				persoMap : this._getPersoColumnMap(oTable),
+				columnInfoCallback: this._tableColumnInfo,
+				initialColumnState : this._mInitialTableStateMap[oTable],
+				persoService: this.getPersoService(),
+				contentWidth: this.getContentWidth(),
+				contentHeight: this.getContentHeight(),
+				hasGrouping: this.getHasGrouping(),
+				showSelectAll: this.getShowSelectAll(),
+				showResetAll: this.getShowResetAll(),
+		});
 
+// Link to this new TablePersoDialog via the aggregation
+	this.setAggregation("_tablePersoDialog", oTablePersoDialog);
 
+// When the TablePersoDialog closes, we want to retrieve the personalizations
+// made, amend the table, and also persist them
+	oTablePersoDialog.attachConfirm(jQuery.proxy(function() {
+		this._oPersonalizations = oTablePersoDialog.retrievePersonalizations();
+		this._callFunctionForAllTables(this._personalizeTable);
+		this.savePersonalizations();
+		this.firePersonalizationsDone();
+	}, this));
 
-
+};
 
 /**
  * Adjusts the table by getting the existing personalizations
@@ -239,7 +258,6 @@ sap.m.TablePersoController.prototype._adjustTable = function(oData, oTable) {
 /**
  * Personalizes the table, i.e. sets column order and visibility
  * according to the stored personalization settings
- * 
  *
  * @private
  */
@@ -248,7 +266,7 @@ sap.m.TablePersoController.prototype._personalizeTable = function(oTable) {
 	
 	//mPersoMap may be null if oTable's id is not static 
 	//or if any of the column ids is not static
-	if(!!mPersoMap) {
+	if(!!mPersoMap && !!this._oPersonalizations) {
 		var bDoSaveMigration = false;
 		// Set order and visibility
 		for ( var c = 0, cl = this._oPersonalizations.aColumns.length; c < cl; c++) {
@@ -269,7 +287,7 @@ sap.m.TablePersoController.prototype._personalizeTable = function(oTable) {
 				oTableColumn.setVisible(oNewSetting.visible);
 				oTableColumn.setOrder(oNewSetting.order);
 			} else {
-				jQuery.sap.log.warning("Perso could not be applied to column " + oNewSetting.id + " - not found!");
+				jQuery.sap.log.warning("Personalization could not be applied to column " + oNewSetting.id + " - not found!");
 			}
 		}
 		
@@ -296,7 +314,7 @@ sap.m.TablePersoController.prototype.savePersonalizations = function() {
 	oBundle[this._schemaProperty] = this._schemaVersion;
 
 	// Commit to backend service
-	var oWritePromise = this._oPersService.setPersData(oBundle);
+	var oWritePromise = this.getPersoService().setPersData(oBundle);
 	oWritePromise.done(function() {
 		// all OK
 	});
@@ -304,6 +322,27 @@ sap.m.TablePersoController.prototype.savePersonalizations = function() {
 		jQuery.sap.log.error("Problem persisting personalization data.");
 	});
 
+};
+
+
+/**
+ * Refresh the personalizations
+ *
+ * @public
+ */
+sap.m.TablePersoController.prototype.refresh = function() {
+	var fnRefreshTable = function(oTable) {
+		this._mTablePersMap = {};
+		oTable.invalidate();
+	};
+
+	this._callFunctionForAllTables(fnRefreshTable);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		//need to refresh the map which contains columns and personalizations
+		//columns may have been removed or added. (CSN 0120031469 0000415411 2014)
+		oTablePersoDialog.setPersoMap(this._getPersoColumnMap(sap.ui.getCore().byId(oTablePersoDialog.getPersoDialogFor())));
+	}
 };
 
 
@@ -316,6 +355,7 @@ sap.m.TablePersoController.prototype.savePersonalizations = function() {
 sap.m.TablePersoController.prototype.openDialog = function() {
 	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
 	if(!!oTablePersoDialog) {
+		jQuery.sap.syncStyleClass("sapUiSizeCompact", oTablePersoDialog.getPersoDialogFor(), oTablePersoDialog._oDialog);
 		oTablePersoDialog.open();
 	} else {
 		jQuery.sap.log.warning("sap.m.TablePersoController: trying to open TablePersoDialog before TablePersoService has been activated.");
@@ -323,23 +363,66 @@ sap.m.TablePersoController.prototype.openDialog = function() {
 };
 
 /**
- * Reflector for the TablePersoDialog's Dialog's contentWidth property.
+ * Reflector for the controller's 'contentWidth' property.
  * @public
  */
-sap.m.TablePersoController.prototype.getContentWidth = function(sWidth) {
-	var sResult = this.getProperty("contentWidth");
-	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
-	if(!!oTablePersoDialog) {
-		sResult = oTablePersoDialog.getContentWidth();
-	}
-	return sResult;
-};
-
 sap.m.TablePersoController.prototype.setContentWidth = function(sWidth) {
 	this.setProperty("contentWidth", sWidth, true);
 	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
 	if(!!oTablePersoDialog) {
 		oTablePersoDialog.setContentWidth(sWidth);
+	}
+	return this;
+};
+
+/**
+ * Reflector for the controller's 'contentHeight' property.
+ * @public
+ */
+sap.m.TablePersoController.prototype.setContentHeight = function(sHeight) {
+	this.setProperty("contentHeight", sHeight, true);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.setContentHeight(sHeight);
+	}
+	return this;
+};
+
+/**
+ * Reflector for the controller's 'hasGrouping' property.
+ * @public
+ */
+sap.m.TablePersoController.prototype.setHasGrouping = function(bHasGrouping) {
+	this.setProperty("hasGrouping", bHasGrouping, true);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.setHasGrouping(bHasGrouping);
+	}
+	return this;
+};
+
+/**
+ * Reflector for the controller's 'showSelectAll' property.
+ * @public
+ */
+sap.m.TablePersoController.prototype.setShowSelectAll = function(bShowSelectAll) {
+	this.setProperty("showSelectAll", bShowSelectAll, true);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.setShowSelectAll(bShowSelectAll);
+	}
+	return this;
+};
+
+/**
+ * Reflector for the controller's 'showResetAll' property.
+ * @public
+ */
+sap.m.TablePersoController.prototype.setShowResetAll = function(bShowResetAll) {
+	this.setProperty("showResetAll", bShowResetAll, true);
+	var oTablePersoDialog = this.getAggregation("_tablePersoDialog");
+	if(!!oTablePersoDialog) {
+		oTablePersoDialog.setShowResetAll(bShowResetAll);
 	}
 	return this;
 };
@@ -489,5 +572,74 @@ sap.m.TablePersoController.prototype._getPersoColumnMap = function(oTable) {
 		this._mTablePersMap[oTable] = mResult;
 	}
 	return mResult;
+};
+
+/**
+ * Store's the given table's initial state in the controler's initial state map.
+ * @private
+ * @param {object} oTable the table for which initial state shall be remembered
+ */
+sap.m.TablePersoController.prototype._rememberInitialTableStates = function (oTable) {
+	this._mInitialTableStateMap[oTable] = this._tableColumnInfo(oTable, this._getPersoColumnMap(oTable), this.getPersoService());
+};
+
+/**
+ * Returns table column settings (header text, order, visibility) for a table
+ * @private
+ * @param {object} oTable the table for which column settings should be returned
+ * @param {object} oPersoMap the table's personalization map
+ * @param {object} oPersoService the table's personalization provider instance
+ */
+sap.m.TablePersoController.prototype._tableColumnInfo = function (oTable, oPersoMap, oPersoService) {
+	
+	//Check if persoMap has been passed into the dialog.
+	//Otherwise, personalization is not possible.
+	if(!!oPersoMap) {
+		var aColumns = oTable.getColumns(),
+			aColumnInfo = [];
+		aColumns.forEach(function(oColumn){
+			var sCaption = null;
+			if(oPersoService.getCaption) {
+				sCaption = oPersoService.getCaption(oColumn);
+			}
+			
+			var sGroup = null;
+			if(oPersoService.getGroup) {
+				sGroup = oPersoService.getGroup(oColumn);
+			}
+			
+			if (!sCaption) {
+				var oColHeader = oColumn.getHeader();
+				//Check if header control has either text or 'title' property
+				if(oColHeader.getText && oColHeader.getText()) {
+					sCaption = oColHeader.getText();
+				} else if(oColHeader.getTitle && oColHeader.getTitle()) {
+					sCaption = oColHeader.getTitle();
+				}
+				
+				if (!sCaption){
+					//Fallback: use column id and issue warning to let app developer know to add captions to columns
+					sCaption = oColumn.getId();
+					jQuery.sap.log.warning("Please 'getCaption' callback implentation in your TablePersoProvider for column " + oColumn + ". Table personalization uses column id as fallback value.");
+				}
+			}
+			
+			//In this case, oColumn is one of our controls. Therefore, sap.ui.core.Element.toString() 
+			//is called which delivers something like 'Element sap.m.Column#<sId>' where sId is the column's sId property
+			aColumnInfo.push({
+				text : sCaption,
+				order : oColumn.getOrder(),
+				visible : oColumn.getVisible(),
+				id: oPersoMap[oColumn],
+				group : sGroup
+			});
+		});
+
+		// Sort to make sure they're presented in the right order
+		aColumnInfo.sort(function(a, b) { return a.order - b.order; });
+
+		return aColumnInfo;
+	}
+	return null;
 };
 

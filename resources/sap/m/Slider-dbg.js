@@ -63,7 +63,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -1216,7 +1216,7 @@ sap.m.Slider.prototype.onsapescape = function() {
 /* ----------------------------------------------------------- */
 
 sap.m.Slider.prototype.getFocusDomRef = function() {
-	return this.getDomRef() ? this._$Handle[0] : null;
+	return this.getDomRef("handle");
 };
 
 /**

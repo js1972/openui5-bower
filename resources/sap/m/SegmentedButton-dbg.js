@@ -58,7 +58,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.20.10
+ * @version 1.22.4
  *
  * @constructor   
  * @public
@@ -371,7 +371,7 @@ sap.m.SegmentedButton.M_EVENTS = {'select':'select'};
  *         sIcon
  *         Icon to be displayed as graphical element within the button.
  * 
- * Density related image will be loaded if image with density awareness name in format [imageName]@[densityValue].[extension] is provided.
+ *         Density related image will be loaded if image with density awareness name in format [imageName]@[densityValue].[extension] is provided.
  * @param {boolean} 
  *         bEnabled
  *         Boolean property to enable the control (default is true). Buttons that are disabled have other colors than enabled ones, depending on custom settings
@@ -477,10 +477,12 @@ sap.m.SegmentedButton.prototype.onAfterRendering = function() {
 	//get the size of each button
 	this._getButtonWidths();
 	
-	//Flag if control is inside the bar. If inside bar the buttons always use the width they need.
-	this._bInsideBar = (this.$().closest('.sapMBar').length > 0) ? true : false;
+
 	//Flag if control is inside a popup
 	this._bInsidePopup = (this.$().closest(".sapMPopup-CTX").length > 0);
+
+	//Flag if control is inside the bar. If inside bar the buttons always use the width they need.
+	this._bInsideBar = (this.$().closest('.sapMIBar').length > 0) ? true : false;
 
 	var aButtons = this.getButtons();
 	var bAllIcons = true;
@@ -641,7 +643,6 @@ sap.m.SegmentedButton.prototype.createButton = function(sText, sURI, bEnabled) {
 
 	return oButton;
 };
-
 
 (function(){
 	sap.m.SegmentedButton.prototype.addButton = function(oButton) {
