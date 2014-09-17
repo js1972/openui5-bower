@@ -66,7 +66,7 @@ jQuery.sap.require("sap.ui.core.Control");
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -846,8 +846,9 @@ sap.ui.unified.Shell._SIDEPANE_WIDTH_DESKTOP = 240;
 sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE = true; /*Whether header hiding is technically possible (touch enabled)*/
 sap.ui.unified.Shell._HEADER_AUTO_CLOSE = true;
 sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 30;
-if(sap.ui.Device.os.windows && sap.ui.Device.os.version == 8 && sap.ui.Device.browser.chrome){
-	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 15;
+if(sap.ui.Device.browser.chrome){
+	//see https://groups.google.com/a/chromium.org/forum/#!topic/input-dev/Ru9xjSsvLHw --> chrome://flags/#touch-scrolling-mode
+	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = sap.ui.Device.browser.version < 36 ? 10 : 15;
 }
 	
 sap.ui.unified.Shell.prototype.init = function(){
@@ -1323,7 +1324,6 @@ sap.ui.unified.Shell.prototype._timedHideHeader = function(bClearOnly){
 	this._headerHidingTimer = jQuery.sap.delayedCall(this._iHeaderHidingDelay, this, function(){
 		if(this._isHeaderHidingActive() && this._iHeaderHidingDelay > 0 && !jQuery.sap.containsOrEquals(this.getDomRef("hdr"), document.activeElement)){
 			this._doShowHeader(false);
-			this._refreshCSSWorkaround();
 		}
 	});
 };
@@ -1434,6 +1434,8 @@ sap.ui.unified.Shell.prototype._repaint = function(oDom){
 		oDom.style.display = "none";
 		oDom.offsetHeight;
 		oDom.style.display = display;
+		
+		this._refreshCSSWorkaround();
 	}
 };
 
@@ -1446,7 +1448,7 @@ sap.ui.unified.Shell.prototype._isHeaderHidingActive = function(){
 };
 
 sap.ui.unified.Shell.prototype._refreshCSSWorkaround = function() {
-	if(!sap.ui.Device.browser.chrome || !sap.ui.Device.support.touch){
+	if(!sap.ui.Device.browser.webkit || !sap.ui.Device.support.touch){
 		return;
 	}
 	

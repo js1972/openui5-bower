@@ -2865,6 +2865,18 @@ L  0.78125% =  8px / 1024px
 	position: relative;
 }
 
+/* Internet Explorer  does not support "text-align: start"!
+Therefore the title needs to be positioned separately for RTL and LTR mode */
+[data-sap-ui-browser^=ie] .sapUiGrid th > .sapUiFormTitle,
+[data-sap-ui-browser^=ie] .sapUiGrid td > .sapUiFormTitle{ 
+	text-align: left;
+}
+
+html[dir=rtl][data-sap-ui-browser^=ie] .sapUiGrid th > .sapUiFormTitle,
+html[dir=rtl][data-sap-ui-browser^=ie] .sapUiGrid td > .sapUiFormTitle{ 
+	text-align: right;
+}
+
 /*
 .sapUiGrid td[colspan="8"] > .sapUiFormTitle{
 	border-color: @sapUiMediumBorder;
@@ -3162,20 +3174,27 @@ HTML[data-sap-ui-browser*='ie'] .sapUiRFL {
 	padding-bottom: 0.125rem;
 }
 
+/* on last row no padding-bottom on container content */
+.sapUiRespGridMedia-Std-Phone > .sapUiFormResGridLastRowM:last-child > .sapUiRGLContainer > .sapUiRGLContainerCont,
+.sapUiRespGridMedia-Std-Tablet > .sapUiFormResGridLastRowM > .sapUiRGLContainer > .sapUiRGLContainerCont,
+.sapUiRespGridMedia-Std-Desktop > .sapUiFormResGridLastRowL > .sapUiRGLContainer > .sapUiRGLContainerCont{
+	padding-bottom: 0;
+}
+
 /* ============================ */
 /*   MEDIUM and LARGE DEVICES   */
 /* ============================ */
 /* add paddings between containers */
 .sapUiRespGridMedia-Std-Tablet.sapUiFormResGridMain > div:not(.sapUiRespGridSpanM12):not(.sapUiFormResGridLastContM),
 .sapUiRespGridMedia-Std-Desktop.sapUiFormResGridMain > div:not(.sapUiRespGridSpanL12):not(.sapUiFormResGridLastContL){
-	padding-right: 1rem;
+	padding-right: 0.75rem; /* because fields have 0.25rem padding on left and right */
 	-moz-box-sizing: padding-box;
 	box-sizing: border-box;
 }
 
 .sapUiRespGridMedia-Std-Tablet.sapUiFormResGridMain > div:not(.sapUiRespGridBreakM):not(.sapUiRespGridSpanM12),
 .sapUiRespGridMedia-Std-Desktop.sapUiFormResGridMain > div:not(.sapUiRespGridBreakL):not(.sapUiRespGridSpanL12){
-	padding-left: 1rem;
+	padding-left: 0.75rem; /* because fields have 0.25rem padding on left and right */
 	-moz-box-sizing: padding-box;
 	box-sizing: border-box;
 }
@@ -3195,11 +3214,12 @@ HTML[data-sap-ui-browser*='ie'] .sapUiRFL {
 
 .sapUiRGLContainer > .sapUiFormTitle{
 	border: none;
+	padding-left: 0.25rem;
 }
 
 .sapUiFormResGrid > div {
 	background-color: fade(@sapUiLightestBG, @sapUiTranslucentBGOpacity);
-	padding: 1rem;
+	padding: 1rem 0.75rem; /* because fields have 0.25rem padding on left and right */
 	-moz-box-sizing: padding-box;
 	box-sizing: border-box;
 }
@@ -3497,6 +3517,7 @@ html[data-sap-ui-browser^="ff"] .sapUiSizeCompact .sapUiFormEdit.sapUiFormM .sap
 .sapUiLoSplitter.sapUiLoSplitterH > .sapUiLoSplitterBar.sapUiLoSplitterNoResize,
 .sapUiLoSplitter.sapUiLoSplitterV > .sapUiLoSplitterBar.sapUiLoSplitterNoResize {
 	cursor: default;
+	visibility: hidden;
 }
 
 .sapUiLoSplitter > .sapUiLoSplitterBar.sapUiLoSplitterNoResize > *,
@@ -3520,10 +3541,6 @@ html[data-sap-ui-browser^="ff"] .sapUiSizeCompact .sapUiFormEdit.sapUiFormM .sap
 
 /******************************************* Horizontal *******************************************/
 
-.sapUiLoSplitterH {
-	white-space: nowrap;
-}
-
 .sapUiLoSplitterH > .sapUiLoSplitterBar,
 .sapUiLoSplitterH > .sapUiLoSplitterContent,
 .sapUiLoSplitterH > .sapUiLoSplitterOverlay > .sapUiLoSplitterOverlayBar {
@@ -3532,14 +3549,16 @@ html[data-sap-ui-browser^="ff"] .sapUiSizeCompact .sapUiFormEdit.sapUiFormM .sap
 	height: 100%;
 }
 
-.sapUiLoSplitterH .sapUiLoSplitterBarIcon {
+.sapUiLoSplitterH > .sapUiLoSplitterBar > .sapUiLoSplitterBarIcon,
+.sapUiLoSplitterH > .sapUiLoSplitterOverlay > .sapUiLoSplitterOverlayBar > .sapUiIcon.sapUiLoSplitterBarIcon {
 	font-size: 16px;
 	line-height: 16px;
 	height: 16px;
 	top: ~"calc(50% - 12px)";
 }
 
-.sapUiLoSplitterH .sapUiIcon.sapUiLoSplitterBarIcon::before {
+.sapUiLoSplitterH > .sapUiLoSplitterBar > .sapUiIcon.sapUiLoSplitterBarIcon::before,
+.sapUiLoSplitterH > .sapUiLoSplitterOverlay > .sapUiLoSplitterOverlayBar > .sapUiIcon.sapUiLoSplitterBarIcon::before {
 	content: "\e1fa";
 }
 
@@ -3563,7 +3582,8 @@ html[data-sap-ui-browser^="ff"] .sapUiSizeCompact .sapUiFormEdit.sapUiFormM .sap
 	width: 100%;
 }
 
-.sapUiLoSplitterV .sapUiLoSplitterBarIcon {
+.sapUiLoSplitterV > .sapUiLoSplitterBar > .sapUiLoSplitterBarIcon,
+.sapUiLoSplitterV > .sapUiLoSplitterOverlay > .sapUiLoSplitterOverlayBar > .sapUiIcon.sapUiLoSplitterBarIcon {
 	font-size: 16px;
 	line-height: 16px;
 	width: 16px;
@@ -3571,7 +3591,8 @@ html[data-sap-ui-browser^="ff"] .sapUiSizeCompact .sapUiFormEdit.sapUiFormM .sap
 	top: -5px;
 }
 
-.sapUiLoSplitterV .sapUiIcon.sapUiLoSplitterBarIcon::before {
+.sapUiLoSplitterV > .sapUiLoSplitterBar > .sapUiIcon.sapUiLoSplitterBarIcon::before,
+.sapUiLoSplitterV > .sapUiLoSplitterOverlay > .sapUiLoSplitterOverlayBar > .sapUiIcon.sapUiLoSplitterBarIcon::before {
 	content: "\e1fb";
 }
 
