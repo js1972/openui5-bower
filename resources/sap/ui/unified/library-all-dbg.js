@@ -19,7 +19,7 @@ sap.ui.unified.CalendarRenderer = {
 
 /**
  * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
- * 
+ *
  * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
  * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
  */
@@ -51,6 +51,9 @@ sap.ui.unified.CalendarRenderer.render = function(oRm, oCal){
 	oRm.write(rb.getText("CALENDAR_CANCEL"));
 	oRm.write("</button>");
 
+	// dummy element to catch tabbing in from next element
+	oRm.write("<div id=\""+sId+"-end\" tabindex=\"0\" style=\"width:0;height:0;position:absolute;right:0;bottom:0;\"></div>");
+
 	oRm.write("</div>");
 };
 
@@ -58,8 +61,8 @@ sap.ui.unified.CalendarRenderer.renderHeader = function(oRm, oCal, oDate){
 
 	var oLocaleData = oCal._getLocaleData();
 	var sId = oCal.getId();
-	var iMonth = oDate.getMonth();
-	var iYear = oDate.getFullYear();
+	var iMonth = oDate.getUTCMonth();
+	var iYear = oDate.getUTCFullYear();
 	var aMonthNames = [];
 	if (oCal._bLongMonth || !oCal._bNamesLengthChecked) {
 		aMonthNames = oLocaleData.getMonthsStandAlone("wide");
@@ -137,8 +140,8 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 	var sLocale = oCal.getLocale();
 	var oLocaleData = oCal._getLocaleData();
 	var oDate = oCal._getFocusedDate();
-	var iMonth = oDate.getMonth();
-	var iYear = oDate.getFullYear();
+	var iMonth = oDate.getUTCMonth();
+	var iYear = oDate.getUTCFullYear();
 	var iFirstDayOfWeek = oLocaleData.getFirstDayOfWeek();
 	var iWeekendStart = oLocaleData.getWeekendStart();
 	var iWeekendEnd = oLocaleData.getWeekendEnd();
@@ -147,8 +150,8 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 
 	// determine weekday of first day in month
 	var oFirstDay = new Date(oDate.getTime());
-	oFirstDay.setDate(1);
-	var iWeekDay = oFirstDay.getDay();
+	oFirstDay.setUTCDate(1);
+	var iWeekDay = oFirstDay.getUTCDay();
 	var iDaysOldMonth = iWeekDay - iFirstDayOfWeek;
 	if (iDaysOldMonth < 0) {
 		iDaysOldMonth = 7 + iDaysOldMonth;
@@ -156,7 +159,7 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 
 	if (iDaysOldMonth > 0) {
 		// determine first day for display
-		oFirstDay.setDate(1 - iDaysOldMonth);
+		oFirstDay.setUTCDate(1 - iDaysOldMonth);
 	}
 
 	var oDay = new Date(oFirstDay.getTime());
@@ -165,8 +168,9 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 	var iSelected = 0;
 
 	do {
-		sYyyymmdd = oCal._oFormatYyyymmdd.format(oDay);
-		iWeekDay = oDay.getDay();
+
+		sYyyymmdd = oCal._oFormatYyyymmdd.format(oDay, true);
+		iWeekDay = oDay.getUTCDay();
 		iSelected = oCal._checkDateSelected(oDay);
 		oRm.write("<div");
 		oRm.writeAttribute("id", sId+"-"+sYyyymmdd);
@@ -175,10 +179,10 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 		if (iWeekDay == iFirstDayOfWeek) {
 			oRm.addClass("sapUiCalFirstWDay");
 		}
-		if (iMonth != oDay.getMonth()) {
+		if (iMonth != oDay.getUTCMonth()) {
 			oRm.addClass("sapUiCalDayOtherMonth");
 		}
-		if (oDay.getMonth() == oToday.getMonth() && oDay.getYear() == oToday.getYear() && oDay.getDate() == oToday.getDate()) {
+		if (oDay.getUTCMonth() == oToday.getMonth() && oDay.getUTCFullYear() == oToday.getFullYear() && oDay.getUTCDate() == oToday.getDate()) {
 			oRm.addClass("sapUiCalDayToday");
 		}
 
@@ -206,7 +210,7 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 		oRm.write(">"); // div element
 
 		oRm.write("<span class=\"sapUiCalDayNum\">");
-		oRm.write(oDay.getDate());
+		oRm.write(oDay.getUTCDate());
 		oRm.write("</span>");
 
 		if (iWeekDay == iFirstDayOfWeek) {
@@ -217,8 +221,10 @@ sap.ui.unified.CalendarRenderer.renderDays = function(oRm, oCal, oDate){
 		}
 
 		oRm.write("</div>");
-		oDay.setDate(oDay.getDate()+1);
-	} while (oDay.getMonth() != iNextMonth || oDay.getDay() != iFirstDayOfWeek);
+
+		oDay.setUTCDate(oDay.getUTCDate()+1);
+
+	} while (oDay.getUTCMonth() != iNextMonth || oDay.getUTCDay() != iFirstDayOfWeek);
 
 };
 
@@ -236,12 +242,12 @@ sap.ui.unified.CalendarRenderer.calculateWeekNumber = function(oDate, iYear, sLo
 		 * So the week beginning in December and ending in January has 2 week numbers
 		 */
 		var oJanFirst = new Date(oDate.getTime());
-		oJanFirst.setFullYear(iYear, 0, 1);
-		iWeekDay = oJanFirst.getDay();
+		oJanFirst.setUTCFullYear(iYear, 0, 1);
+		iWeekDay = oJanFirst.getUTCDay();
 
 		//get the date for the same weekday like jan 1.
 		var oCheckDate = new Date(oDate.getTime());
-		oCheckDate.setDate(oCheckDate.getDate() - oCheckDate.getDay() + iWeekDay);
+		oCheckDate.setUTCDate(oCheckDate.getUTCDate() - oCheckDate.getUTCDay() + iWeekDay);
 
 		iWeekNum = Math.round((oCheckDate.getTime() - oJanFirst.getTime()) / 86400000 / 7) + 1;
 
@@ -252,19 +258,19 @@ sap.ui.unified.CalendarRenderer.calculateWeekNumber = function(oDate, iYear, sLo
 		// find Thursday of this week
 		// if the checked day is before the 1. day of the week use a day of the previous week to check
 		var oThursday = new Date(oDate.getTime());
-		oThursday.setDate(oThursday.getDate() - iFirstDayOfWeek);
-		iWeekDay = oThursday.getDay();
-		oThursday.setDate(oThursday.getDate() - iWeekDay + 4);
+		oThursday.setUTCDate(oThursday.getUTCDate() - iFirstDayOfWeek);
+		iWeekDay = oThursday.getUTCDay();
+		oThursday.setUTCDate(oThursday.getUTCDate() - iWeekDay + 4);
 
 		var oFirstDayOfYear = new Date(oThursday.getTime());
-		oFirstDayOfYear.setMonth(0, 1);
-		iWeekDay = oFirstDayOfYear.getDay();
+		oFirstDayOfYear.setUTCMonth(0, 1);
+		iWeekDay = oFirstDayOfYear.getUTCDay();
 		var iAddDays = 0;
 		if (iWeekDay > 4) {
 			iAddDays = 7; // first day of year is after Thursday, so first Thursday is in the next week
 		}
 		var oFirstThursday = new Date(oFirstDayOfYear.getTime());
-		oFirstThursday.setDate(1 - iWeekDay + 4 + iAddDays);
+		oFirstThursday.setUTCDate(1 - iWeekDay + 4 + iAddDays);
 
 		iWeekNum = Math.round((oThursday.getTime() - oFirstThursday.getTime()) / 86400000 / 7) + 1;
 
@@ -285,7 +291,7 @@ sap.ui.unified.CalendarRenderer.renderMonthPicker = function(oRm, oCal, oDate){
 	} else {
 		aMonthNames = oLocaleData.getMonthsStandAlone("abbreviated");
 	}
-	var iMonth = oDate.getMonth();
+	var iMonth = oDate.getUTCMonth();
 
 	oRm.write("<div id=\""+sId+"-months\" class=\"sapUiCalMonths\">");
 
@@ -311,7 +317,7 @@ sap.ui.unified.CalendarRenderer.renderYearPicker = function(oRm, oCal, oDate){
 
 	var oLocaleData = oCal._getLocaleData();
 	var sId = oCal.getId();
-	var iCurrentYear = oDate.getFullYear();
+	var iCurrentYear = oDate.getUTCFullYear();
 	var iYear = 0;
 
 	oRm.write("<div id=\""+sId+"-years\" class=\"sapUiCalYears\">");
@@ -334,6 +340,7 @@ sap.ui.unified.CalendarRenderer.renderYearPicker = function(oRm, oCal, oDate){
 	oRm.write("</div>");
 
 };
+
 }; // end of sap/ui/unified/CalendarRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ContentSwitcherRenderer') ) {
 /*!
@@ -404,7 +411,7 @@ jQuery.sap.declare("sap.ui.unified.CurrencyRenderer");
 /**
  * @class Currency renderer.
  *
- * @version 1.22.4
+ * @version 1.22.9
  * @static
  */
 sap.ui.unified.CurrencyRenderer = {
@@ -551,7 +558,7 @@ jQuery.sap.declare("sap.ui.unified.MenuRenderer");
  * @class Menu renderer.
  * @author SAP - TD Core UI&AM UI Infra
  *
- * @version 1.22.4
+ * @version 1.22.9
  * @static
  */
 sap.ui.unified.MenuRenderer = {
@@ -566,9 +573,7 @@ sap.ui.unified.MenuRenderer = {
  * @param {sap.ui.core.Control}
  *            oMenu An object representation of the control that should be rendered
  */
-sap.ui.unified.MenuRenderer.render = function(oRenderManager,oMenu) {
-	var aItems = oMenu.getItems();
-	var rm = oRenderManager;
+sap.ui.unified.MenuRenderer.render = function(rm, oMenu) {
 	var colCount = 8;
 	
 	if(oMenu.oHoveredItem && oMenu.indexOfItem(oMenu.oHoveredItem) < 0){
@@ -609,7 +614,16 @@ sap.ui.unified.MenuRenderer.render = function(oRenderManager,oMenu) {
 	}
 	rm.writeClasses();
 	rm.writeControlData(oMenu);
-	rm.write("><ul class=\"sapUiMnuLst");
+	rm.write(">");
+	sap.ui.unified.MenuRenderer.renderItems(rm, oMenu);
+	rm.write("</div>");
+};
+
+sap.ui.unified.MenuRenderer.renderItems = function(rm, oMenu) {
+	var aItems = oMenu.getItems();
+	var bAccessible = sap.ui.getCore().getConfiguration().getAccessibility();
+	
+	rm.write("<ul class=\"sapUiMnuLst");
 
 	var bHasIcons = false;
 	var bHasSubMenus = false;
@@ -657,7 +671,7 @@ sap.ui.unified.MenuRenderer.render = function(oRenderManager,oMenu) {
 		}
 	}
 
-	rm.write("</ul></div>");
+	rm.write("</ul>");	
 };
 }; // end of sap/ui/unified/MenuRenderer.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ShellOverlayRenderer') ) {
@@ -847,6 +861,9 @@ sap.ui.unified.ShellRenderer.renderHeaderItems = function(rm, oShell, begin) {
 		if(aItems[i].getStartsSection()){
 			rm.addClass("sapUiUfdShellHeadItmDelim");
 		}
+		if(aItems[i].getShowSeparator()){
+			rm.addClass("sapUiUfdShellHeadItmSep");
+		}
 		if(!aItems[i].getVisible()){
 			rm.addClass("sapUiUfdShellHidden");
 		}
@@ -993,7 +1010,7 @@ if ( !jQuery.sap.isDeclared('sap.ui.unified.library') ) {
  * ----------------------------------------------------------------------------------- */
 
 /**
- * Initialization Code and shared classes of library sap.ui.unified (1.22.4)
+ * Initialization Code and shared classes of library sap.ui.unified (1.22.9)
  */
 jQuery.sap.declare("sap.ui.unified.library");
 jQuery.sap.require('sap.ui.core.Core'); // unlisted dependency retained
@@ -1038,7 +1055,7 @@ sap.ui.getCore().initLibrary({
     "sap.ui.unified.ShellHeadItem",
     "sap.ui.unified.ShellHeadUserItem"
   ],
-  version: "1.22.4"});
+  version: "1.22.9"});
 
 /*!
  * SAP UI development toolkit for HTML5 (SAPUI5/OpenUI5)
@@ -1058,7 +1075,7 @@ jQuery.sap.declare("sap.ui.unified.ContentSwitcherAnimation");
 /**
  * @class Predefined animations for the ContentSwitcher
  *
- * @version 1.22.4
+ * @version 1.22.9
  * @static
  * @public
  * @since 1.16.0
@@ -1244,7 +1261,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author  
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -1582,6 +1599,14 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 	};
 
+	sap.ui.unified.Calendar.prototype.exit = function(){
+
+		if (this._sRenderMonth) {
+			jQuery.sap.clearDelayedCall(this._sRenderMonth);
+		}
+
+	};
+
 //	sap.ui.unified.Calendar.prototype.onBeforeRendering = function(){
 //	};
 
@@ -1599,15 +1624,14 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	// overwrite invalidate to recognize changes on selectedDates
 	sap.ui.unified.Calendar.prototype.invalidate = function(oOrigin) {
 
-		var that = this;
-		_determineFocusedDate(that);
-
 		if(!oOrigin || !(oOrigin instanceof sap.ui.unified.DateRange)){
 			sap.ui.core.Control.prototype.invalidate.apply(this, arguments);
 		}else{
 			// DateRange changed -> only rerender days
-			if (this.getDomRef() && this._iMode == 0) {
-				_renderMonth(that);
+			if (this.getDomRef() && this._iMode == 0 && !this._sRenderMonth) {
+				// do this only once if more DateRanges / Special days are changed
+				var that = this;
+				this._sRenderMonth = jQuery.sap.delayedCall(0, this, _renderMonth, [that]);
 			}
 		}
 
@@ -1660,15 +1684,14 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 	sap.ui.unified.Calendar.prototype._setFocusedDate = function(oDate){
 
-		this._oFocusedDate = new Date(oDate.getTime());
-		this._oFocusedDate.setHours(0, 0, 0, 0);
+		this._oFocusedDate = new Date(oDate);
 
 	};
 
 	sap.ui.unified.Calendar.prototype.focusDate = function(oDate){
 
-		if (oDate && (!this._oFocusedDate || this._oFocusedDate.getTime() != oDate.getTime())) {
-			this._setFocusedDate(oDate);
+		if (oDate && !this._oFocusedDate || this._oFocusedDate.getTime() != oDate.getTime()) {
+			this._setFocusedDate(_createUTCDate(oDate));
 
 			if (this.getDomRef() && this._iMode == 0) {
 				var that = this;
@@ -1719,13 +1742,13 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		if (jQuery.sap.containsOrEquals(this.getDomRef("next"), oEvent.target)) {
 			switch (this._iMode) {
 			case 0: // day picker
-				oFocusedDate.setMonth(oFocusedDate.getMonth()+1, 1);
+				oFocusedDate.setUTCMonth(oFocusedDate.getUTCMonth()+1, 1);
 				_renderMonth(that);
 				break;
 
 			case 1: // month picker
-				oFocusedDate.setFullYear(oFocusedDate.getFullYear()+1);
-				this.$("year").text(oFocusedDate.getFullYear());
+				oFocusedDate.setUTCFullYear(oFocusedDate.getUTCFullYear()+1);
+				this.$("year").text(oFocusedDate.getUTCFullYear());
 				break;
 
 			case 2: // year picker
@@ -1735,14 +1758,14 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		} else if (jQuery.sap.containsOrEquals(this.getDomRef("prev"), oEvent.target)) {
 			switch (this._iMode) {
 			case 0: // day picker
-				oFocusedDate.setDate(1);
-				oFocusedDate.setDate(oFocusedDate.getDate()-1);
+				oFocusedDate.setUTCDate(1);
+				oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-1);
 				_renderMonth(that);
 				break;
 
 			case 1: // month picker
-				oFocusedDate.setFullYear(oFocusedDate.getFullYear()-1);
-				this.$("year").text(oFocusedDate.getFullYear());
+				oFocusedDate.setUTCFullYear(oFocusedDate.getUTCFullYear()-1);
+				this.$("year").text(oFocusedDate.getUTCFullYear());
 				break;
 
 			case 2: // year picker
@@ -1755,12 +1778,16 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			}else {
 				_hideMonthPicker(that);
 			}
+			// add ItemNavigation again (might be removed by Tab)
+			this.addDelegate(this._oItemNavigation);
 		} else if (oEvent.target.id == this.getId()+"-year") {
 			if (this._iMode != 2) {
 				_showYearPicker(that);
 			}else {
 				_hideYearPicker(that);
 			}
+			// add ItemNavigation again (might be removed by Tab)
+			this.addDelegate(this._oItemNavigation);
 		} else if (oEvent.target.id == this.getId()+"-cancel") {
 			this.onsapescape(oEvent);
 		}
@@ -1783,8 +1810,8 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 		if ($Target.hasClass("sapUiCalDay")) {
 			var oFocusedDate = this._getFocusedDate();
-			var oOldFocusedDate = new Date(oFocusedDate.getTime());
-			oFocusedDate = this._oFormatYyyymmdd.parse($Target.attr("data-sap-day"));
+			var oOldFocusedDate = oFocusedDate;
+			oFocusedDate = this._oFormatYyyymmdd.parse($Target.attr("data-sap-day"), true);
 			this._setFocusedDate(oFocusedDate);
 
 			if (oFocusedDate.getTime() != oOldFocusedDate.getTime()) {
@@ -1793,7 +1820,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 					// in other month -> change month
 					_renderMonth(that);
 				}else {
-					_selectDay(that, new Date(oFocusedDate.getTime()), false, true);
+					_selectDay(that, oFocusedDate, false, true);
 					this._bMoveChange = true;
 				}
 
@@ -1815,7 +1842,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			for ( var i = 0; i < aDomRefs.length; i++) {
 				var $DomRef = jQuery(aDomRefs[i]);
 				if (!$DomRef.hasClass("sapUiCalDayOtherMonth")) {
-					if ($DomRef.attr("data-sap-day") == this._oFormatYyyymmdd.format(oFocusedDate)) {
+					if ($DomRef.attr("data-sap-day") == this._oFormatYyyymmdd.format(oFocusedDate, true)) {
 						$DomRef.focus();
 						break;
 					}
@@ -1825,7 +1852,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			if (this._bMoveChange) {
 				// selection was changed -> make it final
 				var that = this;
-				_selectDay(that, new Date(oFocusedDate.getTime()));
+				_selectDay(that, oFocusedDate);
 				this._bMoveChange = false;
 				_fireSelect(that);
 			}
@@ -1838,7 +1865,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		var that = this;
 		var oFocusedDate = this._getFocusedDate();
 
-		oFocusedDate.setMonth(oFocusedDate.getMonth()+1, 1);
+		oFocusedDate.setUTCMonth(oFocusedDate.getUTCMonth()+1, 1);
 		_renderMonth(that);
 
 	};
@@ -1848,8 +1875,8 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		var that = this;
 		var oFocusedDate = this._getFocusedDate();
 
-		oFocusedDate.setDate(1);
-		oFocusedDate.setDate(oFocusedDate.getDate()-1);
+		oFocusedDate.setUTCDate(1);
+		oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-1);
 		_renderMonth(that);
 
 	};
@@ -1863,8 +1890,12 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		switch (this._iMode) {
 		case 0: // day picker
 			if (jQuery.sap.containsOrEquals(this.getDomRef("days"), oEvent.target)) {
-				_selectDay(that, new Date(this._getFocusedDate().getTime()));
+				_selectDay(that, that._getFocusedDate());
 				_fireSelect(that);
+
+				//to prevent bubbling into input field if in DatePicker
+				oEvent.stopPropagation();
+				oEvent.preventDefault();
 			}
 			break;
 
@@ -1882,10 +1913,6 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			}
 			break;
 		}
-
-		//to prevent bubbling into input field if in DatePicker
-		oEvent.stopPropagation();
-		oEvent.preventDefault();
 
 	};
 
@@ -1923,16 +1950,42 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 	};
 
+	sap.ui.unified.Calendar.prototype.onsapshow = function(oEvent){
+
+		if (this._bPoupupMode) {
+			var that = this;
+			switch (this._iMode) {
+			case 1: // month picker
+				_hideMonthPicker(that);
+				break;
+
+			case 2: // year picker
+				_hideYearPicker(that);
+				break;
+			}
+			this.fireCancel();
+		}
+
+	};
+
+	sap.ui.unified.Calendar.prototype.onsaphide = sap.ui.unified.Calendar.prototype.onsapshow;
+
 	sap.ui.unified.Calendar.prototype.onsappageupmodifiers = function(oEvent){
 
 		// not handled by ItemNavigation
-		// go one year back
-		var oFocusedDate = this._getFocusedDate();
-		var that = this;
-		var iYear = oFocusedDate.getFullYear();
+		if (jQuery.sap.containsOrEquals(this.getDomRef("days"), oEvent.target)) {
+			// go one year back
+			var oFocusedDate = this._getFocusedDate();
+			var that = this;
+			var iYear = oFocusedDate.getUTCFullYear();
 
-		oFocusedDate.setFullYear(iYear-1);
-		_renderMonth(that);
+			if (!!(oEvent.metaKey || oEvent.ctrlKey)) {
+				oFocusedDate.setUTCFullYear(iYear-10);
+			} else {
+				oFocusedDate.setUTCFullYear(iYear-1);
+			}
+			_renderMonth(that);
+		}
 
 		// cancel the event otherwise the browser select some text
 		oEvent.preventDefault();
@@ -1942,18 +1995,35 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	sap.ui.unified.Calendar.prototype.onsappagedownmodifiers = function(oEvent){
 
 		// not handled by ItemNavigation
-		// go one year forward
-		var oFocusedDate = this._getFocusedDate();
-		var that = this;
-		var iYear = oFocusedDate.getFullYear();
+		if (jQuery.sap.containsOrEquals(this.getDomRef("days"), oEvent.target)) {
+			// go one year forward
+			var oFocusedDate = this._getFocusedDate();
+			var that = this;
+			var iYear = oFocusedDate.getUTCFullYear();
 
-		oFocusedDate.setFullYear(iYear+1);
-		_renderMonth(that);
+			if (!!(oEvent.metaKey || oEvent.ctrlKey)) {
+				oFocusedDate.setUTCFullYear(iYear+10);
+			} else {
+				oFocusedDate.setUTCFullYear(iYear+1);
+			}
+			_renderMonth(that);
+		}
 
 		// cancel the event otherwise the browser select some text
 		oEvent.preventDefault();
 
 	};
+
+	sap.ui.unified.Calendar.prototype.onsappageup = function(oEvent){
+
+		if(oEvent.target.id == this.getId()+"-month" || oEvent.target.id == this.getId()+"-year"){
+			//prevent browser scrolling
+			oEvent.preventDefault();
+		}
+
+	};
+
+	sap.ui.unified.Calendar.prototype.onsappagedown = sap.ui.unified.Calendar.prototype.onsappageup;
 
 	sap.ui.unified.Calendar.prototype.onsaptabnext = function(oEvent){
 
@@ -1970,19 +2040,41 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				jQuery(this._oItemNavigation.getItemDomRefs()[this._oItemNavigation.getFocusedIndex()]).attr("tabindex", "-1");
 			}
 
+			// remove ItemNavigation to prevent arrow navigation on buttons
+			this.removeDelegate(this._oItemNavigation);
+
 			oEvent.preventDefault();
 		}else if(oEvent.target.id == this.getId()+"-month"){
 			jQuery.sap.focus(this.getDomRef("year"));
 
+			// remove ItemNavigation to prevent arrow navigation on buttons
+			this.removeDelegate(this._oItemNavigation);
+
 			oEvent.preventDefault();
+		}else if(oEvent.target.id == this.getId()+"-year"){
+			// add ItemNavigation again
+			this.addDelegate(this._oItemNavigation);
 		}
 
 	};
 
 	sap.ui.unified.Calendar.prototype.onsaptabprevious = function(oEvent){
 
-		if(oEvent.target.id == this.getId()+"-month"){
-			// remove Tabindex from day - to break cycle
+		if (jQuery.sap.containsOrEquals(this.getDomRef("days"), oEvent.target) ||
+		    jQuery.sap.containsOrEquals(this.getDomRef("months"), oEvent.target) ||
+		    jQuery.sap.containsOrEquals(this.getDomRef("years"), oEvent.target)) {
+			// tab from a day
+			if (this._bPoupupMode) {
+				jQuery.sap.focus(this.getDomRef("year"));
+
+				// remove ItemNavigation to prevent arrow navigation on buttons
+				this.removeDelegate(this._oItemNavigation);
+
+				oEvent.preventDefault();
+			}
+		}else if(oEvent.target.id == this.getId()+"-month"){
+			// add ItemNavigation again
+			this.addDelegate(this._oItemNavigation);
 			this._oItemNavigation.focusItem(this._oItemNavigation.getFocusedIndex());
 
 			oEvent.preventDefault();
@@ -1990,6 +2082,46 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			jQuery.sap.focus(this.getDomRef("month"));
 
 			oEvent.preventDefault();
+		}
+
+	};
+
+	sap.ui.unified.Calendar.prototype.onsapnext = function(oEvent){
+
+		if(oEvent.target.id == this.getId()+"-month" || oEvent.target.id == this.getId()+"-year"){
+			//prevent browser scrolling
+			oEvent.preventDefault();
+		}
+
+	};
+
+	sap.ui.unified.Calendar.prototype.onsapprevious = sap.ui.unified.Calendar.prototype.onsapnext;
+
+	sap.ui.unified.Calendar.prototype.onfocusin = function(oEvent){
+
+		if(oEvent.target.id == this.getId()+"-end"){
+			// focus via tab+shift (otherwise not possible to go to this element)
+			jQuery.sap.focus(this.getDomRef("year"));
+
+			// remove Tabindex from day - to break cycle
+			jQuery(this._oItemNavigation.getItemDomRefs()[this._oItemNavigation.getFocusedIndex()]).attr("tabindex", "-1");
+
+			// remove ItemNavigation to prevent arrow navigation on buttons
+			this.removeDelegate(this._oItemNavigation);
+		}
+
+		// remove tabindex of dummy element if focus is inside calendar
+		jQuery.sap.byId(this.getId()+"-end").attr("tabindex", "-1");
+
+	};
+
+	sap.ui.unified.Calendar.prototype.onsapfocusleave = function(oEvent){
+
+		if (!oEvent.relatedControlId || !jQuery.sap.containsOrEquals(this.getDomRef(), sap.ui.getCore().byId(oEvent.relatedControlId).getFocusDomRef())) {
+			// put dummy element back to tab-chain
+			jQuery.sap.byId(this.getId()+"-end").attr("tabindex", "0");
+			// add ItemNavigation again
+			this.addDelegate(this._oItemNavigation);
 		}
 
 	};
@@ -2005,26 +2137,24 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 		var iSelected = 0;
 		var aSelectedDates = this.getSelectedDates();
+		var oTimeStamp = oDate.getTime();
 
 		for ( var i = 0; i < aSelectedDates.length; i++) {
 			// initalize the time part of the start and end time
 			var oRange = aSelectedDates[i];
-			var oTmpDate = oRange.getStartDate();
+			var oTmpDate = _createUTCDate(oRange.getStartDate());
 			var oStartDate = undefined;
 			var oStartTimeStamp = 0;
 			if (oTmpDate) {
-				oStartDate = new Date (oTmpDate.getTime());
-				oStartDate.setHours(0, 0, 0, 0);
+				oStartDate = oTmpDate;
 				oStartTimeStamp = oStartDate.getTime();
 			}
 			var oEndDate = undefined;
 			var oEndTimeStamp = 0;
-			var oTimeStamp = oDate.getTime();
 			if (this.getIntervalSelection()) {
-				oTmpDate = oRange.getEndDate();
+				oTmpDate = _createUTCDate(oRange.getEndDate());
 				if (oTmpDate) {
-					oEndDate = new Date (oTmpDate.getTime());
-					oEndDate.setHours(0, 0, 0, 0);
+					oEndDate = oTmpDate;
 					oEndTimeStamp = oEndDate.getTime();
 				}
 			}
@@ -2079,10 +2209,10 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			if ($DomRef.hasClass("sapUiCalDayOtherMonth")) {
 				if (oEvent.type == "saphomemodifiers" && (oEvent.metaKey || oEvent.ctrlKey)) {
 					// on ctrl+home key focus first day of month
-					oFocusedDate.setDate(1);
+					oFocusedDate.setUTCDate(1);
 					for ( var i = 0; i < aDomRefs.length; i++) {
 						var $DomRefDay = jQuery(aDomRefs[i]);
-						if (this._oFormatYyyymmdd.parse($DomRefDay.attr("data-sap-day")).getDate() == 1) {
+						if (this._oFormatYyyymmdd.parse($DomRefDay.attr("data-sap-day"), true).getUTCDate() == 1) {
 							this._oItemNavigation.focusItem(i);
 							break;
 						}
@@ -2092,7 +2222,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 					for ( var i = aDomRefs.length-1; i > 0 ; i--) {
 						var $DomRefDay = jQuery(aDomRefs[i]);
 						if (!$DomRefDay.hasClass("sapUiCalDayOtherMonth")) {
-							oFocusedDate = this._oFormatYyyymmdd.parse($DomRefDay.attr("data-sap-day"));
+							oFocusedDate = this._oFormatYyyymmdd.parse($DomRefDay.attr("data-sap-day"), true);
 							this._setFocusedDate(oFocusedDate);
 							this._oItemNavigation.focusItem(i);
 							break;
@@ -2100,7 +2230,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 					}
 				} else {
 					// switch to the requested month and focus the chosen day
-					oFocusedDate = this._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"));
+					oFocusedDate = this._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"), true);
 					this._setFocusedDate(oFocusedDate);
 					_renderMonth(that);
 				}
@@ -2108,7 +2238,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				// day in current month focused
 				if (!jQuery(oEvent.target).hasClass("sapUiCalWeekNum")) {
 					// not if clicked on week number
-					oFocusedDate = this._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"));
+					oFocusedDate = this._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"), true);
 					this._setFocusedDate(oFocusedDate);
 				}
 			}
@@ -2143,7 +2273,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 			switch (oThis._iMode) {
 			case 0: // day picker
-				_selectDay(oThis, new Date(oFocusedDate.getTime()), oEvent.shiftKey);
+				_selectDay(oThis, oFocusedDate, oEvent.shiftKey);
 				_fireSelect(oThis);
 				if (oThis.getIntervalSelection() && oThis.$().is(":visible")) {
 					// if calendar was closed in select event, do not add mousemove handler
@@ -2179,52 +2309,52 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			case 0: // day picker
 				switch (oEvent.type) {
 				case "sapnext":
-				case "sapnextmodifieres":
+				case "sapnextmodifiers":
 					// last day in month reached
 					if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_DOWN) {
 						//goto same day next week
-						oFocusedDate.setDate(oFocusedDate.getDate()+7);
+						oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()+7);
 					} else {
 						//go to next day
-						oFocusedDate.setDate(oFocusedDate.getDate()+1);
+						oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()+1);
 					}
 					break;
 
 				case "sapprevious":
-				case "sappreviousmodifieres":
+				case "sappreviousmodifiers":
 					// first day in month reached
 					if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_UP) {
 						//goto same day previous week
-						oFocusedDate.setDate(oFocusedDate.getDate()-7);
+						oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-7);
 					} else {
 						//go to previous day
-						oFocusedDate.setDate(oFocusedDate.getDate()-1);
+						oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-1);
 					}
 					break;
 
 				case "sappagedown":
 					// go to same day next month
-					iMonth = oFocusedDate.getMonth()+1;
-					oFocusedDate.setMonth(iMonth);
-					// but if the day don't exist in this month, go to last day of the month
-					if (iMonth%12 != oFocusedDate.getMonth()) {
-						while (iMonth != oFocusedDate.getMonth()) {
-							oFocusedDate.setDate(oFocusedDate.getDate()-1);
+					iMonth = oFocusedDate.getUTCMonth()+1;
+					oFocusedDate.setUTCMonth(iMonth);
+					// but if the day doesn't exist in this month, go to last day of the month
+					if (iMonth%12 != oFocusedDate.getUTCMonth()) {
+						while (iMonth != oFocusedDate.getUTCMonth()) {
+							oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-1);
 						}
 					}
 					break;
 
 				case "sappageup":
-					// go to same day next month
-					iMonth = oFocusedDate.getMonth()-1;
-					oFocusedDate.setMonth(iMonth);
+					// go to same day previous month
+					iMonth = oFocusedDate.getUTCMonth()-1;
+					oFocusedDate.setUTCMonth(iMonth);
 					if (iMonth < 0) {
 						iMonth = 11;
 					}
-					// but if the day don't exist in this month, go to last day of the month
-					if (iMonth != oFocusedDate.getMonth()) {
-						while (iMonth != oFocusedDate.getMonth()) {
-							oFocusedDate.setDate(oFocusedDate.getDate()-1);
+					// but if the day doesn't exist in this month, go to last day of the month
+					if (iMonth != oFocusedDate.getUTCMonth()) {
+						while (iMonth != oFocusedDate.getUTCMonth()) {
+							oFocusedDate.setUTCDate(oFocusedDate.getUTCDate()-1);
 						}
 					}
 					break;
@@ -2242,7 +2372,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			case 2: // year picker
 				switch (oEvent.type) {
 				case "sapnext":
-				case "sapnextmodifieres":
+				case "sapnextmodifiers":
 					if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_DOWN) {
 						//same column in first row of next group
 						_updateYears(that, true, this._oItemNavigation.getFocusedIndex() - 16);
@@ -2253,7 +2383,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 					break;
 
 				case "sapprevious":
-				case "sappreviousmodifieres":
+				case "sappreviousmodifiers":
 					if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_UP) {
 						//same column in last row of previous group
 						_updateYears(that, false, 16 + this._oItemNavigation.getFocusedIndex());
@@ -2285,8 +2415,9 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	function _initItemNavigation(oThis){
 
 		var oDate = oThis._getFocusedDate();
-		var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate);
+		var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate, true);
 		var aDomRefs = [];
+		var oRootDomRef;
 		var iIndex = 0;
 		var iColumns = 0;
 		var bNoColumnChange = false;
@@ -2294,12 +2425,12 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 
 		switch (oThis._iMode) {
 		case 0: // day picker
-			var iDay = oDate.getDate();
+			oRootDomRef = oThis.$("days").get(0);
 			aDomRefs = oThis.$("days").children(".sapUiCalDay");
 
 			for ( var i = 0; i < aDomRefs.length; i++) {
 				var $DomRef = jQuery(aDomRefs[i]);
-				if ($DomRef.attr("data-sap-day") == sYyyymmdd) {
+				if ($DomRef.attr("data-sap-day") === sYyyymmdd) {
 					iIndex = i;
 				}
 			}
@@ -2311,14 +2442,16 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			break;
 
 		case 1: // month picker
+			oRootDomRef = oThis.$("months").get(0);
 			aDomRefs = oThis.$("months").children(".sapUiCalMonth");
-			iIndex = oDate.getMonth();
+			iIndex = oDate.getUTCMonth();
 
 			iColumns = 3;
 
 			break;
 
 		case 2: // year picker
+			oRootDomRef = oThis.$("years").get(0);
 			aDomRefs = oThis.$("years").children(".sapUiCalYear");
 			iIndex = 10;
 
@@ -2337,8 +2470,14 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			oThis._oItemNavigation.attachEvent(sap.ui.core.delegate.ItemNavigation.Events.BorderReached, _handleBorderReached, oThis);
 			oThis.addDelegate(oThis._oItemNavigation);
 			oThis._oItemNavigation.setHomeEndColumnMode(true, true);
+			oThis._oItemNavigation.setDisabledModifiers({
+				sapnext : ["alt"],
+				sapprevious : ["alt"],
+				saphome : ["alt"],
+				sapend : ["alt"]
+			});
 		}
-		oThis._oItemNavigation.setRootDomRef(oThis.getDomRef());
+		oThis._oItemNavigation.setRootDomRef(oRootDomRef);
 		oThis._oItemNavigation.setItemDomRefs(aDomRefs);
 		oThis._oItemNavigation.setCycling(bCycling);
 		oThis._oItemNavigation.setColumns(iColumns, bNoColumnChange);
@@ -2348,6 +2487,8 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	};
 
 	function _renderMonth(oThis){
+
+		this._sRenderMonth = undefined; // initialize delayed call
 
 		var oDate = oThis._getFocusedDate();
 		var $Container = oThis.$("days");
@@ -2369,13 +2510,40 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		} else {
 			aMonthNames = oThis._getLocaleData().getMonthsStandAlone("abbreviated");
 		}
-		oThis.$("month").text(aMonthNames[oDate.getMonth()]);
-		oThis.$("year").text(oDate.getFullYear());
+		oThis.$("month").text(aMonthNames[oDate.getUTCMonth()]);
+		oThis.$("year").text(oDate.getUTCFullYear());
 
 		_initItemNavigation(oThis);
 		oThis._oItemNavigation.focusItem(oThis._oItemNavigation.getFocusedIndex());
 
 	};
+
+
+
+	/**
+	 * Creates a Date in local timezone from UTC timezone
+	 * @param {Date} oDate in UTC timezone
+	 * @return {Date} in local timezone
+	 * @private
+	 */
+	function _createLocalDate(oDate) {
+		if (oDate) {
+			return new Date(oDate.getTime() + oDate.getTimezoneOffset() * 60000);
+		}
+	}
+
+	/**
+	 * Creates a Date in UTC timezone from local timezone
+	 * @param {Date} oDate in local timezone
+	 * @return {Date} in UTC timezone
+	 * @private
+	 */
+	function _createUTCDate(oDate) {
+		if (oDate) {
+			return new Date(Date.UTC(oDate.getFullYear(),oDate.getMonth(),oDate.getDate()));
+		}
+
+	}
 
 	function _selectDay(oThis, oDate, bIntervalEnd, bMove){
 
@@ -2388,11 +2556,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 			var oStartDate = undefined;
 			if (aSelectedDates.length > 0) {
 				oDateRange = aSelectedDates[0];
-				oStartDate = oDateRange.getStartDate();
-				if (oStartDate) {
-					oStartDate = new Date (oStartDate.getTime());
-					oStartDate.setHours(0, 0, 0, 0);
-				}
+				oStartDate = _createUTCDate(oDateRange.getStartDate());
 			} else{
 				oDateRange = new sap.ui.unified.DateRange();
 				oThis.addAggregation("selectedDates", oDateRange, true); // no re-rendering
@@ -2403,17 +2567,17 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				var oEndDate = undefined;
 				if (oDate.getTime() < oStartDate.getTime()) {
 					oEndDate= oStartDate;
-					oStartDate = new Date(oDate.getTime());
+					oStartDate = oDate;
 					if (!bMove) {
 						// in move mode do not set date. this bring broblems if on backward move the start date would be cahnged
-						oDateRange.setProperty("startDate", oStartDate, true); // no-rerendering
-						oDateRange.setProperty("endDate", oEndDate, true); // no-rerendering
+						oDateRange.setProperty("startDate", _createLocalDate(oStartDate), true); // no-rerendering
+						oDateRange.setProperty("endDate", _createLocalDate(oEndDate), true); // no-rerendering
 					}
 				}else if (oDate.getTime() >= oStartDate.getTime()) {
 					// single day ranges are allowed
-					oEndDate = new Date(oDate.getTime());
+					oEndDate = oDate;
 					if (!bMove) {
-						oDateRange.setProperty("endDate", oEndDate, true); // no-rerendering
+						oDateRange.setProperty("endDate", _createLocalDate(oEndDate), true); // no-rerendering
 					}
 				}
 
@@ -2421,7 +2585,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				var iDay = 0;
 				for ( var i = 0; i < aDomRefs.length; i++) {
 					var $DomRef = jQuery(aDomRefs[i]);
-					oDay = oThis._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"));
+					oDay = oThis._oFormatYyyymmdd.parse($DomRef.attr("data-sap-day"), true);
 
 					if (oDay.getTime() == oStartDate.getTime()) {
 						$DomRef.addClass("sapUiCalDaySelStart");
@@ -2451,12 +2615,12 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				}
 			} else {
 				// single day selection or start a new interval
-				var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate);
+				var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate, true);
 				for ( var i = 0; i < aDomRefs.length; i++) {
 					var $DomRef = jQuery(aDomRefs[i]);
 					if (!$DomRef.hasClass("sapUiCalDayOtherMonth") && $DomRef.attr("data-sap-day") == sYyyymmdd) {
 						$DomRef.addClass("sapUiCalDaySel");
-					}else if ($DomRef.hasClass("sapUiCalDaySel")/*oOldDate && parseInt($DomRef.attr("data-sap-day")) == oOldDate.getDate()*/){
+					}else if ($DomRef.hasClass("sapUiCalDaySel")/*oOldDate && parseInt($DomRef.attr("data-sap-day")) == oOldDate.getUTCDate()*/){
 							$DomRef.removeClass("sapUiCalDaySel");
 					}
 					if ($DomRef.hasClass("sapUiCalDaySelStart")){
@@ -2467,7 +2631,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 							$DomRef.removeClass("sapUiCalDaySelEnd");
 					}
 				}
-				oDateRange.setProperty("startDate", new Date(oDate.getTime()), true); // no-rerendering
+				oDateRange.setProperty("startDate", _createLocalDate(oDate), true); // no-rerendering
 				oDateRange.setProperty("endDate", undefined, true); // no-rerendering
 			}
 		} else {
@@ -2480,17 +2644,17 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				if (iSelected > 0) {
 					// already selected - deselect
 					for ( var i = 0; i < aSelectedDates.length; i++) {
-						if (aSelectedDates[i].getStartDate() && oDate.getTime() == aSelectedDates[i].getStartDate().getTime()) {
+						if (aSelectedDates[i].getStartDate() && oDate.getTime() == _createUTCDate(aSelectedDates[i].getStartDate()).getTime()) {
 							oThis.removeAggregation("selectedDates", i, true); // no re-rendering
 							break;
 						}
 					}
 				}else{
 					// not selected -> select
-					oDateRange = new sap.ui.unified.DateRange({startDate: new Date(oDate.getTime())});
+					oDateRange = new sap.ui.unified.DateRange({startDate: _createLocalDate(oDate)});
 					oThis.addAggregation("selectedDates", oDateRange, true); // no re-rendering
 				}
-				var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate);
+				var sYyyymmdd = oThis._oFormatYyyymmdd.format(oDate, true);
 				for ( var i = 0; i < aDomRefs.length; i++) {
 					var $DomRef = jQuery(aDomRefs[i]);
 					if (!$DomRef.hasClass("sapUiCalDayOtherMonth") && $DomRef.attr("data-sap-day") == sYyyymmdd) {
@@ -2511,13 +2675,12 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		var aSelectedDates = oThis.getSelectedDates();
 		if (aSelectedDates && aSelectedDates[0] && aSelectedDates[0].getStartDate()) {
 			// selected dates are provided -> use first one to focus
-			oThis._oFocusedDate = new Date(aSelectedDates[0].getStartDate().getTime());
+			oThis._oFocusedDate = _createUTCDate(aSelectedDates[0].getStartDate());
 		} else {
 			// use current date
-			oThis._oFocusedDate = new Date();
+			var newDate = new Date();
+			oThis._oFocusedDate = _createUTCDate(newDate);
 		}
-		// initalize the time part of date
-		oThis._oFocusedDate.setHours(0, 0, 0, 0);
 
 	};
 
@@ -2565,12 +2728,12 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	function _selectMonth(oThis, iMonth){
 
 		var oFocusedDate = oThis._getFocusedDate();
-		oFocusedDate.setMonth(iMonth);
+		oFocusedDate.setUTCMonth(iMonth);
 
-		if (iMonth != oFocusedDate.getMonth() ) {
-			// day did not exost in this month (e.g. 31) -> go to last day of month
-			var iDay = oFocusedDate.getDate();
-			oFocusedDate.setDate(0);
+		if (iMonth != oFocusedDate.getUTCMonth() ) {
+			// day did not exist in this month (e.g. 31) -> go to last day of month
+			var iDay = oFocusedDate.getUTCDate();
+			oFocusedDate.setUTCDate(0);
 		}
 
 		_renderMonth(oThis);
@@ -2623,7 +2786,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		var oFocusedDate = oThis._getFocusedDate();
 		var aDomRefs = oThis.$("years").children(".sapUiCalYear");
 		var sYear = jQuery(aDomRefs[iIndex]).text();
-		oFocusedDate.setFullYear(sYear);
+		oFocusedDate.setUTCFullYear(sYear);
 
 		_renderMonth(oThis);
 
@@ -2636,7 +2799,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 		var aDomRefs = oThis.$("years").children(".sapUiCalYear");
 		var iFirstYear = parseInt(jQuery(aDomRefs[0]).text());
 		var oFocusedDate = oThis._getFocusedDate();
-		var sCurrentYear = oFocusedDate.getFullYear().toString();
+		var sCurrentYear = oFocusedDate.getUTCFullYear().toString();
 
 		if (bForward) {
 			iFirstYear = iFirstYear + 20;
@@ -2709,10 +2872,10 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 				if (!oLocaleData) {
 					oLocaleData = oThis._getLocaleData();
 				}
-				// cahnge month name on button but not chnage month picker, becuase it is hided again
+				// change month name on button but not chnage month picker, becuase it is hided again
 				var aMonthNames = oLocaleData.getMonthsStandAlone("abbreviated");
 				var oDate = oThis._getFocusedDate();
-				oThis.$("month").text(aMonthNames[oDate.getMonth()]);
+				oThis.$("month").text(aMonthNames[oDate.getUTCMonth()]);
 			} else{
 				oThis._bLongMonth = true;
 			}
@@ -2737,6 +2900,7 @@ jQuery.sap.require('sap.ui.model.type.Date'); // unlisted dependency retained
 	};
 
 }());
+
 }; // end of sap/ui/unified/Calendar.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.ContentSwitcher') ) {
 /*!
@@ -2798,7 +2962,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -3232,7 +3396,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -3500,7 +3664,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author  
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -3690,7 +3854,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -4012,7 +4176,8 @@ sap.ui.unified.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
 
 /**
  * Getter for property <code>fileType</code>.
- * The chosen files will be checked against an array of file types. This property can be defined as a array of file endings to be checked against. If at least one file does not fit the file type restriction the upload is prevented. Example: fileType: "jpg,png,txt".
+ * The chosen files will be checked against an array of file types. If at least one file does not fit the file type restriction the upload is prevented.
+ * Example: ["jpg", "png", "bmp"].
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -4087,7 +4252,8 @@ sap.ui.unified.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
 
 /**
  * Getter for property <code>mimeType</code>.
- * The chosen files will be checked against an array of mime types. This property can be defined as a array of mime types to be checked against. If at least one file does not fit the mime type restriction the upload is prevented. This property is not supported by Internet Explorer 8 and 9. Example: fileType: "image,text". It is also possible to be more specific and set "image/png".
+ * The chosen files will be checked against an array of mime types. If at least one file does not fit the mime type restriction the upload is prevented. This property is not supported by Internet Explorer 8 and 9.
+ * Example: mimeType ["image/png", "image/jpeg"].
  *
  * Default value is empty/<code>undefined</code>
  *
@@ -4743,31 +4909,29 @@ sap.ui.unified.FileUploader.M_EVENTS = {'change':'change','uploadComplete':'uplo
  */
 sap.ui.unified.FileUploader.prototype.init = function(){
 
+	// Instantiate browser-specific UI-Elements (IE8 only): 
 	// works fine with applySettings() after init() - most things are done in onAfterRendering
 	// IE8 should render a native file uploader and the SAPUI5 controls should be exactly behind
 	if (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8) {
 		this.oFilePath = new sap.ui.commons.TextField(this.getId() + "-fu_input",
 													{width: "225px"});
-	} else {
-		this.oFilePath = sap.ui.unified.FileUploaderHelper.createTextField(this.getId() + "-fu_input");
-	}
-	this.oFilePath.setParent(this);
-	if (this.getButtonText()) {
-		var sButtonText = this.getButtonText();
-	} else {
-		var sButtonText = this.getBrowseText();
-	}
-
-	if (!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 8) {
+		
 		this.oBrowse = new sap.ui.commons.Button({enabled : this.getEnabled(),
-													text: sButtonText,
-													width: "0px",
-													height: "0px"});
+			text: "Browse..",
+			width: "0px",
+			height: "0px"});
 	} else {
+		//all other browsers will load the respective UI-Elements from the FileUploaderHelper
+		this.oFilePath = sap.ui.unified.FileUploaderHelper.createTextField(this.getId() + "-fu_input");
 		this.oBrowse = sap.ui.unified.FileUploaderHelper.createButton();
 	}
+	this.oFilePath.setParent(this);
 	this.oBrowse.setParent(this);
+
 	this.oFileUpload = null;
+
+	//retrieving the default browse button text from the resource bundle
+	this.oBrowse.setText(this.getBrowseText());
 
 //	var that = this;
 //	var oDelegate = {
@@ -4783,8 +4947,44 @@ sap.ui.unified.FileUploader.prototype.init = function(){
 
 };
 
+sap.ui.unified.FileUploader.prototype.setButtonText = function(sText) {
+	this.oBrowse.setText(sText || this.getBrowseText());
+	this.setProperty("buttonText", sText, false);
+	return this;
+};
+
 sap.ui.unified.FileUploader.prototype.getIdForLabel = function () {
 	return this.oBrowse.getId();
+};
+
+sap.ui.unified.FileUploader.prototype.setFileType = function(vTypes) {
+	// Compatibility issue: converting the given types to an array in case it is a string
+	var aTypes = this._convertTypesToArray(vTypes);
+	this.setProperty("fileType", aTypes, false);
+	return this;
+};
+
+sap.ui.unified.FileUploader.prototype.setMimeType = function(vTypes) {
+	// Compatibility issue: converting the given types to an array in case it is a string
+	var aTypes = this._convertTypesToArray(vTypes);
+	this.setProperty("mimeType", aTypes, false);
+	return this;
+};
+
+/**
+ * Helper to ensure, that the types (file or mime) are inside an array.
+ * The FUP also accepts comma-separated strings for its fileType and mimeType property. 
+ * @private
+ */
+sap.ui.unified.FileUploader.prototype._convertTypesToArray = function (vTypes) {
+	if (typeof vTypes === "string") {
+		if(vTypes === ""){
+			return [];
+		} else {
+			return vTypes.split(",");
+		}
+	}
+	return vTypes;
 };
 
 /**
@@ -4811,14 +5011,6 @@ sap.ui.unified.FileUploader.prototype.exit = function(){
  * @private
  */
 sap.ui.unified.FileUploader.prototype.onBeforeRendering = function() {
-
-	this._runOnce = false;
-
-	if (this.getButtonText()) {
-		this.oBrowse.setText(this.getButtonText());
-	} else {
-		this.oBrowse.setText(this.getBrowseText());
-	}
 
 	// store the file uploader outside in the static area
 	var oStaticArea = sap.ui.getCore().getStaticAreaRef();
@@ -4857,24 +5049,21 @@ sap.ui.unified.FileUploader.prototype.onAfterRendering = function() {
 		if ((!!sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version == 9)) {
 			this.oBrowse.$().attr("tabindex", "-1");
 		}
-		// calculation of the width of the overlay for the original file upload
-		// !!!sap.ui.Device.browser.internet_explorer check: only for non IE browsers since there we need
-		// the button in front of the fileuploader
-		if (this.getWidth()) {
+		jQuery.sap.delayedCall(0, this, this._recalculateWidth);
+	}
+	
+};
 
-			if (!this._runOnce) {
-				this._runOnce = true;
-				jQuery.sap.delayedCall(50, this, function(){
-					this.onAfterRendering();
-				});
-			} else {
-				if(this.getButtonOnly()) {
-					this.oBrowse.getDomRef().style.width = this.getWidth();
-				} else {
-					// Recalculate the textfield width...
-					this._resizeDomElements();
-				}
-			}
+sap.ui.unified.FileUploader.prototype._recalculateWidth = function() {
+	// calculation of the width of the overlay for the original file upload
+	// !!!sap.ui.Device.browser.internet_explorer check: only for non IE browsers since there we need
+	// the button in front of the fileuploader
+	if (this.getWidth()) {
+		if(this.getButtonOnly()) {
+			this.oBrowse.getDomRef().style.width = this.getWidth();
+		} else {
+			// Recalculate the textfield width...
+			this._resizeDomElements();
 		}
 	}
 };
@@ -4923,11 +5112,11 @@ sap.ui.unified.FileUploader.prototype._resizeDomElements = function() {
 }
 
 sap.ui.unified.FileUploader.prototype.onresize = function() {
-	this.onAfterRendering();
+	this._recalculateWidth();
 }
 
 sap.ui.unified.FileUploader.prototype.onThemeChanged = function() {
-	this.onAfterRendering();
+	this._recalculateWidth();
 }
 
 sap.ui.unified.FileUploader.prototype.setEnabled = function(bEnabled){
@@ -4983,11 +5172,18 @@ sap.ui.unified.FileUploader.prototype.setValue = function(sValue, bFireEvent) {
 				this.oFilePath.getFocusDomRef().focus();
 			}
 		}
-		if (this.oFileUpload && !sValue) {
+		var oForm = this.getDomRef("fu_form");
+		if (this.oFileUpload && /* is visible: */ oForm && !sValue) {
 			// some browsers do not allow to clear the value of the fileuploader control
 			// therefore we utilize the form and reset the values inside this form and
 			// apply the additionalData again afterwards
-			this.getDomRef("fu_form").reset();
+			oForm.reset();
+			if (sap.ui.Device.browser.chrome) {
+				// Chrome needs the value to be cleared this way since the form reset leads
+				// to showing the old value while nothing is uploaded. This specifically 
+				// happens when the focus changes due to the change event in between.
+				this.getDomRef("fu_input").value = "";
+			}
 			this.$("fu_data").val(this.getAdditionalData());
 		}
 		// only fire event when triggered by user interaction
@@ -5145,8 +5341,10 @@ sap.ui.unified.FileUploader.prototype.handlechange = function(oEvent) {
 	if (this.oFileUpload && this.getEnabled()) {
 
 		var fMaxSize = this.getMaximumFileSize();
-		var sFileType = this.getFileType();
-		var sMimeType = this.getMimeType();
+
+		var aFileTypes = this.getFileType();
+		var aMimeTypes = this.getMimeType();
+		
 		var sFileString = '';
 
 		if (window.File) {
@@ -5168,16 +5366,16 @@ sap.ui.unified.FileUploader.prototype.handlechange = function(oEvent) {
 					});
 					return;
 				}
-				if (sMimeType) {
+				//check allowed mime-types for potential mismatches
+				if (aMimeTypes && aMimeTypes.length > 0) {
 					var bWrongMime = true;
-					var aMimeCheck = sMimeType.split(",");
-					for (var j = 0; j < aMimeCheck.length; j++) {
-						if (sType.match(aMimeCheck[j])) {
+					for (var j = 0; j < aMimeTypes.length; j++) {
+						if (sType.match(aMimeTypes[j])) {
 							bWrongMime = false;
 						}
 					}
 					if (bWrongMime) {
-						jQuery.sap.log.info("File: " + sName + " is of type " + sType + " .Allowed types are: "  + sMimeType + ".");
+						jQuery.sap.log.info("File: " + sName + " is of type " + sType + ". Allowed types are: "  + aMimeTypes + ".");
 						this.fireTypeMissmatch({
 							fileName:sName,
 							fileType:sType
@@ -5185,18 +5383,18 @@ sap.ui.unified.FileUploader.prototype.handlechange = function(oEvent) {
 						return;
 					}
 				}
-				if (sFileType) {
+				//check allowed file-types for potential mismatches
+				if (aFileTypes && aFileTypes.length > 0) {
 					var bWrongType = true;
-					var aTypeCheck = sFileType.split(",");
 					var iIdx = sName.lastIndexOf(".");
 					var sFileEnding = sName.substring(iIdx + 1);
-					for (var k = 0; k < aTypeCheck.length; k++) {
-						if (sFileEnding == aTypeCheck[k]) {
+					for (var k = 0; k < aFileTypes.length; k++) {
+						if (sFileEnding == aFileTypes[k]) {
 							bWrongType = false;
 						}
 					}
 					if (bWrongType) {
-						jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
+						jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + ". Allowed types are: "  + aFileTypes + ".");
 						this.fireTypeMissmatch({
 							fileName:sName,
 							fileType:sFileEnding
@@ -5209,19 +5407,20 @@ sap.ui.unified.FileUploader.prototype.handlechange = function(oEvent) {
 			if (sFileString) {
 				this.fireFileAllowed();
 			}
-		} else if (sFileType) {
+		} else if (aFileTypes && aFileTypes.length > 0) {
+			// This else case is executed if the File-API is not supported by the browser (especially IE8/9).
+			// Check if allowed file types match the chosen file from the oFileUpload IFrame Workaround.
 			var bWrongType = true;
-			var aTypeCheck = sFileType.split(",");
 			var sName = this.oFileUpload.value || "";
 			var iIdx = sName.lastIndexOf(".");
 			var sFileEnding = sName.substring(iIdx + 1);
-			for (var k = 0; k < aTypeCheck.length; k++) {
-				if (sFileEnding == aTypeCheck[k]) {
+			for (var k = 0; k < aFileTypes.length; k++) {
+				if (sFileEnding == aFileTypes[k]) {
 					bWrongType = false;
 				}
 			}
 			if (bWrongType) {
-				jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + " .Allowed types are: "  + sFileType + ".");
+				jQuery.sap.log.info("File: " + sName + " is of type " + sFileEnding + ". Allowed types are: "  + aFileTypes + ".");
 				this.fireTypeMissmatch({
 					fileName:sName,
 					fileType:sFileEnding
@@ -5255,6 +5454,7 @@ sap.ui.unified.FileUploader.prototype.handlechange = function(oEvent) {
 //
 //	Private
 //
+
 /**
  * Helper to retrieve the I18N texts for a button
  * @private
@@ -5374,6 +5574,7 @@ sap.ui.unified.FileUploader.prototype.prepareFileUploadAndIFrame = function() {
 
 	}
 };
+
 }; // end of sap/ui/unified/FileUploader.js
 if ( !jQuery.sap.isDeclared('sap.ui.unified.FileUploaderParameter') ) {
 /*!
@@ -5436,7 +5637,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -5593,7 +5794,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -5937,7 +6138,7 @@ jQuery.sap.declare("sap.ui.unified.MenuTextFieldItem");
  * @extends sap.ui.unified.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -6208,7 +6409,9 @@ sap.ui.unified.MenuTextFieldItem.prototype.onkeydown = function(oEvent){
 
 
 sap.ui.unified.MenuTextFieldItem.prototype.onclick = function(oEvent){
-	oEvent.preventDefault();
+	if(!sap.ui.Device.system.desktop && this.getParent().checkEnabled(this)){
+		this.focus();
+	}
 	oEvent.stopPropagation();
 };
 
@@ -6290,6 +6493,12 @@ sap.ui.unified.MenuTextFieldItem.prototype.setValueState = function(sValueState)
 //************ Private Helpers *************
 
 
+sap.ui.unified.MenuTextFieldItem.prototype.getFocusDomRef = function () {
+	var $FocusRef = this.$("tf");
+	return $FocusRef.length ? $FocusRef.get(0) : null;
+};
+
+
 sap.ui.unified.MenuTextFieldItem.prototype._adaptSizes = function(){
 	var $tf = this.$("tf");
 	var $lbl = this.$("lbl");
@@ -6358,6 +6567,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * <li>Properties
  * <ul>
  * <li>{@link #getStartsSection startsSection} : boolean (default: false)</li>
+ * <li>{@link #getShowSeparator showSeparator} : boolean (default: true)</li>
  * <li>{@link #getSelected selected} : boolean (default: false)</li>
  * <li>{@link #getShowMarker showMarker} : boolean (default: false)</li>
  * <li>{@link #getIcon icon} : sap.ui.core.URI</li>
@@ -6387,7 +6597,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -6402,6 +6612,7 @@ sap.ui.core.Element.extend("sap.ui.unified.ShellHeadItem", { metadata : {
 	library : "sap.ui.unified",
 	properties : {
 		"startsSection" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
+		"showSeparator" : {type : "boolean", group : "Appearance", defaultValue : true},
 		"selected" : {type : "boolean", group : "Appearance", defaultValue : false},
 		"showMarker" : {type : "boolean", group : "Appearance", defaultValue : false, deprecated: true},
 		"icon" : {type : "sap.ui.core.URI", group : "Appearance", defaultValue : null},
@@ -6457,6 +6668,33 @@ sap.ui.unified.ShellHeadItem.M_EVENTS = {'press':'press'};
  * @deprecated Since version 1.18. 
  * Dividers are not supported anymore.
  * @name sap.ui.unified.ShellHeadItem#setStartsSection
+ * @function
+ */
+
+
+/**
+ * Getter for property <code>showSeparator</code>.
+ * If set to true, a separator is displayed after the item.
+ *
+ * Default value is <code>true</code>
+ *
+ * @return {boolean} the value of property <code>showSeparator</code>
+ * @public
+ * @since 1.22.5
+ * @name sap.ui.unified.ShellHeadItem#getShowSeparator
+ * @function
+ */
+
+/**
+ * Setter for property <code>showSeparator</code>.
+ *
+ * Default value is <code>true</code> 
+ *
+ * @param {boolean} bShowSeparator  new value for property <code>showSeparator</code>
+ * @return {sap.ui.unified.ShellHeadItem} <code>this</code> to allow method chaining
+ * @public
+ * @since 1.22.5
+ * @name sap.ui.unified.ShellHeadItem#setShowSeparator
  * @function
  */
 
@@ -6642,6 +6880,14 @@ sap.ui.unified.ShellHeadItem.prototype.setStartsSection = function(bStartsSectio
 };
 
 
+sap.ui.unified.ShellHeadItem.prototype.setShowSeparator = function(bShowSeparator){
+	bShowSeparator = !!bShowSeparator;
+	this.setProperty("showSeparator", bShowSeparator, true);
+	this.$().toggleClass("sapUiUfdShellHeadItmSep", bShowSeparator);
+	return this;
+};
+
+
 sap.ui.unified.ShellHeadItem.prototype.setSelected = function(bSelected){
 	bSelected = !!bSelected;
 	this.setProperty("selected", bSelected, true);
@@ -6752,7 +6998,7 @@ jQuery.sap.require('sap.ui.core.Element'); // unlisted dependency retained
  * @extends sap.ui.core.Element
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -7021,7 +7267,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -7672,7 +7918,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -8023,6 +8269,8 @@ sap.ui.unified.Menu.M_EVENTS = {'itemSelect':'itemSelect'};
 
 jQuery.sap.require('sap.ui.core.Popup'); // unlisted dependency retained
 
+jQuery.sap.require('jquery.sap.script'); // unlisted dependency retained
+
 
 sap.ui.unified.Menu.prototype.init = function(){
 	var that = this;
@@ -8031,14 +8279,11 @@ sap.ui.unified.Menu.prototype.init = function(){
 	this.oHoveredItem = null;
 	this.oPopup = null; // Will be created lazily
 	this.fAnyEventHandlerProxy = jQuery.proxy(function(oEvent){
-		if(!this.bOpen || !this.getDomRef() || oEvent.type != "mousedown") {
+		var oRoot = this.getRootMenu();
+		if(oRoot != this || !this.bOpen || !this.getDomRef() || (oEvent.type != "mousedown" && oEvent.type != "touchstart")) {
 			return;
 		}
-		var oSource = oEvent.target, oDomRef = this.getDomRef();
-
-		if(!jQuery.sap.containsOrEquals(oDomRef, oSource) || oSource.tagName=="BODY"){
-			this.getRootMenu().handleOuterEvent(this.getId(), oEvent);
-		}
+		oRoot.handleOuterEvent(this.getId(), oEvent); //TBD: standard popup autoclose
 	}, this);
 	this.fOrientationChangeHandler = function(){
 		that.close();
@@ -8065,10 +8310,19 @@ sap.ui.unified.Menu.prototype.exit = function(){
 		this._bOrientationChangeBound = false;
 	}
 	
-	// Cleanup resize event registration
-	if(this.sResizeListenerId){
-		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
-		this.sResizeListenerId = null;
+	// Cleanup
+	this._resetDelayedRerenderItems();
+};
+
+/**
+ * Called when the control or its children are changed.
+ * @private
+ */
+sap.ui.unified.Menu.prototype.invalidate = function(oOrigin){
+	if(oOrigin instanceof sap.ui.unified.MenuItemBase && this.getDomRef()){
+		this._delayedRerenderItems();
+	}else{
+		sap.ui.core.Control.prototype.invalidate.apply(this, arguments);
 	}
 };
 
@@ -8077,11 +8331,7 @@ sap.ui.unified.Menu.prototype.exit = function(){
  * @private
  */
 sap.ui.unified.Menu.prototype.onBeforeRendering = function() {
-	// Cleanup resize event registration before re-rendering
-	if(this.sResizeListenerId){
-		sap.ui.core.ResizeHandler.deregister(this.sResizeListenerId);
-		this.sResizeListenerId = null;
-	}
+	this._resetDelayedRerenderItems();
 };
 
 /**
@@ -8112,26 +8362,67 @@ sap.ui.unified.Menu.prototype.onAfterRendering = function() {
 	if(this.$().outerHeight(true) > iMaxHeight){
 		this.$().css("max-height", iMaxHeight+"px").toggleClass("sapUiMnuScroll", true);
 	}
-	
-	//Might be in the end not a good idea to listen for resizing the body / window because the body might change its size
-	//during a menu is opened (which then closes the menu again):
-
-	//Listen to resizing of the document
-	//if(this.getRootMenu() == this)
-	//	this.sResizeListenerId = sap.ui.core.ResizeHandler.register(!!sap.ui.Device.browser.internet_explorer ? window : jQuery("body").get(0), jQuery.proxy(this.onresize, this));
 };
-
-///**
-// * Called when the control is resized
-// * @private
-// */
-//sap.ui.unified.Menu.prototype.onresize = function(oEvent) {
-//	if(!this.bOpen) return;
-//	this.close();
-//};
 
 
 //****** API Methods ******
+
+sap.ui.unified.Menu.prototype.addItem = function(oItem){
+	this.addAggregation("items", oItem, !!this.getDomRef());
+	this._delayedRerenderItems();
+	return this;
+};
+
+sap.ui.unified.Menu.prototype.insertItem = function(oItem, idx){
+	this.insertAggregation("items", oItem, idx, !!this.getDomRef());
+	this._delayedRerenderItems();
+	return this;
+};
+
+sap.ui.unified.Menu.prototype.removeItem = function(oItem){
+	this.removeAggregation("items", oItem, !!this.getDomRef());
+	this._delayedRerenderItems();
+	return this;
+};
+
+sap.ui.unified.Menu.prototype.removeAllItems = function(){
+	var oRes = this.removeAllAggregation("items", !!this.getDomRef());
+	this._delayedRerenderItems();
+	return oRes;
+};
+
+sap.ui.unified.Menu.prototype.destroyItems = function(){
+	this.destroyAggregation("items", !!this.getDomRef());
+	this._delayedRerenderItems();
+	return this;
+};
+
+sap.ui.unified.Menu.prototype._delayedRerenderItems = function(){
+	if(!this.getDomRef()){
+		return;
+	}
+	this._resetDelayedRerenderItems();
+	
+	this._itemRerenderTimer = jQuery.sap.delayedCall(0, this, function(){
+		var oDomRef = this.getDomRef();
+		if(oDomRef){
+			var oRm = sap.ui.getCore().createRenderManager();
+			sap.ui.unified.MenuRenderer.renderItems(oRm, this);
+			oRm.flush(oDomRef);
+			oRm.destroy();
+			this.onAfterRendering();
+			this.getPopup()._applyPosition(this.getPopup()._oLastPosition);
+		}
+	});
+};
+
+sap.ui.unified.Menu.prototype._resetDelayedRerenderItems = function(){
+	if(this._itemRerenderTimer){
+		jQuery.sap.clearDelayedCall(this._itemRerenderTimer);
+		delete this._itemRerenderTimer;
+	}
+};
+
 
 sap.ui.unified.Menu.prototype.open = function(bWithKeyboard, oOpenerRef, my, at, of, offset, collision){
 	if(this.bOpen) {
@@ -8204,7 +8495,7 @@ sap.ui.unified.Menu.prototype.close = function() {
 	this.getPopup().close(0);
 
 	//Remove the Menus DOM after it is closed
-	this.onBeforeRendering();
+	this._resetDelayedRerenderItems();
 	this.$().remove();
 	this.bOutput = false;
 
@@ -8220,6 +8511,7 @@ sap.ui.unified.Menu.prototype.close = function() {
  * @private
  */ 
 sap.ui.unified.Menu.prototype._menuClosed = function() {
+	//TBD: standard popup autoclose: this.close(); //Ensure proper cleanup
 	if (this.oOpenerRef) {
 		if(!this.ignoreOpenerDOMRef) {
 			this.oOpenerRef.focus();
@@ -8348,6 +8640,9 @@ sap.ui.unified.Menu.prototype.onsaptabnext = sap.ui.unified.Menu.prototype.onsap
 sap.ui.unified.Menu.prototype.onsaptabprevious = sap.ui.unified.Menu.prototype.onsapescape;
 
 sap.ui.unified.Menu.prototype.onmouseover = function(oEvent){
+	if(!sap.ui.Device.system.desktop){
+		return;
+	}
 	var oItem = this.getItemByDomRef(oEvent.target);
 	if(!this.bOpen || !oItem || oItem == this.oHoveredItem) {
 		return;
@@ -8374,6 +8669,9 @@ sap.ui.unified.Menu.prototype.onmouseover = function(oEvent){
 };
 
 sap.ui.unified.Menu.prototype.onmouseout = function(oEvent){
+	if(!sap.ui.Device.system.desktop){
+		return;
+	}
 	fnIe8RepaintBug(this);
 	
 	if(jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())){
@@ -8393,25 +8691,38 @@ sap.ui.unified.Menu.prototype.onsapfocusleave = function(oEvent){
 	if(this.oOpenedSubMenu || !this.bOpen) {
 		return;
 	}
-	this.getRootMenu().handleOuterEvent(this.getId(), oEvent);
+	this.getRootMenu().handleOuterEvent(this.getId(), oEvent); //TBD: standard popup autoclose
 };
 
 //****** Helper Methods ******
 
 sap.ui.unified.Menu.prototype.handleOuterEvent = function(oMenuId, oEvent){
-	var isInMenuHierarchy = false;
-	if (oEvent.type == "mousedown"){
+	//See sap.ui.core.Popup implementation: Target is to use autoclose mechanismn of the popup
+	//but currently there autoclose only works for 2 hierarchy levels and not for n as needed by the menu
+	//-> This function and all its callers are obsolete when switching later to standard popup autoclose
+	//   (all needed further code locations for that change are marked with "TBD: standard popup autoclose")
+	var isInMenuHierarchy = false,
+		touchEnabled = this.getPopup().touchEnabled;
+	
+	if (oEvent.type == "mousedown" || oEvent.type == "touchstart"){
+		// Suppress the delayed mouse event from mobile browser
+		if(touchEnabled && (oEvent.isMarked("delayedMouseEvent") || oEvent.isMarked("cancelAutoClose"))){
+			return;
+		}
 		var currentMenu = this;
-		while(currentMenu){
+		while(currentMenu && !isInMenuHierarchy){
 			if(jQuery.sap.containsOrEquals(currentMenu.getDomRef(), oEvent.target)){
 				isInMenuHierarchy = true;
 			}
 			currentMenu = currentMenu.oOpenedSubMenu;
 		}
 	}else if (oEvent.type == "sapfocusleave"){
+		if(touchEnabled){
+			return;
+		}
 		if(oEvent.relatedControlId){
 			var currentMenu = this;
-			while(currentMenu){
+			while(currentMenu && !isInMenuHierarchy){
 				if((currentMenu.oOpenedSubMenu && currentMenu.oOpenedSubMenu.getId() == oEvent.relatedControlId)
 						|| jQuery.sap.containsOrEquals(currentMenu.getDomRef(), jQuery.sap.byId(oEvent.relatedControlId).get(0))){
 					isInMenuHierarchy = true;
@@ -8423,7 +8734,6 @@ sap.ui.unified.Menu.prototype.handleOuterEvent = function(oMenuId, oEvent){
 
 	if(!isInMenuHierarchy) {
 		this.ignoreOpenerDOMRef = true;
-		
 		this.close();
 		this.ignoreOpenerDOMRef = false;
 	}
@@ -8453,8 +8763,13 @@ sap.ui.unified.Menu.prototype.selectItem = function(oItem, bWithKeyboard, bCtrlK
 		// This is a normal item -> Close all menus and fire event.
 		this.getRootMenu().close();
 	}else{
-		// Item with sub menu was triggered -> Open sub menu and fire event.
-		this.openSubmenu(oItem, bWithKeyboard);
+		if(!sap.ui.Device.system.desktop && this.oOpenedSubMenu === oSubMenu){
+			this.oOpenedSubMenu.close();
+			this.oOpenedSubMenu = null;
+		}else{
+			// Item with sub menu was triggered -> Open sub menu and fire event.
+			this.openSubmenu(oItem, bWithKeyboard);
+		}
 	}
 
 	oItem.fireSelect({item: oItem, ctrlKey: bCtrlKey});
@@ -8485,7 +8800,8 @@ sap.ui.unified.Menu.prototype.getMenuLevel = function(){
 
 sap.ui.unified.Menu.prototype.getPopup = function (){
 	if(!this.oPopup){
-		this.oPopup = new sap.ui.core.Popup(this, false, true); // content, modal, shadow
+		this.oPopup = new sap.ui.core.Popup(this, false, true, false); // content, modal, shadow, autoclose (TBD: standard popup autoclose)
+		this.oPopup.setDurations(0, 0);
 		this.oPopup.attachOpened(this._menuOpened, this);
 		this.oPopup.attachClosed(this._menuClosed, this);
 	}
@@ -8548,7 +8864,7 @@ sap.ui.unified.Menu.prototype.openSubmenu = function(oItem, bWithKeyboard, bWith
 sap.ui.unified.Menu.prototype._bringToFront = function() {
 	// This is a hack. We "simulate" a mouse-down-event on the submenu so that it brings itself
 	// to the front.
-	this.getPopup().onmousedown();
+	jQuery.sap.byId(this.getPopup().getId()).mousedown();
 };
 
 sap.ui.unified.Menu.prototype.checkEnabled = function(oItem){
@@ -8944,7 +9260,7 @@ jQuery.sap.declare("sap.ui.unified.MenuItem");
  * @extends sap.ui.unified.MenuItemBase
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -9170,7 +9486,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
@@ -9955,8 +10271,9 @@ sap.ui.unified.Shell._SIDEPANE_WIDTH_DESKTOP = 240;
 sap.ui.unified.Shell._HEADER_ALWAYS_VISIBLE = true; /*Whether header hiding is technically possible (touch enabled)*/
 sap.ui.unified.Shell._HEADER_AUTO_CLOSE = true;
 sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 30;
-if(sap.ui.Device.os.windows && sap.ui.Device.os.version == 8 && sap.ui.Device.browser.chrome){
-	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = 15;
+if(sap.ui.Device.browser.chrome){
+	//see https://groups.google.com/a/chromium.org/forum/#!topic/input-dev/Ru9xjSsvLHw --> chrome://flags/#touch-scrolling-mode
+	sap.ui.unified.Shell._HEADER_TOUCH_TRESHOLD = sap.ui.Device.browser.version < 36 ? 10 : 15;
 }
 	
 sap.ui.unified.Shell.prototype.init = function(){
@@ -10432,7 +10749,6 @@ sap.ui.unified.Shell.prototype._timedHideHeader = function(bClearOnly){
 	this._headerHidingTimer = jQuery.sap.delayedCall(this._iHeaderHidingDelay, this, function(){
 		if(this._isHeaderHidingActive() && this._iHeaderHidingDelay > 0 && !jQuery.sap.containsOrEquals(this.getDomRef("hdr"), document.activeElement)){
 			this._doShowHeader(false);
-			this._refreshCSSWorkaround();
 		}
 	});
 };
@@ -10543,6 +10859,8 @@ sap.ui.unified.Shell.prototype._repaint = function(oDom){
 		oDom.style.display = "none";
 		oDom.offsetHeight;
 		oDom.style.display = display;
+		
+		this._refreshCSSWorkaround();
 	}
 };
 
@@ -10555,7 +10873,7 @@ sap.ui.unified.Shell.prototype._isHeaderHidingActive = function(){
 };
 
 sap.ui.unified.Shell.prototype._refreshCSSWorkaround = function() {
-	if(!sap.ui.Device.browser.chrome || !sap.ui.Device.support.touch){
+	if(!sap.ui.Device.browser.webkit || !sap.ui.Device.support.touch){
 		return;
 	}
 	
@@ -10654,7 +10972,7 @@ jQuery.sap.require('sap.ui.core.Control'); // unlisted dependency retained
  * @extends sap.ui.core.Control
  *
  * @author SAP AG 
- * @version 1.22.4
+ * @version 1.22.9
  *
  * @constructor   
  * @public
